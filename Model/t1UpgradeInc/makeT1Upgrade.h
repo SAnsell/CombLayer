@@ -143,7 +143,7 @@ class makeT1Upgrade
   makeT1Upgrade& operator=(const makeT1Upgrade&);
   ~makeT1Upgrade();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

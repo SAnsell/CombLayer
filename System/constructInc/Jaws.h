@@ -3,7 +3,7 @@
  
  * File:   constructInc/Jaws.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ namespace constructSystem
   \brief Jaws unit  
 */
 
-class Jaws : public attachSystem::FixedComp,
+class Jaws : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
@@ -43,13 +43,6 @@ class Jaws : public attachSystem::FixedComp,
   
   const int jawIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< step in X 
-  double yStep;                 ///< step in X 
-  double zStep;                 ///< step in X 
-  double xAngle;                ///< rotation about X [last]
-  double yAngle;                ///< rotation about Y [mid]
-  double zAngle;                ///< rotation about Z [first]
   
   double zOpen;                 ///< Z-opening
   double zThick;                ///< Blade thickness

@@ -3,7 +3,7 @@
  
  * File:   support/stringCombine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,66 @@
 namespace  StrFunc
 {
 
+char
+indexToAlpha(const size_t index)
+  /*!
+    Convert an index to A-Z / a-z 
+    \param index :: index value
+    \return [A-z] based on index '?' on error
+  */
+{
+  static const char cmap[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+  return (index>=52) ? '?' : cmap[index];
+}
+
+char
+indexToRevAlpha(const size_t index)
+  /*!
+    Convert an index to  a-z / A-Z
+    \param index :: index value
+    \return [a-Z] based on index 
+  */
+{
+  static const char cmap[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  return cmap[index % 52];
+}
+
+size_t
+alphaToIndex(const char C)
+  /*!
+    Convert an index to  a-z / A-Z
+    \param index :: index value
+    \return [a-Z] based on index 
+  */
+{
+  static const char cmap[]=
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+  size_t pos=(strchr(cmap,C)-cmap);
+  return pos;
+}
+
+size_t
+revAlphaToIndex(const char C)
+  /*!
+    Convert an index to  a-z / A-Z
+    \param index :: index value
+    \return [a-Z] based on index 
+  */
+{
+  static const char cmap[]=
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  size_t pos=(strchr(cmap,C)-cmap);
+  return pos;
+}
+    
+  
 template<typename T>
 std::string
 makeString(const T& V)

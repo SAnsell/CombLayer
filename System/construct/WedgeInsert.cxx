@@ -3,7 +3,7 @@
  
  * File:   construct/WedgeInsert.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 
@@ -75,7 +76,7 @@ namespace constructSystem
 {
 
 WedgeInsert::WedgeInsert(const std::string& Key,const size_t Index) :
-  attachSystem::FixedComp(Key+StrFunc::makeString(Index),6),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
   attachSystem::ContainedComp(),baseName(Key),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wedgeIndex+1)
@@ -87,10 +88,9 @@ WedgeInsert::WedgeInsert(const std::string& Key,const size_t Index) :
 {}
 
 WedgeInsert::WedgeInsert(const WedgeInsert& A) : 
-  attachSystem::FixedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   baseName(A.baseName),wedgeIndex(A.wedgeIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  cellIndex(A.cellIndex),
   viewWidth(A.viewWidth),viewHeight(A.viewHeight),
   viewXY(A.viewXY),viewZ(A.viewZ),wall(A.wall),
   mat(A.mat),wallMat(A.wallMat),temp(A.temp)
@@ -110,13 +110,9 @@ WedgeInsert::operator=(const WedgeInsert& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       viewWidth=A.viewWidth;
       viewHeight=A.viewHeight;
       viewXY=A.viewXY;
@@ -154,6 +150,7 @@ WedgeInsert::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("WedgeInsert","populate");
 
+  attachSystem::FixedOffset::populate(Control);
     // Master values
   if (Control.hasVariable(keyName+"Cent"))
     {
@@ -163,14 +160,6 @@ WedgeInsert::populate(const FuncDataBase& Control)
       yStep=Cent.Y();
       zStep=Cent.Z();
     }
-  else
-    {
-      xStep=Control.EvalVar<double>(keyName+"XStep");
-      yStep=Control.EvalVar<double>(keyName+"YStep");
-      zStep=Control.EvalVar<double>(keyName+"ZStep");
-    }
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   viewWidth=Control.EvalPair<double>(keyName,baseName,"ViewWidth");   
   viewHeight=Control.EvalPair<double>(keyName,baseName,"ViewHeight");   
@@ -197,9 +186,7 @@ WedgeInsert::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("WedgeInsert","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
 
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  applyOffset();
   return;
 }
 
@@ -227,8 +214,6 @@ WedgeInsert::createSurfaces()
   Qz.rotate(vZMinus);
   Qz.invRotate(vZPlus);
   
-
-
   // Back plane
   ModelSupport::buildPlane(SMap,wedgeIndex+1,Origin,Y);  
   // sides:

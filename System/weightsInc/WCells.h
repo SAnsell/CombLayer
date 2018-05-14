@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WCells.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WCells_h
-#define WCells_h
+#ifndef WeightSystem_WCells_h
+#define WeightSystem_WCells_h
 
 
 namespace WeightSystem
@@ -48,7 +48,7 @@ class WCells : public WForm
  public:
   
   WCells();
-  WCells(const char);
+  WCells(const std::string&);
   WCells(const WCells&);
   WCells& operator=(const WCells&);
   ~WCells();
@@ -75,6 +75,8 @@ class WCells : public WForm
 
   const std::vector<double>& getWeights(const int) const;
 
+  void writePHITSHead(std::ostream&) const;
+  void writePHITS(std::ostream&) const;
   void write(std::ostream&) const;
 };
 

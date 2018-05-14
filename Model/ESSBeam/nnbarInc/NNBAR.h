@@ -46,7 +46,7 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class ChopperUnit;
+  class SingleChopper;
   class HoleShape;
   class TubeDetBox;  
 }
@@ -109,8 +109,6 @@ class NNBAR : public attachSystem::CopiedComp
   /// Cave enterance hole
   std::shared_ptr<constructSystem::HoleShape> CaveCut;
 
-
-  void setBeamAxis(const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);

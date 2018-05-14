@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,10 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "version.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -56,17 +58,11 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "sswTally.h"
-#include "tallyFactory.h"
+#include "localRotate.h"
+#include "masterRotate.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -81,6 +77,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
@@ -93,6 +90,9 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "Source.h"
+#include "inputSupport.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
@@ -103,8 +103,8 @@
 #include "Simulation.h"
 
 Simulation::Simulation()  :
-  mcnpVersion(6),CNum(100000),OSMPtr(new ModelSupport::ObjSurfMap),
-  PhysPtr(new physicsSystem::PhysicsCards)
+  OSMPtr(new ModelSupport::ObjSurfMap),
+  cellDNF(0),cellCNF(0)
   /*!
     Start of simulation Object
   */
@@ -112,78 +112,46 @@ Simulation::Simulation()  :
   ModelSupport::SimTrack::Instance().addSim(this);
 }
 
-Simulation::Simulation(const Simulation& A)  :
-  mcnpVersion(A.mcnpVersion),inputFile(A.inputFile),
-  CNum(A.CNum),DB(A.DB),
-  OSMPtr(new ModelSupport::ObjSurfMap),
-  TList(A.TList),  cellOutOrder(A.cellOutOrder),
-  PhysPtr(new physicsSystem::PhysicsCards(*A.PhysPtr))
+Simulation::Simulation(const Simulation& A) : 
+  inputFile(A.inputFile),
+  cmdLine(A.cmdLine),DB(A.DB),
+  OSMPtr(new ModelSupport::ObjSurfMap(*A.OSMPtr)),
+  TList(A.TList),cellDNF(A.cellDNF),cellCNF(A.cellCNF),
+  cellOutOrder(A.cellOutOrder),
+  voidCells(A.voidCells),sourceName(A.sourceName)
   /*!
-    Copy constructor:: makes a deep copy of the point objects
-    object including calling the virtual clone on the 
-    Surface pointers
-    \param A :: object to copy
+    Copy constructor
+    \param A :: Simulation to copy
   */
 {
-  ModelSupport::SimTrack::Instance().addSim(this);
-  // Object
-  OTYPE::const_iterator mc;
-  for(mc=A.OList.begin();mc!=A.OList.end();mc++)
-    {
-      OList.insert(std::pair<int,MonteCarlo::Qhull*>
-		   (mc->first,(mc->second)->clone()));
-    }
-  // Tally
-  std::map<int,tallySystem::Tally*>::const_iterator tc;
-  for(tc=A.TItem.begin();tc!=A.TItem.end();tc++)
-    {
-      TItem.insert(std::pair<int,tallySystem::Tally*>
-		   (tc->first,(tc->second)->clone()));
-    }
-
-  createObjSurfMap();
-
+      ELog::EM<<"CALLING INCORRECT Simulation(Simulation)"<<ELog::endCrit;
 }
 
 Simulation&
-Simulation::operator=(const Simulation& A) 
+Simulation::operator=(const Simulation& A)
   /*!
-    Assignment operator :: 
-    \param A :: object to copy
+    Assignment operator
+    \param A :: Simulation to copy
     \return *this
   */
 {
-  ELog::RegMethod RegA("Simulation","operator=");
-
   if (this!=&A)
     {
+      ELog::EM<<"CALLING INCORRECT Simulation::operator="<<ELog::endCrit;
       inputFile=A.inputFile;
-      CNum=A.CNum;
+      cmdLine=A.cmdLine;
       DB=A.DB;
       TList=A.TList;
+      cellDNF=A.cellDNF;
+      cellCNF=A.cellCNF;
+      OList=A.OList;
       cellOutOrder=A.cellOutOrder;
-      delete PhysPtr;
-      PhysPtr=new physicsSystem::PhysicsCards(*A.PhysPtr);
-      deleteObjects();
-      deleteTally();
-      // Object
-      OTYPE::const_iterator mc;
-      for(mc=A.OList.begin();mc!=A.OList.end();mc++)
-	{
-	  OList.insert(std::pair<int,MonteCarlo::Qhull*>
-		       (mc->first,(mc->second)->clone()));
-	}
-      std::map<int,tallySystem::Tally*>::const_iterator tc;
-      for(tc=A.TItem.begin();tc!=A.TItem.end();tc++)
-        {
-	  TItem.insert(std::pair<int,tallySystem::Tally*>
-			(tc->first,(tc->second)->clone()));
-	}
-      ModelSupport::SimTrack::Instance().setCell(this,0);
-      createObjSurfMap();
+      voidCells=A.voidCells;
+      sourceName=A.sourceName;
     }
   return *this;
 }
+
 
 Simulation::~Simulation()
   /*!
@@ -193,10 +161,8 @@ Simulation::~Simulation()
 {
   ELog::RegMethod RegA("Simulation","delete operator");
 
-  delete PhysPtr;
   delete OSMPtr;
   deleteObjects();
-  deleteTally();
   ModelSupport::SimTrack::Instance().clearSim(this);
 
 }
@@ -210,11 +176,8 @@ Simulation::resetAll()
   ModelSupport::surfIndex::Instance().reset();
   TList.erase(TList.begin(),TList.end());
   OSMPtr->clearAll();
-  PhysPtr->clearAll();
-  deleteTally();
   deleteObjects();
   cellOutOrder.clear();
-  CNum=0;
   masterRotate& MR = masterRotate::Instance();
   MR.clearGlobal();
   return;
@@ -237,144 +200,6 @@ Simulation::deleteObjects()
   return;
 }
 
-void
-Simulation::deleteTally()
-  /*!
-    Delete all the Tallies and clear the maps
-  */
-{
-  for(TallyTYPE::value_type& MVal : TItem)
-    delete MVal.second;
-
-  TItem.erase(TItem.begin(),TItem.end());
-  return;
-}
-
-
-void
-Simulation::setMCNPversion(const int V)
-  /*!
-    Sets the MCNP version number 
-    Use 10 for MCNPX
-    \param V :: Version
-   */
-{
-  mcnpVersion=V;
-  PhysPtr->setMCNPversion(V);
-  return;
-}
-
-
-int
-Simulation::readTransform(std::istream& IX)
-  /*!
-    Read the transformation zone .
-    Now makes use of the current state of the data base.
-    \param IX :: Input stream
-    \returns 
-      - 0 on failure
-      - Number of successful read transforms
-  */
-{
-  ELog::RegMethod RegA("Simulation","readTransform");
-  std::string Line;
-  std::string Snd;
-  int Tcount(0);
-
-  std::string ExtraStr;
-  while(IX.good())
-    {
-      Line += StrFunc::getLine(IX);
-      Line=StrFunc::fullBlock(Line);
-      if (Line.substr(0,2)=="tr" || Line.substr(0,2)=="TR" ||
-	  Line.substr(0,3)=="*tr" || Line.substr(0,3)=="*TR")   //tr line
-        {
-	  ReadFunc::removeDollarComment(Line);
-	  Geometry::Transform Tr;
-	  ReadFunc::processDollarString(DB,Line);
-	  int etype=Tr.setTransform(Line);
-	  if (!etype)
-	    {
-	      TList[Tr.getName()]=Tr;
-	      Tcount++;
-	      Line="";
-	    }
-	  else if (etype<0)
-	    {
-	      ELog::EM<<"Error with trans : "<<Line<<":"<<Snd<<ELog::endErr;
-	      throw ColErr::ExitAbort("eType<0");
-	    }
-	}
-      else if (Line.find("END")!=std::string::npos ||
-	       Line.find("CARDS")!=std::string::npos)
-        {
-	  return Tcount;
-	}
-      else
-        {
-	  Line="";
-	}
-    }
-  return Tcount;
-}
-
-int
-Simulation::readTally(std::istream& OX)
-  /*!
-    Read the Tally information
-    \param OX :: Input stream
-    \retval 0 on failure
-    \retval Number of successful read tallies
-  */
-{
-  ELog::RegMethod RegA("Simulation","readTally");
-  std::string Line;             /// 
-  std::string ProcLine;         /// Line to proces
-  int currentID(-1000);
-  tallySystem::Tally* TX(0);
-  std::map<int,tallySystem::Tally*>::iterator vc;
-  while(OX.good() && Line.find("END")==std::string::npos)
-    {
-      Line = StrFunc::getLine(OX);
-      const int flag=tallySystem::Tally::firstLine(Line);
-      if (!flag)                 // Cont line
-        {
-	  ProcLine+=Line+" ";
-	}
-      else if (!ProcLine.empty())        // Real line + process line
-        {
-	  int id=tallySystem::Tally::getID(ProcLine);
-	  // New/old tally (hopefully)
-	  if (id>=0 && id!=currentID)
-	    {
-	      vc=TItem.find(id);
-	      if (vc==TItem.end())
-	        {
-		  TX=tallySystem::tallyFactory::Instance()->createTally(id);
-		  TItem[id]=TX;
-		}
-	      else
-		TX=vc->second;
-
-	      currentID=id;
-	    }
-	  // This avoids the -1 error type
-	  if (id==currentID)
-	    {
-	      if (id<0 || TX->addLine(ProcLine))
-	        {
-		  ELog::EM<<"Error reading line "<<ProcLine<<ELog::endErr;
-		  throw ColErr::ExitAbort("id<0 || addLine fail");
-		}
-	    }
-	  ProcLine="";
-	}
-      
-      if (flag>0)                 // Not a cont line
-	ProcLine= Line+" ";
-    }
-  return static_cast<int>(TItem.size());
-}
 
 int
 Simulation::checkInsert(const MonteCarlo::Qhull& A)
@@ -401,50 +226,19 @@ Simulation::checkInsert(const MonteCarlo::Qhull& A)
   return 1;
 }
 
-tallySystem::Tally*
-Simulation::getTally(const int Index) const
-  /*!
-    Gets a tally from the map
-    \param Index :: Tally item to search for
-    \return Tally pointer ( or 0 on null)
-   */
-{
-  std::map<int,tallySystem::Tally*>::const_iterator vc; 
-  vc=TItem.find(Index);
-  if (vc!=TItem.end())
-    return vc->second;
-  return 0;
-}
-
-tallySystem::sswTally*
-Simulation::getSSWTally() const
-  /*!
-    Gets the sswTally 
-    \return Tally pointer ( or 0 on null)
-   */
-{
-  std::map<int,tallySystem::Tally*>::const_iterator vc; 
-  vc=TItem.find(0);
-  if (vc!=TItem.end())
-    return dynamic_cast<tallySystem::sswTally*>(vc->second);
-
-  return 0;
-}
-
 int
-Simulation::nextTallyNum(int tNum) const
+Simulation::getNextCell(int CN) const
   /*!
-    Quick funciton to get the next tally point
-    \param tNum :: initial index
-    \return Next free tally number
-   */
+    Get next cell
+    \param CN :: Cell number to start offset from
+    \return next free offset
+  */
 {
-  ELog::RegMethod RegA("Simulation","nextTallyNum");
-
-  while(TItem.find(tNum)!=TItem.end())
-    tNum+=10;
-
-  return tNum;
+  while (OList.find(CN)!=OList.end())
+    {
+      CN++;
+    }
+  return CN;
 }
 
 int
@@ -492,7 +286,6 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       throw ColErr::InContainerError<int>(cellNumber,"cellNumber");
     }
 
-
   if (!QHptr->hasComplement() ||
       removeComplement(*QHptr))
     {
@@ -504,14 +297,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Cell==:"<<*QHptr<<ELog::endCrit;
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
-      
-  // Add Volume unit [default]:
-  PhysPtr->setVolume(cellNumber,1.0);
   OR.addActiveCell(cellNumber);
-
-  // Add surfaces to OSMPtr:
-  //  OSMPtr->addSurfaces(QHptr);
-
   return 1;
 }
 
@@ -528,10 +314,55 @@ Simulation::addCell(const int Index,const int MatNum,
    */
 {
   ELog::RegMethod RegA("Simulation","addCell(int,int,string)");
+  return addCell(Index,MatNum,0.0,RuleLine);
+}
+
+int
+Simulation::addCell(const int Index,const int matNum,
+		    const double matTemp,
+		    const std::string& RuleLine)
+  /*!
+    From the information try to add a new cell
+    \param Index :: Identifier of cell
+    \param matNum :: Material number 
+    \param matTemp :: Material temperature
+    \param RuleLine :: List of rules
+    \retval -1 :: failure [no new cell etc]
+    \retval 0 :: success
+   */
+{
+  ELog::RegMethod RegA("Simulation","addCell(int,int,double,string)");
+  
   MonteCarlo::Qhull TX;
   TX.setName(Index);
-  TX.setMaterial(MatNum);  
+  TX.setMaterial(matNum);
+  TX.setTemp(matTemp);  
   TX.procString(RuleLine);         // This always is successful. 
+  return addCell(Index,TX);
+}
+
+int
+Simulation::addCell(const int Index,const int matNum,
+		    const double matTemp,
+		    const HeadRule& RuleItem)
+  /*!
+    From the information try to add a new cell
+    \param Index :: Identifier of cell
+    \param matNum :: Material number 
+    \param matTemp :: Material temperature
+    \param RuleItem :: List of rules
+    \retval -1 :: failure [no new cell etc]
+    \retval 0 :: success
+   */
+{
+  ELog::RegMethod RegA("Simulation","addCell(int,int,double,HeadRule)");
+  
+  MonteCarlo::Qhull TX;
+  TX.setName(Index);
+  TX.setMaterial(matNum);
+  TX.setTemp(matTemp);  
+  TX.procHeadRule(RuleItem);
+  
   return addCell(Index,TX);
 }
 
@@ -546,106 +377,6 @@ Simulation::setENDF7()
   return;
 }
 
-void
-Simulation::readMaster(const std::string& Fname)
-  /*! 
-    Processes the full  master file which is the
-    Modified MCNPX file:
-    Required sections:
-    - Transforms 
-    - Surfaces
-    - Cells
-    - Materials
-    - Weights
-    - Physics
-    \param Fname :: Master file name (with full path)
-  */
-  
-{
-  ELog::RegMethod RegA("Simulation","readMaster");
-
-  std::ifstream IX;
-  IX.open(Fname.c_str(),std::ios::in);
-  if (!IX)
-    {
-      ELog::EM<<"No Master file found:"<<std::endl;
-      if (Fname.empty())
-	ELog::EM<<" No Master file specified"<<ELog::endErr;
-      else
-	ELog::EM<<" Attempted to load : "<<Fname<<ELog::endErr;
-      throw ColErr::ExitAbort(RegA.getFull());
-      return;
-    }
-  inputFile=Fname;
-/* Read components and then calculate sections */
-  int nT(0);     // Transforms 
-  int nS(0);     // Surfaces 
-  int nC(0);     // Cells 
-  int nM(0);     // Materials
-  int nW(0);     // Weights
-  int nTa(0);    // Tallys
-  int nP(0);     // Physics
-
-  while(IX.good())
-    {
-      std::string Einfo=StrFunc::getLine(IX);
-      if (Einfo.find("TRANSFORM CARDS")!=std::string::npos)
-        {
-	  ELog::EM.debug("Reading Transforms");
-	  nT+=readTransform(IX);
-	}
-      else if (Einfo.find("SURFACE CARDS")!=std::string::npos)
-        {
-	  ELog::EM.debug("Reading surfaces");
-	  nS+=ReadFunc::readSurfaces(DB,IX,0);
-	}
-      else if (Einfo.find("CELL CARDS")!=std::string::npos)
-        {
-	  ELog::EM.debug("Reading cells");
-	  nC+=ReadFunc::readCells(DB,IX,0,OList);
-	}
-      else if (Einfo.find("MATERIAL CARDS")!=std::string::npos)
-        {
-	  ELog::EM.debug("Reading materials");
-	  nM+=ReadFunc::readMaterial(IX);
-	}
-      else if (Einfo.find("TALLY CARDS")!=std::string::npos)
-        {
-	  ELog::EM.debug("Reading Tally");
-	  nTa+=readTally(IX);
-	}
-      else if (Einfo.find("PHYSICS CARDS")!=std::string::npos)
-        {
-	  ELog::EM.debug("Reading Physics");
-	  nP+=ReadFunc::readPhysics(DB,IX,PhysPtr);
-	}
-    }
-  RegA.incIndent();
-  ELog::EM<<"Number of  Transforms == "<<nT<<ELog::endTrace;
-  ELog::EM<<"Number of Surfaces == "<<nS<<ELog::endTrace;
-  ELog::EM<<"Number of Cells == "<<nC<<ELog::endTrace;
-  ELog::EM<<"Number of Materials == "<<nM<<ELog::endTrace;
-  ELog::EM<<"Number of Weights == "<<nW<<ELog::endTrace;
-  ELog::EM<<"Number of Tallies == "<<nTa<<ELog::endTrace;
-  ELog::EM<<"Number of Physics == "<<nP<<ELog::endTrace;
-  RegA.decIndent();
-  IX.close();
-
-  if (applyTransforms())
-    ELog::EM<<"Error applying transform for surfaces"<<ELog::endErr;
-  else if (populateCells())        //error getting surfaces 
-    ELog::EM<<"There is an error getting surface for cells"<<ELog::endErr;
-  else if (removeComplements())
-    ELog::EM<<"Removing complements failed"<<ELog::endErr;
-  else if (setMaterialDensity(OList))
-    ELog::EM<<"Materials and cells do not balance"<<ELog::endErr;
-  else
-    {
-      ELog::EM<<"Cells are populated "<<ELog::endBasic;
-      return;
-    }
-  throw ColErr::ExBase("Build object error");
-}
 
 int
 Simulation::removeDeadSurfaces(const int placeFlag)
@@ -696,45 +427,6 @@ Simulation::removeDeadSurfaces(const int placeFlag)
   return 0;
 }
 
-int
-Simulation::removeCells(const int startN,const int endN)
-  /*!
-    Removes the cells in the range
-    \param startN :: First cell to remove
-    \param endN :: Last cell to remove [if -1 use max number]
-    \return 1 on success  0 on failure
-  */
-{
-  ELog::RegMethod RegItem("Simulation","removeCells");
-  ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  // It seems quicker to create a new map and copy
-  OTYPE newOList;
-  OTYPE::iterator vc;
-  for(vc=OList.begin();vc!=OList.end();vc++)
-    {
-      // Replace if not placeholder / and in range
-      if (!vc->second->isPlaceHold() &&
-	  (vc->first>=startN && (endN<0 || vc->first<=endN)))
-	{
-	  ST.checkDelete(this,vc->second);
-          PhysPtr->removeCell(vc->first);
-          OR.removeActiveCell(vc->first);
-	  delete vc->second;
-	}
-      else
-	newOList.insert(OTYPE::value_type(vc->first,vc->second));
-    }
-  OList=newOList;
-
-// Now process Physics so importance/volume cards can be set
-//  processCellsImp();
-//  ELog::CellM.processReport(std::cout);
-  return 1;
-}
-
 void
 Simulation::removeCell(const int cellNumber)
   /*!
@@ -755,8 +447,6 @@ Simulation::removeCell(const int cellNumber)
   delete vc->second;
   OList.erase(vc);
 
-  // Add Volume unit [default]:
-  PhysPtr->removeCell(cellNumber);
   OR.removeActiveCell(cellNumber);
 
   return;
@@ -769,100 +459,57 @@ Simulation::removeAllSurface(const int KeyN)
     from the simulation. Then remove
     surface KeyN from the surface map.
     \param KeyN :: Surface number to remove
-    \returns Number of surface removed (will do)
+    \return Number of surface removed (will do)
   */
 {
-  OTYPE::iterator oc;
-  for(oc=OList.begin();oc!=OList.end();oc++)
+  ELog::RegMethod RegA("Simulation","removeAllSurface");
+  
+  for(OTYPE::value_type& om : OList)
     {
-      oc->second->removeSurface(KeyN);
-      oc->second->populate();
-      oc->second->createSurfaceList();
+      om.second->removeSurface(KeyN);
+      om.second->populate();
+      om.second->createSurfaceList();
     }
   ModelSupport::surfIndex::Instance().deleteSurface(KeyN);
   return 0;
 }
 
-int 
-Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
+void
+Simulation::substituteAllSurface(const int oldSurfN,const int newSurfN)
   /*!
-    Remove all the surface of name KeyN
+    Remove all the surface of name oldSurfN
     from the simulation. Then remove
     surface KeyN from the surface map.
-    \param KeyN :: Number of surface to alter
-    \param NsurfN :: Number of new surface + sign to swap KeyN sign.
+    \param oldSurfN :: Number of surface to alter
+    \param newSurfN :: Number of new surface + sign to swap KeyN sign.
     \throw IncontainerError if the key does not exist
-    \returns Number of surface removed (will do)
   */
 {
   ELog::RegMethod RegA("Simulation","substituteAllSurface");
-  const int NS(NsurfN>0 ? NsurfN : -NsurfN);
+  
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+
+  // SurfaceIndex and surfaces already updated
+  const int NS(newSurfN>0 ? newSurfN : -newSurfN);
   Geometry::Surface* XPtr=ModelSupport::surfIndex::Instance().getSurf(NS);
   if (!XPtr)
-    throw ColErr::InContainerError<int>
-      (NsurfN,"Surface number not found");
+    throw ColErr::InContainerError<int>(newSurfN,"Surface number not found");
 
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)
-    oc->second->substituteSurf(KeyN,NsurfN,XPtr);
+    oc->second->substituteSurf(oldSurfN,newSurfN,XPtr);
 
-  TallyTYPE::iterator tc;
-  for(tc=TItem.begin();tc!=TItem.end();tc++)
-    tc->second->renumberSurf(KeyN,NsurfN);
-
-  PhysPtr->substituteSurface(KeyN,NsurfN);
+  // Source:
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->substituteSurface(oldSurfN,newSurfN);
+    }
   
-  return 0;
+  return;
 }
 
-int
-Simulation::bindCell(const int CellVirtual,const int CellBound)
-  /*!
-    Given two cells it uses a virtual cell to bind the extent
-    of a non-virtual cell
-    \param CellVirtual :: Virtual cell name (note that -ve indicates that 
-    the complementary of the cell is to be use)
-    \param CellBound :: cell to be changed.
-    \return -ve if error / 0 on success
-  */
-{
-  const int CVN((CellVirtual>0)  ? CellVirtual : -CellVirtual);
-  const MonteCarlo::Qhull* CV=findQhull(CVN);
-  MonteCarlo::Qhull* CB=findQhull(CellBound);
-  if (!CV || !CB)
-    return -1;
-  if (CVN!=CellVirtual)
-    {
-      
-      MonteCarlo::Qhull* CX=new MonteCarlo::Qhull(*CV);
-      CX->makeComplement();
-      removeComplement(*CX);
-      const int res=CB->addSurfString(CX->cellCompStr());
-      delete CX;
-      return res;
-    }
-  return CB->addSurfString(CV->cellCompStr());
-}
-
-
-int
-Simulation::makeVirtual(const int CellN) 
-  /*!
-    Sets a cell to be virtual
-    \param CellN :: cell number to make virtual
-    \retval 0 :: success
-    \retval -1 :: cell not found
-   */
-{
-  OTYPE::iterator vc;
-  vc=OList.find(CellN);
-  if (vc==OList.end())
-    {
-      return -1;
-    }
-  vc->second->setPlaceHold(1);
-  return 0;
-}
 
 int
 Simulation::setMaterialDensity(OTYPE& ObjGroup)
@@ -915,51 +562,26 @@ Simulation::setMaterialDensity(const int cellNum)
   return 0;
 }
 
-Geometry::Transform*
-Simulation::createSourceTransform() 
-  /*!
-    Create an unused transform for the source 
-    term in the case of non-orthoganal rotation
-    \return Transform ptr [never zero]
-   */
-{
-  ELog::RegMethod RegA("Simulation","createSourceTransform");
-
-  int index(1);
-  while(TList.find(index)!=TList.end())
-    index++;
-  std::pair<TransTYPE::iterator,bool> TX=
-    TList.insert(TransTYPE::value_type(index,Geometry::Transform()));
-
-  TX.first->second.setName(index);
-  return &TX.first->second;          //*(TX.first)
-}
-
-
-void
-Simulation::processCellsImp()
+std::vector<std::pair<int,int>>
+Simulation::getCellImp() const
   /*!
     Now process Physics so importance/volume cards can be set.
-    \todo : What is the official score on cookie-cutter cells??
+    \return pair of cellNumber : importance in cell 
   */
 {
-  ELog::RegMethod RegA("Simulation","processCellsImp");
+  ELog::RegMethod RegA("Simulation","getCellImp");
 
-  std::vector<int> cellOrder;
-  std::vector<double> impValue;
+  std::vector<std::pair<int,int>> cellImp;
 
-  OTYPE::const_iterator vc;
-  for(vc=OList.begin();vc!=OList.end();vc++)
+  for(const OTYPE::value_type& VC: OList)
     {
-      if (!vc->second->isPlaceHold())
+      if (!VC.second->isPlaceHold())
 	{
-	  cellOrder.push_back(vc->first);
-	  impValue.push_back( (vc->second->getImp()>0) ? 1.0 : 0.0);
+	  cellImp.push_back
+	    (std::pair<int,int>(VC.first,(VC.second->getImp()>0) ? 1 : 0));
 	}
     }
-  
-  PhysPtr->setCellNumbers(cellOrder,impValue);
-  return;
+  return cellImp;
 }
 
 int
@@ -1004,11 +626,9 @@ Simulation::removeComplements()
 	      MonteCarlo::Algebra AX;
 	      AX.setFunctionObjStr(workObj.cellStr(OList));
 	      if (!workObj.procString(AX.writeMCNPX()))
-		{
-		  ELog::EM<<"Error processing Algebra Complement : "
-			  <<ELog::endErr;
-		  throw ColErr::ExitAbort(RegA.getFull());
-		}
+		throw ColErr::InvalidLine(AX.writeMCNPX(),
+					  "Algebra Complement");
+
 	      workObj.populate();
 	      workObj.createSurfaceList();
 	    }
@@ -1124,27 +744,6 @@ Simulation::populateCells(const std::vector<int>& cellVec)
   return 0;
 }
 
-void
-Simulation::populateWCells()
-  /*!
-    Once Qhull objects are build the Weight
-    system can be populated with density/temp
-    info etc. This does not do Energy or Weight
-    trace.
-  */
-{
-  ELog::RegMethod RegA("Simulation","populateWCells");
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  
-  // char:WForm
-  WeightSystem::weightManager::CtrlTYPE::iterator mc;
-  for(mc=WM.WMap.begin();mc!=WM.WMap.end();mc++)
-    mc->second->populateCells(OList);
-	
-  return;
-}
-
 int
 Simulation::applyTransforms()
   /*! 
@@ -1238,6 +837,32 @@ Simulation::calcAllVertex()
 }
 
 void
+Simulation::updateSurface(const int SN,const std::string& SLine)
+  /*!
+    Update a surface that has already been assigned:
+    \param SN :: Surface number
+    \param SLine :: Surface string
+   */
+{
+  ELog::RegMethod RegA("Simulation","updateSurface");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  if (SurI.getSurf(SN))
+    SurI.deleteSurface(SN);
+  SurI.createSurface(SN,0,SLine);
+  //
+  OTYPE::iterator oc;
+  for(oc=OList.begin();oc!=OList.end();oc++)
+    {
+      if (oc->second->hasSurface(SN))
+	{
+	  oc->second->rePopulate();
+	}
+    }
+  return;
+}
+
+void
 Simulation::addObjSurfMap(MonteCarlo::Qhull* QPtr)
   /*! 
     Add an object surface mappings.
@@ -1261,7 +886,6 @@ Simulation::validateObjSurfMap()
 {
   ELog::RegMethod RegA("Simulation","validateObjSurfMap");
   OTYPE::iterator mc;
-  //  ELog::EM<<"Call validate "<<++debugNum<<ELog::endDebug;
 
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
@@ -1284,10 +908,10 @@ Simulation::createObjSurfMap()
     Creates all the object surface mappings.
   */
 {
-
   ELog::RegMethod RegA("Simulation","createObjSurfMap");
 
-  OSMPtr->clearAll();  
+  OSMPtr->clearAll();
+
   OTYPE::iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
@@ -1326,7 +950,7 @@ Simulation::printVertex(const int CellN) const
 }
 
 void
-Simulation::setEnergy(const double EMin) 
+Simulation::setEnergy(const double) 
   /*!
     Set the cut energy
     \param EMin :: Energy minimum
@@ -1335,78 +959,20 @@ Simulation::setEnergy(const double EMin)
   ELog::RegMethod RegA("Simulation","setEnergy");
 
   // cut source + weight window (?)
-  PhysPtr->setEnergyCut(EMin);
-  TallyTYPE::iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    mc->second->cutEnergy(EMin);
+  //  PhysPtr->setEnergyCut(EMin);
+
 
   return;
 }
 
 void
-Simulation::removeAllTally()
-  /*!
-    Removes all of the tallies
-   */
-{
-  for_each(TItem.begin(),TItem.end(),
-	   MapSupport::mapDelete<TallyTYPE>());
-  TItem.clear();
-  return;
-}
-
-int
-Simulation::removeTally(const int Key)
-  /*!
-    Rather drastic destruction of a tally
-    (it can be turned off with setActive(0)).
-    This removes the tally from TItem.
-    \param Key :: Item to remove
-    \retval 0 :: Tally removed
-    \retval -1 :: Tally not found
+Simulation::setSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
   */
 {
-  TallyTYPE::iterator vc;
-  vc=TItem.find (Key);
-  if (vc==TItem.end())
-    return -1;
-  delete vc->second;
-  TItem.erase(vc);
-  return 0;
-}
-
-int
-Simulation::addTally(const tallySystem::Tally& TRef)
-  /*!
-    Adds a tally to the main TItem list.
-    \param TRef :: Tally item to insert
-    \return 0 :: Successful
-    \return -1 :: Tally already in use
-  */
-{
-  ELog::RegMethod RegA("Simlation","addTally");
-  
-  const int keyNum=TRef.getKey();
-  if (TItem.find(keyNum)!=TItem.end())
-    return -1;
-
-  tallySystem::Tally* TX=TRef.clone();
-  TItem.insert(TallyTYPE::value_type(keyNum,TX));
-  return 0;
-}
-
-void
-Simulation::setForCinder()
-  /*!
-    Assuming that the cell tallies have
-    been set. Set the system to have unit volumes
-    The card is required regardless of its existance in 
-    the mcnpx input deck.
-  */
-{
-  ELog::RegMethod RegA("Simuation","setForCinder");
-
-  PhysPtr->setHist(1);      // add histp card
+  sourceName=S;
   return;
 }
 
@@ -1449,9 +1015,50 @@ Simulation::getCellMaterial(const int cellNumber) const
 
   return QH->getMat();
 }
+
+std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
+  /*!
+    Find a cell pair (or 1) that have -/+SN as a valid cell 
+    \param Pt :: Point to test
+    \param SN :: Surface number
+    \return Pair Object valid for -SN : Object valid for +SN 
+  */
+{
+  ELog::RegMethod RegA("Simulation","findCellPair");
+  
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*> Out(0,0);
+
+  const ModelSupport::ObjSurfMap::STYPE& negType=OSMPtr->getObjects(-SN);
+  const ModelSupport::ObjSurfMap::STYPE& plusType=OSMPtr->getObjects(SN);
+
+
+  for(const MonteCarlo::Object* OPtr : negType)
+    {
+      if (!OPtr->isPlaceHold() &&
+	  OPtr->isDirectionValid(Pt,-SN))
+	{
+	  Out.first=OPtr;
+	  break;
+	}
+    }
+
+  for(const MonteCarlo::Object* OPtr : plusType)
+    {
+      if (!OPtr->isPlaceHold() &&
+	  OPtr->isDirectionValid(Pt,SN))
+	{
+	  Out.second=OPtr;
+	  break;
+	}
+    }
+  return Out;
+    
+}
 				 
 int
-Simulation::isValidCell(const int cellNumber,const Geometry::Vec3D& Pt) const
+Simulation::isValidCell(const int cellNumber,
+			const Geometry::Vec3D& Pt) const
   /*!
     Check if a point is in the cell
     \param cellNumber :: number of cell to check
@@ -1460,7 +1067,6 @@ Simulation::isValidCell(const int cellNumber,const Geometry::Vec3D& Pt) const
     \retval 1 if valid
   */
 {
-  
   /* Does Oi correspond to an object */
   const MonteCarlo::Qhull* QH=findQhull(cellNumber);
   if (!QH)
@@ -1531,235 +1137,9 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
 }
 
 void
-Simulation::writeTally(std::ostream& OX) const
-  /*!
-    Writes out the tallies using a nice boost binding
-    construction.
-    \param OX :: Output stream
-   */
-{
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
-  for(const TallyTYPE::value_type& TM : TItem)
-    TM.second->write(OX);
-
-  return;
-}
-
-void
-Simulation::writeTransform(std::ostream& OX) const
-  /*!
-    Write all the transforms in standard MCNPX output 
-    type [These should now not be used].
-    \param OX :: Output stream
-  */
-
-{
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- TRANSFORM CARDS -----------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-
-  TransTYPE::const_iterator vt;
-  for(vt=TList.begin();vt!=TList.end();vt++)
-    {
-      vt->second.write(OX);
-    }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  return;
-}
-
-
-void
-Simulation::writeCells(std::ostream& OX) const
-  /*!
-    Write all the cells in standard MCNPX output 
-    type.
-    \param OX :: Output stream
-  */
-
-{
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- CELL CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    {
-      mp->second->write(OX);
-    }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  OX<<std::endl;  // Empty line manditory for MCNPX
-  return;
-}
-
-
-void
-Simulation::writeSurfaces(std::ostream& OX) const
-  /*!
-    Write all the surfaces in standard MCNPX output 
-    type.
-    \param OX :: Output stream
-  */
-
-{
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- SURFACE CARDS -------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-
-  const ModelSupport::surfIndex::STYPE& SurMap =
-    ModelSupport::surfIndex::Instance().surMap();
-
-  std::map<int,Geometry::Surface*>::const_iterator mp;
-  for(mp=SurMap.begin();mp!=SurMap.end();mp++)
-    {
-      (mp->second)->write(OX);
-    }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  OX<<std::endl;
-  return;
-}
-
-void
-Simulation::writeMaterial(std::ostream& OX) const
-  /*!
-    Write all the used Materials in standard MCNPX output 
-    type.
-    \param OX :: Output stream
-  */
-
-{
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-
-
-  if (!PhysPtr->getMode().hasElm("h"))
-    DB.deactivateParticle("h");
-  
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    {
-      DB.setActive(mp->second->getMat());
-    }
-
-  DB.writeMCNPX(OX);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  return;
-}
-
-void
-Simulation::writeWeights(std::ostream& OX) const
-  /*!
-    Write all the used Weight in standard MCNPX output 
-    type.
-    \param OX :: Output stream
-  */
-
-{
-  ELog::RegMethod RegA("Simulation","writeWeights");
-  
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- WEIGHT CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  WM.write(OX);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  return;
-}
-
-
-void
-Simulation::writePhysics(std::ostream& OX) const
-  /*!
-    Write all the used Weight in standard MCNPX output 
-    type. Note that it also has to add the rdum cards
-    to the physics
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("Simulation","writePhysics");
-
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- PHYSICS CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-
-  // Processing for point tallies
-  std::map<int,tallySystem::Tally*>::const_iterator mc;
-  std::vector<int> Idum;
-  std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::pointTally* Ptr=
-        dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-          Idum.push_back(Ptr->getKey());
-          for(size_t i=0;i<4;i++)
-            Rdum.push_back(Ptr->getWindowPt(i));
-          Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
-        }
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-        OX<<"           "<< *vc<<std::endl;
-    }
-  
-  // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder,voidCells);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  OX<<std::endl;  // MCNPX requires a blank line to terminate
-  return;
-}
-
-void
-Simulation::writeVariables(std::ostream& OX,
-			   const char commentChar) const
-  /*!
-    Write all the variables in standard MCNPX output format
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeVaraibles");
-  OX<<commentChar<<" ---------- VERSION NUMBER ------------------"<<std::endl;
-  OX<<commentChar<<"  ========= "<<version::Instance().getIncrement()
-    <<" ========== "<<std::endl;
-  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
-  OX<<commentChar<<" --------------- VARIABLE CARDS ---------------"<<std::endl;
-  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
-  const varList& Ptr= DB.getVarList();
-  varList::varStore::const_iterator vc;
-  for(vc=Ptr.begin();vc!=Ptr.end();vc++)
-    {
-      std::string Val;
-      if (vc->second->isActive())
-	{
-	  vc->second->getValue(Val);
-	  OX<<commentChar<<" "<<vc->first<<" "
-	    <<Val<<std::endl;
-	}
-    }  
-  return;
-}
-  
-
-void
 Simulation::reZeroFromVertex(const int CellN,const unsigned int M,
-			     const unsigned int A,
-			     const unsigned int B,const unsigned int C,
+			     const unsigned int A,const unsigned int B,
+			     const unsigned int C,
 			     Geometry::Vec3D& Dis,Geometry::Matrix<double>& MR)
   /*! 
      Given points M , A (x) , B (y) ,C (z)  
@@ -1784,103 +1164,6 @@ Simulation::reZeroFromVertex(const int CellN,const unsigned int M,
   return;
 }
 
-void 
-Simulation::writeCinder() const
-  /*!
-    Write out files useful to cinder
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeCinder");
-
-  writeCinderMat();
-  writeHTape();
-  return;
-}
-
-
-void
-Simulation::write(const std::string& Fname) const
-  /*!
-    Write out all the system (in MCNPX output format)
-    \param Fname :: Output file 
-  */
-{
-  std::ofstream OX(Fname.c_str());
-  
-  OX<<"Input File:"<<inputFile<<std::endl;
-  StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
-  writeVariables(OX);
-  writeCells(OX);
-  writeSurfaces(OX);
-  writeMaterial(OX);
-  writeTransform(OX);
-  writeWeights(OX);
-  writeTally(OX);
-  writePhysics(OX);
-  OX.close();
-  return;
-}
-
-void
-Simulation::writeHTape() const
-  /*!
-    Write out the all the f4 tallys 
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeHTape");
-
-  unsigned int index(0);
-  std::string tail="a"; 
-  TallyTYPE::const_iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::cellFluxTally* CPtr=
-	dynamic_cast<const tallySystem::cellFluxTally*>(mc->second);
-      if (CPtr)
-	{
-	  CPtr->writeHTape("inth",tail);
-	  if (tail[index]=='z')
-	    {
-	      if (index==0)
-		{
-		  tail[index]='a';
-		  tail+='a';
-		  index=1;
-		}
-	      else
-		{
-		  tail[0]++;
-		  tail[1]='a';
-		}
-	    }
-	  else
-	    tail[index]++;
-	}
-    }
-  return;
-}
-
-void
-Simulation::writeCinderMat() const
-  /*!
-    Writes out a cinder material output deck
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeCinderMat");
-  std::ofstream OX("material");  
-  // Get used material list
-
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
-
-  DB.writeCinder(OX);
-  OX.close();
-  return;
-}
 
 std::vector<int>
 Simulation::getCellTempRange(const double LT,const double HT) const
@@ -1979,11 +1262,11 @@ Simulation::getCellWithMaterial(const int matN) const
 }
 
 std::vector<int>
-Simulation::getCellWithZaid(const int zaidNum) const
+Simulation::getCellWithZaid(const size_t zaidNum) const
   /*!
     Ugly function to return the current
     vector of cells with a particular zaid type
-    \param zaidNumber :: Material zaid number
+    \param zaidNum :: Material zaid number
     \return vector of cell numbers (ordered)
     \todo Make this with a transform, not a loop.
   */
@@ -2063,13 +1346,61 @@ Simulation::getCellVectorRange(const int RA,const int RB) const
   return cellOrder;
 }
 
-void
+std::map<int,int>
+Simulation::calcCellRenumber(const std::vector<int>& cOffset,
+			     const std::vector<int>& cRange) const
+/*
+    Re-arrange all the cell numbers to be sequentual from 1-N.
+    \param cOffset :: Protected start
+    \param cRange :: Protected range
+    \return map of nubmer to move
+  */
+{
+  ELog::RegMethod RegA("Simulation","calcCellRenumber");
+
+  // This is ordered:
+  std::map<int,int> renumberMap;
+  int nNum(1);
+  OTYPE::const_iterator vc;  
+  for(vc=OList.begin();vc!=OList.end();vc++)
+    {
+      const int cNum=vc->second->getName();
+
+      // NUMBER not in RANGE:
+      const size_t cIndex=inUnorderedRange(cOffset,cRange,cNum);
+      if (!cIndex)
+	{
+	  size_t nIndex=inUnorderedRange(cOffset,cRange,nNum);
+	  while(nIndex)
+	    {
+	      nNum = cOffset[nIndex-1]+cRange[nIndex-1]+1;
+	      nIndex=inUnorderedRange(cOffset,cRange,nNum);
+	    }
+	  while(renumberMap.find(nNum)!=renumberMap.end())
+	    nNum += 10000;
+	  renumberMap.emplace(cNum,nNum);
+	  nNum++;
+	}
+      else
+	{
+	  int offsetNNum(cNum-cOffset[cIndex-1]+cRange[cIndex-1]);
+	  while(renumberMap.find(offsetNNum)!=renumberMap.end())
+	    offsetNNum += 10000;
+	  renumberMap.emplace(cNum,offsetNNum);
+	}
+    }
+  return renumberMap;
+}
+
+
+std::map<int,int>
 Simulation::renumberCells(const std::vector<int>& cOffset,
 			  const std::vector<int>& cRange)
   /*!
     Re-arrange all the cell numbers to be sequentual from 1-N.
     \param cOffset :: Protected start
     \param cRange :: Protected range
+    \returns the map for further use if required
   */
 {
   ELog::RegMethod RegA("Simulation","renumberCells");
@@ -2080,81 +1411,61 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
 
-  //Offset index  
-  const int cIndex(10000);
-
-  OTYPE newMap;           // New map with correct numbering
-  int nNum(0);
-  int index(1);
-
+  const std::map<int,int> RMap=calcCellRenumber(cOffset,cRange);
+  
   std::string oldUnit,keyUnit;
-  int startNum(0);
+  int orStartNumber(0);
   const attachSystem::CellMap* CMapPtr(0);
-  // This is ordered:
-  OTYPE::const_iterator vc;  
-  for(vc=OList.begin();vc!=OList.end();vc++)
-    {
-      const int cNum=vc->second->getName();
-      keyUnit=OR.inRange(cNum);
-      // Determine inf the cell is within cRange:
-      size_t j=0;
-      while(j<cOffset.size())
-	{
-	  if (cNum>=cOffset[j] && cNum<cOffset[j]+cRange[j])
-	    {
-	      nNum=cIndex*static_cast<int>(j+1)+(cNum-cOffset[j]);
-	      break;
-	    }
-	  j++;
-	}
-      // if not find the next index:
-      if (j==cOffset.size())
-	{
-	  nNum=index++;
-	  // skip index over preserved ranges:
-	  if (index==cIndex)
-	    index+=cIndex*static_cast<int>(cOffset.size());
-	}
-      // Do renumber:
-      vc->second->setName(nNum);      
-      newMap.insert(OTYPE::value_type(nNum,vc->second));
-      WM.renumberCell(cNum,nNum);
+  int cNum(0),nNum(0);
 
-      if (!vc->second->isPlaceHold())
+  
+  OTYPE newMap;           // New map with correct numbering
+  for(const std::map<int,int>::value_type& RMItem : RMap)
+    {
+      cNum=RMItem.first;
+      nNum=RMItem.second;
+
+      MonteCarlo::Qhull* oPtr=findQhull(cNum);
+      if (oPtr)
 	{
-	  PhysPtr->substituteCell(cNum,nNum);
-	  for(TallyTYPE::value_type& TI : TItem)
-	    TI.second->renumberCell(cNum,nNum);
-	}
-      if (keyUnit!=oldUnit)
-	{
-	  if (startNum)
-	    OR.setRenumber(oldUnit,startNum,nNum-1);
-	  oldUnit=keyUnit;
-	  startNum=nNum;
+	  oPtr->setName(nNum);      
+	  newMap.emplace(nNum,oPtr);
+
+	  WM.renumberCell(cNum,nNum);
+
+	  // objectRegister update
+	  keyUnit=OR.inRange(cNum);
+	  if (keyUnit!=oldUnit)
+	    {
+	      if (orStartNumber)
+		OR.setRenumber(oldUnit,orStartNumber,nNum-1);
+	      oldUnit=keyUnit;
+	      orStartNumber=nNum;
+	    }
+	  OR.renumberActiveCell(cNum,nNum);
+	  
           CMapPtr=OR.getObject<attachSystem::CellMap>(keyUnit);
+	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
+		  <<" Object:"<<keyUnit;
+
 	}
-      
-      ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
-	      <<" Object:"<<keyUnit;
+      ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum<<" Object:"<<keyUnit;
       if (CMapPtr)
         {
-          const std::string& cName=
-            CMapPtr->getName(cNum);
-          if (!cName.empty())
-            ELog::RN<<" ("<<cName<<")";
-          const std::string& xName=
-            CMapPtr->getName(nNum);
-          if (!xName.empty())
-            ELog::EM<<"Found "<<xName<<" "<<cNum<<" "<<nNum<<ELog::endCrit;
-         }
+          const std::string& cName=CMapPtr->getName(cNum);
+          if (!cName.empty()) ELog::RN<<" ("<<cName<<")";
+	}
       ELog::RN<<ELog::endBasic;
-    }
+    }    
 
   // Last item
-  OR.setRenumber(keyUnit,startNum,nNum);
-  OList=newMap;
-  return;
+  if (orStartNumber)
+    {
+      OR.setRenumber(keyUnit,orStartNumber,nNum);
+      OList=newMap;
+    }
+  
+  return RMap;
 }
 
 void
@@ -2202,7 +1513,7 @@ Simulation::renumberSurfaces(const std::vector<int>& rLow,
 void
 Simulation::voidObject(const std::string& ObjName)
   /*!
-    Given an object set remove it from system 
+    Given an object set the material void
     \param ObjName :: Object to void
   */
 {
@@ -2219,9 +1530,167 @@ Simulation::voidObject(const std::string& ObjName)
   for(int i=1;i<=cellRange;i++)
     {
       MonteCarlo::Qhull* QH=findQhull(cellN+i);
-      if (!QH)
-	return;
+      if (!QH) return;
       QH->setMaterial(0);
+    }
+  return;
+}
+
+int
+Simulation::splitObject(const int CA,const int SN)
+  /*!
+    Split a cell into two based on surface 
+    Note the original surface is in the negative direction
+    \param CA :: Cell number
+    \param SN :: surface number
+    \return new cell number
+   */
+{
+  ELog::RegMethod RegA("Simulation","splitObject");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  MonteCarlo::Object* CPtr = findQhull(CA);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CA,"Cell not found");
+
+  // get next cell
+  const int CB=getNextCell(CA);
+  
+  // headrules +/- surface
+  HeadRule CHead=CPtr->getHeadRule();
+  HeadRule DHead(CHead);
+
+  CHead.addIntersection(-SN);
+  DHead.addIntersection(SN);
+  
+  addCell(CB,CPtr->getMat(),CPtr->getTemp(),DHead);
+  CPtr->procHeadRule(CHead);
+
+  MonteCarlo::Object* DPtr = findQhull(CB);  
+  CPtr->populate();
+  CPtr->createSurfaceList();
+
+  DPtr->populate();
+  DPtr->createSurfaceList();
+
+  // get implicates relative to a surface:
+  const std::vector<std::pair<int,int>>
+    IP=CPtr->getImplicatePairs(std::abs(SN));
+
+  // Now make two cells and replace this cell with A + B
+
+  MonteCarlo::Algebra AX;
+  AX.setFunctionObjStr(CHead.display());
+  
+  AX.addImplicates(IP);
+  if (AX.constructShannonDivision(-SN))
+    {
+      CPtr->procString(AX.writeMCNPX());
+    }
+
+  AX.setFunctionObjStr(DHead.display());
+  if (AX.constructShannonDivision(SN))
+    {
+      DPtr->procString(AX.writeMCNPX());
+    }
+  
+  return CB;
+
+}
+
+void
+Simulation::minimizeObject(const int CN)
+  /*
+    Carry out minimization of a cell to remove 
+    literals which can be removed due to implicates [e.g. a->b etc]
+    due to parallel surfaces
+    \param CN :: Cell to minimize
+   */
+{
+  ELog::RegMethod RegA("Simualation","minimizeObject");
+
+  MonteCarlo::Object* CPtr = findQhull(CN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CN,"Cell not found");
+  
+  if (!CPtr->isPlaceHold())
+    {
+      CPtr->populate();
+      CPtr->createSurfaceList();
+      
+      const std::vector<std::pair<int,int>>
+	IP=CPtr->getImplicatePairs();
+            
+      MonteCarlo::Algebra AX;
+      AX.setFunctionObjStr(CPtr->cellCompStr());
+      AX.addImplicates(IP);
+	    
+      AX.constructShannonExpansion();
+
+      if (!CPtr->procString(AX.writeMCNPX()))
+	throw ColErr::InvalidLine(AX.writeMCNPX(),
+				  "Algebra Export");
+    }
+      
+  return;
+}
+  
+void
+Simulation::makeObjectsDNForCNF()
+   /*!
+     Expand the objects into DNF form or CNF form
+   */
+{
+  ELog::RegMethod RegA("Simulation","makeObjectsDNForCNF");
+
+  if (cellCNF || cellDNF)
+    {
+      size_t cellIndex(0);
+      ELog::EM<<"Cells :"<<ELog::endDiag;;
+      for(OTYPE::value_type& OC : OList)
+	{
+	  MonteCarlo::Object* CPtr = OC.second;
+	  if (!CPtr->isPlaceHold())
+	    {
+	      MonteCarlo::Algebra AX;
+	      AX.setFunctionObjStr(CPtr->cellCompStr());
+	      const size_t NL=AX.countLiterals();
+	      if (NL<=cellDNF || NL<=cellCNF)
+		{
+		  // Note both together possible
+		  if (NL<=cellDNF)
+		      AX.expandBracket();
+		  if (NL<=cellCNF)
+		    AX.expandCNFBracket();
+		  
+		  if (!CPtr->procString(AX.writeMCNPX()))
+		    {
+		      ELog::EM<<ELog::endDiag;
+		      throw ColErr::InvalidLine(AX.writeMCNPX(),
+						"Algebra ExpandD/CNFBracket");
+		    }
+		  const size_t NLX=AX.countLiterals();
+		  if (NLX !=NL)
+		    {
+		      ELog::EM<<CPtr->getName()<<"["<<NL<<","<<NLX<<"] ";
+		      cellIndex++;
+		      if (!(cellIndex % 8)) ELog::EM<<ELog::endDiag;
+		    }
+		  
+		}
+	      else
+		{
+		  if (cellIndex % 8) ELog::EM<<ELog::endDiag;
+		  ELog::EM<<"\nNOT Cell "<<CPtr->getName()
+			  <<"["<<NL<<"]"<<ELog::endCrit;
+		  ELog::EM<<"\n";
+		  cellIndex=0;
+		}
+	    }
+	}
+      ELog::EM<<"\n END DNF/CNF "<<ELog::endDiag;
     }
   return;
 }
@@ -2276,28 +1745,61 @@ Simulation::masterRotation()
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
 
-  // Physics units [dxtrans and others]
-  PhysPtr->rotateMaster();
-
-  
-  // Source:
-  SDef::Source& sdef=PhysPtr->getSDefCard();
-  if (sdef.isActive())
-    if (sdef.rotateMaster())
-      {
-	sdef.setTransform(createSourceTransform());
-	if (sdef.rotateMaster())
-          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-      }
-  // Applyotations to tallies
-  std::map<int,tallySystem::Tally*>::iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    mc->second->rotateMaster();
-
   OR.rotateMaster();
   
-  MR.setGlobal();
-
   return;
 }
 
+void
+Simulation::masterSourceRotation()
+  /*!
+    Apply master rotations to the physics system
+   */
+{
+  ELog::RegMethod RegA("Simulation","masterPhysicsRotation");
+
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  const masterRotate& MR = masterRotate::Instance();
+  
+  // Source:
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->rotate(MR);
+    }
+  return;
+}
+
+void
+Simulation::writeVariables(std::ostream& OX,
+			   const char commentChar) const
+  /*!
+    Write all the variables in standard MCNPX output format
+    \param OX :: Output stream
+    \param commentChar :: character for comments
+  */
+{
+  ELog::RegMethod RegA("SimMCNP","writeVaraibles");
+  OX<<commentChar<<" ---------- VERSION NUMBER ------------------"<<std::endl;
+  OX<<commentChar<<"  ===Git: "<<version::Instance().getBuildTag()
+    <<" ====== "<<std::endl;
+  OX<<commentChar<<"  ========= "<<version::Instance().getIncrement()
+    <<" ========== "<<std::endl;
+  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
+  OX<<commentChar<<" --------------- VARIABLE CARDS ---------------"<<std::endl;
+  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
+  const varList& Ptr= DB.getVarList();
+  varList::varStore::const_iterator vc;
+  for(vc=Ptr.begin();vc!=Ptr.end();vc++)
+    {
+      std::string Val;
+      if (vc->second->isActive())
+	{
+	  vc->second->getValue(Val);
+	  OX<<commentChar<<" "<<vc->first<<" "
+	    <<Val<<std::endl;
+	}
+    }  
+  return;
+}

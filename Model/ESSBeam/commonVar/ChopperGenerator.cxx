@@ -3,7 +3,7 @@
  
  * File:   commonVar/ChopperGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,9 +60,10 @@ ChopperGenerator::ChopperGenerator() :
   mainZStep(28.0),height(86.5),width(86.5),
   shortWidth(50.5),shortHeight(50.5),
   mainRadius(38.122),windowThick(0.3),
-  ringRadius(40.0),motorRadius(12.0),
-  motorOuter(15.20),portRadius(10.0),
-  portOuter(12.65),portWidth(11.6),
+  ringRadius(40.0),motorRadius(10.0),
+  motorInner(12.0),motorOuter(15.20),
+  portRadius(10.0),portOuter(12.65),
+  motorRevFlag(0),portWidth(11.6),
   portHeight(11.6),portBoltStep(1.0),
   wallMat("Aluminium"),portMat("Aluminium"),
   sealMat("Poly"),windowMat("Aluminium")
@@ -83,6 +84,7 @@ ChopperGenerator::ChopperGenerator(const ChopperGenerator& A) :
   shortWidth(A.shortWidth),shortHeight(A.shortHeight),
   mainRadius(A.mainRadius),windowThick(A.windowThick),
   ringRadius(A.ringRadius),motorRadius(A.motorRadius),
+  motorInner(A.motorInner),
   motorOuter(A.motorOuter),portRadius(A.portRadius),
   portOuter(A.portOuter),portWidth(A.portWidth),
   portHeight(A.portHeight),portBoltStep(A.portBoltStep),
@@ -113,6 +115,7 @@ ChopperGenerator::operator=(const ChopperGenerator& A)
       windowThick=A.windowThick;
       ringRadius=A.ringRadius;
       motorRadius=A.motorRadius;
+      motorInner=A.motorInner;
       motorOuter=A.motorOuter;
       portRadius=A.portRadius;
       portOuter=A.portOuter;
@@ -137,6 +140,7 @@ ChopperGenerator::setMainRadius(const double R)
   ringRadius*=R/mainRadius;
   mainZStep*=R/mainRadius;
   motorRadius*=R/mainRadius;
+  motorInner*=R/mainRadius;
   motorOuter*=R/mainRadius;
   portRadius*=R/mainRadius;
   portOuter*=R/mainRadius;
@@ -147,6 +151,50 @@ ChopperGenerator::setMainRadius(const double R)
   return;
 }
 
+void
+ChopperGenerator::setPortRadius(const double R)
+  /*!
+    Set the port radius for the chopper.
+    Note that the motor radius should be reduce if the 
+    main radius is not being increased
+    \param R :: Radius
+  */
+{
+
+  portOuter*=R/portRadius;
+  portBoltStep*=R/portRadius;
+  portOuter*=R/portRadius;
+  portWidth*=R/portRadius;
+  portRadius=R;
+  return;
+}
+
+void
+ChopperGenerator::setMotorRadius(const double R)
+  /*!
+    Set the motor radius for the chopper.
+    Note that the port radius should be reduce if the 
+    main radius is not being increased
+    \param R :: Radius
+  */
+{
+  motorInner*=R/motorRadius;
+  motorOuter*=R/motorRadius;
+  motorRadius=R;
+  return;
+}
+
+void
+ChopperGenerator::setReverseMotor(const bool A)
+  /*!
+    Reverse the motors from -ve Y direction
+    \param A :: Reverse Motor 
+  */
+{
+  motorRevFlag=A;
+  return;
+}
+  
 void
 ChopperGenerator::setFrame(const double H,const double W)
   /*!
@@ -193,7 +241,8 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("ChopperGenerator","generateChopper");
-
+  const double boltRad(0.5);
+  
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"MainZStep",mainZStep);   // drawing [5962.2]
   Control.addVariable(keyName+"Height",height);
@@ -203,23 +252,50 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"ShortWidth",shortWidth);
   Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
   Control.addVariable(keyName+"MainThick",voidLength);  // estimate
-  
-  Control.addVariable(keyName+"MotorRadius",motorRadius); // [5691.2]
-  Control.addVariable(keyName+"MotorOuter",motorOuter); // [5691.2]
-  Control.addVariable(keyName+"MotorStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorNBolt",24); 
-  Control.addVariable(keyName+"MotorBoltRadius",0.50); //M10 inc thread
+
+  const double wallThick((length-voidLength)/2.0);
+  Control.addVariable(keyName+"MotorBodyLength",5.0);
+  Control.addVariable(keyName+"MotorPlateThick",wallThick*1.2);
+  Control.addVariable(keyName+"MotorAxleRadius",0.5);
+  Control.addVariable(keyName+"MotorBodyRadius",motorRadius);
+  Control.addVariable(keyName+"MotorAxleMat","Nickel");
+  Control.addVariable(keyName+"MotorBodyMat","Copper");
+  Control.addVariable(keyName+"MotorPlateMat",wallMat);    
+  Control.addVariable(keyName+"MotorInnerRadius",motorInner); // [5691.2]
+  Control.addVariable(keyName+"MotorOuterRadius",motorOuter); // [5691.2]
+  Control.addVariable(keyName+"MotorBoltRadius",boltRad);       //M10 inc thread
+  Control.addVariable(keyName+"MotorMainMat",wallMat);
+  Control.addVariable(keyName+"MotorBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"MotorSealMat","Poly");
+  Control.addVariable(keyName+"MotorNBolts",24);
+  const double sealRad=(motorInner+motorOuter)/2.0-2.0*boltRad;
+  Control.addVariable(keyName+"MotorSealRadius",sealRad);
+		      
   Control.addVariable(keyName+"MotorSealThick",0.2);  
-  Control.addVariable(keyName+"MortorSealMat","Poly");
+  Control.addVariable(keyName+"MotorSealMat","Poly");
+  Control.addVariable(keyName+"MotorReverse",static_cast<int>(motorRevFlag));
   
-  Control.addVariable(keyName+"PortRadius",portRadius); // [5691.2]
-  Control.addVariable(keyName+"PortOuter",portOuter); // [5691.2]
-  Control.addVariable(keyName+"PortStep",0.0); // estimate
-  Control.addVariable(keyName+"PortNBolt",24); 
-  Control.addVariable(keyName+"PortBoltRadius",0.40); //M8 inc
-  Control.addVariable(keyName+"PortBoltAngOff",180.0/24.0);
-  Control.addVariable(keyName+"PortSealThick",0.2);
-  Control.addVariable(keyName+"PortSealMat","Poly");
+  Control.addVariable(keyName+"FrontFlangeNBolts",24); 
+  Control.addVariable(keyName+"FrontFlangeBoltRadius",0.40); 
+  Control.addVariable(keyName+"FrontFlangeInnerRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"FrontFlangeOuterRadius",portOuter); // [5691.2]
+  Control.addVariable(keyName+"FrontFlangeAngleOffset",180.0/24.0);
+  Control.addVariable(keyName+"FrontFlangeThickness",2.0); // estimate
+  Control.addVariable(keyName+"FrontFlangeSealThick",0.2);
+  Control.addVariable(keyName+"FrontFlangeMainMat",wallMat);
+  Control.addVariable(keyName+"FrontFlangeBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"FrontFlangeSealMat","Poly");
+
+  Control.addVariable(keyName+"BackFlangeNBolts",24); 
+  Control.addVariable(keyName+"BackFlangeBoltRadius",0.40); 
+  Control.addVariable(keyName+"BackFlangeInnerRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"BackFlangeOuterRadius",portOuter); // [5691.2]
+  Control.addVariable(keyName+"BackFlangeAngleOffset",180.0/24.0);
+  Control.addVariable(keyName+"BackFlangeThickness",2.0); // estimate
+  Control.addVariable(keyName+"BackFlangeSealThick",0.2);
+  Control.addVariable(keyName+"BackFlangeMainMat",wallMat);
+  Control.addVariable(keyName+"BackFlangeBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"BackFlangeSealMat","Poly");
 
   Control.addVariable(keyName+"RingNSection",12);
   Control.addVariable(keyName+"RingNTrack",12);
@@ -270,7 +346,5 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"VoidMat","Void");
   return;
 }
-
-
   
 }  // NAMESPACE setVariable

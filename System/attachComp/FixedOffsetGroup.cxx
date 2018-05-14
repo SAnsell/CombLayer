@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffsetGroup.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,6 +142,30 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
   */
 {}
 
+FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
+                                   const std::string& AKey,
+                                   const size_t ANL,
+                                   const std::string& BKey,
+                                   const size_t BNL,
+                                   const std::string& CKey,
+                                   const size_t CNL,
+                                   const std::string& DKey,
+                                   const size_t DNL) :
+  FixedGroup(mainKey,AKey,ANL,BKey,BNL,CKey,CNL,DKey,DNL),
+  preXYAngle(0.0),preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)  
+ /*!
+    Constructor 
+    \param mainKey :: KeyName [main system]
+    \param AKey :: Key unit
+    \param ANL :: A Number of links
+    \param BKey :: Key unit
+    \param BNL :: B Number of links
+    \param CKey :: Key unit
+    \param CNL :: B Number of links
+  */
+{}
+
 
 FixedOffsetGroup::FixedOffsetGroup(const FixedOffsetGroup& A) : 
   FixedGroup(A),
@@ -205,6 +229,8 @@ void
 FixedOffsetGroup::populate(const FuncDataBase& Control)
   /*!
     Populate the variables
+    The structure sets global variables based on 
+    keyName and FixedGroup based on keyaName+GroupKey
     \param Control :: Control data base
    */
 {
@@ -233,6 +259,7 @@ void
 FixedOffsetGroup::applyOffset()
   /*!
     Apply the rotation/step offset
+    Note the rotation/step is apply ON TOP of the full R/Step combination
   */
 {
   ELog::RegMethod RegA("FixedOffsetGroup","applyOffset");

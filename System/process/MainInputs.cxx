@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <iterator>
 #include <memory>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -70,7 +69,10 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
+  IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
+  IParam.regItem("cellDNF","cellDNF");
+  IParam.regItem("cellCNF","cellCNF");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
   IParam.regItem("defaultConfig","defaultConfig");
@@ -87,53 +89,55 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("m","multi",1,1);
   IParam.regDefItem<std::string>("matDB","materialDatabase",1,
                                  std::string("shielding"));  
+  IParam.regItem("matFile","matFile");
+  IParam.regItem("maxEnergy","maxEnergy");   // default max energy
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");
   IParam.regItem("MN","meshNPS",3,3);
   IParam.regFlag("md5","md5");
+  IParam.regItem("md5Mesh","md5Mesh");
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
+  IParam.regItem("noVariables","noVariables");
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
   IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
+  IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regDefItem<std::string>("print","printTable",1,
 				 "10 20 40 50 110 120");  
   IParam.regItem("PTRAC","ptrac");
-  IParam.regDefItemList<std::string>("r","renum",10,RItems);
+
+  IParam.regItem("r","renum");
   IParam.regMulti("R","report",1000,0);
+  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
+
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
-  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
-  IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
   IParam.regItem("sdefFile","sdefFile");
-  IParam.regDefItem<int>("SI","sdefIndex",1,1);
-
-  std::vector<std::string> SItems(3,"");
-  IParam.regDefItemList<std::string>("SObj","sdefObj",3,SItems);
+  IParam.regMulti("sdefMod","sdefMod",1000,0);
+  IParam.regMulti("sdefObj","sdefObj",1000,0);
   
-  IParam.regItem("SP","sdefPos");
-  IParam.regItem("SR","sdefRadius");
-  IParam.regItem("SV","sdefVec");
-  IParam.regItem("SZ","sdefZRot");
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti("T","tally",1000,0);
-  IParam.regMulti("TAdd","tallyAdd",1000);
+  IParam.regMulti("OAdd","objectAddition",1000);
   IParam.regMulti("TC","tallyCells",10000,2,3);
   IParam.regMulti("TGrid","TGrid",10000,2,3);
-  IParam.regMulti("TMod","tallyMod",8,1);
+  IParam.regMulti("TMod","tallyMod",1000,1);
   IParam.regFlag("TW","tallyWeight");
   IParam.regItem("TX","Txml",1);
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regItem("validFC","validFC",1);
+  IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
@@ -142,6 +146,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("volCell","volCells",100,1,100);
     
   IParam.regFlag("void","void");
+  IParam.regItem("vtkMesh","vtkMesh",1);
   IParam.regFlag("vtk","vtk");
   IParam.regFlag("vcell","vcell");
   std::vector<std::string> VItems(15,"");
@@ -150,11 +155,13 @@ createInputs(inputParam& IParam)
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
   IParam.regMulti("wExt","wExt",25,0);
+  IParam.regMulti("wEXP","wEXP",25,0);
   IParam.regMulti("wECut","wECut",100,0);
   IParam.regMulti("wPWT","wPWT",25,0);
   IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regItem("WType","weightType",1,30);
+  IParam.regItem("WEType","weightEnergyType",1,30);
+  IParam.regItem("WParticle","weightParticles",1,30);
   IParam.regMulti("WSource","weightSource",30,1);
   IParam.regMulti("WPlane","weightPlane",30,2);
   IParam.regMulti("WTally","weightTally",30,1);
@@ -164,14 +171,20 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wDD","weightDD",100,1);
 
 
-  IParam.regMulti("wFCL","wFCL",25,0);
-  IParam.regMulti("wWWG","wWWG",25,0);
-  IParam.regMulti("wIMP","wIMP",25,0);
-    
+  IParam.regMulti("wFCL","wFCL",1000,0);
+  IParam.regMulti("wWWG","wWWG",1000,0);
+  IParam.regMulti("wIMP","wIMP",1000,0);
+  IParam.regMulti("wEMF","wEMF",1000,0);
+  IParam.regMulti("wLAM","wLAM",1000,0);
+  IParam.regMulti("wCUT","wCUT",1000,0);
+  IParam.regMulti("wMAT","wMAT",1000,0);
+  
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regItem("wwgVTK","wwgVTK",1,10);
   IParam.regItem("wwgNorm","wwgNorm",0,30);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
+  IParam.regItem("wwgCADIS","wwgCADIS",0,30);
+  IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
   IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
@@ -202,39 +215,40 @@ createInputs(inputParam& IParam)
   IParam.setDesc("m","Create multiple files (diff: RNDseed)");
   IParam.setDesc("matDB","Set the material database to use "
                  "(shielding or neutronics)");  
+  IParam.setDesc("matFile","Set the materials from a file");
+
   IParam.setDesc("M","Add mesh tally");
   IParam.setDesc("MA","Lower Point in mesh tally");
   IParam.setDesc("MB","Upper Point in mesh tally");
   IParam.setDesc("MN","Number of points [3]");
   IParam.setDesc("md5","MD5 track of cells");
+  IParam.setDesc("md5Mesh","Define mesh for MD5/VTK");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
+  IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PovRay","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("offset","Displace to component [name]");
+  IParam.setDesc("ObjAdd","Add a component (cell)");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
   IParam.setDesc("report","Report a position/axis (show info on points etc)");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("sdefFile","File(s) for source");
-  IParam.setDesc("SA","Source Angle [deg]");
-  IParam.setDesc("SI","Source Index value [1:2]");
-  IParam.setDesc("SObj","Source Initialization Object");
+  IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
+  
   IParam.setDesc("physModel","Physics Model"); 
-  IParam.setDesc("SP","Source start point");
-  IParam.setDesc("SV","Sourece direction vector");
-  IParam.setDesc("SZ","Source direction: Rotation to +ve Z [deg]");
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
-  IParam.setDesc("TAdd","Add a tally component (cell)");
+  IParam.setDesc("OAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");
@@ -246,6 +260,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
+  IParam.setDesc("vtkMesh","Define mesh for MD5/VTK");
   IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
@@ -257,16 +272,20 @@ createInputs(inputParam& IParam)
   IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
   IParam.setDesc("wDD","Dxtran Diagnostic [set -wDXT help] ");
   IParam.setDesc("wWWG","Weight WindowGenerator Mesh  ");
+  IParam.setDesc("wwgCalc","Single step evolve for the calculate for WWG/WWCell  ");
+  IParam.setDesc("wwgMarkov","Evolve the calculate for WWG/WWCell  ");
   IParam.setDesc("wIMP","set imp partile imp object(s)  ");
   IParam.setDesc("wFCL","Forced Collision ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
-  IParam.setDesc("WType","Initial model for weights [help for info]");
+  IParam.setDesc("WEType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WRebase","Rebase the weights based on a cell");
   IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
   IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
-
+  IParam.setDesc("wwgNorm"," normalization step : "
+		 "[weightRange - lowRange - highRange - powerRange]");
+  
   IParam.setDesc("x","XML input file");
   IParam.setDesc("X","XML output file");
   return;
@@ -335,6 +354,7 @@ createDelftInputs(inputParam& IParam)
   IParam.regItem("coreType","coreType",1);
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
+  IParam.regDefItem<std::string>("buildType","buildType",1,"Full");
   IParam.regMulti("kcode","kcode",1000);
   IParam.regMulti("ksrcMat","ksrcMat",1000);
   IParam.regMulti("ksrcVec","ksrcVec",1000);
@@ -346,6 +366,7 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("kcode","MatN nsourcePart keff skip realRuns");
   IParam.setDesc("ksrcMat","Acceptable material number for ksrc");
   IParam.setDesc("ksrcVec","Positions for ksrc [after matN check]");
+  IParam.setDesc("buildType","Single/Full -- build moderator only");
   IParam.setDesc("modType","Type of moderator (sphere/tunnel)");
   IParam.setDesc("refExtra","Type of extra Be around moderators");
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
@@ -569,53 +590,6 @@ createLinacInputs(inputParam& IParam)
   return;
 }
   
-void
-createESSInputs(inputParam& IParam)
-  /*!
-    Set the specialise inputs for the ESS
-    \param IParam :: Input Parameters
-  */
-{
-  ELog::RegMethod RegA("MainProcess::","createESSInputs");
-  createInputs(IParam);
-  
-  //  IParam.setValue("sdefEnergy",2503.0);    
-  IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Bilbao"));
-  
-  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
-  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("iradLine","iradLineType",1,
-                                 std::string("void"));
-  
-  IParam.regMulti("bunkerChicane","bunkerChicane",1000,1);
-  IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
-  IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
-  IParam.regMulti("iradObj","iradObject",1000,3);
-  
-  IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
-  IParam.regMulti("beamlines","beamlines",1000);
-  IParam.regDefItem<int>("nF5", "nF5", 1,0);
-
-
-  IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
-  IParam.setDesc("beamlines","Creates beamlines on the main model");
-  IParam.setDesc("lowMod","Type of low moderator to be built");
-  IParam.setDesc("topMod","Type of top moderator to be built");
-  IParam.setDesc("lowPipe","Type of low moderator pipework");
-  IParam.setDesc("topPipe","Type of top moderator pipework");
-  IParam.setDesc("iradLine","Build an irradiation line [void for none]");
-  IParam.setDesc("iradObj","Build an irradiation object [void for none]");
-  IParam.setDesc("beamlines","Build beamlines [void for none]");
-  IParam.setDesc("bunker","Build bunker [void for none [A-D]");
-  IParam.setDesc("nF5","Number of F5 collimators to build. \n"
-		 "  -- The collimators will be named as F5, F15, etc.\n"
-		 "  -- The corresponding variables must exist.");
-
-  return;
-}
 
 void
 createSingleItemInputs(inputParam& IParam)

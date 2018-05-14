@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/WedgeInsert.h
+ * File:   constructInc/WedgeInsert.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace constructSystem
   It adds a component within any object, e.g. a moderator
 */
 
-class WedgeInsert : public attachSystem::FixedComp,
+class WedgeInsert : public attachSystem::FixedOffset,
   attachSystem::ContainedComp
 {
  private:
@@ -45,12 +45,6 @@ class WedgeInsert : public attachSystem::FixedComp,
   const std::string baseName;   ///< Base name 
   const int wedgeIndex;         ///< Surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;             ///< X step
-  double yStep;             ///< Y step
-  double zStep;             ///< Z step
-  double xyAngle;           ///< Rotation 
-  double zAngle;            ///< rotation Z 
 
   double viewWidth;         ///< View height [inner]
   double viewHeight;        ///< View Width  [inner]

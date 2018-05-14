@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/MonoPlug.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,18 +161,17 @@ MonoPlug::populate(const Simulation& System)
 
 void
 MonoPlug::createUnitVector(const attachSystem::FixedComp& VoidFC,
-			   const size_t index)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param VoidFC :: VoidVessel to get top and axises
-    \param Index :: Top surface
+    \param sideIndex  :: Top surface
   */
 {
   ELog::RegMethod RegA("MonoPlug","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(VoidFC);
-
-  Origin=VoidFC.getLinkPt(index);
+  Origin=VoidFC.getLinkPt(sideIndex);
   return;
 }
 
@@ -215,12 +214,15 @@ MonoPlug::createSurfaces()
 
 void
 MonoPlug::createObjects(Simulation& System,
-			const size_t vLCIndex,
+			const long int vLCIndex,
 			const attachSystem::FixedComp& VoidFC,
 			const attachSystem::FixedComp& BulkFC)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
+    \param vLCIndex :: void link point
+    \param VoidFC :: Main outer void
+    \param BulkFC :: Bulk steel object
   */
 {
   ELog::RegMethod RegA("MonoPlug","createObjects");
@@ -232,11 +234,11 @@ MonoPlug::createObjects(Simulation& System,
 
   // The outside stuff
   const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
-  const std::string outSurf=StrFunc::makeString(-VoidFC.getLinkSurf(0));
+  const std::string outSurf=VoidFC.getLinkString(-1);
   
 
-  const std::string bulkSurf= 
-    StrFunc::makeString(-BulkFC.getLinkSurf(vLCIndex));
+  const std::string bulkSurf=
+    BulkFC.getLinkString(-vLCIndex);
 
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)
@@ -317,12 +319,15 @@ MonoPlug::createLinks()
 
 void
 MonoPlug::createAll(Simulation& System,
-		    const size_t vLCIndex,
+		    const long int vLCIndex,
 		    const attachSystem::FixedComp& VoidFC,
 		    const attachSystem::FixedComp& BulkFC)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param vLCIndex :: void link point
+    \param VoidFC :: Main outer void
+    \param BulkFC :: Bulk steel object
   */
 {
   ELog::RegMethod RegA("MonoPlug","createAll");

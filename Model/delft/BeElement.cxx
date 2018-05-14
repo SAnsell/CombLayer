@@ -3,7 +3,7 @@
  
  * File:   delft/BeElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "LayerDivide1D.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -78,17 +82,20 @@ namespace delftSystem
 
 
 BeElement::BeElement(const size_t XI,const size_t YI,
-			 const std::string& Key) :
+		     const std::string& Key) :
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param XI :: X index
+    \param YI :: Y index
+    \param Key :: KeyName
   */
 {}
 
 BeElement::BeElement(const BeElement& A) : 
   RElement(A),
   Width(A.Width),Depth(A.Depth),TopHeight(A.TopHeight),
-  beMat(A.beMat)
+  nLayer(A.nLayer),beMat(A.beMat)
   /*!
     Copy constructor
     \param A :: BeElement to copy
@@ -109,6 +116,7 @@ BeElement::operator=(const BeElement& A)
       Width=A.Width;
       Depth=A.Depth;
       TopHeight=A.TopHeight;
+      nLayer=A.nLayer;
       beMat=A.beMat;
     }
   return *this;
@@ -133,7 +141,10 @@ BeElement::populate(const FuncDataBase& Control)
 
   beMat=ReactorGrid::getMatElement
     (Control,keyName+"Mat",XIndex,YIndex);
-  
+
+  nLayer=ReactorGrid::getElement<size_t>
+    (Control,keyName+"NLayer",XIndex,YIndex);
+
   return;
 }
 
@@ -171,7 +182,7 @@ BeElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
   ModelSupport::buildPlane(SMap,surfIndex+6,Z*TopHeight,Z);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
 
   return;
 }
@@ -190,6 +201,7 @@ BeElement::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
   System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  addCell("Main",cellIndex-1);
 
   return;
 }
@@ -208,15 +220,63 @@ BeElement::createLinks()
 }
 
 void
+BeElement::layerProcess(Simulation& System,
+			const FuelLoad& FuelSystem)
+  /*!
+    Layer all the be elements.
+    Note all calls go to FuelSystem.getMaterial
+
+    \param System :: Simulation
+    \param FuelSystem :: Fuel Load system for materials
+  */
+{
+  ELog::RegMethod RegA("BeElement","layerProcess");
+  
+  if (nLayer<2)
+    {
+      const int MatN=
+	FuelSystem.getMaterial(XIndex+1,YIndex+1,0,1,beMat);
+      if (MatN!=beMat)
+	{
+	  const int CN=getCell("Main");
+	  MonteCarlo::Object* OPtr=System.findQhull(CN);
+	  if (!OPtr)
+	    throw ColErr::InContainerError<int>
+	      (CN,"["+keyName+"] Main Be Cell");
+	  
+	  OPtr->setMaterial(MatN);
+	}
+      return;
+    }
+
+  ModelSupport::LayerDivide1D LD1(keyName+"Main");
+
+  LD1.setSurfPair(SMap.realSurf(surfIndex+5),-SMap.realSurf(surfIndex+6));
+  LD1.setFractions(nLayer);  
+
+  std::vector<int> DefMat;
+  for(size_t i=0;i<nLayer;i++)
+    {
+      const int MatN=
+	FuelSystem.getMaterial(XIndex+1,YIndex+1,0,i+1,beMat);
+      DefMat.push_back(MatN);
+    }
+  LD1.setMaterials(DefMat);
+  LD1.divideCell(System,getCell("Main"));
+  return;
+}
+
+void
 BeElement::createAll(Simulation& System,
                      const attachSystem::FixedComp& RG,
 		     const Geometry::Vec3D& OG,
-		     const FuelLoad&)
+		     const FuelLoad& FuelSystem)
   /*!
     Creation of the Be-Reflector unit
     \param System :: Simulation to add component to
     \param RG :: Fixed Unit
     \param OG :: Origin
+    \param FuelSystem :: XML input form for material burnup
   */
 {
   ELog::RegMethod RegA("BeElement","createAll");
@@ -226,6 +286,7 @@ BeElement::createAll(Simulation& System,
   createSurfaces(RG);
   createObjects(System);
   createLinks();
+  layerProcess(System,FuelSystem);
   insertObjects(System);       
 
   return;

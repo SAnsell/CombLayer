@@ -3,7 +3,7 @@
  
  * File:   construct/DiskChopper.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,8 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h" 
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "DiskBlades.h"
 #include "DiskChopper.h"
@@ -79,9 +81,9 @@ namespace constructSystem
 
 DiskChopper::DiskChopper(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   chpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(chpIndex+1),centreFlag(0),nDisk(0)
+  cellIndex(chpIndex+1),centreFlag(0),offsetFlag(0),nDisk(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -90,9 +92,9 @@ DiskChopper::DiskChopper(const std::string& Key) :
 
 DiskChopper::DiskChopper(const DiskChopper& A) : 
   attachSystem::FixedOffsetGroup(A),
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::CellMap(A),
   chpIndex(A.chpIndex),cellIndex(A.cellIndex),
-  centreFlag(A.centreFlag),
+  centreFlag(A.centreFlag),offsetFlag(A.offsetFlag),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   diskGap(A.diskGap),nDisk(A.nDisk),DInfo(A.DInfo)
   /*!
@@ -113,8 +115,10 @@ DiskChopper::operator=(const DiskChopper& A)
     {
       attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       centreFlag=A.centreFlag;
+      offsetFlag=A.offsetFlag;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
       diskGap=A.diskGap;
@@ -200,23 +204,21 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
   beamOrigin=beamFC.getCentre();
   beamAxis=beamFC.getY();
 
+  double XYZ[3]={0,0,0};
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
-      double XYZ[3]={0,0,0};
       const size_t index=static_cast<size_t>(std::abs(centreFlag)-1);
-      if (centreFlag<0)
-	XYZ[index]=-((outerRadius+innerRadius)/2.0);
-      else
-	XYZ[index]=((outerRadius+innerRadius)/2.0);
-
-      if (offsetFlag)
-        {
-          const double TD((offsetFlag>0) ? -totalThick/2.0 : totalThick/2.0);
-          XYZ[1] += TD;
-          beamFC.applyShift(0.0,TD,0.0);
-        }
-      mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
+      XYZ[index] += (centreFlag<0) ?
+	-(outerRadius+innerRadius)/2.0 : (outerRadius+innerRadius)/2.0;
     }
+  if (offsetFlag)
+    {
+      const double TD((offsetFlag>0) ? -totalThick/2.0 : totalThick/2.0);
+      XYZ[1] += TD;
+      beamFC.applyShift(0.0,TD,0.0);
+    }
+  mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
+      
   setDefault("Main");
 
   return;
@@ -309,19 +311,23 @@ DiskChopper::createObjects(Simulation& System)
           // Inner :
 	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"12M -511M -7");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
+	  addCell("Inner",cellIndex-1);
+	  
           // Outer
 	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"2M -501M 7 -17");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  addCell("Outer",cellIndex-1);
 	}
       
       // inner layer
       Out=ModelSupport::getComposite(SMap,chpIndex,CI,"11M -12M -7");
       System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.getInnerMat(),
                                        0.0,Out));
+      addCell("Inner",cellIndex-1);
+
       // Chopper opening
       const size_t NPhase=DRef.getNPhase();
-        const std::string Main=
+      const std::string Main=
 	ModelSupport::getComposite(SMap,chpIndex,CI,"1M -2M  7 -17");
       
       int PI(CI);       // current 
@@ -338,6 +344,8 @@ DiskChopper::createObjects(Simulation& System)
 	  else
 	    Out=ModelSupport::getComposite(SMap,PI," (3 : -4) ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Main));
+	  addCell("Outer",cellIndex-1);
+		  
 	  // CLOSING
 	  oA=DRef.getCloseAngle(index/2);
 	  cA=DRef.getOpenAngle(1+(index/2));
@@ -347,6 +355,7 @@ DiskChopper::createObjects(Simulation& System)
 	    Out=ModelSupport::getComposite(SMap,PI,PN," (4 : -3M) ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,DRef.getOuterMat(),0.0,Out+Main));
+	  addCell("Outer",cellIndex-1);
 	  PI+=10;
 	  PN+=10;
 	}
@@ -354,9 +363,11 @@ DiskChopper::createObjects(Simulation& System)
       if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
         {
           Out=ModelSupport::getComposite(SMap,chpIndex,"11 -1 7 -17");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  addCell("Outer",cellIndex-1);
           Out=ModelSupport::getComposite(SMap,chpIndex,"2 -12 7 -17");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  addCell("Outer",cellIndex-1);
         }
 
       CI+=500;

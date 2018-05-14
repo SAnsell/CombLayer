@@ -3,7 +3,7 @@
  
  * File:   epbBuild/Building.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,27 +42,18 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"

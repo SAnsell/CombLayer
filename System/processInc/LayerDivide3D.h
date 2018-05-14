@@ -36,7 +36,8 @@ namespace ModelSupport
   \brief Bulk divider to produce 3D grid in a cell
 */
 
-class LayerDivide3D  : public attachSystem::FixedComp,
+
+class LayerDivide3D : public attachSystem::FixedComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
@@ -69,9 +70,6 @@ class LayerDivide3D  : public attachSystem::FixedComp,
   std::string outputFile;        ///< File to write
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp&,
-			const long int,const bool);
 
   
   void checkDivide() const;
@@ -97,6 +95,7 @@ class LayerDivide3D  : public attachSystem::FixedComp,
   void setIndexNames(const std::string&,const std::string&,
 		  const std::string&);
   void setDivider(const std::string&);
+  void setDividerByExclude(const Simulation&,const int);
 
   void setMaterials(const std::string&);
   void setMaterials(const size_t,const std::vector<std::string>&);

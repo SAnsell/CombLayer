@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Line.h"
 #include "Qhull.h"
 #include "varList.h"
@@ -70,6 +67,15 @@ ContainedGroup::ContainedGroup()
     Constructor 
   */
 {}
+
+ContainedGroup::ContainedGroup(const std::string& A)
+  /*!
+    Constructor 
+    \param A :: Key one
+  */
+{
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+}
 
 ContainedGroup::ContainedGroup(const std::string& A,
 			       const std::string& B)
@@ -319,6 +325,21 @@ ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
   return;
 }
 
+const HeadRule&
+ContainedGroup::getOuterSurf(const std::string& Key) const
+  /*!
+    Calculate the write out the excluded surface.
+    This allows the object to be inserted in a larger
+    object.
+    \param Key :: Key name for rule
+    \return outer surf
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","getOuterSurf");
+  
+  return getCC(Key).getOuterSurf();
+}
+  
 std::string
 ContainedGroup::getExclude(const std::string& Key) const
   /*!
@@ -405,16 +426,45 @@ ContainedGroup::addInsertCell(const std::string& Key,
 }
 
 void 
+ContainedGroup::addInsertCell(const std::string& Key,
+			      const ContainedComp& CC)
+  /*!
+    Adds a cell to the insert list
+    \param Key :: Key name for rule
+    \param CC :: Contained component to copy
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addInsertCell(CC)");
+  getCC(Key).addInsertCell(CC);
+  return;
+}
+
+void 
 ContainedGroup::addAllInsertCell(const int CN)
   /*!
     Adds a cell to the insert list [for all]
     \param CN :: Cell number
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","addInsertCell");
+  ELog::RegMethod RegA("ContainedGroup","addAllInsertCell(cell)");
   CTYPE::iterator mc;
   for(mc=CMap.begin();mc!=CMap.end();mc++)
     mc->second.addInsertCell(CN);
+  
+  return;
+}
+
+void 
+ContainedGroup::addAllInsertCell(const ContainedComp& CC)
+  /*!
+    Adds a cell to the insert list [for all]
+    \param CC :: Contained comp to use
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addAllInsertCell(CC)");
+  CTYPE::iterator mc;
+  for(mc=CMap.begin();mc!=CMap.end();mc++)
+    mc->second.addInsertCell(CC);
   
   return;
 }
@@ -461,6 +511,38 @@ ContainedGroup::addInsertCell(const std::string& Key,
   return;
 }
 
+
+void 
+ContainedGroup::insertInCell(const std::string& Key,
+			     Simulation& System,
+			     const int CN)
+  /*!
+    Inserts a contained component into the cell 
+    \param Key :: Group name
+    \param System :: Simulation to get cells
+    \param CN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","insertInCell");
+  getCC(Key).insertInCell(System,CN);
+  return;
+}
+
+void 
+ContainedGroup::insertInCell(const std::string& Key,
+			     Simulation& System,
+			     const std::vector<int>& CVec)
+  /*!
+    Inserts a contained component into the cell 
+    \param Key :: Group name
+    \param System :: Simulation to get cells
+    \param CVec :: Cell numbers
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","insertInCell");
+  getCC(Key).insertInCell(System,CVec);
+  return;
+}
   
 void
 ContainedGroup::insertObjects(Simulation& System)

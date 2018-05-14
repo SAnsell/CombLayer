@@ -55,6 +55,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "essVariables.h"
 
@@ -96,14 +97,14 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAxisZAngle",0.0);  // rotation
   Control.addVariable("miraclesAxisZStep",0.0);   // offset
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.3);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.3,"Void");  
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"miraclesFA",350.0, 6.0,5.0 ,5.0,9.5);
   
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"miraclesPipeB",8.0,44.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.8,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFB",42.0, 5.0,4.857,  9.5,9.85714);
 
@@ -116,7 +117,7 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAppAInnerHeight",4.0);
   Control.addVariable("miraclesAppAWidth",12.0);
   Control.addVariable("miraclesAppAHeight",12.0);
-  Control.addVariable("miraclesAppADepth",5.0);
+  Control.addVariable("miraclesAppAThick",5.0);
   Control.addVariable("miraclesAppAYStep",7.0);
   Control.addVariable("miraclesAppADefMat","Tungsten");
 
@@ -207,13 +208,13 @@ MIRACLESvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
 
   PipeGen.setPipe(10.0,0.5);
-  PipeGen.generatePipe(Control,"miraclesPipeOutA",2.0,1497.0);  
-  FGen.generateBender(Control,"miraclesBOutA",1496.0,
+  PipeGen.generatePipe(Control,"miraclesPipeOutA",4.0,1495.0);  
+  FGen.generateBender(Control,"miraclesBOutA",1491.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
 
   PipeGen.generatePipe(Control,"miraclesPipeOutB",1.0,1498.0);  
-  FGen.generateBender(Control,"miraclesBOutB",1496.0,
+  FGen.generateBender(Control,"miraclesBOutB",1494.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
 

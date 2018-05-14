@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,12 @@
  *
  ****************************************************************************/
 #include <iostream>
+#include <iterator>
 #include <iomanip>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <sstream>
-#include <cmath>
 #include <cctype>
 #include <complex>
 #include <vector>
@@ -322,8 +322,48 @@ lowerString(std::string& LN)
   */
 {
   for(size_t i=0;i<LN.length();i++)
-    LN[i]=static_cast<char>(tolower(LN[i]));
+    LN[i]=static_cast<char>(std::tolower(LN[i]));
+  
   return;
+}
+
+void
+upperString(std::string& LN) 
+  /*!
+    raisze the words in the string
+    \param LN :: String to change
+  */
+{
+  for(size_t i=0;i<LN.length();i++)
+    LN[i]=static_cast<char>(std::toupper(LN[i]));
+  
+  return;
+}
+
+std::string
+toUpperString(const std::string& LN) 
+  /*!
+    raisze the words in the string
+    \param LN :: String to change
+    \return upper case string
+  */
+{
+  std::string Out(LN);
+  upperString(Out);
+  return Out;
+}
+
+std::string
+toLowerString(const std::string& LN) 
+  /*!
+    Lowers the words in the string
+    \param LN :: String to change
+    \return lower case string
+  */
+{
+  std::string Out(LN);
+  lowerString(Out);
+  return Out;
 }
 
 int
@@ -486,6 +526,27 @@ singleLine(const std::string& A)
   Out=StrFunc::stripMultSpc(Out);
   Out=StrFunc::fullBlock(Out);
   return Out;
+}
+
+std::string
+frontBlock(const std::string& A)
+  /*!
+    Returns the string from the first non-space to the 
+    last non-space 
+    \param A :: string to process
+    \returns shortened string
+  */
+{
+  if (A.empty()) return "";
+
+  std::string::size_type posA;
+  
+  for(posA=0;posA<A.size() && 
+	isspace(A[posA]);posA++) ;
+
+  if (posA==A.size()) return "";
+  
+  return A.substr(posA);
 }
 
 std::string
@@ -808,124 +869,6 @@ sectionCINDER(std::string& A,double& out)
   return 0;
 }
 
-
-void
-writeMCNPX(const std::string& Line,std::ostream& OX)
-/*!
-  Write out the line in the limited form for MCNPX
-  ie initial line from 0::72 after that 8 to 72
-  (split on a space or comma)
-  \param Line :: full MCNPX line
-  \param OX :: ostream to write to
-*/
-{
-  writeControl(Line,OX,72,8);
-  return;
-}
-
-void
-writeMCNPXcont(const std::string& Line,std::ostream& OX)
-/*!
-  Write out the line in the limited form for MCNPX
-  ie initial line from 0::72 after that 8 to 72
-  as if it is a split line
-  \param Line :: full MCNPX line
-  \param OX :: ostream to write to
-*/
-{
-  writeControl(Line,OX,72,-8);
-  return;
-}
-
-void
-writeControl(const std::string& Line,std::ostream& OX,
-	     const size_t LNmax,int insertDepth)
-/*!
-  Write out the line in the limited form for MCNPX
-  ie initial line from 0::72 after that 8 to 72
-  (split on a space or comma)
-  \param Line :: full MCNPX line
-  \param OX :: ostream to write to
-  \param LNmax :: Maximium char count in a line
-  \param insertDepth :: second line insert depth [-ve to include first line]
-*/
-{
-  // Line
-  size_t spcLen(0);
-  if (insertDepth<0)
-    {
-      insertDepth *= -1;
-      spcLen=static_cast<size_t>(insertDepth);
-    }
-
-  std::string::size_type pos(0);
-  std::string X=Line.substr(0,LNmax-spcLen);    
-  std::string::size_type posB=X.find_last_of(" ,");
-  while(X.length() == LNmax-spcLen &&
-	posB!=std::string::npos)
-    {
-      pos+=posB+1;
-      if (!isspace(X[posB])) posB++;  // skip pass comma 
-      X=fullBlock(X.substr(0,posB));
-      if (!isEmpty(X))
-	OX<<std::string(spcLen,' ')<<X<<std::endl;
-
-      spcLen=static_cast<size_t>(insertDepth);
-      X=Line.substr(pos,LNmax-spcLen);
-      posB=X.find_last_of(" ,");
-    }
-    
-  X=fullBlock(X);
-  if (!isEmpty(X))
-    OX<<std::string(spcLen,' ')<<X<<std::endl;
-  return;
-}
-
-void
-writeMCNPXcomment(const std::string& Line,std::ostream& OX)
-/*!
-  Write out the line in the limited form for MCNPX
-  ie initial line from 0->72 after that 8 to 72
-  (split on a space or comma). It puts int all in a comment
-  so lines are cut by 2
-  \param Line :: full MCNPX line
-  \param OX :: ostream to write to
-*/
-{
-  const size_t MaxLine(72);
-
-  std::string::size_type pos(0);
-  std::string X=Line.substr(0,MaxLine);
-  std::string::size_type posB=X.find_last_of(" ,");
-  size_t spc(0);
-  while (posB!=std::string::npos && 
-	 X.length()>=MaxLine-spc)
-    {
-      pos+=posB+1;
-      if (!isspace(X[posB]))
-	posB++;
-      const std::string Out=X.substr(0,posB);
-      if (!isEmpty(Out))
-        {
-	  OX<<"c ";
-	  if (spc)
-	    OX<<std::string(spc,' ');
-	  OX<<X.substr(0,posB)<<std::endl;
-	}
-      spc=8;
-      X=Line.substr(pos,MaxLine-spc);
-      posB=X.find_last_of(" ,");
-    }
-  if (!isEmpty(X))
-    {
-      OX<<"c ";
-      if (spc)
-	OX<<std::string(spc,' ');
-      OX<<X<<std::endl;
-    }
-  return;
-}
-
 std::vector<std::string>
 StrParts(std::string Ln)
 /*!
@@ -1171,6 +1114,26 @@ sliceVector(V<T,Alloc>& A,const T& indexA,const T& indexB)
   return 0;
 }
 
+template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
+bool
+removeItem(V<T,Alloc>& A,const T& indexA)
+  /*!
+    Given values indexA , indexB : 
+    Find the values in the list and
+    return just that bit. 
+    \param A :: vect/list to slice
+    \param indexA :: Component to find
+    \param indexB :: Component to find
+    \return true if item removed / false otherwize
+   */
+{
+  typename V<T,Alloc>::iterator ac=find(A.begin(),A.end(),indexA);
+
+  if (ac==A.end()) return 0;
+  A.erase(ac);
+  return 1;
+}
+
 std::vector<std::string>
 splitParts(const std::string& Line,const char delim)
   /*!
@@ -1234,7 +1197,7 @@ writeLine(std::ostream& OX,const T& V,
   const double VUnit=static_cast<double>(V);
 
   const double AVal(std::fabs(VUnit));
-  if (AVal>9.9e4 || (AVal<1e-5 && AVal>1e-38))
+  if (AVal>9.9e4 || (AVal<1e-2 && AVal>1e-38))
     OX<<(SciFMT % VUnit);
   else
     OX<<(DblFMT % VUnit);
@@ -1323,6 +1286,7 @@ template int setValues(const std::string&,const std::vector<int>&,
 		      std::vector<double>&);
 
 template int sliceVector(std::vector<int>&,const int&,const int&);
+template bool removeItem(std::vector<int>&,const int&);
 
 /// \endcond TEMPLATE 
 

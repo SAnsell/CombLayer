@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/MXcards.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,25 +49,16 @@
 namespace MonteCarlo
 {
 
-MXcards::MXcards() :
-  Mnum(-1),NZaid(0)
-  /*!
-    Default Constructor
-  */
-{} 
-
-MXcards::MXcards(const int N,const size_t NZ,const std::string& P) :
-  Mnum(N),NZaid(NZ),particle(P),items(NZ,"j")
+MXcards::MXcards(const std::string& P) :
+  particle(P)
   /*!
     Constructor
-    \param N :: Material number
-    \param NZ :: number of zaids
     \param P :: particle string
   */
 {} 
 
 MXcards::MXcards(const MXcards& A) : 
-  Mnum(A.Mnum),NZaid(A.NZaid),particle(A.particle),items(A.items)
+  particle(A.particle),items(A.items)
   /*!
     Copy constructor
     \param A :: MXcards to copy
@@ -84,8 +75,6 @@ MXcards::operator=(const MXcards& A)
 {
   if (this!=&A)
     {
-      Mnum=A.Mnum;
-      NZaid=A.NZaid;
       particle=A.particle;
       items=A.items;
     }
@@ -98,77 +87,75 @@ MXcards::~MXcards()
     Standard Destructor
   */
 {}
-
-void
-MXcards::setItem(const size_t Index,const std::string& IS)
+  
+bool
+MXcards::hasZaid(const size_t Index) const
   /*!
-    Set a given item
-    \param Index :: Index number
-    \param IS :: Modification
+    Find is a modification has been set
+    \param Index :: Zaid
+    \return true if set / false otherwize
   */
 {
-  ELog::RegMethod RegA("MXcards","setItem");
-  
-  if (Index>=NZaid)
-    throw ColErr::IndexError<size_t>(Index,NZaid,"Index");
-  
-  items[Index]=IS;
-  return;
+  return (items.find(Index)==items.end()) ? 0 : 1;
 }
 
 void
-MXcards::setItem(const std::vector<std::string>& VItems)
+MXcards::setZaid(const size_t Index,const std::string& IS)
   /*!
-    Set all teh items
-    \param VItems :: Vector of items
-    \param IS :: Modification
+    Set a given zaid set the item value
+    \param Index :: Zaid
+    \param IS :: Modification string
   */
 {
-  ELog::RegMethod RegA("MXcards","setItem(vector)");
-
-  if (static_cast<size_t>(VItems.size())!=NZaid)
-    throw ColErr::MisMatch<size_t>(VItems.size(),NZaid,"VItems!=NZaid");
+  ELog::RegMethod RegA("MXcards","setZaid");
   
-  items=VItems;
+  items.emplace(Index,IS);
   return;
 }
 
-void
-MXcards::setCard(const int N,const std::string& P,const size_t NZ) 
+const std::string&
+MXcards::getZaid(const size_t Index) const
   /*!
-    Set the incident particle
-    \param N :: Number of material
-    \param P :: Particle
-    \param NZ :: Number of particles
+    Return the modification string
+    \param Index :: Zaid
+    \return modification string
   */
 {
-  Mnum=N;
-  particle=P;
-  items.resize(NZ);
-  fill(items.begin(),items.end(),"j");
-  return;
-}
+  ELog::RegMethod RegA("MXcards","getZaid");
+  
+  std::map<size_t,std::string>::const_iterator mc=
+    items.find(Index);
 
+  if (mc==items.end())
+    throw ColErr::InContainerError<size_t>(Index,"Zaid not found");
+  return mc->second;
+}
 
 void 
-MXcards::write(std::ostream& OX) const
+MXcards::write(std::ostream& OX,
+	       const std::vector<Zaid>& ZaidList) const
   /*!
     Write out the information about the material
     in a humman readable form (same as mcnpx file)
     \param OX :: Output stream
   */
 {
-  if (particle.empty()) return;
-
-  std::ostringstream cx;
-  cx.precision(10);
-  cx<<"mx"<<Mnum<<":"<<particle<<" ";
-  
-  std::vector<std::string>::const_iterator vc;
-  for(vc=items.begin();vc!=items.end();vc++)
-    cx<<*vc<<"   ";
-  
-  StrFunc::writeMCNPX(cx.str(),OX);
+  if (!particle.empty()) 
+    OX<<":"<<particle;
+  OX<<" ";
+	
+  for(const Zaid& ZI : ZaidList)
+    {
+      if (ZI.getZ())
+	{
+	  std::map<size_t,std::string>::const_iterator mc=
+	    items.find(ZI.getZaidNum());
+	  if (mc!=items.end())
+	    OX<<mc->second<<" ";
+	  else
+	    OX<<"j ";
+	}
+    }
   return;
 } 
 

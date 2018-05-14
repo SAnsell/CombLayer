@@ -3,7 +3,7 @@
  
  * File:   supportInc/stringCombine.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,12 @@ namespace StrFunc
   template<typename U> 
     std::string makeString(const char*,const U&);
 
+  char indexToAlpha(const size_t);
+  char indexToRevAlpha(const size_t);
+
+  size_t alphaToIndex(const char);
+  size_t revAlphaToIndex(const char);
+  
   size_t checkKey(const std::string&,const std::string&,
 		  const std::string&,const std::string&);
 }  // NAMESPACE StrFunc

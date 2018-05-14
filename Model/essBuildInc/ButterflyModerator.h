@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/ButterflyModerator.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_ButterflyModerator_h
@@ -31,22 +31,24 @@ namespace essSystem
 
 /*!
   \class ButterflyModerator
-  \author Stuart Ansell 
+  \author Stuart Ansell
   \version 1.0
   \date April 2015
   \brief Butterfly moderator object [composite for mutli-system]
-     
-  Implementation based on K. Bat concept
+
+  Implementation based on K. Batkov concept
 */
 
 class ButterflyModerator :
-  public constructSystem::ModBase
+  public EssModBase
 {
  private:
 
   const int flyIndex;        ///< Index of surface offset
   int cellIndex;             ///< Cell index
-  
+
+  std::string bfType;        ///< Type (BF1 or BF2)
+
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator
   std::shared_ptr<MidWaterDivider> MidWater;    ///< Water divider
@@ -58,22 +60,23 @@ class ButterflyModerator :
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp*,
+			const long int,
+			const attachSystem::FixedComp&,
 			const long int);
 
   void createExternal();
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   ButterflyModerator(const std::string&);
   ButterflyModerator(const ButterflyModerator&);
   ButterflyModerator& operator=(const ButterflyModerator&);
   virtual ButterflyModerator* clone() const;
   virtual ~ButterflyModerator();
-  
+
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
@@ -81,18 +84,22 @@ class ButterflyModerator :
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
+
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
 
   std::string getLeftExclude() const;
   std::string getRightExclude() const;
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,
+  std::string getLeftFarExclude() const;
+  std::string getRightFarExclude() const;
+
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int,
+		 const attachSystem::FixedComp&,
 		 const long int);
 };
 
 }
 
 #endif
- 
+

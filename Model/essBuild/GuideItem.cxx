@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -420,10 +420,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addCell("Body",cellIndex-1);
-      // Inner metal:
-      if (!filled)
-	Out+=ModelSupport::getComposite(SMap,guideIndex,
-					"(-1103:1104:-1105:1106) ");
+
       if (i==0)
 	{
 	  Out=ModelSupport::getComposite
@@ -434,12 +431,16 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	Out=ModelSupport::getComposite
 	  (SMap,GI,guideIndex,"1M 7 13 -14 15 -16 -57");
 
+      // Inner metal:
       if (!filled)
 	Out+=ModelSupport::getComposite
 	  (SMap,guideIndex,"(-1103:1104:-1105:1106) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));      
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      
       if (filled) addCell("Void",cellIndex-1);
       addCell("Body",cellIndex-1);
+      addCell("BodyMetal",cellIndex-1);
+      
       GI+=50;
     }      
   // Inner void
@@ -548,7 +549,7 @@ GuideItem::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("GuideItem","createAll");
-
+	    
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();

@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESSPipes.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -82,14 +81,10 @@ ESSPipes::ESSPipes()
  */
 {
   registerPipes({
-      "TSupplyLeftAl","TSupplyLeftConnect","TSupplyLeftInvar",
-      "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar",
-      "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar",
-      "TReturnRightAl","TReturnRightConnect","TReturnRightInvar",
-      "LSupplyLeftAl","LSupplyLeftConnect","LSupplyLeftInvar",
-      "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar",
-      "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar",
-      "LReturnRightAl","LReturnRightConnect","LReturnRightInvar"});
+      "TSupplyLeftAl","TSupplyRightAl",
+      "TReturnLeftAl","TReturnRightAl",
+      "LSupplyLeftAl","LSupplyRightAl",
+      "LReturnLeftAl","LReturnRightAl"});
 }
 
 ESSPipes::ESSPipes(const ESSPipes& A) : 
@@ -178,13 +173,10 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
     ModelSupport::objectRegister::Instance();
 
   PipeTYPE& pipeAl=getPipe(pipeAlName);
-  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
-  PipeTYPE& pipeInvar=getPipe(pipeInvarName);
-
-  
+  ///  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
+  ///  PipeTYPE& pipeInvar=getPipe(pipeInvarName);
   const attachSystem::FixedComp* lobe=
-    OR.getObjectThrow<attachSystem::FixedComp>
-    (lobeName,"FixedComp::Lobe");
+    OR.getObjectThrow<attachSystem::FixedComp>(lobeName,"FixedComp::Lobe");
 
   const attachSystem::CellMap* waterCM=
     OR.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");
@@ -195,17 +187,41 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   // layer level is depth into the object layers [0=> inner]
   // linkPt is normal link point in fixedcomp [2]
   // layerLevel : linkPoint [2]
-  pipeAl->createAll(System,*lobe,0,2,2);
 
-  pipeConnect->setAngleSeg(12);
-  pipeConnect->setOption(pipeSpecialization);
-  pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
-  pipeConnect->createAll(System,*pipeAl,2);
+  if (lobeName.find("CakeMidH2") != std::string::npos) // Pancake
+    {
+      if (waterName.find("CakeLeftWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,4,4);
+      else if (waterName.find("CakeRightWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,3,3);
+    } else if (lobeName.find("BoxMidH2") != std::string::npos) // Box
+    {
+      if (waterName.find("BoxLeftWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,4,4);
+      else if (waterName.find("BoxRightWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,3,3);
+    } else // Butterfly
+    {
+      pipeAl->createAll(System,*lobe,0,2,2);
+    }
 
-  pipeInvar->setAngleSeg(12);
-  pipeInvar->setOption(pipeSpecialization);
-  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
-  pipeInvar->createAll(System,*pipeConnect,2);
+  if (pipeConnectName.length())
+    {
+      PipeTYPE& pipeConnect = getPipe(pipeConnectName);
+      pipeConnect->setAngleSeg(12);
+      pipeConnect->setOption(pipeSpecialization);
+      pipeConnect->setStartSurf(pipeAl->getLinkString(2));
+      pipeConnect->createAll(System,*pipeAl,2);
+    
+      if (pipeInvarName.length())
+	{
+	  PipeTYPE& pipeInvar = getPipe(pipeInvarName);
+	  pipeInvar->setAngleSeg(12);
+	  pipeInvar->setOption(pipeSpecialization);
+	  pipeInvar->setStartSurf(pipeConnect->getLinkString(2));
+	  pipeInvar->createAll(System,*pipeConnect,2);
+	}
+    }
   return;
 }
 
@@ -221,23 +237,41 @@ ESSPipes::buildTopPipes(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","buildTopPipes");
-  return;
 
   if (!pipeUniqName.empty() || pipeUniqName!="help")
     {
+      if (pipeUniqName.find("supply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
+		      "TSupplyLeftAl");
+	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
+		      "TSupplyRightAl");
+	}
 
-      buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-		  "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
-      
-      buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-		  "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
-      
-      
-      buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-		  "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
-      
-      buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-		  "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
+      if (pipeUniqName.find("return") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
+		      "TReturnLeftAl");
+
+	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
+		      "TReturnRightAl");
+	}
+
+      if (pipeUniqName.find("PancakeSupply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopCakeMidH2","TopCakeLeftWater",pipeUniqName,
+		      "TSupplyLeftAl");
+	  buildH2Pipe(System,"TopCakeMidH2","TopCakeRightWater",pipeUniqName,
+		      "TSupplyRightAl");
+	}
+
+      if (pipeUniqName.find("BoxSupply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopBoxMidH2","TopBoxLeftWater",pipeUniqName,
+		      "TSupplyLeftAl");
+	  buildH2Pipe(System,"TopBoxMidH2","TopBoxRightWater",pipeUniqName,
+		      "TSupplyRightAl");
+	}
     }
   return;
 }
@@ -253,20 +287,25 @@ ESSPipes::buildLowPipes(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","buildLowPipes");
-  return;
+  //  return;
   if (!pipeUniqName.empty() || pipeUniqName!="help")
     {
-      buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-                  "LSupplyLeftAl","LSupplyLeftConnect", "LSupplyLeftInvar");
+      if (pipeUniqName.find("supply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
+		      "LSupplyLeftAl");
 
-      buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-                  "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar");
-      
-      buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-                  "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar");
-      
-      buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-              "LReturnRightAl","LReturnRightConnect","LReturnRightInvar");
+	  buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
+		      "LSupplyRightAl");
+	}
+      if (pipeUniqName.find("return") != std::string::npos)
+	{
+	  buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
+		      "LReturnLeftAl");
+
+	  buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
+		      "LReturnRightAl");
+	}
     }
   return;
 }

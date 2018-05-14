@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/essVariables.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,12 +52,14 @@ namespace setVariable
   void DREAMvariables(FuncDataBase&);
   void ESTIAvariables(FuncDataBase&);
   void FREIAvariables(FuncDataBase&);
+  void HEIMDALvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
   void MAGICvariables(FuncDataBase&);
   void MIRACLESvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void NNBARvariables(FuncDataBase&);
   void ODINvariables(FuncDataBase&);
+  void SKADIvariables(FuncDataBase&);
   void TESTBEAMvariables(FuncDataBase&);
   void TREXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);

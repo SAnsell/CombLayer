@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/reactorTallyConstruct.h
+ * File:   delftInc/reactorTallyConstruct.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,27 +35,27 @@ namespace tallySystem
 
 /*!
   \class reactorTallyConstruct
-  \version 1.0
+  \version 2.0
   \author S. Ansell
   \date April 2014
-  \brief Holds everthing for tallies
-
-  Provides linkage to its outside on FixedComp[0]
+  \brief Constructs a reactor Power tally
 */
 
-class reactorTallyConstruct : virtual public fissionConstruct
+class reactorTallyConstruct 
 {
+ private:
+
+  /// private constructor
+  reactorTallyConstruct() {}
+
  public:
 
-  reactorTallyConstruct();
-  reactorTallyConstruct(const reactorTallyConstruct&);
-  reactorTallyConstruct& operator=(const reactorTallyConstruct&);
-  virtual ~reactorTallyConstruct() {}  ///< Destructor
 
-  virtual int processPower(Simulation&,const mainSystem::inputParam&,
-			    const size_t,const bool) const;
 
-  virtual void writeHelp(std::ostream&) const;
+  static void processPower(SimMCNP&,const mainSystem::inputParam&,
+			    const size_t);
+
+  static void writeHelp(std::ostream&);
 };
 
 }

@@ -76,7 +76,6 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "surfExpand.h"
 #include "BasicFlightLine.h"
 
 namespace moderatorSystem
@@ -347,8 +346,8 @@ BasicFlightLine::createObjects(Simulation& System,
   ELog::RegMethod RegA("BasicFlightLine","createObjects");
 
     
-  const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
-  const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
+  const std::string innerCut=innerFC.getLinkString(innerIndex);
+  const std::string outerCut=outerFC.getLinkString(outerIndex);
   
   setLinkSignedCopy(0,innerFC,innerIndex);
   setLinkSignedCopy(1,outerFC,outerIndex);

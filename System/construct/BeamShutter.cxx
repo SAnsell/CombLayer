@@ -188,9 +188,11 @@ BeamShutter::createSurfaces()
   ModelSupport::buildPlane(SMap,collIndex+16,
 			   Origin+Z*(surroundThick+height/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,collIndex+105,
+		 Origin-Z*(liftZStep+surroundThick+height/2.0),Z);
   ModelSupport::buildPlane(SMap,collIndex+106,
-			   Origin+Z*(topVoid+surroundThick+height/2.0),Z);
-    
+		 Origin+Z*(-liftZStep+topVoid+surroundThick+height/2.0),Z);
+
   int CN(collIndex);
   Geometry::Vec3D POrg(Origin);
   for(size_t i=0;i<nLayers;i++)
@@ -232,11 +234,31 @@ BeamShutter::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,surroundMat,0.0,Out));
   addCell("Surround",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,collIndex,CN," 1 -11M 13 -14 16 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  // lower void if present
+  if (liftZStep>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,collIndex,CN,
+                                     " 1 -11M 13 -14 105 -15 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      addCell("Void",cellIndex-1);
+    }
 
-  Out=ModelSupport::getComposite(SMap,collIndex,CN," 1 -11M 13 -14 15 -106  ");
+  // top void if present
+  if (liftZStep-topVoid < Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,collIndex,CN,
+                                     " 1 -11M 13 -14 16 -106 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      addCell("Void",cellIndex-1);
+	    
+    }
+
+  if (liftZStep>=0.0)
+    Out=ModelSupport::getComposite(SMap,collIndex,CN,
+				   " 1 -11M 13 -14 105 -106  ");
+  else
+    Out=ModelSupport::getComposite(SMap,collIndex,CN,
+				   " 1 -11M 13 -14 15 -106  ");
   addOuterSurf(Out);
   return;
 }

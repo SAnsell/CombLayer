@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/BWaterPipe.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,15 +130,13 @@ BWaterPipe::~BWaterPipe()
 {}
 
 void
-BWaterPipe::populate(const Simulation& System)
+BWaterPipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("BWaterPipe","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
 
   Xoffset=Control.EvalVar<double>(keyName+"XOffset"); 
@@ -159,7 +157,7 @@ BWaterPipe::populate(const Simulation& System)
 
 void
 BWaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - X Across the moderator
@@ -178,7 +176,7 @@ BWaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
 
 void 
 BWaterPipe::insertPipe(Simulation& System,const attachSystem::FixedComp& FC,
-		    const size_t sideIndex)
+		    const long int sideIndex)
   /*!
     Add a pipe to the hydrogen system:
     \param System :: Simulation to add pipe to
@@ -186,7 +184,7 @@ BWaterPipe::insertPipe(Simulation& System,const attachSystem::FixedComp& FC,
     \param sideIndex :: index fo side
   */
 {
-  ELog::RegMethod RegA("BWaterPipe","addPipe");
+  ELog::RegMethod RegA("BWaterPipe","insertPipe");
 
   // Base Points
   Central.addPoint(FC.getLinkPt(sideIndex)+X*Xoffset+Y*Yoffset);
@@ -215,7 +213,7 @@ BWaterPipe::insertPipe(Simulation& System,const attachSystem::FixedComp& FC,
 void
 BWaterPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FUnit,
-		      const size_t sideIndex)
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -225,7 +223,7 @@ BWaterPipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BWaterPipe","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FUnit,sideIndex);
   insertPipe(System,FUnit,sideIndex);
   

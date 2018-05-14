@@ -3,7 +3,7 @@
  
  * File:   essBuild/VOR.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -82,7 +83,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "LineShield.h"
 #include "HoleShape.h"
 #include "DHut.h"
@@ -106,7 +107,7 @@ VOR::VOR(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -118,7 +119,7 @@ VOR::VOR(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   FOCDisk(new constructSystem::DiskChopper(newName+"FOCDisk")),
   FOCExitPort(new constructSystem::HoleShape(newName+"FOCExitPort")),
 
@@ -127,7 +128,7 @@ VOR::VOR(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOCDiskB")),
   FOCEntryPortB(new constructSystem::HoleShape(newName+"FOCEntryPortB")),
   FOCExitPortB(new constructSystem::HoleShape(newName+"FOCExitPortB")),
@@ -195,35 +196,115 @@ VOR::~VOR()
 {}
 
 void
-VOR::setBeamAxis(const FuncDataBase& Control,
-		 const GuideItem& GItem,
-		 const bool reverseZ)
+VOR::buildBunkerUnits(Simulation& System,
+                        const attachSystem::FixedComp& FA,
+                        const long int startIndex,
+                        const int bunkerVoid)
   /*!
-    Set the primary direction object
-    \param Control :: Database for variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis (if required)
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
    */
 {
-  ELog::RegMethod RegA("VOR","setBeamAxis");
+  ELog::RegMethod RegA("VOR","buildBunkerUnits");
+  
+  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->createAll(System,FA,startIndex);
 
-  vorAxis->populate(Control);
-  vorAxis->createUnitVector(GItem);
-  vorAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  vorAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  vorAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  vorAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
+  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  // BEAM needs to be shifted/rotated:
-  vorAxis->linkShift(3);
-  vorAxis->linkShift(4);
-  vorAxis->linkAngleRotate(3);
-  vorAxis->linkAngleRotate(4);
+  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
-  if (reverseZ)
-    vorAxis->reverseZ();
+  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+
+
+  // First (green chopper)
+  ChopperA->addInsertCell(bunkerVoid);
+  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+
+  // Double disk chopper
+  DDisk->addInsertCell(ChopperA->getCell("Void"));
+  DDisk->setOffsetFlag(1);  // Centre in void
+  DDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDisk);
+
+  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
+
+  FocusD->addInsertCell(VPipeD->getCells("Void"));
+  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+
   return;
 }
+  
+  
+void
+VOR::buildIsolated(Simulation& System,const int voidCell)
+  /*!
+    Carry out the build in isolation
+    \param System :: Simulation system
+    \param voidCell :: void cell
+   */
+{
+  ELog::RegMethod RegA("VOR","buildIsolated");
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"BUILD ISOLATED Start/Stop:"
+          <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
+  long int startIndex(0);
+  
+  if (startPoint<1)
+    {
+      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      // Set the start point fo rb
+      FStart= &(FocusD->getKey("Guide0"));
+      startIndex= 2;
+    }
+  if (stopPoint==2 || stopPoint==1) return;
+
+  if (startPoint<2)
+    {
+      /*      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      startIndex=2;
+      OutPitT0->addFrontWall(*VPipeWall,2);
+
+    }
+  if (stopPoint==3) return;
+
+  if (startPoint<3)
+    {
+      buildOutGuide(System,*FStart,startIndex,voidCell);      
+      FStart=&(ChopperOutB->getKey("Beam"));
+      startIndex=2;
+    }
+
+  if (stopPoint==4) return;      
+
+  if (startPoint<4)
+    {
+      buildHut(System,*FStart,startIndex,voidCell);
+      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
+    }
+      */
+    }
+  return;
+}
+
+
   
 void 
 VOR::build(Simulation& System,
@@ -246,9 +327,12 @@ VOR::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"Stop point == "<<stopPoint<<ELog::endDiag;
-  
-  setBeamAxis(Control,GItem,0);
+
+
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
+	  <<ELog::endDiag;
+
+  essBeamSystem::setBeamAxis(*vorAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -256,34 +340,8 @@ VOR::build(Simulation& System,
   FocusA->createAll(System,*vorAxis,-3,*vorAxis,-3);
   if (stopPoint==1) return;
 
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
-
-  FocusB->addInsertCell(VPipeB->getCells("Void"));
-  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
-
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
-
-  FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
-
-
-  // First (green chopper)
-  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
-
-  // Double disk chopper
-  DDisk->addInsertCell(ChopperA->getCell("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->setOffsetFlag(1);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
-
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
-
-  FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;
 
@@ -299,6 +357,7 @@ VOR::build(Simulation& System,
   FocusWall->addInsertCell(VPipeWall->getCells("Void"));
   FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
 
+  
   if (stopPoint==3) return;
 
   OutPitA->addInsertCell(voidCell);
@@ -311,14 +370,14 @@ VOR::build(Simulation& System,
 
   // Double disk chopper
   FOCDisk->addInsertCell(ChopperOutA->getCell("Void"));
-  FOCDisk->setCentreFlag(3);  // Z direction
-  FOCDisk->setOffsetFlag(1);  // Z direction
-  FOCDisk->createAll(System,ChopperOutA->getKey("Beam"),0);
+  FOCDisk->setOffsetFlag(1);  // Centre in void
+  FOCDisk->createAll(System,ChopperOutA->getKey("Main"),0);
+  ChopperOutA->insertAxle(System,*FOCDisk);
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));
-  FOCExitPort->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                       OutPitA->getKey("Mid").getSignedFullRule(-2));
+  FOCExitPort->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                       OutPitA->getKey("Mid").getFullRule(-2));
   FOCExitPort->createAll(System,OutPitA->getKey("Inner"),2);
 
 
@@ -327,15 +386,15 @@ VOR::build(Simulation& System,
   OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
 
   FOCEntryPortB->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
-			  OutPitB->getKey("Mid").getSignedFullRule(-1));
+  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getFullRule(1),
+			  OutPitB->getKey("Mid").getFullRule(-1));
   FOCEntryPortB->createAll(System,OutPitB->getKey("Inner"),1);
 
   
   FOCExitPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   FOCExitPortB->addInsertCell(OutPitB->getCells("Collet"));
-  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
-                       OutPitB->getKey("Mid").getSignedFullRule(-2));
+  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
+                       OutPitB->getKey("Mid").getFullRule(-2));
   FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
 
   // shielding between PitA and P it B
@@ -379,8 +438,8 @@ VOR::build(Simulation& System,
 
   CavePort->addInsertCell(Cave->getCells("Steel"));
   CavePort->setCutFaceFlag(1);
-  CavePort->setFaces(Cave->getKey("Inner").getSignedFullRule(1),
-		     Cave->getKey("Mid").getSignedFullRule(-1));
+  CavePort->setFaces(Cave->getKey("Inner").getFullRule(1),
+		     Cave->getKey("Mid").getFullRule(-1));
   CavePort->createAll(System,FocusOutC->getKey("Guide0"),2);
 
   Tank->addInsertCell(Cave->getCells("Void"));

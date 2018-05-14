@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   cuBlock/CuCollet.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -73,21 +72,57 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
+#include "FixedOffset.h"
 #include "CuCollet.h"
 
 namespace cuSystem
 {
 
 CuCollet::CuCollet(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
-  cuIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(cuIndex+1)
+  attachSystem::FixedOffset(Key,3),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
   */
 {}
+
+CuCollet::CuCollet(const CuCollet& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  radius(A.radius),cuRadius(A.cuRadius),holeRadius(A.holeRadius),
+  cuGap(A.cuGap),cerThick(A.cerThick),steelThick(A.steelThick),
+  cuThick(A.cuThick),cerMat(A.cerMat),steelMat(A.steelMat),
+  cuMat(A.cuMat)
+  /*!
+    Copy constructor
+    \param A :: CuCollet to copy
+  */
+{}
+
+CuCollet&
+CuCollet::operator=(const CuCollet& A)
+  /*!
+    Assignment operator
+    \param A :: CuCollet to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      radius=A.radius;
+      cuRadius=A.cuRadius;
+      holeRadius=A.holeRadius;
+      cuGap=A.cuGap;
+      cerThick=A.cerThick;
+      steelThick=A.steelThick;
+      cuThick=A.cuThick;
+      cerMat=A.cerMat;
+      steelMat=A.steelMat;
+      cuMat=A.cuMat;
+    }
+  return *this;
+}
 
 
 CuCollet::~CuCollet() 
@@ -97,19 +132,15 @@ CuCollet::~CuCollet()
 {}
 
 void
-CuCollet::populate(const Simulation& System)
+CuCollet::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to use
   */
 {
   ELog::RegMethod RegA("CuCollet","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");   
+  FixedOffset::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");   
   holeRadius=Control.EvalVar<double>(keyName+"HoleRadius");   
@@ -128,15 +159,18 @@ CuCollet::populate(const Simulation& System)
 }
 
 void
-CuCollet::createUnitVector()
+CuCollet::createUnitVector(const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
+    \param FC :: FixedComp for orgin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("CuCollet","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
-  applyShift(xStep,yStep,zStep);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -150,21 +184,21 @@ CuCollet::createSurfaces()
   ELog::RegMethod RegA("CuCollet","createSurface");
 
   // ceramic:
-  ModelSupport::buildPlane(SMap,cuIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,cuIndex+2,Origin+Y*cerThick,Y);
-  ModelSupport::buildCylinder(SMap,cuIndex+7,Origin,Y,radius);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*cerThick,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);  
 
   // Steel:
-  ModelSupport::buildPlane(SMap,cuIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(steelThick+cerThick),Y);
 
   // Cu:
-  ModelSupport::buildPlane(SMap,cuIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin+Y*(steelThick+cerThick+cuGap),Y);
-  ModelSupport::buildPlane(SMap,cuIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(steelThick+cerThick+cuGap+cuThick),Y);
-  ModelSupport::buildCylinder(SMap,cuIndex+17,Origin,Y,holeRadius);  
-  ModelSupport::buildCylinder(SMap,cuIndex+27,Origin,Y,cuRadius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,holeRadius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,cuRadius);  
 
   return;
 }
@@ -181,27 +215,27 @@ CuCollet::createObjects(Simulation& System)
   std::string Out;
 
   // Ceramic
-  Out=ModelSupport::getComposite(SMap,cuIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cerMat,0.0,Out));
   // Steel
-  Out=ModelSupport::getComposite(SMap,cuIndex,"2 -12 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
   if (cuGap>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,cuIndex,"12 -21 -27");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"12 -21 -27");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
     }
 
   // Cu : Checked for existance of inner
-  Out=ModelSupport::getSetComposite(SMap,cuIndex,"21 -22 -27 17");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -27 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
   if (cuGap>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,cuIndex,"21 -22 -17 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
     }
   // Outer Boundary : 
-  Out=ModelSupport::getComposite(SMap,cuIndex,"1 -22 -27 (-7:12)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 -27 (-7:12)");
   addOuterSurf(Out);
   
   return;
@@ -220,22 +254,26 @@ CuCollet::createLinks()
   FixedComp::setConnect(1,Origin+
 			Y*(cuGap+cuThick+cerThick+steelThick),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(cuIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(cuIndex+2));  
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
 
   return;
 }
 
 void
-CuCollet::createAll(Simulation& System)
+CuCollet::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param FC :: FixedComp for orgin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("CuCollet","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

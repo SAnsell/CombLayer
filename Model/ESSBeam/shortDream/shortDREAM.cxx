@@ -3,7 +3,7 @@
  
  * File:   essBuild/shortDREAM.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -233,10 +233,10 @@ shortDREAM::setBeamAxis(const GuideItem& GItem,
   ELog::RegMethod RegA("shortDREAM","setBeamAxis");
 
   dreamAxis->createUnitVector(GItem);
-  dreamAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  dreamAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  dreamAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  dreamAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  dreamAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
+  dreamAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
+  dreamAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
+  dreamAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
 
   if (reverseZ)
     dreamAxis->reverseZ();

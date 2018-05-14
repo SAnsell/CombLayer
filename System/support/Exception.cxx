@@ -578,6 +578,26 @@ DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
 }
 
 template<unsigned int ndim,typename T>
+DimensionError<ndim,T>::DimensionError(const std::vector<T>& A,
+				       const std::vector<T>& R,
+				       const std::string& Place) :
+  ExBase(0,Place)
+  /*!
+    Set a DimensionError
+    \param A :: Array size
+    \param R :: Required size
+    \param Place :: String describing the place
+  */
+{
+  for(size_t i=0;i<ndim;i++)
+    {
+      indexSize[i]=(i<A.size()) ? A[i] : T(0);
+      reqSize[i]=(i<R.size()) ? R[i] : T(0);
+    }
+  setOutLine();
+}
+
+template<unsigned int ndim,typename T>
 DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
   ExBase(A)
   /*!

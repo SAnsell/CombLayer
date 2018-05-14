@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Algebra.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,10 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MapSupport.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 
@@ -63,7 +65,7 @@ operator<<(std::ostream& OX,const Algebra& A)
 }
 
 Algebra::Algebra() :
-  F(Union),FplusImpl(Union)
+  F(Union)
   /*!
     Constructor
   */
@@ -71,7 +73,7 @@ Algebra::Algebra() :
 
 Algebra::Algebra(const Algebra& A) :
   SurfMap(A.SurfMap),F(A.F),
-  FplusImpl(A.FplusImpl)
+  ImplicateVec(A.ImplicateVec)
   /*!
     Copy Constructor 
     \param A :: Algebra to copy
@@ -90,7 +92,7 @@ Algebra::operator=(const Algebra& A)
     {
       SurfMap=A.SurfMap;
       F=A.F;
-      FplusImpl=A.FplusImpl;
+      ImplicateVec=A.ImplicateVec;
     }
   return *this;
 }
@@ -100,7 +102,7 @@ Algebra::~Algebra()
 { }
 
 
-int
+bool
 Algebra::operator==(const Algebra& A) const
   /*!
     Equality operator
@@ -113,7 +115,7 @@ Algebra::operator==(const Algebra& A) const
   return F==A.F;
 }
 
-int
+bool
 Algebra::operator!=(const Algebra& A) const
   /*!
     Inequality operator
@@ -200,6 +202,55 @@ Algebra::operator*(const Algebra& M) const
   return T;
 }
 
+size_t
+Algebra::countComponents() const
+  /*!
+    Count the nubmer of components in the object
+    \return compennts size
+  */
+{
+  ELog::RegMethod RegA("Algebra","countComponents");
+  
+  return F.countComponents();
+}
+  
+void
+Algebra::expandBracket()
+  /*!
+    Expand all the brackets into DNF form
+    Not need full sort before /after
+  */
+{
+  F.Sort();
+  F.expandBracket();
+  F.Sort();
+  return;
+}
+
+
+void
+Algebra::expandCNFBracket()
+  /*!
+    Expand all the brackets into DNF form
+    Not need full sort before /after
+  */
+{
+  F.Sort();
+  F.expandCNFBracket();
+  F.Sort();
+  return;
+}
+
+void
+Algebra::merge()
+  /*!
+    MERGE all the brackets into DNF form
+  */
+{
+  F.merge();
+  return;
+}
+  
 void
 Algebra::Complement()
   /*!
@@ -208,6 +259,7 @@ Algebra::Complement()
   */
 {
   F.complement();
+  return;
 }
 
 std::pair<Algebra,Algebra>
@@ -231,107 +283,157 @@ Algebra::algDiv(const Algebra& D) const
   return std::pair<Algebra,Algebra>(Q,R);
 }
 
-
-std::string
-Algebra::writeMCNPX() const
+int
+Algebra::convertMCNPSurf(const int mcnpSN) const
   /*!
-    Writes out the string in terms
-    of surface numbers for MCNPX.
-    Note the ugly use of valEqual to find the cell
-    since the SurfMap is the wrong way round.
-    This also has the problem that Algebra uses
-    intersection as master but MCNPX uses union 
-    \return MCNPX string of algebra
+    Convert the surf number to interal index
+    \param mcnpSN :: mcnpSurf number
+    \return internal number
   */
 {
-  ELog::RegMethod RegA("Algebra","writeMCNPX");
+  std::map<int,int>::const_iterator ac=
+    SurfMap.find(std::abs(mcnpSN));
+  if (ac==SurfMap.end())
+    throw ColErr::InContainerError<int>(mcnpSN,"mcnpSN -> SurfMap");
+  return (mcnpSN>0) ? ac->second : -ac->second;
+}
 
-  // First wrap the function if it is a union.
-  std::string Out;  
-  Out = (F.isInter()) ? F.display() : "("+F.display()+")";
-  const size_t lenOut=Out.length();
-  Out+=" ";      // Guard string
+void
+Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
+  /*!
+    Adds the implicates to the from a list of surface numbers
+    [signed]
+    \param IM :: Implicate list 
+    
+   */
+{
+  ELog::RegMethod RegA("Algebra","addImplicates");
 
-  std::ostringstream cx;
-  for(size_t i=0;i<lenOut;i++)
+  for(const std::pair<int,int>& mc : IM)
     {
-      if (islower(Out[i]) || isupper(Out[i]) || Out[i]=='%')
-        {
-	  // Handle overflow
-	  std::string item;
-	  if (Out[i]=='%')
-	    {
-	      do
-		{
-		  item+=Out[i];
-		  i++;
-		}
-	      while (i<lenOut && isdigit(Out[i]));
-	      i--;
-	    }
-	  else
-	    item=std::string(1,Out[i]);
-	  
+      std::map<int,int>::const_iterator ac=
+	SurfMap.find(std::abs(mc.first));
+      std::map<int,int>::const_iterator bc=
+	SurfMap.find(std::abs(mc.second));
 
-	  // Converts a character to a surface number
-	  std::map<int,std::string>::const_iterator vc=
-	    find_if(SurfMap.begin(),SurfMap.end(),
-		     MapSupport::valEqual<int,std::string>(item));
-
-	    
-	  // Error processing:
-	  if (vc==SurfMap.end())
-            {
-	      for_each(SurfMap.begin(),SurfMap.end(),
-		       MapSupport::mapWrite<std::map<int,std::string> >
-		       (ELog::EM.Estream()));
-	      throw ColErr::InContainerError<std::string>(std::string(1,Out[i]),
-							  "surfMap");
-	    }
-
-	  if (Out[i+1]=='\'')
-	    {
-	      cx<<" -"<<vc->first;
-	      i++;
-	    }
-	  else
-	    cx<<" "<<vc->first;
-	}
-      else if (Out[i]=='+')
-        {
-	  cx<<" :";
-	}
-      else       // brackets are constant
-        {
-	  cx<<" "<<Out[i];
+      if (ac!=SurfMap.end() && bc!=SurfMap.end())
+	{
+	  const int surfA=(mc.first>0) ? ac->second  : -ac->second;
+	  const int surfB=(mc.second>0) ? bc->second  : -bc->second;
+	  ImplicateVec.push_back(std::pair<int,int>(surfA,surfB));
 	}
     }
-  return cx.str();
+  return;
 }
 
-std::ostream&
-Algebra::write(std::ostream& Out) const
+
+bool
+Algebra::constructShannonDivision(const int mcnpSN)
   /*!
-    Output function
-    \param Out :: Ostream to write out
-    \return Out
+    Given a surface number SN [signed]
+    can we divide base on implicates of that surfac
+    removing the +/- part 
+    \parma mcnpSN :: Surface for divide and implicate
+    \return true if a surface can be removed
   */
 {
-  Out<<"F == "<<F.display()<<std::endl;
-  //  Out<<F.displayDepth(0)<<std::endl;
-  return Out;
-}
+  ELog::RegMethod RegA("Algebra","constructShannonDivision");
+  
+  const int SN=convertMCNPSurf(mcnpSN);
+  const int ASN(std::abs(SN));
+  Acomp FX(F);
+  FX.expandCNFBracket();
+  Acomp AD=FX;
 
-std::string
-Algebra::display() const
+  for(const std::pair<int,int>& IP : ImplicateVec)
+    {
+      int SNA=IP.first;
+      int SNB=IP.second;
+      int ANA=std::abs(SNA);
+      int ANB=std::abs(SNB);
+      if (ANB==ASN)
+	{
+	  std::swap(ANA,ANB);
+	  std::swap(SNA,SNB);
+	  SNA*=-1;
+	  SNB*=-1;
+	}
+
+      if (SNA==SN)
+	AD.resolveTrue(SNB);
+    }
+  F=AD;
+
+  return 1;  
+}
+  
+bool
+Algebra::constructShannonExpansion()
   /*!
-    Write out the algoritnm to a string
-    \return reduced form
-  */
+    Overall schema -
+       - make algebra with ALL implicates
+       - for each +/- pair resolve shannon expansion
+       - Compute F=a'F(00)+a'bF(01)+bF(11)
+          assuming that a->b is true 
+       -- if a -> -b then apply -1 to flag of b
+       - if F(01) is null and either F(11) or F(00) is null
+             then remove either/and  a and b from the equation.
+       - re-resolve for next literal
+    \return true if a surface was removed
+   */
 {
-  return F.display();
-}
+  ELog::RegMethod RegA("Algebra","constructShannonExpansion");
 
+  Acomp FX(F);
+  FX.expandCNFBracket();
+
+  std::set<int> LitM;
+  FX.getLiterals(LitM);
+
+
+  for(const std::pair<int,int>& IP : ImplicateVec)
+    {
+      //
+      // now do shannon expansion about both literals [together]
+      // if the literals are opposite signed then we reverse one nad
+      // continue/
+
+      const int& SNA=IP.first;
+      const int& SNB=IP.second;
+      
+      Acomp FaFbT(FX);
+      FaFbT.resolveTrue(-SNA);     // a=0
+      FaFbT.resolveTrue(SNB);    // b=1
+      if (FaFbT.isFalse())
+	{
+	  Acomp FaFbF(FX);
+	  Acomp FaTbT(FX);
+	  FaFbF.resolveTrue(-SNA);
+	  FaFbF.resolveTrue(-SNB);
+
+	  FaTbT.resolveTrue(SNA);
+	  FaTbT.resolveTrue(SNB);
+
+	  // POST PROCESS
+	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
+	    {
+	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
+	      FX=FaTbT;
+	      FX.addIntersect(SNB);
+	    }
+	  if (FaTbT.isFalse())
+	    {
+	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
+	      FX=FaFbF;
+	      FX.addIntersect(-SNA);	      
+	    }
+	}
+	      
+    }
+
+  return 1;
+}
+  
 int
 Algebra::setFunctionObjStr(const std::string& A)
   /*!
@@ -348,9 +450,8 @@ Algebra::setFunctionObjStr(const std::string& A)
 
   // get first item
   std::ostringstream cx;
-  std::string nLiteral="a";
+  int nLitIndex=1;
   size_t ipt(0);    // start of component
-  int bigFlag(0);  // Literals getting big
   while (ipt<A.length())
     {
 
@@ -362,7 +463,7 @@ Algebra::setFunctionObjStr(const std::string& A)
       else if (A[ipt]=='-' || isdigit(A[ipt]) )
         {
 	  int N;
-	  int neg(0);
+	  int neg(1);
 	  size_t nCount=
 	    StrFunc::convPartNum(A.substr(ipt,std::string::npos),N);
 	  if (nCount)
@@ -370,42 +471,22 @@ Algebra::setFunctionObjStr(const std::string& A)
 	      if (N<0)
 	        {
 		  N*=-1;
-		  neg=1;
+		  neg=-1;
 		}
-	      std::map<int,std::string>::iterator mc=SurfMap.find(N);
+	      std::map<int,int>::iterator mc=SurfMap.find(N);
 	      if (mc==SurfMap.end())
 	        {
-		  if (!bigFlag)
-		    {
-		      SurfMap[N]=nLiteral;
-		      cx<<nLiteral;
-		      nLiteral[0]= (nLiteral[0]=='z') ? 'A' : static_cast<char>(nLiteral[0]+1);
-		      bigFlag=(nLiteral[0]=='Z') ? 1 : 0;
-		    }
-		  else
-		    {
-		      std::ostringstream lcx;
-		      lcx<<"%"<<bigFlag;
-		      SurfMap[N]=lcx.str();
-		      cx<<lcx.str();
-		      bigFlag++;
-		    }
+		  SurfMap.emplace(N,nLitIndex);
+		  cx<<Acomp::strUnit(neg*nLitIndex);
+		  nLitIndex++;
 		}
 	      else
-	        {
-		  cx<<mc->second;
-		}
-	      // Add negation note:
-	      if (neg)
-		cx<<"\'";
+		cx<<Acomp::strUnit(neg*mc->second);
 	      // Add to the number
 	      ipt+=nCount;
 	    }
 	  else
-	    {
-	      ELog::EM<<"ncount==0"<<ELog::endErr;
-	      throw ColErr::ExitAbort(RegA.getFull());
-	    }
+	    throw ColErr::MisMatch<size_t>(nCount,0,"Ncount");
 	}
       else if (A[ipt]==':')
         {
@@ -454,6 +535,20 @@ Algebra::setFunction(const std::string& A)
   return 0;
 }
 
+void
+Algebra::resolveTrue(const std::string& unit)
+  /*!
+    Given a string resolve for that unit to be removed
+    \param unit :: string in form a' or a
+   */
+{
+  if (unit.empty())
+    return;
+  const int index=Acomp::unitStr(unit);
+  F.resolveTrue(index);
+  return;
+}
+  
 int
 Algebra::setFunction(const Acomp& A)
   /*!
@@ -468,6 +563,56 @@ Algebra::setFunction(const Acomp& A)
 }
 
 int
+Algebra::getSurfIndex(const int SN) const
+  /*!
+    Convert a surf index into a mcnp object surface number
+    \param SN :: Surface number						
+    \return mcnp surf number
+  */
+{  
+  const int ASN=std::abs(SN);
+  // Converts a character to a surface number
+  std::map<int,int>::const_iterator vc=
+    find_if(SurfMap.begin(),SurfMap.end(),
+	    MapSupport::valEqual<int,int>(ASN));
+  if (vc==SurfMap.end())
+    throw ColErr::InContainerError<int>(SN,"Algebra::SurfMap");
+
+  return (SN<0) ? -vc->first : vc->first;
+}
+  
+int
+Algebra::getSurfIndex(std::string SName) const
+  /*!
+     Convert a string into an index value
+     \param SName :: String name
+     \return signed value
+  */
+{
+  if (SName.empty()) return 0;
+
+  const int SN = Acomp::unitStr(SName);
+  return getSurfIndex(SN);
+}
+
+std::string
+Algebra::getSurfKey(const int SN) const
+  /*!
+     Convert a string into an index value
+     \param SName :: String name
+     \return signed value
+  */
+{
+  std::map<int,int>::const_iterator vc=SurfMap.find(std::abs(SN));
+  if (vc!=SurfMap.end())
+    {
+      return (SN<0) ? Acomp::strUnit(-vc->second) :
+	Acomp::strUnit(vc->second);
+    }
+  return "VOID";
+}
+  
+size_t
 Algebra::countLiterals() const
   /*!
     Count the number of different literals
@@ -476,24 +621,12 @@ Algebra::countLiterals() const
     \returns number of literals found
   */
 {
-  std::map<int,int> Lit;
+  std::set<int> Lit;
   F.getLiterals(Lit);
-  return static_cast<int>(Lit.size());
+  return Lit.size();
 }
 
-void
-Algebra::addImplicate(const int,const int)
-  /*!
-    Adds an implication to the algebra
-    A->B
-    \param  :: first surface
-    \param  :: second surface
-  */
-{
-//  FplusImpl.
-}
-
-int
+bool
 Algebra::logicalEqual(const Algebra& A) const
   /*!
     Calculate if two functions are logically
@@ -504,6 +637,92 @@ Algebra::logicalEqual(const Algebra& A) const
   
 {
   return F.logicalEqual(A.F);
+}
+
+
+std::string
+Algebra::display() const
+  /*!
+    Write out the algoritnm to a string
+    \return reduced form
+  */
+{
+  return F.display();
+}
+
+std::ostream&
+Algebra::write(std::ostream& Out) const
+  /*!
+    Output function
+    \param Out :: Ostream to write out
+    \return Out
+  */
+{
+  Out<<"F == "<<F.display()<<std::endl;
+  return Out;
+}
+
+std::string
+Algebra::writeMCNPX() const
+  /*!
+    Writes out the string in terms
+    of surface numbers for MCNPX.
+    Note the ugly use of valEqual to find the cell
+    since the SurfMap is the wrong way round.
+    This also has the problem that Algebra uses
+    intersection as master but MCNPX uses union 
+    \return MCNPX string of algebra
+  */
+{
+  ELog::RegMethod RegA("Algebra","writeMCNPX");
+
+  // First wrap the function if it is a union.
+  std::string Out;
+  Out = (F.isInter()) ? F.display() : "("+F.display()+")";
+  const size_t lenOut=Out.length();
+  Out+=" ";      // Guard string
+
+  std::ostringstream cx;
+  for(size_t i=0;i<lenOut;i++)
+    {
+      if (islower(Out[i]) || isupper(Out[i]) || Out[i]=='%')
+        {
+	  // Handle overflow
+	  std::string item;
+	  if (Out[i]=='%')
+	    {
+	      do
+		{
+		  item+=Out[i];
+		  i++;
+		}
+	      while (i<lenOut && isdigit(Out[i]));
+	      i--;
+
+	    }
+	  else
+	    item=std::string(1,Out[i]);
+	  
+	  const int SN = getSurfIndex(item);	    
+
+	  if (Out[i+1]=='\'')
+	    {
+	      cx<<" "<<-SN;
+	      i++;
+	    }
+	  else
+	    cx<<" "<<SN;
+	}
+      else if (Out[i]=='+')
+        {
+	  cx<<" :";
+	}
+      else       // brackets are constant
+        {
+	  cx<<" "<<Out[i];
+	}
+    }
+  return cx.str();
 }
 
 } // NAMESPACE MonteCarlo

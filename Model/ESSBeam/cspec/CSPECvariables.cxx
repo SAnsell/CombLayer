@@ -55,6 +55,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "essVariables.h"
 
@@ -85,14 +86,14 @@ CSPECvariables(FuncDataBase& Control)
   // extent of beamline
   Control.addVariable("cspecStopPoint",0);
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.3);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.3,"Void");
   FGen.setYOffset(4.0);
   FGen.generateTaper(Control,"cspecFA",350.0, 9.1,10.6, 10.0,14.8);
 
 
   PipeGen.generatePipe(Control,"cspecPipeB",8.0,46.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"cspecFB",44.0, 10.6,14.8);   
 

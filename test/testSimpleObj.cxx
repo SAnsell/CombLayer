@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSimpleObj.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -106,7 +107,8 @@ testSimpleObj::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testSimpleObj","applyTest");
-
+  TestFunc::regSector("testsimpleObj");
+  
   typedef int (testSimpleObj::*testPtr)();
   testPtr TPtr[]=
     {

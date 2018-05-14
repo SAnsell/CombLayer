@@ -44,6 +44,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -71,6 +72,7 @@ makeSinbad::makeSinbad(const std::string& pKey) :
   fPlate(new FissionPlate(pKey+"FissionPlate"))
   /*!
     Constructor
+    \param pKey :: Part-key name
   */
 {
   ModelSupport::objectRegister& OR=
@@ -143,11 +145,11 @@ makeSinbad::buildDetectors(Simulation& System)
 
 void 
 makeSinbad::build(Simulation* SimPtr,
-		  const mainSystem::inputParam& IParam)
+		  const mainSystem::inputParam& )
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
-    \param IParam :: Input parameters
+    \param  :: Input parameters
   */
 {
   // For output stream
@@ -170,8 +172,6 @@ makeSinbad::build(Simulation* SimPtr,
   //  ShieldArray->addInsertCell(voidCell) ;
   //  ShieldArray->createAll(*SimPtr,World::masterOrigin());
 
-  ELog::EM<<"WARNING EARLY RETURN"<<ELog::endCrit;
-   
   return;
 }
   

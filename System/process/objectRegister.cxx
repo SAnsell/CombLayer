@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,6 +145,24 @@ objectRegister::getLast(const std::string& Name) const
   return (mc!=regionMap.end()) ?
     mc->second.second : 0;
 }
+
+bool
+objectRegister::hasCell(const std::string& Name,
+			const int cellN) const
+  /*!
+    Determine if a cell is within a range
+    \param Name :: object name    
+    \param cellN :: cell number
+    \return true if cellN is registered to region
+  */
+{
+  ELog::RegMethod RegA("objectRegister","hasCell");
+  MTYPE::const_iterator mc=regionMap.find(Name);
+  if (mc==regionMap.end()) return 0;
+  const MTYPE::mapped_type& PI(mc->second);
+  return (cellN>=PI.first && cellN<=PI.second) ? 1 : 0;
+}
+  
   
 std::string
 objectRegister::inRange(const int Index) const
@@ -207,7 +225,7 @@ objectRegister::renumberActiveCell(const int oldCellN,
     \param newCellN :: new cell number
   */
 {
-  ELog::RegMethod RegA("objectRegister","renumberActive");
+  ELog::RegMethod RegA("objectRegister","renumberActiveCell");
 
   std::set<int>::iterator sc=activeCells.find(oldCellN);
   if (sc==activeCells.end())
@@ -552,13 +570,12 @@ objectRegister::calcRenumber(const int CN) const
   /*!
     Take a cell number and calculate the renumber [not ideal]
     \param CN :: orignal cell number
-    \return correct offset nubmer
+    \return correct offset number
    */
 {
   const std::string key=inRange(CN);
   if (key.empty())
     return CN;
-
 
   MTYPE::const_iterator Amc=regionMap.find(key);
   MTYPE::const_iterator Bmc=renumMap.find(key);
@@ -566,7 +583,7 @@ objectRegister::calcRenumber(const int CN) const
     return CN;
 
   const int Cdiff=CN-Amc->second.first;
-  return Bmc->second.first+Cdiff;
+  return Bmc->second.first+Cdiff-1;
 }
 
 std::vector<int>
@@ -596,7 +613,8 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::vector<int> Out=CPtr->getCells(cellName);
       if (Out.empty())
         {
-          ELog::EM<<"EMPTY NAME::Possible names == "<<ELog::endDiag;
+          ELog::EM<<"EMPTY NAME::Possible names["<<itemName
+		  <<"] == "<<ELog::endDiag;
           std::vector<std::string> NameVec=CPtr->getNames();
           for(const std::string CName : NameVec)
             ELog::EM<<"  "<<CName<<ELog::endDiag;
@@ -605,11 +623,10 @@ objectRegister::getObjectRange(const std::string& objName) const
         }
       
       for(int& CN : Out)
-        CN=calcRenumber(CN);
-
+	CN=calcRenumber(CN);
       return Out;
     }
-
+  
   // Simple number range
   pos=objName.find("-");
   if (pos!=std::string::npos)
@@ -639,6 +656,7 @@ objectRegister::getObjectRange(const std::string& objName) const
         Out.push_back(calcRenumber(CN));
       return Out;
     }
+
   
   // Just an object name:
 
@@ -665,7 +683,6 @@ objectRegister::getObjectRange(const std::string& objName) const
     }
   for(int& CN : Out)
     CN=calcRenumber(CN);
-
   return Out;
 }
   

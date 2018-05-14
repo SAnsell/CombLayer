@@ -164,7 +164,7 @@ BeFilter::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BeFilter","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,0);
-  Origin=FC.getSignedLinkPt(sideIndex);
+  Origin=FC.getLinkPt(sideIndex);
   applyOffset();
   Origin+=Y*wallThick;   // accommodate wall thickness
   return;

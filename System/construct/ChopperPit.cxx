@@ -488,7 +488,7 @@ ChopperPit::addFrontWall(const attachSystem::FixedComp& WFC,
   */
 {
   createFrontLinks(WFC,sideIndex);
-  frontCut=WFC.getSignedFullRule(sideIndex);
+  frontCut=WFC.getFullRule(sideIndex);
   activeFront=1;
   return;
 }

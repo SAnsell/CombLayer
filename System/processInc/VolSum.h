@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   processInc/VolSum.h
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ namespace ModelSupport
 
 /*!
   \class VolSum
-  \brief Hold an official model number
+  \brief Calculate the volumes in a region
   \date August 2010
   \author S. Ansell
   \version 1.0
@@ -56,7 +56,7 @@ class VolSum
   
   double fullVol;                           ///< Full volume  
   double totalDist;                         ///< Total distance
-  int nTracks;                              ///< Number of full tracks
+  size_t nTracks;                           ///< Number of full tracks
    
   tvTYPE tallyVols;                         ///< TallyNum:Volumes
 
@@ -80,7 +80,7 @@ class VolSum
   void trackRun(const Simulation&,const size_t);
   void pointRun(const Simulation&,const size_t);
   double calcVolume(const int) const;
-  void populateTally(const Simulation&);
+  void populateTally(const SimMCNP&);
   void populateAll(const Simulation&);
   void populateVSet(const Simulation&,const std::vector<int>&);
   

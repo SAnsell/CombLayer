@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CH4PreModBase.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "CH4PreModBase.h"
@@ -65,7 +66,7 @@ namespace ts1System
 {
   
 CH4PreModBase::CH4PreModBase(const std::string& Key,const size_t NLink)  : 
-  ContainedComp(),FixedComp(Key,NLink),LayerComp(0,0),
+  ContainedComp(),FixedOffset(Key,NLink),LayerComp(0,0),
   preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(preIndex+1)
   /*!
@@ -76,7 +77,7 @@ CH4PreModBase::CH4PreModBase(const std::string& Key,const size_t NLink)  :
 {}
 
 CH4PreModBase::CH4PreModBase(const CH4PreModBase& A) : 
-  ContainedComp(A),FixedComp(A),LayerComp(A),
+  ContainedComp(A),FixedOffset(A),LayerComp(A),
   preIndex(A.preIndex),cellIndex(A.cellIndex)
   /*!
     Copy constructor
@@ -95,7 +96,7 @@ CH4PreModBase::operator=(const CH4PreModBase& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
     }
   return *this;

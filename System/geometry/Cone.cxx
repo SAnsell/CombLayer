@@ -3,7 +3,7 @@
  
  * File:   geometry/Cone.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,13 +39,14 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Line.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -164,8 +165,8 @@ Cone::setSurface(const std::string& Pstr)
     Processes a standard MCNPX cone string    
     Recall that cones can only be specified on an axis
      Valid input is: 
-     - k/x cen_x cen_y cen_z radius 
-     - kx radius 
+     - k/x cen_y cen_z tan(angle)
+     - kx tan(angle)
     \return : 0 on success, neg of failure 
   */
 {
@@ -208,7 +209,9 @@ Cone::setSurface(const std::string& Pstr)
 
   cutFlag=0;
   StrFunc::section(Line,cutFlag);      // doesn't set on failure    
-
+  if (cutFlag)
+    ELog::EM<<"WARNING == CUTFLAG DEPRECIATED"<<ELog::endWarn;
+  
   Centre=Geometry::Vec3D(cent);
   Normal=Geometry::Vec3D(norm);
   setTanAngle(sqrt(tanAng));
@@ -428,16 +431,6 @@ Cone::onSurface(const Geometry::Vec3D& R) const
   return (side(R)==0) ? 1 : 0;
 }
 
-
-void
-Cone::writePOVRay(std::ostream&) const
-  /*!
-    Write out the cone class in a POV-Ray file format.
-    \param  :: Output Stream (required for multiple std::endl)
-  */
-{
-  ELog::EM<<"Cone::writePovRay: not implemented yet"<< ELog::endErr;
-}
 
   
 void

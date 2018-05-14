@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/LeadPlate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -89,9 +90,9 @@ namespace shutterSystem
 
 
 LeadPlate::LeadPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   leadIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(leadIndex+1)
+  cellIndex(leadIndex+1),activeFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,10 +100,9 @@ LeadPlate::LeadPlate(const std::string& Key)  :
 {}
 
 LeadPlate::LeadPlate(const LeadPlate& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   leadIndex(A.leadIndex),cellIndex(A.cellIndex),
-  populated(A.populated),zAngle(A.zAngle),xyAngle(A.xyAngle),
-  fStep(A.fStep),thick(A.thick),defMat(A.defMat),
+  activeFlag(A.activeFlag),thick(A.thick),defMat(A.defMat),
   supportMat(A.supportMat),Centre(A.Centre),radius(A.radius),
   linerThick(A.linerThick),centSpc(A.centSpc)
   /*!
@@ -124,12 +124,9 @@ LeadPlate::operator=(const LeadPlate& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
-      zAngle=A.zAngle;
-      xyAngle=A.xyAngle;
-      fStep=A.fStep;
+      activeFlag=A.activeFlag;
       thick=A.thick;
       defMat=A.defMat;
       supportMat=A.supportMat;
@@ -180,58 +177,45 @@ LeadPlate::clearHoleCentre()
 }
 
 void
-LeadPlate::populate(const Simulation& System)
+LeadPlate::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Simulation to use
   */
 {
   ELog::RegMethod RegA("LeadPlate","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-  try
+  FixedOffset::populate(Control);
+  
+  activeFlag=Control.EvalVar<int>(keyName+"Active");
+  if (activeFlag)
     {
-      const int activeFlag=Control.EvalVar<int>(keyName+"Active");      
-      zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-      xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-      fStep=Control.EvalVar<double>(keyName+"FStep");
-      
       thick=Control.EvalVar<double>(keyName+"Thick");
-
+      
       centSpc=Control.EvalVar<double>(keyName+"CentSpace");
       radius=Control.EvalVar<double>(keyName+"Radius");
       linerThick=Control.EvalVar<double>(keyName+"LinerThick");
-
+      
       defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
       supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
-
-      populated= (!activeFlag || thick<Geometry::zeroTol) ? 0 : 1;
-    }
-  // Exit and don't report if we are not using this scatter plate
-  catch (ColErr::InContainerError<std::string>& EType)
-    {
-      ELog::EM<<"LeadPlate "<<keyName<<" not in use Var:"
-	      <<EType.getItem()<<ELog::endWarn;
-      populated=0;   
     }
   return;
 }
 
 void
 LeadPlate::createUnitVector(const attachSystem::FixedComp& FC,
-			    const size_t Index)
-  /*!
+			    const long int sideIndex)
+/*!
     Create the unit vectors
     \param FC :: FixedComponenT to attach this object to.
-    \param Index :: Index
+    \param sideIndex :: Index
   */
 {
   ELog::RegMethod RegA("LeadPlate","createUnitVector");
 
   // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(Index)+Y*fStep;
-  applyAngleRotate(xyAngle,zAngle);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -509,7 +493,7 @@ LeadPlate::printHoles() const
     {
       (*vc)->write(ELog::EM.Estream());
     }
-  ELog::EM<<ELog::endDebug;
+  ELog::EM<<ELog::endDiag;
 
   return;
 }
@@ -517,18 +501,19 @@ LeadPlate::printHoles() const
 void
 LeadPlate::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const size_t Index)
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Twin component to set axis etc
+    \param FC :: Twin component to set axis etc    
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("LeadPlate","createAll");
-  populate(System);
-  if (populated)
+  populate(System.getDataBase());
+  if (activeFlag)
     {
-      createUnitVector(FC,Index);
+      createUnitVector(FC,sideIndex);
       createSurfaces();
       createObjects(System);
       insertObjects(System);

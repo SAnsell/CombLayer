@@ -3,7 +3,7 @@
  
  * File:   monteInc/Material.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace MonteCarlo
 */
 
 class Material 
-{
+{ 
  private:
   
   int Mnum;                        ///< Material Number (Necessary)  
@@ -52,8 +52,8 @@ class Material
   int getExtraType(std::string&,std::string&);
   void calcAtomicDensity();
 
-  size_t getZaidIndex(const int,const int,const char) const;
-  static void writeZaid(std::ostream&,const double,const int);
+  size_t getZaidIndex(const size_t,const size_t,const char) const;
+  static void writeZaid(std::ostream&,const double,const size_t);
 
  public:
   
@@ -97,7 +97,7 @@ class Material
   int setMaterial(const int,const std::string&,const std::string&,
 		  const std::string&);
 
-  void setMXitem(const int,const int,const char,const std::string&,
+  void setMXitem(const size_t,const size_t,const char,const std::string&,
 		 const std::string&);
   /// Get atomic density
   double getAtomDensity() const { return atomDensity; }
@@ -105,20 +105,22 @@ class Material
   double getMeanA() const;
   void setENDF7();
   void setDensity(const double);
-  bool hasZaid(const int,const int,const char) const;
+  bool hasZaid(const size_t,const size_t,const char) const;
+  std::vector<Zaid> getZaidVec() const { return zaidVec; }
 
   /// remove mt cards
   void removeSQW() { SQW.clear(); }
   void removeMX(const std::string&);
   void removeLib(const std::string&);
     
-  void changeLibrary(const int,const char);
+  void changeLibrary(const size_t,const char);
 
   void listComponent() const;
   void print() const;
   void write(std::ostream&) const;               
   void writeCinder(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
+  void writePHITS(std::ostream&) const;
   void writePOVRay(std::ostream&) const;               
   
 };

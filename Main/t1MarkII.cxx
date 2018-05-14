@@ -3,7 +3,7 @@
  
  * File:   Main/t1MarkII.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
@@ -128,7 +129,7 @@ main(int argc,char* argv[])
       
       ts1System::makeT1Upgrade T1Obj;
       World::createOuterObjects(*SimPtr);
-      T1Obj.build(SimPtr,IParam);
+      T1Obj.build(*SimPtr,IParam);
             
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

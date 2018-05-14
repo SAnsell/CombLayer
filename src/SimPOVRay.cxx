@@ -3,7 +3,7 @@
  
  * File:   src/SimPOVRay.cxx
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2004-2017 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -77,7 +78,6 @@ SimPOVRay::SimPOVRay() : Simulation()
   */
 {}
 
-
 SimPOVRay::SimPOVRay(const SimPOVRay& A) : Simulation(A)
  /*! 
    Copy constructor
@@ -100,8 +100,6 @@ SimPOVRay::operator=(const SimPOVRay& A)
   return *this;
 }
 
-
-
 void
 SimPOVRay::writeCells(std::ostream& OX) const
   /*!
@@ -111,8 +109,7 @@ SimPOVRay::writeCells(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SimPOVRay","writeCells");
-  
-  
+    
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writePOVRay(OX);
@@ -159,11 +156,11 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 
   DB.writePOVRay(OX);
   
-  // Overwrite textures by a user-provided file textures.inc
-  OX << "#if (file_exists(\"textures.inc\"))" << std::endl;
-  OX << "#include \"textures.inc\"" << std::endl;
+  // Overwrite textures by a user-provided file
+  OX << "#if (file_exists(\"materials.inc\"))" << std::endl;
+  OX << "#include \"materials.inc\"" << std::endl;
   OX << "#end"  << std::endl;
-  
+
   return;
 }
   
@@ -175,7 +172,7 @@ SimPOVRay::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimPOVRay","write");
-
+  ELog::EM<<"WRITE"<<ELog::endDiag;
   std::ofstream OX(Fname.c_str()); 
   OX << "// POV-Ray model from CombLayer."<<std::endl;
   OX << "// This file contains only geomety." << std::endl;
@@ -183,31 +180,7 @@ SimPOVRay::write(const std::string& Fname) const
   OX << std::endl;
   OX << "// Material" << std::endl;
   writeMaterial(OX);
-  OX << std::endl;
   OX << "// Surfaces" << std::endl;
-  // The 'Reorient' macro is taken from John VanSickle's Thorougly Useful Macros
-  // http://www.geocities.ws/evilsnack/macs.html
-  // It is used by the InfiniteCylinder macro from this post
-  // http://news.povray.org/povray.newusers/message/<3A0F50A5.1C648BDF%40erols.com>
-  OX << "#macro Reorient(Axis1,Axis2)" << std::endl
-     << " #local vX1=vnormalize(Axis1);" << std::endl
-     << " #local vX2=vnormalize(Axis2);" << std::endl
-     << " #local vY=vnormalize(vcross(vX1,vX2));" << std::endl
-     << "#if (vlength(vY)>0)" << std::endl
-     << " #local vZ1=vnormalize(vcross(vX1,vY));" << std::endl
-     << " #local vZ2=vnormalize(vcross(vX2,vY));" << std::endl
-     <<"  matrix < vX1.x, vY.x,vZ1.x, vX1.y,vY.y,vZ1.y, vX1.z,vY.z, vZ1.z, 0,0,0 >" << std::endl
-     <<"  matrix < vX2.x,vX2.y,vX2.z, vY.x,vY.y, vY.z, vZ2.x,vZ2.y,vZ2.z, 0,0,0 >" << std::endl
-     <<"#end" << std::endl
-     <<"#end" << std::endl
-     << std::endl;
-  OX << "#macro InfiniteCylinder(PointA,PointB,Radius)" << std::endl
-     << " quadric { <1,0,1>,<0,0,0>,<0,0,0>,-Radius*Radius" << std::endl
-     << " Reorient(y,vnormalize(PointB-PointA))" << std::endl
-     << " translate PointA" << std::endl
-     << "}" << std::endl
-     << "#end" << std::endl
-     << std::endl;
   writeSurfaces(OX);
   OX << "// Cells" << std::endl;
   writeCells(OX);

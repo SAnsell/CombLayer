@@ -3,7 +3,7 @@
  
  * File:   build/TS2FlatTarget.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -84,8 +85,7 @@ namespace TMRSystem
 TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
   constructSystem::TargetBase(Key,3),
   protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1),populated(0),
-  frontPlate(0),backPlate(0)
+  cellIndex(protonIndex+1),frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,9 +95,7 @@ TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
 TS2FlatTarget::TS2FlatTarget(const TS2FlatTarget& A) : 
   constructSystem::TargetBase(A),
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
-  populated(A.populated),frontPlate(A.frontPlate),
-  backPlate(A.backPlate),xOffset(A.xOffset),
-  yOffset(A.yOffset),zOffset(A.zOffset),
+  frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),cladThick(A.cladThick),
   waterThick(A.waterThick),waterFront(A.waterFront),
@@ -129,12 +127,8 @@ TS2FlatTarget::operator=(const TS2FlatTarget& A)
     {
       constructSystem::TargetBase::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
-      xOffset=A.xOffset;
-      yOffset=A.yOffset;
-      zOffset=A.zOffset;
       mainLength=A.mainLength;
       coreRadius=A.coreRadius;
       surfThick=A.surfThick;
@@ -183,20 +177,16 @@ TS2FlatTarget::~TS2FlatTarget()
 {}
 
 void
-TS2FlatTarget::populate(const Simulation& System)
+TS2FlatTarget::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: database to use
   */
 {
   ELog::RegMethod RegA("TS2FlatTarget","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  xOffset=Control.EvalVar<double>(keyName+"XOffset");
-  yOffset=Control.EvalVar<double>(keyName+"YOffset");
-  zOffset=Control.EvalVar<double>(keyName+"ZOffset");
-
+  FixedOffset::populate(Control);
+  
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
   surfThick=Control.EvalVar<double>(keyName+"SurfThick");
@@ -230,7 +220,6 @@ TS2FlatTarget::populate(const Simulation& System)
   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 
-  populated=1;
   return;
 }
 
@@ -244,7 +233,7 @@ TS2FlatTarget::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("TS2FlatTarget","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xOffset,yOffset,zOffset);
+  applyOffset();
   
   return;
 }
@@ -257,7 +246,8 @@ TS2FlatTarget::createSurfaces()
 {
   ELog::RegMethod RegA("TS2FlatTarget","createSurface");
   
-  // INNER PLANES    
+  // INNER PLANES
+
   SMap.addMatch(protonIndex+186,frontPlate);
   SMap.addMatch(protonIndex+190,backPlate);
 
@@ -372,9 +362,10 @@ TS2FlatTarget::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 57 -101");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,protonIndex,"2 -101 186");
+  // Space for water manifold
+  Out=ModelSupport::getComposite(SMap,protonIndex,"2 -101 190");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-    
+  ELog::EM<<"Cell == "<<Out<<" ::: "<<cellIndex-1<<ELog::endDiag;
   // FRONT Plate:
   Out=ModelSupport::getComposite(SMap,protonIndex,"-1 -27 301");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
@@ -465,34 +456,6 @@ TS2FlatTarget::addInnerBoundary(attachSystem::ContainedComp& CC) const
 }
 
 void
-TS2FlatTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("TS2FlatTarget","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();
-      
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	  (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,2);  // 2 => front face of target
-    }
-  return;
-}
-
-
-void
 TS2FlatTarget::addProtonLine(Simulation& System,
 			 const attachSystem::FixedComp& refFC,
 			 const long int index)
@@ -505,16 +468,16 @@ TS2FlatTarget::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("TS2Target","addProtonLine");
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
-  PLine->createAll(System,*this,2,refFC,index);
-  createBeamWindow(System);
-  System.populateCells();
-  System.createObjSurfMap();
+
+  PLine->createAll(System,*this,3,refFC,index);
+  createBeamWindow(System,3);
   return;
 }
 
   
 void
-TS2FlatTarget::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+TS2FlatTarget::createAll(Simulation& System,
+			 const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -523,13 +486,12 @@ TS2FlatTarget::createAll(Simulation& System,const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("TS2FlatTarget","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   layerProcess(System);
   createLinks();
-  createBeamWindow(System);
   addInnerBoundary(*this);
   insertObjects(System);
 

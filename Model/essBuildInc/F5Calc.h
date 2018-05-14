@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/F5Calc.h
  *
- * Copyright (c) 2015-2016 Konstantin Batkov
+ * Copyright (c) 2015-2017 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,10 @@ namespace tallySystem
 /*!
   \class F5Calc
   \version 1.0
-  \author K. Batkov. 
+  \author Konstantin Batkov 
   \date May 2015
   \brief F5 collimator system projection calculation system
+  \todo This is not a good way to do this -- 
 */
 
 class F5Calc
@@ -42,13 +43,14 @@ class F5Calc
 
   Geometry::Vec3D F5; ///< F5 tally coordinates
 
-  /// Distance of the middle of the collimator entrance
-  //  from the point detector
+  /// Distance of the middle of the collimator entrance from the point detector
   double af;
+
   ///Coordinates of point A, the start of the collimator on the M - F5 line
   Geometry::Vec3D A; 
 
-  Geometry::Vec3D M; //Middle of the moderator
+  /// Middle of the moderator
+  Geometry::Vec3D M; 
     
   Geometry::Vec3D CalculateNormalVector(const Geometry::Vec3D&,
 					const Geometry::Vec3D&,
@@ -75,9 +77,10 @@ class F5Calc
   double GetXYAngle();
   double GetHalfSizeX() const; 
   double GetHalfSizeZ() const; 
+
   /// returns the collimator solid angle
   double GetOmega() const
-  { return GetHalfSizeX()*GetHalfSizeZ()*4.0/af/af; } 
+    { return GetHalfSizeX()*GetHalfSizeZ()*4.0/af/af; } 
   
  };
  

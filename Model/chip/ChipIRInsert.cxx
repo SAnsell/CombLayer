@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRInsert.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -86,7 +87,6 @@
 #include "chipDataStore.h"
 #include "BulkInsert.h"
 #include "cylTrack.h"
-#include "CylinderColl.h"
 #include "LeadPlate.h"
 #include "ChipIRInsert.h"
 
@@ -454,20 +454,6 @@ ChipIRInsert::createDatumPoints() const
   return;
 }
 
-void
-ChipIRInsert::createCollimator(Simulation& System)
-  /*!
-    Create the cylindrical collimator
-    \param System :: Simuation to add
-  */
-{
-  ELog::RegMethod RegA("ChipIRInsert","createCollimator");
-  if (!CCol)
-    CCol=std::shared_ptr<CylinderColl>(new CylinderColl("chipCylInsert"));
-
-  CCol->createAll(System,*this);
-  return;
-}
 
 void
 ChipIRInsert::createLeadPlate(Simulation& System)
@@ -486,7 +472,7 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
   PbA->addBoundarySurf(this->getCompContainer("inner"));
   PbA->setInsertCell(chipInnerVoid);
-  PbA->createAll(System,*this,0);
+  PbA->createAll(System,*this,1);
   OR.addObject(PbA);
 
   // Outer
@@ -495,7 +481,7 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
   PbB->addBoundarySurf(this->getCompContainer("outer"));
   PbB->setInsertCell(chipOuterVoid);
-  PbB->createAll(System,*this,1);
+  PbB->createAll(System,*this,2);
   OR.addObject(PbB);
 
   return;
@@ -516,7 +502,6 @@ ChipIRInsert::createAll(Simulation& System,
   createUnitVector();
   createSurfaces();
   createObjects(System);
-  //  createCollimator(System);
   createLeadPlate(System);
   layerProcess(System);
   createDatumPoints();

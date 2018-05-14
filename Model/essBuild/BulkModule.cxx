@@ -77,6 +77,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "BulkModule.h"
 
@@ -85,6 +87,7 @@ namespace essSystem
 
 BulkModule::BulkModule(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
+  attachSystem::SurfMap(),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -95,6 +98,7 @@ BulkModule::BulkModule(const std::string& Key)  :
 
 BulkModule::BulkModule(const BulkModule& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::SurfMap(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
@@ -116,6 +120,7 @@ BulkModule::operator=(const BulkModule& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       nLayer=A.nLayer;
       radius=A.radius;
@@ -209,6 +214,7 @@ BulkModule::createSurfaces()
       ModelSupport::buildPlane(SMap,RI+6,Origin+Z*height[i],Z);
       ModelSupport::buildCylinder(SMap,RI+7,Origin+COffset[i]
 				  ,Z,radius[i]);
+      addSurf("Radius"+std::to_string(i),SMap.realSurf(RI+7));
       RI+=10;
     }
 
@@ -308,9 +314,9 @@ BulkModule::addFlightUnit(Simulation& System,
 
   std::stringstream cx;
   cx<<" (";
-  for(size_t index=2;index<5;index++)
+  for(long int index=3;index<6;index++)
     cx<<FC.getLinkString(index)<<" : ";
-  cx<<FC.getLinkString(5)<<" )";
+  cx<<FC.getLinkString(6)<<" )";
 
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
@@ -322,8 +328,8 @@ BulkModule::addFlightUnit(Simulation& System,
     }
   // Now make internal surface
   cx.str("");
-  for(size_t index=2;index<6;index++)
-    cx<<FC.getLinkComplement(index)<<" ";
+  for(long int index=3;index<7;index++)
+    cx<<FC.getLinkString(-index)<<" ";
 
   Out=ModelSupport::getComposite(SMap,bulkIndex,
 				 bulkIndex+10*static_cast<int>(nLayer-1),

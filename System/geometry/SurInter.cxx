@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,6 @@
 namespace SurInter
 {
 
-
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
           const HeadRule& mainHR,const HeadRule& sndHR)
@@ -86,10 +85,11 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
     \param sndHR :: Secondary/ Bridge rule
    */
 {
-  ELog::RegMethod RegA("SurInter[F]","getLinePoint");
+  ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,HR)");
   
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
+
   mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
 
   std::vector<Geometry::Vec3D> out;
@@ -596,6 +596,33 @@ getPoint(const Geometry::Surface* A,
   
   return Out.back();
 
+}
+
+Geometry::Vec3D
+getPoint(const Geometry::Surface* A,
+	 const Geometry::Surface* B,
+	 const Geometry::Surface* C,
+	 const int signV,const Geometry::Surface* Control)
+  /*! 
+    Calculate the single intersection point of a set of surfaces [assuming only one]
+    \param A :: Surface to use
+    \param B :: Surface to use
+    \param C :: Surface to use
+    \param signV :: Sign of control surface
+    \param Control :: Control surface
+    \returns Intersection point
+  */
+{
+  ELog::RegMethod RegA("SurInter","getPoint(Control)");
+
+  if (!Control) return getPoint(A,B,C);
+
+  const std::vector<Geometry::Vec3D> Out=
+    processPoint(A,B,C);
+  for(const Geometry::Vec3D Pt : Out)
+    if (Control->side(Pt)*signV>0) return Pt;
+
+  throw ColErr::MisMatch<size_t>(Out.size(),1,"No matching points in Out");
 }
 
 Geometry::Vec3D

@@ -3,7 +3,7 @@
  
  * File:   build/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "TargetBase.h"
 #include "TS2ModifyTarget.h"
@@ -131,15 +132,13 @@ TS2ModifyTarget::~TS2ModifyTarget()
 {}
 
 void
-TS2ModifyTarget::populate(const Simulation& System)
+TS2ModifyTarget::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database for variables
   */
 {
   ELog::RegMethod RegA("TS2ModifyTarget","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   const size_t nPlates=Control.EvalVar<size_t>(keyName+"NPlates");
   for(size_t i=0;i<nPlates;i++)
@@ -483,7 +482,7 @@ TS2ModifyTarget::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TS2ModifyTarget","createAll");
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(TB);
   createSurfaces();
   addBoundarySurf(TB.getContainer());

@@ -54,6 +54,7 @@
 #include "ChopperGenerator.h"
 #include "PipeGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "JawGenerator.h"
 #include "RotaryHoleGenerator.h"
@@ -92,13 +93,13 @@ ODINvariables(FuncDataBase& Control)
   // VACUUM PIPE in Gamma shield
   Control.addVariable("odinStopPoint",0);
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.3);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.3,"Void");
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"odinFA",350.0, 4.423,1.806,  3.5,5.24 );
+  FGen.generateTaper(Control,"odinFA",350.0, 4.38,3.70,  3.3,5.26 );
 
   PipeGen.generatePipe(Control,"odinPipeB",8.0,46.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.8,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"odinFB",44.0, 1.806,1.60, 5.24,6.78);
 

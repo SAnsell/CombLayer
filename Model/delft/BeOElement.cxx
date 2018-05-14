@@ -3,7 +3,7 @@
  
  * File:   delft/BeOElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -159,16 +161,16 @@ BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+15,RG.getLinkPt(4)+Z*T,Z);
+  ModelSupport::buildPlane(SMap,surfIndex+15,RG.getLinkPt(5)+Z*T,Z);
 
   T+=coolThick;
   ModelSupport::buildPlane(SMap,surfIndex+21,Origin-Y*(Depth/2.0-T),Y);
   ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(4)+Z*T,Z);
+  ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(5)+Z*T,Z);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
 
   return;
 }

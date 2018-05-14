@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/WaterDividers.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ namespace ts1System
 WaterDividers::WaterDividers(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
   wIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(wIndex+1),populated(0)
+  cellIndex(wIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +90,7 @@ WaterDividers::WaterDividers(const std::string& Key)  :
 WaterDividers::WaterDividers(const WaterDividers& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   wIndex(A.wIndex),cellIndex(A.cellIndex),
-  populated(A.populated),conHeight(A.conHeight),
+  conHeight(A.conHeight),
   fblkConnect(A.fblkConnect),fblkSize(A.fblkSize),
   fblkSndStep(A.fblkSndStep),fblkSndOut(A.fblkSndOut),
   fblkSndWidth(A.fblkSndWidth),fblkSndLen(A.fblkSndLen),
@@ -127,7 +127,6 @@ WaterDividers::operator=(const WaterDividers& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       conHeight=A.conHeight;
       fblkConnect=A.fblkConnect;
       fblkSize=A.fblkSize;
@@ -176,16 +175,13 @@ WaterDividers::~WaterDividers()
 {}
 
 void
-WaterDividers::populate(const Simulation& System)
+WaterDividers::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database
  */
 {
   ELog::RegMethod RegA("WaterDividers","populate");
-
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   conHeight=Control.EvalVar<double>(keyName+"ConnectHeight");
 
@@ -231,8 +227,6 @@ WaterDividers::populate(const Simulation& System)
   cornerThick=Control.EvalVar<double>(keyName+"CornerThick");
   cornerWidth=Control.EvalVar<double>(keyName+"CornerWidth");
   
-  
-  populated |= 1;
   return;
 }
   
@@ -245,8 +239,7 @@ WaterDividers::createUnitVector(const attachSystem::FixedComp& FC)
   */
 {
   ELog::RegMethod RegA("WaterDividers","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(0);
+  attachSystem::FixedComp::createUnitVector(FC,0);
   return;
 }
 
@@ -262,11 +255,11 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
   ELog::RegMethod RegA("WaterDividers","createSurface");
 
   // VacVessel values [Back plate]: 
-  SMap.addMatch(wIndex+2002,Vessel.getLinkSurf(1));
-  const Geometry::Vec3D VesselPt=Vessel.getLinkPt(1);
+  SMap.addMatch(wIndex+2002,Vessel.getLinkSurf(2));
+  const Geometry::Vec3D VesselPt=Vessel.getLinkPt(2);
 
-  SMap.addMatch(wIndex+2005,Vessel.getLinkSurf(4));
-  SMap.addMatch(wIndex+2006,Vessel.getLinkSurf(5));
+  SMap.addMatch(wIndex+2005,Vessel.getLinkSurf(5));
+  SMap.addMatch(wIndex+2006,Vessel.getLinkSurf(6));
 
 
   // FORWARD DIVIDER
@@ -685,7 +678,7 @@ WaterDividers::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("WaterDividers","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(PT);
   createSurfaces(PT,Vessel);

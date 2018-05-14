@@ -92,8 +92,14 @@ setDefUnits(FuncDataBase& Control,
 	    (Key,"Iparam.defaultConfig");
 	}
 
-      A.process(Control,IParam);
     }
+  else
+    {
+      ELog::EM<<"Generic build [TS1MarkVIb]" <<ELog::endDiag;
+      setTS1MarkVIb(A);
+    }
+  A.process(Control,IParam);
+	
   return;
 }
 

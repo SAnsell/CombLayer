@@ -3,7 +3,7 @@
  
  * File:   test/testSurfDivide.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "surfDBase.h"
 #include "mergeMulti.h"
 #include "mergeTemplate.h"
@@ -185,6 +186,9 @@ testSurfDivide::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
+  ELog::RegMethod RegA("testSurfDivide","applyTest");
+  TestFunc::regSector("testSurfDivide");
+
   typedef int (testSurfDivide::*testPtr)();
   testPtr TPtr[]=
     {
@@ -419,6 +423,7 @@ testSurfDivide::testTemplate()
 {
   ELog::RegMethod RegA("testSurfDivide","mergeTemplate");
 
+  initSim();
   ModelSupport::surfDivide DA;
   DA.addFrac(0.2);
   DA.addFrac(0.6);
@@ -460,6 +465,7 @@ testSurfDivide::testTemplatePair()
 {
   ELog::RegMethod RegA("testSurfDivide","mergeTemplatePair");
 
+  initSim();
   ModelSupport::surfDivide DA;
   DA.addFrac(0.2);
   DA.addFrac(0.6);
@@ -502,6 +508,7 @@ testSurfDivide::testTemplateInnerPair()
 {
   ELog::RegMethod RegA("testSurfDivide","mergeInnerPair");
 
+  initSim();
   ModelSupport::surfDivide DA;
   DA.addFrac(0.2);
   DA.addFrac(0.6);

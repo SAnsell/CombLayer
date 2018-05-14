@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/HWrapper.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,18 +238,17 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
 
   // Note can use the divide surface as a real surface.
   SMap.addMatch(preIndex+1,divideSurf);
-
-  SMap.addMatch(preIndex+2,VacFC.getLinkSurf(1));  // front
-  SMap.addMatch(preIndex+3,VacFC.getLinkSurf(2));  // side 
-  SMap.addMatch(preIndex+4,VacFC.getLinkSurf(3));  // side
-  SMap.addMatch(preIndex+5,VacFC.getLinkSurf(4));  // base [outer]
-  SMap.addMatch(preIndex+6,VacFC.getLinkSurf(5));  // top  [target]
+  SMap.addMatch(preIndex+2,VacFC.getLinkSurf(2));  // front
+  SMap.addMatch(preIndex+3,VacFC.getLinkSurf(3));  // side
+  SMap.addMatch(preIndex+4,VacFC.getLinkSurf(4));  // side
+  SMap.addMatch(preIndex+5,VacFC.getLinkSurf(5));  // base
+  SMap.addMatch(preIndex+6,VacFC.getLinkSurf(6));  // top  [target]
 
   // FLight line
-  SMap.addMatch(preIndex+103,-FLine.getLinkSurf(2));  // side 
-  SMap.addMatch(preIndex+104,FLine.getLinkSurf(3));  // side
-  SMap.addMatch(preIndex+105,-FLine.getLinkSurf(4));  // base [outer]
-  SMap.addMatch(preIndex+106,FLine.getLinkSurf(5));  // top  [target]
+  SMap.addMatch(preIndex+103,FLine.getLinkSurf(-3));  // side 
+  SMap.addMatch(preIndex+104,FLine.getLinkSurf(4));  // side
+  SMap.addMatch(preIndex+105,FLine.getLinkSurf(-5));  // base [outer]
+  SMap.addMatch(preIndex+106,FLine.getLinkSurf(6));  // top  [target]
 
   const double sideWater=sideExt-(alInner+vacOuter+vacInner);
   const double topWater=heightExt-(alOuter+alInner+vacOuter+vacInner);

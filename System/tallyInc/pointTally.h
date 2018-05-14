@@ -43,7 +43,7 @@ class pointTally : public Tally
   DTriple<int,double,int> ddFlag; ///< ddFlag
   std::vector<Geometry::Vec3D> Window;     ///< Window (if applied)
   int secondDFlag;               ///< Use the second distance number
-  double secondDist;             ///< setcond distancd
+  double secondDist;             ///< second distance
   bool mcnp6Out;                 ///< MCNP6 output 
 
   void orderWindow();

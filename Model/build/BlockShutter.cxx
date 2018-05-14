@@ -3,7 +3,7 @@
  
  * File:   build/BlockShutter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -286,7 +287,7 @@ BlockShutter::createInsert(Simulation& System)
       const zbTYPE ZB= iBlock.back();  // previous block
       ItemZB->initialize(System,*ZB);
       Out=ModelSupport::getComposite(SMap,surfIndex,"-17 ")+divideStr();
-      ItemZB->createAll(System,ZB->getLinkSurf(1),"",Out);
+      ItemZB->createAll(System,ZB->getLinkSurf(2),"",Out);
       iBlock.push_back(ItemZB);
     }
   processColletExclude(System,colletOuterCell,cutPt,iBlock.size());	  
@@ -315,8 +316,8 @@ BlockShutter::processColletExclude(Simulation& System,const int cellN,
       if (!iBlock[i]->equalExternal(*ZB))
 	{
 	  if (firstCell)
-	    ZB->addOuterSurf(iBlock[firstCell]->getLinkSurf(0));
-	  ZB->addOuterSurf(-ZB->getLinkSurf(1));
+	    ZB->addOuterSurf(iBlock[firstCell]->getLinkSurf(1));
+	  ZB->addOuterSurf(ZB->getLinkSurf(-2));
 	  ZB->setInsertCell(cellN);
 	  ZB->insertObjects(System);
 	  firstCell=i;
@@ -325,7 +326,7 @@ BlockShutter::processColletExclude(Simulation& System,const int cellN,
   // Always add one block:
   zbTYPE ZOut=iBlock.back();
   if (firstCell)
-    ZOut->addOuterSurf(-iBlock[firstCell]->getLinkSurf(0));
+    ZOut->addOuterSurf(iBlock[firstCell]->getLinkSurf(-1));
   ZOut->setInsertCell(cellN);
   ZOut->insertObjects(System);
   return;

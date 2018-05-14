@@ -3,7 +3,7 @@
  
  * File:   process/surfRegister.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,8 +204,9 @@ surfRegister::addToIndex(const int addSurfIndex,const int realSurfIndex)
   ELog::RegMethod RegA("surfRegister","addToIndex");
 
   if (Index.find(addSurfIndex)!=Index.end())
-    ELog::EM<<"Replacement of surface "<<addSurfIndex<<" "<<realSurfIndex
-	    <<ELog::endErr;
+    throw ColErr::InContainerError<int>(addSurfIndex," from realSurf:"+
+					std::to_string(realSurfIndex));
+
   Index.insert(MTYPE::value_type(addSurfIndex,realSurfIndex));  
   Index.insert(MTYPE::value_type(-addSurfIndex,-realSurfIndex));  
   return;
@@ -297,7 +298,8 @@ surfRegister::findPtr(const Geometry::Vec3D& A,const Geometry::Vec3D& B,
 void
 surfRegister::setKeep(const int SN,const int status) const
   /*!
-    Sets the keep flag of a surface
+    Sets the keep flag of a surface so that deletion
+    due to "not-used" checks do not delete this surface
     \param SN :: Surface number
     \param status :: status number
   */

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/ConcreteWall.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,19 +37,12 @@ namespace bibSystem
 */
 
 class ConcreteWall : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int wallIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle 
-  double zAngle;                ///< Angle 
 
   double innerRadius;          ///< Main depth
   double thickness;            ///< Main thickness    
@@ -58,9 +51,9 @@ class ConcreteWall : public attachSystem::ContainedComp,
 
   int mat;             ///< Default material
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&, const size_t );
-  void createSurfaces(const attachSystem::FixedComp&, const size_t );
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&, const long int );
+  void createSurfaces(const attachSystem::FixedComp&, const long int );
   void createLinks();
   void createObjects(Simulation&);
 

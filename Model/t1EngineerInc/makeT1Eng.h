@@ -1,9 +1,9 @@
  /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/makeT1Eng.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,11 +127,15 @@ class makeT1Eng
 
   // Array of flightlines
   
-  // TriModerator flight line 
+  /// TriModerator flight line (Left)
   std::shared_ptr<moderatorSystem::FlightLine> TriFLA;
+  /// TriModerator flight line (Right)
   std::shared_ptr<moderatorSystem::FlightLine> TriFLB;
+  /// H2 flight line 
   std::shared_ptr<moderatorSystem::FlightLine> H2FL;
+  /// CH4 methane
   std::shared_ptr<moderatorSystem::FlightLine> CH4FLA;
+  /// CH4 methane
   std::shared_ptr<moderatorSystem::FlightLine> CH4FLB;
 
   void buildCH4Pipe(Simulation&);
@@ -145,7 +149,7 @@ class makeT1Eng
   makeT1Eng& operator=(const makeT1Eng&);
   ~makeT1Eng();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

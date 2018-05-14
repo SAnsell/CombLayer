@@ -31,7 +31,7 @@ namespace constructSystem
     \version 1.0
     \author S. Ansell
     \date February 2017
-    \brief Beamstop op
+    \brief Movable shutter [keeps link pt fixed]
   */
   
 class BeamShutter : public attachSystem::ContainedComp,
@@ -57,7 +57,7 @@ class BeamShutter : public attachSystem::ContainedComp,
   double surroundThick;         ///< Surround thickness
   double topVoid;               ///< Top void space
 
-  int surroundMat;              ///< Surround thickness
+  int surroundMat;              ///< Surround material
 
   
   void createUnitVector(const attachSystem::FixedComp&,

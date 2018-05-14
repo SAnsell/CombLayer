@@ -3,7 +3,7 @@
  
  * File:   process/VolSum.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,8 @@
 #include "ObjSurfMap.h"
 #include "neutron.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
+#include "LineTrack.h"
 #include "volUnit.h"
 #include "VolSum.h"
 
@@ -74,10 +76,10 @@ namespace ModelSupport
 
 VolSum::VolSum(const Geometry::Vec3D& OPt,
 	       const Geometry::Vec3D& AxisRange) : 
-  Origin(OPt),X(fabs(AxisRange[0]),0,0),
-  Y(0,fabs(AxisRange[1]),0),Z(0,0,fabs(AxisRange[2])),
+  Origin(OPt),X(std::abs(AxisRange[0]),0,0),
+  Y(0,std::abs(AxisRange[1]),0),Z(0,0,std::abs(AxisRange[2])),
   fullVol(0.0),totalDist(0),nTracks(0)
-  /*!
+  /*!g
     Constructor
     \param OPt :: Centre
     \param AxisRange :: X/Y/Z extent
@@ -178,7 +180,7 @@ VolSum::populateAll(const Simulation& System)
 
   
 void
-VolSum::populateTally(const Simulation& System)
+VolSum::populateTally(const SimMCNP& System)
   /*!
     The big population call
     \param System :: Simulation system
@@ -186,8 +188,8 @@ VolSum::populateTally(const Simulation& System)
 {
   ELog::RegMethod RegA("VolSum","populateTally");
   
-  const Simulation::TallyTYPE& TM=System.getTallyMap();
-  Simulation::TallyTYPE::const_iterator mc;
+  const SimMCNP::TallyTYPE& TM=System.getTallyMap();
+  SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=TM.begin();mc!=TM.end();mc++)
     {
       const tallySystem::cellFluxTally* cellPtr=
@@ -311,7 +313,7 @@ VolSum::pointRun(const Simulation& System,const size_t N)
   // directiron
 
   for(size_t i=0;i<N;i++)
-    {
+    { 
       Geometry::Vec3D Pt(Origin+
 			 X*(RNG.rand()-0.5)+
 			 Y*(RNG.rand()-0.5)+
@@ -361,16 +363,13 @@ VolSum::getCubePoint() const
 void
 VolSum::trackRun(const Simulation& System,const size_t N) 
   /*!
-    Calculate the tracking
+    Calculate the tracking 
     \param System :: Simulation to use
     \param N :: Number of points to test
   */
 {
   ELog::RegMethod RegA("VolSum","run");
   
-  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
-
-  MonteCarlo::Object* InitObj(0);
   reset();
   
   const double AreaXY(X[0]*Y[1]);
@@ -383,52 +382,28 @@ VolSum::trackRun(const Simulation& System,const size_t N)
   fracX=AreaXY/totalArea;
   fracY=(AreaXZ+AreaXY)/totalArea;
   
-  const Geometry::Surface* SPtr;          // Output surface
-  double aDist;       
-
   // Note for sphere that you can use X,Y,Z in any orthogonal 
   // directiron
 
   for(size_t i=0;i<N;i++)
     {
-      Geometry::Vec3D Pt=getCubePoint();
-      Geometry::Vec3D XPt=getCubePoint();
-      double trackDistance=Pt.Distance(XPt);
-      XPt-=Pt;
-      totalDist+=trackDistance;
-      
-      // track length to go == [Max]
-      
-      MonteCarlo::neutron TNeut(1,Pt,XPt);
-      // Find Initial cell [Store for next time]
-      InitObj=System.findCell(TNeut.Pos,InitObj);      
-      MonteCarlo::Object* OPtr=InitObj;
-      int SN(0);
+      const Geometry::Vec3D Pt=getCubePoint();
+      const Geometry::Vec3D XPt=getCubePoint();
 
-      while(OPtr)
+
+      LineTrack A(Pt,XPt);
+      A.calculate(System);
+      const std::vector<MonteCarlo::Object*>& OVec=A.getObjVec();
+      const std::vector<double>& TVec=A.getTrack();
+      for(size_t i=0;i<OVec.size();i++)
 	{
-	  // Note: Need OPPOSITE Sign on exiting surface
-	  SN= -OPtr->trackOutCell(TNeut,aDist,SPtr,-SN);
-	  trackDistance-=aDist;
-	  if (trackDistance > 0.0)
-	    {
-	      addDistance(OPtr->getName(),aDist);
-	      trackDistance-=aDist;
-	      TNeut.moveForward(aDist+2.0*Geometry::zeroTol);
-
-	      OPtr=(SN) ?
-		OSMPtr->findNextObject
-		(SN,TNeut.Pos,OPtr->getName()) : 0;		
-	    }
-	  else
-	    {
-	      //	      ELog::EM<<"Adding "<<
-	      //		trackDistance-TNeut.travel<<ELog::endDebug;
-	      //	      addDistance(OPtr->getName(),
-	      //			  trackDistance-TNeut.travel);
-	      OPtr=0;
-	    }
+	  const MonteCarlo::Object* OPtr=OVec[i];
+	  if (OPtr)
+	    addDistance(OPtr->getName(),TVec[i]);
 	}
+
+      const double trackDistance=Pt.Distance(XPt);
+      totalDist+=trackDistance;
     }
   ELog::EM<<"Total Dist == "<<totalDist<<ELog::endTrace;  
   nTracks+=N;
@@ -449,7 +424,7 @@ VolSum::calcVolume(const int TN) const
   std::map<int,volUnit>::const_iterator mc;
   mc=tallyVols.find(TN);
   if (mc!=tallyVols.end())
-    return fullVol*mc->second.calcVol(1.0/nTracks);
+    return fullVol*mc->second.calcVol(1.0/static_cast<double>(nTracks));
   ELog::EM<<"No tally of value "<<TN<<ELog::endErr;
   return 0.0;
 }
@@ -473,10 +448,11 @@ VolSum::write(const std::string& OFile) const
 
   char sf='a';  
   tvTYPE::const_iterator mc;
+  const double nT((nTracks) ? static_cast<double>(nTracks) : 1.0);
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     {
       OX<<"tally"<<(FMTI3 % mc->first % 
-		    (fullVol*mc->second.calcVol(1.0/nTracks)) %
+		    (fullVol*mc->second.calcVol(1.0/nT)) %
 		    sf % mc->second.getMat() % 
 		    mc->second.getComment())<<std::endl;
       sf++;

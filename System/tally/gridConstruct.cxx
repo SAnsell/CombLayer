@@ -3,7 +3,7 @@
  
  * File:   tally/gridConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,35 +84,19 @@
 #include "MeshGrid.h"
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "gridConstruct.h" 
 
 
 namespace tallySystem
 {
 
-gridConstruct::gridConstruct() 
-  /// Constructor
-{}
-
-gridConstruct::gridConstruct(const gridConstruct&) 
-  /// Copy Constructor
-{}
-
-gridConstruct&
-gridConstruct::operator=(const gridConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 void
-gridConstruct::processGrid(Simulation& System,
+gridConstruct::processGrid(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+			   const size_t Index) 
   /*!
     Add grid tally as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -145,12 +129,14 @@ gridConstruct::processGrid(Simulation& System,
   
   if (PType=="free")
     {
+      size_t itemIndex(2);
       Geometry::Vec3D TOrigin=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Centre point detector");
+	IParam.getCntVec3D("tally",Index,itemIndex,"Centre point detector");
       Geometry::Vec3D XVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,5,"XVector");
+	IParam.getCntVec3D("tally",Index,itemIndex,"XVector");
       Geometry::Vec3D YVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,8,"YVector");
+	IParam.getCntVec3D("tally",Index,itemIndex,"YVector");
+
       TOrigin=MR.reverseRotate(TOrigin);
       XVec=MR.reverseAxisRotate(XVec);
       YVec=MR.reverseAxisRotate(YVec);
@@ -161,9 +147,13 @@ gridConstruct::processGrid(Simulation& System,
     {
       size_t offsetIndex(4);
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"object name not given");
+	IParam.getValueError<std::string>
+	("tally",Index,2,"object name not given");
+      
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
+
       Geometry::Vec3D TOrigin=
 	IParam.getCntVec3D("tally",Index,offsetIndex,"Centre point offset");
       Geometry::Vec3D XVec=
@@ -192,7 +182,7 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
 			     const long int linkNumber,
 			     Geometry::Vec3D& Centre,
 			     Geometry::Vec3D& XVec,
-			     Geometry::Vec3D& YVec) const
+			     Geometry::Vec3D& YVec) 
 /*!
   Calculate the global Center/XY axis based on C/X/Y which
   are currently in the local frame
@@ -214,7 +204,7 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
     OR.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
   
 
-  const Geometry::Vec3D O=FC->getSignedLinkPt(linkNumber);
+  const Geometry::Vec3D O=FC->getLinkPt(linkNumber);
 
   Geometry::Vec3D X,Y,Z;
   FC->calcLinkAxis(linkNumber,X,Y,Z);
@@ -231,12 +221,12 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
 			     
 
 void
-gridConstruct::applyMultiGrid(Simulation& System,
+gridConstruct::applyMultiGrid(SimMCNP& System,
 			      const size_t initNPD,
 			      const size_t NPD,
 			      const Geometry::Vec3D& TOrigin,
 			      const Geometry::Vec3D& Xv,
-			      const Geometry::Vec3D& Yv) const
+			      const Geometry::Vec3D& Yv) 
   /*!
     Actually proces the grid system based on the input mesh
     \param System :: simulation to add tallies
@@ -287,10 +277,10 @@ gridConstruct::applyMultiGrid(Simulation& System,
 
   
 void
-gridConstruct::writeHelp(std::ostream& OX) const
+gridConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<

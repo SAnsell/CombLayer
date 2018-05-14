@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SurfNormSource.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,44 +35,44 @@ namespace SDef
   \version 1.0
   \author S. Ansell
   \date September 2015
-  \brief Creat a source on the +/- of a surface
+  \brief Create a source on the +/- of a surface
 */
 
 class SurfNormSource :
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public SourceBase
 {
  private:
     
-  int particleType;             ///< Particle Type
   double angleSpread;           ///< Angle from normal
   int surfNum;                  ///< Surfacte number
-  double cutEnergy;             ///< Start energy
-  double height;                ///< Height of source
-  
-  double weight;
-  std::vector<double> Energy;   ///< Energies [MeV]
-  std::vector<double> EWeight;  ///< Weights
-  
-  void populate(const FuncDataBase& Control);
-  int populateEnergy(std::string,std::string);
 
+  double width;                 ///< Width of source
+  double height;                ///< Height of source
+    
+  void populate(const mainSystem::MITYPE&);
   void setSurf(const attachSystem::FixedComp&,
 			const long int);
-  void createSource(SDef::Source&) const;
 
  public:
 
   SurfNormSource(const std::string&);
   SurfNormSource(const SurfNormSource&);
   SurfNormSource& operator=(const SurfNormSource&);
+  SurfNormSource* clone() const;
   ~SurfNormSource();
 
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
-  void loadEnergy(const std::string&);
-  
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
-		 const long int,SDef::Source&);
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(const attachSystem::FixedComp&,const long int);
+
+  virtual void rotate(const localRotate&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
+  virtual void write(std::ostream&) const;
+
   
 };
 

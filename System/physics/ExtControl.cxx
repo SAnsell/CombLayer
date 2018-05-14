@@ -3,7 +3,7 @@
  
  * File:   physics/ExtControl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "MapRange.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -307,7 +307,7 @@ ExtControl::renumberCell(const int originalCell,const int newCell)
 	  if (mcN->second==originalCell) return;   // work already done
 	  throw ColErr::InContainerError<int>
 	    (newCell,"Cell is already remapped:" +
-	     StrFunc::makeString(mcN->second)+")");
+	     std::to_string(mcN->second)+")");
 	}
       renumberMap.insert(std::map<int,int>::value_type(newCell,originalCell));
     }

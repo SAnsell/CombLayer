@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,9 +181,9 @@ CylPreMod::getBoxCut(const char F) const
    */
 {
   if (F=='A' && blockActiveA)
-    return ExtAObj->getLinkComplement(3); 
+    return ExtAObj->getLinkString(-4); 
   if (F=='B' && blockActiveB)
-    return ExtBObj->getLinkComplement(3); 
+    return ExtBObj->getLinkString(-4); 
   return "";
 }
 
@@ -207,13 +207,12 @@ CylPreMod::checkItems(const attachSystem::FixedComp& Mod)
   if (Mod.NConnect()<6)
     throw ColErr::IndexError<size_t>(6,Mod.NConnect(),"Moderator LU size");
   
-  Geometry::Vec3D OutPt=Mod.getLinkPt(0);
+  Geometry::Vec3D OutPt=Mod.getCentre();
   innerRadius=OutPt.Distance(Origin);
   // Never figure out if we are +/- Z so decided to test
-  for(size_t i=4;i<6;i++)
+  for(long int i=5;i<=6;i++)
     {
       OutPt=Mod.getLinkPt(i)-Origin;
-      const Geometry::Vec3D TP=Mod.getLinkPt(i);
       if (OutPt.dotProd(Z)>0.0)
 	innerHeight=OutPt.abs();
       else
@@ -318,8 +317,8 @@ CylPreMod::populate(const FuncDataBase& Control)
     }
   blockActiveA=Control.EvalVar<int>(keyName+"ABlockActive");   
   blockActiveB=Control.EvalVar<int>(keyName+"BBlockActive");   
-  aSide=Control.EvalVar<size_t>(keyName+"ABlockSide");   
-  bSide=Control.EvalVar<size_t>(keyName+"BBlockSide");   
+  aSide=Control.EvalVar<long int>(keyName+"ABlockSide");   
+  bSide=Control.EvalVar<long int>(keyName+"BBlockSide");   
 
   return;
 }
@@ -669,34 +668,36 @@ CylPreMod::getLayerString(const size_t layerIndex,
 
 Geometry::Vec3D 
 CylPreMod::calcViewIntercept(const size_t viewIndex,
-			     const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Calculate the intercept point on the view edge
     \param viewIndex :: View number
-    \param sideIndex :: side Index 0/1
+    \param sideIndex :: side Index 1/2
   */
 {
-  ELog::RegMethod RegA("CylPreMod","calcViewIndex");
+  ELog::RegMethod RegA("CylPreMod","calcViewIntercept");
+  
   if (viewIndex>=viewY.size())
     throw ColErr::IndexError<size_t>(viewIndex,viewY.size(),"viewIndex");
 
-  if (sideIndex>1)
-    throw ColErr::IndexError<size_t>(sideIndex,2,"sideIndex");
-  
+  if (!sideIndex || std::abs(sideIndex)>2)
+    throw ColErr::IndexError<long int>(sideIndex,2,"sideIndex");
+
+  const size_t SI(static_cast<size_t>(std::abs(sideIndex)-1));
   const int VI(modIndex+100*static_cast<int>(viewIndex) 
-	       +static_cast<int>(sideIndex));
+	       +static_cast<int>(SI));
 
   const Geometry::Vec3D BulkPtA=
     SurInter::getPoint(SMap.realSurfPtr(modIndex+17),
 		       SMap.realSurfPtr(VI+113),
 		       SMap.realSurfPtr(modIndex+15),
-		       FLpts[4*viewIndex+sideIndex]);
+		       FLpts[4*viewIndex+SI]);
 
   const Geometry::Vec3D BulkPtB=
     SurInter::getPoint(SMap.realSurfPtr(modIndex+17),
 		       SMap.realSurfPtr(VI+113),
 		       SMap.realSurfPtr(modIndex+16),
-		       FLpts[4*viewIndex+sideIndex]);
+		       FLpts[4*viewIndex+SI]);
 
   return (BulkPtA+BulkPtB)/2.0;
 }
@@ -755,21 +756,23 @@ CylPreMod::createAll(Simulation& System,
   Geometry::Vec3D IPt=calcViewIntercept(0,aSide);
   ExtAObj->setActive(blockActiveA);
   ExtAObj->setCentRotate(Origin);
-  ExtAObj->setEdgeSurf(SMap.realSurf(modIndex+103+
-				     static_cast<int>(aSide)));  //103
+  ExtAObj->setEdgeSurf
+    (SMap.realSurf(modIndex+102+static_cast<int>(aSide)));  // 103/104
+
   ExtAObj->copyInterObj(this->getCC("Main"));
-  ExtAObj->createAll(System,IPt,*this,nLayers-2,4+aSide);   //4
+  ExtAObj->createAll(System,IPt,*this,nLayers-2,4+aSide);   //5/6
   addOuterSurf("BlockA",ExtAObj->getCompExclude());
 
   // CREATE BLOCK ADDITION
-  IPt=calcViewIntercept(1,1-bSide);   // view : side
+  IPt=calcViewIntercept(1,3-bSide);   // view : side (2/1 from 1/2)
   ExtBObj->setActive(blockActiveB);
-  ExtBObj->setEdgeSurf(SMap.realSurf(modIndex+204-
-				     static_cast<int>(bSide)));  // 204
+  ExtBObj->setEdgeSurf
+    (SMap.realSurf(modIndex+205-static_cast<int>(bSide))); // 204/203
+
   ExtBObj->setCentRotate(Origin);
   ExtBObj->copyInterObj(this->getCC("Main"));
 
-  ExtBObj->createAll(System,IPt,*this,nLayers-2,4+bSide);
+  ExtBObj->createAll(System,IPt,*this,nLayers-2,4+bSide);    // 5/6
 
   addOuterSurf("BlockB",ExtBObj->getCompExclude());  
   for(size_t i=nLayers-2;i<nLayers;i++)

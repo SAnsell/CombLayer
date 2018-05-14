@@ -1,10 +1,15 @@
 \documentclass{article}
 \usepackage{relsize}
 \usepackage{tikz} % ,pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
-\usetikzlibrary{shapes,decorations,shadings,positioning,arrows}
-\usepackage{amsmath,enumerate}
+\usetikzlibrary{shapes,decorations,shadings,positioning,arrows,snakes,3d}
+\usepackage{amsmath,enumerate,xspace,subfig,siunitx}
+\tikzstyle{legend} = [red, fill=white, font=\footnotesize, inner sep=2pt, rounded corners=0.05cm]
+\tikzstyle{arrow} = [red, ->, line width=2pt]
+
+\usepackage{amsmath,enumerate,xspace,subfig,siunitx,lscape}
 \usepackage{listings}
 \usepackage[absolute,overlay]{textpos}
+\usepackage[colorinlistoftodos]{todonotes}
 
 \usepackage[colorlinks=true,linkcolor=red,pagecolor=red,
   citecolor=blue,urlcolor=blue,breaklinks=true,
@@ -18,9 +23,16 @@
 \title{CombLayer Guide}
 \author{Stuart Ansell}
 
+\usepackage{nomencl}
+\makenomenclature
+
 \begin{document}
 \maketitle
 \tableofcontents
+\clearpage
+\printnomenclature[2cm]
+\clearpage
+
 
 \input{Frames/Introduction}
 \newpage
@@ -36,9 +48,12 @@
 \input{Components/ObjectRegister}
 \input{Components/ExtWeightCommand}
 
+\section{User guide}
+\input{UserGuide/guide.tex}
+\input{UserGuide/VarianceReduction.tex}
+\clearpage
 
-
-\end{document}
-
+\bibliographystyle{unsrt}
+\bibliography{Guide}
 
 \end{document}

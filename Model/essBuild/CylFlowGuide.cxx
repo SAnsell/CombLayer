@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylFlowGuide.cxx
  *
- * Copyright (c) 2004-2015 by Konstantin Batkov
+ * Copyright (c) 2004-2017 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,7 +161,7 @@ CylFlowGuide::populate(const FuncDataBase& Control)
 
 void
 CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
-				      const size_t sideIndex)
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Centre for object
@@ -172,7 +172,8 @@ CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp::createUnitVector(FC);
 
   // Take data from containing object
-  const int CN=FC.getLinkSurf(sideIndex);
+  const int CN=std::abs(FC.getLinkSurf(sideIndex));
+
   const Geometry::Cylinder* CPtr=SMap.realPtr<Geometry::Cylinder>(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Unable to convert to cylinder");
@@ -220,7 +221,7 @@ CylFlowGuide::createSurfaces()
 void
 CylFlowGuide::createObjects(Simulation& System,
                             attachSystem::FixedComp& FC,
-                            const size_t sideIndex)
+                            const long int sideIndex)
 /*!
     Create the objects
     \param System :: Simulation to add results
@@ -238,9 +239,13 @@ CylFlowGuide::createObjects(Simulation& System,
   const int innerMat=MatInfo.first;
   const double innerTemp=MatInfo.second;
   std::string Out;
-  const std::string vertStr = FC.getLinkString(sideIndex+1)+
+
+  // This is AWFUL:
+  const std::string vertStr =
+    FC.getLinkString(sideIndex+3)+
     FC.getLinkString(sideIndex+2);
-  const std::string sideStr = FC.getLinkString(sideIndex);
+  const std::string sideStr =
+    FC.getLinkString(sideIndex);
 
   const int initCellIndex(cellIndex);
   // central plate
@@ -349,16 +354,11 @@ CylFlowGuide::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("CylFlowGuide","createAll");
-  
-  // unsigned version [long 
-  const size_t SIndex=static_cast<size_t>(std::abs(sideIndex)-1);
-  
+    
   populate(System.getDataBase());
-  
-  createUnitVector(FC,SIndex);
-  
+  createUnitVector(FC,sideIndex);  
   createSurfaces();
-  createObjects(System,FC,SIndex);
+  createObjects(System,FC,sideIndex);
   createLinks();
   
   insertObjects(System);       

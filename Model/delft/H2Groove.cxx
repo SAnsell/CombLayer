@@ -3,7 +3,7 @@
  
  * File:   delft/H2Groove.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
+#include "FixedOffset.h"
+// #include "SecondTrack.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -79,7 +80,7 @@ namespace delftSystem
 {
 
 H2Groove::H2Groove(const std::string& Key,const int NG)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0),
   gIndex(NG),siIndex(ModelSupport::objectRegister::Instance().cell(Key,NG)),
   cellIndex(siIndex+1)
   /*!
@@ -89,10 +90,9 @@ H2Groove::H2Groove(const std::string& Key,const int NG)  :
 {}
 
 H2Groove::H2Groove(const H2Groove& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   gIndex(A.gIndex),siIndex(A.siIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),face(A.face),
-  height(A.height),xyAngleA(A.xyAngleA),xyAngleB(A.xyAngleB),
+  face(A.face),height(A.height),xyAngleA(A.xyAngleA),xyAngleB(A.xyAngleB),
   siTemp(A.siTemp),siMat(A.siMat)
   /*!
     Copy constructor
@@ -111,11 +111,8 @@ H2Groove::operator=(const H2Groove& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       face=A.face;
       height=A.height;
       xyAngleA=A.xyAngleA;
@@ -133,16 +130,17 @@ H2Groove::~H2Groove()
 {}
 
 void
-H2Groove::populate(const Simulation& System)
+H2Groove::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod RegA("H2Groove","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
+  FixedOffset::populate(Control);
+
+  
   const std::string keyNum(keyName+StrFunc::makeString(gIndex));
 
   face=Control.EvalPair<int>(keyNum+"Face",keyName+"Face");
@@ -163,31 +161,22 @@ H2Groove::populate(const Simulation& System)
   
 
 void
-H2Groove::createUnitVector(const attachSystem::FixedComp& FUnit)
+H2Groove::createUnitVector(const attachSystem::FixedComp& FUnit,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down the H2Groove direction
     - X Across the H2Groove
     - Z up (towards the target)
     \param FUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("H2Groove","createUnitVector");
   
   // Opposite since other face:
-  attachSystem::FixedComp::createUnitVector(FUnit);
-  
-  if (face<0)
-    {
-      Origin=FUnit.getLinkPt(0);
-      Y=FUnit.getLinkAxis(0);
-    }      
-  else if (face>0)
-    {
-      Origin=FUnit.getLinkPt(1);
-      Y=FUnit.getLinkAxis(1);
-    }      
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  attachSystem::FixedComp::createUnitVector(FUnit,sideIndex);
+  FixedOffset::applyOffset();
 
   return;
 }
@@ -266,10 +255,15 @@ H2Groove::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("H2Groove","createAll");
-  populate(System);
+  populate(System.getDataBase());
+
   if (face)
     {
-      createUnitVector(FUnit);
+      if (face<0)
+	createUnitVector(FUnit,1);
+      else 
+	createUnitVector(FUnit,2);
+
       createSurfaces();
       createObjects(System,CC);
       createLinks();
@@ -279,4 +273,4 @@ H2Groove::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE delftSystem

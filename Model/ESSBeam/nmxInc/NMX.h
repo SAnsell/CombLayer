@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/NMX.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,10 @@ namespace attachSystem
 
 namespace constructSystem
 {  
-  class Jaws;
+  class BeamShutter;
   class DiskChopper;
   class ChopperPit;
+  class Jaws;
   class RotaryCollimator;
   class VacuumBox;
   class ChopperHousing;
@@ -63,7 +64,7 @@ class NMX : public attachSystem::CopiedComp
 
   /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
-    
+  
   /// Pipe between gamma shield / 10m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// Bender in first pipe [6-10m]
@@ -98,12 +99,12 @@ class NMX : public attachSystem::CopiedComp
   /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
-  // Piece after wall
+  /// Main beam shutter
+  std::shared_ptr<constructSystem::BeamShutter> MainShutter;
+
+  /// Piece after wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;
-  
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
-  
+    
  public:
   
   NMX(const std::string&);

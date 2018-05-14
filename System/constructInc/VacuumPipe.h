@@ -3,7 +3,7 @@
  
  * File:   constructInc/VacuumPipe.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,22 @@ class Simulation;
 
 namespace constructSystem
 {
+
+  /*!
+    \struct windowInfo
+    \version 1.0
+    \date July 2015
+    \author S. Ansell
+    \brief window build data
+  */
+struct windowInfo
+{
+  double thick;           ///< Joining Flange length
+  double radius;          ///< Window radius
+  double height;          ///< Window Height
+  double width;           ///< Window Width
+  int mat;                ///< Material
+};
   
 /*!
   \class VacuumPipe
@@ -37,15 +53,13 @@ namespace constructSystem
 
 class VacuumPipe :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
+  public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   bool frontJoin;               ///< Flag for front join
   Geometry::Vec3D FPt;          ///< Front point
   Geometry::Vec3D FAxis;        ///< Front point
@@ -61,18 +75,26 @@ class VacuumPipe :
   double length;                ///< void length [total]
 
   double feThick;               ///< pipe thickness
+  double claddingThick;         ///< cladding thickness
 
-  double flangeRadius;          ///< Joining Flange thick
-  double flangeLength;          ///< Joining Flange length
+  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeAHeight;          ///< Joining Flange height
+  double flangeAWidth;           ///< Joining Flange width
+  double flangeALength;          ///< Joining Flange length
+
+  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeBHeight;          ///< Joining Flange height
+  double flangeBWidth;           ///< Joining Flange width
+  double flangeBLength;          ///< Joining Flange length
 
   int activeWindow;             ///< Flag on window activity
-  double windowThick;           ///< Joining Flange length
-  double windowRadius;          ///< Joining Flange length
-  
+  windowInfo windowFront;       ///< Front window info
+  windowInfo windowBack;        ///< Back window info
+    
   int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material 
-  int windowMat;                ///< Window material 
-
+  int feMat;                    ///< Pipe material
+  int claddingMat;              ///< Pipe cladding material 
+  
   size_t nDivision;             ///< Number divisions
   
   void populate(const FuncDataBase&);
@@ -81,7 +103,6 @@ class VacuumPipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void getShiftedSurf(const HeadRule&,const int,const int,const double);
   void applyActiveFrontBack();
   void createDivision(Simulation&);
   

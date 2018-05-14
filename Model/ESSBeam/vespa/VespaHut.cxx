@@ -3,7 +3,7 @@
  
  * File:   essModel/VespaHut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ VespaHut::populate(const FuncDataBase& Control)
 
 void
 VespaHut::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -147,7 +147,6 @@ VespaHut::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& Outer=getKey("Outer");
   attachSystem::FixedComp& Mid=getKey("Mid");
   attachSystem::FixedComp& Inner=getKey("Inner");
-
   Outer.createUnitVector(FC,sideIndex);
   Mid.createUnitVector(FC,sideIndex);
   Inner.createUnitVector(FC,sideIndex);
@@ -155,7 +154,7 @@ VespaHut::createUnitVector(const attachSystem::FixedComp& FC,
   setDefault("Inner");
   return;
 }
-
+ 
 void
 VespaHut::createSurfaces()
   /*!
@@ -171,7 +170,6 @@ VespaHut::createSurfaces()
   ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z);  
-
 
   // FE WALLS:
   ModelSupport::buildPlane(SMap,hutIndex+11,
@@ -285,7 +283,7 @@ VespaHut::createLinks()
   innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
 
   
-  // INNER VOID
+  // MID Fe Layer
   midFC.setConnect(0,Origin-Y*(feFront+voidLength/2.0),-Y);
   midFC.setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
   midFC.setConnect(2,Origin-X*(feLeftWall+voidWidth/2.0),-X);

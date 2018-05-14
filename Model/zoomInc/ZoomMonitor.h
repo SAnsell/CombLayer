@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoomInc/ZoomMonitor.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,19 +42,13 @@ namespace zoomSystem
   \brief ZoomMonitor unit  
 */
 
-class ZoomMonitor : public attachSystem::FixedComp,
+class ZoomMonitor : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
   
   const int monIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< Origin step
-  double yStep;                 ///< Origin step
-  double zStep;                 ///< Origin step
-  double xyAngle;               ///< xy angle
-  double zAngle;                ///< Z angle
   
   double viewThick;             ///< Thickness of wall
   double wallThick;             ///< Thickness of wall

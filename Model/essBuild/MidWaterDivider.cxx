@@ -149,7 +149,7 @@ MidWaterDivider::clone() const
   /*!
     Virtual copy constructor
     \return new (this)
-   */
+  */
 {
   return new MidWaterDivider(*this);
 }
@@ -177,6 +177,8 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   topThick=Control.EvalDefVar<double>(keyName+"TopThick",0.0);
+  baseThick=Control.EvalDefVar<double>(keyName+"BaseThick",0.0);
+  cornerRadius=Control.EvalDefVar<double>(keyName+"CornerRadius",0.0);
   
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -230,10 +232,10 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   FixedComp::setLinkSurf(8, SMap.realSurf(divIndex+132));  
 
   std::vector<int> surfN;
-  surfN.push_back(leftWing.getSignedLinkSurf(1));
-  surfN.push_back(leftWing.getSignedLinkSurf(3));
-  surfN.push_back(rightWing.getSignedLinkSurf(1));
-  surfN.push_back(rightWing.getSignedLinkSurf(3));
+  surfN.push_back(leftWing.getLinkSurf(1));
+  surfN.push_back(leftWing.getLinkSurf(3));
+  surfN.push_back(rightWing.getLinkSurf(1));
+  surfN.push_back(rightWing.getLinkSurf(3));
 
   // Now deterermine point which are divider points
   const Geometry::Plane* midPlane=
@@ -266,14 +268,15 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   std::string Out;
   HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,divIndex,"(-123 : 124) -131 -132 ");
+
+  Out=ModelSupport::getComposite(SMap,divIndex," ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
   HR.procString(Out);
   HR.makeComplement();
   FixedComp::setLinkSurf(10,HR);
   FixedComp::setBridgeSurf(10,-SMap.realSurf(divIndex+100));
 
   // +ve Y
-  Out=ModelSupport::getComposite(SMap,divIndex,"(-103 : 104)  -111 -112 ");
+  Out=ModelSupport::getComposite(SMap,divIndex," ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
   HR.procString(Out);
   HR.makeComplement();  
   FixedComp::setLinkSurf(11,HR);
@@ -298,6 +301,8 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
   // Mid Vertical divider
   ModelSupport::buildPlane(SMap,divIndex+200,Origin,Z);
+  // Mid Vertical divider
+  ModelSupport::buildPlane(SMap,divIndex+300,Origin,X);
 
   // +Y section
   ModelSupport::buildPlaneRotAxis
@@ -312,7 +317,6 @@ MidWaterDivider::createSurfaces()
     (SMap,divIndex+24,Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
-
   Geometry::Vec3D leftNorm(Y);
   Geometry::Quaternion::calcQRotDeg(-midAngle/2.0,Z).rotate(leftNorm);  
   Geometry::Vec3D rightNorm(Y);
@@ -328,14 +332,13 @@ MidWaterDivider::createSurfaces()
   
   // Aluminum layers [+100]
   // +Y section
-  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
+  const double LStep(midYStep+wallThick/sin(M_PI*midAngle/360.0));
   ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+103,Origin+Y*LStep,X,-Z,-midAngle/2.0);
   ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+104,Origin+Y*LStep,X,-Z,midAngle/2.0);
 
   // -Y section
-
   ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+123,Origin-Y*LStep,-X,-Z,-midAngle/2.0);
   ModelSupport::buildPlaneRotAxis
@@ -346,7 +349,6 @@ MidWaterDivider::createSurfaces()
 			   Origin+leftNorm*(length+wallThick),leftNorm);
   ModelSupport::buildPlane(SMap,divIndex+112,
 			   Origin+rightNorm*(length+wallThick),rightNorm);
-
   // Length below [note reverse of normals]
   ModelSupport::buildPlane(SMap,divIndex+131,
 			   Origin-rightNorm*(wallThick+length),-rightNorm);
@@ -358,9 +360,59 @@ MidWaterDivider::createSurfaces()
     ModelSupport::buildPlane(SMap,divIndex+5,
                              Origin+Z*(height/2.0-topThick),Z);
 
+
+  // Create corners:
+  if (cornerRadius>Geometry::zeroTol)
+    {
+      const std::vector<int> sideSurf({-11, -12, -32, -31});
+      const std::vector<int> frontSurf({4, -3,  24, -23});
+
+      int CI(divIndex);
+      for(size_t i=0;i<4;i++)
+        {
+          const std::string Out=ModelSupport::getComposite(SMap,divIndex,
+                                         std::to_string(sideSurf[i])+" "+
+                                         std::to_string(frontSurf[i]));
+
+          HeadRule CCorner(Out);
+          CCorner.populateSurf();
+	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+	    RCircle=Geometry::findCornerCircle
+            (CCorner,
+             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(sideSurf[i])),
+             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(frontSurf[i])),
+             *SMap.realPtr<Geometry::Plane>(60000),
+             cornerRadius);
+	  const Geometry::Vec3D& CPt=std::get<0>(RCircle);
+	  const Geometry::Vec3D& APt=std::get<1>(RCircle);
+	  const Geometry::Vec3D& BPt=std::get<2>(RCircle);
+	  
+	  // axis away from outer radius
+	  const Geometry::Vec3D CAxis((CPt*2.0-APt-BPt).unit());
+
+	  
+          ModelSupport::buildCylinder(SMap,CI+7,CPt,Z,cornerRadius);
+          // Towards centre of circle
+          ModelSupport::buildPlane(SMap,CI+8,APt,BPt,APt+Z,CAxis);
+
+	  // Construct secondaries
+	  
+          ModelSupport::buildCylinder(SMap,CI+107,CPt,Z,
+				      cornerRadius+wallThick);
+          ModelSupport::buildShiftedPlane(SMap,CI+108,
+					  SMap.realPtr<Geometry::Plane>(CI+8),
+					  -wallThick);
+				      
+
+	  
+          CI+=10;
+        }      
+    }
+  
   return;
 }
- 
+
+
 void
 MidWaterDivider::createObjects(Simulation& System,
 			       const H2Wing& leftWing,
@@ -374,8 +426,8 @@ MidWaterDivider::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=leftWing.getLinkComplement(4);
-  const std::string Top=leftWing.getLinkComplement(5);
+  const std::string Base=leftWing.getLinkString(-5);
+  const std::string Top=leftWing.getLinkString(-6);
   
   HeadRule LCut(leftWing.getLayerString(cutLayer,7));
   HeadRule RCut(rightWing.getLayerString(cutLayer,7));
@@ -386,57 +438,93 @@ MidWaterDivider::createObjects(Simulation& System,
 
   if (topThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 -5 ");
-      Out+=LCut.display()+RCut.display()+Base;
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11 -5 (-7:8)");
+      Out+=LCut.display()+Base;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 5 ");
-      Out+=LCut.display()+RCut.display()+Top;
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 -5 (-17:18)");
+      Out+=RCut.display()+Base;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11  5 (-7:8)");
+      Out+=LCut.display()+Top;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 5 (-17:18)");
+      Out+=RCut.display()+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
       // Reverse side
-      Out=ModelSupport::getComposite(SMap,divIndex,
-                                     "-100 (-23 : 24) -31 -32 -5 ");
-      Out+=LCut.display()+RCut.display()+Base;
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "300 -100 -23  -31  -5 (-37:38) ");
+      Out+=LCut.display()+Base;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "-300 -100 24 -32 -5 (-27:28)");
+      Out+=RCut.display()+Base;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      Out=ModelSupport::getComposite(SMap,divIndex,
-                                     "-100 (-23 : 24) -31 -32 5 ");
-      Out+=LCut.display()+RCut.display()+Top;
+      
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "300 -100 -23 -31 5 (-37:38) ");
+      Out+=LCut.display()+Top;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "-300 -100 24 -32 5 (-27:28)");
+      Out+=RCut.display()+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
     }
   else 
     {
-      Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 ");
-      Out+=LCut.display()+RCut.display()+Base+Top;
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11 (-7:8)");
+      Out+=LCut.display()+Base+Top;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 (-17:18)");
+      Out+=RCut.display()+Base+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      // Reverse layer
-      Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 ");
-      Out+=LCut.display()+RCut.display()+Base+Top;
+      // Reverse layers
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 -100 -23 -31 (-37:38)");
+      Out+=LCut.display()+Base+Top;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 -100 24 -32 (-27:28)");
+      Out+=RCut.display()+Base+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
       
     }
   
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104) -111 -112 "
-				 " ( (3  -4) : 11 : 12 ) ");
-				 
-  Out+=LCut.display()+RCut.display()+Base+Top;
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				 "300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) ) ");				 
+  Out+=LCut.display()+Base+Top;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104)  -111 -112 ");
+
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				 "-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18)) ");				 
+  Out+=RCut.display()+Base+Top;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				 "100 ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
   addOuterSurf(Out);
 
-  
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124)  -131 -132 "
-				 "((23  -24) : 31 : 32 )");
-  Out+=LCut.display()+RCut.display()+Base+Top;
+  // Reverse side
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				 "300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
+  Out+=LCut.display()+Base+Top;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124) -131 -132 ");
+
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				 "-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");
+  Out+=RCut.display()+Base+Top;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				 "-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
   addOuterUnionSurf(Out);
   
    
@@ -461,9 +549,9 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   const size_t rWing=rightWing.getNLayers();
 
   const std::string LBase=
-    leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
+    leftWing.getLinkString(-5)+leftWing.getLinkString(-6);
   const std::string RBase=
-    rightWing.getLinkComplement(4)+rightWing.getLinkComplement(5);
+    rightWing.getLinkString(-5)+rightWing.getLinkString(-6);
 
   HeadRule cutRule;
   std::string Out;
@@ -501,8 +589,8 @@ MidWaterDivider::getSurfacePoint(const size_t,
 			const long int) const
   /*!
     Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param :: layer, 0 is inner moderator [0-6]
+    \param :: Side [0-3] // mid sides   
     \return Surface point
   */
 {

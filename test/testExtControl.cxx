@@ -3,7 +3,7 @@
  
  * File:   test/testExtControl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ testExtControl::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testExtControl","applyTest");
+  TestFunc::regSector("testExtControl");
 
   typedef int (testExtControl::*testPtr)();
   testPtr TPtr[]=

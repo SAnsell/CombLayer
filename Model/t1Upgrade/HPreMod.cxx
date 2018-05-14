@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/HPreMod.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,27 +150,28 @@ HPreMod::clone() const
 
 void
 HPreMod::getConnectPoints(const attachSystem::FixedComp& FC,
-			  const size_t index)
+			  const long int sideIndex)
   /*!
     Get connection points
     \param FC :: FixedComponent
-    \param index :: Index points
+    \param sideIndex :: Index points
    */
 {
   ELog::RegMethod RegA("HPreMod","getConnectPoints");
 
-  const size_t sequence[6][6]={ {0,1,2,3,4,5},
-				{1,0,3,2,4,5},
-				{2,3,0,1,4,5},
-				{3,2,1,0,4,5},
-				{4,5,2,3,0,1}, 
-				{5,4,3,2,1,0} };
+  const long int sequence[6][6]={ {1,2,3,4,5,6},
+				  {2,1,4,3,5,6},
+				  {3,4,1,2,5,6},
+				  {4,3,2,1,5,6},
+				  {5,6,3,4,1,2}, 
+				  {6,5,4,3,2,1} };
 
+  const size_t index(static_cast<size_t>(std::abs(sideIndex)-1));
+  
   if (FC.NConnect()<6)
     throw ColErr::RangeError<size_t>(0,6,FC.NConnect(),"Number of connects");
-  if (FC.NConnect()<6)
-    throw ColErr::IndexError<size_t>(index,6,"Index");
-
+  if (index>5)
+    throw ColErr::RangeError<long int>(sideIndex,1,6,"sideIndex");
   
   sidePts.clear();
   sideAxis.clear();
@@ -230,7 +231,7 @@ HPreMod::createUnitVector(const attachSystem::FixedComp& FC)
   
 void
 HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
-			const size_t frontIndex)
+			const long int frontIndex)
   /*!
     Create All the surfaces
     \param FC :: Fixed unit that connects to this moderator
@@ -300,9 +301,9 @@ HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
 void
 HPreMod::createObjects(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const size_t frontIndex)
+		       const long int frontIndex)
   /*!
-    Adds the Chip guide components
+    Adds the main object components
     \param System :: Simulation to create objects in
     \param FC :: FixedComp Attached
     \param frontIndex :: Index of the front face
@@ -312,7 +313,7 @@ HPreMod::createObjects(Simulation& System,
 
   int addFlag(0);
   std::string Inner(" (");
-  for(size_t i=0;i<6;i++)
+  for(long int i=1;i<7;i++)
     {
       if (i!=frontIndex)
 	{
@@ -323,10 +324,9 @@ HPreMod::createObjects(Simulation& System,
     }
   Inner+=")";
 
-  const std::string FFace=FC.getLinkComplement(frontIndex);
+  const std::string FFace=FC.getLinkString(-frontIndex);
   // Set first link Point:
-  FixedComp::setConnect(0,FC.getLinkPt(frontIndex),Y);
-  FixedComp::setLinkSurf(0,FC,frontIndex);
+  FixedComp::setLinkSignedCopy(0,FC,frontIndex);
 
   // Wrap AL:
   std::string Out;
@@ -384,7 +384,7 @@ HPreMod::createLinks()
 void
 HPreMod::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
-		   const size_t frontIndex)
+		   const long int frontIndex)
    /*!
     Generic function to create everything
     \param System :: Simulation item

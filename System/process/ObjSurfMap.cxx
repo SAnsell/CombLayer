@@ -3,7 +3,7 @@
  
  * File:   process/ObjSurfMap.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <functional>
 #include <memory>
 
 #include "Exception.h"
@@ -144,8 +145,8 @@ ObjSurfMap::getObj(const int SNum,const size_t Index) const
 const ObjSurfMap::STYPE&
 ObjSurfMap::getObjects(const int SNum) const
   /*!
-    Get vector of object 
-    \param SNum :: Surface number
+    Get vector of objects which have a surface SNum.
+    \param SNum :: Surface number [signed]
     \return empty set if SNum doesn't match
    */
 {
@@ -168,16 +169,10 @@ ObjSurfMap::addSurfaces(MonteCarlo::Object* OPtr)
   
   // signed set
   const std::set<int>& sSet=OPtr->getSurfSet();
+
   std::set<int>::const_iterator sc;
   for(sc=sSet.begin();sc!=sSet.end();sc++)
-    {
-      addSurface(*sc,OPtr);
-      /* Remove for simple test [REVSURF]
-       const int oSurf= -SurI.hasOpposite(*sc);
-       if (oSurf)
-       	addSurface(oSurf,OPtr);
-      */
-    }
+    addSurface(*sc,OPtr);
 
   return;
 }
@@ -266,9 +261,7 @@ ObjSurfMap::findNextObject(const int SN,
 {
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
-
   const STYPE& MVec=getObjects(SN);
-  STYPE::const_iterator mc;
 
   for(MonteCarlo::Object* MPtr : MVec)
     {
@@ -283,19 +276,25 @@ ObjSurfMap::findNextObject(const int SN,
 
   ELog::EM<<"Failure to find surface on "<<SN<<" :: "
 	  <<MR.calcRotate(Pos)<<ELog::endCrit;
-  if (SN != -119)
-    return 0;
 
   ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endDiag;
+	  <<MR.calcRotate(Pos)<<" :: "<<SN<<ELog::endDiag;
   if (SurI.getSurf(abs(SN)))
-    ELog::EM<<"Surface == "<<*SurI.getSurf(abs(SN))<<ELog::endWarn;
-  else 
-    ELog::EM<<"Failed to get == "<<SN<<ELog::endWarn;
+    {
+      Geometry::Surface* SPtr=SurI.getSurf(abs(SN));
+      ELog::EM<<"Surface == "<<*SPtr<<ELog::endWarn;
+      ELog::EM<<"Distance == "<<SPtr->distance(Pos)<<ELog::endDiag;
+      Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
+      ELog::EM<<"SurfaceNormal == "<<N<<ELog::endDiag;
+    }
+  else
+    {
+      ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
+    }
+    
+  for(const MonteCarlo::Object* MPtr : MVec)
+    ELog::EM<<"Common surf Cell  == "<<MPtr->getName()<<ELog::endDiag;
 
-  for(mc=MVec.begin();mc!=MVec.end();mc++)
-    ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
-  ELog::EM<<"Quit == "<<ELog::endErr;
   return 0;
 }
 

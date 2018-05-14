@@ -3,7 +3,7 @@
  
  * File:   essBuild/WheelBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -75,7 +76,8 @@ namespace essSystem
 {
 
 WheelBase::WheelBase(const std::string& Key) :
-  attachSystem::ContainedGroup("Wheel","Shaft"),attachSystem::FixedComp(Key,10),
+  attachSystem::ContainedGroup("Wheel","Shaft"),
+  attachSystem::FixedOffset(Key,10),
   attachSystem::CellMap(),
   wheelIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(wheelIndex+1)
@@ -87,7 +89,8 @@ WheelBase::WheelBase(const std::string& Key) :
 {}
 
 WheelBase::WheelBase(const WheelBase& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   wheelIndex(A.wheelIndex),cellIndex(A.cellIndex)
   /*!
@@ -107,7 +110,7 @@ WheelBase::operator=(const WheelBase& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
     }
@@ -121,4 +124,20 @@ WheelBase::~WheelBase()
    */
 {}
 
+void
+WheelBase::createUnitVector(const attachSystem::FixedComp& FC,
+			const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: sideIndex
+  */
+{
+  ELog::RegMethod RegA("WheelBase","createUnitVector");
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+
+  return;
+}
+  
 } // NAMESPACE essSystem

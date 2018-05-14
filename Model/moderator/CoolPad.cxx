@@ -3,7 +3,7 @@
  
  * File:   moderator/CoolPad.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,10 +190,6 @@ CoolPad::createUnitVector(const attachSystem::FixedComp& CUnit,
 {
   ELog::RegMethod RegA("CoolPad","createUnitVector");
   FixedComp::createUnitVector(CUnit,sideIndex);
-  // Origin=CUnit.getLinkPt(fixIndex);
-  // Y=CUnit.getLinkAxis(fixIndex);
-  // Z=CUnit.getZ();
-  // X=Z*Y;
   applyShift(xStep,0.0,zStep);
 
   // Ugly loop to put relative coordinates into absolute
@@ -212,8 +208,6 @@ CoolPad::createSurfaces()
   */
 {
   ELog::RegMethod RegA("CoolPad","createSurface");
-
-  //SMap.addMatch(padIndex+1,CUnit.getLinkSurf(fixIndex));
 
   ModelSupport::buildPlane(SMap,padIndex+2,Origin+Y*thick,Y);
   ModelSupport::buildPlane(SMap,padIndex+3,Origin-X*(width/2.0),X);
@@ -281,7 +275,7 @@ CoolPad::createAll(Simulation& System,
   
   createUnitVector(FUnit,sideIndex);
   createSurfaces();
-  hotSurf=FUnit.getSignedFullRule(sideIndex);
+  hotSurf=FUnit.getFullRule(sideIndex);
   createObjects(System);
   insertObjects(System);       
   createWaterTrack(System);

@@ -3,7 +3,7 @@
  
  * File:   processInc/LayerDivide1D.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,14 +26,12 @@ class Simulation;
 
 namespace ModelSupport
 {
-  class DivideGrid;
-  
 /*!
   \class LayerDivide1D
   \version 1.0
   \author S. Ansell
   \date November 2015
-  \brief Bulk divider to produce 3D grid in a cell
+  \brief Bulk divider to produce 1D grid in a cell
 */
 
 class LayerDivide1D  : public attachSystem::FixedComp,
@@ -42,29 +40,25 @@ class LayerDivide1D  : public attachSystem::FixedComp,
 {
  private:
 
-  Geometry::Vec3D Centre;          ///< Centre point
+  Geometry::Vec3D Centre;        ///< Centre point
   
-  const int divIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  const int divIndex;            ///< Index of surface offset
+  int cellIndex;                 ///< Cell index
 
   std::vector<double> AFrac;     ///< Fractions in A direction
+  std::vector<int> AMat;         ///< Materials  
 
   size_t ALen;                   ///< Number of A Segments
 
-  std::string WallID;               ///< ID names for walls
-  std::pair<int,int> AWall;         ///< A wall surf numbers
-  std::string divider;              ///< divider string [if any]
-
-  DivideGrid* DGPtr;             ///< Main divider materials
+  std::string WallID;            ///< ID names for walls
+  std::pair<int,int> AWall;      ///< A wall surf numbers
+  std::string divider;           ///< divider string [if any]
 
   std::string objName;           ///< XML component name
   std::string loadFile;          ///< File to load
   std::string outputFile;        ///< File to write
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp&,
-			const long int,const bool);
 
   
   void checkDivide() const;
@@ -91,7 +85,8 @@ class LayerDivide1D  : public attachSystem::FixedComp,
 
   void setMaterials(const std::string&);
   void setMaterials(const std::vector<std::string>&);
-  void setMaterialXML(const std::string&,const std::string&,
+  void setMaterials(const std::vector<int>&);
+  int setMaterialXML(const std::string&,const std::string&,
 		      const std::string&,const std::string&);
   
   void divideCell(Simulation&,const int);

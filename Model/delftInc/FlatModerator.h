@@ -3,7 +3,7 @@
  
  * File:   delftInc/FlatModerator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,16 +40,25 @@ class FlatModerator : public virtualMod
  private:
   
   const int flatIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  int cellIndex;                 ///< Cell index
 
-  double backRad;           ///< Back radius
-  double frontRad;          ///< Back radius
-  double depth;             ///< Centre-Centre mid dist
+  double frontRadius;       ///< inner(front) radius
+  double backRadius;        ///< Back(outer) radius
+  double frontRoundRadius;  ///< inner(front) radius
+  double backRoundRadius;   ///< Back(outer) radius
+
+  double frontWallThick;    ///< Wall thickenss of view side
+  double backWallThick;     ///< Wall thickenss of core side
+
+  double wingAngle;         ///< Angle of cone
+  double viewExtent;        ///< Distance across join
+
+  
+  double depth;             ///< Sphere mid dist offset
   double length;            ///< inner apex - cut plane 
   double radius;            ///< Radius of minus wall
   double sideThick;         ///< Side thickness
 
-  double wallThick;         ///< Wall thickenss
   
   double modTemp;           ///< Moderator temperature
   double gasTemp;           ///< Moderator temperature
@@ -60,7 +69,8 @@ class FlatModerator : public virtualMod
   int HCell;                ///< Main H2 cell
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::SecondTrack&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -77,7 +87,8 @@ class FlatModerator : public virtualMod
   /// Access to hydrogen region
   virtual int getMainBody() const { return HCell; }
 
-  virtual void createAll(Simulation&,const attachSystem::TwinComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
   virtual void postCreateWork(Simulation&);
 };
 

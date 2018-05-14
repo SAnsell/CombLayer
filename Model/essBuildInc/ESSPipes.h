@@ -51,8 +51,9 @@ class ESSPipes
   void registerPipes(const std::vector<std::string>&);
   void buildH2Pipe(Simulation&,const std::string&,
 		   const std::string&,const  std::string&,
-		   const std::string&,const  std::string&,
-		   const std::string&);
+		   const std::string&,
+		   const  std::string& connect="",
+		   const std::string& invar="");
 
   PipeTYPE& getPipe(const std::string&);
 

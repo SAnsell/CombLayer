@@ -3,8 +3,7 @@
  
  * File:   sourceInc/BeamSource.h
  *
- *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,44 +39,39 @@ namespace SDef
 */
 
 class BeamSource : 
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public SourceBase
 {
  private:
-  
-  
-  int particleType;             ///< Particle Type
-  double cutEnergy;             ///< Energy cut point
-  double radius;
-  double angleSpread;           ///< Angle spread
 
-  double weight;                ///< Particle weight
-
-  std::vector<double> Energy;   ///< Energies [MeV]
-  std::vector<double> EWeight;  ///< Weights
+  double radius;                ///< spot size
+  double angleSpread;           ///< Angle spread [deg]
   
-  void populate(const FuncDataBase& Control);
-  int populateEnergy(std::string,std::string);
-  int populateEFile(const std::string&,const int,const int);
+  void populate(const ITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
-  void createSource(SDef::Source&) const;
 
  public:
 
   BeamSource(const std::string&);
   BeamSource(const BeamSource&);
   BeamSource& operator=(const BeamSource&);
-  ~BeamSource();
+  virtual BeamSource* clone() const;
+  virtual ~BeamSource();
 
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
+  /// Set radius
+  void setRadius(const double R) { radius=R; }
+  void createAll(const ITYPE&,const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(const attachSystem::FixedComp&,
+		 const long int);
 
-
-  void createAll(const FuncDataBase&,SDef::Source&);
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
-		 const long int,SDef::Source&);
-  
+  virtual void rotate(const localRotate&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void write(std::ostream&) const;
+  virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
+    
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   geometry/Line.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ operator<<(std::ostream& OX,const Line& Lref)
   return OX;
 }
 
-Line::Line() : Origin(),Direct()
+  Line::Line() : Origin(),Direct(0.0,1.0,0.0)
   /*!
     Constructor
   */
@@ -94,6 +94,8 @@ Line::Line(const Geometry::Vec3D& O,const Geometry::Vec3D& D)
   */
 {
   Direct.makeUnit();
+  if (Direct.nullVector())
+    throw ColErr::NumericalAbort("Line Constructor Direction");
 }
 
 Line::Line(const Line& A) : 
@@ -103,17 +105,6 @@ Line::Line(const Line& A) :
     \param A :: Line to copy
    */
 {}
-
-/*Line*
-Line::clone() const
-  /* ! 
-    Virtual copy constructor (not currently used)
-  * /
-
-{
-  return new Line(*this);
-}
-*/
 
 Line&
 Line::operator=(const Line& A)
@@ -227,11 +218,10 @@ Line::setDirect(const Geometry::Vec3D& Pt)
     \param Pt :: New direction
   */
 {
-  if (Pt.abs()>Geometry::zeroTol)
-    Direct=Pt.unit();
-  else
-    ELog::EM<<"Line::setDirect : Normal near zero:"
-	  <<Pt<<ELog::endErr;
+  if (Pt.nullVector())
+    throw ColErr::NumericalAbort("Line::setDirect Direction");
+  
+  Direct=Pt.unit();
   return;
 }
 
@@ -240,11 +230,13 @@ Line::rotate(const Geometry::Matrix<double>& MA)
   /*!
     Applies the rotation matrix to the 
     object.
-    \param MA :: Rotation Matrix
+    \param MA :: Rotation Matrix [not checked]
   */
 {
   Origin.rotate(MA);
   Direct.rotate(MA);
+  if (Direct.nullVector())
+    throw ColErr::NumericalAbort("Line::rotate Direction");
   Direct.makeUnit();
   return;
 }
@@ -439,21 +431,15 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   const Geometry::Vec3D b=Origin-V;
   const double AdotN=A.dotProd(Direct);
   const double AdotB=A.dotProd(b);
+  const double BdotB=b.dotProd(b);
   const double BdotN=b.dotProd(Direct);
   const double gamma2=CObj.getCosAngle()*CObj.getCosAngle();
 
-
-      ///\todo BUG HERE
-  //  if ((CObj.getCutFlag()>0 && AdotB<0) ||
-  //      (CObj.getCutFlag()<0 && AdotB>0))
-  //    return 0;
-  
   double C[3];  
   C[0]=AdotN*AdotN-gamma2;
   C[1]=2.0*(AdotB*AdotN-gamma2*BdotN);
-  C[2]=AdotB*AdotB-gamma2*b.dotProd(b);
+  C[2]=AdotB*AdotB-gamma2*BdotB;
 
-  
   std::pair<std::complex<double>,std::complex<double> > SQ;
   const size_t ix = solveQuadratic(C,SQ);
 

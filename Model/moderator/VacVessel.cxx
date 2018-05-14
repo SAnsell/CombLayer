@@ -3,7 +3,7 @@
  
  * File:   moderator/VacVessel.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,17 +66,17 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Groove.h"
 #include "Hydrogen.h"
-#include "Decoupled.h"
 #include "VacVessel.h"
 
 namespace moderatorSystem
 {
 
 VacVessel::VacVessel(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,8),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1),populated(0)
   /*!
@@ -242,7 +242,8 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit)
   for(size_t i=0;i<6;i++)
     BVec[i]=FUnit[i].getConnectPt();
   
-  divideSurf= FUnit.getLinkSurf(0);
+  divideSurf= FUnit.getLinkSurf(-1);
+
   return;
 }
 
@@ -258,26 +259,30 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit,
   ELog::RegMethod RegA("VacVessel","createBoundary");
   // Sides/Top/Base:
   Geometry::Vec3D A,B;
+
   A=FUnit[2].getConnectPt()-Origin;
   B=GUnit[2].getConnectPt()-Origin;
-  BVec[2]= (A.dotProd(X)<B.dotProd(X)) ? A : B;
+  BVec[2]= (A.dotProd(X) < B.dotProd(X)) ? A : B;
+
   A=FUnit[3].getConnectPt()-Origin;
   B=GUnit[3].getConnectPt()-Origin;
-  BVec[3]= (A.dotProd(X)>B.dotProd(X)) ? A : B;
+  BVec[3]= (A.dotProd(X) > B.dotProd(X)) ? A : B;
+
   A=FUnit[4].getConnectPt()-Origin;
   B=GUnit[4].getConnectPt()-Origin;
-  BVec[4]= (A.dotProd(Z)<B.dotProd(Z)) ? A : B;
+  BVec[4]= (A.dotProd(Z) < B.dotProd(Z)) ? A : B;
+
   A=FUnit[5].getConnectPt()-Origin;
   B=GUnit[5].getConnectPt()-Origin;
-  BVec[5]= (A.dotProd(Z)>B.dotProd(Z)) ? A : B;
+  BVec[5]= (A.dotProd(Z) > B.dotProd(Z)) ? A : B;
   for(size_t i=2;i<6;i++)
     BVec[i]+=Origin;
 
   // Centres: 
-  BVec[0]=FUnit[1].getConnectPt();
-  BVec[1]=GUnit[1].getConnectPt();
+  BVec[0]=FUnit.getLinkPt(2);
+  BVec[1]=GUnit.getLinkPt(2);
   
-  divideSurf= -FUnit.getLinkSurf(0);
+  divideSurf= FUnit.getLinkSurf(-1);
   return;
 }
 
@@ -413,7 +418,8 @@ VacVessel::createLinks()
 
   // set Links:
   for(size_t i=2;i<6;i++)
-    FixedComp::setConnect(i,getSurfacePoint(4,i+1),getDirection(i));
+    FixedComp::setConnect(i,getSurfacePoint(4,static_cast<long int>(i+1)),
+			  getDirection(i));
 
   // Set Connect surfaces:
   for(int i=2;i<6;i++)
@@ -423,7 +429,7 @@ VacVessel::createLinks()
   // For Cylindrical surface must also have a divider:
   // -- Groove:
   FixedComp::setLinkSurf(0,SMap.realSurf(vacIndex+41));
-  FixedComp::setBridgeSurf(0,SMap.realSurf(divideSurf));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(divideSurf));
 
   FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+42));
   FixedComp::setBridgeSurf(1,-SMap.realSurf(divideSurf));
@@ -463,7 +469,7 @@ VacVessel::getSurfacePoint(const size_t layer,
   /*!
     Get the center point for the surfaces in each layer
     \param layer :: Layer number : 0 is inner 4 is outer
-    \param side :: Index to side (front/back/left/right/up/down)
+    \param sideIndex :: Index to side (front/back/left/right/up/down)
     \return point on surface
   */
 {
@@ -516,10 +522,22 @@ VacVessel::createAllPair(Simulation& System,const Groove& GMod,
   createLinks();
   insertObjects(System);       
 
+  
+  // Mid of grood
+  FixedComp::setLinkSurf(6,-SMap.realSurf(vacIndex+41));
+  FixedComp::setBridgeSurf(6,SMap.realSurf(divideSurf));
+
+  Geometry::Vec3D AimPt=GMod.getLinkPt(7);
+  Geometry::Vec3D LP=this->getLinkPt(1);
+  LP-= Z * Z.dotProd(LP);
+  LP+= Z * Z.dotProd(AimPt);
+  FixedComp::setConnect(6,LP,Y);
+
+  FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+42));
+  FixedComp::setBridgeSurf(7,SMap.realSurf(divideSurf));
+  FixedComp::setConnect(7,HMod.getLinkPt(2),Y);  
   return;
 }
-
-
 
 void
 VacVessel::createAll(Simulation& System,

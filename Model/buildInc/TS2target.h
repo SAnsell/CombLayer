@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/TS2target.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,15 +49,9 @@ class TS2target : public constructSystem::TargetBase
   const int protonIndex;        ///< Index of surface offset
 
   int cellIndex;                ///< Cell index
-  int populated;                ///< populated or not
-
 
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
-
-  double xOffset;               ///< Master offset distance 
-  double yOffset;               ///< Master offset distance 
-  double zOffset;               ///< Master offset distance 
   
   double mainLength;            ///< Straight length
   double coreRadius;            ///< Inner W radius [cyl]
@@ -114,7 +108,7 @@ class TS2target : public constructSystem::TargetBase
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
   
   void createSurfaces();  
@@ -122,7 +116,7 @@ class TS2target : public constructSystem::TargetBase
   void createObjects(Simulation&);
   void createNoseConeObjects(Simulation&);
   void createLinks();
-  void createBeamWindow(Simulation&);
+
 
  public:
 

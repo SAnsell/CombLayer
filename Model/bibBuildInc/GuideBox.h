@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/GuideBox.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,18 +36,12 @@ namespace bibSystem
 */
 
 class GuideBox : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int guideIndex;           ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
 
   double width;                   ///< width of GuideBox
   double height;                  ///< height of GuideBox
@@ -60,11 +54,11 @@ class GuideBox : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createLinks();
 
   public:
@@ -76,9 +70,9 @@ class GuideBox : public attachSystem::ContainedComp,
   
   void createAll(Simulation&, 
 		 const attachSystem::FixedComp&,
-		 const size_t,
+		 const long int,
 		 const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
   
 };

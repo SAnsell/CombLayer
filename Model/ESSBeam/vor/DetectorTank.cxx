@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/vor/DetectorTank.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,47 @@ DetectorTank::DetectorTank(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+DetectorTank::DetectorTank(const DetectorTank& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  tankIndex(A.tankIndex),cellIndex(A.cellIndex),
+  innerRadius(A.innerRadius),outerRadius(A.outerRadius),
+  midAngle(A.midAngle),height(A.height),innerThick(A.innerThick),
+  frontThick(A.frontThick),backThick(A.backThick),
+  roofThick(A.roofThick),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: DetectorTank to copy
+  */
+{}
+
+DetectorTank&
+DetectorTank::operator=(const DetectorTank& A)
+  /*!
+    Assignment operator
+    \param A :: DetectorTank to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      innerRadius=A.innerRadius;
+      outerRadius=A.outerRadius;
+      midAngle=A.midAngle;
+      height=A.height;
+      innerThick=A.innerThick;
+      frontThick=A.frontThick;
+      backThick=A.backThick;
+      roofThick=A.roofThick;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 
 DetectorTank::~DetectorTank() 

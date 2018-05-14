@@ -3,7 +3,7 @@
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,15 +47,14 @@ class Object
   int listNum;       ///< Creation number
   double Tmp;        ///< Starting temperature (if given)
   int MatN;          ///< Material Number 
-  int fill;          ///< fill number
   int trcl;          ///< transform number
-  int universe;      ///< universe number
   int imp;           ///< importance / 0 
   double density;    ///< Density
   int placehold;     ///< Is cell virtual (ie not in output)
   int populated;     ///< Full population
 
   HeadRule HRule;    ///< Top rule
+
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;
  
@@ -103,6 +102,7 @@ class Object
   int setObject(std::string);
   int setObject(const int,const int,const std::vector<Token>&);
   int procString(const std::string&);
+  int procHeadRule(const HeadRule&);
   void setDensity(const double D) { density=D; }       ///< Set Density [Atom/A^3]
   void setMaterial(const int M) { MatN=M; }            ///< Set Material number
   void setPlaceHold(const int P) { placehold=P; }      ///< Set placeholder
@@ -124,7 +124,8 @@ class Object
   /// get head rule 
   const HeadRule& getHeadRule() const { return HRule; }
   
-  int populate();
+  void populate();
+  void rePopulate();
   int createSurfaceList();
   void createLogicOpp();
   int isObjSurfValid() const { return objSurfValid; }  ///< Check validity needed
@@ -153,6 +154,9 @@ class Object
   /// Access the surface list [of pointers]
   const std::vector<const Geometry::Surface*>& getSurList() const
     { return SurList; }
+
+  std::vector<std::pair<int,int>> getImplicatePairs(const int) const;
+  std::vector<std::pair<int,int>> getImplicatePairs() const;
   
   ///\cond ABSTRACT
   virtual void displace(const Geometry::Vec3D&) {}

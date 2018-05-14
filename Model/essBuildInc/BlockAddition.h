@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ class BlockAddition :  public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::LayerComp&,
-		     const size_t,const size_t);
+		     const size_t,const long int);
   void createLinks();
 
   std::string rotateItem(std::string);
@@ -79,8 +79,6 @@ class BlockAddition :  public attachSystem::ContainedComp,
   BlockAddition& operator=(const BlockAddition&);
   virtual ~BlockAddition();
 
-  virtual std::string getLinkComplement(const size_t) const;
-  virtual std::string getLinkString(const size_t) const;
 
   /// Set/unset active
   void setActive(const int A) { active=A; }
@@ -91,7 +89,7 @@ class BlockAddition :  public attachSystem::ContainedComp,
   std::string createCut(const size_t) const;
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::LayerComp&,
-		 const size_t,const size_t);
+		 const size_t,const long int);
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;

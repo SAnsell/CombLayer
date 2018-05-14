@@ -3,7 +3,7 @@
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
     Determine what to calculate for an object 
     based on the mesh form
     \param ObjPtr :: object to calculate for
-    \return result
+    \return determined value from the object
   */
 {
   if (!ObjPtr) return 0.0;
@@ -176,10 +176,11 @@ Visit::populate(const Simulation* SimPtr,
   /*!
     The big population call
     \param SimPtr :: Simulation system
-    \param Active :: Active set
+    \param Active :: Active set of cells to use (ranged)
    */
 {
-  ELog::RegMethod RegA("Visit","populate");
+  ELog::RegMethod RegA("Visit","populate(set)");
+
   MonteCarlo::Object* ObjPtr(0);
   Geometry::Vec3D aVec;
 
@@ -188,30 +189,29 @@ Visit::populate(const Simulation* SimPtr,
   
   const bool aEmptyFlag=Active.empty();
 
-  size_t beCnt(0);
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
-    stepXYZ[i]=XYZ[i]/nPts[i];
+    stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
 
   for(long int i=0;i<nPts[0];i++)
     {
-      aVec[0]=stepXYZ[0]*(i+0.5);
+      aVec[0]=stepXYZ[0]*(static_cast<double>(i)+0.5);
       for(long int j=0;j<nPts[1];j++)
         {
-	  aVec[1]=stepXYZ[1]*(0.5+j);
+	  aVec[1]=stepXYZ[1]*(0.5+static_cast<double>(j));
 	  for(long int k=0;k<nPts[2];k++)
 	    {
-	      aVec[2]=stepXYZ[2]*(0.5+k);
+	      aVec[2]=stepXYZ[2]*(0.5+static_cast<double>(k));
 	      const Geometry::Vec3D Pt=Origin+aVec;
 	      ObjPtr=SimPtr->findCell(Pt,ObjPtr);
+
 	      // Active Set Code:
 	      if (!aEmptyFlag)
 		{
+
 		  const std::string rangeStr=OR.inRange(ObjPtr->getName());
 		  if (Active.find(rangeStr)!=Active.end())
-		    {
-		      mesh[i][j][k]=getResult(ObjPtr);
-		    }
+		    mesh[i][j][k]=getResult(ObjPtr);
 		  else
 		    mesh[i][j][k]=0.0;
 		}
@@ -219,9 +219,6 @@ Visit::populate(const Simulation* SimPtr,
 	      else
 		{
 		  mesh[i][j][k]=getResult(ObjPtr);
-		  if (outType==VISITenum::material && 
-		      fabs(mesh[i][j][k]-37)<1e-4)
-		    beCnt++;
 		}
 
 	    }
@@ -237,6 +234,8 @@ Visit::populate(const Simulation* SimPtr)
     \param SimPtr :: Simulation system
    */
 {
+  ELog::RegMethod RegA("Visit","populate(sim)");
+
   std::set<std::string> Empty;
   populate(SimPtr,Empty);
   return;
@@ -254,10 +253,10 @@ Visit::writeVTK(const std::string& FName) const
   std::ofstream OX(FName.c_str());
   std::ostringstream cx;
   boost::format fFMT("%1$11.6g%|14t|");
-
+  
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
-    stepXYZ[i]=XYZ[i]/nPts[i];
+    stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
   
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"chipIR Data"<<std::endl;
@@ -266,27 +265,27 @@ Visit::writeVTK(const std::string& FName) const
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
   for(int i=0;i<nPts[0];i++)
-    OX<<(fFMT % (Origin[0]+stepXYZ[0]*(i+0.5)));
+    OX<<(fFMT % (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
-  for(int i=0;i<nPts[1];i++)
-    OX<<(fFMT % (Origin[1]+stepXYZ[1]*(i+0.5)));
+  for(long int i=0;i<nPts[1];i++)
+    OX<<(fFMT % (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(int i=0;i<nPts[2];i++) 
-    OX<<(fFMT % (Origin[2]+stepXYZ[2]*(i+0.5)));
+    OX<<(fFMT % (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"POINT_DATA "<<nPts[0]*nPts[1]*nPts[2]<<std::endl;
   OX<<"SCALARS cellID float 1.0"<<std::endl;
   OX<<"LOOKUP_TABLE default"<<std::endl;
 
-  for(int k=0;k<nPts[2];k++)
-    for(int j=0;j<nPts[1];j++)
+  for(long int k=0;k<nPts[2];k++)
+    for(long int j=0;j<nPts[1];j++)
       {
-	for(int i=0;i<nPts[0];i++)
+	for(long int i=0;i<nPts[0];i++)
 	  OX<<(fFMT % (mesh[i][j][k]));
 	OX<<std::endl;
       }

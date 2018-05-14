@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/BilReflector.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,19 +36,13 @@ namespace bibSystem
 */
 
 class BilReflector : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int refIndex;           ///< Index of surface offset 
   int cellIndex;                ///< Cell index
  
-  double xStep;                 ///< X Step
-  double yStep;                 ///< Y Step
-  double zStep;                 ///< Z step
-  double xyAngle;               ///< XY Rotation [deg]
-  double zAngle;                ///< Z Rotation [deg]
-
   double BeHeight;              ///< Be Height
   double BeDepth;               ///< Be Depth
   double BeRadius;              ///< Be radius
@@ -80,8 +74,8 @@ class BilReflector : public attachSystem::ContainedComp,
   double OuterPbRadius;              ///< Final Pb radius
   int OuterPbMat;                    ///< Final Pb Material
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&, const size_t );
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createLinks();
@@ -102,7 +96,9 @@ class BilReflector : public attachSystem::ContainedComp,
   /// Main cell
   int getInnerCell() const { return refIndex+1; }
   std::vector<int> getCells() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const size_t);
+  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

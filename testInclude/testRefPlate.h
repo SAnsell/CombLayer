@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   testInclude/testRefPlate.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ class testRefPlate
 {
 private:
 
-  Simulation ASim;           ///< Simulation model [local for testing]
+  SimMCNP ASim;           ///< Simulation model [local for testing]
   /// Base object for testing additions too
   std::shared_ptr<testSystem::simpleObj> SObj;
 

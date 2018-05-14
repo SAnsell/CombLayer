@@ -129,13 +129,15 @@ Quaternion::calcQRotDeg(const double Angle,const double a,const double b,const d
 
 Quaternion
 Quaternion::calcQVRot(const Geometry::Vec3D& A,
-                      const Geometry::Vec3D& APrime)
+                      const Geometry::Vec3D& APrime,
+		      const Geometry::Vec3D& ZRotDef)
   /*!
     Calculate Quaternion value for a given 
     a vector and the new target vector rotated about the
     origin
     \param A :: Original vector
     \param APrime :: Vector that is rotated to A
+    \param ZRotDef :: Z-default rotation if A and APrime are colinear
     \return Quaternion that rotates APrime to A
   */
 {
@@ -144,8 +146,12 @@ Quaternion::calcQVRot(const Geometry::Vec3D& A,
   double Angle=A.dotProd(APrime)/(A.abs()*APrime.abs());
 
   // Note the test for the 1.0+epsilon error:
-  Angle=(std::abs(Angle)<1.0-Geometry::zeroTol) ?
-    acos(Angle) : 0.0;
+  if (std::abs(Angle)<1.0-Geometry::zeroTol)
+    Angle=(acos(Angle));
+  else if (Angle>0.0)
+    return Quaternion(1.0,Geometry::Vec3D(0,0,0));
+  else
+    return Quaternion(0.0,ZRotDef.unit());
     
   Axis*=sin(Angle/2.0);
   return Quaternion(cos(Angle/2.0),Axis);
@@ -671,7 +677,5 @@ Quaternion::basisRotate(const Vec3D& xa,const Vec3D& xb,
     Out[i]=EigenVec[i][0];
   return Out;
 }
-  
-
 
 }  // NAMESPACE Geometry

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   imat/IMatGuide.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -317,7 +317,7 @@ IMatGuide::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("IMatGuide","createObjects");
   
-  const std::string insertEdge=FC.getLinkString(1);
+  const std::string insertEdge=FC.getLinkString(2);
   std::string Out;
   Out=ModelSupport::getComposite(SMap,guideIndex," -2 33 -34 35 -36 ");
   addOuterSurf("Inner",Out);

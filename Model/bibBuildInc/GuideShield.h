@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/GuideShield.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,8 +58,8 @@ class GuideShield : public attachSystem::ContainedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&,const attachSystem::ContainedComp*,
-		     const attachSystem::FixedComp&,const size_t,
-		     const attachSystem::FixedComp&,const size_t);
+		     const attachSystem::FixedComp&,const long int,
+		     const attachSystem::FixedComp&,const long int);
   void calcInnerDimensions(const attachSystem::FixedComp&);
 
  public:
@@ -71,8 +71,8 @@ class GuideShield : public attachSystem::ContainedComp,
 
   std::vector<int> getCells() const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&,const size_t,
-		 const attachSystem::FixedComp&,const size_t);
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int);
   
 };
 

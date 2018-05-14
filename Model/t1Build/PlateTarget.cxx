@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/PlateTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,7 +211,7 @@ PlateTarget::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("PlateTarget","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(0);
+  Origin=FC.getLinkPt(1);
   return;
 }
 
@@ -243,7 +243,7 @@ PlateTarget::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlane(SMap,ptIndex+25,Origin-Z*WHeight,Z);
   ModelSupport::buildPlane(SMap,ptIndex+26,Origin+Z*WHeight,Z);
 
-  SMap.addMatch(ptIndex+1004,FC.getLinkSurf(0));
+  SMap.addMatch(ptIndex+1004,FC.getLinkSurf(1));
 
   Geometry::Vec3D FPt(Origin);
   for(size_t i=0;i<nBlock;i++)
@@ -374,8 +374,8 @@ PlateTarget::plateEdge(const size_t plateN,double& W,double& L) const
   
   W=width;
   Geometry::Vec3D FPt(Origin);
-  FPt += Y*((plateN+1.0) * waterThick+
-	    (2.0*plateN+1.0) * taThick);
+  FPt += Y*(static_cast<double>(plateN+1) * waterThick+
+	    static_cast<double>(2*plateN+1) * taThick);
   for(size_t i=1; i<= plateN;i++)
     FPt+=Y*tBlock[i-1];
   
@@ -433,7 +433,7 @@ PlateTarget::buildFeedThrough(Simulation& System)
       const Geometry::Vec3D PStart=
 	X*sX*feedXOffset+Z*sZ*(height-feedHeight);
       const Geometry::Vec3D PEnd=
-	PStart+getLinkPt(1)+Y*backPlateThick;
+	PStart+getLinkPt(2)+Y*backPlateThick;
 
       WaterChannel.addPoint(PStart+Origin);
       WaterChannel.addPoint(PEnd);

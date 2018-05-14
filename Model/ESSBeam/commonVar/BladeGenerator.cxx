@@ -3,7 +3,7 @@
  
  * File:   commonVar/BladeGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -235,7 +234,7 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
     {
       realYStep= -std::accumulate(thick.begin(),thick.end(),0.0);
       realYStep+=thick.front();  // front allowed for
-      realYStep-=(thick.size()-1.0)*gap;
+      realYStep-=(static_cast<double>(thick.size())-1.0)*gap;
       realYStep/=2.0;
     }
   
@@ -252,11 +251,11 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
   Control.addVariable(keyName+"NDisk",thick.size());
 
   for(size_t i=0;i<innerThick.size();i++)
-    Control.addVariable(keyName+StrFunc::makeString(i)+"InnerThick",
+    Control.addVariable(keyName+std::to_string(i)+"InnerThick",
                         innerThick[i]);
   
   for(size_t i=0;i<thick.size();i++)
-    Control.addVariable(keyName+StrFunc::makeString(i)+"Thick",thick[i]);
+    Control.addVariable(keyName+std::to_string(i)+"Thick",thick[i]);
 
   Control.addVariable(keyName+"InnerMat",innerMat);
   Control.addVariable(keyName+"OuterMat",outerMat);
@@ -264,13 +263,13 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
   for(size_t index=0;index<CentreAngle.size();index++)
     {
       
-      const std::string IndexStr(StrFunc::makeString(index));
+      const std::string IndexStr(std::to_string(index));
       const std::vector<double>& CRef=CentreAngle[index];
       const std::vector<double>& ORef=OpenAngle[index];
       Control.addVariable(keyName+IndexStr+"NBlades",CRef.size());
       for(size_t j=0;j<CRef.size();j++)
 	{
-	  const std::string jStr(StrFunc::makeString(j));
+	  const std::string jStr(std::to_string(j));
 	  Control.addVariable(keyName+IndexStr+"PhaseAngle"+jStr,CRef[j]);
 	  Control.addVariable(keyName+IndexStr+"OpenAngle"+jStr,ORef[j]);
 	}

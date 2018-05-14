@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/CH4PreModBase.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace ts1System
 */
 
 class CH4PreModBase : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::LayerComp
 {
  protected:
@@ -53,7 +53,7 @@ class CH4PreModBase : public attachSystem::ContainedComp,
   virtual CH4PreModBase* clone() const =0; 
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const size_t,const size_t) =0;
+			 const long int,const long int) =0;
 
 };
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/fissionConstruct.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -43,22 +44,23 @@ namespace tallySystem
   Similar to flux tally
 */
 
-class fissionConstruct : virtual public basicConstruct
+class fissionConstruct 
 {
  private:
-  
 
+  static int convertRange(const std::string&,int&,int&);
+
+  /// private constructor
+  fissionConstruct() {}
+  
  public:
 
-  fissionConstruct();
-  fissionConstruct(const fissionConstruct&);
-  fissionConstruct& operator=(const fissionConstruct&);
-  virtual ~fissionConstruct() {}  ///< Destructor
 
-  virtual int processPower(Simulation&,const mainSystem::inputParam&,
-			   const size_t,const bool) const;
 
-  virtual void writeHelp(std::ostream&) const;
+  static int processPower(SimMCNP&,const mainSystem::inputParam&,
+			   const size_t);
+
+  static void writeHelp(std::ostream&);
 };
 
 }

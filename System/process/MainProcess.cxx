@@ -3,7 +3,7 @@
  
  * File:   process/MainProcess.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
 #include "SimPOVRay.h"
+#include "SimMCNP.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
@@ -67,14 +68,19 @@
 #include "SimProcess.h"
 #include "DefPhysics.h"
 #include "TallySelector.h"
+#include "TallyBuilder.h"
+#include "flukaTallyBuilder.h"
+#include "flukaTallySelector.h"
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
+#include "inputSupport.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "flukaSourceSelector.h"
+#include "ObjectAddition.h"
 
 #include "MainProcess.h"
-
 
 #include "surfRegister.h"
 #include "HeadRule.h"
@@ -259,14 +265,13 @@ renumberCells(Simulation& System,const inputParam& IParam)
 	    (i+1<dataCnt) ? IParam.getValue<std::string>("renum",i+1) : "";
 
 	  int xOffset(0);
-	  int xRange(10000);
-	  
+	  int xRange(10000);	  
 	  i+=2;
 	  if (!StrFunc::convert(Name,xOffset) || 
 	      !StrFunc::convert(Range,xRange))
 	    {
 	      xOffset=OR.getCell(Name);
-	      xRange=OR.getRange(Name);
+	      xRange=OR.getRange(Name);			
 	      i--;              // using names
 	    }
 	  
@@ -300,7 +305,7 @@ setVariables(Simulation& System,const inputParam& IParam,
     \param System :: Simulation
     \param IParam :: Parameter set
     \param Names :: Vector of Options and values
-    \todo Value/AddValues not set but used by setRunTimeVariables
+    \todo Value/AddValues not set bu-t used by setRunTimeVariables
   */
 {
   ELog::RegMethod RegA("MainProcess","setVariables");
@@ -391,7 +396,9 @@ createSimulation(inputParam& IParam,
   // DEBUG
   if (IParam.flag("debug"))
     ELog::EM.setActive(IParam.getValue<size_t>("debug"));
-  
+
+
+
   IParam.processMainInput(Names);
 
   Simulation* SimPtr;
@@ -403,8 +410,17 @@ createSimulation(inputParam& IParam,
     SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
-  else 
-    SimPtr=new Simulation;
+  else
+    {
+      SimMCNP* SMCPtr=new SimMCNP;
+      SMCPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+      SimPtr=SMCPtr;
+    }
+
+  // DNF split the cells
+  SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
+  // DNF split the cells
+  SimPtr->setCellCNF(IParam.getDefValue<size_t>(0,"cellCNF"));
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 
@@ -458,20 +474,143 @@ setMaterialsDataBase(const inputParam& IParam)
       throw ColErr::ExitAbort("help");
     }	
   else
-    throw ColErr::InContainerError<std::string>(materials,
-						"Materials Data Base type");
+    throw ColErr::InContainerError<std::string>
+      (materials,"Materials Data Base type");
+
+  if (IParam.flag("matFile"))
+    {
+      const size_t NCnt(IParam.itemCnt("matFile",0));
+      for(size_t i=0;i<NCnt;i++)
+	{
+	  const std::string matFile=IParam.getValue<std::string>("matFile",i);
+	  ModelSupport::processMaterialFile(matFile);
+	}
+    }
+  return;
 }
   
 void
 exitDelete(Simulation* SimPtr)
  /*!
    Final deletion including singletons
-   \param Simulation to delete
+   \param SimPtr :: Simulation to delete
  */
 {
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
+  return;
+}
+
+
+void
+buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
+		 const mainSystem::inputParam& IParam,
+		 const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimFLUKAPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
+
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+  if (IParam.flag("noVariables"))
+    SimFLUKAPtr->setNoVariables();
+
+  ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
+  //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+
+  flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
+  //
+  SimFLUKAPtr->processActiveMaterials();
+  SimProcess::importanceSim(*SimFLUKAPtr,IParam);
+  
+  //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
+  tallyModification(*SimFLUKAPtr,IParam);
+
+  SDef::flukaSourceSelection(*SimFLUKAPtr,IParam);
+  SimFLUKAPtr->masterSourceRotation();
+  // Ensure we done loop
+
+  do
+    {
+      SimProcess::writeIndexSimFLUKA(*SimFLUKAPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+
+void
+buildFullSimMCNP(SimMCNP* SimMCPtr,
+		 const mainSystem::inputParam& IParam,
+		 const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+
+  
+  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+  SimMCPtr->prepareWrite();
+
+  // From tallybuilder
+  tallySystem::tallySelection(*SimMCPtr,IParam);
+   //
+
+  SimProcess::importanceSim(*SimMCPtr,IParam);
+
+  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
+  tallyModification(*SimMCPtr,IParam);
+
+  SDef::sourceSelection(*SimMCPtr,IParam);
+  SimMCPtr->masterSourceRotation();
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+
+void
+buildFullSimPOVRay(SimPOVRay* SimPOVRayPtr,
+		   const mainSystem::inputParam& IParam,
+		   const std::string& OName)
+/*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimPOVRayPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
+  // Definitions section 
+
+  // if (IParam.flag("noVariables"))
+  //   SimPOVRayPtr->setNoVariables();
+
+  SimPOVRayPtr->prepareWrite();
+  SimPOVRayPtr->write(OName+".x");
+
   return;
 }
 
@@ -486,45 +625,65 @@ buildFullSimulation(Simulation* SimPtr,
     \param IParam :: input pararmeter
     \param OName :: output file name
    */
-  
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
+
+  ModelSupport::objectAddition(*SimPtr,IParam);
+  
+  SimPtr->removeComplements();
+  SimPtr->removeDeadSurfaces(0);
+  
+  ModelSupport::setDefRotation(IParam);
+  SimPtr->masterRotation();
+
+  reportSelection(*SimPtr,IParam);
+  if (createVTK(IParam,SimPtr,OName))
+    return;
+
+  //  UGLY CASTS to be removed
+  SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
+  if (SimMCPtr)
+    {
+      buildFullSimMCNP(SimMCPtr,IParam,OName);
+      return;
+    }
+  
+  SimFLUKA* SimFLUKAPtr=dynamic_cast<SimFLUKA*>(SimPtr);
+  if (SimFLUKAPtr)
+    {      
+      buildFullSimFLUKA(SimFLUKAPtr,IParam,OName);
+      return;
+    }
+
+  SimPOVRay* SimPOVPtr=dynamic_cast<SimPOVRay*>(SimPtr);
+  if (SimPOVPtr)
+    {      
+      buildFullSimPOVRay(SimPOVPtr,IParam,OName);
+      return;
+    }
 
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
-
-  tallyAddition(*SimPtr,IParam);
-  SimPtr->removeComplements();
-  SimPtr->removeDeadSurfaces(0);         
-  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
-  ModelSupport::setDefRotation(IParam);
-  SimPtr->masterRotation();
-
-  const int renumCellWork=tallySelection(*SimPtr,IParam);
-  reportSelection(*SimPtr,IParam);
-  if (createVTK(IParam,SimPtr,OName))
-    return;
   // 
   SimProcess::importanceSim(*SimPtr,IParam);
   SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-  if (renumCellWork)
-    tallyRenumberWork(*SimPtr,IParam);
-  tallyModification(*SimPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);
+  SimPtr->masterSourceRotation();
   // Ensure we done loop
   do
     {
-      SimProcess::writeIndexSim(*SimPtr,OName,MCIndex);
+      //SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
       MCIndex++;
     }
   while(MCIndex<multi);
 
   return;
 }
-  
+
+
+
                       
 }  // NAMESPACE mainSystem
 

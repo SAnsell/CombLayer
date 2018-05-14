@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/itemConstruct.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -38,31 +39,31 @@ namespace tallySystem
   \version 1.0
   \author S. Ansell
   \date April 2012
-  \brief Holds everthing for 
+  \brief Holds everthing for item construct
 
-  Provides linkage to its outside on FixedComp[0]
 */
 
-class itemConstruct : virtual public basicConstruct
+class itemConstruct 
 {
+ private:
 
+  /// private constructor
+  itemConstruct() {}
 
+  
  public:
 
-  itemConstruct();
-  itemConstruct(const itemConstruct&);
-  itemConstruct& operator=(const itemConstruct&);
-  virtual ~itemConstruct() {}  ///< Destructor
 
-  void processItem(Simulation&,
+
+  static void processItem(SimMCNP&,
 		   const mainSystem::inputParam&,
-		   const size_t) const;
+		   const size_t);
   
-  void addBeamLineItem(Simulation&,const int,const double,
-			const std::string&,const int,
-			const double,const double) const;
+  static void addBeamLineItem(SimMCNP&,const int,const double,
+			const std::string&,const long int,
+			const double,const double);
 
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

@@ -229,11 +229,14 @@ MultiChannel::createSurfaces()
   const double TotalD=topSurf->distance(Origin)+
     baseSurf->distance(Origin);
 
-  if (TotalD<nBlades*bladeThick+Geometry::zeroTol)
-    throw ColErr::SizeError<double>(TotalD,nBlades*bladeThick,
-      "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
+  const double BladeTotal(static_cast<double>(nBlades)*bladeThick);
+  const double voidThick((TotalD-BladeTotal)/
+			 static_cast<double>(nBlades+1));
+
+  if (TotalD<BladeTotal+Geometry::zeroTol)
+    throw ColErr::SizeError<double>(TotalD,BladeTotal,
+       "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
   
-  const double voidThick((TotalD-nBlades*bladeThick)/(nBlades+1.0));
 
   double DPosA(voidThick);
   double DPosB(voidThick+bladeThick);
@@ -339,8 +342,8 @@ MultiChannel::setFaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("MultiChannel","setFaces<FC>");
 
-  const int baseSurfN=FC.getSignedLinkSurf(BS);
-  const int topSurfN=FC.getSignedLinkSurf(TS);
+  const int baseSurfN=FC.getLinkSurf(BS);
+  const int topSurfN=FC.getLinkSurf(TS);
   setFaces(baseSurfN,topSurfN);
 
   return;
@@ -391,8 +394,8 @@ MultiChannel::setLeftRight(const attachSystem::FixedComp& FCA,
 {
   ELog::RegMethod RegA("MultiChannel","setLeftRight(FC)");
 
-  leftStruct=FCA.getSignedFullRule(lIndex);
-  rightStruct=FCB.getSignedFullRule(rIndex);
+  leftStruct=FCA.getFullRule(lIndex);
+  rightStruct=FCB.getFullRule(rIndex);
   setFlag |= 2;
   return;
 }

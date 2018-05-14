@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/ProtonPipe.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ProtonPipe.h"
@@ -74,7 +75,7 @@ namespace bibSystem
 
 ProtonPipe::ProtonPipe(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,3),
+  attachSystem::FixedOffset(Key,3),
   protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(protonIndex+1)
   /*!
@@ -84,10 +85,9 @@ ProtonPipe::ProtonPipe(const std::string& Key) :
 {}
 
 ProtonPipe::ProtonPipe(const ProtonPipe& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),radius(A.radius),
+  radius(A.radius),
   innerWallThick(A.innerWallThick),wallThick(A.wallThick),
   length(A.length),innerLength(A.innerLength),voidMat(A.voidMat),
   innerWallMat(A.innerWallMat),wallMat(A.wallMat)
@@ -108,13 +108,8 @@ ProtonPipe::operator=(const ProtonPipe& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       radius=A.radius;
       innerWallThick=A.innerWallThick;
       wallThick=A.wallThick;
@@ -165,29 +160,26 @@ ProtonPipe::populate(const FuncDataBase& Control)
 
 void
 ProtonPipe::createUnitVector(const attachSystem::FixedComp& FC,
-		   const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
   */
 {
   ELog::RegMethod RegA("ProtonPipe","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
 
 void
 ProtonPipe::createSurfaces(const attachSystem::FixedComp& TarFC,
-			   const size_t targetIndex)
+			   const long int targetIndex)
   /*!
     Create planes for the silicon and Polyethene layers
     \param TarFC :: Target Object
-    \param tarIndex :: Target side index 
+    \param targetIndex :: Target side index 
   */
 {
   ELog::RegMethod RegA("ProtonPipe","createSurfaces");
@@ -279,8 +271,8 @@ ProtonPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("ProtonPipe","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(Target,tarIndex);
-  createSurfaces(Target,tarIndex);
+  createUnitVector(Target,tarIndex+1);
+  createSurfaces(Target,tarIndex+1);
   createObjects(System);
 
   createLinks();

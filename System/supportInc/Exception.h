@@ -3,7 +3,7 @@
  
  * File:   supportInc/Exception.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -319,6 +319,9 @@ class DimensionError : public ExBase
  public:
 
   DimensionError(const T*,const T*,const std::string&);
+  DimensionError(const std::vector<T>&,const std::vector<T>&,
+		 const std::string&);
+  
   DimensionError(const DimensionError<ndim,T>&);
   DimensionError<ndim,T>& operator=(const DimensionError<ndim,T>&);
   virtual ~DimensionError() throw() {}  ///< Destructor

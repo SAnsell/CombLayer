@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testPoly.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -326,9 +326,6 @@ testPoly::testBezoutFail()
 	    "0.999314767x^2+1.5680273x-389.022646");
 
   
-  ELog::EM<<"F == "<<FXYZ<<ELog::endDebug;
-  ELog::EM<<"G == "<<GXYZ<<ELog::endDebug;
-  ELog::EM<<"H == "<<HXYZ<<ELog::endDebug;
 
   // mathLevel::solveValues SV;
   // SV.setEquations(FXYZ,GXYZ,HXYZ);

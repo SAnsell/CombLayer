@@ -3,7 +3,7 @@
  
  * File:   lensModel/makeLens.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,10 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "siModerator.h"
@@ -173,13 +175,13 @@ makeLens::getFC() const
 {
   ELog::RegMethod RegA("makeLens","getFC");
   if (!layerObj)
-    throw ColErr::EmptyValue<void>("LayerObject "+RegA.getFull());
+    throw ColErr::EmptyValue<void>("LayerObject ");
  
   return layerObj->getFC();
 }
 
 void
-makeLens::createTally(Simulation& System,
+makeLens::createTally(SimMCNP& System,
 		      const mainSystem::inputParam& IParam)
   /*!
     Create all the tallies for lens

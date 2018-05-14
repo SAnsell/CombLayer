@@ -3,7 +3,7 @@
  
  * File:   delft/makeDelft.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Source.h"
+#include "inputSupport.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
@@ -76,12 +78,12 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "World.h"
@@ -90,6 +92,7 @@
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "BeamTube.h"
+#include "BeamTubeJoiner.h"
 #include "SwimingPool.h"
 #include "virtualMod.h"
 #include "delftH2Moderator.h"
@@ -97,6 +100,7 @@
 #include "ConeModerator.h"
 #include "FlatModerator.h"
 #include "H2Vac.h"
+#include "PressureVessel.h"
 #include "H2Groove.h"
 #include "beamSlot.h"
 #include "BeamInsert.h"
@@ -111,65 +115,19 @@
 namespace delftSystem
 {
 
-virtualMod*
-makeDelft::createColdMod(const std::string& modType) 
-  /*!
-    Simple constructor for cold moderators
-    \param modType :: Moderator type
-    \return virtual pointer
-  */
-{
-  ELog::RegMethod RegA("makeDelft","createColdMod");
-
-  if (modType=="Sphere")
-    return new SphereModerator("sphereH2");
-  if (modType=="SphereLong")
-    return new SphereModerator("sphereLong");
-  if (modType=="DoubleMoon")
-    return new SphereModerator("sphereH2");
-  if (modType=="Moon")
-    return new delftH2Moderator("delftH2");
-  if (modType=="Tunnel" || modType=="Cone")
-    return new ConeModerator("cone");
-  if (modType=="Kaeri" || modType=="Flat")
-    return new FlatModerator("flat");
-  if (modType=="Void")
-    return 0;
-  if (modType=="help")
-    {
-      ELog::EM<<"Options "<<ELog::endDiag;
-      ELog::EM<<"-- Sphere     :: Spherical moderator from FRM-1\n";
-      ELog::EM<<"-- SphereLong :: Spherical moderator long extension\n";
-      ELog::EM<<"-- DoubleMoon :: Modified twin curve modreator\n";
-      ELog::EM<<"-- Moon       :: Single cylindrical cut out moderator\n";
-      ELog::EM<<"-- Cone        :: Cone moderator"<<ELog::endDiag;
-      ELog::EM<<"-- Flat        :: Simple flat cone"<<ELog::endDiag;
-      ELog::EM<<"-- Void        :: No moderator"<<ELog::endDiag;
-      return 0;
-    }
-
-  throw ColErr::InContainerError<std::string>
-    (modType,"Moderator type unknown");
-}
-
-makeDelft::makeDelft(const std::string& modType) :
-  vacReq((modType=="Cone" || modType=="Sphere" ||
-	  modType=="Flat" || modType=="SphereLong") ? 0 : 1),
+makeDelft::makeDelft() :
   GridPlate(new ReactorGrid("delftGrid")),
   Pool(new SwimingPool("delftPool")),
-  FlightA(new BeamTube("delftFlightR2")),
+  FlightA(new BeamTubeJoiner("delftFlightR2")),
   FlightB(new BeamTube("delftFlightR3")),
   FlightC(new BeamTube("delftFlightR1")),
   FlightD(new BeamTube("delftFlightL2")),
   FlightE(new BeamTube("delftFlightL1")),
   FlightF(new BeamTube("delftFlightL3")),
-  ColdMod(createColdMod(modType)),
-  CSurround(new H2Vac("delftH2Cont")),
-  R2Insert(new BeamInsert("R2Insert")),
-  R2Be(new BeSurround("R2Ref")),
-  R2Cube(new BeCube("R2Cube")),
-  RFull(new BeFullBlock("RFull")),
-  LFull(new BeFullBlock("LFull"))
+  ColdMod(new FlatModerator("flat")),
+  ColdVac(new PressureVessel("delftVac")),
+  ColdPress(new PressureVessel("delftPress")),
+  R2Insert(new BeamInsert("R2Insert"))
   /*!
     Constructor
     \param modType :: Cold moderator type
@@ -188,37 +146,30 @@ makeDelft::makeDelft(const std::string& modType) :
   OR.addObject(FlightD);
   OR.addObject(FlightE);
   OR.addObject(FlightF);
-  if (ColdMod)
-    OR.addObject(ColdMod);
-  OR.addObject(CSurround);
+  OR.addObject(ColdMod);
+  OR.addObject(ColdVac);
+  OR.addObject(ColdPress);
   OR.addObject(R2Insert);
-  OR.addObject(R2Be);
-  OR.addObject(R2Cube);
-
 }
-
+  
 makeDelft::makeDelft(const makeDelft& A) :
   GridPlate(new ReactorGrid(*A.GridPlate)),
   Pool(new SwimingPool(*A.Pool)),
-  FlightA(new BeamTube(*A.FlightA)),  // Centre object get self cut
+  FlightA(new BeamTubeJoiner(*A.FlightA)),  // Centre object get self cut
   FlightB(new BeamTube(*A.FlightB)),
   FlightC(new BeamTube(*A.FlightC)),
   FlightD(new BeamTube(*A.FlightD)),
   FlightE(new BeamTube(*A.FlightE)),
   FlightF(new BeamTube(*A.FlightF)),
-  ColdMod(A.ColdMod->clone()),
-  CSurround(new H2Vac(*A.CSurround)),
-  R2Insert(new BeamInsert(*A.R2Insert)),
-  R2Be(new BeSurround(*A.R2Be))
+  ColdMod(new FlatModerator(*A.ColdMod)),
+  ColdVac(new PressureVessel(*A.ColdVac)),
+  ColdPress(new PressureVessel(*A.ColdPress)),
+  R2Insert(new BeamInsert(*A.R2Insert))
   /*!
     Copy constructor
     \param A :: makeDelft to copy
   */
-{
-  std::vector<std::shared_ptr<H2Groove> >::const_iterator vc;
-  for(vc=A.ColdGroove.begin();vc!=A.ColdGroove.end();vc++)
-    ColdGroove.push_back(std::shared_ptr<H2Groove>(new H2Groove(**vc)));
-}
+{}
 
 makeDelft&
 makeDelft::operator=(const makeDelft& A)
@@ -238,12 +189,10 @@ makeDelft::operator=(const makeDelft& A)
       *FlightD=*A.FlightD;
       *FlightE=*A.FlightE;
       *FlightF=*A.FlightF;
+      *ColdVac=*A.ColdVac;
+      *ColdPress=*A.ColdPress;
       *ColdMod=*A.ColdMod;
-      ColdGroove.clear();
-      std::vector<std::shared_ptr<H2Groove> >::const_iterator vc;
-      for(vc=A.ColdGroove.begin();vc!=A.ColdGroove.end();vc++)
-	ColdGroove.push_back(std::shared_ptr<H2Groove>(new H2Groove(**vc)));
-      *CSurround=*A.CSurround;
+
       *R2Insert=*A.R2Insert;
       *R2Be=*A.R2Be;
     }
@@ -256,29 +205,6 @@ makeDelft::~makeDelft()
    */
 {}
 
-void 
-makeDelft::variableObjects(const FuncDataBase& Control)
-  /*!
-    Process those object that need to be controlled by variables
-    \param Control :: control object
-  */
-{
-  ELog::RegMethod RegA("makeDelft","variableObjects");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  const int NGroove=Control.EvalVar<int>("delftH2NGroove");
-  for(int i=0;i<NGroove;i++)
-    {
-      ColdGroove.push_back
-	(std::shared_ptr<H2Groove>
-	 (new H2Groove("delftH2Groove",i+1)));
-      OR.addObject
-	(StrFunc::makeString(std::string("delftH2Groove"),i+1),
-	 ColdGroove.back());
-    }
-  return;
-}
 
 void
 makeDelft::makeBlocks(Simulation& System)
@@ -345,23 +271,21 @@ makeDelft::makeRabbit(Simulation& System)
 	}
       index++;
     } while (flag);  
-
-  
   return;
 }
 
 void 
-makeDelft::setSource(Simulation* SimPtr,
+makeDelft::setSource(Simulation& System,
 		     const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input system
   */
 {
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
-
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
   
   if (IParam.flag("kcode"))
     {
@@ -369,136 +293,202 @@ makeDelft::setSource(Simulation* SimPtr,
       std::ostringstream cx;
       for(size_t i=0;i<NItems;i++)
 	cx<<IParam.getValue<std::string>("kcode",i)<<" ";
-      SDef::KCode& KCard=SimPtr->getPC().getKCodeCard();
+      
+      SDef::KCode KCard;
       KCard.setLine(cx.str());
 
       if (IParam.flag("ksrcMat"))
 	{
-	  std::vector<Geometry::Vec3D> FissionVec=
-	    GridPlate->fuelCentres();
-	  ELog::EM<<"Kmat vector size :"
-		  <<FissionVec.size()<<ELog::endDiag;
+	  const size_t fissileZaid=IParam.getDefValue<size_t>(0,"ksrcMat",0,0);
+	  std::vector<int> fuelCells=
+	    GridPlate->getFuelCells(System,fissileZaid);
+
+	  std::vector<Geometry::Vec3D> FissionVec;
+	  for(const int FC : fuelCells)
+	    {
+	      MonteCarlo::Qhull* OPtr=
+		System.findQhull(FC);
+	      if (!OPtr)
+		throw ColErr::InContainerError<int>(FC,"Cell Not found");
+	      if (OPtr->calcVertex())
+		{
+		  const Geometry::Vec3D& CPt(OPtr->getCofM());
+		  if (OPtr->isValid(CPt))
+		    FissionVec.push_back(CPt);
+		}		
+	    }
+	  ELog::EM<<"Fission size == "<<FissionVec.size()<<ELog::endDiag;
 	  KCard.setKSRC(FissionVec);
+	  SDB.registerSource("kcode",KCard);
 	}
     }
 
   return;
 }
 
+void
+makeDelft::buildCore(Simulation& System,
+		     const mainSystem::inputParam& IParam)
+  /*!
+    Build the main core
+    \param System :: Simualation system
+    \param IParam :: Input parameters					       
+   */
+{
+  ELog::RegMethod RegA("makeDelft","buildCore");
+
+  const attachSystem::FixedComp& WC=World::masterOrigin();
+  
+  if (IParam.flag("fuelXML"))
+    GridPlate->loadFuelXML(IParam.getValue<std::string>("fuelXML"));
+  
+  GridPlate->addInsertCell(Pool->getCells("Water"));
+  GridPlate->createAll(System,WC,0);
+  if (IParam.flag("FuelXML"))
+    GridPlate->writeFuelXML(IParam.getValue<std::string>("FuelXML"));
+
+}
+
+void
+makeDelft::buildFlight(Simulation& System,
+		       const std::string& flightConfig)
+  /*!
+    Build the main core
+    \param System :: Simualation system
+    \param flightConfig :: fight configurations
+   */
+{
+  ELog::RegMethod RegA("makeDelft","buildFlight");
+
+ 
+ 
+  const attachSystem::FixedComp& WC=World::masterOrigin();
+
+  if (flightConfig=="Single")
+    return;
+
+
+  FlightB->addInsertCell(Pool->getCells("Water"));
+  FlightB->addInsertCell(74123);
+  FlightB->createAll(System,WC,0);
+
+  FlightC->addInsertCell(Pool->getCells("Water"));
+  FlightC->addInsertCell(74123);
+  FlightC->createAll(System,WC,0);
+
+  FlightD->addInsertCell(Pool->getCells("Water"));
+  FlightD->addInsertCell(74123);
+  FlightD->createAll(System,WC,0);
+
+  FlightE->addInsertCell(Pool->getCells("Water"));
+  FlightE->addInsertCell(74123);
+  FlightE->createAll(System,WC,0);
+
+  FlightF->addInsertCell(Pool->getCells("Water"));
+  FlightF->addInsertCell(74123);
+  FlightF->createAll(System,WC,0);
+  return;
+}
+  
+void
+makeDelft::buildModerator(Simulation& System,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex,
+			  const std::string& modType,
+			  const std::string& refExtra)
+  /*!
+    Build the main moderator in flightA
+    \param System :: Simualation system
+    \param FC :: Fixed point of side of reactro
+    \param sideIndex :: link point 
+    \param modType :: Name of moderator type
+    \param refExtra :: Extra reflector be piece type
+   */
+{
+  ELog::RegMethod RegA("makeDeflt","buildModerator");
+
+  ELog::EM<<"Mod type == "<<modType<<ELog::endDiag;
+  const int voidCell(74123);
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  ColdPress->addInsertCell(Pool->getCells("Water"));
+  ColdPress->addInsertCell(74123);
+  ColdPress->createAll(System,FC,sideIndex);
+
+  ColdVac->addInsertCell(ColdPress->getCells("Void"));
+  ColdVac->createAll(System,*ColdPress,0);
+  if (modType!="Empty" && modType!="empty")
+    {
+      ColdMod->addInsertCell(ColdVac->getCells("Void"));
+      ColdMod->createAll(System,*ColdVac,0);
+    }
+
+  // Joins onto the pressure vessel
+  FlightA->addInsertCell(Pool->getCells("Water"));
+  FlightA->addInsertCell(74123);
+  FlightA->createAll(System,*ColdPress,2);
+
+  R2Insert->addInsertCell(FlightA->getCells("Void"));
+  R2Insert->createAll(System,*FlightA,0);
+    
+
+  // Built relative to main plate
+  if (refExtra=="R2Surround")
+    {
+      BeSurround* BePtr=new BeSurround("R2Ref");
+      BePtr->addInsertCell(Pool->getCells("Water"));
+      if (Pool->getCells("Water").empty())
+	BePtr->addInsertCell(voidCell);
+      HeadRule CPCut(ColdPress->getFullRule(1));
+      CPCut.addUnion(ColdPress->getFullRule(3));
+      BePtr->createAll(System,FC,sideIndex,
+		       FlightB->getExclude()+FlightC->getExclude()+
+		       CPCut.display());
+      R2Be=std::shared_ptr<attachSystem::FixedOffset>(BePtr);
+      OR.addObject(R2Be);
+    }
+
+  return;
+}
+  
 void 
-makeDelft::build(Simulation* SimPtr,
+makeDelft::build(Simulation& System,
 		 const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input paratmers					       
    */
 {
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
-  // First create variable objects:
-  variableObjects(SimPtr->getDataBase());
-
-  const attachSystem::FixedComp& WC=
-    World::masterOrigin();
-
-  const std::string refExtra=IParam.getValue<std::string>("refExtra");
-
-  Pool->addInsertCell(74123);
-  Pool->createAll(*SimPtr,WC,0);
-
-  if (IParam.flag("fuelXML"))
-    GridPlate->loadFuelXML(IParam.getValue<std::string>("fuelXML"));
-  GridPlate->addInsertCell(Pool->getCells("Water"));
-  GridPlate->createAll(*SimPtr,WC);
-  if (IParam.flag("FuelXML"))
-    GridPlate->writeFuelXML(IParam.getValue<std::string>("FuelXML"));
 
 
-  FlightA->addInsertCell(Pool->getCells("Water"));
-  FlightA->addInsertCell(74123);
-  FlightA->createAll(*SimPtr,WC,WC.getX());
+  const attachSystem::FixedComp& WC=World::masterOrigin();
 
-  FlightB->addInsertCell(Pool->getCells("Water"));
-  FlightB->addInsertCell(74123);
-  FlightB->createAll(*SimPtr,WC,WC.getX());
+  const std::string buildType=IParam.getValue<std::string>("buildType");
+  const std::string modType=IParam.getValue<std::string>("modType");
+  const std::string refExtra=IParam.getValue<std::string>("refExtra");  
 
-  FlightC->addInsertCell(Pool->getCells("Water"));
-  FlightC->addInsertCell(74123);
-  FlightC->createAll(*SimPtr,WC,WC.getX());
-
-  FlightD->addInsertCell(Pool->getCells("Water"));
-  FlightD->addInsertCell(74123);
-  FlightD->createAll(*SimPtr,WC,-WC.getX());
-
-  FlightE->addInsertCell(Pool->getCells("Water"));
-  FlightE->addInsertCell(74123);
-  FlightE->createAll(*SimPtr,WC,-WC.getX());
-
-  FlightF->addInsertCell(Pool->getCells("Water"));
-  FlightF->addInsertCell(74123);
-  FlightF->createAll(*SimPtr,WC,-WC.getX());
-
-  R2Insert->addInsertCell(FlightA->getInnerVoid());
-  R2Insert->createAll(*SimPtr,*FlightA,0);
-
-  if (refExtra=="R2Surround")
+  const attachSystem::FixedComp* FCPtr=&WC;
+  long int sideIndex(0);
+  if (buildType!="Single")
     {
-      R2Be->addInsertCell(Pool->getCells("Water"));
-      R2Be->createAll(*SimPtr,*FlightA,
-		      FlightB->getExclude()+FlightC->getExclude());
-    }
-  else if (refExtra=="R2Cube")
-    {
-      R2Cube->addInsertCell(Pool->getCells("Water"));
-      R2Cube->createAll(*SimPtr,*FlightA,
-		      FlightA->getExclude());
-    }
-  else if (refExtra=="FullBlock")
-    {
-      RFull->addInsertCell(Pool->getCells("Water"));
-      RFull->createAll(*SimPtr,*FlightA,-1);
-      attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightA);
-      attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightB);
-      attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightC);
-      LFull->addInsertCell(Pool->getCells("Water"));
-      LFull->createAll(*SimPtr,*FlightD,-1);
-      attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightD);
-      attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightE);
-      attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightF);
+      Pool->addInsertCell(74123);
+      Pool->createAll(System,WC,0);
+      
+      makeBlocks(System);
+      buildCore(System,IParam);
+      makeRabbit(System);
+      FCPtr=GridPlate.get();  
+      sideIndex=2;
     }
   
-  makeBlocks(*SimPtr);
-  makeRabbit(*SimPtr);
+  buildFlight(System,buildType);
 
-  // ELog::EM<<"Insert to be removed "<<ELog::endWarn;
-  if (ColdMod)
-    {
-      if (!vacReq)
-	ColdMod->addInsertCell(FlightA->getInnerVoid());
-      ColdMod->createAll(*SimPtr,*FlightA);
-      
-      const int MB=ColdMod->getMainBody();
-      if (MB)
-	{
-	  std::vector<std::shared_ptr<H2Groove> >::iterator vc;
-	  int gprev(0);
-	  for(vc=ColdGroove.begin();vc!=ColdGroove.end();vc++)
-	    {
-	      (*vc)->addInsertCell(MB);
-	      if (gprev) 
-		(*vc)->addInsertCell(gprev);
-	      (*vc)->createAll(*SimPtr,*ColdMod,*ColdMod);
-	      gprev=(*vc)->getMainCell();
-	    }      
-	}
-      if (vacReq)
-	{
-	  CSurround->addInsertCell(FlightA->getInnerVoid());
-	  CSurround->createAll(*SimPtr,*ColdMod,*ColdMod);
-	}
-      ColdMod->postCreateWork(*SimPtr);
-    }
+  buildModerator(System,*FCPtr,sideIndex,modType,refExtra);
   
   return;
 }

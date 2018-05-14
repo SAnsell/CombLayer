@@ -175,7 +175,9 @@ TubeDetBox::populate(const FuncDataBase& Control)
     outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
   else
     outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",-1);
-  
+
+  filterMat=ModelSupport::EvalDefMat<int>(Control,baseName+"FilterMat",0);
+  filterMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FilterMat",filterMat);
   return;
 }
 
@@ -202,10 +204,9 @@ TubeDetBox::createSurfaces()
 {
   ELog::RegMethod RegA("TubeDetBox","createSurfaces");
 
-  if (!nDet) return;
 
-  //main inner box:
-  
+
+  //main inner box
   
   // tube caps:
   ModelSupport::buildPlane(SMap,detIndex+5,
@@ -216,31 +217,16 @@ TubeDetBox::createSurfaces()
 			   Origin+Z*(height/2.0),Z);    
   ModelSupport::buildPlane(SMap,detIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);    
+
   
   const Geometry::Vec3D XGap(X*(2.0*centRadius));
-  Geometry::Vec3D tubeCent(Origin-XGap*((nDet-1)/2.0));
-  int DI(detIndex);
-  for(size_t i=0;i<nDet;i++)
-    {
-      ModelSupport::buildCylinder(SMap,DI+7,tubeCent,Z,tubeRadius);
-      ModelSupport::buildCylinder(SMap,DI+17,tubeCent,Z,
-                                  tubeRadius+wallThick);
-      DI+=100;
-      tubeCent+=XGap;
-    }
-
-  ModelSupport::buildPlane(SMap,detIndex+1001,Origin-Y*centRadius,Y);
-  ModelSupport::buildPlane(SMap,detIndex+1002,Origin+Y*centRadius,Y);
-
-  ModelSupport::buildPlane(SMap,detIndex+1003,Origin-XGap*(nDet/2.0),X);
-  ModelSupport::buildPlane(SMap,detIndex+1004,Origin+XGap*(nDet/2.0),X);
-
 
   if (outerMat>=0)
     {
-      const Geometry::Vec3D XDist=XGap*(nDet/2.0);
+      const Geometry::Vec3D XDist=XGap*(static_cast<double>(nDet)/2.0);
       const Geometry::Vec3D ZDist=Z*(height/2.0+wallThick);
 
+      ModelSupport::buildPlane(SMap,detIndex+2001,Origin-Y*(centRadius+gap),Y);
       ModelSupport::buildPlane(SMap,detIndex+2002,Origin+Y*(centRadius+gap),Y);
       ModelSupport::buildPlane(SMap,detIndex+2003,Origin-XDist-X*gap,X);
       ModelSupport::buildPlane(SMap,detIndex+2004,Origin+XDist+X*gap,X);
@@ -262,6 +248,29 @@ TubeDetBox::createSurfaces()
     }
 
 
+  if (nDet)
+    {  
+      Geometry::Vec3D tubeCent(Origin-XGap*(static_cast<double>(nDet-1)/2.0));
+      int DI(detIndex);
+      for(size_t i=0;i<nDet;i++)
+	{
+	  ModelSupport::buildCylinder(SMap,DI+7,tubeCent,Z,tubeRadius);
+	  ModelSupport::buildCylinder(SMap,DI+17,tubeCent,Z,
+				      tubeRadius+wallThick);
+	  DI+=100;
+	  tubeCent+=XGap;
+	}
+      
+      ModelSupport::buildPlane(SMap,detIndex+1001,Origin-Y*centRadius,Y);
+      ModelSupport::buildPlane(SMap,detIndex+1002,Origin+Y*centRadius,Y);
+      
+      ModelSupport::buildPlane(SMap,detIndex+1003,
+			       Origin-XGap*(static_cast<double>(nDet)/2.0),X);
+      ModelSupport::buildPlane(SMap,detIndex+1004,
+			       Origin+XGap*(static_cast<double>(nDet)/2.0),X);
+    }
+
+  
   return; 
 }
 
@@ -304,13 +313,17 @@ TubeDetBox::createObjects(Simulation& System)
 	    (SMap,detIndex," 1001 -2002 2005 -2006  2003 -2004  "
                            " (1002:-15:16:-1003:1004)");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  // filter
+	  Out= ModelSupport::getComposite
+	    (SMap,detIndex," 2001 -1001 -2002 2005 -2006  2003 -2004  ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,filterMat,0.0,Out));
 	  // outer wall
 	  Out= ModelSupport::getComposite
-	    (SMap,detIndex," 1001 -2012 2015 -2016  2013 -2014  "
+	    (SMap,detIndex," 2001 -2012 2015 -2016  2013 -2014  "
                            " (2002:-2003:2004:-2005:2006)");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
 	  Out= ModelSupport::getComposite
-	    (SMap,detIndex," 1001 -2012 2015 -2016  2013 -2014 ");
+	    (SMap,detIndex," 2001 -2012 2015 -2016  2013 -2014 ");
 	}
       addOuterSurf(Out);
     }
@@ -321,8 +334,26 @@ void
 TubeDetBox::createLinks()
   /*!
     Creates a full attachment set
+    Currently only the tube centres
   */
 {
+  ELog::RegMethod RegA("TubeDetBox","createLinks");
+  
+  FixedComp::setNConnect(nDet+6);
+
+  if (nDet)
+    {
+      int DI(detIndex);
+      const Geometry::Vec3D XGap(X*(2.0*centRadius));
+      Geometry::Vec3D tubeCent(Origin-XGap*(static_cast<double>(nDet-1)/2.0));
+      for(size_t i=0;i<nDet;i++)
+	{
+	  FixedComp::setConnect(i,tubeCent,-Y);
+	  FixedComp::setLinkSurf(i,SMap.realSurf(DI+7));
+	  tubeCent+=XGap;
+	  DI+=100;
+	}
+    }
   
   return;
 }

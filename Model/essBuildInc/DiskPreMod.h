@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/DiskPreMod.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_DiskPreMod_h
@@ -27,6 +27,7 @@ class Simulation;
 namespace essSystem
 {
   class CylFlowGuide;
+  class OnionCooling;
 /*!
   \class DiskPreMod
   \author S. Ansell
@@ -36,33 +37,36 @@ namespace essSystem
 */
 
 class DiskPreMod : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
-    public attachSystem::FixedComp,
-    public attachSystem::CellMap
+  public attachSystem::LayerComp,
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
-  
+
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-  
-  double zStep;                   ///< Step away from target
+
   double outerRadius;             ///< Outer radius of Be Zone
-  
+
   std::vector<double> radius;         ///< cylinder radii [additive]
   std::vector<double> height;         ///< Full heights [additive]
   std::vector<double> depth;          ///< full depths [additive]
   std::vector<double> width;          ///< Widths [additive]
-  std::vector<int> mat;               ///< Materials 
+  std::vector<int> mat;               ///< Materials
   std::vector<double> temp;           ///< Temperatures
-
   
+  std::string flowGuideType; ///< cooling flow guide type
+
   size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
   /// Flow guide pattern inside DiskPreMod (engineering detail)
-  std::shared_ptr<CylFlowGuide> InnerComp; 
-  
-  
-  void populate(const FuncDataBase&,const double,const double);
+  std::shared_ptr<CylFlowGuide> InnerComp;
+  std::shared_ptr<OnionCooling> onion;
+  std::string sideRule; ///< side rule
+
+  using FixedOffset::populate;
+  void populate(const FuncDataBase&,const double&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
 
@@ -82,17 +86,19 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
 
+  std::string getSideRule() const { return sideRule; }
+
   /// total height of object
   double getZOffset() const { return zStep; }
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double,const double);
+		 const long int,const bool,const double&);
 
 };
 
 }
 
 #endif
- 
+

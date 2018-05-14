@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSource.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,46 @@ testSource::~testSource()
   /// Destructor
 {}
 
+int
+testSource::checkSDef(const std::string& Res,const std::string& Expect)
+  /*!
+    check the Res vs Expected
+    \param Res :: Result
+    \param Expect :: Expected result
+    \return -ve on failure / 0 on success
+  */
+{
+  
+  if (StrFunc::fullBlock(Res)!=Expect)
+    {
+      ELog::EM<<"Test Failed"<<ELog::endDiag;
+      ELog::EM<<"Expect:"<<Expect<<":"<<ELog::endDiag;
+      ELog::EM<<"Out   :"<<StrFunc::fullBlock(Res)<<":"<<ELog::endDiag;
+      const std::string Out=StrFunc::fullBlock(Res);
+      for(size_t i=0;i<Out.size();i++)
+	if (isspace(Out[i]))
+	  ELog::EM<<"<spc>";
+      	else if (isalnum(Out[i]) || Out[i]=='.')
+	  ELog::EM<<Out[i];
+      	else
+	  ELog::EM<<"<"<<(int)Out[i]<<">";
+	  
+      ELog::EM<<ELog::endDiag;
+
+      for(size_t i=0;i<Expect.size();i++)
+	if (isspace(Expect[i]))
+	  ELog::EM<<"<spc>";
+	else if (isalnum(Expect[i]) || Expect[i]=='.')
+	  ELog::EM<<Expect[i];
+	else
+	  ELog::EM<<"<"<<(int)Expect[i]<<">";
+
+      ELog::EM<<ELog::endDiag;
+      return -1;
+    }
+  return 0;
+}
+
 int 
 testSource::applyTest(const int extra)
   /*!
@@ -74,6 +114,9 @@ testSource::applyTest(const int extra)
     \retval 0 All succeeded
   */
 {
+  ELog::RegMethod RegA("testSource","applyTest");
+  TestFunc::regSector("testSource");
+
   typedef int (testSource::*testPtr)();
   testPtr TPtr[]=
     {
@@ -115,18 +158,21 @@ testSource::applyTest(const int extra)
 int
 testSource::testBasic()
   /*!
-    Tests the Creation of Line and stuff
+    Simple test of source term [basic components]
     \return 0 sucess / -ve on failure
   */
 {
   ELog::RegMethod RegItem("testSource","testBasic");
+
+	
+  const std::string Expect("sdef cel=1 x=3.4");
   Source A;
-  A.setActive();
   A.setComp("cel",1);
   A.setComp("x",3.4);
 
-  A.write(std::cout);
-  return 0;
+  std::ostringstream cx;
+  A.write(cx);
+  return checkSDef(cx.str(),Expect);
 }
 
 int
@@ -137,8 +183,13 @@ testSource::testProbTable()
   */
 {
   ELog::RegMethod RegItem("testSource","testProbTable");
+
+  const std::string Expect
+    ("sdef cel=1 erg=d1 x=3.4\n"
+     "si1 A 0.3 0.5 0.9\n"
+     "sp1 0.2 0.3"  );
+  
   Source A;
-  A.setActive();
   A.setComp("cel",1);
   A.setComp("x",3.4);
 
@@ -149,17 +200,16 @@ testSource::testProbTable()
   SI1.addData(0.5);
   SI1.addData(0.9);
 
-  SrcProb SP1(1);
+  SrcProb SP1(0);
   SP1.addData(0.2);
   SP1.addData(0.3);
   D1.addUnit(SI1);
   D1.addUnit(SP1);
   A.setData("erg",D1);
 
-  ELog::EM<<"WRITE :: "<<ELog::endTrace;
-  A.write(std::cout);
-  ELog::EM<<"---------- "<<ELog::endTrace;
-  return 0;
+  std::ostringstream cx;
+  A.write(cx);
+  return checkSDef(cx.str(),Expect);
 }
 
 int
@@ -170,9 +220,14 @@ testSource::testItem()
   */
 {
   ELog::RegMethod RegItem("testSource","testItem");
+  const std::string Expect
+    ("sdef ccc=76 dir=1 erg=fdir=d3 par=9 tr=1 vec=0.0 0.0 -5 x=d1 y=d2\n"
+     "sp1 -41 1.3344 0\n"
+     "sp2 -41 1.3344 0\n"
+     "ds3 s 18 17 15 13");
+
   Source A;
   
-  A.setActive();
   A.setComp("dir",1.0);
   A.setComp("vec",Geometry::Vec3D(0,0,-5));
   A.setComp("tr",1);
@@ -199,9 +254,10 @@ testSource::testItem()
 
   A.setData("erg",D3);
 
-  A.write(std::cout);
-  
-  return 0;
+
+  std::ostringstream cx;
+  A.write(cx);
+  return checkSDef(cx.str(),Expect);
 }
   
   

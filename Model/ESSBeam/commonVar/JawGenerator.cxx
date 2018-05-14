@@ -3,7 +3,7 @@
  
  * File:   commonVar/JawGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,10 +57,32 @@ namespace setVariable
 {
 
 JawGenerator::JawGenerator()
-/*!
+  /*!
     Constructor and defaults
   */
 {}
+
+JawGenerator::JawGenerator(const JawGenerator&)  
+
+  /*!
+    Copy constructor
+    \param  :: JawGenerator to copy
+  */
+{}
+
+JawGenerator&
+JawGenerator::operator=(const JawGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: JawGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+    }
+  return *this;
+}
 
 
 JawGenerator::~JawGenerator() 

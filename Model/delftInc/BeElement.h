@@ -3,7 +3,7 @@
  
  * File:   delftInc/BeElement.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,9 @@ class BeElement  : public RElement
   double Depth;           ///< Depth of outer
   double TopHeight;       ///< Top height (from origin)
 
-  int beMat;              ///< Default [be material]
-
+  size_t nLayer;          ///< number of layers
+  int beMat;              ///< Default be material
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const Geometry::Vec3D&);
@@ -52,6 +53,7 @@ class BeElement  : public RElement
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
   void createLinks();
+  void layerProcess(Simulation&,const FuelLoad&); 
 
  public:
 

@@ -3,7 +3,7 @@
  
  * File:   test/testMathSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -327,12 +327,13 @@ testMathSupport::testCubic()
   // (x-2)(x+3)(x-3)
   const double CoefA[4]={1,-2,-9,18};
   size_t flag=solveCubic(CoefA,A,B,C);
-  if (fabs(A.real()+3.0)>1e-10  ||
-      fabs(B.real()-3.0)>1e-10  ||
-      fabs(C.real()-2.0)>1e-10  ||
-      fabs(A.imag())>1e-10  ||
-      fabs(B.imag())>1e-10  ||
-      fabs(C.imag())>1e-10)
+  if (flag!=3 ||
+      std::abs(A.real()+3.0)>1e-10  ||
+      std::abs(B.real()-3.0)>1e-10  ||
+      std::abs(C.real()-2.0)>1e-10  ||
+      std::abs(A.imag())>1e-10  ||
+      std::abs(B.imag())>1e-10  ||
+      std::abs(C.imag())>1e-10)
     {
       ELog::EM<<"Equation (x-2)(x+3)(x-3)"<<ELog::endCrit;
       ELog::EM<<"Answers == "<<A<<ELog::endCrit;
@@ -345,11 +346,13 @@ testMathSupport::testCubic()
   // (x-2)(x+3)(x+3)
   const double CoefB[4]={1,0,-1,2/sqrt(27)};
   flag=solveCubic(CoefB,A,B,C);
-  if (!validCubic(CoefB,A) ||
+  if (flag!=2 ||
+      !validCubic(CoefB,A) ||
       !validCubic(CoefB,B) ||
       !validCubic(CoefB,C) )
     {
-      ELog::EM<<"Equation x^3=0"<<ELog::endCrit;
+      ELog::EM<<"Equation x^3-x+2/sqrt(27)=0"<<ELog::endCrit;
+      ELog::EM<<"Flag "<<flag<<ELog::endCrit;
       ELog::EM<<"Answers == "<<A<<ELog::endCrit;
       ELog::EM<<"Answers == "<<B<<ELog::endCrit;
       ELog::EM<<"Answers == "<<C<<ELog::endCrit;
@@ -359,7 +362,8 @@ testMathSupport::testCubic()
   // ONE REAL: TWO COMPLEX
   const double CoefC[4]={1,2,-1,6};
   flag=solveCubic(CoefC,A,B,C);
-  if (!validCubic(CoefC,A) ||
+  if (flag!=3 ||
+      !validCubic(CoefC,A) ||
       !validCubic(CoefC,B) ||
       !validCubic(CoefC,C))
     {
@@ -424,13 +428,13 @@ testMathSupport::testPermSort()
   std::vector<double> V(30);
   std::generate(V.begin(),V.end(),
   		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
-  
+
   std::vector<size_t> Index=
     mathSupport::sortPermutation(V,[](const double& a,
                                       const double& b)
                                  { return (a<b); } );
+
   mathSupport::applyPermutation(V,Index);
-  
   for(size_t i=1;i<V.size();i++)
     {
       if (V[i-1]>V[i])

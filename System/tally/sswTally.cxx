@@ -3,7 +3,7 @@
  
  * File:   tally/sswTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -54,12 +52,6 @@
 #include "NRange.h"
 #include "NList.h"
 #include "Tally.h"
-#include "Transform.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "sswTally.h"
 
 namespace tallySystem

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/candleStick.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,14 +189,14 @@ candleStick::createUnitVector(const attachSystem::FixedComp& FC)
   FixedComp::createUnitVector(FC);  
 
   // Centre Base centre to be half way into bar:
-  BaseCent=FC.getLinkPt(4)+X*baseXoffset+Y*baseYoffset-
+  BaseCent=FC.getLinkPt(5)+X*baseXoffset+Y*baseYoffset-
     Z*baseThick/2.0;
 
   // Set stick vector
   StickCent=X*vsXoffset+Y*vsYoffset+
     Z*(BaseCent.Z()+baseThick/2.0);
 
-  CylCent=FC.getLinkPt(4)+Geometry::Vec3D(-xCyl,yCyl,0);
+  CylCent=FC.getLinkPt(5)+Geometry::Vec3D(-xCyl,yCyl,0);
 
   return;
 }

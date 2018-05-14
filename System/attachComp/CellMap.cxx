@@ -3,7 +3,7 @@
  
  * File:   attachComp/CellMap.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Line.h"
 #include "Qhull.h"
 #include "varList.h"
@@ -98,6 +95,34 @@ CellMap::operator=(const CellMap& A)
       BaseMap::operator=(A);
     }
   return *this;
+}
+  
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& cutKey,
+			 const CellMap& CM,
+			 const std::string& holdKey) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param cutKey :: Items in the Cell map to slicde
+    \param CM :: Items that will cut this
+    \param holdKey :: Items in the Cell map to be inserted
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(CellMap)");
+
+  for(const int cn : CM.getCells(holdKey))
+    {
+      const MonteCarlo::Object* OPtr=
+	System.findQhull(cn);
+      if (OPtr)
+	{
+	  const HeadRule compObj=OPtr->getHeadRule().complement();
+	  insertComponent(System,cutKey,compObj);	  
+	}
+    }
+  return;
 }
   
 void
@@ -216,7 +241,7 @@ CellMap::insertComponent(Simulation& System,
 			 const std::string& Key,
 			 const FixedComp& FC,
 			 const long int sideIndex) const
-/*!
+  /*!
     Insert an exclude component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
@@ -230,10 +255,30 @@ CellMap::insertComponent(Simulation& System,
     throw ColErr::InContainerError<long int>
       (0,"Zero line surface not defined for : "+FC.getKeyName());
 
-  insertComponent(System,Key,FC.getSignedLinkString(sideIndex));
+  insertComponent(System,Key,FC.getLinkString(sideIndex));
   return;
 }
 
+void
+CellMap::makeCell(const std::string& Key,Simulation& System,
+		  const int cellIndex,const int matNumber,
+		  const double matTemp,const std::string& Out)
+
+  /*!
+    Builds a new cell in Simulation and registers it with the CellMap
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param cellIndex :: Cell index
+    \param matNumber :: Material number
+    \param matTemp :: Temperature
+    \param Out :: Boolean surface string
+  */
+{
+  ELog::RegMethod RegA("CellMap","makeCell");
+  System.addCell(cellIndex,matNumber,matTemp,Out);
+  addCell(Key,cellIndex);
+  return;
+}
 void
 CellMap::deleteCell(Simulation& System,
 		    const std::string& Key,
@@ -256,6 +301,50 @@ CellMap::deleteCell(Simulation& System,
   return;
 }
 
+HeadRule
+CellMap::getCellsHR(const Simulation& System,
+		    const std::string& Key) const
+  /*!
+    Get the main head rules for all the cells [UNION]
+    \param System :: Simulation to get cell from 
+    \param Key :: cell key name
+   */
+
+{
+  ELog::RegMethod RegA("CellMap","getCellsHR");
+
+  HeadRule Out;
+  const std::vector<int> cells=getCells(Key);
+  for(const int cellN : cells)
+    {
+      const MonteCarlo::Object* cellObj=System.findQhull(cellN);
+      if (!cellObj)
+	throw ColErr::InContainerError<int>(cellN,"cellN on found");
+      Out.addUnion(cellObj->getHeadRule());
+    }
+  return Out;
+}
+
+const HeadRule&
+CellMap::getCellHR(const Simulation& System,
+		   const std::string& Key,
+		   const size_t Index) const
+  /*!
+    Get the main head rule for the cell
+    \param System :: Simulation to get cell from 
+    \param Key :: cell key name
+    \param Index :: index of keyname unit
+   */
+{
+  ELog::RegMethod RegA("CellMap","getCellHR");
+
+  const int cellN=getCell(Key,Index);
+  const MonteCarlo::Object* cellObj=System.findQhull(cellN);
+  if (!cellObj)
+    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+  return cellObj->getHeadRule();
+}
+  
 std::pair<int,double>
 CellMap::deleteCellWithData(Simulation& System,
 			    const std::string& Key,
@@ -282,7 +371,5 @@ CellMap::deleteCellWithData(Simulation& System,
   System.removeCell(CN);  // too complex to handle from ObjPtr
   return Out;
 }
-
-
  
 }  // NAMESPACE attachSystem

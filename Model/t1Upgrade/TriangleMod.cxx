@@ -684,13 +684,13 @@ TriangleMod::createObjects(Simulation& System)
 }
 
 int
-TriangleMod::getExitWindow(const size_t outIndex,
+TriangleMod::getExitWindow(const long int sideIndex,
 			   std::vector<int>& window) const
   /*!
     Generic exit window system : 
     -- Requires at least 5 surfaces
     -- Requires 3-5 to be sign surf
-    \param outIndex :: Direction 0  for entry 1 for exit
+    \param sideIndex :: link point 
     \param window :: window vector of paired planes
     \return Viewed surface
   */
@@ -698,17 +698,20 @@ TriangleMod::getExitWindow(const size_t outIndex,
   ELog::RegMethod RegA("TriangleMod","getExitWindow");
   if (LU.size()<5)
     throw ColErr::IndexError<size_t>(LU.size(),5,"Link size too small");
-  if (outIndex>LU.size())
-    throw ColErr::IndexError<size_t>(outIndex,5,"outIndex too big");
 
 
+  const long int outIndex(std::abs(sideIndex));
+  if (outIndex>6)
+    throw ColErr::IndexError<long int>(outIndex,6,"outIndex too big");
+
+  // 5: to get front + 4 on side
   window.clear();
-  for(size_t i=0;i<5;i++)
+  for(long int i=1;i<6;i++)
     if (i!=outIndex)
       window.push_back(std::abs(getLinkSurf(i)));
 
   window.push_back(0);
-  return std::abs(SMap.realSurf(getLinkSurf(outIndex)));
+  return std::abs(SMap.realSurf(getLinkSurf(sideIndex)));
 }
 
 Geometry::Vec3D

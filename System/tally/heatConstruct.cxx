@@ -3,7 +3,7 @@
  
  * File:   tally/heatConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -56,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -66,36 +66,22 @@
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
+#include "objectSupport.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "heatConstruct.h" 
 
 namespace tallySystem
 {
 
-heatConstruct::heatConstruct() 
-  /// Constructor
-{}
-
-heatConstruct::heatConstruct(const heatConstruct&) 
-  /// Copy Constructor
-{}
-
-heatConstruct&
-heatConstruct::operator=(const heatConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
 
 void
-heatConstruct::processHeat(Simulation& System,
+heatConstruct::processHeat(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+			   const size_t Index) 
   /*!
     Add heat tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -124,7 +110,7 @@ heatConstruct::processHeat(Simulation& System,
     }
 
   const std::vector<int> cells=
-    getCellSelection(System,matN,cellKey);
+    objectSupport::getCellSelection(System,matN,cellKey);
   if (cells.empty())
     throw ColErr::InContainerError<std::string>
       (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");
@@ -145,7 +131,7 @@ heatConstruct::processHeat(Simulation& System,
 
 
 void
-heatConstruct::writeHelp(std::ostream& OX) const
+heatConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream

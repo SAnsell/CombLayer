@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/BeSurround.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace delftSystem
 */
 
 class BeSurround : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
@@ -48,18 +48,18 @@ class BeSurround : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
 
 
-  double xStep;                 ///< Offset on X to front
-  double yStep;                 ///< Offset on Y to front
-  double zStep;                 ///< Offset on Z top front
 
   double innerRadius;           ///< Inner radius
   double outerRadius;           ///< Radius of Be outer
   double length;                ///< Total length
+  double frontThick;            ///< Front thickness
 
-  int mat;                      ///< Material 
+  int mat;                      ///< Material
+  int frontMat;                 ///< Front Material 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,const std::string&);
@@ -73,7 +73,7 @@ class BeSurround : public attachSystem::ContainedComp,
   virtual ~BeSurround();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const std::string&);
+		 const long int,const std::string&);
 
 };
 

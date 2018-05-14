@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedGroup.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ class ContainedGroup
  public:
 
   ContainedGroup();
+  explicit ContainedGroup(const std::string&);
   ContainedGroup(const std::string&,const std::string&);
   ContainedGroup(const std::string&,const std::string&,
 		 const std::string&);
@@ -63,7 +64,8 @@ class ContainedGroup
   ContainedGroup(const ContainedGroup&);
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
- 
+
+  virtual const HeadRule& getOuterSurf(const std::string&) const;
   virtual std::string getExclude(const std::string&) const;
   virtual std::string getContainer(const std::string&) const;
   virtual std::string getCompExclude(const std::string&) const;
@@ -87,14 +89,19 @@ class ContainedGroup
   // and its sign.
   int surfOuterIntersect(const std::string&,const Geometry::Line&) const;
 
-
-  void addInsertCell(const std::string&,const int);
   void addAllInsertCell(const int);
+  void addAllInsertCell(const ContainedComp&);
+  void addInsertCell(const std::string&,const int);
+  void addInsertCell(const std::string&,const std::vector<int>&);
+  void addInsertCell(const std::string&,const ContainedComp&);
+  
   void setInsertCell(const std::string&,const int);
   void setAllInsertCell(const int);
 
-  void addInsertCell(const std::string&,const std::vector<int>&);
+
   void insertObjects(Simulation&);
+  void insertInCell(const std::string&,Simulation&,const int);
+  void insertInCell(const std::string&,Simulation&,const std::vector<int>&);
 
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 

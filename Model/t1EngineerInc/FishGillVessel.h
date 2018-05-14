@@ -3,7 +3,7 @@
  
  * File:   t1EngineeringInc/FishGillVessel.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class FishGillVessel : public attachSystem::ContainedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
 
  public:
 
@@ -86,7 +86,7 @@ class FishGillVessel : public attachSystem::ContainedComp,
   void setMainRadius(const double R) { mainRadius=R; }
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&,const size_t);
+		 const attachSystem::FixedComp&,const long int);
 
 };
 

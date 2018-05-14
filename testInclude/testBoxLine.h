@@ -36,7 +36,7 @@ class testBoxLine
 {
  private:
 
-  Simulation ASim;           ///< Simulation model
+  SimMCNP ASim;           ///< Simulation model
   ModelSupport::surfRegister SMap;         ///< SMap to register surfaces
 
   void initSim();

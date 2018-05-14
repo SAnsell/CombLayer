@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/insertBaseInfo.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
-#include <boost/functional.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -65,7 +63,6 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MaterialSupport.h"
-#include "surfFunctors.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
@@ -275,7 +272,7 @@ insertBaseInfo::calcSidesIntercept(const int CyNum,const int testPlane) const
   std::vector<Geometry::Vec3D> Out;
   const Geometry::Surface* CySurf=SMapRef.realSurfPtr(CyNum);
   const Geometry::Surface* TestSurf=SMapRef.realSurfPtr(abs(testPlane));
-  const int sign((testPlane>0) ? 1 : -1);
+  const int signV((testPlane>0) ? 1 : -1);
   if (!CySurf)
     throw ColErr::InContainerError<int>(CyNum,RegA.getBase());
   if (!TestSurf && testPlane)
@@ -284,15 +281,13 @@ insertBaseInfo::calcSidesIntercept(const int CyNum,const int testPlane) const
   // Calcualte edge intersecton
   std::vector<const Geometry::Surface*> Edges;
   if (Sides.size()<4)
-    {
-      ELog::EM<<"Failed to set sides "<<Sides.size()<<ELog::endErr;
-      throw ColErr::IndexError<size_t>(Sides.size(),4,RegA.getBase());
-    }
+    throw ColErr::IndexError<size_t>(Sides.size(),4,"insufficent sides");
+
   for(size_t i=0;i<4;i++)
     {
       Edges.push_back(SMapRef.realSurfPtr(abs(Sides[i])));
       if (!Edges.back())
-	throw ColErr::InContainerError<int>(Sides[i],RegA.getBase());
+	throw ColErr::InContainerError<int>(Sides[i],"Cant map Edge to Ptr");
     }
   // Points are a-b, c-d hence swap b/c
   std::swap(Edges[1],Edges[2]);
@@ -300,18 +295,10 @@ insertBaseInfo::calcSidesIntercept(const int CyNum,const int testPlane) const
 
   for(size_t i=0;i<4;i++)
     {
-      std::vector<Geometry::Vec3D> PtOut=
-	SurInter::processPoint(Edges[i],Edges[(i+1) % 4],CySurf);
-      if (testPlane)
-        {
-	  std::vector<Geometry::Vec3D>::iterator vc=
-	    remove_if(PtOut.begin(),PtOut.end(),
-		      boost::bind(&Geometry::surfaceCheck,sign,TestSurf,_1));
-	  PtOut.erase(vc,PtOut.end());
-	}
-      if (!PtOut.empty())
-	Out.push_back(PtOut.front());
-    }  
+      Out.push_back 
+	(SurInter::getPoint(Edges[i],Edges[(i+1) % 4],
+			    CySurf,signV,TestSurf));
+    }
   return Out;
 }
 

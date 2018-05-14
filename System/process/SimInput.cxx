@@ -3,7 +3,7 @@
  
  * File:   process/SimInput.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,60 +56,32 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "LineTrack.h"
 #include "ImportControl.h"
 #include "SimValid.h"
 #include "MainProcess.h"
 #include "WeightControl.h"
+#include "WCellControl.h"
+#include "WWGControl.h"
 #include "SimInput.h"
 
 
 namespace SimProcess
 {
 
-void
-importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
-  /*!
-    Apply importances/renumber and weights
-     \param System :: Simuation object 
-     \param IParam :: Input parameters
-   */
-{
-  ELog::RegMethod RegA("SimInput","importanceSim");
-
-  System.populateCells();
-  System.createObjSurfMap();
-
-  WeightSystem::simulationImp(System,IParam);
-
-  WeightSystem::ExtField(System,IParam);
-  WeightSystem::FCL(System,IParam);
-  WeightSystem::IMP(System,IParam);
-  WeightSystem::DXT(System,IParam);
-  WeightSystem::PWT(System,IParam);
-  WeightSystem::EnergyCellCut(System,IParam);
-  mainSystem::renumberCells(System,IParam);
-  WeightSystem::WeightControl WC;
-  WC.processWeights(System,IParam);
-  
-  return;
-}
-
 int
-processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
+processExitChecks(Simulation& System,
+		  const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 
@@ -118,55 +90,105 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
   */
 {
   ELog::RegMethod RegA("SimInput[F]","processExitChecks");
+
   int errFlag(0);
   if (IParam.flag("validCheck"))
     {
       ELog::EM<<"SIMVALID TRACK "<<ELog::endDiag;
       ELog::EM<<"-------------- "<<ELog::endDiag;
       ModelSupport::SimValid SValidCheck;
-      
-      if (IParam.flag("validPoint"))
-	SValidCheck.setCentre(IParam.getValue<Geometry::Vec3D>("validPoint"));
 
-      if (!SValidCheck.run(System,IParam.getValue<size_t>("validCheck")))
-	errFlag += -1;
+      if (IParam.flag("validPoint"))
+	{
+	  const Geometry::Vec3D CPoint=
+	    IParam.getValue<Geometry::Vec3D>("validPoint");
+
+	  if (!SValidCheck.runPoint(System,CPoint,
+				    IParam.getValue<size_t>("validCheck")))
+	    errFlag += -1;
+	}
+      else if (IParam.flag("validFC"))
+	{
+
+	}
+      else 
+	{
+	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),
+				    IParam.getValue<size_t>("validCheck")))
+	    errFlag += -1;
+	}
+
     }
-  if (IParam.flag("cinder"))
-    System.writeCinder();
   
+  const size_t NLine = IParam.setCnt("validLine");
+  for(size_t i=0;i<NLine;i++)
+    {
+      ELog::EM<<"Processing "<<i<<" / "<<NLine<<ELog::endDiag;
+      size_t cnt(0);
+      const Geometry::Vec3D C=
+	IParam.getCntVec3D("validLine",i,cnt,"Start point");
+      Geometry::Vec3D D=
+	IParam.getCntVec3D("validLine",i,cnt,"End point/Direction");
+      if (D.abs()>1.5 || D.abs()<0.5)
+	D-=C;
+      D.makeUnit();
+      ELog::EM<<std::setprecision(12)<<"C == "<<C<<":"<<D<<ELog::endDiag;
+      ModelSupport::LineTrack LT(C,D,1000.0);
+      ModelSupport::LineTrack LTR(C,-D,1000.0);
+      LT.calculate(System);
+      LTR.calculate(System);
+    }
+  
+  if (IParam.flag("cinder")) System.writeCinder();
+
   return errFlag;
 }
 
-
 void
 inputProcessForSim(Simulation& System,
-                const mainSystem::inputParam& IParam)
+		   const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 
     \param IParam :: Inpute parameters
   */
 {
-  ELog::RegMethod RegA("SimInput[F]","inputPatterSim");
-  
-  if (IParam.flag("cinder"))
-    System.setForCinder();
-  
+  ELog::RegMethod RegA("SimInput[F]","inputProcessForSim");
+
   // Cut energy tallies:
   if (IParam.flag("ECut"))
     System.setEnergy(IParam.getValue<double>("ECut"));
 
+  return;
+}
+
+void
+inputProcessForSimMCNP(SimMCNP& System,
+		       const mainSystem::inputParam& IParam)
+  /*!
+    Check the validity of the simulation
+    \param System :: Simuation object 
+    \param IParam :: Inpute parameters
+  */
+{
+  ELog::RegMethod RegA("SimInput[F]","inputProcessForSimMCNP");
+
+  inputProcessForSim(System,IParam);
+  
+  if (IParam.flag("cinder"))
+    System.setForCinder();
+  
   if (IParam.flag("endf"))
     System.setENDF7();
 
   if (IParam.flag("ptrac"))
-    processPTrack(IParam,System.getPC());
+    SimProcess::processPTrack(IParam,System.getPC());
 
   if (IParam.flag("event"))
-    processEvent("event",IParam,System.getPC());
+    SimProcess::processEvent("event",IParam,System.getPC());
 
   if (IParam.flag("dbcn"))
-    processEvent("dbcn",IParam,System.getPC());
+    SimProcess::processEvent("dbcn",IParam,System.getPC());
   
   return;
 }

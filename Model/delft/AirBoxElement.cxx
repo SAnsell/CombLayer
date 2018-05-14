@@ -3,7 +3,7 @@
  
  * File:   delft/AirBoxElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -200,7 +202,7 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*Depth/2.0,Y); 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*Width/2.0,X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*Height,Z);
 
 
@@ -223,7 +225,7 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
 			   Origin+X*(Width/2.0-edgeGap-wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+25,
-			   RG.getLinkPt(4)+Z*wallThick,Z);
+			   RG.getLinkPt(5)+Z*wallThick,Z);
 
   ModelSupport::buildPlane(SMap,surfIndex+26,
 			   Origin+Z*(Height-wallThick),Z);

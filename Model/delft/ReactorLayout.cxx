@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorLayout.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,8 +130,8 @@ DelftCompactModel(mainSystem::inputParam& IParam,
   /*!
     Function to set system for a given form of reactor.
     This is the compact model from 
-    \param Control :: Function data base to add constants too
     \param IParam :: Main input parameter system
+    \param Control :: Function data base to add constants too
   */
 {
   ELog::RegMethod RegA("ReactorLayout[f]","DelftCompactModel");
@@ -242,8 +242,8 @@ DelftKaeriModel(mainSystem::inputParam& IParam,
 }
 
 void
-DelftNukemModel(mainSystem::inputParam& IParam,
-		FuncDataBase& Control)
+DelftNukemModel(mainSystem::inputParam&,
+		FuncDataBase&)
  /*!
     Function to set system for a given form of reactor.
     This is the compact model from 

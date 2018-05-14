@@ -3,7 +3,7 @@
  
  * File:   process/pipeUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,8 +71,6 @@
 #include "ContainedComp.h"
 #include "LineTrack.h"
 #include "pipeUnit.h"
-
-#include "Debug.h"
 
 namespace ModelSupport
 {
@@ -452,7 +450,7 @@ pipeUnit::insertObjects(Simulation& System)
   if (prev && std::abs(prev->getOuterRadius()-radius)<10.0*Geometry::zeroTol)
     radius+=Geometry::zeroTol*100;  
 
-  const double angleStep(2*M_PI/nAngle);
+  const double angleStep(2*M_PI/static_cast<double>(nAngle));
   double angle(0.0);
   Geometry::Vec3D addVec(0,0,0);
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
@@ -464,7 +462,6 @@ pipeUnit::insertObjects(Simulation& System)
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
       std::vector<MonteCarlo::Object*>::const_iterator oc;
 
-      int debugCnt(0);
       for(MonteCarlo::Object* oc : OVec)
 	{	  
 	  const int ONum=oc->getName();

@@ -292,8 +292,6 @@ void
 RotaryCollimator::setHoleIndex()
   /*!
     Given a hole index determine and set the angle offset
-    \param HIndex :: Index to use [ Zero :: use HAngle directly]
-    \param HAngle :: Angle to use if HIndex is zero
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","setHoleIndex");
@@ -369,11 +367,11 @@ RotaryCollimator::createLinks()
       size_t index(0);
       for(size_t i=0;i<nHole;i++)
         {
-          holeFC.setLinkCopy(index,*Holes[i],0);
-          holeFC.setLinkCopy(index+1,*Holes[i],1);
-          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(0)+
-                                      Holes[i]->getLinkPt(1))/2.0);
-          holeFC.setConnect(index+2,midPt,Holes[i]->getSignedLinkAxis(1));
+          holeFC.setLinkSignedCopy(index,*Holes[i],1);
+          holeFC.setLinkSignedCopy(index+1,*Holes[i],2);
+          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(1)+
+                                      Holes[i]->getLinkPt(2))/2.0);
+          holeFC.setConnect(index+2,midPt,Holes[i]->getLinkAxis(1));
           index+=3;
         }
     }
@@ -387,7 +385,7 @@ RotaryCollimator::layerProcess(Simulation&)
     Processes the splitting of the surfaces into a multilayer system
     This has to deal with the three layers that invade cells:
     
-    \param System :: Simulation to work on
+    \param  :: Simulation to work on
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","LayerProcess");
@@ -419,4 +417,4 @@ RotaryCollimator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

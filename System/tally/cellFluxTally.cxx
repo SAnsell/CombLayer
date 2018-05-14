@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/cellFluxTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -159,6 +160,7 @@ cellFluxTally::setSDField(const double V)
   /*!
     Sets a constant value for all FS fields.
     \param V :: Item to add
+    \return 1 - success [only possible]
   */
 {
   SDfield.clear();

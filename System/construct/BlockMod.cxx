@@ -397,7 +397,7 @@ int
 BlockMod::getCommonSurf(const long int) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [1-6]
+    \param  :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {
@@ -442,7 +442,7 @@ BlockMod::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   int SI(modIndex+static_cast<int>(layerIndex)*10);
-  SI+=std::abs(sideIndex);
+  SI+=static_cast<int>(std::abs(sideIndex));
   
   int signValue((sideIndex<0) ? -1 : 1);
   signValue *= (sideIndex % 2) ? -1 : 1;

@@ -3,7 +3,7 @@
  
  * File:   tallyInc/fmeshTally.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,27 +36,14 @@ class fmeshTally : public Tally
 {
  private:
 
+  int typeID;                      ///< type of tally [1/2/3]
   std::set<std::string> keyWords;  ///< active-keywords
 
-  std::string geomType;            ///< Geometry type [GType]
-  Geometry::Vec3D Origin;          ///< Origin position [manditory]
-  Geometry::Vec3D Axis;            ///< Centre Axis of Cyl mesh
-  Geometry::Vec3D theta0;          ///< Theta-0 Axis for Cyl mesh
-  
-  // MESH
-  std::vector<double> X;     ///< X/R coordinates [+origin]
-  std::vector<double> Y;     ///< Y/Z/phi coordinates [+origin]
-  std::vector<double> Z;     ///< Z/theta coordinates [+origin]
-
-  std::vector<size_t> XFine;    ///< Number of fine X bins 
-  std::vector<size_t> YFine;    ///< Number of fine Y bins 
-  std::vector<size_t> ZFine;    ///< Number of fine z bins 
-
-  size_t NX;                    ///< Total number of X
-  size_t NY;                    ///< Total number of Y
-  size_t NZ;                    ///< Total number of Z
-
   int requireRotation;           ///< rotation to the mesh
+  
+  std::array<size_t,3> Pts;      ///< N-Points
+  Geometry::Vec3D minCoord;      ///< Min coordinate
+  Geometry::Vec3D maxCoord;      ///< Max coordinate
   
   void writeMesh(std::ostream&) const;
   
@@ -70,13 +57,21 @@ class fmeshTally : public Tally
   
   void setType(const int);
   void setKeyWords(const std::string&);
-  void setIndexLine(std::string);
   void setRot() { requireRotation=1; }   ///< Set rotations
-  void setIndex(const size_t*);
+  void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setResponse(const std::string&);
 
- 
+
+  /// Access the centre
+  Geometry::Vec3D getCentre() const { return (minCoord+maxCoord)/2.0; }
+  /// access min/max point
+  const Geometry::Vec3D& getMinPt() const { return minCoord; }
+  /// access min/max point
+  const Geometry::Vec3D& getMaxPt() const { return maxCoord; }
+  /// access min/max point
+  const std::array<size_t,3>& getNPt() const { return Pts; }
+
   virtual void rotateMaster();
   int addLine(const std::string&);
   void writeCoordinates(std::ostream&) const;

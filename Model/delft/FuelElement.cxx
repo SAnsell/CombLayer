@@ -3,7 +3,7 @@
  
  * File:   delft/FuelElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -154,7 +156,8 @@ FuelElement::plateCentre(const size_t Index) const
    */
 {
   const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
-  return Origin+Y*plateDepth*(Index-(nElement-1.0)/2.0);
+  return Origin+Y*plateDepth*
+    (static_cast<double>(Index)-(static_cast<double>(nElement)-1.0)/2.0);
 }
 
 void
@@ -227,7 +230,7 @@ FuelElement::makeFuelDivider()
   
   for(size_t i=1;i<nFuel;i++)
     {
-      fuelFrac.push_back(static_cast<double>(i+1)/
+      fuelFrac.push_back(static_cast<double>(i)/
 			 static_cast<double>(nFuel));
     }
 
@@ -250,11 +253,10 @@ FuelElement::isFuel(const size_t nE) const
 }
 
 void
-FuelElement::createUnitVector(const FixedComp& FC,
+FuelElement::createUnitVector(const attachSystem::FixedComp& FC,
 			      const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
-    - Y Down the beamline
     \param FC :: Reactor Grid Unit
     \param OG :: Origin
   */
@@ -263,6 +265,12 @@ FuelElement::createUnitVector(const FixedComp& FC,
 
   attachSystem::FixedComp::createUnitVector(FC);
   Origin=OG;
+  if (Origin.abs()>1e4)
+    {
+      ELog::EM<<"Fuel: "<<keyName<<" "<<Origin<<ELog::endDiag;
+      ELog::EM<<"Fuel: "<<XIndex<<" "<<YIndex<<ELog::endDiag;
+      ELog::EM<<"Y "<<keyName<<" "<<Z<<ELog::endErr;
+    }
   return;
 }
 
@@ -286,7 +294,7 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG)
 			   Origin+X*width/2.0,X);
   const double tHeight(fuelHeight/2.0+cladHeight+topHeight);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
   ModelSupport::buildPlane(SMap,surfIndex+6,
    			   Origin+Z*tHeight,Z);
   // Width numbers:
@@ -528,19 +536,19 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
   */
 {
   ELog::RegMethod RegA("FuelElement","layerProcess");
-  
+
   if (nFuel<2) return;
   // All fuel cells
   int SI(surfIndex+4001);
   for(size_t i=0;i<fuelCells.size();i++)
     {
       ModelSupport::surfDivide DA;
-      for(size_t j=0;j<nFuel-1;j++)
+      for(size_t j=1;j<nFuel;j++)
 	{
-	  DA.addFrac(fuelFrac[j]);
+	  DA.addFrac(fuelFrac[j-1]);
 	  
 	  DA.addMaterial
-	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j+1,fuelMat));
+	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j,fuelMat));
 	}
       DA.addMaterial(FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,
 					    nFuel,fuelMat));
@@ -557,7 +565,8 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
 }
 
 void
-FuelElement::createAll(Simulation& System,const FixedComp& FC,
+FuelElement::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
 		       const Geometry::Vec3D& OG,
 		       const FuelLoad& FuelSystem)
   /*!

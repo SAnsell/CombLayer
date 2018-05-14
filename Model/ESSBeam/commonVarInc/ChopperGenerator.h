@@ -3,7 +3,7 @@
  
  * File:   commonVarInc/ChopperGenerator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,15 +43,17 @@ class ChopperGenerator
   double height;           ///< Full height
   double width;            ///< Full width
   double shortWidth;       ///< corner cut width
-  double shortHeight;       ///< corner cut height
+  double shortHeight;      ///< corner cut height
   double mainRadius;       ///< full chopper void radius
   double windowThick;      ///< window material thickness
-  double ringRadius;       ///< Radius of the rinng 
+  double ringRadius;       ///< Radius of the ring 
 
   double motorRadius;      ///< Motor radius
-  double motorOuter;       ///< Motor outer
+  double motorInner;       ///< Motor inner flange
+  double motorOuter;       ///< Motor outer flange
   double portRadius;       ///< Port radius
   double portOuter;        ///< Port outer
+  bool motorRevFlag;       ///< reverse motor to +Y direction
 
   double portWidth;        ///< Port width
   double portHeight;       ///< Port height
@@ -73,8 +75,10 @@ class ChopperGenerator
   void setMaterial(const std::string&,const std::string&);
   void setFrame(const double,const double);  
   void setMainRadius(const double);
-
-
+  void setMotorRadius(const double);
+  void setPortRadius(const double);
+  void setReverseMotor(const bool);
+  
   void generateChopper(FuncDataBase&,
 		       const std::string&,
 		       const double,const double,

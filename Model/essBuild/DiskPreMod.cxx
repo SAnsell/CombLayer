@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskPreMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -66,11 +65,14 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
+#include "OnionCooling.h"
 #include "DiskPreMod.h"
 
 
@@ -80,11 +82,13 @@ namespace essSystem
 DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,9),
-  attachSystem::CellMap(),  
+  attachSystem::FixedOffset(Key,9),
+  attachSystem::CellMap(),attachSystem::SurfMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
-  InnerComp(new CylFlowGuide(Key+"FlowGuide"))
+  InnerComp(new CylFlowGuide(Key+"FlowGuide")),
+  onion(new OnionCooling(Key+"OnionCooling")),
+  sideRule("")
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -97,12 +101,15 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
-  InnerComp(A.InnerComp->clone())
+  flowGuideType(A.flowGuideType),
+  InnerComp(A.InnerComp->clone()),
+  onion(A.onion->clone()),
+  sideRule(A.sideRule)
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -121,8 +128,9 @@ DiskPreMod::operator=(const DiskPreMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
@@ -130,7 +138,10 @@ DiskPreMod::operator=(const DiskPreMod& A)
       width=A.width;
       mat=A.mat;
       temp=A.temp;
+      flowGuideType=A.flowGuideType;
       *InnerComp=*A.InnerComp;
+      *onion=*A.onion;
+      sideRule=A.sideRule;
    }
   return *this;
 }
@@ -154,20 +165,20 @@ DiskPreMod::~DiskPreMod()
 
 void
 DiskPreMod::populate(const FuncDataBase& Control,
-		     const double zShift,
-		     const double outRadius)
+		     const double& outRadius)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height 
     \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  FixedOffset::populate(Control);
 
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
+
   outerRadius=outRadius;
 
   // clear stuff 
@@ -228,14 +239,16 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
-  Origin=refCentre.getSignedLinkPt(sideIndex);
+  Origin=refCentre.getLinkPt(sideIndex);
   if (zRotate)
     {
       X*=-1;
       Z*=-1;
     }
   const double D=(depth.empty()) ? 0.0 : depth.back();
-  applyShift(0,0,zStep+D);
+
+  zStep += D;
+  applyOffset();
 
   return;
 }
@@ -261,6 +274,9 @@ DiskPreMod::createSurfaces()
 
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
+      SurfMap::setSurf("LayerBase"+std::to_string(i),SMap.realSurf(SI+5));
+      SurfMap::setSurf("LayerTop"+std::to_string(i),SMap.realSurf(SI+6));
+      
       if (i<NWidth)
 	{
 	  ModelSupport::buildPlane(SMap,SI+3,Origin-X*(width[i]/2.0),X);
@@ -316,7 +332,6 @@ DiskPreMod::createObjects(Simulation& System)
 
   SI-=10;
 
-
   // Outer extra void
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
@@ -327,6 +342,9 @@ DiskPreMod::createObjects(Simulation& System)
     }
 
   addOuterSurf(Out);
+
+  sideRule=ModelSupport::getComposite(SMap,SI," -7 ");
+
   return; 
 }
 
@@ -410,7 +428,7 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 3:
       return Origin+X*(radius[layerIndex]);
     case 4:
-      return Origin-Z*(height[layerIndex]);
+      return Origin-Z*(depth[layerIndex]);
     case 5:
       return Origin+Z*(height[layerIndex]);
     }
@@ -428,7 +446,7 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkSurf");
+  ELog::RegMethod RegA("DiskPreMod","getLayerSurf");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -509,21 +527,19 @@ DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex,
 		      const bool zRotate,
-		      const double VOffset,
-		      const double ORad)
+		      const double& ORad)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
     \param sideIndex :: side of object
     \param zRotate :: Rotate to -ve Z
-    \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  populate(System.getDataBase(),VOffset,ORad);
+  populate(System.getDataBase(),ORad);
   createUnitVector(FC,sideIndex,zRotate);
 
   createSurfaces();
@@ -532,9 +548,13 @@ DiskPreMod::createAll(Simulation& System,
 
   insertObjects(System);
 
-  if (engActive) 
-    InnerComp->createAll(System,*this,7);
-  
+  if (engActive)
+    {
+      if (flowGuideType.find("Onion")!=std::string::npos)
+          onion->createAll(System,*this);
+      else
+        InnerComp->createAll(System,*this,7);
+    }
 
   return;
 }

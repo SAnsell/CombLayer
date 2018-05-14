@@ -3,7 +3,7 @@
  
  * File:   delft/H2Vac.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "H2Vac.h"
 
@@ -79,7 +80,7 @@ namespace delftSystem
 {
 
 H2Vac::H2Vac(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1)
   /*!
@@ -89,7 +90,7 @@ H2Vac::H2Vac(const std::string& Key)  :
 {}
 
 H2Vac::H2Vac(const H2Vac& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   vacIndex(A.vacIndex),cellIndex(A.cellIndex),vacPosGap(A.vacPosGap),
   vacNegGap(A.vacNegGap),vacPosRadius(A.vacPosRadius),
   vacNegRadius(A.vacNegRadius),vacSide(A.vacSide),
@@ -115,7 +116,7 @@ H2Vac::operator=(const H2Vac& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       vacPosGap=A.vacPosGap;
       vacNegGap=A.vacNegGap;
@@ -154,7 +155,8 @@ H2Vac::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("H2Vac","populate");
-  
+
+  sideRadius=Control.EvalDefVar<double>(keyName+"SideRadius",0.0);
   // First get inner widths:
   vacPosGap=Control.EvalVar<double>(keyName+"VacPosGap");
   vacNegGap=Control.EvalVar<double>(keyName+"VacNegGap");
@@ -244,21 +246,21 @@ H2Vac::getSurfacePoint(const attachSystem::FixedComp& FC,
   for(size_t i=0;i<=layerIndex;i++)
     sumVec+=DPtr[SI][i];
   
-  return FC.getSignedLinkPt(sideIndex)+XYZ*sumVec;
+  return FC.getLinkPt(sideIndex)+XYZ*sumVec;
 }
 
 void
-H2Vac::createUnitVector(const attachSystem::FixedComp& FC)
+H2Vac::createUnitVector(const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points down the Groove direction
-    - X Across the Groove
-    - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
+    \param sideIndex :: side point
   */
 {
   ELog::RegMethod RegA("H2Vac","createUnitVector");
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -269,10 +271,13 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
     \param FC :: A  FixedComp for the front/back surfaces
   */
 {
-  ELog::RegMethod RegA("H2Vac","createSurface");
+  ELog::RegMethod RegA("H2Vac","createSurfaces");
 
-  const double sideRadius=(Origin-FC.getLinkPt(2)).abs();
-  ELog::EM<<"Side radius == "<<sideRadius<<ELog::endDebug;
+
+  if (sideRadius<Geometry::zeroTol)
+    sideRadius=FC.getLinkDistance(0,3);
+  
+  ELog::EM<<"Side radius == "<<sideRadius<<ELog::endDiag;
 
   // Inner Layers:
 
@@ -392,7 +397,7 @@ H2Vac::createAll(Simulation& System,
   ELog::RegMethod RegA("H2Vac","createAll");
   populate(System.getDataBase());
  
-  createUnitVector(FC);                       // fixed 
+  createUnitVector(FC,0);                       // fixed 
   createSurfaces(FC);
   createObjects(System,CC.getExclude());
   createLinks();

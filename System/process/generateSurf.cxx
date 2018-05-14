@@ -92,6 +92,27 @@ buildRotatedPlane(surfRegister& SMap,const int N,
 }
 
 Geometry::Plane*
+buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
+			const int N,const Geometry::Plane* PN,
+			const double Dist)
+  /*!
+    Divider based on signed value 
+    \param SMap :: Surface Map system
+    \param signedValue :: Deciding value
+    \param N :: Initial Number
+    \param PN :: Plane to use as template
+    \param Dist :: Distance along normal to move plane
+    \return New plane ptr [inserted/tested]
+   */
+{
+  ELog::RegMethod("generateSurf","buildSignedShiftedPlane");
+  
+  return (signValue>=0) ?
+    buildShiftedPlane(SMap,N,PN,Dist) :
+    buildShiftedPlaneReversed(SMap,N,PN,Dist);  
+}
+
+Geometry::Plane*
 buildShiftedPlane(surfRegister& SMap,const int N,
 		  const Geometry::Plane* PN,const double Dist)
   /*!

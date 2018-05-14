@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/shortNmx/shortNMX.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -65,6 +64,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -84,6 +84,7 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
+#include "beamlineSupport.h"
 
 #include "shortNMX.h"
 
@@ -136,33 +137,6 @@ shortNMX::~shortNMX()
   */
 {}
 
-void
-shortNMX::setBeamAxis(const FuncDataBase& Control,
-		 const GuideItem& GItem,
-		 const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("shortNMX","setBeamAxis");
-
-  nmxAxis->populate(Control);
-  nmxAxis->createUnitVector(GItem);
-  nmxAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  nmxAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be rotated:
-  nmxAxis->linkAngleRotate(3);
-  nmxAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    nmxAxis->reverseZ();
-  return;
-}
   
 void 
 shortNMX::build(Simulation& System,
@@ -185,12 +159,12 @@ shortNMX::build(Simulation& System,
   CopiedComp::process(System.getDataBase());
   ELog::EM<<"EVAL == "<<newName+"StopPoint"<<ELog::endDiag;
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*nmxAxis,System.getDataBase(),GItem,0);
 
-  ELog::EM<<"Beam axis == "<<nmxAxis->getSignedLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Beam axis == "<<nmxAxis->getLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); 

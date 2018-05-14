@@ -3,7 +3,7 @@
  
  * File:   funcBase/FuncDataBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,6 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif 
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,7 +42,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "XMLwriteVisitor.h"
@@ -710,7 +706,7 @@ FuncDataBase::compileFunctionParams(
 {
   const size_t curStackPtr = Build.getStackPtr();
   const size_t Ind2 = compileExpression(FString, Ind); 
-
+  
   if(Build.getStackPtr() != curStackPtr+reqParam)
     throw ColErr::IndexError<size_t>(Build.getStackPtr(),reqParam,
 				  "FuncDataBase::compileFunctionParams "
@@ -1014,7 +1010,7 @@ FuncDataBase::processXML(const std::string& FName)
       const std::string Type=AR->getDefItem<std::string>("type","double");
 
       if (!hasVariable(Name))
-	ELog::EM<<"Adding variable "<<Name<<ELog::endWarn;
+	ELog::EM<<"Re-Adding variable "<<Name<<ELog::endWarn;
       
       // Only vector type 
       if (Type=="function")
@@ -1100,39 +1096,6 @@ FuncDataBase::resetActive()
   return;
 }
 
-size_t
-FuncDataBase::convPartVec(const std::string& A,
-			  Geometry::Vec3D& out)
-/*!
-  Takes a character string and evaluates 
-  the first vector obejct
-  Format Vec3D[3,4,5]
-  
-  it allows trailing characters after the number. 
-  \param A :: string to process
-  \param out :: place for output
-  \retval number of char read on success
-  \retval 0 on failure
-*/ 
-{
-  ELog::RegMethod RegA("FuncDataBase","convPartVec");
-
-#ifndef NO_REGEX
-  if (A.size()<10) return 0;
-
-  std::string APart(A);
-  boost::regex Re("^\\s*Vec3D\\s*\\[(.*?)\\]");
-  std::string OutVec;
-  Geometry::Vec3D AVec;
-  if (StrFunc::StrFullCut(APart,Re,OutVec,0) &&
-      StrFunc::section(OutVec,AVec))
-    {
-      out=AVec;
-      return 1+A.size()-APart.size();
-    }
-#endif
-  return 0;
-}
 
 /// \cond TEMPLATE
 

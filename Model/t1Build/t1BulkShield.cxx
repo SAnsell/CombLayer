@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -237,7 +236,7 @@ t1BulkShield::createSurfaces(const attachSystem::FixedComp& FC)
 			      Origin,Z,outerRadius);
 
   // INNER LAYER:
-  SMap.addMatch(bulkIndex+7,FC.getLinkSurf(0));
+  SMap.addMatch(bulkIndex+7,FC.getLinkSurf(1));
   return;
 }
 
@@ -368,7 +367,7 @@ t1BulkShield::createBulkInserts(Simulation& System,
 				SMap.realSurf(bulkIndex+27),
 				SMap.realSurf(bulkIndex+37) );
       BData.back()->setGlobalVariables(shutterRadius,innerRadius,outerRadius);
-      BData.back()->createAll(System,*GData[static_cast<size_t>(i)]);    
+      BData.back()->createAll(System,*GData[i]);    
     }
   return;
 }

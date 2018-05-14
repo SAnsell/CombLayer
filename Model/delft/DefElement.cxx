@@ -65,6 +65,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -101,13 +103,14 @@ DefElement::populate(const FuncDataBase&)
 }
 
 void
-DefElement::createUnitVector(const FixedComp& FC,
-			      const Geometry::Vec3D& OG)
+DefElement::createUnitVector(const attachSystem::FixedComp& FC,
+			     const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
     - Y Down the beamline
     \param FC :: Reactor Grid Unit
-    \param OG :: Orgin
+    \param OG :: Origin
+    \todo Update for newer FC,linkpt notation
   */
 {
   ELog::RegMethod RegA("DefElement","createUnitVector");
@@ -121,7 +124,6 @@ void
 DefElement::createSurfaces()
   /*!
     Creates/duplicates the surfaces for this block
-    \param startSurf :: First surface to use
   */
 {  
   ELog::RegMethod RegA("DefElement","createSurface");
@@ -157,14 +159,16 @@ DefElement::createLinks()
 }
 
 void
-DefElement::createAll(Simulation& System,const FixedComp& FC,
+DefElement::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
 		      const Geometry::Vec3D& OG,
 		      const FuelLoad&)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
-    \param OG :: Origin
+    \param OG :: Origin				
+    \param :: FuelLoad 
   */
 {
   ELog::RegMethod RegA("DefElement","createAll(DefElement)");

@@ -76,7 +76,6 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "Window.h"
-#include "ProtonVoid.h"
 #include "BeamWindow.h"
 #include "t1CylVessel.h"
 #include "t1BulkShield.h"
@@ -277,7 +276,6 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new t1PlateTarget("t1PlateTarget"));
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
-      RefObj->addToInsertChain(*TarObj);
       TarObj->createAll(System,World::masterOrigin());
       return "PVessel";
     }
@@ -286,8 +284,9 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      // Cylinder [innernal] both the same
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
       return "t1CylTarget";
     }    
@@ -296,8 +295,9 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
       OR.addObject("t1CylTarget",TarObj);
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      // Cylinder [innernal] both the same
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -311,8 +311,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
       return "t1Inner";
     }    
@@ -323,8 +323,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
       OR.addObject(TarObj);
       /// Target
 
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<ts1System::targCoolant> 
@@ -340,8 +340,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1BlockTarget";
     }    
@@ -350,8 +349,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
-      RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Cannelloni";
     }    
@@ -538,7 +536,7 @@ makeT1Upgrade::buildWaterPipe(Simulation& System,
    */
 {
   ELog::RegMethod RegA("makeT1Upgrade","buildWaterPipe");
-
+  return;
   WaterPipeObj->setAngleSeg(12);
   WaterPipeObj->setOption("");   // no modifiecation to the variable name
   WaterReturnObj->setAngleSeg(12);
@@ -636,8 +634,10 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
 
 	H2PMod=std::shared_ptr<ts1System::HPreMod>
 	  (new HPreMod("HPreMod"));      
-	H2PMod->createAll(System,*H2Mod,1);
-	RefObj->addToInsertControl(System,*H2PMod,*H2PMod);
+	H2PMod->createAll(System,*H2Mod,2);
+
+	attachSystem::addToInsertControl
+	  (System,*RefObj,"Reflector",*H2PMod,*H2PMod);
 
 	return "H2Mod";
     }
@@ -693,19 +693,19 @@ makeT1Upgrade::buildHelp(Simulation& System)
 
 
 void 
-makeT1Upgrade::build(Simulation* SimPtr,
+makeT1Upgrade::build(Simulation& System,
 		       const mainSystem::inputParam& IParam)
-/*!
-  Carry out the full build
-  \param SimPtr :: Simulation system
-  \param IParam :: Input parameters
-*/
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param IParam :: Input parameters
+  */
 {
   // For output stream
   ELog::RegMethod RControl("makeT1Upgrade","build");
 
   if (IParam.flag("help"))
-    buildHelp(*SimPtr);
+    buildHelp(System);
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
@@ -724,126 +724,132 @@ makeT1Upgrade::build(Simulation* SimPtr,
 	 !IParam.compValue("E",std::string("Reflector")) )) 
     {
 	//  VoidObj->addInsertCell(74123);  
-	VoidObj->createAll(*SimPtr);
+	VoidObj->createAll(System);
     
 	BulkObj->addInsertCell(voidCell);  
-	BulkObj->createAll(*SimPtr,IParam,*VoidObj);
+	BulkObj->createAll(System,IParam,*VoidObj);
 
-	MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-	MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+	MonoTopObj->createAll(System,3,*VoidObj,*BulkObj);
+	MonoBaseObj->createAll(System,2,*VoidObj,*BulkObj);
 	voidCell=VoidObj->getVoidCell();
     }
   else
     {
-      VoidObj->createStatus(*SimPtr);
+      VoidObj->createStatus(System);
     }
 
   RefObj->addInsertCell(voidCell);
-  RefObj->createAll(*SimPtr,World::masterOrigin());
+  RefObj->createAll(System,World::masterOrigin(),0);
 
   const std::string TarExcludeName=
-    buildTarget(*SimPtr,TarName,voidCell);
+    buildTarget(System,TarName,voidCell);
 
+  RefObj->insertComponent(System,"Reflector",*TarObj);
+  
   if (IParam.flag("exclude") &&
       IParam.compValue("E",std::string("Reflector")))
     {
-      SimPtr->voidObject(RefObj->getKeyName());
+      System.voidObject(RefObj->getKeyName());
       return;
     }
 
   const std::string WaterModExclude=
-    buildWaterMod(*SimPtr,World::masterOrigin(),WaterModName);
-  RefObj->addToInsertControl(*SimPtr,*TriMod,*TriMod);
+    buildWaterMod(System,World::masterOrigin(),WaterModName);
+
+  attachSystem::addToInsertControl
+	  (System,*RefObj,"Reflector",*TriMod,*TriMod);
   
   TarObj->addProtonLineInsertCell(RefObj->getCells());
-  TarObj->addProtonLine(*SimPtr,*RefObj,-3);
-
-  //  TriMod->createAll(*SimPtr,World::masterOrigin());
-
-  //  attachSystem::addToInsertControl(*SimPtr,*TriMod,*TriMod);
+  TarObj->addProtonLine(System,*RefObj,-3);
 
   // Cold centre
-  ColdCentObj->createAll(SimPtr->getDataBase(),World::masterOrigin());
+  ColdCentObj->createAll(System.getDataBase(),World::masterOrigin());
   const std::string H2ModExclude=
-    buildH2Mod(*SimPtr,*ColdCentObj,H2ModName);
+    buildH2Mod(System,*ColdCentObj,H2ModName);
 
-  RefObj->addToInsertControl(*SimPtr,*H2Mod,*H2Mod);
-
+  attachSystem::addToInsertControl
+    (System,*RefObj,"Reflector",*H2Mod,*H2Mod);
+    
   const std::string CH4ModExclude=
-    buildCH4Mod(*SimPtr,*ColdCentObj,CH4ModName);
+    buildCH4Mod(System,*ColdCentObj,CH4ModName);
 
-  RefObj->addToInsertControl(*SimPtr,*CH4Mod,*CH4Mod);
+  attachSystem::addToInsertControl
+	  (System,*RefObj,"Reflector",*CH4Mod,*CH4Mod);
 
   const std::string CH4PreExclude=
-    buildCH4Pre(*SimPtr,CH4PreName);
+    buildCH4Pre(System,CH4PreName);
   if (CH4PMod)
-    RefObj->addToInsertControl(*SimPtr,*CH4PMod,*CH4PMod);
+    {
+      attachSystem::addToInsertControl
+	  (System,*RefObj,"Reflector",*CH4PMod,*CH4PMod);
+    }
 
   if (H2PMod && CH4Mod)
-    attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2PMod);  
+    attachSystem::addToInsertSurfCtrl(System,*CH4Mod,*H2PMod);  
 
   // FLIGHTLINES:
-  const std::string Out=RefObj->getLinkComplement(2);
+  const std::string Out=RefObj->getLinkString(-3);
   TriFLA->addBoundarySurf("inner",Out);  
-  TriFLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(TriFLA->getCC("outer"));
-  TriFLA->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(0));
+  TriFLA->addBoundarySurf("outer",Out);
+  TriFLA->createAll(System,*TriMod,*TriMod,TriMod->getSideIndex(0));
+  RefObj->insertComponent(System,"Reflector",TriFLA->getCC("outer"));
+
 
   TriFLB->addBoundarySurf("inner",Out);  
-  TriFLB->addBoundarySurf("outer",Out);  
-  TriFLB->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(1));
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getCC("outer"));  
-
+  TriFLB->addBoundarySurf("outer",Out);
+  TriFLB->createAll(System,*TriMod,*TriMod,TriMod->getSideIndex(1));
+  RefObj->insertComponent(System,"Reflector",TriFLB->getCC("outer"));
+  
   H2FL->addBoundarySurf("inner",Out);  
-  H2FL->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(H2FL->getCC("outer"));
-  H2FL->createAll(*SimPtr,1,1,*H2Mod);
+  H2FL->addBoundarySurf("outer",Out);
+  H2FL->createAll(System,1,1,*H2Mod);
+  RefObj->insertComponent(System,"Reflector",H2FL->getCC("outer"));
 
   CH4FLA->addBoundarySurf("inner",Out);  
-  CH4FLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(CH4FLA->getCC("outer"));
-  CH4FLA->createAll(*SimPtr,*CH4Mod,*CH4Mod);
+  CH4FLA->addBoundarySurf("outer",Out);
+  RefObj->insertComponent(System,"Reflector",CH4FLA->getCC("outer"));
+  CH4FLA->createAll(System,*CH4Mod,*CH4Mod);
 
   CH4FLB->addBoundarySurf("inner",Out);  
-  CH4FLB->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(CH4FLB->getCC("outer"));
-
-  CH4FLB->createAll(*SimPtr,*CH4Mod,*CH4Mod);
+  CH4FLB->addBoundarySurf("outer",Out);
+  CH4FLB->createAll(System,*CH4Mod,*CH4Mod);
+  RefObj->insertComponent(System,"Reflector",CH4FLB->getCC("outer"));
 
   if (H2Mod && CH4Mod)
-    attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2Mod);
+    attachSystem::addToInsertSurfCtrl(System,*CH4Mod,*H2Mod);
 
   if (H2PCylMod)
     {
-      H2PCylMod->createAll(*SimPtr,*H2Mod,*H2FL);
-      RefObj->addToInsertControl(*SimPtr,*H2PCylMod,*H2PCylMod);
+      H2PCylMod->createAll(System,*H2Mod,*H2FL);
+      attachSystem::addToInsertControl
+	  (System,*RefObj,"Reflector",*H2PCylMod,*H2PCylMod);
     }
 
   if (CH4PMod)
     {
       if (H2PMod)
-	attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,*H2PMod);  
+	attachSystem::addToInsertSurfCtrl(System,*CH4PMod,*H2PMod);  
       else if (H2PCylMod)
-	attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,*H2PCylMod);  
+	attachSystem::addToInsertSurfCtrl(System,*CH4PMod,*H2PCylMod);  
 
-      attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+      attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 					H2FL->getCC("outer"));  
-      attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+      attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 				      CH4FLA->getCC("outer"));  
-      attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+      attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 					CH4FLA->getCC("outer"));  
-      attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+      attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 					CH4FLB->getCC("outer"));  
     }
 
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,*CH4Mod);
+  attachSystem::addToInsertSurfCtrl(System,*RefObj,*CH4Mod);
 
-  H2FL->processIntersectMajor(*SimPtr,*CH4FLB,"inner","outer");
-  CH4FLB->processIntersectMinor(*SimPtr,*H2FL,"inner","outer");
+  H2FL->processIntersectMajor(System,*CH4FLB,"inner","outer");
+  CH4FLB->processIntersectMinor(System,*H2FL,"inner","outer");
 
-  buildCH4Pipe(*SimPtr,CH4ModName);
-  //  buildH2Pipe(*SimPtr,H2ModName);
-  buildWaterPipe(*SimPtr,WaterModName);
+  buildCH4Pipe(System,CH4ModName);
+  //  buildH2Pipe(System,H2ModName);
+  buildWaterPipe(System,WaterModName);
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   tally/surfaceConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -63,6 +62,7 @@
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "NList.h"
 #include "NRange.h"
@@ -70,46 +70,20 @@
 #include "TallyCreate.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "surfaceConstruct.h" 
 
 namespace tallySystem
 {
 
-surfaceConstruct::surfaceConstruct() :
-  idType(1)
-  /*!
-    Constructor
-  */
-{}
-
-surfaceConstruct::surfaceConstruct(const surfaceConstruct& A) :
-  idType(A.idType)
-  /*! 
-    Copy Constructor
-  */
-{}
-
-surfaceConstruct&
-surfaceConstruct::operator=(const surfaceConstruct& A)  
-  /*! 
-    Assignment operator
-    \param A :: surface Construct
-    \return *this
-  */
-{
-  if (this!=&A)
-    idType=A.idType;
-  return *this;
-}  
   
-int
-surfaceConstruct::processSurface(Simulation& System,
-			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+void
+surfaceConstruct::processSurface(SimMCNP& System,
+				 const int idType,
+				 const mainSystem::inputParam& IParam,
+				 const size_t Index)
   /*!
     Add surface tally as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -127,41 +101,43 @@ surfaceConstruct::processSurface(Simulation& System,
   const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
   ELog::EM<<"Surface Tally Type == "<<pType<<ELog::endDiag;
   std::vector<std::string> excludeSurf;
+  // Process a surface extracted from a linkPt of an object(FC)
   if (pType=="object")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
+      
       const long int linkNumber=attachSystem::getLinkIndex(snd);
-      return processSurfObject(System,place,linkNumber,excludeSurf);
+      processSurfObject(System,idType,place,linkNumber,excludeSurf);
+      return;
     }
+
+  // Process a surface extracted from a surfMap
   if (pType=="surfMap")
     {
-      const std::string object=
-	IParam.outputItem<std::string>
+      const std::string object=IParam.getValueError<std::string>
 	("tally",Index,2,"Object component not given");
-      const std::string surfItem=
-	IParam.outputItem<std::string>
-	("tally",Index,3,"SurfMap set key not give");
-      // This should be a range:
-      const long int surfIndex=
-	IParam.outputItem<long int>
-	("tally",Index,4,"position not given");
-      
-      Geometry::Vec3D Axis;
-      size_t itemIndex(5);
-      IParam.checkCntVec3D("tally",Index,itemIndex,Axis);
-      
-      return processSurfMap(System,object,surfItem,surfIndex);
+
+      const std::string surfItem=IParam.getValueError<std::string>
+	("tally",Index,3,"SurfMap set key not given");
+
+      // This should be a range (?):
+      const long int surfIndex=IParam.getValueError<long int>
+	("tally",Index,4,"Index Offset direction");
+            
+      processSurfMap(System,idType,object,surfItem,surfIndex);
+      return;
     }
 
   if (pType=="viewObject")
     {
-      const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
-      const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+      const std::string place=IParam.getValueError<std::string>
+	("tally",Index,2,"position not given");
+      const std::string snd=IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       std::vector<int> surfN;
       const size_t maxIndex=IParam.itemCnt("tally",Index);
@@ -172,24 +148,27 @@ surfaceConstruct::processSurface(Simulation& System,
 	    IParam.getValue<std::string>("tally",Index,i);
 	  excludeSurf.push_back(ST);
 	}
-      return processSurfObject(System,place,linkNumber,excludeSurf);
+      processSurfObject(System,idType,place,linkNumber,excludeSurf);
+      return;
     }
   ELog::EM<<"Surface Tally NOT Processed"<<ELog::endErr;
-  return 0;
+  return;
 }
 
 
 int
-surfaceConstruct::processSurfObject(Simulation& System,
+surfaceConstruct::processSurfObject(SimMCNP& System,
+				    const int idType,
 				    const std::string& FObject,
 				    const long int linkPt,
-				    const std::vector<std::string>& linkN) const
+				    const std::vector<std::string>& linkN)
   /*!
     Process a surface tally on a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param linkN :: surface exclude number for making a region of interest
+    \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfObject");
@@ -202,52 +181,47 @@ surfaceConstruct::processSurfObject(Simulation& System,
       const attachSystem::FixedComp* TPtr=
 	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
       
-      const size_t iLP=(linkPt>0) ?
-	static_cast<size_t>(linkPt-1) : static_cast<size_t>(-1-linkPt);
-      const int masterPlane=  
-	TPtr->getMasterSurf(iLP);
+      const int masterPlane= TPtr->getLinkSurf(linkPt);
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
 	{
 	  const long int LIndex=attachSystem::getLinkIndex(linkN[i]);
-	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
+	  surfN.push_back(TPtr->getLinkSurf(LIndex));
 	}
-      const int signV((linkPt>0) ? 1 : -1);
-      addF1Tally(System,tNum,signV*masterPlane,surfN);
+      addF1Tally(System,tNum,masterPlane,surfN);
       return 1;
     }
   return 0;
 }
 
 int
-surfaceConstruct::processSurfMap(Simulation& System,
+surfaceConstruct::processSurfMap(SimMCNP& System,
+				 const int idType,
 				 const std::string& SObject,
 				 const std::string& SurfUnit,
-				 const long int linkPt) const
+				 const long int linkIndex) 
   /*!
     Process a surface tally on a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param SObject :: SurfMap object for surfaces
     \param SurfUnit :: Object within surfMap
-    \param linkPt :: Link point [-ve for beam object]
+    \param linkIndex :: Index of surface [or -ve for all]
+    \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  ModelSupport::surfIndex& SurI=
-    ModelSupport::surfIndex::Instance();
   
   const int tNum=System.nextTallyNum(idType);
-  if (linkPt)
+  if (linkIndex)
     {
       const attachSystem::SurfMap* SPtr=
 	OR.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
 
-      const int side=(linkPt>0) ? 1 : -1;
-      const size_t index=(linkPt>0) ? static_cast<size_t>(linkPt-1) :
-	static_cast<size_t>(-linkPt-1);
+      const int side=(linkIndex>0) ? 1 : -1;
+      const size_t index=(linkIndex>0) ? static_cast<size_t>(linkIndex-1) :
+	static_cast<size_t>(-linkIndex-1);
 
       const int surf=SPtr->getSurf(SurfUnit,index);
 
@@ -257,51 +231,54 @@ surfaceConstruct::processSurfMap(Simulation& System,
   return 0;
 }
 
-int
-surfaceConstruct::processSurfaceCurrent(Simulation& System,
+void
+surfaceConstruct::processSurfaceCurrent(SimMCNP& System,
                                         const mainSystem::inputParam& IParam,
                                         const size_t Index) 
 /*!
     Add surface tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
+    \return 1 on success / 0 on failure 
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfaceCurrent");
-  idType=1;
-  return processSurface(System,IParam,Index);
+  processSurface(System,1,IParam,Index);
+  return;
 }
 
-int
-surfaceConstruct::processSurfaceFlux(Simulation& System,
+void
+surfaceConstruct::processSurfaceFlux(SimMCNP& System,
                                      const mainSystem::inputParam& IParam,
                                      const size_t Index) 
 /*!
     Add surface tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfaceCurrent");
-  idType=2;
-  return processSurface(System,IParam,Index);
+  
+  processSurface(System,2,IParam,Index);
+  return;
 }
 
 
   
 void
-surfaceConstruct::writeHelp(std::ostream& OX) const
+surfaceConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<"Surface tally options:\n"
     <<"object linkName\n"
     <<"object objectName front/back \n"
-    <<"surfMap objectName front/back/N {1-4 designator} \n"
+    <<"surfMap objectName surfName index-Direction \n"
+    <<"  -- indexDir is +/- 1-N surfaces stored under surfName\n"
     <<"viewObject objectName front/back/N {1-4 designator} \n";
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,11 +93,12 @@ checkLineIntersect(const FixedComp& InsertFC,
 {
   ELog::RegMethod RegA("AttachSupportLine[F]","checkLineInsert");
   
-  
-  const size_t NPoint=InsertFC.NConnect();
-  for(size_t j=0;j<NPoint;j++)
+
+  const std::vector<Geometry::Vec3D> linkPts=
+    InsertFC.getAllLinkPts();
+
+  for(const Geometry::Vec3D& IP : linkPts)
     {
-      const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
       if (CellObj.isValid(IP))
 	return 1;
     }
@@ -107,12 +108,11 @@ checkLineIntersect(const FixedComp& InsertFC,
   const std::vector<const Geometry::Surface*>& SurList=
     CellObj.getSurList();
 
-  for(size_t j=0;j<NPoint;j++)
+  for(const Geometry::Vec3D& IP : linkPts)
     {
-      const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
-      for(size_t k=j+1;k<NPoint;k++)
+      for(const Geometry::Vec3D& JP : linkPts)
         {
-          Geometry::Vec3D UV=InsertFC.getLinkPt(k)-IP;
+          Geometry::Vec3D UV=JP-IP;
           const double LLen=UV.makeUnit();
           if (LLen>Geometry::zeroTol)
             {
@@ -192,9 +192,11 @@ addToInsertLineCtrl(Simulation& System,
     the point is tested REGARDLESS of being in the CC, to 
     being in the BaseFC. If it is an insert is made
     \param System :: Simulation to use
-    \param OuterFC :: FixedComp for name
+    \param BaseCell :: CellMap to extract cells for testing
+    \param cellName :: Particular cells to use from BaseCell
     \param InsertFC :: FixedComp with a ContainedComp/containedGroup
     dynamics cast
+    \param CC :: Container for insersion
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
@@ -222,17 +224,13 @@ addToInsertLineCtrl(Simulation& System,
     \param System :: Simulation to use
     \param OuterFC :: FixedComp to get name for cells
     \param InsertFC :: FixedComp 
-    dynamics cast
+    \param CC :: Container for insersion
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  // Determin cells to scan
-  const int cellN=OR.getCell(OuterFC.getKeyName());
-  const int cellL=OR.getLast(OuterFC.getKeyName());
 
   const std::vector<int> CNum=
     OR.getObjectRange(OuterFC.getKeyName());
@@ -284,23 +282,23 @@ lineIntersect(Simulation& System,
 	      const FixedComp& FC,
 	      std::map<int,MonteCarlo::Object*>& OMap)
   /*!
-    For the line from APt to BPt Axis find all the intercepts
-    in the model and add them to cells
+    For all the tracks between fixed points in the FC 
+    find the cell in the model the tracks intersect.
     \param System :: Simualation to use
     \param FC :: Fixed Comp
     \param OMap :: Object map to add extra units to
   */
 {
-  ELog::RegMethod RegA("","lineIntersect(Pt,Axis)");
+  ELog::RegMethod RegA("AttachSupportLine[F]","lineIntersect(Pt,Axis)");
 
   const long int NC(static_cast<long int>(FC.NConnect()));
 
   for(long int i=0;i<=NC;i++)
     {
-      const Geometry::Vec3D APt(FC.getSignedLinkPt(i));
+      const Geometry::Vec3D APt(FC.getLinkPt(i));
       for(long int j=i+1;j<=NC;j++)
 	{
-	  const Geometry::Vec3D BPt(FC.getSignedLinkPt(j));
+	  const Geometry::Vec3D BPt(FC.getLinkPt(j));
 	  lineIntersect(System,APt,BPt,OMap);
 	}
     }
@@ -318,7 +316,7 @@ lineIntersect(Simulation& System,
     in the model and add them to cells
     \param System :: Simualation to use
     \param APt :: Start Point
-    \param BPt :: Start Point
+    \param BPt :: End Point
     \param OMap :: Object map to add extra units to
   */
 {
@@ -342,8 +340,5 @@ lineIntersect(Simulation& System,
     }
   return;
 }
-	      
-	      
 
-  
 }  // NAMESPACE attachSystem

@@ -25,7 +25,6 @@
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
   class CellMap;
 }
 
@@ -37,7 +36,7 @@ namespace instrumentSystem
 namespace constructSystem
 {  
   class Aperture;
-  class ChopperUnit;
+  class SingleChopper;
   class ChopperPit;
   class DiskChopper;
   class Jaws;
@@ -88,7 +87,7 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> PSCDisk;
 
@@ -185,8 +184,6 @@ class MAGIC : public attachSystem::CopiedComp
   void buildHut(Simulation&,const attachSystem::FixedComp&,
 		const long int,const int);
   
-  
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   

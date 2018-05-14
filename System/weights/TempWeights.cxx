@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/TempWeights.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,9 +80,9 @@ scaleTempWeights(Simulation& System,double factor)
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
   
-  WM.addParticle<WeightSystem::WCells>('n');
+  WM.addParticle<WeightSystem::WCells>("n");
   WeightSystem::WCells* WF=
-    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+    dynamic_cast<WeightSystem::WCells*>(WM.getParticle("n"));
   if (!WF)
     {
       ELog::EM<<"Temp weight applied to non cell neutron particles"

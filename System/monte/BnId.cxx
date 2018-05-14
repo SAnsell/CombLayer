@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/BnId.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,10 +190,6 @@ BnId::operator<(const BnId& A) const
 {
   if (A.size!=size)
     return size<A.size;
-  std::pair<int,int> cntA(0,0);   // count for A
-  std::pair<int,int> cntT(0,0);   // count for this
-  if (Znum!=A.Znum)
-    return (Znum<A.Znum) ? 1 : 0;
 
   if (Tnum!=A.Tnum)
     return (Tnum<A.Tnum) ? 1 : 0;
@@ -388,6 +384,32 @@ BnId::mapState(const std::vector<int>& Index,
   return;
 }
 
+void
+BnId::setState(const std::vector<int>& Index,
+	       const std::map<int,int>& Base) 
+  /*!
+    Sets the components within base with true/false
+    \param Index :: vector of Literal/Surface numbers
+    \param Base :: map to be used
+  */ 
+{
+  std::map<int,int>::const_iterator mc;
+  Tnum=0;
+  Znum=0;
+  size=0;
+  for(size_t i=0;i<Index.size() && Tval.size();i++)
+    {
+      mc=Base.find(Index[i]);
+      Tval[i]=(mc->second) ? 1 : -1;
+      if (mc->second)
+	Tnum++;
+      else
+	Znum++;
+      size++;
+    }
+  return;
+}
+
 
 
 std::pair<int,BnId>
@@ -409,7 +431,7 @@ BnId::makeCombination(const BnId& A) const
     return std::pair<int,BnId>(-1,BnId());
 
   // Zero unequal or 1 value to far apart
-  if (Znum!=A.Znum || (Tnum-A.Tnum)*(Tnum-A.Tnum)>1)
+  if ((Tnum-A.Tnum)*(Tnum-A.Tnum)>1)
     return std::pair<int,BnId>(-1,BnId());
 
   // no difference 

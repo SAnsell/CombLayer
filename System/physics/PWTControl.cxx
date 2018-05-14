@@ -3,7 +3,7 @@
  
  * File:   physics/PWTControl.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "stringCombine.h"
 #include "MapRange.h"
 #include "MatrixBase.h"
@@ -154,7 +155,7 @@ PWTControl::renumberCell(const int originalCell,const int newCell)
 	  if (mcN->second==originalCell) return;   // work already done
 	  throw ColErr::InContainerError<int>
 	    (newCell,"Cell is already remapped:" +
-	     StrFunc::makeString(mcN->second)+")");
+	     std::to_string(mcN->second)+")");
 	}
       renumberMap.insert(std::map<int,int>::value_type(newCell,originalCell));
     }
@@ -165,12 +166,12 @@ PWTControl::renumberCell(const int originalCell,const int newCell)
 void
 PWTControl::write(std::ostream& OX,
 		  const std::vector<int>& cellOutOrder,
-		  const std::set<int>& voidCells) const
+		  const std::set<int>& ) const
   /*!
     Write out the card
     \param OX :: Output stream
     \param cellOutOrder :: Cell List
-    \param voidCells :: List of void cells
+    \param voidCells :: List of void cells [placeholder]
   */
 {
   ELog::RegMethod RegA("PWTControl","write");

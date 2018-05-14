@@ -3,7 +3,7 @@
  
  * File:   imat/IMatPrimGuide.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,7 +160,7 @@ IMatPrimGuide::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("IMatPrimGuide","createObjects");
   
-  const std::string insertEdge=FC.getLinkString(1);
+  const std::string insertEdge=FC.getLinkString(2);
   std::string Out;
   Out=ModelSupport::getComposite(SMap,guideIndex," -2 33 -34 35 -36 ");
   addOuterSurf("Inner",Out);

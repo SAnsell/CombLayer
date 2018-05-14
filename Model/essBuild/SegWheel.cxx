@@ -3,7 +3,7 @@
  
  * File:   essBuild/SegWheel.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -86,8 +87,7 @@ SegWheel::SegWheel(const std::string& Key) :
 
 SegWheel::SegWheel(const SegWheel& A) : 
   WheelBase(A),lh2Index(A.lh2Index),mainShaftCell(A.mainShaftCell),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
+  targetHeight(A.targetHeight),
   targetSectorOffsetX(A.targetSectorOffsetX),
   targetSectorOffsetY(A.targetSectorOffsetY), 
   targetSectorOffsetZ(A.targetSectorOffsetZ),
@@ -129,11 +129,6 @@ SegWheel::operator=(const SegWheel& A)
       WheelBase::operator=(A);
       lh2Index=A.lh2Index;
       mainShaftCell=A.mainShaftCell;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       targetHeight=A.targetHeight;
       targetSectorOffsetX=A.targetSectorOffsetX;
       targetSectorOffsetY=A.targetSectorOffsetY;
@@ -202,13 +197,7 @@ SegWheel::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("SegWheel","populate");
-
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
 
@@ -443,23 +432,6 @@ SegWheel::makeShaftObjects(Simulation& System)
   return;
 }
 
-void
-SegWheel::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: sideIndex
-  */
-{
-  ELog::RegMethod RegA("SegWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
-  return;
-}
 
 void
 SegWheel::createSurfaces()
@@ -471,8 +443,8 @@ SegWheel::createSurfaces()
 
   //  loop angles in sectors
   // sector aperture
-  double psi1(360.0/targetSectorNumber);
-  double psi2(targetSectorAngleXY);
+  const double psi1(360.0/static_cast<double>(targetSectorNumber));
+  const double psi2(targetSectorAngleXY);
   double psi(0.0);
 
   //  loop focal points for He wedge in sectors 
@@ -490,8 +462,8 @@ SegWheel::createSurfaces()
       Geometry::Quaternion::calcQRotDeg(-psi2,Z).rotate(dirX);
       ModelSupport::buildPlane(SMap,SI1+3,Origin-X*FPX+Y*FPY,dirX);
       
-      FPX=targetSectorOffsetY*sin((i+1)*psi1*M_PI/180);
-      FPY=targetSectorOffsetY*cos((i+1)*psi1*M_PI/180);
+      FPX=targetSectorOffsetY*sin(static_cast<double>(i+1)*psi1*M_PI/180);
+      FPY=targetSectorOffsetY*cos(static_cast<double>(i+1)*psi1*M_PI/180);
 
       psi=psi1+2.0*psi2;  
       
@@ -725,13 +697,13 @@ SegWheel::createAll(Simulation& System,
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-    \param sideIndex :: sideIndex
+    \param sideIndex :: LinkPt for origin / axis
    */
 {
   ELog::RegMethod RegA("SegWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC,sideIndex);
+  WheelBase::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 

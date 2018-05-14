@@ -3,7 +3,7 @@
  
  * File:   processInc/LineTrack.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,15 +53,22 @@ class LineTrack
 
   double TDist;                     ///< Total distance
   
-  std::vector<long int> Cells;                   ///< Cells in order
-  std::vector<MonteCarlo::Object*> ObjVec;  ///< Object pointer
+  std::vector<long int> Cells;                    ///< Cells in order
+  std::vector<MonteCarlo::Object*> ObjVec;        ///< Object pointers
+  std::vector<const Geometry::Surface*> SurfVec;  ///< Surface pointers
+
+  ///< Signed index [particle origin side true]
+  std::vector<int> SurfIndex;                
   std::vector<double> Track;                ///< Track length
 
-  bool updateDistance(MonteCarlo::Object*,const double);
+  bool updateDistance(MonteCarlo::Object*,
+		      const Geometry::Surface*,
+		      const int,const double);
 
  public:
 
   LineTrack(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  LineTrack(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
   LineTrack(const LineTrack&);
   LineTrack& operator=(const LineTrack&);    
   ~LineTrack() {}          ///< Destructor
@@ -80,8 +87,18 @@ class LineTrack
     { return Track; }
   /// Access Object Pointers
   const std::vector<MonteCarlo::Object*>& getObjVec() const
-    { return ObjVec; }
+  { return ObjVec; }
+  /// Access Surface Pointers
+  const std::vector<const Geometry::Surface*>& getSurfVec() const
+    { return SurfVec; }
+  /// Access Surface Pointers
+  const std::vector<int>& getSurfIndex() const
+    { return SurfIndex; }
+
   Geometry::Vec3D getPoint(const size_t) const;
+  int getSurfIndex(const size_t) const;
+  const Geometry::Surface* getSurfPtr(const size_t) const;
+  
   /// access total distance
   double getTotalDist() const { return aimDist; }
 

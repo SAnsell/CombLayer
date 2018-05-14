@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVarOne.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "masterWrite.h"
+#include "polySupport.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
 
@@ -679,7 +680,7 @@ PolyVar<1>::derivative()
     }
 
   for(size_t i=0;i<iDegree;i++)
-    PCoeff[i]=PCoeff[i+1]*(i+1);
+    PCoeff[i]=PCoeff[i+1]*static_cast<double>(i+1);
   iDegree--;
 
   return *this;
@@ -781,7 +782,7 @@ PolyVar<1>::divide(const PolyVar<1>& pD,PolyVar<1>& pQ,
     \param epsilon :: Tolerance  [-ve to use master tolerance]
   */ 
 {
-
+  
   if (iDegree>=pD.iDegree)
     {
       const size_t iQuotDegree = iDegree - pD.iDegree;  
@@ -860,10 +861,12 @@ PolyVar<1>::checkSmallPoly(std::vector<std::complex<double> >& Out) const
       Out[0]=std::complex<double>(-PCoeff[0]);
       break;
     case 2:  // x^2+a_1 x 
-      N=solveQuadratic(Out[0],Out[1]);
+      N= ::solveQuadratic(PCoeff[2],PCoeff[1],PCoeff[0],
+			  Out[0],Out[1]);
       break;
     case 3:  // x^3+a_2 x^2+ a_1 x+c=0
-      N=solveCubic(Out[0],Out[1],Out[2]);
+      N= ::solveCubic(PCoeff[3],PCoeff[2],PCoeff[1],PCoeff[0],
+		      Out[0],Out[1],Out[2]);
       break;
     default:
       return 0;
@@ -951,7 +954,9 @@ PolyVar<1>::calcRoots(const double epsilon)
   // x^2+a_1 x+c = 0
   if (iDegree==2)
     {
-      const size_t N=solveQuadratic(Out[0],Out[1]);
+      const size_t N=
+	::solveQuadratic(PCoeff[2],PCoeff[1],PCoeff[0],
+			 Out[0],Out[1]);
       Out.resize(N);
       return Out;
     }
@@ -959,7 +964,9 @@ PolyVar<1>::calcRoots(const double epsilon)
   // x^3+a_2 x^2+ a_1 x+c=0
   if (iDegree==3)
     {
-      const size_t N=solveCubic(Out[0],Out[1],Out[2]);
+      const size_t N=
+	::solveCubic(PCoeff[3],PCoeff[2],PCoeff[1],PCoeff[0],
+		     Out[0],Out[1],Out[2]);
       Out.resize(N);
       return Out;
     }
@@ -997,111 +1004,6 @@ PolyVar<1>::calcRoots(const double epsilon)
 #endif
 
   return Out;
-}
-
-size_t
-PolyVar<1>::solveQuadratic(std::complex<double>& AnsA,
-			 std::complex<double>& AnsB) const
-  /*!
-    Solves Complex Quadratic component.
-    compress MUST have been called.
-    \param AnsA :: complex roots of the equation 
-    \param AnsB :: complex roots of the equation 
-    \return number of unique solutions 
-  */
-{
-  const double b=PCoeff[1];
-  const double c=PCoeff[0];
-  
-  const double cf=b*b-4.0*c;
-  if (cf>=0)          /* Real Roots */
-    {
-      const double q=(b>=0) ? -0.5*(b+sqrt(cf)) : -0.5*(b-sqrt(cf));
-      AnsA=std::complex<double>(q,0.0);
-      AnsB=std::complex<double>(c/q,0.0);
-      return (std::abs(cf)<1e-50) ? 1 : 2;
-    }
-
-
-  std::complex<double> CQ;
-  if (b>=0.0)
-    CQ=std::complex<double>(-0.5*b,-0.5*sqrt(-cf));
-  else
-    CQ=std::complex<double>(-0.5*b,0.5*sqrt(-cf));
-  AnsA = CQ;
-  AnsB = c/CQ;
-  return 2;
-}
-
-size_t
-PolyVar<1>::solveCubic(std::complex<double>& AnsA,std::complex<double>& AnsB,
-		       std::complex<double>& AnsC) const
-  /*!
-    Solves Cubic equation of type
-    \f$ x^3+ax^2+bx+c=0 \f$
-    \param AnsA :: complex roots of the equation 
-    \param AnsB :: complex roots of the equation 
-    \param AnsC :: complex roots of the equation 
-    \return number of unique solutions 
-  */
-
-{
-  double q,r;        /* solution parameters */
-  double s,t,termR,termI,discrim;
-  double q3,r13;
-
-  if (std::abs(PCoeff[3])<1e-50)
-    return solveQuadratic(AnsA,AnsB);
-  const double b = PCoeff[2]/PCoeff[3];
-  const double c = PCoeff[1]/PCoeff[3];
-  const double d = PCoeff[0]/PCoeff[3];
-  std::pair<std::complex<double>,std::complex<double> > SQ;
-  
-  q = (3.0*c - (b*b))/9.0;                   // -q
-  r = -27.0*d + b*(9.0*c - 2.0*b*b);       // -r 
-  r /= 54.0;
- 
-  discrim = q*q*q + r*r;           // r^2-qq^3 
-  /* The first root is always real. */
-  termR = (b/3.0);
-
-  if (discrim > 1e-13)  /* one root real, two are complex */
-    { 
-      s = r + sqrt(discrim);
-      s = ((s < 0) ? -pow(-s, (1.0/3.0)) : pow(s, (1.0/3.0)));
-      t = r - sqrt(discrim);
-      t = ((t < 0) ? -pow(-t, (1.0/3.0)) : pow(t, (1.0/3.0)));
-      AnsA=std::complex<double>(-termR+s+t,0.0);
-      // second real point.
-      termR += (s + t)/2.0;
-      termI = sqrt(3.0)*(-t + s)/2;
-      AnsB=std::complex<double>(-termR,termI);
-      AnsC=std::complex<double>(-termR,-termI);
-      return 3;
-    }
-
-  /* The remaining options are all real */
-
-  if (discrim<1e-13) // All roots real 
-    {
-      q = -q;
-      q3 = q*q*q;
-      q3 = acos(-r/sqrt(q3));
-      r13 = -2.0*sqrt(q);
-      AnsA=std::complex<double>(-termR + r13*cos(q3/3.0),0.0);
-      AnsB=std::complex<double>(-termR + r13*cos((q3 + 2.0*M_PI)/3.0),0.0);
-      AnsC=std::complex<double>(-termR + r13*cos((q3 - 2.0*M_PI)/3.0),0.0);
-      return 3;
-    }
-
-// Only option left is that all roots are real and unequal 
-// (to get here, q*q*q=r*r)
-
-  r13 = ((r < 0) ? -pow(-r,(1.0/3.0)) : pow(r,(1.0/3.0)));
-  AnsA=std::complex<double>(-termR+2.0*r13,0.0);
-  AnsB=std::complex<double>(-(r13+termR),0.0);
-  AnsC=std::complex<double>(-(r13+termR),0.0);
-  return 2;
 }
 
 size_t

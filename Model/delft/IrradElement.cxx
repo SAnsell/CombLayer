@@ -3,7 +3,7 @@
  
  * File:   delft/IrradElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -266,8 +268,8 @@ IrradElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+14,
 			   Origin+X*(Width/2.0-locThick),X);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
-  Geometry::Vec3D BaseZ(RG.getLinkPt(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
+  Geometry::Vec3D BaseZ(RG.getLinkPt(5));
   
   BaseZ+=Z*endStop;
   ModelSupport::buildPlane(SMap,surfIndex+15,BaseZ,Z);
@@ -297,7 +299,6 @@ IrradElement::createObjects(Simulation& System)
   ELog::RegMethod RegA("IrradElement","createObjects");
 
   std::string Out;
-  // Outer Layers
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -45 ");
   addOuterSurf(Out);      
 

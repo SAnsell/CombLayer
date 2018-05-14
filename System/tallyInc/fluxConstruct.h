@@ -3,7 +3,7 @@
  
  * File:   tallyInc/fluxConstruct.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -40,28 +41,27 @@ namespace tallySystem
   \date April 2012
   \brief Holds everthing for tallies
 
-  Provides linkage to its outside on FixedComp[0]
 */
 
-class fluxConstruct : virtual public basicConstruct
+class fluxConstruct 
 {
  private:
   
-  std::vector<int> getCell(const Simulation&,
-			   const mainSystem::inputParam&,
-			   const size_t,
-			   const int);
+  static std::vector<int> getCell(const SimMCNP&,
+				  const mainSystem::inputParam&,
+				  const size_t,
+				  const int);
+
+  /// private constructor
+  fluxConstruct() {}
+  
  public:
 
-  fluxConstruct();
-  fluxConstruct(const fluxConstruct&);
-  fluxConstruct& operator=(const fluxConstruct&);
-  virtual ~fluxConstruct() {}  ///< Destructor
 
-  int processFlux(Simulation&,const mainSystem::inputParam&,
-		  const size_t) const;
+  static int processFlux(SimMCNP&,const mainSystem::inputParam&,
+			 const size_t);
 
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

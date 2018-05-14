@@ -3,7 +3,7 @@
  
  * File:   scatMat/CryMat.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
 #include "Exception.h"
@@ -80,7 +79,7 @@ struct etaFunc
   */
   double operator()(const double& eta)
     {
-      return (fabs(eta)>1e-7) ? eta/(exp(eta)-1.0) : 1.0;
+      return (std::abs(eta)>1e-7) ? eta/(exp(eta)-1.0) : 1.0;
     }
 };
 

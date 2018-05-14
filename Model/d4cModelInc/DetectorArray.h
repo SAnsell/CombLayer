@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   d4cModelInc/DetectorArray.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,14 @@
 
 class Simulation;
 
+/*!
+  \namespace d4cSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief Model component for simulating D4C
+*/
+
 namespace d4cSystem
 {
 
@@ -36,18 +44,12 @@ namespace d4cSystem
 */
 
 class DetectorArray : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int detIndex;            ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;
-  double zAngle;
 
   double centRadius;            ///< Radius of from centre
   double tubeRadius;            ///< Radius of detector
@@ -64,7 +66,8 @@ class DetectorArray : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -78,7 +81,8 @@ class DetectorArray : public attachSystem::ContainedComp,
   virtual ~DetectorArray();
 
   void createTally(Simulation&) const;
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

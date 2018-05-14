@@ -3,7 +3,7 @@
  
  * File:   t1Engineering/FishGillVessel.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -276,7 +276,7 @@ FishGillVessel::createSurfaces()
 void
 FishGillVessel::createObjects(Simulation& System,
 			      const attachSystem::FixedComp& TarObj,
-			      const size_t frontIndex)
+			      const long int frontIndex)
   /*!
     Creates the target vessel objects
     \param System :: Simulation to create objects in
@@ -375,7 +375,7 @@ FishGillVessel::createObjects(Simulation& System,
 
 
   // BACKPLATE:
-  const std::string BFace=TarObj.getLinkString(1);
+  const std::string BFace=TarObj.getLinkString(2);
   Out=ModelSupport::getComposite(SMap,pvIndex,PV," -8 -2M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BFace));
   
@@ -411,7 +411,7 @@ void
 FishGillVessel::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
   			  const attachSystem::FixedComp& TarObj,
-			  const size_t frontIndex)
+			  const long int frontIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

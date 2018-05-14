@@ -3,7 +3,7 @@
  
  * File:   delftInc/FuelElement.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ class FuelElement  : public RElement
 {
  protected:
 
-  size_t nElement;           ///< Number of elements
-  std::set<size_t> Exclude;     ///< Exclude set
+  size_t nElement;            ///< Number of elements
+  std::set<size_t> Exclude;   ///< Exclude set
 
   double depth;              ///< Total depth of the cell
   double width;              ///< Total width of the cell
@@ -62,15 +62,15 @@ class FuelElement  : public RElement
   int watMat;                ///< coollant material
   int fuelMat;               ///< default fuel material
 
-  size_t nFuel;              ///< Number of fuel sub-cells in a strip
-  std::vector<int> fuelCells;    ///< Cells with U for division
+  size_t nFuel;                     ///< Number of fuel sub-cells in a strip
+  std::vector<int> fuelCells;       ///< Cells with U for division
   std::vector<Geometry::Vec3D> fuelCentre;    ///< Centre with U 
-  std::vector<int> waterCells;   ///< Cells with H2O coolant [for insertion]
-  std::vector<double> fuelFrac;  ///< divider of fuel
+  std::vector<int> waterCells;      ///< Cells with H2O coolant [for insertion]
+  std::vector<double> fuelFrac;     ///< divider of fuel
 
   std::vector<int> midCell;                  ///< Mid cell if needed
   std::vector<Geometry::Vec3D> midCentre;    ///< Mid centre
-  int topCell;                  ///< Mid cell if needed
+  int topCell;                               ///< Mid cell if needed
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

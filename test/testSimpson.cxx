@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSimpson.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ struct etaFunc
   /// Eta function [Eqn 9: Nucl Inst Method. 213 (1983) 495]
   double operator()(const double& eta)
     {
-      return (fabs(eta)>1e-7) ? eta/(exp(-eta)-1.0) : 1.0;
+      return (std::abs(eta)>1e-7) ? eta/(exp(-eta)-1.0) : 1.0;
     }
 };
 
@@ -124,7 +124,8 @@ testSimpson::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testSimpson","applyTest");
-
+  TestFunc::regSector("testSimpson");
+  
   typedef int (testSimpson::*testPtr)();
   testPtr TPtr[]=
     {
@@ -174,18 +175,19 @@ testSimpson::testExp()
   ELog::RegMethod RegA("testSimpson","testExp");
 
   typedef std::tuple<double,double,double> TTYPE;
-  std::vector<TTYPE> Items;
-
-  Items.push_back(TTYPE(0.0,1.0,exp(1)-1.0));
-  Items.push_back(TTYPE(0.0,10.0,exp(10)-1.0));
-  Items.push_back(TTYPE(-5.0,10.0,exp(10)-exp(-5.0)));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(0.0,1.0,exp(1)-1.0),
+      TTYPE(0.0,10.0,exp(10)-1.0),
+      TTYPE(-5.0,10.0,exp(10)-exp(-5.0))
+    };
 
   int cnt(1);
-  for(const TTYPE& tc : Items)
+  for(const TTYPE& tc : Tests)
     {
       const double A=
 	Simpson::integrate<Exp>(20,std::get<0>(tc),std::get<1>(tc));
-      if (fabs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
+      if (std::abs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
 	{
 	  ELog::EM<<"Failed on item "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"A="<<A<<" "<<std::get<2>(tc)<<ELog::endCrit;
@@ -217,7 +219,7 @@ testSimpson::testEta()
     {
       const double A=
 	Simpson::integrate<etaFunc>(40,std::get<0>(tc),std::get<1>(tc));
-      if (fabs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
+      if (std::abs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
 	{
 	  ELog::EM<<"Failed on item "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"A="<<A<<" "<<std::get<2>(tc)<<ELog::endCrit;
@@ -251,7 +253,7 @@ testSimpson::testWeibull()
     {
       const double A=Simpson::integrate<Weibull>(20,std::get<0>(tc),
 						 std::get<1>(tc),WB);
-      if (fabs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
+      if (std::abs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
 	{
 	  ELog::EM<<"Failed on item "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"A="<<A<<" "<<std::get<2>(tc)<<ELog::endCrit;

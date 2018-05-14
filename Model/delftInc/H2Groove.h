@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/H2Groove.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace delftSystem
 */
 
 class H2Groove : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
@@ -44,10 +44,6 @@ class H2Groove : public attachSystem::ContainedComp,
   
   const int siIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;             ///< X Step
-  double yStep;             ///< Y Step
-  double zStep;             ///< Z Step
   
   int face;                 ///< 0 not object / +/- Y direction
   double height;            ///< Height 
@@ -57,8 +53,9 @@ class H2Groove : public attachSystem::ContainedComp,
   double siTemp;           ///< Moderator temperature
   int siMat;                ///< Moderator material
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp&);

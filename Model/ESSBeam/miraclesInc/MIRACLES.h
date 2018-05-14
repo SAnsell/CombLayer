@@ -25,7 +25,6 @@
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
   class CellMap;
 }
 
@@ -38,7 +37,7 @@ namespace constructSystem
 {  
   class Aperture;
   class BeamShutter;
-  class ChopperUnit;
+  class SingleChopper;
   class ChopperPit;
   class DiskChopper;
   class Jaws;
@@ -118,7 +117,7 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// First single chopper pair
-  std::shared_ptr<constructSystem::ChopperUnit> ChopE;
+  std::shared_ptr<constructSystem::SingleChopper> ChopE;
   /// Top twin disk
   std::shared_ptr<constructSystem::DiskChopper> EDisk;
   
@@ -157,8 +156,6 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Bender in first shielding
   std::shared_ptr<beamlineSystem::GuideLine> BendOutB;
 
-
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,

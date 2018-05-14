@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerRoof.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,61 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   */
 {}
 
+BunkerRoof::BunkerRoof(const BunkerRoof& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  baseName(A.baseName),roofIndex(A.roofIndex),cellIndex(A.cellIndex),
+  roofThick(A.roofThick),roofMat(A.roofMat),activeRoof(A.activeRoof),
+  nVert(A.nVert),nRadial(A.nRadial),nMedial(A.nMedial),
+  vert(A.vert),radial(A.radial),medial(A.medial),
+  nBasicVert(A.nBasicVert),basicVert(A.basicVert),
+  basicMatVec(A.basicMatVec),loadFile(A.loadFile),
+  outFile(A.outFile),divider(A.divider),baseSurf(A.baseSurf),
+  topSurf(A.topSurf),innerSurf(A.innerSurf),outerSurf(A.outerSurf)
+  /*!
+    Copy constructor
+    \param A :: BunkerRoof to copy
+  */
+{}
+
+BunkerRoof&
+BunkerRoof::operator=(const BunkerRoof& A)
+  /*!
+    Assignment operator
+    \param A :: BunkerRoof to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      roofThick=A.roofThick;
+      roofMat=A.roofMat;
+      activeRoof=A.activeRoof;
+      nVert=A.nVert;
+      nRadial=A.nRadial;
+      nMedial=A.nMedial;
+      vert=A.vert;
+      radial=A.radial;
+      medial=A.medial;
+      nBasicVert=A.nBasicVert;
+      basicVert=A.basicVert;
+      basicMatVec=A.basicMatVec;
+      loadFile=A.loadFile;
+      outFile=A.outFile;
+      divider=A.divider;
+      baseSurf=A.baseSurf;
+      topSurf=A.topSurf;
+      innerSurf=A.innerSurf;
+      outerSurf=A.outerSurf;
+    }
+  return *this;
+}
 
 BunkerRoof::~BunkerRoof() 
   /*!
@@ -218,7 +273,6 @@ BunkerRoof::createSector(Simulation& System,
   ELog::RegMethod RegA("BunkerRoof","createSector");
 
   std::vector<double> empty;
-  
   ModelSupport::LayerDivide3D LD3(keyName+"Main"+
 				  StrFunc::makeString(sectNum));
 
@@ -226,7 +280,7 @@ BunkerRoof::createSector(Simulation& System,
   LD3.setSurfPair(0,innerSurf,outerSurf);
   LD3.setSurfPair(1,lwIndex,rwIndex);
   LD3.setSurfPair(2,baseSurf,topSurf);
-  LD3.setDivider(divider);
+  LD3.setDividerByExclude(System,cellN);
 
   const bool AFlag (activeRoof & (1 << sectNum));
 
@@ -244,9 +298,9 @@ BunkerRoof::createSector(Simulation& System,
       LD3.setFractions(0,empty);
       LD3.setFractions(1,empty);
       LD3.setFractions(2,basicVert);
-      for(size_t index=0;index<basicMatVec.size();index++)
-	LD3.setMaterials(2,basicMatVec);
+      LD3.setMaterials(2,basicMatVec);
     }
+  
   LD3.divideCell(System,cellN);
   addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());
   return;

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/DecFileMod.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +44,9 @@ class DecFileMod : public Decoupled
 
   Geometry::Matrix<double> RBase;  ///< ReBase matrix
   
-  void populate(const Simulation&);
-  virtual void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
   int readFile(Simulation&,const std::string&);
   void reMapSurf(ReadFunc::OTYPE&) const;
 
@@ -59,7 +60,7 @@ class DecFileMod : public Decoupled
   virtual ~DecFileMod();
 
   void createAllFromFile(Simulation&,const attachSystem::FixedComp&,
-			 const std::string&);
+			 const long int,const std::string&);
 
 };
 

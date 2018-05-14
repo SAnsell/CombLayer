@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/NiGuide.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -75,9 +76,9 @@ namespace bibSystem
 {
 
 NiGuide::NiGuide(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  niguideindex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(niguideindex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  niGuideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(niGuideIndex+1)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,12 +86,10 @@ NiGuide::NiGuide(const std::string& Key) :
 {}
 
 NiGuide::NiGuide(const NiGuide& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  niguideindex(A.niguideindex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),width(A.width),height(A.height),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  niGuideIndex(A.niGuideIndex),cellIndex(A.cellIndex),
+  width(A.width),height(A.height),
   length(A.length),wallThick(A.wallThick),wallMat(A.wallMat)
-  
   /*!
     Copy constructor
     \param A :: NiGuide to copy
@@ -104,33 +103,17 @@ NiGuide::operator=(const NiGuide& A)
     \param A :: NiGuide to copy
     \return *this
   */
-  
-  /** Incluimos aqui las variables*/
 {
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       length=A.length;
       wallThick=A.wallThick;
-      wallMat=A.wallMat;
-      
-//       depth=A.depth;
-//       wallThick=A.wallThick;
-//       waterMat=A.waterMat;
-
-//       premThick=A.premThick;           
-//       wallPremThick=A.wallPremThick;   
-//       premTemp=A.premTemp;
-//       premGap=A.premGap;
+      wallMat=A.wallMat;      
     }
   return *this;
 }
@@ -151,15 +134,9 @@ NiGuide::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("NiGuide","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  attachSystem::FixedOffset::populate(Control);
 
-
+  
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -167,62 +144,53 @@ NiGuide::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");  
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
 
-//   beMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");  
-//   beTemp=Control.EvalVar<double>(keyName+"BeTemp");
-  
-  
-    
   return;
 }
 
 
 void
 NiGuide::createUnitVector(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: Link Point
   */
 {
   ELog::RegMethod RegA("NiGuide","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex); /** Aqui pide el punto*/
-
-//   const double yShift=wallThick; /** De este modo, aplicamos el desplazamiento al origen para situarlo en  la superficie que queremos*/
-  
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
 void
 NiGuide::createSurfaces(const attachSystem::FixedComp& FCA,
-		     const size_t sideIndexA,
-		     const attachSystem::FixedComp& FCB,
-		     const size_t sideIndexB)
-  /*!
+			const long int sideIndexA,
+			const attachSystem::FixedComp& FCB,
+			const long int sideIndexB)
+/*!
     Create planes for the silicon and Polyethene layers
-    \param FCA : surface 
-  */
-  
-  /** Creamos las superficies de cada cuerpo*/
+    \param FCA : Front surface FixedComp 
+    \param FCB : Back surface FixedComp
+    \param sideIndexA :: Front surface link point
+    \param sideIndexB :: Back surface link point
+*/
 {
   ELog::RegMethod RegA("NiGuide","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,niguideindex+2,Origin+Y*length,Y);    
-  ModelSupport::buildPlane(SMap,niguideindex+3,Origin-X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,niguideindex+4,Origin+X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,niguideindex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,niguideindex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+2,Origin+Y*length,Y);    
+  ModelSupport::buildPlane(SMap,niGuideIndex+3,Origin-X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+4,Origin+X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+6,Origin+Z*height/2.0,Z);  
   
-  ModelSupport::buildPlane(SMap,niguideindex+11,Origin-X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,niguideindex+12,Origin+X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,niguideindex+13,Origin-Z*(height/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,niguideindex+14,Origin+Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+11,Origin-X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+12,Origin+X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+13,Origin-Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,niGuideIndex+14,Origin+Z*(height/2.0+wallThick),Z);  
   
-  SMap.addMatch(niguideindex+21,FCA.getLinkSurf(sideIndexA)); 
-  SMap.addMatch(niguideindex+22,FCA.getLinkSurf(sideIndexB)); 
+  SMap.addMatch(niGuideIndex+21,FCA.getLinkSurf(sideIndexA)); 
+  SMap.addMatch(niGuideIndex+22,FCB.getLinkSurf(sideIndexB)); 
 
 
   return; 
@@ -230,7 +198,7 @@ NiGuide::createSurfaces(const attachSystem::FixedComp& FCA,
 
 void
 NiGuide::createObjects(Simulation& System,
-			const attachSystem::ContainedComp& CC)
+		       const attachSystem::ContainedComp& CC)
   /*!
     Create the simple moderator
     \param System :: Simulation to add results
@@ -241,18 +209,16 @@ NiGuide::createObjects(Simulation& System,
   std::string Out;
 
   // NiGuide
-///   Out=ModelSupport::getComposite(SMap,niguideindex,"1 -2 3 -4 5 -6");
-      Out=ModelSupport::getComposite(SMap,niguideindex,"21 22 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,niGuideIndex,"21 22 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-//   Out+=CC.getExclude();  /** Esta es una de las cuatro operaciones. Realiza la operacion de exclusion de lo que viene en el "Out" inmediatamente anterior. */
 
-///   Out=ModelSupport::getComposite(SMap,niguideindex,"1 -2 11 -12 13 -14  (-3:4:-5:6)");
-      Out=ModelSupport::getComposite(SMap,niguideindex,"21 22 -2 11 -12 13 -14  (-3:4:-5:6)");
+
+  Out=ModelSupport::getComposite(SMap,niGuideIndex,"21 22 -2 11 -12 13 -14  (-3:4:-5:6)");
   Out+=CC.getContainer(); /// Con esto se incluye tooooodo lo que hay en el interior de esta celda en la guia
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,300.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   
   
-  Out=ModelSupport::getComposite(SMap,niguideindex,"21 22 -2 11 -12 13 -14" ); /** Hay que añadir una superficie externa*/
+  Out=ModelSupport::getComposite(SMap,niGuideIndex,"21 22 -2 11 -12 13 -14" ); /** Hay que añadir una superficie externa*/
   addOuterSurf(Out);
 
   return; 
@@ -278,41 +244,38 @@ NiGuide::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);  
 
   // WHY HAVENT I WRITTEN AutoLinkSurf()
-  FixedComp::setLinkSurf(0,-SMap.realSurf(niguideindex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
-  FixedComp::setLinkSurf(1,SMap.realSurf(niguideindex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(niguideindex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(niguideindex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(niguideindex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(niguideindex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(niGuideIndex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
+  FixedComp::setLinkSurf(1,SMap.realSurf(niGuideIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(niGuideIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(niGuideIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(niGuideIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(niGuideIndex+16));
   
   return;
 }
 
 void
-/// NiGuide::createAll(Simulation& System,
-/// 		    const attachSystem::FixedComp& FC,
-/// 		    const size_t sideIndex,
-/// 		    const attachSystem::ContainedComp& CC)
 NiGuide::createAll(Simulation& System,
-		const attachSystem::FixedComp& FCA,
-		const size_t sideIndexA,
-		const attachSystem::FixedComp& FCB,
-		const size_t sideIndexB,
-		const attachSystem::ContainedComp& CC)
+		   const attachSystem::FixedComp& FCA,
+		   const long int sideIndexA,
+		   const attachSystem::FixedComp& FCB,
+		   const long int sideIndexB,
+		   const attachSystem::ContainedComp& CC)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: FixedComponent for origin
-    \param sideIndex :: Side index
+    \param FCA :: FixedComp for origin
+    \param sideIndexA :: Front Side index
+    \param FCB :: FixedComp for back
+    \param sideIndexB :: Back Side index
+    \param CC :: Contained Componenet (cutter)
    */
 {
   ELog::RegMethod RegA("NiGuide","createAll");
 
   populate(System.getDataBase());
 
-///   createUnitVector(FC,sideIndex);
   createUnitVector(FCA,sideIndexA);
-///   createSurfaces();
   createSurfaces(FCA,sideIndexA,FCB,sideIndexB);
   createObjects(System,CC);
 

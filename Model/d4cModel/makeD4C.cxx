@@ -3,7 +3,7 @@
  
  * File:   d4cModel/makeD4C.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -136,11 +137,12 @@ makeD4C::build(Simulation* SimPtr,
   BellObj->createAll(*SimPtr,World::masterOrigin());
   CellObj->setInsertCell(BellObj->innerCell());
   CellObj->createAll(*SimPtr,*BellObj,0);
+
   SimMonte* SM=dynamic_cast<SimMonte*>(SimPtr);
   for(size_t i=0;i<NDet;i++)
     {
       DetObj[i]->setInsertCell(BellObj->outerCell());
-      DetObj[i]->createAll(*SimPtr,*BellObj);
+      DetObj[i]->createAll(*SimPtr,*BellObj,0);
       DetObj[i]->createTally(*SimPtr);
       
       if (SM)

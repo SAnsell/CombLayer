@@ -3,7 +3,7 @@
  
  * File:   tally/fluxConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,38 +67,23 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 
 #include "inputParam.h"
-
+#include "objectSupport.h" 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "fluxConstruct.h" 
 
 namespace tallySystem
 {
 
-fluxConstruct::fluxConstruct() 
-  /// Constructor
-{}
-
-fluxConstruct::fluxConstruct(const fluxConstruct&) 
-  /// Copy Constructor
-{}
-
-fluxConstruct&
-fluxConstruct::operator=(const fluxConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 int
-fluxConstruct::processFlux(Simulation& System,
+fluxConstruct::processFlux(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+			   const size_t Index) 
   /*!
     Add flux tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -129,7 +114,7 @@ fluxConstruct::processFlux(Simulation& System,
     }
   
   const std::vector<int> cells=
-    getCellSelection(System,matN,cellKey);
+    objectSupport::getCellSelection(System,matN,cellKey);
 
   if (cells.empty())
     throw ColErr::InContainerError<std::string>
@@ -150,7 +135,7 @@ fluxConstruct::processFlux(Simulation& System,
 
 
 void
-fluxConstruct::writeHelp(std::ostream& OX) const
+fluxConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: output stream

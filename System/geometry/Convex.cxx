@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,20 +174,18 @@ void
 Convex::setPoints(const std::vector<Geometry::Vec3D>& PVec)
   /*!
     Sets the points
-    \param PVec :: Points
+    \param PVec :: Vector of Points
    */
 {  
   ELog::RegMethod RegItem("Convex","setPoints");
   Pts=PVec;
   deleteAll();
-  std::vector<Vec3D>::const_iterator vc;
-  for(vc=Pts.begin();vc!=Pts.end();vc++)
+
+  for(const Vec3D& corner : Pts)
     {
-      Vertex* NV=new Vertex(static_cast<int>(VList.size()),*vc);
+      Vertex* NV=new Vertex(static_cast<int>(VList.size()),corner);
       VList.push_back(NV);
     }
-  ELog::EM<<"Number of points == "<<PVec.size()<<ELog::endDebug;
-
   return;
 }
 

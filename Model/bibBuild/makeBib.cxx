@@ -3,7 +3,7 @@
  
  * File:   bibBuild/makeBib.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,7 +181,7 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
       std::shared_ptr<GuideBox> GA
 	(new GuideBox(StrFunc::makeString("Guide",i+1)));
       GA->addInsertCell(voidCell);
-      GA->createAll(System,*ColdMod,1,*BeFilterForward,1);      
+      GA->createAll(System,*ColdMod,2,*BeFilterForward,2);      
       OR.addObject(GA);
       
       attachSystem::addToInsertForced(System,*RefObj,*GA);
@@ -196,7 +196,7 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
       std::shared_ptr<GuideBox> GA
 	(new GuideBox(StrFunc::makeString("Guide",i+3)));
       GA->addInsertCell(voidCell);
-      GA->createAll(System,*ColdMod2,1,*BeFilterBackward,1);      
+      GA->createAll(System,*ColdMod2,2,*BeFilterBackward,2);      
       OR.addObject(GA);
       
       attachSystem::addToInsertForced(System,*RefObj,*GA);
@@ -225,7 +225,7 @@ makeBib::buildShieldArray(Simulation& System)
       std::shared_ptr<GuideShield> GS
 	(new GuideShield("GShield",i+1));
       GS->addInsertCell(CWall->getInnerCell());
-      GS->createAll(System,*GuideArray[i],*RefObj,2,*CWall,0);      
+      GS->createAll(System,*GuideArray[i],*RefObj,3,*CWall,1);      
       OR.addObject(GS);      
       ShieldArray.push_back(GS);
     }
@@ -250,7 +250,7 @@ makeBib::build(Simulation& System,
 
   Rotor->createAll(System,World::masterOrigin());
 
-  RefObj->createAll(System,*Rotor,8);
+  RefObj->createAll(System,*Rotor,9);
   attachSystem::addToInsertSurfCtrl(System,*RefObj,
 				  Rotor->getCC("Target"));
   attachSystem::addToInsertForced(System,*RefObj,

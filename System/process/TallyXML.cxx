@@ -3,7 +3,7 @@
  
  * File:   process/TallyXML.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,12 +53,12 @@
 #include "pairRange.h"
 #include "Tally.h"
 #include "pointTally.h"
-#include "meshTally.h"
+#include "tmeshTally.h"
+#include "fmeshTally.h"
 #include "heatTally.h"
 #include "cellFluxTally.h"
 #include "surfaceTally.h"
 #include "textTally.h"
-#include "tallyFactory.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "Code.h"
@@ -66,6 +66,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
@@ -86,7 +87,8 @@ namespace tallySystem
 {
   
 void
-addXMLtally(Simulation& System,const std::string& FName)
+addXMLtally(Simulation& System,
+	    const std::string& FName)
   /*!
     Tally from an XML file
     \param System :: Simuation object 
@@ -115,7 +117,7 @@ addXMLtally(Simulation& System,const std::string& FName)
       Tally* TX(0);
       try
 	{
-	  TX=tallyFactory::Instance()->createTally(tNumber);
+	  // TX=tallyFactory::Instance()->createTally(tNumber);
 	}
       catch (ColErr::InContainerError<int>&)
 	{
@@ -134,7 +136,10 @@ addXMLtally(Simulation& System,const std::string& FName)
 	    break;
 	  }
       
-      if (TX) System.addTally(*TX);
+      SimMCNP* SM=dynamic_cast<SimMCNP*>(&System);
+      if (SM)
+	SM->addTally(*TX);
+
       delete TX;
       CO.deleteObj(AR);   
       AR=CO.findObj("tally");

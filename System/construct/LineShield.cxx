@@ -3,7 +3,7 @@
  
  * File:   construct/LineShield.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
- ****************************************************************************/
+ *************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -180,9 +180,10 @@ LineShield::removeFrontOverLap()
       index--;
       if (index>0)
         {
-          length-=segStep*index;
+	  const double LUnit=segStep*static_cast<double>(index);
+          length-=LUnit;
           nSeg-=index;
-          Origin+=Y*(index*segStep/2.0);
+          Origin+=Y*(LUnit/2.0);
           ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
                   <<index<<ELog::endDiag;
         }
@@ -332,9 +333,7 @@ LineShield::createObjects(Simulation& System)
 
   // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
-				   frontStr+backStr));
-  addCell("Void",cellIndex-1);
+  makeCell("Void",System,cellIndex++,0,0.0,Out+frontStr+backStr);
 
   // Loop over all segments:
   std::string FBStr;
@@ -448,7 +447,7 @@ LineShield::createLinks()
     }
   else
     {
-      FixedComp::setLinkSurf(0,backSurf,1,backCut,0);      
+      FixedComp::setLinkSurf(1,backSurf,1,backCut,0);      
       FixedComp::setConnect
         (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
     }
@@ -477,8 +476,8 @@ LineShield::setFront(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeFront=1;
-  frontSurf=FC.getSignedMainRule(sideIndex);
-  frontCut=FC.getSignedCommonRule(sideIndex);
+  frontSurf=FC.getMainRule(sideIndex);
+  frontCut=FC.getCommonRule(sideIndex);
   frontSurf.populateSurf();
   frontCut.populateSurf();
   
@@ -500,8 +499,8 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeBack=1;
-  backSurf=FC.getSignedMainRule(sideIndex);
-  backCut=FC.getSignedCommonRule(sideIndex);
+  backSurf=FC.getMainRule(sideIndex);
+  backCut=FC.getCommonRule(sideIndex);
   backSurf.populateSurf();
   backCut.populateSurf();
   

@@ -3,7 +3,7 @@
  
  * File:   construct/shutterVar.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ shutterVar::setSteelOffsets(const size_t AIndex,const size_t BIndex,
 
 
 double
-shutterVar::SteelBlock(FuncDataBase& Control,const int index,const double CX,
+shutterVar::SteelBlock(FuncDataBase& Control,const size_t index,const double CX,
 		       const double Len,const double HSize,const double VSize,
 		       const double VG,const double HG,const std::string& mat,
 		       const size_t extra) const
@@ -142,8 +142,9 @@ shutterVar::SteelBlock(FuncDataBase& Control,const int index,const double CX,
     \param VSize :: Height 
     \param VG :: Vertical gap
     \param HG :: Horrizontal gap
-    \param mat :: Material 
+    \param mat :: Material name
     \param extra :: Number of blocks
+    \return extension length
    */
 {
   boost::format FMT(keyName+"ShutterBlock%d%s");
@@ -154,14 +155,15 @@ shutterVar::SteelBlock(FuncDataBase& Control,const int index,const double CX,
   Control.addVariable((FMT % index % "VGap").str(),VG);
   Control.addVariable((FMT % index % "HGap").str(),HG);
   Control.addVariable((FMT % index % "Mat").str(),mat);
-  for(int i=0;i<static_cast<int>(extra);i++)
+  for(size_t i=0;i<extra;i++)
     Control.addVariable((FMT % (index+i) % "Mat").str(),mat);
-  return Len*extra;
+
+  return Len*static_cast<double>(extra);
 }
 
 
 double
-shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
+shutterVar::B4Cspacer(FuncDataBase& Control,const size_t index,
 		      const double CX,const double CZ,
 		      const double GX,const double GZ) const
 /*!
@@ -196,7 +198,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
 }
 
 double
-shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
+shutterVar::B4Cspacer(FuncDataBase& Control,const size_t index,
 		      const double CX,const double CZ,
 		      const double GR) const
 /*!
@@ -291,8 +293,8 @@ shutterVar::buildVar(FuncDataBase& Control,
   ELog::RegMethod RegA("shutterVar","buildVar");
   header(Control,xStep,xAngle,zAngle);
 
-  const int b4cNumber(3);
-  int blockIndex(2); 
+  const size_t b4cNumber(3);
+  size_t blockIndex(2); 
   const std::string steelMat("Stainless304");
   const double shutterInnerLen(179.2);
 
@@ -315,7 +317,7 @@ shutterVar::buildVar(FuncDataBase& Control,
 			      steelLen,steelWidth,steelHeight,
 			      blockVertGap+bZ,blockHorGap+bX,
 			      steelMat,steelNumber);
-	  blockIndex+=static_cast<int>(steelNumber)+b4cNumber;
+	  blockIndex+=static_cast<size_t>(steelNumber)+b4cNumber;
 	}
     }
 
@@ -366,17 +368,17 @@ shutterVar::buildCylVar(FuncDataBase& Control,
 
   const int b4cNumber(3);
 
-  Control.addVariable(keyName+"ShutterBlock1FStep",0.0);    //   Inner blocks
-  Control.addVariable(keyName+"ShutterBlock1CentX",0.0);    //   Inner blocks
-  Control.addVariable(keyName+"ShutterBlock1CentZ",0.0);    //   Inner blocks
-  Control.addVariable(keyName+"ShutterBlock1Len",3.0);      //   Inner blocks
+  Control.addVariable(keyName+"ShutterBlock1FStep",0.0);   
+  Control.addVariable(keyName+"ShutterBlock1CentX",0.0);   
+  Control.addVariable(keyName+"ShutterBlock1CentZ",0.0);   
+  Control.addVariable(keyName+"ShutterBlock1Len",3.0);     
   Control.addVariable(keyName+"ShutterBlock1Width",steelSize[0].first); 
   Control.addVariable(keyName+"ShutterBlock1Height",steelSize[0].second); 
-  Control.addVariable(keyName+"ShutterBlock1VGap",3.0);     //   Height
-  Control.addVariable(keyName+"ShutterBlock1HGap",3.0);     //   Hor. Gap (full)
-  Control.addVariable(keyName+"ShutterBlock1Mat","Void");        //   Spacer
+  Control.addVariable(keyName+"ShutterBlock1VGap",3.0);     // Height
+  Control.addVariable(keyName+"ShutterBlock1HGap",3.0);     // Hor. Gap (full)
+  Control.addVariable(keyName+"ShutterBlock1Mat","Void");   //   Spacer
 
-  int blockIndex(2); 
+  size_t blockIndex(2); 
   const std::string steelMat("Stainless304");
 
   const double steelLen(179.2/
@@ -399,10 +401,10 @@ shutterVar::buildCylVar(FuncDataBase& Control,
 			      steelMat,steelNumber);
 	  blockIndex+=steelNumber;
 	}
-    }
+    } 
   const std::string finalBlock=
     StrFunc::makeString(std::string(keyName+"ShutterBlock"),blockIndex);
-  Control.addVariable(keyName+"ShutterNBlocks",blockIndex);     //   Inner blocks
+  Control.addVariable(keyName+"ShutterNBlocks",blockIndex);     //   Inner blocks 
 
   Control.addVariable(finalBlock+"CentX",0.0);  //   Inner blocks
   Control.addVariable(finalBlock+"CentZ",0.0);  //   Inner blocks

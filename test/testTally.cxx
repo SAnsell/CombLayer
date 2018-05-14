@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testTally.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@
 #include "Plane.h"
 #include "Tally.h"
 #include "pointTally.h"
-#include "tallyFactory.h"
 
 #include "testFunc.h"
 #include "testTally.h"
@@ -82,6 +81,8 @@ testTally::applyTest(const int extra)
     \retval 0 All succeeded
   */
 {
+  ELog::RegMethod RegA("testTally","applyTest");
+  TestFunc::regSector("testTally");
 
   typedef int (testTally::*testPtr)();
   testPtr TPtr[]=

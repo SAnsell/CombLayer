@@ -30,7 +30,6 @@ namespace beamlineSystem
 
 namespace constructSystem
 {
-  class ModBase;
   class SupplyPipe;
 
 }
@@ -56,27 +55,32 @@ namespace essSystem
   class Wheel;
   class BilbaoWheel;
   class BeRef;
-  class essMod;
+  class EssModBase;
   class ESSPipes;
   class ConicModerator;
   class CylPreMod;
+  class PreModWing;
   class IradCylinder;
   class BulkModule;
   class ShutterBay;
-  class ProtonTube;
+  class TelescopicPipe;
   class PreModWing;
   class GuideBay;
   class BeamMonitor;
-  class DiskPreMod;
   class DiskLayerMod;
   class Bunker;
   class TwisterModule;
   class RoofPillars;
   class Curtain;
+  class HighBay;
   class F5Collimator;
   class BunkerFeed;
   class WedgeFlightLine;
   class Chicane;
+  class PBIP;
+  class TSMainBuilding;
+
+
 
       
   /*!
@@ -91,10 +95,11 @@ class makeESS
 {
  private:
   
-  std::shared_ptr<WheelBase> Target;   ///< target object
-  std::shared_ptr<BeRef> Reflector;    ///< reflector object
-  std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
-  std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
+  std::shared_ptr<WheelBase> Target;     ///< target object
+  std::shared_ptr<BeRef> Reflector;      ///< reflector object
+  std::shared_ptr<TelescopicPipe> PBeam; ///< Proton Void
+  std::shared_ptr<PBIP> pbip;            ///< proton beam instrumentation plug
+  std::shared_ptr<BeamMonitor> BMon;     ///< Beam Monitor
 
   // main moderator focus points
   std::shared_ptr<FocusPoints> topFocus;   ///< Top focus
@@ -102,16 +107,16 @@ class makeESS
 
   // Butterfly
   /// Primary Lower Mod 
-  std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
-  std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
+  std::shared_ptr<EssModBase> LowMod;
+  std::shared_ptr<DiskLayerMod> LowPreMod;         ///< Lower mod 
+  std::shared_ptr<DiskLayerMod> LowCapMod;         ///< Upper mod
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
   
-  // Butterly
+  // Butterfly
 
-  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod 
+  std::shared_ptr<EssModBase> TopMod;                 ///< Primary Upper Mod 
   std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod 
   std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod
 
@@ -124,7 +129,6 @@ class makeESS
   std::shared_ptr<essSystem::WedgeFlightLine> TopBFL;  ///< Top Mod FL
 
   std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
-
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
@@ -146,6 +150,11 @@ class makeESS
   ///< Right bunker Pillars [B]
   std::shared_ptr<RoofPillars> BBunkerPillars; 
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
+  std::shared_ptr<HighBay> ABHighBay;   ///< HighBay structure
+  std::shared_ptr<HighBay> CDHighBay;   ///< HighBay structure
+
+  /// Main building?
+  std::shared_ptr<TSMainBuilding> TSMainBuildingObj;
 
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 
@@ -159,6 +168,11 @@ class makeESS
 
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
+  void buildLowBox(Simulation&);
+  void buildTopBox(Simulation&);
+
+  void buildLowPancake(Simulation&);
+  void buildTopPancake(Simulation&);
 
   void buildTopButterfly(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
@@ -169,7 +183,8 @@ class makeESS
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
-  void buildPillars(Simulation&);
+  void buildPillars(Simulation&,
+		    const mainSystem::inputParam&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
   void buildBunkerChicane(Simulation&,

@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -67,6 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -75,8 +75,10 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -84,7 +86,7 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -125,7 +127,7 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopE(new constructSystem::ChopperUnit(newName+"ChopE")),
+  ChopE(new constructSystem::SingleChopper(newName+"ChopE")),
   EDisk(new constructSystem::DiskChopper(newName+"EBlade")),
 
   ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),
@@ -210,35 +212,6 @@ MIRACLES::~MIRACLES()
   */
 {}
 
-void
-MIRACLES::setBeamAxis(const FuncDataBase& Control,
-		      const GuideItem& GItem,
-		      const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("MIRACLES","setBeamAxis");
-
-  miraclesAxis->populate(Control);
-  miraclesAxis->createUnitVector(GItem);
-  miraclesAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  miraclesAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  miraclesAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  miraclesAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  miraclesAxis->linkShift(3);
-  miraclesAxis->linkShift(4);
-  miraclesAxis->linkAngleRotate(3);
-  miraclesAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    miraclesAxis->reverseZ();
-  return;
-}
 
 void
 MIRACLES::buildBunkerUnits(Simulation& System,
@@ -276,13 +249,14 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinB->createAll(System,*AppA,2);
 
   BDiskLow->addInsertCell(TwinB->getCell("Void"));
-  BDiskLow->createAll(System,TwinB->getKey("Motor"),6,
-                      TwinB->getKey("BuildBeam"),-1);
-
+  BDiskLow->createAll(System,TwinB->getKey("MotorBase"),0,
+                      TwinB->getKey("Beam"),-1);
+  
   BDiskTop->addInsertCell(TwinB->getCell("Void"));
-  BDiskTop->createAll(System,TwinB->getKey("Motor"),3,
-                      TwinB->getKey("BuildBeam"),-1);
-
+  BDiskTop->createAll(System,TwinB->getKey("MotorTop"),0,
+                      TwinB->getKey("Beam"),-1);
+  TwinB->insertAxle(System,*BDiskLow,*BDiskTop);
+  
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,TwinB->getKey("BuildBeam"),2);
 
@@ -293,13 +267,14 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinC->createAll(System,FocusD->getKey("Guide0"),2);
 
   CDiskLow->addInsertCell(TwinC->getCell("Void"));
-  CDiskLow->createAll(System,TwinC->getKey("Motor"),6,
-                      TwinC->getKey("BuildBeam"),-1);
+  CDiskLow->createAll(System,TwinC->getKey("MotorBase"),0,
+                      TwinC->getKey("Beam"),-1);
 
   CDiskTop->addInsertCell(TwinC->getCell("Void"));
-  CDiskTop->createAll(System,TwinC->getKey("Motor"),3,
-                      TwinC->getKey("BuildBeam"),-1);
-
+  CDiskTop->createAll(System,TwinC->getKey("MotorTop"),0,
+                      TwinC->getKey("Beam"),-1);
+  TwinC->insertAxle(System,*CDiskLow,*CDiskTop);
+  
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,TwinC->getKey("BuildBeam"),2);
 
@@ -307,14 +282,13 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
   ChopE->addInsertCell(bunkerVoid);
-  ChopE->getKey("Main").setAxisControl(3,ZVert);
-  
+  ChopE->getKey("Main").setAxisControl(3,ZVert);  
   ChopE->createAll(System,FocusE->getKey("Guide0"),2);
 
   EDisk->addInsertCell(ChopE->getCell("Void"));
-  EDisk->createAll(System,ChopE->getKey("Main"),0,
-		   ChopE->getKey("Beam"),2);
-
+  EDisk->createAll(System,ChopE->getKey("Main"),0);
+  ChopE->insertAxle(System,*EDisk);
+  
   ShutterA->addInsertCell(bunkerVoid);
   ShutterA->createAll(System,ChopE->getKey("Beam"),2);
 
@@ -427,7 +401,7 @@ MIRACLES::build(Simulation& System,
     \param GItem :: Guide Item 
     \param bunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
-   */
+  */
 {
   // For output stream
   ELog::RegMethod RegA("MIRACLES","build");
@@ -437,10 +411,10 @@ MIRACLES::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*miraclesAxis,Control,GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);

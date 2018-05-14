@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/ExcludedComp.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ class ExcludedComp
 
   std::vector<std::string> ExcludeObj;   ///< Fixed object to use
   /// Boundary object [Encloses cut volume]
-  Rule* boundary;                         
+  HeadRule boundary;                         
 
  public:
 
@@ -70,17 +70,15 @@ class ExcludedComp
 
   void clearRules();
   /// Test if has rule
-  bool hasExclude() const { return (boundary) ? 1 : 0; }
+  bool hasExclude() const { return boundary.hasRule(); }
   int isExcludeUnitValid(const Geometry::Vec3D&) const;
 
   void addExcludeCell(const int);
   void setExcludeCell(const int);
 
 
-  void addExcludeSurf(const attachSystem::FixedComp& ,
-		      const int,const size_t);
-  void addExcludeSurf(const std::string&,
-		      const int,const size_t);
+  void addExcludeSurf(const attachSystem::FixedComp&,const long int);
+  void addExcludeSurf(const std::string&,const long int);
 
   void addExcludeSurf(const int);
   void addExcludeSurf(const std::string&);

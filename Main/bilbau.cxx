@@ -3,7 +3,7 @@
  
  * File:   Main/bilbau.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <memory>
 #include <array>
 
-
 #include "Exception.h"
 #include "MersenneTwister.h"
 #include "FileReport.h"
@@ -63,23 +62,17 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
-#include "SurInter.h"
 #include "Simulation.h"
-#include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "mainJobs.h"
 #include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "makeBib.h"
 

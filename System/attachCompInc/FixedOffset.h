@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedOffset.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,10 +54,17 @@ class FixedOffset  : public FixedComp
   virtual ~FixedOffset() {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
+  virtual void populate(const std::map<std::string,
+			std::vector<std::string>>&);
+  
   virtual void populate(const std::string&,const FuncDataBase&);
+  void setOffset(const double,const double,const double);
+  void setPreRotation(const double,const double);
+  void setRotation(const double,const double);
   void applyOffset();
-  void linkShift(const long int);
-  void linkAngleRotate(const long int);
+
+  void linkShift(const size_t);
+  void linkAngleRotate(const size_t);
   
 };
 

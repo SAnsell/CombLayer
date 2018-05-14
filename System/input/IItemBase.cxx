@@ -254,9 +254,13 @@ IItem::setObj(const size_t setIndex,const size_t itemIndex,
 
   const size_t IS(DItems[setIndex].size());
 
+
   if (itemIndex>=maxItems || itemIndex>IS+1)
+    {
+      ELog::EM<<"Max = "<<maxItems<<ELog::endDiag;
       throw ColErr::IndexError<size_t>(itemIndex,DItems[setIndex].size(),
 				     Key+"::itemIndex");
+    }
   if (itemIndex==IS)
     DItems[setIndex].push_back(V);
   else

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/GuideBox.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 
 #include "GuideBox.h"
 
@@ -75,7 +75,7 @@ namespace bibSystem
 {
 
 GuideBox::GuideBox(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(guideIndex+1)
   /*!
@@ -85,12 +85,10 @@ GuideBox::GuideBox(const std::string& Key) :
 {}
 
 GuideBox::GuideBox(const GuideBox& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   guideIndex(A.guideIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
-  height(A.height),length(A.length),NiRadius(A.NiRadius),
-  NiThickness(A.NiThickness),mat(A.mat)
+  width(A.width),height(A.height),length(A.length),
+  NiRadius(A.NiRadius),NiThickness(A.NiThickness),mat(A.mat)
   /*!
     Copy constructor
     \param A :: GuideBox to copy
@@ -108,13 +106,8 @@ GuideBox::operator=(const GuideBox& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -140,14 +133,10 @@ GuideBox::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideBox","populate");
 
+  attachSystem::FixedOffset::populate(Control);
+  
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   length=Control.EvalVar<double>(keyName+"Length");
 
@@ -160,7 +149,7 @@ GuideBox::populate(const FuncDataBase& Control)
 
 void
 GuideBox::createUnitVector(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
@@ -168,11 +157,9 @@ GuideBox::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("GuideBox","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex); 
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }
@@ -215,7 +202,7 @@ GuideBox::createSurfaces()
 void
 GuideBox::createObjects(Simulation& System,
 			const attachSystem::FixedComp& FC,
-			const size_t sideIndex)
+			const long int sideIndex)
   /*!
     Create the simple moderator
     \param System :: Simulation to add results
@@ -226,9 +213,11 @@ GuideBox::createObjects(Simulation& System,
   ELog::RegMethod RegA("GuideBox","createObjects");
   
   std::string Out;
+
+  const std::string boundSurf=FC.getLinkString(sideIndex);
   
   Out=ModelSupport::getComposite(SMap,guideIndex," -7 3 -4 5 -6 ");
-  Out+=FC.getLinkString(sideIndex);
+  Out+=boundSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addBoundarySurf(Out);
 
@@ -241,11 +230,11 @@ GuideBox::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-2 7 3 -4 5 -6 (-13:14:-15:16)");
-  Out+=FC.getLinkString(sideIndex);
+  Out+=boundSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
-  Out+=FC.getLinkString(sideIndex);
+  Out+=boundSurf;
   addOuterSurf(Out);
 
   return; 
@@ -287,15 +276,16 @@ GuideBox::createLinks()
 void
 GuideBox::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
-		    const size_t orgIndex,
+		    const long int orgIndex,
 		    const attachSystem::FixedComp& LimitFC,
-		    const size_t sideIndex)
+		    const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-    \param sideIndex :: Side index
-    \param Limit :: FixedComponent for Limit
+    \param orgIndex :: linkPoint for origin
+    \param LimitFC :: FixedComponent for hard Limit
+    \param sideIndex :: FixedComponent for hard Limit
    */
 {
   ELog::RegMethod RegA("GuideBox","createAll");

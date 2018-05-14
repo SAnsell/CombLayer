@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WWG.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class WWG
 {
  private:
 
-  char ptype;          ///< Particle type
+  std::set<std::string> pType;   ///< Particle type
   double wupn;         ///< Max weight before upsplitting
   double wsurv;        ///< survival possiblitiy
   int maxsp;           ///< max split
@@ -57,8 +57,8 @@ class WWG
 
   /// linearized centre point [x,y,z order]
   std::vector<Geometry::Vec3D> GridMidPt;
-  /// weight mesh
-  boost::multi_array<double,4> WMesh;
+  /// final output weight mesh
+  WWGWeight WMesh;
     
   void writeHead(std::ostream&) const;
   
@@ -76,7 +76,9 @@ class WWG
   const Geometry::Mesh3D& getGrid() const { return Grid; }
   /// get grid mid point
   const std::vector<Geometry::Vec3D>& getMidPoints() const
-    {return GridMidPt; }
+    { return GridMidPt; }
+
+  void setParticles(const std::set<std::string>&);
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&,
@@ -89,13 +91,12 @@ class WWG
 		     const size_t,const double);
   void calcGridMidPoints();
   void updateWM(const WWGWeight&,const double);
-  void normalize();
-  void scaleRange(const double,const double);
+  void scaleRange(const double,const double,const double);
   void powerRange(const double);
 
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
-  void writeVTK(const std::string&) const;
+  void writeVTK(const std::string&,const long int =0) const;
 
 
   

@@ -3,7 +3,7 @@
  
  * File:   process/Volumes.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "objectRegister.h"
 #include "volUnit.h"
@@ -83,7 +84,10 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
       if (IParam.flag("volCells") )
 	populateCells(*SimPtr,IParam,VTally);
       else
-	VTally.populateTally(*SimPtr);
+	{
+	  const SimMCNP* SMPtr=dynamic_cast<const SimMCNP*>(SimPtr);
+	  VTally.populateTally(*SMPtr);
+	}
 
       VTally.pointRun(*SimPtr,NP);
       ELog::EM<<"Volume == "<<Org<<" : "<<XYZ<<" : "<<NP<<ELog::endDiag;

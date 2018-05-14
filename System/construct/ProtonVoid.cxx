@@ -3,7 +3,7 @@
  
  * File:   construct/ProtonVoid.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,7 +151,6 @@ ProtonVoid::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("ProtonVoid","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC);
-  ELog::EM<<"Centre == "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -212,9 +211,9 @@ ProtonVoid::createAll(Simulation& System,
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param FC :: FixedComp for origin
+    \param TargetFC :: FixedComp for origin and target value
     \param tIndex :: Target plate surface
-    \param RefFC :: FixedComp for origin
+    \param RefFC :: FixedComp for reflector (bounding surf)
     \param rIndex :: Reflector outer surf
   */
 {
@@ -223,8 +222,9 @@ ProtonVoid::createAll(Simulation& System,
 
   createUnitVector(TargetFC);
   createSurfaces();
-  const std::string TSurf=TargetFC.getSignedLinkString(tIndex);
-  const std::string RSurf=RefFC.getSignedLinkString(rIndex);
+  const std::string TSurf=TargetFC.getLinkString(tIndex);
+  const std::string RSurf=RefFC.getLinkString(rIndex);
+
   createObjects(System,TSurf,RSurf);
   createLinks();
   insertObjects(System);       

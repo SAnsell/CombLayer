@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2015-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <memory>
 #include <array>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -76,7 +76,7 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "LayerComp.h"
-#include "ModBase.h"
+#include "EssModBase.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
 #include "PreModWing.h"
@@ -98,8 +98,9 @@ PreModWing::PreModWing(const std::string& Key) :
 {}
 
 PreModWing::PreModWing(const PreModWing& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),attachSystem::CellMap(A),
-  
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),
   innerHeight(A.innerHeight),outerHeight(A.outerHeight),
   innerDepth(A.innerDepth),outerDepth(A.outerDepth),
@@ -186,6 +187,26 @@ PreModWing::populate(const FuncDataBase& Control)
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
+  nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
+  if (nLayers<1) nLayers=1;
+  
+  innerMat.push_back(mat);
+  surfMat.push_back(wallMat);
+  for(size_t i=1;i<nLayers;i++)
+    {
+      const std::string sNum=std::to_string(i);
+      const double RL=Control.EvalVar<double>
+        (keyName+"LayerRadius"+sNum);
+      const int iMat=ModelSupport::EvalDefMat<int>
+        (Control,keyName+"InnerMat"+sNum,mat);
+      const int sMat=ModelSupport::EvalDefMat<int>
+        (Control,keyName+"SurfMat"+sNum,wallMat);
+      layerRadii.push_back(RL);
+      innerMat.push_back(iMat);
+      surfMat.push_back(sMat);
+
+    }
+  
   
   return;
 }
@@ -215,9 +236,12 @@ PreModWing::createSurfaces()
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
 
-  // First define the inner/outer radiii
   ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,innerRadius);
-  ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
+  if (!outerSurf.hasRule())
+    {
+      ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
+      outerSurf.procSurfNum(-SMap.realSurf(modIndex+17));
+    }
 
   // make height cone if given:
   const double IR(innerRadius>Geometry::zeroTol  ? innerRadius : 0.0);
@@ -260,9 +284,45 @@ PreModWing::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*innerDepth,Z);
   ModelSupport::buildPlane(SMap,modIndex+15,Origin-Z*(innerDepth-wallThick),Z);
 
+  // Build layres for different material structure
+  int CL(modIndex+100);
+  for(size_t i=1;i<nLayers;i++)
+    {
+      ModelSupport::buildCylinder(SMap,CL+7,Origin,Z,layerRadii[i-1]);
+      CL+=100;
+    }
+  
   return; 
 }
 
+std::string
+PreModWing::getLayerZone(const size_t layerIndex) const
+  /*!
+    Generate the inner zone for a given index
+    \param layerIndex :: zone index
+    \return string for surfaces in zone
+  */
+{
+  ELog::RegMethod RegA("PreModWing","getLayerZone");
+
+  std::string Out;
+  const int CL(modIndex+static_cast<int>(layerIndex)*100);
+  if (!layerIndex)
+    Out=innerSurf.display();
+  else
+    Out=mainDivider.display();
+
+  Out+=ModelSupport::getComposite(SMap,CL," 7 ");
+  
+  if (layerIndex+1==nLayers)
+    Out+=outerSurf.display();
+  else
+    Out+=ModelSupport::getComposite(SMap,CL," -107 ");
+
+  return Out;
+}
+
+  
 void
 PreModWing::createObjects(Simulation& System)
 
@@ -275,30 +335,51 @@ PreModWing::createObjects(Simulation& System)
 
   std::string Out;
 
-  
   // BASE
   // inner first
-  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7");
+  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ");
   Out+=innerSurf.display();
   Out+=baseSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -15 5  -7 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," -15 5 -7 ");
   Out+=innerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // cone section
-  Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 7 -17 ");
-  Out+=innerSurf.display();
-  Out+=baseSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  for(size_t i=0;i<nLayers;i++)
+    {
+      const std::string Zone=getLayerZone(i);
+      // base layer
+      Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 ");
+      Out+=baseSurf.display();
+      Out+=midSurf.display();
+      Out+=Zone;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 7 -17 (8:1005) ");
-  Out+=innerSurf.display();
-  Out+=baseSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 (8:1005) ");
+      Out+=midSurf.display();
+      Out+=Zone;
+      Out+=baseSurf.display();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
+      
+      // Top layer
+      Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 ");
+      Out+=midSurf.display();
+      Out+=Zone;
+	    
+      Out+=topSurf.display();
+	    
+      Out+=getLayerZone(i);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
-
+      Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 (9:-1006) ");
+      Out+=midSurf.display();
+      Out+=topSurf.display();
+      Out+=Zone;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
+    }
+  
   // TOP
   // inner first
   Out=ModelSupport::getComposite(SMap,modIndex," 6 -7 ");
@@ -306,23 +387,12 @@ PreModWing::createObjects(Simulation& System)
   Out+=topSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6  -7 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6 -7 ");
   Out+=innerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  // cone section
-  Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 7 -17 ");
-  Out+=innerSurf.display();
-  Out+=topSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 7 -17 (9:-1006) ");
-  Out+=innerSurf.display();
-  Out+=topSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-
-  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) -17 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) ");
+  Out+=outerSurf.display();
   Out+=mainDivider.display();
   addOuterSurf(Out);
 

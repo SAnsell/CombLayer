@@ -3,7 +3,7 @@
  
  * File:   essBuild/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- *
+ * 
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
@@ -184,7 +184,7 @@ LayerDivide3D::processSurface(const size_t Index,
   // 
   // mirror planes only work with planes(!)
   std::string surGroup="ASurf";
-  surGroup[0]+=Index;
+  surGroup[0]=StrFunc::indexToAlpha(Index);
 
   if (WallSurf.first<0)
     {
@@ -307,7 +307,7 @@ LayerDivide3D::setFractions(const size_t index,
   /*!
     Set the fractions
     \param index :: Type index 0 to 2
-    \param FV :: Fraction
+    \param FV :: Fractions [0 - 1]
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","setFractions");
@@ -389,11 +389,11 @@ LayerDivide3D::checkDivide() const
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","checkDivide");
-  if (!(AWall.first*AWall.second))
+  if (AWall.first*AWall.second==0)
     throw ColErr::EmptyValue<int>("Section A not set");
-  if (!(BWall.first*BWall.second))
+  if (BWall.first*BWall.second==0)
     throw ColErr::EmptyValue<int>("Section B not set");
-  if (!(CWall.first*CWall.second))
+  if (CWall.first*CWall.second==0)
     throw ColErr::EmptyValue<int>("Section C not set");
   return;
 }
@@ -476,6 +476,34 @@ LayerDivide3D::setMaterialXML(const std::string& LFile,
 
   
 void
+LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
+  /*!
+    Set the divider
+    \param System :: Simulation to use
+    \param cellN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
+  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN");
+
+  HeadRule CellRule= CPtr->getHeadRule();
+
+  CellRule.removeItems(AWall.first);
+  CellRule.removeItems(AWall.second);
+  CellRule.removeItems(BWall.first);
+  CellRule.removeItems(BWall.second);
+  CellRule.removeItems(CWall.first);
+  CellRule.removeItems(CWall.second);
+
+  divider=CellRule.display();
+  return;
+}
+
+
+
+void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
   /*!
     Create a tesselated main wall
@@ -487,9 +515,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   checkDivide();
   
-  ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
   const MonteCarlo::Object* CPtr=System.findQhull(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
@@ -519,16 +544,15 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 	  for(size_t k=0;k<CLen;k++,cIndex++)
 	    {
 	      const std::string CCut=
-		ModelSupport::getComposite(SMap,cIndex,"1 -2")+BCut;
+		ModelSupport::getComposite(SMap,cIndex," 1 -2 ")+BCut;
 	      const int Mat=DGPtr->getMaterial(i+1,j+1,k+1);
-	      
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
-					       CCut+divider));
-	      attachSystem::CellMap::addCell
-                ("LD3:"+layerNum,cellIndex-1);
+
+	      CellMap::makeCell("LD3:"+layerNum,System,
+				cellIndex++,Mat,0.0,CCut+divider);
       	    }
 	}
     }
+
   System.removeCell(cellN);
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);

@@ -44,6 +44,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "LayerPlate.h"
@@ -52,7 +53,7 @@ namespace sinbadSystem
 {
 
 LayerPlate::LayerPlate(const std::string& Key) : 
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   slabIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
   cellIndex(slabIndex+1),frontShared(1)
   /*!
@@ -62,10 +63,9 @@ LayerPlate::LayerPlate(const std::string& Key) :
 {}
 
 LayerPlate::LayerPlate(const LayerPlate& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   slabIndex(A.slabIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),frontShared(A.frontShared),
+  frontShared(A.frontShared),
   width(A.width),height(A.height),nSlab(A.nSlab),
   thick(A.thick),mat(A.mat),matTemp(A.matTemp),
   radiusWindow(A.radiusWindow)
@@ -86,13 +86,8 @@ LayerPlate::operator=(const LayerPlate& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       frontShared=A.frontShared;
       width=A.width;
       height=A.height;
@@ -158,12 +153,7 @@ LayerPlate::getFrontSurface(const size_t layerIndex,
       const int SI(slabIndex+static_cast<int>(layerIndex)*10);
       return ModelSupport::getComposite(SMap,SI," 1 ");
     }
-  // FC Object
-  if (sideIndex>0) 
-    return FC.getLinkString(static_cast<size_t>(sideIndex-1));
-
-  // Negetive surface
-  return FC.getLinkComplement(static_cast<size_t>((-sideIndex)-1));
+  return FC.getLinkString(sideIndex);
 }
 
 std::string
@@ -193,12 +183,7 @@ LayerPlate::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("LayerPlate","populate");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  attachSystem::FixedOffset::populate(Control);
 
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -237,11 +222,11 @@ LayerPlate::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("LayerPlate","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-  if (fabs(yStep)>Geometry::zeroTol || 
-      fabs(xyAngle)>Geometry::zeroTol ||
-      fabs(zAngle)>Geometry::zeroTol)
+  applyOffset();
+  
+  if (std::abs(yStep)>Geometry::zeroTol || 
+      std::abs(xyAngle)>Geometry::zeroTol ||
+      std::abs(zAngle)>Geometry::zeroTol)
     frontShared=0;
       
       

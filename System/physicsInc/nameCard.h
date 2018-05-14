@@ -3,7 +3,7 @@
  
  * File:   physicsInc/nameCard.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,11 @@ class nameCard
   enum class MData { DBL = 1, INT = 2, STR = 3, J = 4 };
   
   const std::string keyName;               ///< Main name
-  const int writeType;                     ///< Write out type [name / flat
+  const int writeType;                     ///< Write out type [name / flat]
   bool active;                             ///< Active
-
   
   std::vector<std::string> nameOrder;      ///< Ordered list of units
-  std::map<std::string,MData> regNames;      ///< Registered names / type
+  std::map<std::string,MData> regNames;    ///< Registered names / type
 
   std::set<std::string> JUnit;             ///< Default items [superseeds]
   
@@ -66,7 +65,7 @@ class nameCard
   template<typename T>
   void setItem(const std::string&,const T&);
 
-
+  bool isAllDefault() const;
   
  public:
    

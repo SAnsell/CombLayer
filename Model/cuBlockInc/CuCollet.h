@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   cuBlockInc/CuCollet.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,18 +35,11 @@ namespace cuSystem
   \brief Simple Cu block object
 */
 
-class CuCollet : public attachSystem::FixedComp,
+class CuCollet : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
   
-  const int cuIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-
   double radius;                ///< Cu size
   double cuRadius;              ///< Cu outer size
   double holeRadius;            ///< Hole size
@@ -60,8 +53,8 @@ class CuCollet : public attachSystem::FixedComp,
   int steelMat;                ///< Steel material 
   int cuMat;                   ///< Copper material
 
-  void populate(const Simulation&);
-  void createUnitVector();
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -74,7 +67,8 @@ class CuCollet : public attachSystem::FixedComp,
   CuCollet& operator=(const CuCollet&);
   virtual ~CuCollet();
 
-  void createAll(Simulation&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

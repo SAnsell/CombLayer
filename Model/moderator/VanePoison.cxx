@@ -3,7 +3,7 @@
  
  * File:   moderator/VanePoison.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "VanePoison.h"
 
@@ -71,7 +72,7 @@ namespace moderatorSystem
 {
 
 VanePoison::VanePoison(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   vaneIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vaneIndex+1)
   /*!
@@ -81,11 +82,10 @@ VanePoison::VanePoison(const std::string& Key)  :
 {}
   
 VanePoison::VanePoison(const VanePoison& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   vaneIndex(A.vaneIndex),cellIndex(A.cellIndex),
   nBlades(A.nBlades),bWidth(A.bWidth),absThick(A.absThick),
   bGap(A.bGap),yLength(A.yLength),zLength(A.zLength),
-  xOffset(A.xOffset),yOffset(A.yOffset),zOffset(A.zOffset),
   modTemp(A.modTemp),modMat(A.modMat),bladeMat(A.bladeMat),
   absMat(A.absMat)
   /*!
@@ -105,7 +105,7 @@ VanePoison::operator=(const VanePoison& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       nBlades=A.nBlades;
       bWidth=A.bWidth;
@@ -113,9 +113,6 @@ VanePoison::operator=(const VanePoison& A)
       bGap=A.bGap;
       yLength=A.yLength;
       zLength=A.zLength;
-      xOffset=A.xOffset;
-      yOffset=A.yOffset;
-      zOffset=A.zOffset;
       modTemp=A.modTemp;
       modMat=A.modMat;
       bladeMat=A.bladeMat;
@@ -131,16 +128,15 @@ VanePoison::~VanePoison()
 {}
 
 void
-VanePoison::populate(const Simulation& System)
+VanePoison::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DtaBase
   */
 {
   ELog::RegMethod RegA("VanePoison","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-  
+  FixedOffset::populate(Control);
   nBlades=Control.EvalVar<size_t>(keyName+"NBlades");
 
   bGap=Control.EvalVar<double>(keyName+"BladeGap");
@@ -148,10 +144,6 @@ VanePoison::populate(const Simulation& System)
   absThick=Control.EvalVar<double>(keyName+"AbsThick");
   yLength=Control.EvalVar<double>(keyName+"YLength");
   zLength=Control.EvalVar<double>(keyName+"ZLength");
-
-  xOffset=Control.EvalVar<double>(keyName+"XOffset");
-  yOffset=Control.EvalVar<double>(keyName+"YOffset");
-  zOffset=Control.EvalVar<double>(keyName+"ZOffset");
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
@@ -175,9 +167,9 @@ VanePoison::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("VanePoison","createUnitVector");
-
+  
   FixedComp::createUnitVector(FC,linkPt);
-  applyShift(xOffset,yOffset,zOffset);
+  applyOffset();
   return;
 }
 
@@ -207,9 +199,10 @@ VanePoison::createSurfaces()
   
 
   // First calc half width
-  const double width=((nBlades-1)*bGap+nBlades*bWidth)/2.0;
+  const double width=(static_cast<double>(nBlades-1)*bGap+
+		      static_cast<double>(nBlades)*bWidth)/2.0;
   
-  if (fabs(yOffset)>Geometry::zeroTol)
+  if (std::abs(yStep)>Geometry::zeroTol)
     ModelSupport::buildPlane(SMap,vaneIndex+11,Origin,Y);
 
   ModelSupport::buildPlane(SMap,vaneIndex+12,Origin+Y*yLength,Y);
@@ -253,25 +246,27 @@ VanePoison::createObjects(Simulation& System,
   ELog::RegMethod RegA("VanePoison","createObjects");
   std::string yFront,yBack,zBase,zTop;
 
-  yFront= (fabs(yOffset)>Geometry::zeroTol) ?
+  yFront= (std::abs(yStep)>Geometry::zeroTol) ?
     ModelSupport::getComposite(SMap,vaneIndex," 11 ") :
-    FC.getSignedLinkString(linkPt);
+    FC.getLinkString(linkPt);
   yBack=ModelSupport::getComposite(SMap,vaneIndex," -12 ");
-  if (zLength>0.0)
+
+  if (zLength>Geometry::zeroTol)
     {
       zBase=ModelSupport::getComposite(SMap,vaneIndex," 15 ");
       zTop=ModelSupport::getComposite(SMap,vaneIndex," -16 ");
     }
   else
     {
-      size_t zUp(FC.findLinkAxis(Z));
-      size_t zDown(FC.findLinkAxis(-Z));
+      long int zUp(static_cast<long int>(FC.findLinkAxis(Z)));
+      long int zDown(static_cast<long int>(FC.findLinkAxis(-Z)));
       if (zUp<6) zUp+=6;
       if (zDown<6) zDown+=6;
       if (zUp>5)                 // Inner points are reversed
 	std::swap(zUp,zDown);      
-      zBase=FC.getLinkString(zDown);
-      zTop=FC.getLinkString(zUp);
+
+      zBase=FC.getLinkString(zDown+1);
+      zTop=FC.getLinkString(zUp+1);
     }
 
   std::string Out;
@@ -312,10 +307,11 @@ VanePoison::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: link system
+    \param linkIndex :: linked index
   */
 {
   ELog::RegMethod RegA("VanePoison","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,linkIndex);
   if (nBlades)
@@ -325,8 +321,6 @@ VanePoison::createAll(Simulation& System,
       createLinks();
       insertObjects(System);       
     }
-
-
   return;
 }
   

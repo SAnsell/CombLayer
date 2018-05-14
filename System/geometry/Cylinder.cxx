@@ -3,7 +3,7 @@
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -53,7 +54,6 @@
 #include "Plane.h"
 #include "Cylinder.h"
 
-#include "Debug.h"
 
 namespace Geometry
 {
@@ -533,7 +533,6 @@ Cylinder::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
 
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);  
   if (Ndir==-1 || Ndir==1)
     {
@@ -544,9 +543,10 @@ Cylinder::writeFLUKA(std::ostream& OX) const
     }
   else if (Ndir==-2 || Ndir==2)
     {
+      // note the reversed order -- see sec 8.2.4.12 of the fluka manual.
       cx<<"YCC s"<<getName()<<" "
-	<<MW.Num(Centre[0])<<" "
 	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Centre[0])<<" "
 	<<MW.Num(Radius);
     }
   else if (Ndir==-3 || Ndir==3)
@@ -560,26 +560,6 @@ Cylinder::writeFLUKA(std::ostream& OX) const
   return;
 }
 
-void
-Cylinder::writePOVRay(std::ostream& OX) const
-  /*! 
-    Write out the cylinder for POV-Ray
-    \param OX :: output stream
-  */
-{
-  ELog::RegMethod RegA("Cylinder","writePOVRay");
-
-  masterWrite& MW=masterWrite::Instance();
-  const int Ndir=Normal.masterDir(Geometry::zeroTol);
-
-  
-  OX<<"#declare s"<<getName()<<" = InfiniteCylinder( ";
-  OX<<"<"<<MW.NumComma(Centre)<<">,<"
-    <<MW.NumComma(Centre+Normal)<<">, "
-    <<MW.Num(Radius)<<" )"<<std::endl;
-  
-  return;
-}
   
 void
 Cylinder::print() const

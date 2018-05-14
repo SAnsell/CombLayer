@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <functional>
 #include <memory>
 
 #include "Exception.h"
@@ -73,39 +74,25 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h" 
 #include "itemConstruct.h" 
 
 namespace tallySystem
 {
 
-itemConstruct::itemConstruct() 
-  /// Constructor
-{}
-
-itemConstruct::itemConstruct(const itemConstruct&) 
-  /// Copy Constructor
-{}
-
-itemConstruct&
-itemConstruct::operator=(const itemConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
 
 void
-itemConstruct::processItem(Simulation& System,
+itemConstruct::processItem(SimMCNP& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) const
+			     const size_t Index)
   /*!
     Add point tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -121,18 +108,19 @@ itemConstruct::processItem(Simulation& System,
   
   if (PType=="beamline")  // beamline : Number
     {
-      std::string modName;
-      int viewIndex(0);
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-      checkItem<std::string>(IParam,Index,3,modName);
-      checkItem<int>(IParam,Index,4,viewIndex);
-      checkItem<double>(IParam,Index,5,beamDist);
-      checkItem<double>(IParam,Index,6,windowOffset);
-      checkItem<double>(IParam,Index,7,pointZRot);
+      const int beamNum=IParam.getValueError<int>("tally",Index,2,
+					     "beamline number not given");
+
+      const std::string modName=
+	IParam.getDefValue<std::string>("","tally",Index,3);
+      const long int viewIndex=
+	IParam.getDefValue<long int>(0,"tally",Index,4);
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,5);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,7);
 
       addBeamLineItem(System,beamNum-1,beamDist,modName,
 		       viewIndex,windowOffset,pointZRot);
@@ -142,16 +130,16 @@ itemConstruct::processItem(Simulation& System,
 }
 
 void 
-itemConstruct::addBeamLineItem(Simulation& System,
+itemConstruct::addBeamLineItem(SimMCNP& System,
 			       const int beamNum,
 			       const double beamDist,
 			       const std::string& modName,
-			       const int viewSurface,
+			       const long int viewSurface,
 			       const double windowOffset,
-			       const double pointZRot) const
+			       const double pointZRot) 
 /*!
     Adds a beamline tally Item to the system
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
@@ -160,15 +148,12 @@ itemConstruct::addBeamLineItem(Simulation& System,
     \param pointZRot :: Z axis rotation of the beamline
   */
 {
-  ELog::RegMethod RegA("itemConstruct","addBeamLineTally");
+  ELog::RegMethod RegA("itemConstruct","addBeamLineItem");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
-
-  size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
-	     static_cast<size_t>(-viewSurface-1));
 
   //int VSign((viewSurface<0) ? -1 : 1);
 
@@ -186,16 +171,17 @@ itemConstruct::addBeamLineItem(Simulation& System,
       (modName,"Moderator Object not found");
 
   // MODERATOR PLANE
-  const int masterPlane=ModPtr->getExitWindow(iLP,Planes);
 
+  const int masterPlane=ModPtr->getExitWindow(viewSurface,Planes);
+  
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getLinkPt(1); 
 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
@@ -236,7 +222,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
 
 
 void
-itemConstruct::writeHelp(std::ostream& OX) const
+itemConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream

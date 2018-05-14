@@ -101,12 +101,12 @@ class MTRand
 
  private:
 
-  enum { M = 397 };  ///<  period parameter
+  enum { M = 397 };       ///<  period parameter
 
   uint32 saveState[N+1];  ///< internal state (include left)
-  uint32 state[N];   ///< internal state
-  uint32 *pNext;     ///< next value to get from state
-  uint32 left;          ///< number of values left before reload needed
+  uint32 state[N];        ///< internal state
+  uint32 *pNext;          ///< next value to get from state
+  uint32 left;            ///< number of values left before reload needed
 
   // Methods:
   void reload();
@@ -124,6 +124,7 @@ class MTRand
   static uint32 hash(time_t,clock_t);
 
   //Methods
+  
  public:
 		      
   MTRand(const uint32&);  // initialize with a simple uint32

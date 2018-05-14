@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@ struct IncSeq{
 IncSeq():v(0){}                      ///< Constructor
 };
 
+template<typename T,typename U>
+void signSplit(const T&,T&,U&);
+
 size_t lowBitIndex(const unsigned int&);
 size_t lowBitIndex(const size_t&);
 size_t countBits(const size_t&);
@@ -44,6 +47,12 @@ double factorialDB(const int);
 double fibonacci(const int);
 double normalDist(const double); ///< convert a number 0->1 into a normal distribute
 double invErf(const double);    ///< Inverse error function
+
+template<typename T>
+size_t
+inUnorderedRange(const std::vector<T>&,
+		 const std::vector<T>&,
+		 const T&);
 
 template<typename T>
 int 
@@ -142,6 +151,12 @@ namespace mathFunc
   template<typename T>
   T mean(const std::vector<T>&);
 
+  double logAdd(const double&,const double&);
+  double logSubtract(const double&,const double&);
+
+  double logFromLinear(const double,const double,const size_t,
+		      const size_t);
+  
 }
 
 
@@ -159,8 +174,6 @@ namespace mathFunc
 namespace mathSupport
 {
 
-double logFromLinear(const double,const double,const size_t,
-		      const size_t);
   /*!
     \struct Rsol
     \brief A simple imagenary class (replace by complex)

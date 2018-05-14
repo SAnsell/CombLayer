@@ -3,7 +3,7 @@
  
  * File:   monte/Zaid.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,9 @@
 #include "IsoTable.h"
 #include "Element.h"
 #include "Zaid.h"
+
+namespace MonteCarlo
+{
 
 std::ostream&
 operator<<(std::ostream& OX,const Zaid& Z)
@@ -106,7 +109,31 @@ Zaid::operator==(const Zaid& A) const
 }
 
 bool
-Zaid::isEquavilent(const int Z,const int T,const char C) const
+Zaid::operator<(const Zaid& A) const
+  /*!
+    Check if this is less than A [excluding density]
+    \param A :: Object to check
+    \return true if matched
+   */
+{
+  if (index<A.index)
+    return 1;
+  else if (index>A.index)
+    return 0;
+  else // if (index==A.index)
+    {
+      if (tag<A.tag)
+	return 1;
+      else if (tag>A.tag)
+	return 0;
+      else // if (tag==A.tag)
+	return (type<A.type) ? 1 : 0;
+    }
+  return 0;
+}
+
+bool
+Zaid::isEquivalent(const size_t Z,const size_t T,const char C) const
   /*!
     Determine if the numbers are equivilent
     \param Z :: Zaid number [0 to ignore]
@@ -121,7 +148,7 @@ Zaid::isEquavilent(const int Z,const int T,const char C) const
 }
 
 
-int
+size_t
 Zaid::setZaid(const std::string& A)
   /*!
     Given a zaid string determine if 
@@ -132,7 +159,7 @@ Zaid::setZaid(const std::string& A)
 {
   ELog::RegMethod RegA("Zaid","setZaid");
 
-  int Z;  
+  size_t Z;  
   std::string::size_type pos=A.find('.');
   if ( pos==std::string::npos ||
        pos+4>A.size() ||
@@ -146,6 +173,42 @@ Zaid::setZaid(const std::string& A)
   StrFunc::convert(Num,tag);
   type=A[pos+3];
   return 1;
+}
+
+std::string
+Zaid::getFlukaName() const
+/*!
+  Return FLUKA-compatible name
+  In FLUKA, max length of the SDUM card is 8 characters,
+  but len(ZZZAAA.abX) is 10 characters.
+  Therefore we can remove dot to reduce it to 9 symbols,
+  and since it most cases Z<100 than the total length
+  is 8 characters.
+  \todo Make it work for for Z>=100
+ */
+{
+  ELog::RegMethod RegA("Zaid","getFlukaName");
+
+  std::string V(getZaid());
+  V.erase(std::remove(V.begin(),V.end(),'.'),V.end());
+
+  return V;
+}
+
+std::string
+Zaid::getZaid() const
+/*!
+  Return zaid string (ZZZAAA.abX)
+ */
+{
+  boost::format FMTstr("%1$d.%2$02d%3$c");
+  std::ostringstream OX;
+
+  if (index)  // avoid writing 00000 zaid
+    OX << FMTstr % index % tag % type;
+
+  return OX.str();
+
 }
   
     
@@ -170,7 +233,7 @@ Zaid::getAtomicMass() const
     \return mean atomic mass
   */
 {
-  const int INum=getIso();
+  const size_t INum=getIso();
   if (INum) 
     {
       const IsoTable& IT=IsoTable::Instance();
@@ -187,11 +250,15 @@ Zaid::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTstr("%1$d.%2$02d%3$c");
   boost::format FMTnum("%1$.6g");
-  OX<<FMTstr % index % tag % type;
-  if (type=='c')
-    OX<<" "<<FMTnum % density;
+
+  if (index)  // avoid writing 00000 zaid
+    {
+      OX<<getZaid();
+      if (type=='c')
+        OX<<" "<<FMTnum % density;
+    }
   return;
 }
 
+}  // NAMESPACE MonteCarlo

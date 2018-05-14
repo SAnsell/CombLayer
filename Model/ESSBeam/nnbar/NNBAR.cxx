@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/NNBAR.cxx
+ * File:   nnBar/NNBAR.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "HoleShape.h"
 #include "Jaws.h"
@@ -151,35 +152,6 @@ NNBAR::~NNBAR()
   */
 {}
 
-void
-NNBAR::setBeamAxis(const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("NNBAR","setBeamAxis");
-
-  nnbarAxis->createUnitVector(GItem);
-  nnbarAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  nnbarAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  nnbarAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  nnbarAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  nnbarAxis->linkShift(3);
-  nnbarAxis->linkShift(4);
-  nnbarAxis->linkAngleRotate(3);
-  nnbarAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    nnbarAxis->reverseZ();
-
-  return;
-}
-  
 
 void
 NNBAR::buildBunkerUnits(Simulation& System,
@@ -272,8 +244,8 @@ NNBAR::buildHut(Simulation& System,
   ShieldA->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setFaces(Cave->getKey("Mid").getSignedFullRule(-1),
-                    Cave->getKey("Inner").getSignedFullRule(1));
+  CaveCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
+                    Cave->getKey("Inner").getFullRule(1));
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
 
   return;
@@ -297,6 +269,7 @@ NNBAR::buildIsolated(Simulation& System,const int voidCell)
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"BUILD ISOLATED Start/Stop:"
           <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+
   const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
   long int startIndex(0);
   
@@ -329,10 +302,10 @@ NNBAR::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(GItem,0);
+  essBeamSystem::setBeamAxis(*nnbarAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
