@@ -3,7 +3,7 @@
  
  * File:   tally/fissionConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 
 #include "inputParam.h"
 
@@ -103,28 +104,13 @@ fissionConstruct::convertRange(const std::string& Word,
   return 1;
 }
 
-fissionConstruct::fissionConstruct() 
-  /// Constructor
-{}
-
-fissionConstruct::fissionConstruct(const fissionConstruct&) 
-  /// Copy Constructor
-{}
-
-fissionConstruct&
-fissionConstruct::operator=(const fissionConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 int
-fissionConstruct::processPower(Simulation& System,
+fissionConstruct::processPower(SimMCNP& System,
 			       const mainSystem::inputParam& IParam,
-			       const size_t Index) const
+			       const size_t Index) 
   /*!
     Process a fission power on a cell
-    \param System :: Simulation to use
+    \param System :: SimMCNP to use
     \param IParam :: Input system
     \param Index :: index of the -T card
     \return renumber required status [1 for true]
@@ -188,7 +174,7 @@ fissionConstruct::processPower(Simulation& System,
 }
 
 void
-fissionConstruct::writeHelp(std::ostream& OX) const
+fissionConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out the help
     \param OX :: Output stream

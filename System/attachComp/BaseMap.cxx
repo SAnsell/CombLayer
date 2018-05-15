@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -388,6 +388,84 @@ BaseMap::removeVecUnit(const std::string& kName,
   if (SRef.empty())
     Items.erase(mc);
   return;
+}
+
+bool
+BaseMap::registerExtra(const int prevCN,const int extraCN)
+  /*!
+    Given a previous cell number find the object and 
+    add the extra cell to it 
+    \param prevCN :: Existing Cell number
+    \param extraCN :: New cell nubmer
+    \return true if insert possible
+   */
+{
+  ELog::RegMethod RegA("CellMap","registerExtra");
+
+  const std::string Unit=findCell(prevCN);
+  if (Unit.empty()) return 0;
+
+  BaseMap::addItem(Unit,extraCN);
+  return 1;
+}
+
+std::string
+BaseMap::findCell(const int cellN) const
+  /*!
+    Determine if cellN exists in set and return
+    cell name.
+    \param cellN :: Cell to test
+    \return string if found 
+    \todo use std::optional 
+  */
+{
+  for(const LCTYPE::value_type& IUnit : Items)
+    {
+      const std::vector<int>& SRef(IUnit.second);
+      if (std::find(SRef.begin(),SRef.end(),cellN) != SRef.end())
+	return IUnit.first;
+    }
+  return "";
+}
+
+bool
+BaseMap::hasCell(const int cellN) const
+  /*!
+    Determine if cellN exists in set
+    \param cellN :: Cell to test
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("BaseMap","hasCell");
+  
+  for(const LCTYPE::value_type& IUnit : Items)
+    {
+      const std::vector<int>& SRef(IUnit.second);
+      if (std::find(SRef.begin(),SRef.end(),cellN) != SRef.end())
+	return 1;
+    }
+  return 0;
+}
+
+
+bool
+BaseMap::hasCell(const std::string& kName,const int cellN) const
+  /*!
+    Determine if cellN exists in set
+    \param kName :: unit to search
+    \param cellN :: Cell to test
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("BaseMap","hasCell(string)");
+
+  LCTYPE::const_iterator mc=Items.find(kName);
+
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(kName,"Key not present");
+
+  const std::vector<int>& SRef(mc->second);
+  return (std::find(SRef.begin(),SRef.end(),cellN) != SRef.end());
 }
 
   

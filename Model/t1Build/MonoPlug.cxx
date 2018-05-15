@@ -161,18 +161,17 @@ MonoPlug::populate(const Simulation& System)
 
 void
 MonoPlug::createUnitVector(const attachSystem::FixedComp& VoidFC,
-			   const size_t index)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param VoidFC :: VoidVessel to get top and axises
-    \param index :: Top surface
+    \param sideIndex  :: Top surface
   */
 {
   ELog::RegMethod RegA("MonoPlug","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(VoidFC);
-
-  Origin=VoidFC.getLinkPt(index);
+  Origin=VoidFC.getLinkPt(sideIndex);
   return;
 }
 
@@ -215,7 +214,7 @@ MonoPlug::createSurfaces()
 
 void
 MonoPlug::createObjects(Simulation& System,
-			const size_t vLCIndex,
+			const long int vLCIndex,
 			const attachSystem::FixedComp& VoidFC,
 			const attachSystem::FixedComp& BulkFC)
   /*!
@@ -235,11 +234,11 @@ MonoPlug::createObjects(Simulation& System,
 
   // The outside stuff
   const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
-  const std::string outSurf=StrFunc::makeString(-VoidFC.getLinkSurf(0));
+  const std::string outSurf=VoidFC.getLinkString(-1);
   
 
-  const std::string bulkSurf= 
-    StrFunc::makeString(-BulkFC.getLinkSurf(vLCIndex));
+  const std::string bulkSurf=
+    BulkFC.getLinkString(-vLCIndex);
 
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)
@@ -320,7 +319,7 @@ MonoPlug::createLinks()
 
 void
 MonoPlug::createAll(Simulation& System,
-		    const size_t vLCIndex,
+		    const long int vLCIndex,
 		    const attachSystem::FixedComp& VoidFC,
 		    const attachSystem::FixedComp& BulkFC)
   /*!

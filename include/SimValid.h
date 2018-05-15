@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/SimValid.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SimValid_h
-#define SimValid_h
+#ifndef ModelSupport_SimValid_h
+#define ModelSupport_SimValid_h
 
 
 namespace ModelSupport
@@ -33,29 +33,35 @@ namespace ModelSupport
   \version 1.0
   \date March 2013
  */
-
 struct simPoint
 {
   public:
   
   Geometry::Vec3D Pt;              ///< Surface point
+  Geometry::Vec3D Dir;             ///< Surface direction
   int objN;                        ///< Object number
   int surfN;                       ///< Surface crossing 
   MonteCarlo::Object* OPtr;        ///< Object pointer
 
-  simPoint(const Geometry::Vec3D& P,const int ON,const int SN,
-	   MonteCarlo::Object* OP) :
-  Pt(P),objN(ON),surfN(SN),OPtr(OP) {}
+  
+  simPoint(const Geometry::Vec3D& P,const Geometry::Vec3D& D,
+	   const int ON,const int SN,MonteCarlo::Object* OP) :
+  Pt(P),Dir(D),objN(ON),surfN(SN),OPtr(OP) {}
 
   simPoint(const simPoint& A) :
-  Pt(A.Pt),objN(A.objN),surfN(A.surfN),OPtr(A.OPtr) {}
+  Pt(A.Pt),Dir(A.Dir),objN(A.objN),surfN(A.surfN),OPtr(A.OPtr) {}
 
+  /// assignement operator
   simPoint& operator=(const simPoint& A) 
     {
-      Pt=A.Pt;
-      objN=A.objN;
-      surfN=A.surfN;
-      OPtr=A.OPtr;
+      if (this!=&A)
+	{
+	  Pt=A.Pt;
+	  Dir=A.Dir;
+	  objN=A.objN;
+	  surfN=A.surfN;
+	  OPtr=A.OPtr;
+	}
       return *this;
     }
 
@@ -74,7 +80,10 @@ class SimValid
 {
  private:
 
-  Geometry::Vec3D Centre;  // Centre for tracks
+  Geometry::Vec3D Centre;   // Centre for tracks
+
+  void diagnostics(const Simulation&,
+		   const std::vector<simPoint>&) const;
   
  public:
   
@@ -84,9 +93,12 @@ class SimValid
   ~SimValid() {}        /// Destructor
 
   /// Set the centre
-  void setCentre(const Geometry::Vec3D C) { Centre=C;} 
+  void setCentre(const Geometry::Vec3D& C) { Centre=C;} 
+
   // MAIN RUN:
-  int run(const Simulation&,const size_t) const;
+  int runPoint(const Simulation&,const Geometry::Vec3D&,const size_t) const;
+  
+  int runFixedComp(const Simulation&,const size_t) const;
 
 };
 

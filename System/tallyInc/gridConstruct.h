@@ -3,7 +3,7 @@
  
  * File:   tallyInc/gridConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -46,28 +47,27 @@ class gridConstruct
 {
  private:
 
-  void applyMultiGrid(Simulation&,const size_t,const size_t,
+  static void applyMultiGrid(SimMCNP&,const size_t,const size_t,
 		      const Geometry::Vec3D&,
 		      const Geometry::Vec3D&,
-		      const Geometry::Vec3D&) const;
+		      const Geometry::Vec3D&);
 
-  int calcGlobalCXY(const std::string&,
-		    const long int,Geometry::Vec3D&,
-		    Geometry::Vec3D&,Geometry::Vec3D&) const;
-  
+  static int calcGlobalCXY(const std::string&,
+			   const long int,Geometry::Vec3D&,
+			   Geometry::Vec3D&,Geometry::Vec3D&);
+
+  /// private constructor 
+  gridConstruct() {};
+ 
  public:
 
-  gridConstruct();
-  gridConstruct(const gridConstruct&);
-  gridConstruct& operator=(const gridConstruct&);
-  virtual ~gridConstruct() {}  ///< Destructor
   
   // Point Stuff
-  virtual void processGrid(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
+  static void processGrid(SimMCNP&,const mainSystem::inputParam&,
+			  const size_t);
 
 
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 
 };
 

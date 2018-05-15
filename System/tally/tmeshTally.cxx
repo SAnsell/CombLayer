@@ -3,7 +3,7 @@
  
  * File:   tally/tmeshTally.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -302,7 +301,7 @@ tmeshTally::write(std::ostream& OX) const
   */
 {
   masterWrite& MW=masterWrite::Instance();
-  ELog::EM<<"ASDFASDF:"<<isActive()<<ELog::endDiag;
+
   if (isActive())
     {
       const char typeLetter[]="rcs";
@@ -319,7 +318,7 @@ tmeshTally::write(std::ostream& OX) const
 	    cx<<MW.Num(V)<<" ";
 	}
       else
-	cx<<"DOSE "<<activeMSHMF;
+	cx<<"DOSE "<<std::abs(activeMSHMF);
 
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
@@ -328,7 +327,7 @@ tmeshTally::write(std::ostream& OX) const
 	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}					 
-      if (!mshmf.empty())
+      if (!mshmf.empty() && activeMSHMF>0)
 	{
 	  cx.str("");
 	  cx<<"mshmf"<<activeMSHMF<<" "<<mshmf;

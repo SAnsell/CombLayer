@@ -3,7 +3,7 @@
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,7 +189,6 @@ Visit::populate(const Simulation* SimPtr,
   
   const bool aEmptyFlag=Active.empty();
 
-  size_t beCnt(0);
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
     stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);

@@ -72,7 +72,9 @@ sub findSubSrcDir
 {
   my $self=shift;
   my $tName=shift;  ## Top directory name
-
+  my @EXCL;
+  push(@EXCL,@_) if (@_);
+  
   my $topDirName=($tName) ? $tName : "./";
   
   my $dirAll=`ls -d ./$topDirName/*/ 2> /dev/null`;
@@ -83,7 +85,21 @@ sub findSubSrcDir
       if ($dname=~/$topDirName\/(.*)\// &&
 	  $dname!~/\/Main\//)
         {
-	  push(@subDir,$1) if (hasCPPFiles($dname));
+	  my $flag=0;
+	  foreach my $exclude (@EXCL)
+	    {
+	      if ($dname=~/$exclude/)
+	      {
+		$flag=1;
+		print STDERR $dname,"\n";
+		
+		last;
+	      }
+	    }
+	  if (!$flag)
+	  {
+	    push(@subDir,$1) if (hasCPPFiles($dname));
+	  }
 	}
     }
 
@@ -251,6 +267,13 @@ sub writeHeader
   print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
   print $DX "-undefined dynamic_lookup\")\n";
   print $DX "endif()\n";
+
+  print $DX "if(\"\${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"GNU\")\n";
+  print $DX "set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS \"";
+  print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
+  print $DX "-Wl,--start-group\")\n";
+  print $DX "endif()\n";
+  
   return;
 }
  
@@ -311,7 +334,7 @@ sub writeExcutables
         }
       if (!$self->{noregex})
         {
-          print $DX "target_link_libraries(",$item," boost_regex)\n";
+#          print $DX "target_link_libraries(",$item," boost_regex)\n";
           print $DX "target_link_libraries(",$item," boost_filesystem)\n";
 	}
       print $DX "target_link_libraries(",$item," stdc++)\n";

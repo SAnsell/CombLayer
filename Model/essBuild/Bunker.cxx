@@ -140,6 +140,7 @@ Bunker::populate(const FuncDataBase& Control)
   wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
+  wallHeight=Control.EvalDefVar<double>(keyName+"WallHeight",roofHeight);
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   sideThick=Control.EvalVar<double>(keyName+"SideThick");
@@ -292,6 +293,7 @@ Bunker::createSurfaces(const bool revX)
   
   ModelSupport::buildPlane(SMap,bnkIndex+5,Origin-Z*floorDepth,Z);
   ModelSupport::buildPlane(SMap,bnkIndex+6,Origin+Z*roofHeight,Z);
+  ModelSupport::buildPlane(SMap,bnkIndex+106,Origin+Z*wallHeight,Z);
 
   // Walls
   ModelSupport::buildCylinder(SMap,bnkIndex+17,rotCentre,
@@ -312,6 +314,7 @@ Bunker::createSurfaces(const bool revX)
   setSurf("leftWallOuter",SMap.realSurf(bnkIndex+13));
   setSurf("rightWallOuter",SMap.realSurf(bnkIndex+14));
   setSurf("floorInner",SMap.realSurf(bnkIndex+5));
+  setSurf("wallInner",SMap.realSurf(bnkIndex+106));
   setSurf("roofInner",SMap.realSurf(bnkIndex+6));
   setSurf("roofOuter",SMap.realSurf(bnkIndex+16));
   // CREATE Sector boundary lines
@@ -399,8 +402,8 @@ Bunker::createObjects(Simulation& System,
   ELog::RegMethod RegA("Bunker","createObjects");
   
   std::string Out;
-  const std::string Inner=FC.getSignedLinkString(sideIndex);
-  const int InnerSurf=FC.getSignedLinkSurf(sideIndex);
+  const std::string Inner=FC.getLinkString(sideIndex);
+  const int InnerSurf=FC.getLinkSurf(sideIndex);
   
   Out=ModelSupport::getComposite(SMap,bnkIndex,"1 -7 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+Inner));
@@ -413,14 +416,14 @@ Bunker::createObjects(Simulation& System,
   int rwIndex(bnkIndex);
   if (leftWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("leftWall",cellIndex-1);
       lwIndex+=10;
     }
   if (rightWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("rightWall",cellIndex-1);
       rwIndex+=10;
@@ -437,23 +440,25 @@ Bunker::createObjects(Simulation& System,
   for(size_t i=0;i<nSectors;i++)
     {
       // Divide the roof into sector as well
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 6 -16 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 6 (106 : -7) -16 ");
       if (i)
 	Out+=ModelSupport::getComposite(SMap,divIndex," 1 ");
+      else if (leftWallFlag)
+	Out+=ModelSupport::getComposite(SMap,bnkIndex," 13  (106 : 3) ");
       else
-	Out+=ModelSupport::getComposite(SMap,lwIndex," 3 ");
+	Out+=ModelSupport::getComposite(SMap,bnkIndex," 13 ");
 
       if (i+1!=nSectors)
 	Out+=ModelSupport::getComposite(SMap,divIndex," -2 ");
+      else if (rightWallFlag)
+	  Out+=ModelSupport::getComposite(SMap,bnkIndex," -14  (106 : -4) ");
       else
-	Out+=ModelSupport::getComposite(SMap,rwIndex," -4 ");
-
+	Out+=ModelSupport::getComposite(SMap,bnkIndex," -14 ");
+      
       System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out+Inner));
-
       addCell("roof"+StrFunc::makeString(i),cellIndex-1);
-
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,
-				     " 1 7 -17 1M -2M 5 -6 ");
+				     " 1 7 -17 1M -2M 5 -106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       addCell("frontWall",cellIndex-1);
       addCell("frontWall"+StrFunc::makeString(i),cellIndex-1);
@@ -538,7 +543,7 @@ Bunker::createMainWall(Simulation& System)
   const std::string Out=ModelSupport::getComposite(SMap,bnkIndex," 1 ");
 
   wallObj->initialize(System.getDataBase(),*this,0);
-  wallObj->setVertSurf(SMap.realSurf(bnkIndex+5),SMap.realSurf(bnkIndex+6));  //XXX
+  wallObj->setVertSurf(SMap.realSurf(bnkIndex+5),SMap.realSurf(bnkIndex+106));
   wallObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
   wallObj->setDivider(Out);
 

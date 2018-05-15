@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,9 +57,6 @@
 #include "FItem.h"
 #include "FuncDataBase.h"
 #include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -105,7 +102,8 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
 LineTrack::LineTrack(const Geometry::Vec3D& IP,
 		     const Geometry::Vec3D& UVec,
 		     const double ADist) :
-  InitPt(IP),EndPt(IP+UVec),aimDist(ADist),
+  InitPt(IP),EndPt(IP+UVec),
+  aimDist(ADist>=0 ? ADist : 1e10),
   TDist(0.0)
   /*! 
     Constructor 
@@ -136,6 +134,7 @@ LineTrack::operator=(const LineTrack& A)
     {
       TDist=A.TDist;
       Cells=A.Cells;
+      ObjVec=A.ObjVec;
       Track=A.Track;
     }
   return *this;
@@ -150,6 +149,8 @@ LineTrack::clearAll()
   TDist=0.0;
   Cells.clear();
   ObjVec.clear();
+  SurfVec.clear();
+  SurfIndex.clear();
   Track.clear();
   return;
 }
@@ -181,14 +182,14 @@ LineTrack::calculate(const Simulation& ASim)
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
       // Update Track : returns 1 on excess of distance
-      if (SN && updateDistance(OPtr,aDist))
+      if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 	  if (!OPtr)
 	    {
-	      ELog::EM<<"INIT POINT == "<<InitPt<<ELog::endDiag;
+	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endDiag;
 	      calculateError(ASim);
 	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
@@ -207,7 +208,8 @@ LineTrack::calculateError(const Simulation& ASim)
     \param ASim :: Simulation to use						
   */
 {
-  ELog::RegMethod RegA("LineTrack","calculate");
+  ELog::RegMethod RegA("LineTrack","calculateError");
+  
   ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"-------------------"<<ELog::endDiag;
   
@@ -227,26 +229,23 @@ LineTrack::calculateError(const Simulation& ASim)
   
   while(OPtr)
     {
-      ELog::EM<<"== Tracking cell == "<<*OPtr;
+      ELog::EM<<std::setprecision(12)<<ELog::endDiag;
+      ELog::EM<<"== Tracking in cell == "<<*OPtr;
       ELog::EM<<"Neutron == "<<nOut<<" "<<aDist<<ELog::endDiag;
-      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
+      ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
 
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
-      ELog::EM<<"Found Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
+      ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
 
       // Update Track : returns 1 on excess of distance
-      if (SN && updateDistance(OPtr,aDist))
+      if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
 	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 
-	  if (OPtr)
-	    ELog::EM<<"Tracking cell == "<<*OPtr<<ELog::endDiag;
-	  else
-	    ELog::EM<<"void cell"<<ELog::endDiag;
 	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
 	  ELog::EM<<" ============== "<<ELog::endDiag;
 
@@ -259,7 +258,8 @@ LineTrack::calculateError(const Simulation& ASim)
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
 	      if (OPtr)
 		ELog::EM<<"Found CEll: "<<*OPtr<<ELog::endDiag;
-	      ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+
+	      ELog::EM<<"Initial point of line error:"<<InitPt<<ELog::endErr;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
@@ -283,21 +283,30 @@ LineTrack::calculateError(const Simulation& ASim)
 	    }
 
 	  if (aDist<Geometry::zeroTol)
-	    OPtr=ASim.findCell(nOut.Pos,0);
+	    {
+	      ELog::EM<<"ZERO CELL "<<ELog::endErr;
+	      OPtr=ASim.findCell(nOut.Pos,0);
+	    }
 	}
       else
 	OPtr=0;
-	
     }
+
+  ELog::EM<<"Finished "<<ELog::endDiag;
   ELog::EM<<ELog::endErr;
   return;
 }
 
 bool
-LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D) 
+LineTrack::updateDistance(MonteCarlo::Object* OPtr,
+			  const Geometry::Surface* SPtr,
+			  const int SN,
+			  const double D) 
   /*!
     Add the distance, register cell etc
     \param OPtr :: Object points
+    \param SPtr :: Surface pointer
+    \param SN :: Surface number [pointing out]
     \param D :: Distance
     \return 1 if distance insufficient / 0 if at end of line
    */
@@ -306,6 +315,8 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D)
 
   Cells.push_back(OPtr->getName());
   ObjVec.push_back(OPtr);
+  SurfVec.push_back(SPtr);
+  SurfIndex.push_back(SN);
   TDist+=D;
   if (aimDist-TDist < -Geometry::zeroTol)
     {
@@ -316,11 +327,44 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D)
   return 1;
 }
 
+
+const Geometry::Surface*
+LineTrack::getSurfPtr(const size_t Index) const
+  /*!
+    Get a surface from the track
+    \param Index :: Index point
+    \return surface index number
+  */
+{
+  ELog::RegMethod RegA("LineTrack","getPoint");
+
+  if (Index>SurfVec.size())
+    throw ColErr::IndexError<size_t>(Index,SurfVec.size(),
+				     "Index in SurfVec");
+  return SurfVec[Index];
+}
+
+int
+LineTrack::getSurfIndex(const size_t Index) const
+  /*!
+    Get a point from the track
+    \param Index :: Index point
+    \return surface index number
+  */
+{
+  ELog::RegMethod RegA("LineTrack","getPoint");
+
+  if (Index>SurfIndex.size())
+    throw ColErr::IndexError<size_t>(Index,SurfIndex.size(),
+				     "Index in SurfIndex");
+  return SurfIndex[Index];
+}
+  
 Geometry::Vec3D 
 LineTrack::getPoint(const size_t Index) const
   /*!
     Get a point from the track
-    \param Index :: Index poitn
+    \param Index :: Index point
     \return point that line crosses a cell boundary
   */
 {
@@ -332,12 +376,8 @@ LineTrack::getPoint(const size_t Index) const
   if (!Index) return InitPt;
 
   double Len=0.0;
-  for(size_t i=1;i<Index;i++)
-    {
-      Len+=Track[Index-1];
-      if (fabs(Track[Index-1])<Geometry::zeroTol)
-	ELog::EM<<"Point "<<Index-1<<" == "<<Track[Index-1]<<ELog::endDebug;
-    }
+  for(size_t i=0;i<Index;i++)
+    Len+=Track[i];
 
   return InitPt+(EndPt-InitPt).unit()*Len;
 }

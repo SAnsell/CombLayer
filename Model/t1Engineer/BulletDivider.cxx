@@ -195,7 +195,7 @@ BulletDivider::createUnitVector(const attachSystem::FixedComp& FC)
 
 void
 BulletDivider::setInnerRadius(const attachSystem::FixedComp& FC,
-			      const size_t sideIndex)
+			      const long int sideIndex)
   /*!
     Calculate the inner radius of the main target
     \param FC :: PlateTarget inner
@@ -204,8 +204,8 @@ BulletDivider::setInnerRadius(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BulletDivider","setInnerRadius");
 
-  Geometry::Vec3D Pt=FC.getLinkPt(sideIndex);
-  radii[0]=fabs(X.dotProd(Pt-Origin));
+  const Geometry::Vec3D Pt=FC.getLinkPt(sideIndex);
+  radii[0]=std::abs(X.dotProd(Pt-Origin));
   
   return;
 }
@@ -269,9 +269,9 @@ BulletDivider::createSurfaces()
 void
 BulletDivider::createObjects(Simulation& System,
 			     const attachSystem::FixedComp& TarObj,
-			     const size_t radialSide,
+			     const long int radialSide,
 			     const attachSystem::FixedComp& VesselObj,
-			     const size_t topSide,const size_t baseSide)
+			     const long int topSide,const long int baseSide)
   /*!
     Creates the target vessel objects
     \param System :: Simulation to create objects in
@@ -370,9 +370,9 @@ BulletDivider::createAll(Simulation& System,
   populate(System.getDataBase());
 
   createUnitVector(Inner);
-  setInnerRadius(Inner,2);
+  setInnerRadius(Inner,3);
   createSurfaces();
-  createObjects(System,Inner,2,Vessel,7,8);
+  createObjects(System,Inner,3,Vessel,8,9);
   excludeInsertCells(System);
   insertObjects(System);       
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/t1CylVessel.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,9 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -277,31 +275,27 @@ t1CylVessel::createWindows(Simulation& System)
 
   for(size_t i=0;i<nWin;i++)
     {
-      ports.push_back(constructSystem::Window
-		      (StrFunc::makeString("t1Port",i+1)));
+      const std::string IndexStr(std::to_string(i+1));
+      ports.push_back
+	(constructSystem::Window("t1Port"+std::to_string(i+1)));
+      
       Geometry::Vec3D PCent;
       Geometry::Vec3D PAxis;
       // Centres:
-      if (Control.hasVariable(StrFunc::makeString(CKey,i+1)))
-	PCent=Control.EvalVar<Geometry::Vec3D>(StrFunc::makeString(CKey,i+1));
-      else
-	PCent=Z*Control.EvalVar<double>(StrFunc::makeString(CHgh,i+1));
+      PCent=Control.EvalPair<Geometry::Vec3D>(CKey,CHgh,IndexStr);
       // Angles:
-      if (Control.hasVariable(StrFunc::makeString(AKey,i+1)))
-	PAxis=Control.EvalVar<Geometry::Vec3D>(StrFunc::makeString(AKey,i+1));
+      if (Control.hasVariable(AKey+IndexStr))
+	PAxis=Control.EvalVar<Geometry::Vec3D>(AKey+IndexStr);
       else
 	{
-	  const double angle=
-	    Control.EvalVar<double>(StrFunc::makeString(AAng,i+1));
+	  const double angle=Control.EvalVar<double>(AAng+IndexStr);
 	  PAxis=Y;
 	  Geometry::Quaternion::calcQRotDeg(angle,Z).rotate(PAxis);
 	}
       // Height / Width
 
-      const double PHeight=Control.EvalPair<double>
-	(StrFunc::makeString(HKey,i+1),HKey);
-      const double PWidth=Control.EvalPair<double>
-	(StrFunc::makeString(WKey,i+1),WKey);
+      const double PHeight=Control.EvalPair<double>(HKey+IndexStr,HKey);
+      const double PWidth=Control.EvalPair<double>(WKey+IndexStr,WKey);
       ports.back().setCentre(PCent+Origin,PAxis);
       ports.back().setSize(PHeight,PWidth);
     }

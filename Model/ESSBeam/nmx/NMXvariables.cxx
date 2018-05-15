@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMXvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,6 +94,8 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGABeamZAngle",0.0);         // -1.0 [BEND]
 
   FGen.setLayer(1,0.5,"Aluminium");
+  FGen.setLayer(2,0.5,"B4C");
+  FGen.setLayer(3,0.5,"Void");
   FGen.clearYOffset();
   
   const double bendAngle(90.0);

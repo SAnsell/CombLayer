@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essInc/ShieldGenerator.h
+ * File:   commonVarInc/ShieldGenerator.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,6 @@ class ShieldGenerator
   size_t nWall;                 ///< number of wall layers
   size_t nRoof;                 ///< number of roof layers
   size_t nFloor;                ///< number of floor layers  
-
-  double wallThick;             ///< wall thickness [if set]
-  double roofThick;             ///< roof thickness [if set]
-  double floorThick;            ///< floor thickness [if set]
   
   std::string defMat;                         ///< Primary default mat
 

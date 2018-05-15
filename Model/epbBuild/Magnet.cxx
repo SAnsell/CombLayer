@@ -3,7 +3,7 @@
  
  * File:   epbBuild/Magnet.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,6 @@
 #include "Cylinder.h"
 #include "Line.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -210,8 +209,8 @@ Magnet::createObjects(Simulation& System,
   // Outer steel
   Out=ModelSupport::getComposite(SMap,magIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
-  for(size_t i=0;i<segLen;i++)
-    Out+=FC.getLinkString(segIndex+i);
+  for(size_t i=1;i<=segLen;i++)
+    Out+=FC.getLinkString(static_cast<long int>(segIndex+i));
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
 
   return;

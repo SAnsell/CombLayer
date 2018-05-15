@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "fissionTally.h"
 #include "surfaceTally.h"
 #include "sswTally.h"
-#include "tallyFactory.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "SurInter.h"
@@ -75,10 +74,9 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "Source.h"
-#include "KCode.h"
 #include "PhysicsCards.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "SpecialSurf.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
@@ -92,12 +90,12 @@ namespace tallySystem
   
 
 void
-addF1Tally(Simulation& System,const int tNum,
+addF1Tally(SimMCNP& System,const int tNum,
 	   const int surfNum)
   /*!
     Addition of a tally to the mcnpx
     deck
-    \param System :: Simulation class
+    \param System :: SimMCNP class
     \param tNum :: tally number
     \param surfNum :: surface to tally
   */
@@ -113,13 +111,12 @@ addF1Tally(Simulation& System,const int tNum,
 }
 
 void
-addF1Tally(Simulation& System,const int tNum,
+addF1Tally(SimMCNP& System,const int tNum,
 	   const int surfNum,
 	   const std::vector<int>& SDividers)
   /*!
-    Addition of a tally to the mcnpx
-    deck
-    \param System :: Simulation class
+    Addition of a tally to the mcnp deck
+    \param System :: SimMCNP class
     \param tNum :: tally number
     \param surfNum :: surface to tally
     \param SDividers :: Add surface dividers
@@ -137,7 +134,7 @@ addF1Tally(Simulation& System,const int tNum,
 }
 
 void
-addFullHeatBlock(Simulation& System)
+addFullHeatBlock(SimMCNP& System)
   /*!
     Adds a f6 for everthing
     \param System :: Simuation object 
@@ -168,7 +165,7 @@ addFullHeatBlock(Simulation& System)
 }
 
 void
-addHeatBlock(Simulation& System,const std::vector<int>& CellList)
+addHeatBlock(SimMCNP& System,const std::vector<int>& CellList)
   /*!
     Adds a f6 for designated cells
     \param System :: Simuation object 
@@ -222,11 +219,11 @@ addHeatBlock(Simulation& System,const std::vector<int>& CellList)
 }
   
 void
-addF4Tally(Simulation& System,const int tallyNum,
+addF4Tally(SimMCNP& System,const int tallyNum,
 	   const std::string& pType,const std::vector<int>& Units)
   /*!
     Addition of a tally to the mcnpx deck
-    \param System :: Simulation class
+    \param System :: SimMCNP class
     \param tallyNum :: Cell number to tally 
     \param pType :: particle to tally over
     \param Units :: List of cells to add
@@ -246,11 +243,11 @@ addF4Tally(Simulation& System,const int tallyNum,
 }
 
 void
-addF7Tally(Simulation& System,const int tallyNum,
+addF7Tally(SimMCNP& System,const int tallyNum,
 	   const std::vector<int>& Units)
   /*!
     Addition of a tally to the mcnpx deck
-    \param System :: Simulation class
+    \param System :: SimMCNP class
     \param tallyNum :: Cell number to tally 
     \param Units :: List of cells to add
   */
@@ -267,10 +264,10 @@ addF7Tally(Simulation& System,const int tallyNum,
 
   
 sswTally*
-addSSWTally(Simulation& System)
+addSSWTally(SimMCNP& System)
   /*!
     Add a SSW tally to ASim [if it doesn't already have one]
-    \param System :: Simulation item    
+    \param System :: SimMCNP item    
     \return Tally pointer
    */
 {
@@ -282,13 +279,13 @@ addSSWTally(Simulation& System)
 
 
 void
-addF5Tally(Simulation& System,const int tNumber,
+addF5Tally(SimMCNP& System,const int tNumber,
 	   const Geometry::Vec3D& Point,
 	   const std::vector<Geometry::Vec3D>& VList,
 	   const double secondDistance)
   /*!
     Adds a point tally 
-    \param System :: Simulation item
+    \param System :: SimMCNP item
     \param tNumber :: Tally Number
     \param Point :: Centre point
     \param VList :: Window list
@@ -321,10 +318,10 @@ addF5Tally(Simulation& System,const int tNumber,
 }
   
 void
-addF5Tally(Simulation& System,const int tNumber)
+addF5Tally(SimMCNP& System,const int tNumber)
   /*!
     Adds a point tally 
-    \param System :: Simulation item
+    \param System :: SimMCNP item
     \param tNumber :: Tally Number
   */
 {
@@ -335,10 +332,10 @@ addF5Tally(Simulation& System,const int tNumber)
 }
 
 void
-setComment(Simulation& System,const int tNumber,const std::string& Comment)
+setComment(SimMCNP& System,const int tNumber,const std::string& Comment)
   /*!
     Set the comment on a tally
-    \param System :: Simulation to run
+    \param System :: SimMCNP to run
     \param tNumber :: tally number
     \param Comment :: Comment string
   */
@@ -355,15 +352,15 @@ setComment(Simulation& System,const int tNumber,const std::string& Comment)
 }
 
 void
-cutTallyEnergy(Simulation& System,const double energyCut)
+cutTallyEnergy(SimMCNP& System,const double energyCut)
   /*!
     Cut all tallies to a particular energy cut
-    \param System :: Simulation object to add component
+    \param System :: SimMCNP object to add component
     \param energyCut :: Energy to cut [MeV]
   */
 {
-  Simulation::TallyTYPE& TMap=System.getTallyMap();
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE& TMap=System.getTallyMap();
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=TMap.begin();mc!=TMap.end();mc++)
     mc->second->cutEnergy(energyCut);
 
@@ -371,12 +368,12 @@ cutTallyEnergy(Simulation& System,const double energyCut)
 }
 
 void 
-setF5Position(Simulation& System,const int tNumber,
+setF5Position(SimMCNP& System,const int tNumber,
 	      const Geometry::Vec3D& CPoint,const Geometry::Vec3D& Axis,
 	      const double DBplane,const double WStep)
   /*!
     Set the angular offset on a system
-    \param System :: Simulation to run
+    \param System :: SimMCNP to run
     \param tNumber :: tally number
     \param CPoint :: Centre point of line
     \param Axis :: Axis of centre line
@@ -404,11 +401,11 @@ setF5Position(Simulation& System,const int tNumber,
 }
 
 void 
-setF5Position(Simulation& System,const int tNumber,
+setF5Position(SimMCNP& System,const int tNumber,
 	      const Geometry::Vec3D& TPoint)
   /*!
     Set the F5 centre point of a tally
-    \param System :: Simulation to run
+    \param System :: SimMCNP to run
     \param tNumber :: tally number
     \param TPoint :: Centre point of tally
   */
@@ -427,11 +424,11 @@ setF5Position(Simulation& System,const int tNumber,
 }
 
 void 
-moveF5Tally(Simulation& System,const int tNumber,
+moveF5Tally(SimMCNP& System,const int tNumber,
 	    const Geometry::Vec3D& moveVec)
   /*!
     Move the F5 point of a tally
-    \param System :: Simulation to run
+    \param System :: SimMCNP to run
     \param tNumber :: tally number
     \param moveVec :: Displacement value
   */
@@ -450,11 +447,11 @@ moveF5Tally(Simulation& System,const int tNumber,
 }
 
 void 
-setTallyTime(Simulation& System,const int tNumber,
+setTallyTime(SimMCNP& System,const int tNumber,
 	     const std::string& timeStr)
   /*!
     Set the angular offset on a system
-    \param System :: Simulation to run
+    \param System :: SimMCNP to run
     \param tNumber :: tally number
     \param timeStr :: String the defines the time
   */
@@ -472,12 +469,12 @@ setTallyTime(Simulation& System,const int tNumber,
 }
 
 void
-setF5Angle(Simulation& System,const int tNumber,
+setF5Angle(SimMCNP& System,const int tNumber,
 	   const Geometry::Vec3D& PN,const double D,
 	   const double A)
   /*!
     Set the angular offset on a system
-    \param System :: Simulation to run
+    \param System :: SimMCNP to run
     \param tNumber :: tally number
     \param PN :: Normal vector to the plane of rotation
     \param D :: Distance from the centre (1000cm normally)
@@ -496,12 +493,12 @@ setF5Angle(Simulation& System,const int tNumber,
 }
 
 void
-widenF5Tally(Simulation& System,const int tNumber,
+widenF5Tally(SimMCNP& System,const int tNumber,
 	     const int dirIndex,const double scale)
   /*!
     Widens the tally in the window direction by scale cm in 
     each direction
-    \param System :: Simulation to deal with
+    \param System :: SimMCNP to deal with
     \param tNumber :: tally number
     \param dirIndex :: direction index [0/1]
     \param scale :: distance to move (-ve to reduce)
@@ -519,12 +516,12 @@ widenF5Tally(Simulation& System,const int tNumber,
 }
 
 void
-slideF5Tally(Simulation& System,const int tNumber,
+slideF5Tally(SimMCNP& System,const int tNumber,
 	     const int dirIndex,const double scale)
   /*!
     Widens the tally in the window direction by scale cm in 
     each direction
-    \param System :: Simulation to deal with
+    \param System :: SimMCNP to deal with
     \param tNumber :: tally number
     \param dirIndex :: direction index [0/1]
     \param scale :: distance to move (-ve to reduce)
@@ -542,11 +539,11 @@ slideF5Tally(Simulation& System,const int tNumber,
 }
 
 void
-shiftF5Tally(Simulation& System,const int tNumber,
+shiftF5Tally(SimMCNP& System,const int tNumber,
 	     const double scale)
   /*!
     Shift the tally window forward
-    \param System :: Simulation to deal with
+    \param System :: SimMCNP to deal with
     \param tNumber :: tally number
     \param scale :: distance to move (-ve to reduce)
    */
@@ -563,12 +560,12 @@ shiftF5Tally(Simulation& System,const int tNumber,
 }
 
 void
-divideF5Tally(Simulation& System,const int tNumber,
+divideF5Tally(SimMCNP& System,const int tNumber,
 	      const int xPts,const int yPts)
   /*!
     Modification to the FU card to add a user bin divide
     Note this depends on an MCNPX modification to tallyx
-    \param System :: Simulation
+    \param System :: SimMCNP
     \param tNumber :: tally number
     \param xPts :: Number of x points
     \param yPts :: Number of y points
@@ -586,8 +583,8 @@ divideF5Tally(Simulation& System,const int tNumber,
     }
   else
     {
-      Simulation::TallyTYPE& TM=System.getTallyMap();
-      Simulation::TallyTYPE::iterator mc;
+      SimMCNP::TallyTYPE& TM=System.getTallyMap();
+      SimMCNP::TallyTYPE::iterator mc;
       for(mc=TM.begin() ;mc!=TM.end(); mc++)
 	{
 	  tallySystem::pointTally* TX=
@@ -600,17 +597,17 @@ divideF5Tally(Simulation& System,const int tNumber,
 }
 
 void
-removeF5Window(Simulation& System,const int tNumber)
+removeF5Window(SimMCNP& System,const int tNumber)
   /*!
     Removes all/some of the windows for an f5 tally.
-    \param System :: Simulation item
+    \param System :: SimMCNP item
     \param tNumber :: Tally number [0 for all]
   */
 {
   ELog::RegMethod RegA("TallyCreate","removeF5Window");
 
-  Simulation::TallyTYPE& TM=System.getTallyMap();
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE& TM=System.getTallyMap();
+  SimMCNP::TallyTYPE::iterator mc;
   // ugly way to trip in/out of the loop
   mc=(tNumber) ? TM.find(tNumber) : TM.begin();
   for( ;mc!=TM.end(); mc++)
@@ -628,11 +625,11 @@ removeF5Window(Simulation& System,const int tNumber)
 }
 
 void
-modF5TallyCells(Simulation& System,const int tNumber,
+modF5TallyCells(SimMCNP& System,const int tNumber,
 	   const std::vector<int>& cells)
   /*!
     Sets the cells for a particular F5 tally [using icd]
-    \param System :: Simulation item
+    \param System :: SimMCNP item
     \param tNumber :: Tally Number
     \param cells :: List of cells to used
   */
@@ -654,12 +651,12 @@ modF5TallyCells(Simulation& System,const int tNumber,
 }
 
 void
-addF6Tally(Simulation& System,const int tNumber,
+addF6Tally(SimMCNP& System,const int tNumber,
 	   const std::string& particleType,
 	   const std::vector<int>& cellList)
   /*!
     Creates a +f6 type tally
-    \param System :: Simulation to add
+    \param System :: SimMCNP to add
     \param tNumber :: tally number 
     \param particleType :: particle type
     \param cellList :: Cells to tally in
@@ -701,17 +698,17 @@ writePlanes(const int Index,const int MP,
 }
 
 void
-deleteTallyType(Simulation& Sim,const int TType)
+deleteTallyType(SimMCNP& Sim,const int TType)
   /*!
     Delete a tally based on the number-type
-    \param Sim :: Simulation system to remove tallies from
+    \param Sim :: SimMCNP system to remove tallies from
     \param TType :: Type number to delete  [0 for all]
   */
 {
   ELog::RegMethod RegA("TallyCreate","deleteTallyType");
 
-  Simulation::TallyTYPE& TM=Sim.getTallyMap();
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE& TM=Sim.getTallyMap();
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=TM.begin();mc!=TM.end();)
     {
       if (!TType || (mc->second->getKey() % 10) == TType )
@@ -727,17 +724,17 @@ deleteTallyType(Simulation& Sim,const int TType)
 }
 
 void
-deleteTally(Simulation& Sim,const int ID)
+deleteTally(SimMCNP& Sim,const int ID)
   /*!
     Delete a tally based on the number-type
-    \param Sim :: Simulation system to remove tallies from
+    \param Sim :: SimMCNP system to remove tallies from
     \param ID :: Type number to delete 
   */
 {
   ELog::RegMethod RegA("TallyCreate","deleteTally");
 
-  Simulation::TallyTYPE& TM=Sim.getTallyMap();
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE& TM=Sim.getTallyMap();
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=TM.begin();mc!=TM.end();mc++)
     {
       if (mc->second->getKey()==ID)
@@ -752,7 +749,7 @@ deleteTally(Simulation& Sim,const int ID)
 }
 
 int
-getFarPoint(const Simulation& Sim,Geometry::Vec3D& Pt) 
+getFarPoint(const SimMCNP& Sim,Geometry::Vec3D& Pt) 
   /*!
     Get the last tally point based on the tallynumber
     Can use the mesh centre if no point tallies exist
@@ -763,9 +760,9 @@ getFarPoint(const Simulation& Sim,Geometry::Vec3D& Pt)
 {
   ELog::RegMethod RegA("TallyCreate","getFarPoint");
 
-  const Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  const SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int tnum(0);
-  Simulation::TallyTYPE::const_iterator mc;
+  SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       const pointTally* PTptr=
@@ -801,20 +798,20 @@ getFarPoint(const Simulation& Sim,Geometry::Vec3D& Pt)
 }
 
 int
-setEnergy(Simulation& Sim,const int tNumber,
+setEnergy(SimMCNP& Sim,const int tNumber,
 	  const std::string& ePart)
   /*!
     Set the energy of a tally
-    \param Sim :: Simulation
+    \param Sim :: SimMCNP
     \param tNumber :: tally nubmer
     \param ePart :: string
    */
 {
   ELog::RegMethod RegA("TallyCreate","setEnergy");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -831,19 +828,19 @@ setEnergy(Simulation& Sim,const int tNumber,
 }
 
 int
-setSingle(Simulation& Sim,const int tNumber)
+setSingle(SimMCNP& Sim,const int tNumber)
   /*!
     Split all the tallies into single cells
-    \param Sim :: Simulation
+    \param Sim :: SimMCNP
     \param tNumber :: tally nubmer
     \return number of tallies split
    */
 {
   ELog::RegMethod RegA("TallyCreate","setSingle");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -857,11 +854,11 @@ setSingle(Simulation& Sim,const int tNumber)
 }
 
 int
-setTime(Simulation& Sim,const int tNumber,
+setTime(SimMCNP& Sim,const int tNumber,
         const std::string& tPart)
   /*!
     Set the energy of a tally
-    \param Sim :: Simulation
+    \param Sim :: SimMCNP
     \param tNumber :: tally nubmer
     \param tPart :: time segment string [MCNPX format]
     \return number of tallies split
@@ -869,9 +866,9 @@ setTime(Simulation& Sim,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setTime");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -888,11 +885,11 @@ setTime(Simulation& Sim,const int tNumber,
 }
 
 int
-setAngle(Simulation& System,const int tNumber,
+setAngle(SimMCNP& System,const int tNumber,
         const std::string& tPart)
   /*!
     Set the cos bins of a tally
-    \param System :: Simulation
+    \param System :: SimMCNP
     \param tNumber :: tally nubmer
     \param tPart :: time segment string [MCNPX format]
     \return number of tallies split
@@ -900,9 +897,9 @@ setAngle(Simulation& System,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setAngle");
 
-  Simulation::TallyTYPE& tmap=System.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=System.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -919,11 +916,11 @@ setAngle(Simulation& System,const int tNumber,
 }
 
 int
-setFormat(Simulation& System,const int tNumber,
+setFormat(SimMCNP& System,const int tNumber,
           const std::string& fPart)
   /*!
     Set the format of a tally.
-    \param System :: Simulation
+    \param System :: SimMCNP
     \param tNumber :: tally nubmer [-ve for type / 0 for all]
     \param fPart :: format string [MCNP format]
     \return number of tallies split
@@ -931,9 +928,9 @@ setFormat(Simulation& System,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setFormat");
   
-  Simulation::TallyTYPE& tmap=System.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=System.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -948,11 +945,11 @@ setFormat(Simulation& System,const int tNumber,
 }
 
 void
-mergeTally(Simulation& Sim,const int aNumber,
+mergeTally(SimMCNP& Sim,const int aNumber,
            const int bNumber)
   /*!
     Merge the tallys together into one [if makes sence]
-    \param Sim :: Simulation
+    \param Sim :: SimMCNP
     \param aNumber :: tally nubmer 
     \param bNumber :: tally nubmer [-ve for type / 0 for all]
     \param  :: format string [MCNP format]
@@ -960,16 +957,16 @@ mergeTally(Simulation& Sim,const int aNumber,
 {
   ELog::RegMethod RegA("TallyCreate","mergeTally");  
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
 
   // First tally needs to be explicit
-  Simulation::TallyTYPE::iterator ac=tmap.find(aNumber);
+  SimMCNP::TallyTYPE::iterator ac=tmap.find(aNumber);
   if (ac==tmap.end())
     throw ColErr::InContainerError<int>(aNumber,"tally not present");
 
   std::set<int> removalSet;
   const int tType(aNumber % 10);
-  Simulation::TallyTYPE::iterator bc;
+  SimMCNP::TallyTYPE::iterator bc;
   for(bc=tmap.begin();bc!=tmap.end();bc++)
     {
       const int tNum(bc->first);
@@ -985,7 +982,7 @@ mergeTally(Simulation& Sim,const int aNumber,
 
   for(const int Item : removalSet)
     {
-      Simulation::TallyTYPE::iterator ac=
+      SimMCNP::TallyTYPE::iterator ac=
         tmap.find(Item);
       tmap.erase(ac);
     }
@@ -995,11 +992,11 @@ mergeTally(Simulation& Sim,const int aNumber,
   
   
 int
-setSDField(Simulation& Sim,const int tNumber,
+setSDField(SimMCNP& Sim,const int tNumber,
           const std::string& fPart)
   /*!
     Set the format of a tally.
-    \param Sim :: Simulation
+    \param Sim :: SimMCNP
     \param tNumber :: tally nubmer [-ve for type / 0 for all]
     \param fPart :: format string [MCNP format]
     \return number of tallies split
@@ -1007,9 +1004,9 @@ setSDField(Simulation& Sim,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setSDField");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -1025,7 +1022,7 @@ setSDField(Simulation& Sim,const int tNumber,
 
 
 int
-setParticleType(Simulation& Sim,const int tNumber,
+setParticleType(SimMCNP& Sim,const int tNumber,
                 const std::string& nPart) 
   /*!
     Get the last tally point based on the tallynumber
@@ -1038,9 +1035,9 @@ setParticleType(Simulation& Sim,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setParticleType");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -1057,7 +1054,7 @@ setParticleType(Simulation& Sim,const int tNumber,
 }
 
 int
-changeParticleType(Simulation& Sim,const int tNumber,
+changeParticleType(SimMCNP& Sim,const int tNumber,
 		   const std::string& oPart,
 		   const std::string& nPart) 
   /*!
@@ -1072,9 +1069,9 @@ changeParticleType(Simulation& Sim,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","changeParticleType");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  Simulation::TallyTYPE::iterator mc;
+  SimMCNP::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
@@ -1094,18 +1091,18 @@ changeParticleType(Simulation& Sim,const int tNumber,
 }
 
 void
-addPointPD(Simulation& ASim)
+addPointPD(SimMCNP& ASim)
   /*!
     Add point detector PD option to the tally
     Assumed that calcAllVertex has been run on ASim
-    \param ASim :: Simulation value
+    \param ASim :: SimMCNP value
   */
 {
   ELog::RegMethod RegA("TallyCreate","addPointPD");
 
 
-  const Simulation::TallyTYPE& tmap=ASim.getTallyMap();
-  Simulation::TallyTYPE::const_iterator mc;
+  const SimMCNP::TallyTYPE& tmap=ASim.getTallyMap();
+  SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       const pointTally* PTptr=
@@ -1116,7 +1113,8 @@ addPointPD(Simulation& ASim)
 	  ModelSupport::pointDetOpt 
 	    PD(MR.reverseRotate(PTptr->getCentre()));
 	  PD.createObjAct(ASim);
-	  PD.addTallyOpt(PTptr->getKey(),ASim);
+	  PD.addTallyOpt(PTptr->getKey(),ASim,
+			 ASim.getPC());
 	}
     }
   
@@ -1124,17 +1122,17 @@ addPointPD(Simulation& ASim)
 }
 
 int 
-getLastTallyNumber(const Simulation& ASim,const int type)
+getLastTallyNumber(const SimMCNP& ASim,const int type)
   /*!
     Get the last tally nubmer
-    \param ASim :: Simulation
+    \param ASim :: SimMCNP
     \param type :: tally type [0 for any]
     \return tally number for last assigned tally
   */
 {
-  const Simulation::TallyTYPE& tmap=ASim.getTallyMap();
+  const SimMCNP::TallyTYPE& tmap=ASim.getTallyMap();
   int outN(0);
-  Simulation::TallyTYPE::const_iterator mc;
+  SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (mc->first>outN && 

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/NNBAR.cxx
+ * File:   nnBar/NNBAR.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -244,8 +244,8 @@ NNBAR::buildHut(Simulation& System,
   ShieldA->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setFaces(Cave->getKey("Mid").getSignedFullRule(-1),
-                    Cave->getKey("Inner").getSignedFullRule(1));
+  CaveCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
+                    Cave->getKey("Inner").getFullRule(1));
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
 
   return;
@@ -302,7 +302,7 @@ NNBAR::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*nnbarAxis,Control,GItem,1);

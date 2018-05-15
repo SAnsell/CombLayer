@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/ZoomMonitor.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -75,9 +74,8 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedComp.h"
+#include "FixedOffset.h" 
 #include "ContainedComp.h"
 #include "ZoomMonitor.h"
 
@@ -85,7 +83,7 @@ namespace zoomSystem
 {
 
 ZoomMonitor::ZoomMonitor(const std::string& Key) : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
   monIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(monIndex+1)
   /*!
@@ -93,6 +91,40 @@ ZoomMonitor::ZoomMonitor(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+ZoomMonitor::ZoomMonitor(const ZoomMonitor& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  monIndex(A.monIndex),cellIndex(A.cellIndex),viewThick(A.viewThick),
+  wallThick(A.wallThick),length(A.length),radius(A.radius),
+  mat(A.mat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: ZoomMonitor to copy
+  */
+{}
+
+ZoomMonitor&
+ZoomMonitor::operator=(const ZoomMonitor& A)
+  /*!
+    Assignment operator
+    \param A :: ZoomMonitor to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      viewThick=A.viewThick;
+      wallThick=A.wallThick;
+      length=A.length;
+      radius=A.radius;
+      mat=A.mat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 ZoomMonitor::~ZoomMonitor() 
   /*!
@@ -110,13 +142,8 @@ ZoomMonitor::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ZoomMonitor","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-
+  FixedOffset::populate(Control);
+  
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Depth");
   viewThick=Control.EvalVar<double>(keyName+"ViewThick");
@@ -135,6 +162,20 @@ ZoomMonitor::createLinks()
     It must follow the beamline, but exit at the plane
   */
 {
+  FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(monIndex+11));
+  FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(monIndex+12));
+
+  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
+  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
+  FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
+  FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
+
+  FixedComp::setLinkSurf(2,SMap.realSurf(monIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(monIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(monIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(monIndex+17));
   return;
 }
 
@@ -148,10 +189,10 @@ ZoomMonitor::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("ZoomMonitor","createUnitVector");
-  
+
   FixedComp::createUnitVector(FC,linkIndex);
-  FixedComp::applyShift(xStep,yStep,zStep);
-  FixedComp::applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
+
   return;
 }
 

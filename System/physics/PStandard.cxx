@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physics/PStandard.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "mathSupport.h"
+#include "writeSupport.h"
 #include "PhysCard.h"
 #include "PStandard.h"
 
@@ -175,7 +175,7 @@ PStandard::setValue(const size_t ID,const double value)
 
 void
 PStandard::setValues(const size_t NVal,const double A,const double B,
-		   const double C,const double D,const double E)
+		     const double C,const double D,const double E)
   /*!
     Set the values
     \param NVal :: Number of values

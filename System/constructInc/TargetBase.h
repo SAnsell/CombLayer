@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/TargetBase.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,14 +43,14 @@ namespace constructSystem
 
 class TargetBase :
   public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  protected:
 
   std::shared_ptr<ts1System::BeamWindow> BWPtr;    ///< Beam window object
   std::shared_ptr<ts1System::ProtonVoid> PLine;    ///< Proton line  
 
-  virtual void createBeamWindow(Simulation&) =0;
+  virtual void createBeamWindow(Simulation&,const long int);
   
  public:
 
@@ -73,6 +73,7 @@ class TargetBase :
   virtual int getMainBody() const  { return 0; }
   /// Ta cell body
   virtual int getSkinBody() const { return 0; }
+
 
   /// Proton line    
   std::shared_ptr<ts1System::ProtonVoid> getProton() const { return PLine; }

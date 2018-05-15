@@ -3,7 +3,7 @@
  
  * File:   lensModel/LensTally.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "Qhull.h"
 #include "Source.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
@@ -130,7 +131,7 @@ addPointTally(Simulation&,
 
 
 int
-addSurfTally(Simulation& System,
+addSurfTally(SimMCNP& System,
 	     const lensSystem::FlightCluster& FC,
 	     const size_t FN,const double Dist)
   /*!
@@ -147,7 +148,7 @@ addSurfTally(Simulation& System,
    
   const attachSystem::FixedComp& FL=FC.getLine(FN);
   
-  const Geometry::Vec3D& Y=FL.getLinkAxis(1);
+  const Geometry::Vec3D& Y=FL.getLinkAxis(2);
   const Geometry::Vec3D& Org=FL.getCentre();
   
   int TNum=tallySystem::getLastTallyNumber(System,1);
@@ -161,7 +162,7 @@ addSurfTally(Simulation& System,
   Pt.setValues(10.0,1.0,10.0,0);
   Pt.createAll(System,Org+Y*Dist,FL);
   
-  tallySystem::addF1Tally(System,TNum,Pt.getLinkSurf(0));
+  tallySystem::addF1Tally(System,TNum,Pt.getLinkSurf(1));
   return TNum;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   inputInc/inputParam.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,11 @@ class inputParam
   T getValueError(const std::string&,const size_t,const size_t,
 		  const std::string&) const;
 
+  std::map<std::string,std::vector<std::string>>
+    getMapItems(const std::string&) const;
+
+  std::vector<std::string>
+    getAllItems(const std::string&) const;
 
   const std::vector<std::string>&
     getObjectItems(const std::string&,const size_t) const;

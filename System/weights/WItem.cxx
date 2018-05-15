@@ -3,7 +3,7 @@
  
  * File:   weights/WItem.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,11 +42,10 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
-#include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -226,7 +225,7 @@ WItem::rescale(const double Tscale,const double SF)
 	      std::bind2nd(std::divides<double>(),SF));
   return;
 }
-
+  
 void
 WItem::rescale(const int cA,const int cB,const double SF)
   /*!
@@ -245,6 +244,19 @@ WItem::rescale(const int cA,const int cB,const double SF)
   return;
 }
 
+bool
+WItem::isNegative() const
+  /*!
+    Return true is V are negative
+    \return 1 if negative
+   */
+{
+  for(const double& V : Val)
+    if (V<-Geometry::zeroTol)
+      return 1;
+  return 0;
+}
+  
 void
 WItem::write(std::ostream& OX) const
   /*!

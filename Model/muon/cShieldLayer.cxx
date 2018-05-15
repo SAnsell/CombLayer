@@ -3,7 +3,7 @@
  
  * File:   muon/cShieldLayer.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ cShieldLayer::createSurfaces()
 
   if (nLay>0)
     {
-      const double layThick(depth/nLay);
+      const double layThick(depth/static_cast<double>(nLay));
       double yPos(-depth/2.0);
       int plateIndex(csLayerIndex+100);
       for(size_t i=0;i<nLay-1;i++)

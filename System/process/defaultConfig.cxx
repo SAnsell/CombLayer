@@ -126,7 +126,6 @@ defaultConfig::setVar(const std::string& K,const double V)
   return;
 }
 
-
 void
 defaultConfig::setVar(const std::string& K,const std::string& V) 
   /*!

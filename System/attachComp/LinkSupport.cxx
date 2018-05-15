@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,8 @@ getLinkIndex(const std::string& linkName)
 int
 getAttachPoint(const std::string& FCName,
 	       const std::string& linkName,
-	       Geometry::Vec3D& Pt,Geometry::Vec3D& YAxis)
+	       Geometry::Vec3D& Pt,
+	       Geometry::Vec3D& YAxis)
   /*!
     Takes the linkName and the fixed object and converts
     this into the direction and point.
@@ -122,28 +123,13 @@ getAttachPoint(const std::string& FCName,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const FixedComp* FC=
+  const attachSystem::FixedComp* FC=
     OR.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
   const long int index=getLinkIndex(linkName);
-
-  // All these calls throw on error
-  if (index<0)
-    {
-      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
-    }
-  else if (index>0)
-    {
-      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
-    }
-  else
-    {
-      Pt=FC->getCentre();
-      YAxis=-FC->getY();
-    }
+  Pt=FC->getLinkPt(index);
+  YAxis=FC->getLinkAxis(index);
   return 1;
 }
 
@@ -178,8 +164,8 @@ getAttachPointWithXYZ(const std::string& FCName,
 
   const long int index=getLinkIndex(linkName);
   // All these calls throw on error
-  Pt=FC->getSignedLinkPt(index);
-  YAxis=FC->getSignedLinkAxis(index);
+  Pt=FC->getLinkPt(index);
+  YAxis=FC->getLinkAxis(index);
   ZAxis=FC->getZ();
 
   FixedComp::computeZOffPlane(XAxis,YAxis,ZAxis);
@@ -226,4 +212,35 @@ getPoint(const std::vector<std::string>& StrItem,
   return 0;
 }
 
+void
+calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
+		 const HeadRule& boundary,
+		 const Geometry::Vec3D& Origin,
+		 const Geometry::Vec3D& Axis)
+  /*!
+    Calculates the intersecting surface and point 
+    of a line with a headRule. The surfaces is the out
+    going surface and the point is the intersection point
+    along with the axis.  
+    \param FC :: FixedComp to add link point to
+    \param linkIndex :: link Index    
+    \param boundary :: link Index
+    \param Origin :: Origin of line
+    \param Axis :: Axis of line
+   */
+{
+  ELog::RegMethod RegA("LinkSupport[F]","calcBoundaryLink");
+
+  double D;
+  const int SN=boundary.trackSurf(Origin,Axis,D);
+  if (SN)
+    {
+      FC.setLinkSurf(linkIndex,SN);
+      FC.setConnect(linkIndex,Origin+Axis*D,Axis);
+    }
+  return;
+}
+
+
+  
 }  // NAMESPACE attachSystem

@@ -56,7 +56,7 @@
 
 namespace ModelSupport
 {
-
+    
 template<>
 int
 EvalMat(const FuncDataBase& Control,const std::string& Key)
@@ -182,6 +182,8 @@ EvalDefMat(const FuncDataBase& Control,
   return (Control.hasVariable(KeyB)) ? 
     EvalMat<T>(Control,KeyB) : defVal;
 }
+
+
   
 int
 EvalMatName(const std::string& matName)

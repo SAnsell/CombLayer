@@ -3,7 +3,7 @@
  
  * File:   weightsInc/ImportControl.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,27 +24,37 @@
 
 ///\file 
 
+class Simulation;
 namespace mainSystem
 {
   class inputParam;
 }
 
-class Simulation;
+namespace physicsSystem
+{
+  class PhysicsCards;
+}
 
 namespace WeightSystem
-{ 
-  void zeroImp(Simulation&,const int,const int);
-  void simulationImp(Simulation&,const mainSystem::inputParam&);
-  void FCL(Simulation&,const mainSystem::inputParam&);
-  void IMP(Simulation&,const mainSystem::inputParam&);
-  void ExtField(Simulation&,const mainSystem::inputParam&);
-  void EnergyCellCut(Simulation&,const mainSystem::inputParam&);
-  void DXT(Simulation&,const mainSystem::inputParam&);
-  void PWT(Simulation&,const mainSystem::inputParam&);
-  void SBias(Simulation&,const mainSystem::inputParam&);
-  void removePhysImp(Simulation&,const std::string&);
-  void setWWGImp(Simulation&);
-  void setWCellImp(Simulation&);
+{
+  void setWImp(physicsSystem::PhysicsCards&,const std::string&);
+  void clearWImp(physicsSystem::PhysicsCards&,const std::string&);
+  void removePhysImp(physicsSystem::PhysicsCards&,const std::string&);
+  void zeroImp(physicsSystem::PhysicsCards&,Simulation&,const int,const int);
+  void simulationImp(physicsSystem::PhysicsCards&,
+		     Simulation&,const mainSystem::inputParam&);
+  void EnergyCellCut(physicsSystem::PhysicsCards&,const Simulation&,
+		     const mainSystem::inputParam&);
+  void ExtField(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
+  void FCL(physicsSystem::PhysicsCards&,const Simulation&,
+	   const mainSystem::inputParam&);
+  
+  void IMP(physicsSystem::PhysicsCards&,Simulation&,
+	   const mainSystem::inputParam&);
+  void SBias(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
+
+  void DXT(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
+  void PWT(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
 
 }
 

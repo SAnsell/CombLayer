@@ -3,7 +3,7 @@
  
  * File:   include/Simulation.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #ifndef Simulation_h
 #define Simulation_h
 
+class HeadRule;
+
 namespace Geometry
 {
   class Transform;
@@ -37,13 +39,6 @@ namespace Surface
 {
   class Surface;
 }
-
-namespace physicsSystem
-{
-  class PhysicsCards;
-}
-
-class RemoveCell;
 
 namespace ModelSupport
 {
@@ -85,53 +80,37 @@ class Simulation
 
   // UGLY
   typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
-  typedef std::map<int,tallySystem::Tally*> TallyTYPE; ///< Tally type
 
  protected:
 
-  int mcnpVersion;                      ///< version of mcnp
   std::string inputFile;                ///< Input file
   std::string cmdLine;                  ///< Command line : historical recall 
-  int CNum;                             ///< Number of complementary components
+  
   FuncDataBase DB;                      ///< DataBase of variables
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
 
   TransTYPE TList;                      ///< Transforms List (key=Transform)
 
+  size_t cellDNF;                       ///< max size to convert into DNF
+  size_t cellCNF;                       ///< max size to convert into CNF
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
 
-  TallyTYPE TItem;                        ///< Tally Items
-  physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
-  //  WeightSystem::WeightControl* WCtrlPtr;  ///< Weight control pointer
+  std::string sourceName;               ///< Source name
   
   // METHODS:
 
   void deleteObjects();
-  void deleteTally();
   
-  int readTransform(std::istream&);    
-  int readTally(std::istream&);        
-
-  // ALL THE sub-write stuff
-  void writeCells(std::ostream&) const;
-  void writeSurfaces(std::ostream&) const;
-  void writeMaterial(std::ostream&) const;
-  void writeWeights(std::ostream&) const;
-  void writeTransform(std::ostream&) const;
-  void writeTally(std::ostream&) const;
-  void writePhysics(std::ostream&) const;
-  void writeVariables(std::ostream&,const char ='c') const;
-
-  // The Cinder Write stuff
-  void writeCinderMat() const;
-  void writeHTape() const;
 
   int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
   int removeComplement(MonteCarlo::Qhull&) const;
   void addObjSurfMap(MonteCarlo::Qhull*);
+
+  std::map<int,int> calcCellRenumber(const std::vector<int>&,
+				     const std::vector<int>&) const;
 
  public:
 
@@ -142,25 +121,26 @@ class Simulation
   
   /// set the command line
   void setCmdLine(const std::string& S) { cmdLine=S; }
-  void resetAll();
-  void readMaster(const std::string&);   
-  int applyTransforms();  
-  void populateWCells();
+  virtual void resetAll();
+  int applyTransforms();
+  
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
-
-  /// is the system MCNP6
-  bool isMCNP6() const { return mcnpVersion!=10; }
-  
+  /// set cell DNF
+  void setCellDNF(const size_t C) { cellDNF=C; }
+  /// set cell CNF
+  void setCellCNF(const size_t C) { cellCNF=C; }
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
 			       MonteCarlo::Object*) const;
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+    findCellPair(const Geometry::Vec3D&,const int) const;
+  
   int findCellNumber(const Geometry::Vec3D&,const int) const;  
 
   int existCell(const int) const;              ///< check if cell exist
   int getCellMaterial(const int) const;        ///< return cell material
-  int bindCell(const int,const int);
   int setMaterialDensity(OTYPE&);
   int setMaterialDensity(const int);
 
@@ -168,14 +148,12 @@ class Simulation
   FuncDataBase& getDataBase() { return DB; }  
   /// Gets the data base
   const FuncDataBase& getDataBase() const { return DB; }
-  /// Get PhysicsCards
-  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
 
-  
+  /// set Source name
+  void setSourceName(const std::string&);
+
   const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells
-  Geometry::Transform* createSourceTransform();
-  
 
   int removeComplements(); 
 
@@ -186,11 +164,15 @@ class Simulation
   void calcAllVertex();
   
   void masterRotation();
+  void masterSourceRotation();
 
+  int getNextCell(int) const;
   // ADD Objects
   int addCell(const MonteCarlo::Qhull&);         
   int addCell(const int,const MonteCarlo::Qhull&);         
   int addCell(const int,const int,const std::string&);
+  int addCell(const int,const int,const double,const std::string&);
+  int addCell(const int,const int,const double,const HeadRule&);
 
   // LIST Stuff
 
@@ -208,14 +190,12 @@ class Simulation
   std::vector<int> getCellWithMaterial(const int) const;
   std::vector<int> getCellWithZaid(const size_t) const;
 
-  void processCellsImp();           
-  int makeVirtual(const int);
+  std::vector<std::pair<int,int>> getCellImp() const;            
 
   int removeDeadSurfaces(const int); 
-  int removeCells(const int,const int); 
-  void removeCell(const int);
+  virtual void removeCell(const int);
   int removeAllSurface(const int);
-  int substituteAllSurface(const int,const int);
+
   void voidObject(const std::string&);
   void updateSurface(const int,const std::string&);
 
@@ -226,31 +206,25 @@ class Simulation
 
   // Tally processing
 
-  void removeAllTally();
-  int removeTally(const int);
-
-  int addTally(const tallySystem::Tally&);
-  tallySystem::Tally* getTally(const int) const;
-  tallySystem::sswTally* getSSWTally() const;
-  /// Access tally items
-  TallyTYPE& getTallyMap() { return TItem; }
-  /// Access constant
-  const TallyTYPE& getTallyMap() const { return TItem; }
-  void setForCinder();
-  int nextTallyNum(int) const;
-
-  void setEnergy(const double);
+  virtual void setEnergy(const double);
   void setENDF7();
-  /// set MCNPversion
-  void setMCNPversion(const int);
   
   void renumberAll();
-  void renumberCells(const std::vector<int>&,const std::vector<int>&);
-  void renumberSurfaces(const std::vector<int>&,const std::vector<int>&);
-  void prepareWrite();
-  void writeCinder() const;          
+  void renumberSurfaces(const std::vector<int>&,
+			const std::vector<int>&);
+  int splitObject(const int,const int);
+  void minimizeObject(const int);
+  void makeObjectsDNForCNF();
+  virtual void prepareWrite();
 
-  virtual void write(const std::string&) const;  
+  virtual void substituteAllSurface(const int,const int);
+  virtual std::map<int,int> renumberCells(const std::vector<int>&,
+					  const std::vector<int>&);
+  /// no-op call
+  virtual void writeCinder() const {}
+
+  void writeVariables(std::ostream&,const char ='c') const;
+  virtual void write(const std::string&) const =0;  
     
   // Debug stuff
   

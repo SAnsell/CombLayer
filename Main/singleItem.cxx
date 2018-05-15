@@ -73,8 +73,6 @@
 #include "variableSetup.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
 #include "World.h"
 #include "makeSingleItem.h"
 

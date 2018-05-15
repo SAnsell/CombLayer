@@ -46,7 +46,7 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class ChopperUnit;
+  class SingleChopper;
   class Motor;
   class TwinChopper;
   class HoleShape;
@@ -100,7 +100,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusCC;
 
   /// First single chopper pair
-  std::shared_ptr<constructSystem::ChopperUnit> TChopA;
+  std::shared_ptr<constructSystem::SingleChopper> TChopA;
   /// Top twin disk
   std::shared_ptr<constructSystem::DiskChopper> ADiskOne;
   /// Lower twin disk
@@ -119,7 +119,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendCD;
 
   /// Second thermal chopper [single]
-  std::shared_ptr<constructSystem::ChopperUnit> TChopB;
+  std::shared_ptr<constructSystem::SingleChopper> TChopB;
   /// Second Thermal disk
   std::shared_ptr<constructSystem::DiskChopper> BDisk;
 
@@ -129,7 +129,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusTE;
 
   /// Thermal T0 Chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
   /// Thermal T0 Chopper blades
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
   /// Thermal T0 Chopper motor

@@ -3,7 +3,7 @@
  
  * File:   physicsInc/ModeCard.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ class ModeCard
 
   void clear();
 
+
   /// Has been set
   bool isSet() const { return !particles.empty(); }
   /// Get particle count
@@ -64,7 +65,7 @@ class ModeCard
   int removeParticle(const std::string&);
 
   void addElm(const std::string&);
-
+  std::string getFirstElm() const { return particles.front(); }
   void write(std::ostream&) const;  
 };
 

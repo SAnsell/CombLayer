@@ -232,10 +232,10 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   FixedComp::setLinkSurf(8, SMap.realSurf(divIndex+132));  
 
   std::vector<int> surfN;
-  surfN.push_back(leftWing.getSignedLinkSurf(1));
-  surfN.push_back(leftWing.getSignedLinkSurf(3));
-  surfN.push_back(rightWing.getSignedLinkSurf(1));
-  surfN.push_back(rightWing.getSignedLinkSurf(3));
+  surfN.push_back(leftWing.getLinkSurf(1));
+  surfN.push_back(leftWing.getLinkSurf(3));
+  surfN.push_back(rightWing.getLinkSurf(1));
+  surfN.push_back(rightWing.getLinkSurf(3));
 
   // Now deterermine point which are divider points
   const Geometry::Plane* midPlane=
@@ -268,14 +268,15 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   std::string Out;
   HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,divIndex,"(-123 : 124) -131 -132 ");
+
+  Out=ModelSupport::getComposite(SMap,divIndex," ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
   HR.procString(Out);
   HR.makeComplement();
   FixedComp::setLinkSurf(10,HR);
   FixedComp::setBridgeSurf(10,-SMap.realSurf(divIndex+100));
 
   // +ve Y
-  Out=ModelSupport::getComposite(SMap,divIndex,"(-103 : 104)  -111 -112 ");
+  Out=ModelSupport::getComposite(SMap,divIndex," ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
   HR.procString(Out);
   HR.makeComplement();  
   FixedComp::setLinkSurf(11,HR);
@@ -425,8 +426,8 @@ MidWaterDivider::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=leftWing.getLinkComplement(4);
-  const std::string Top=leftWing.getLinkComplement(5);
+  const std::string Base=leftWing.getLinkString(-5);
+  const std::string Top=leftWing.getLinkString(-6);
   
   HeadRule LCut(leftWing.getLayerString(cutLayer,7));
   HeadRule RCut(rightWing.getLayerString(cutLayer,7));
@@ -548,9 +549,9 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   const size_t rWing=rightWing.getNLayers();
 
   const std::string LBase=
-    leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
+    leftWing.getLinkString(-5)+leftWing.getLinkString(-6);
   const std::string RBase=
-    rightWing.getLinkComplement(4)+rightWing.getLinkComplement(5);
+    rightWing.getLinkString(-5)+rightWing.getLinkString(-6);
 
   HeadRule cutRule;
   std::string Out;

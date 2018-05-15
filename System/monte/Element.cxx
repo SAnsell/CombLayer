@@ -3,7 +3,7 @@
  
  * File:   monte/Element.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -220,9 +220,9 @@ Element::elm(const std::string& Astr) const
   for(i=0;i<Astr.length() && !isalpha(Astr[i]);i++) ;
   if (i!=Astr.length())
     {
-      Ts=static_cast<char>(toupper(Astr[i]));
+      Ts=static_cast<char>(std::toupper(Astr[i]));
       if ((i+1)!=Astr.length() && isalpha(Astr[i+1]))
-	Ts+=static_cast<char>(tolower(Astr[i+1]));
+	Ts+=static_cast<char>(std::tolower(Astr[i+1]));
       std::map<std::string,size_t>::const_iterator xv;
       xv=Nmap.find(Ts);
       if (xv!=Nmap.end())
@@ -318,22 +318,22 @@ Element::populate()
   */
 {
   std::string NameData[]= {
-    "H" , "He", "Li", "Be", "B" ,"C",
-    "N" ,"O" ,"F" ,"Ne", "Na", "Mg",
-    "Al", "Si", "P" ,"S" ,"Cl", "Ar",
-    "K" ,"Ca", "Sc", "Ti", "V" ,"Cr",
+    "H" , "He", "Li", "Be", "B" , "C",
+    "N" , "O" , "F" , "Ne", "Na", "Mg",
+    "Al", "Si", "P" , "S" , "Cl", "Ar",
+    "K" , "Ca", "Sc", "Ti", "V" , "Cr",
     "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
     "Ga", "Ge", "As", "Se", "Br", "Kr",
-    "Rb", "Sr", "Y" ,"Zr", "Nb", "Mo",
+    "Rb", "Sr", "Y" , "Zr", "Nb", "Mo",
     "Tc", "Ru", "Rh", "Pd", "Ag", "Cd",
-    "In", "Sn", "Sb", "Te", "I" ,"Xe",
+    "In", "Sn", "Sb", "Te", "I" , "Xe",
     "Cs", "Ba", "La", "Ce", "Pr", "Nd",
     "Pm", "Sm", "Eu", "Gd", "Tb", "Dy",
     "Ho", "Er", "Tm", "Yb", "Lu", "Hf",
-    "Ta", "W" ,"Re", "Os", "Ir", "Pt",
+    "Ta", "W" , "Re", "Os", "Ir", "Pt",
     "Au", "Hg", "Tl", "Pb", "Bi", "Po",
     "At", "Rn", "Fr", "Ra", "Ac", "Th",
-    "Pa", "U" ,"Np", "Pu", "Am", "Cm",
+    "Pa", "U" , "Np", "Pu", "Am", "Cm",
     "Bk", "Cf", "Es", "Fm", "Md", "No",
     "Lr", "Rf", "Ha", "Sg", "Bh", "Hs",
     "Mt" };

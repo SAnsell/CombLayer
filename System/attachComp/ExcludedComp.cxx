@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExcludedComp.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Line.h" 
 #include "Qhull.h"
 #include "varList.h"
@@ -72,8 +69,7 @@
 namespace attachSystem
 {
 
-ExcludedComp::ExcludedComp() :
-  boundary(0)
+ExcludedComp::ExcludedComp() 
   /*!
     Constructor 
   */
@@ -100,6 +96,7 @@ ExcludedComp::operator=(const ExcludedComp& A)
     {
       excludeCells=A.excludeCells;
       ExcludeObj=A.ExcludeObj;
+      boundary=A.boundary;
     }
   return *this;
 }
@@ -108,9 +105,7 @@ ExcludedComp::~ExcludedComp()
   /*!
     Deletion operator
   */
-{
-  clearRules();
-}
+{}
 
 void
 ExcludedComp::clearRules()
@@ -120,8 +115,7 @@ ExcludedComp::clearRules()
 {
   ELog::RegMethod RegA("ExludedComp","clearRules");
 
-  delete boundary;
-  boundary=0;
+  boundary.reset();
   return;
 }
 
@@ -136,7 +130,7 @@ ExcludedComp::getExcludeUnit() const
 {
   ELog::RegMethod RegA("ExcludedComp","getExcludeUnit");
 
-  return (boundary) ? boundary->display() : "";
+  return boundary.display();
 }
 
 std::string
@@ -150,13 +144,7 @@ ExcludedComp::getNotExcludeUnit() const
 {
   ELog::RegMethod RegA("ExcludedComp","getNotExcludeUnit");
 
-  if (boundary)
-    {
-      MonteCarlo::Algebra AX;
-      AX.setFunctionObjStr("#("+boundary->display()+")");
-      return AX.writeMCNPX();
-    }
-  return "";
+  return boundary.complement().display();
 }
 
 
@@ -171,8 +159,7 @@ ExcludedComp::isExcludeUnitValid(const Geometry::Vec3D& V) const
 {
   ELog::RegMethod RegA("ExcludedComp","isExcludeUnitValid"); 
 
-  if (!boundary) return 1;
-  return (boundary->isValid(V)) ? 0 : 1;
+  return boundary.isValid(V);
 }
 
 
@@ -211,7 +198,9 @@ ExcludedComp::addExcludeSurf(const int SN)
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeSurf(int)");
-  addIntersection(SN,0,boundary);
+
+  boundary.addIntersection(SN);
+
   return;
 }
 
@@ -223,21 +212,18 @@ ExcludedComp::addExcludeSurf(const std::string& SList)
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeSurf(std::string)");
-  MonteCarlo::Object Obj(1,0,0.0,SList);
-  if (Obj.topRule())
-    addUnion(Obj,boundary);
 
+  boundary.addUnion(SList);
   return;
 }
 
 
 void
 ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
-			    const int dirFlag,const size_t LIndex)
+			    const long int LIndex)
 /*!
   Add a boundary surface
   \param FC :: Fixed object to use
-  \param dirFlag :: Direction flag
   \param LIndex :: Link surface index 
 */
 
@@ -245,8 +231,7 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("RefBox","addExcludeSurf(FC,Index)");
 
   // Surfaces on links point outwards (hence swap of sign)
-  const int surfSwap((dirFlag<0) ? 1 : -1);
-  addExcludeSurf(FC.getLinkSurf(LIndex)*surfSwap);
+  boundary.addUnion(FC.getLinkSurf(LIndex));
   
   return;
 }
@@ -254,16 +239,14 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
 
 void
 ExcludedComp::addExcludeSurf(const std::string& FCName,
-			     const int dirFlag,
-			     const size_t LIndex)
+			     const long int LIndex)
 /*!
   Add a boundary surface
   \param FCName :: Fixed object to use
-  \param dirFlag :: Direction flag
   \param LIndex :: Link surface index 
 */
 {
-  ELog::RegMethod RegA("RefBox","addExcludeSurf(string,Index)");
+  ELog::RegMethod RegA("ExcludedComp","addExcludeSurf(string,Index)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -271,7 +254,7 @@ ExcludedComp::addExcludeSurf(const std::string& FCName,
   const attachSystem::FixedComp* FCptr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
 
-  addExcludeSurf(*FCptr,dirFlag,LIndex);
+  addExcludeSurf(*FCptr,LIndex);
   return;
 }
 
@@ -282,15 +265,11 @@ ExcludedComp::addExcludeObj(const ContainedComp& CC)
     \param CC ::  Contained component to exclude
   */
 {
-  ELog::RegMethod RegA("ExcludeComp","addExcludeObj(CC)");
+  ELog::RegMethod RegA("ExcludedComp","addExcludeObj(CC)");
   
   const std::string OutStr=CC.getCompExclude();
   if (!OutStr.empty())
-    {
-      MonteCarlo::Object Obj(1,0,0.0,OutStr);
-      if (Obj.topRule())
-	addUnion(Obj,boundary);
-    }
+    boundary.addUnion(OutStr);
   return;
 }
 
@@ -301,26 +280,19 @@ ExcludedComp::addExcludeObj(const std::string& ObjName)
     \param ObjName ::  Object Name [to use outer cell
   */
 {
-  ELog::RegMethod RegA("ExcludeComp","addExcludeObj(str)");
+  ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
   const ContainedComp* CCPtr=
-    OR.getObject<ContainedComp>(ObjName);
+    OR.getObjectThrow<ContainedComp>(ObjName,"CC-Object Not found");
 
-  if (CCPtr)
-    {
-      const std::string OutStr=CCPtr->getCompExclude();
-      if (!OutStr.empty())
-	{
-	  MonteCarlo::Object Obj(1,0,0.0,OutStr);
-	  if (Obj.topRule())
-	    addUnion(Obj,boundary);
-	}
-      return;
-    }
   
+  const std::string OutStr=CCPtr->getCompExclude();
+  if (!OutStr.empty())
+    boundary.addUnion(OutStr);
+
   return;
 }
 
@@ -333,7 +305,7 @@ ExcludedComp::addExcludeObj(const std::string& objName,
     \param grpName ::  Group in CG
   */
 {
-  ELog::RegMethod RegA("ExcludeComp","addExcludeObj(str,str)");
+  ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str,str)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -344,9 +316,7 @@ ExcludedComp::addExcludeObj(const std::string& objName,
   if (CCPtr)
     {
       const std::string OutStr=CCPtr->getCompExclude(grpName);
-      MonteCarlo::Object Obj(1,0,0.0,OutStr);
-      if (Obj.topRule())
-	addUnion(Obj,boundary);
+      boundary.addUnion(OutStr);
     }
   return;
 }
@@ -360,12 +330,10 @@ ExcludedComp::addExcludeObj(const std::string& grpName,
     \param CG :: ContainGroup 
   */
 {
-  ELog::RegMethod RegA("ExcludeComp","addExcludeObj(str,CG)");
+  ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str,CG)");
   
   const std::string OutStr=CG.getCompExclude(grpName);
-  MonteCarlo::Object Obj(1,0,0.0,OutStr);
-  if (Obj.topRule())
-    addUnion(Obj,boundary);
+  boundary.addUnion(OutStr);
 
   return;
 }
@@ -379,7 +347,7 @@ ExcludedComp::applyBoundary(Simulation& System)
 {
   ELog::RegMethod RegA("ExcludedComp","applyBoundary");
 
-  if (!boundary) return;
+  if (!boundary.hasRule()) return;
 
   std::vector<int>::const_iterator vc;
   for(vc=excludeCells.begin();vc!=excludeCells.end();vc++)

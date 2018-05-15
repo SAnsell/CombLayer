@@ -3,7 +3,7 @@
  
  * File:   process/surfDivide.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <functional>
 #include <boost/format.hpp>
 
 #include "Exception.h"

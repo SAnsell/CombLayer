@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/CellMap.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,10 @@ class CellMap  : public BaseMap
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
 
+  HeadRule getCellsHR(const Simulation&,const std::string&) const;
+  const HeadRule& getCellHR(const Simulation&,const std::string&,
+		     const size_t =0) const;
+
   /// remmove a cell number [index is offset]
   std::string removeCellNumber(const int CN,const size_t Index =0)
     { return BaseMap::removeItemNumber(CN,Index); }
@@ -90,7 +94,10 @@ class CellMap  : public BaseMap
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
 
-
+  void insertComponent(Simulation&,const std::string&,
+		       const CellMap&,const std::string&) const;
+  void insertComponent(Simulation&,const std::string&,const size_t,
+		       const CellMap&,const std::string&,const size_t) const;
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,
@@ -104,12 +111,14 @@ class CellMap  : public BaseMap
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
 
+  void makeCell(const std::string&,
+		    Simulation&,const int,const int,const double,
+		    const std::string&);
+  void deleteCell(Simulation&,const std::string&,const size_t =0);
+
+  std::pair<int,double>
+    deleteCellWithData(Simulation&,const std::string&,const size_t =0);
   
- void deleteCell(Simulation&,const std::string&,const size_t =0);
-
- std::pair<int,double>
-   deleteCellWithData(Simulation&,const std::string&,const size_t =0);
-
 };
 
 }

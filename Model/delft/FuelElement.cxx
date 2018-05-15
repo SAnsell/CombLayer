@@ -257,7 +257,6 @@ FuelElement::createUnitVector(const attachSystem::FixedComp& FC,
 			      const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
-    - Y Down the beamline
     \param FC :: Reactor Grid Unit
     \param OG :: Origin
   */
@@ -266,6 +265,12 @@ FuelElement::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp::createUnitVector(FC);
   Origin=OG;
+  if (Origin.abs()>1e4)
+    {
+      ELog::EM<<"Fuel: "<<keyName<<" "<<Origin<<ELog::endDiag;
+      ELog::EM<<"Fuel: "<<XIndex<<" "<<YIndex<<ELog::endDiag;
+      ELog::EM<<"Y "<<keyName<<" "<<Z<<ELog::endErr;
+    }
   return;
 }
 
@@ -289,7 +294,7 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG)
 			   Origin+X*width/2.0,X);
   const double tHeight(fuelHeight/2.0+cladHeight+topHeight);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
   ModelSupport::buildPlane(SMap,surfIndex+6,
    			   Origin+Z*tHeight,Z);
   // Width numbers:

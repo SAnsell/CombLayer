@@ -3,7 +3,7 @@
  
  * File:   weights/GridMesh.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,7 +186,7 @@ GridMesh::getCoordinate(const std::vector<double>& Vec,
          
   
   return Vec[I]+static_cast<double>(Index-offset)*
-    (Vec[I+1]-Vec[I])/NF[I];
+    (Vec[I+1]-Vec[I])/static_cast<double>(NF[I]);
 }
   
   

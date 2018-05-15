@@ -3,7 +3,7 @@
  
  * File:   essBuild/Curtain.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,15 +226,15 @@ Curtain::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   topFC.createUnitVector(FC,sideIndex);
-  topFC.setCentre(FC.getSignedLinkPt(topIndex));
+  topFC.setCentre(FC.getLinkPt(topIndex));
   midFC.createUnitVector(FC,sideIndex);
-  midFC.setCentre(FC.getSignedLinkPt(topIndex));
+  midFC.setCentre(FC.getLinkPt(topIndex));
   baseFC.createUnitVector(FC,sideIndex);
-  baseFC.setCentre(FC.getSignedLinkPt(topIndex));
+  baseFC.setCentre(FC.getLinkPt(topIndex));
   
-  //  Origin=FC.getSignedLinkPt(topIndex);
+  //  Origin=FC.getLinkPt(topIndex);
 
-  wallRadius=FC.getCentre().Distance(FC.getSignedLinkPt(sideIndex));
+  wallRadius=FC.getCentre().Distance(FC.getLinkPt(sideIndex));
   setDefault("Lower");
 
 
@@ -305,9 +305,9 @@ Curtain::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("Curtain","createObjects");
 
-  const std::string topSurf=FC.getSignedLinkString(topIndex);
-  const std::string topBase=FC.getSignedLinkString(-topIndex);
-  const std::string sideSurf=FC.getSignedLinkString(sideIndex);
+  const std::string topSurf=FC.getLinkString(topIndex);
+  const std::string topBase=FC.getLinkString(-topIndex);
+  const std::string sideSurf=FC.getLinkString(sideIndex);
   std::string Out;
   // Top section
   Out=ModelSupport::getComposite(SMap,curIndex," 7 -17 3 -4 15 -6 ");
@@ -402,7 +402,7 @@ Curtain::layerProcess(Simulation& System,
     }
   if (nBaseLayers>1)
     {
-      const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
+      const int topSurf=FC.getLinkSurf(topIndex);
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nBaseLayers;i++)
@@ -419,7 +419,7 @@ Curtain::layerProcess(Simulation& System,
       surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
                                SMap.realSurf(topSurf));
 
-      OutA=FC.getSignedLinkString(-topIndex);
+      OutA=FC.getLinkString(-topIndex);
       OutB=ModelSupport::getComposite(SMap,curIndex," 5 ");
       
       surroundRule.setInnerRule(OutB);
@@ -445,7 +445,7 @@ Curtain::createLinks()
 {
   ELog::RegMethod RegA("Curtain","createLinks");
 
-  attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
+  //  attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   // Lower first:

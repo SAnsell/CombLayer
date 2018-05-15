@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "Rules.h"
@@ -86,10 +87,11 @@ HeadRule::HeadRule(const std::string& RuleStr) :
   HeadNode(0)
   /*!
     Creates a new rule
+    \param RuleStr :: rule in MCNP format
   */
 {
   ELog::RegMethod RegA("HeadRule","HeadRule(string)");
-  if (!procString(RuleStr))
+  if (!RuleStr.empty() && !procString(RuleStr))
     throw ColErr::InvalidLine(RuleStr,"RuleStr",0);
 }
 
@@ -97,6 +99,7 @@ HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : 0)
   /*!
     Creates a new rule
+    \param RPtr :: Rule to clone as a top rule
   */
 {}
 
@@ -583,7 +586,7 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
-    \param S :: Exclude items
+    \param S :: Exclude items [unsigned]
     \return true/false 
   */
 {
@@ -613,7 +616,7 @@ HeadRule::isValid(const std::map<int,int>& M)const
 }
 
 bool
-HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S)const
+HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S) const
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
@@ -971,7 +974,7 @@ HeadRule::removeItems(const int SN)
 	      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
 	      if (SurX)
 		{
-		  if (SurX->getKeyN()==SN)
+		  if (SurX->getSignKeyN()==SN)
 		    {
 		      removeItem(tmpA);
 		      cnt++;
@@ -987,7 +990,7 @@ const SurfPoint*
 HeadRule::findSurf(const int SN) const
   /*!
     Find a surface
-    \param SN :: Surface number
+    \param SN :: Surface number [unsigned]
     \return 0 if no pointer / first point found
   */
 {
@@ -1094,7 +1097,7 @@ HeadRule::findNodes(const size_t NL) const
   /*!
     Return a head rule nodes at NL level
     \param NL :: Level
-    \return nodex
+    \return vector of nodes at level NL
   */
 {
   ELog::RegMethod RegA("HeadRule","findNodes");
@@ -1152,7 +1155,7 @@ std::vector<const Rule*>
 HeadRule::findTopNodes() const
   /*!
     Return a head rule nodes at first level
-    \return headnotes
+    \return head-nodes
   */
 {
   ELog::RegMethod RegA("HeadRule","findTopNodes");
@@ -1417,6 +1420,8 @@ HeadRule::makeComplement()
   if (!HeadNode) return;
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr("#( "+HeadNode->display()+") ");
+  //  AX.setFunctionObjStr(HeadNode->display());
+
   delete HeadNode;
   HeadNode=Rule::procString(AX.writeMCNPX());
   return;
@@ -1460,11 +1465,13 @@ HeadRule::displayFluka() const
   */
 {
   if (!HeadNode) return "";
-  
+
+  // NOTE if HEADNode union no-need fo router bracket
   // union test
-  return (HeadNode->type()== -1) ? 
-    "|"+HeadNode->displayFluka()+"|" :
-    " "+HeadNode->displayFluka()+" ";
+  return HeadNode->displayFluka();
+  // return (HeadNode->type()== -1) ? 
+  //   "("+HeadNode->displayFluka()+")" :
+  //   " "+HeadNode->displayFluka()+" ";
 }
 
 std::string 
@@ -1894,13 +1901,42 @@ HeadRule::procString(const std::string& Line)
 int
 HeadRule::trackSurf(const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& Unit,
+		    double& D,const std::set<int>& activeNull) const
+  /*!
+    Calculate a track of a line to a change in state surface
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \param D :: Distance travelled to surface
+    \param activeNull :: signed avoid surfaces
+    \return exit surface [signed??]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+
+  Geometry::Vec3D Pt(Org);
+  D=0.0;
+  double DD;
+  int SN=trackSurf(Pt,Unit,DD);
+  while (SN && activeNull.find(SN)!=activeNull.end())
+    {
+      Pt+=Unit*DD;
+      SN=trackSurf(Pt,Unit,DD);
+      D+=DD;
+    }
+  D+=DD;
+  return SN;
+}
+
+int
+HeadRule::trackSurf(const Geometry::Vec3D& Org,
+		    const Geometry::Vec3D& Unit,
 		    double& D) const
   /*!
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \param D :: Distance
-    \return exit surface
+    \param D :: Distance travelled to surface
+    \return exit surface [signed??]
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurf");
@@ -1910,10 +1946,10 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurfList.begin();vc!=SurfList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-    const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  for(const Geometry::Surface* SPtr : SurfList)
+    SPtr->acceptVisitor(LI);
+  
+  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 
@@ -1921,7 +1957,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   D= std::numeric_limits<double>::max();
   const Geometry::Surface* surfPtr=0;
   // NOTE: we only check for and exiting surface by going
-  // along the line.
+  // along the line in the positive direction.
   int bestPairValid(0);
   for(size_t i=0;i<dPts.size();i++)
     {
@@ -1941,7 +1977,8 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 	      surfPtr=surfIndex[i];
 	    }
 	}
-    }    
+    }
+      
   return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
 }
 
@@ -1992,7 +2029,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
     Calculate a track of a line that intersects the rule.
     The surface number is the outgoing surface number.
     \param Org :: Origin of line
-    \param Unit :: Direction of line
+    \param VUnit :: Direction of line
     \param Pts :: Points
     \param SNum :: Surface number 
     \return Number of points found
@@ -2165,7 +2202,6 @@ HeadRule::Intersects(const HeadRule& A) const
    */
 {
   ELog::RegMethod RegA("HeadRule","Intersects");
-  
   
   const std::vector<const Geometry::Surface*> 
     AVec(this->getSurfaces());

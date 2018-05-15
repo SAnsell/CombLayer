@@ -130,9 +130,9 @@ findCornerCircle(const Geometry::Vec3D& C,
   const Geometry::Vec3D midDivide=((a+b)/2.0).unit();
   
   const double aDotM=a.dotProd(midDivide);
-  const double lambda=sqrt(radius*radius/(1.0-aDotM*aDotM));
+  const double lambda=sqrt((radius*radius)/(1.0-aDotM*aDotM));
 
-  Geometry::Vec3D RCent=midDivide*lambda;   // c out by step*midDivde
+  const Geometry::Vec3D RCent=midDivide*lambda;   // c out by step*midDivde
   const double alpha=a.dotProd(RCent);
   const double beta=b.dotProd(RCent);
 

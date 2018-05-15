@@ -3,7 +3,7 @@
  
  * File:   physics/ELPTConstructor.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,11 +74,6 @@
 #include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
@@ -99,12 +94,13 @@ ELPTConstructor::ELPTConstructor()
 
 
 void
-ELPTConstructor::processUnit(Simulation& System,
+ELPTConstructor::processUnit(PhysicsCards& PC,const Simulation& System,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
   /*!
     Add ext component 
-    \param System :: Simulation to get physics/fixed points
+    \param PC :: physics system
+    \param System :: Simulation for cell map
     \param IParam :: Main input parameters
     \param Index :: index of the -wECut card
   */
@@ -141,7 +137,6 @@ ELPTConstructor::processUnit(Simulation& System,
   ZUnits.addData(ECutValue);
   ZUnits.sortZone();
 
-  physicsSystem::PhysicsCards& PC=System.getPC();
   physicsSystem::PhysImp& ECImp=PC.addPhysImp("elpt",particleStr);
   
   // care here : ECImp coule be a new particle value

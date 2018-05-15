@@ -3,7 +3,7 @@
  
  * File:   commonVar/FocusGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,16 +63,45 @@ FocusGenerator::FocusGenerator() :
   layerMat({"Void","Aluminium","Void","Void"})
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
   */
 {}
+
+FocusGenerator::FocusGenerator(const FocusGenerator& A) : 
+  yStepActive(A.yStepActive),yBeamActive(A.yBeamActive),
+  yStep(A.yStep),yBeam(A.yBeam),zStep(A.zStep),
+  layerThick(A.layerThick),layerMat(A.layerMat)
+  /*!
+    Copy constructor
+    \param A :: FocusGenerator to copy
+  */
+{}
+
+FocusGenerator&
+FocusGenerator::operator=(const FocusGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: FocusGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      yStepActive=A.yStepActive;
+      yBeamActive=A.yBeamActive;
+      yStep=A.yStep;
+      yBeam=A.yBeam;
+      zStep=A.zStep;
+      layerThick=A.layerThick;
+      layerMat=A.layerMat;
+    }
+  return *this;
+}
 
 FocusGenerator::~FocusGenerator() 
  /*!
    Destructor
  */
 {}
-
 
 void
 FocusGenerator::setLayer(const size_t index,const double T,
@@ -204,7 +233,7 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
     \param V :: Vertical 
    */
 {
-  ELog::RegMethod RegA("FocusGenerator","generateTaper");
+  ELog::RegMethod RegA("FocusGenerator","generateRectangle");
   writeLayers(Control,keyName,length);
   
   Control.addVariable(keyName+"0TypeID","Rectangle");

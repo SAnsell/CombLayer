@@ -66,6 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
 #include "CopiedComp.h"
@@ -84,7 +85,7 @@
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
 #include "ChopperHousing.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
@@ -140,7 +141,7 @@ SKADI::SKADI(const std::string& keyName):
   PitACutFront(new constructSystem::HoleShape(newName+"PitACutFront")),
   
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   ChopAMotor(new constructSystem::Motor(newName+"ChopAMotor")),
   DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
 
@@ -150,7 +151,7 @@ SKADI::SKADI(const std::string& keyName):
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
   PitBCutFront(new constructSystem::HoleShape(newName+"PitBCutFront")),
   PitBCutBack(new constructSystem::HoleShape(newName+"PitBCutBack")),
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   DiskB(new constructSystem::DiskChopper(newName+"BDisk")),
 
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
@@ -160,9 +161,9 @@ SKADI::SKADI(const std::string& keyName):
   PitCCutFront(new
   constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
-  ChopperC1(new constructSystem::ChopperUnit(newName+"ChopperC1")),
+  ChopperC1(new constructSystem::SingleChopper(newName+"ChopperC1")),
   DiskC1(new constructSystem::DiskChopper(newName+"C1Disk")),
-  ChopperC2(new constructSystem::ChopperUnit(newName+"ChopperC2")),
+  ChopperC2(new constructSystem::SingleChopper(newName+"ChopperC2")),
   DiskC2(new constructSystem::DiskChopper(newName+"C2Disk")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),
@@ -282,7 +283,7 @@ SKADI::buildBunkerUnits(Simulation& System,
   BendC->addInsertCell(VPipeC->getCells("Void"));
   BendC->createAll(System,*VPipeC,0,*VPipeC,0);
 
-  CollA->setOuter(VPipeC->getSignedFullRule(-6));
+  CollA->setOuter(VPipeC->getFullRule(-6));
   CollA->setInner(BendC->getXSection(0,0)); 
   CollA->addInsertCell(VPipeC->getCell("Void"));
   CollA->createAll(System,*VPipeC,-1);
@@ -293,7 +294,7 @@ SKADI::buildBunkerUnits(Simulation& System,
   BendD->createAll(System,BendC->getKey("Guide0"),2,
 		    BendC->getKey("Guide0"),2);
   
-  CollB->setOuter(VPipeD->getSignedFullRule(-6));
+  CollB->setOuter(VPipeD->getFullRule(-6));
   CollB->setInner(BendD->getXSection(0,0)); 
   CollB->addInsertCell(VPipeD->getCell("Void"));
   CollB->createAll(System,*VPipeD,-1);
@@ -310,7 +311,7 @@ SKADI::buildBunkerUnits(Simulation& System,
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-  CollC->setOuter(VPipeF->getSignedFullRule(-6)); 
+  CollC->setOuter(VPipeF->getFullRule(-6)); 
   CollC->setInner(FocusF->getXSection(0,0)); 
   CollC->addInsertCell(VPipeF->getCell("Void"));
   CollC->createAll(System,*VPipeF,-1);
@@ -338,7 +339,7 @@ SKADI::build(Simulation& System,
   ELog::EM<<"\n Building SKADI on:"<<GItem.getKeyName()<<ELog::endDiag;
 
   ELog::EM<<"\n First Cell w/ SKADI : "<<GItem.getCell("Void")<<ELog::endDiag;
-    ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+    ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
@@ -373,13 +374,13 @@ SKADI::build(Simulation& System,
   PitA->createAll(System,FocusWallA->getKey("Guide0"),2);
 
   PitACutFront->addInsertCell(PitA->getCells("MidLayerFront"));
-  PitACutFront->setFaces(PitA->getKey("Mid").getSignedFullRule(-1),
-			 PitA->getKey("Inner").getSignedFullRule(1));
+  PitACutFront->setFaces(PitA->getKey("Mid").getFullRule(-1),
+			 PitA->getKey("Inner").getFullRule(1));
   PitACutFront->createAll(System,PitA->getKey("Inner"),-1);
   PitACutBack->addInsertCell(PitA->getCells("MidLayerBack"));
   PitACutBack->addInsertCell(PitA->getCells("Collet"));
-  PitACutBack->setFaces(PitA->getKey("Mid").getSignedFullRule(-2),
-			 PitA->getKey("Inner").getSignedFullRule(2));
+  PitACutBack->setFaces(PitA->getKey("Mid").getFullRule(-2),
+			 PitA->getKey("Inner").getFullRule(2));
   PitACutBack->createAll(System,PitA->getKey("Inner"),2);
   
   ShieldA->addInsertCell(voidCell);
@@ -412,13 +413,13 @@ SKADI::build(Simulation& System,
   PitB->addInsertCell(voidCell); //Chopper II pit
   PitB->createAll(System,PitA->getKey("Outer"),2);
   PitBCutFront->addInsertCell(PitB->getCells("MidLayerFront"));
-  PitBCutFront->setFaces(PitB->getKey("Mid").getSignedFullRule(-1),
-			 PitB->getKey("Inner").getSignedFullRule(1));
+  PitBCutFront->setFaces(PitB->getKey("Mid").getFullRule(-1),
+			 PitB->getKey("Inner").getFullRule(1));
   PitBCutFront->createAll(System,PitB->getKey("Inner"),-1);
   PitBCutBack->addInsertCell(PitB->getCells("MidLayerBack"));
   PitBCutBack->addInsertCell(PitB->getCells("Collet"));
-  PitBCutBack->setFaces(PitB->getKey("Mid").getSignedFullRule(-2),
-			 PitB->getKey("Inner").getSignedFullRule(2));
+  PitBCutBack->setFaces(PitB->getKey("Mid").getFullRule(-2),
+			 PitB->getKey("Inner").getFullRule(2));
   PitBCutBack->createAll(System,PitB->getKey("Inner"),2);
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
@@ -452,14 +453,14 @@ SKADI::build(Simulation& System,
   PitC->createAll(System,PitB->getKey("Outer"),2);
 
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
-  PitCCutFront->setFaces(PitC->getKey("Mid").getSignedFullRule(-1),
-			 PitC->getKey("Inner").getSignedFullRule(1));
+  PitCCutFront->setFaces(PitC->getKey("Mid").getFullRule(-1),
+			 PitC->getKey("Inner").getFullRule(1));
   PitCCutFront->createAll(System,PitC->getKey("Inner"),-1);
 
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
   PitCCutBack->addInsertCell(PitC->getCells("Collet"));
-  PitCCutBack->setFaces(PitC->getKey("Mid").getSignedFullRule(-2),
-			 PitC->getKey("Inner").getSignedFullRule(2));
+  PitCCutBack->setFaces(PitC->getKey("Mid").getFullRule(-2),
+			 PitC->getKey("Inner").getFullRule(2));
   PitCCutBack->createAll(System,PitC->getKey("Inner"),2);
 
   ChopperC1->addInsertCell(PitC->getCell("Void"));
@@ -508,8 +509,8 @@ SKADI::build(Simulation& System,
   Cave->createAll(System,*ShieldD,2);
   
   CaveFrontCut->addInsertCell(Cave->getCells("FrontWall"));
-  CaveFrontCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
-			 Cave->getKey("Inner").getSignedFullRule(1));
+  CaveFrontCut->setFaces(Cave->getKey("Outer").getFullRule(-1),
+			 Cave->getKey("Inner").getFullRule(1));
   CaveFrontCut->createAll(System,*ShieldD,2);
   
   GuideOutE->addInsertCell(voidCell);

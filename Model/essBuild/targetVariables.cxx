@@ -60,36 +60,75 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
-  Control.addVariable("BilbaoWheelEngineeringActive", 1);
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
-
-  Control.addVariable("BilbaoWheelNShaftLayers",5);
-  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
-  Control.addVariable("BilbaoWheelShaftMat1","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
-  Control.addVariable("BilbaoWheelShaftMat2","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
-  Control.addVariable("BilbaoWheelShaftMat3",0);
+  Control.addVariable("BilbaoWheelEngineeringActive", 1);
+  Control.addVariable("BilbaoWheelNShaftLayers",6);
+  Control.addVariable("BilbaoWheelShaftRadius1",5.0);
+  Control.addVariable("BilbaoWheelShaftMat1","SS316L");
+  Control.addVariable("BilbaoWheelShaftRadius2",13.5);
+  Control.addVariable("BilbaoWheelShaftMat2","SS316L");
+  Control.addVariable("BilbaoWheelShaftRadius3",14.0);
+  Control.addVariable("BilbaoWheelShaftMat3","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius4",20.0);
-  Control.addVariable("BilbaoWheelShaftMat4","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius5",22.0);
-  Control.addVariable("BilbaoWheelShaftMat5",0);
+  Control.addVariable("BilbaoWheelShaftMat4","SS316L");
+  Control.addVariable("BilbaoWheelShaftRadius5",23.0);
+  Control.addVariable("BilbaoWheelShaftMat5","SS316L");
+  Control.addVariable("BilbaoWheelShaftRadius6",25.0);
+  Control.addVariable("BilbaoWheelShaftMat6","Void");
+
+  Control.addVariable("BilbaoWheelShaft2StepHeight",15);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionHeight",4);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 5);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 27.5);  // TSM141108V3000
+
+  Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
+  Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
+  
+  Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
+
+  Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);
+  
+  Control.addVariable("BilbaoWheelCatcherHeight",10.0);
+  Control.addVariable("BilbaoWheelCatcherRadius",42.0);
+  Control.addVariable("BilbaoWheelCatcherMiddleHeight",10.0);
+  Control.addVariable("BilbaoWheelCatcherMiddleRadius",32.0);
+  Control.addVariable("BilbaoWheelCatcherNotchDepth",5.0);
+  Control.addVariable("BilbaoWheelCatcherNotchRadius",22.0);
+  Control.addVariable("BilbaoWheelCatcherRingRadius",34.0);
+  Control.addVariable("BilbaoWheelCatcherRingDepth",24.0);
+  Control.addVariable("BilbaoWheelCatcherRingThick",2.0);
+
+  Control.addVariable("BilbaoWheelCirclePipesBigRad",30.0);
+  Control.addVariable("BilbaoWheelCirclePipesRad",1.5);
+  Control.addVariable("BilbaoWheelCirclePipesWallThick",0.2);
 
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
   Control.addVariable("BilbaoWheelXYangle",0.0);
   Control.addVariable("BilbaoWheelZangle",0.0);
-  Control.addVariable("BilbaoWheelTargetHeight",8.0);
+  Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
+  Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",74.5); // TSM141108V3000
+  
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2);
-  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelSteelTungstenInnerThick", 0.5); // TSM141108V3000: upper 0.2, lower 0.3
+  Control.addVariable("BilbaoWheelTemp",600.0);
   Control.addVariable("BilbaoWheelCoolantThick",0.5);
   Control.addVariable("BilbaoWheelCaseThick",1.0);
-  Control.addVariable("BilbaoWheelCaseThickIn",1.5);
-  Control.addVariable("BilbaoWheelVoidThick",1.5);
+  Control.addVariable("BilbaoWheelCaseThickIn",3.0);
+  Control.addVariable("BilbaoWheelVoidThick",2.0);
 
   Control.addVariable("BilbaoWheelInnerRadius",45);
+  Control.addVariable("BilbaoWheelInnerHoleHeight",4.5); // TSM141108V3000
+  Control.addVariable("BilbaoWheelInnerHoleSize",0.25); // value not known=>approx
+
+  // value not known=>
+  //  approx to put a hole on the Y-axis (0,65,0) to increase high-energy noise for conservative reasons
+  Control.addVariable("BilbaoWheelInnerHoleXYangle",-1.0);
+											       
   Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
   Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
   Control.addVariable("BilbaoWheelCaseRadius",129.15);
@@ -339,6 +378,30 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("BeamMonitorBoxTubeAlMat","Aluminium");
   Control.addVariable("BeamMonitorBoxExtHeMat","helium");
 
+  // Beam instrumentation plug (dummy variables)
+  Control.addVariable("PBIPYStep",-177.2); // MK170207
+
+  Control.addVariable("PBIPLength",2.1*20/0.85); // measured from MK170207
+  Control.addVariable("PBIPWidth",2.6*20/0.85); // measured from MK170207
+  Control.addVariable("PBIPHeight",20.0); // a dummy value
+  Control.addVariable("PBIPWallThick",1.0);
+  Control.addVariable("PBIPMainMat","Helium");
+  Control.addVariable("PBIPWallMat","SS316L");
+
+  Control.addVariable("PBIPPipeBeforeHeight",7.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthLeft",20.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeAngleLeft",4.14); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthRight",9.0); // MK170207
+  
+  Control.addVariable("PBIPPipeAfterHeight",8.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthLeft",9.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthRight",20.0); // MK170207
+  Control.addVariable("PBIPPipeAfterAngleRight",4.07); // MK170207
+
+  Control.addVariable("PBIPFoilOffset",5.0); // a dummy value
+  ELog::EM << "PBIP Foil offset??? + references for PBIP foil" << ELog::endDebug;
+  Control.addVariable("PBIPFoilThick",0.05); // YJL
+  Control.addVariable("PBIPFoilMat", "Tungsten#0.04"); // YJL
 
   Control.addVariable("ProtonBeamViewRadius",4.0);
   return;

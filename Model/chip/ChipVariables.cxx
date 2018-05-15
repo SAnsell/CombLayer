@@ -3,7 +3,7 @@
  
  * File:   chip/ChipVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,7 +144,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPb1Active",0);      // 
   Control.addVariable("chipPb1ZAngle",0.0);      // 
   Control.addVariable("chipPb1XYAngle",0.0);      // 
-  Control.addVariable("chipPb1FStep",10.0);      // 
+  Control.addVariable("chipPb1YStep",10.0);      // 
   Control.addVariable("chipPb1Thick",9.0);      // 
   Control.addVariable("chipPb1DefMat","Lead");      // 
   Control.addVariable("chipPb1SupportMat","Stainless304");      //  304 stainless
@@ -155,7 +155,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPb2Active",0);      // 
   Control.addVariable("chipPb2ZAngle",0.0);      // 
   Control.addVariable("chipPb2XYAngle",0.0);      // 
-  Control.addVariable("chipPb2FStep",-50.0);      // 
+  Control.addVariable("chipPb2YStep",-50.0);      // 
   Control.addVariable("chipPb2Thick",9.0);      // 
   Control.addVariable("chipPb2DefMat","Lead");      // 
   Control.addVariable("chipPb2SupportMat","Stainless304");      //  304 stainless
@@ -369,8 +369,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSampleXYAngle",0.0); 
   Control.addVariable("chipSampleZAngle",0.0); 
   Control.addVariable("chipSampleXStep",0.0);  
+  Control.addVariable("chipSampleZStep",40.0);   // From table top
   Control.addVariable("chipSampleDepth",0.5);    // thickness 5mm
-  Control.addVariable("chipSampleZLift",40.0);   // From table top
+
 
   Control.addVariable("chipSample1YStep",-10.0);   // Relative to table centre  
   Control.addVariable("chipSample2YStep",-5.0);   
@@ -527,8 +528,9 @@ ChipVariables(FuncDataBase& Control)
   // Hutch inner stuff:
   Control.addVariable("chipHutTrimMat","Stainless304");        // Steel
   Control.addVariable("chipHutTrimXStep",12.0);   // Shift of the x positoin
+  Control.addVariable("chipHutTrimYStep",231.1);  // Distance from hutch start [Y]
   Control.addVariable("chipHutTrimZStep",19.0);   // up shift of the hole
-  Control.addVariable("chipHutTrimFStep",231.1);  // Distance from hutch start [Y]
+
   Control.addVariable("chipHutTrimWidth",40.0);  // Horr half-beam width [hole]
   Control.addVariable("chipHutTrimHeight",40.0);  // Vertial half-height [hole]
   Control.addVariable("chipHutTrimDepth",35.0);   // Thickness in beam
@@ -764,35 +766,35 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSourceRadial",12.0);        // Width
 
 
-  Control.addVariable("CGSlice0Centre",Geometry::Vec3D(95.0,212.5,0.0));
+  Control.addVariable("CGSlice0CentOffset",Geometry::Vec3D(95.0,212.5,0.0));
   Control.addVariable("CGSlice0Length",30.0);
   Control.addVariable("CGSlice0Height",-1.0);
   Control.addVariable("CGSlice0InsertKey","SteelRightVertical");
   Control.addVariable("CGSliceWidth",5.0);
-  Control.addVariable("CGSliceRotXYangle",90.0);
+  Control.addVariable("CGSliceXYAngle",90.0);
   
   Control.addVariable("chipGuideCutsActive",1);    // Number of cuts
   Control.addVariable("chipGuideNCuts",16);    // Number of cuts
     
-  Control.addVariable("CGCut0Centre",Geometry::Vec3D(55.0,10.0,50.0));
-  Control.addVariable("CGCut1Centre",Geometry::Vec3D(60.0,126.0,50.0));
-  Control.addVariable("CGCut2Centre",Geometry::Vec3D(60.0,253.0,50.0));
-  Control.addVariable("CGCut3Centre",Geometry::Vec3D(60.0,378.0,50.0));
-  Control.addVariable("CGCut4Centre",Geometry::Vec3D(75.0,558.0,50.0));
+  Control.addVariable("CGCut0CentOffset",Geometry::Vec3D(55.0,10.0,50.0));
+  Control.addVariable("CGCut1CentOffset",Geometry::Vec3D(60.0,126.0,50.0));
+  Control.addVariable("CGCut2CentOffset",Geometry::Vec3D(60.0,253.0,50.0));
+  Control.addVariable("CGCut3CentOffset",Geometry::Vec3D(60.0,378.0,50.0));
+  Control.addVariable("CGCut4CentOffset",Geometry::Vec3D(75.0,558.0,50.0));
 
-  Control.addVariable("CGCut5Centre",Geometry::Vec3D(85.0,276.0,50.0));
-  Control.addVariable("CGCut6Centre",Geometry::Vec3D(85.0,427.0,50.0));
+  Control.addVariable("CGCut5CentOffset",Geometry::Vec3D(85.0,276.0,50.0));
+  Control.addVariable("CGCut6CentOffset",Geometry::Vec3D(85.0,427.0,50.0));
 
   // left side
-  Control.addVariable("CGCut7Centre",Geometry::Vec3D(-28.0,10.0,50.0));
-  Control.addVariable("CGCut8Centre",Geometry::Vec3D(-40.0,90.0,50.0));
-  Control.addVariable("CGCut9Centre",Geometry::Vec3D(-28.0,129.0,50.0));
-  Control.addVariable("CGCut10Centre",Geometry::Vec3D(-28.0,253.0,50.0));
-  Control.addVariable("CGCut11Centre",Geometry::Vec3D(-60.0,273.0,50.0));
-  Control.addVariable("CGCut12Centre",Geometry::Vec3D(-28.0,378.0,50.0));
-  Control.addVariable("CGCut13Centre",Geometry::Vec3D(-60.0,427.0,50.0));
-  Control.addVariable("CGCut14Centre",Geometry::Vec3D(-70.0,520.0,50.0));
-  Control.addVariable("CGCut15Centre",Geometry::Vec3D(-60.0,535.5,50.0));
+  Control.addVariable("CGCut7CentOffset",Geometry::Vec3D(-28.0,12.0,50.0));
+  Control.addVariable("CGCut8CentOffset",Geometry::Vec3D(-40.0,90.0,50.0));
+  Control.addVariable("CGCut9CentOffset",Geometry::Vec3D(-28.0,129.0,50.0));
+  Control.addVariable("CGCut10CentOffset",Geometry::Vec3D(-28.0,253.0,50.0));
+  Control.addVariable("CGCut11CentOffset",Geometry::Vec3D(-60.0,273.0,50.0));
+  Control.addVariable("CGCut12CentOffset",Geometry::Vec3D(-28.0,378.0,50.0));
+  Control.addVariable("CGCut13CentOffset",Geometry::Vec3D(-60.0,427.0,50.0));
+  Control.addVariable("CGCut14CentOffset",Geometry::Vec3D(-70.0,520.0,50.0));
+  Control.addVariable("CGCut15CentOffset",Geometry::Vec3D(-60.0,535.5,50.0));
   
   Control.addVariable("CGCut0Length",30.0);
   Control.addVariable("CGCut1Length",40.0);
@@ -832,7 +834,7 @@ ChipVariables(FuncDataBase& Control)
 
   Control.addVariable("CGCutWidth",15.0);
   Control.addVariable("CGCutHeight",3.5);
-  Control.addVariable("CGCutRotXYangle",90.0);
+  Control.addVariable("CGCutXYAngle",90.0);
 
   
   

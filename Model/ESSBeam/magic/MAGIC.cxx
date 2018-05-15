@@ -3,7 +3,7 @@
  
  * File:   essBuild/MAGIC.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -67,6 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -85,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -106,7 +106,7 @@ MAGIC::MAGIC(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   PSCDisk(new constructSystem::DiskChopper(newName+"PSCBlade")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
@@ -247,8 +247,8 @@ MAGIC::buildBunkerUnits(Simulation& System,
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
 
   ELog::EM<<"Bunker Unit start == "
-          <<FA.getSignedLinkPt(startIndex)<<" == "
-          <<FA.getSignedLinkPt(startIndex).abs()
+          <<FA.getLinkPt(startIndex)<<" == "
+          <<FA.getLinkPt(startIndex).abs()
           <<ELog::endDiag;
     
   VPipeB->addInsertCell(bunkerVoid);
@@ -311,12 +311,12 @@ MAGIC::buildOutGuide(Simulation& System,
   ELog::RegMethod RegA("MAGIC","buildOutGuide");
 
   ELog::EM<<"Outer start == "
-          <<FWshield.getSignedLinkPt(startShield)<<" == "
-          <<FWshield.getSignedLinkPt(startShield).abs()<<" "
+          <<FWshield.getLinkPt(startShield)<<" == "
+          <<FWshield.getLinkPt(startShield).abs()<<" "
           <<ELog::endDiag;
   ELog::EM<<"Outer start[G] == "
-          <<FWguide.getSignedLinkPt(startGuide)<<" == "
-          <<FWguide.getSignedLinkPt(startGuide).abs()<<ELog::endDiag;
+          <<FWguide.getLinkPt(startGuide)<<" == "
+          <<FWguide.getLinkPt(startGuide).abs()<<ELog::endDiag;
   
 
   ShieldA->addInsertCell(voidCell);
@@ -511,7 +511,7 @@ MAGIC::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*magicAxis,Control,GItem,1);

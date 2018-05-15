@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,8 +163,8 @@ collInsertBase::createUnitVector(const collInsertBase& ZB)
   beamY=ZB.beamY;  
   beamZ=ZB.beamZ;
 
-  Origin=ZB.getLinkPt(1)+Y*fStep;
-  beamOrigin=ZB.getLinkPt(3)+beamY*fStep;
+  Origin=ZB.getLinkPt(2)+Y*fStep;
+  beamOrigin=ZB.getLinkPt(4)+beamY*fStep;
 
   return;
 }
@@ -183,8 +183,8 @@ collInsertBase::createUnitVector(const FixedComp& FC)
   beamZ=Z;
   if (FC.NConnect()>1)
     {
-      Origin=FC.getLinkPt(1)+Y*fStep;
-      beamY=FC.getLinkAxis(1);
+      Origin=FC.getLinkPt(2)+Y*fStep;
+      beamY=FC.getLinkAxis(2);
     }
   else
     {
@@ -332,7 +332,7 @@ collInsertBase::createAll(Simulation& System,
   populate(System,&ZB);
 
   createUnitVector(ZB);
-  createSurfaces(ZB.getLinkSurf(1));
+  createSurfaces(ZB.getLinkSurf(2));
   createObjects(System,"","");
   createLinks();
   insertObjects(System);       

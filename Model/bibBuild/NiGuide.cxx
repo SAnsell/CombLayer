@@ -189,8 +189,8 @@ NiGuide::createSurfaces(const attachSystem::FixedComp& FCA,
   ModelSupport::buildPlane(SMap,niGuideIndex+13,Origin-Z*(height/2.0+wallThick),Z);  
   ModelSupport::buildPlane(SMap,niGuideIndex+14,Origin+Z*(height/2.0+wallThick),Z);  
   
-  SMap.addMatch(niGuideIndex+21,FCA.getSignedLinkSurf(sideIndexA)); 
-  SMap.addMatch(niGuideIndex+22,FCB.getSignedLinkSurf(sideIndexB)); 
+  SMap.addMatch(niGuideIndex+21,FCA.getLinkSurf(sideIndexA)); 
+  SMap.addMatch(niGuideIndex+22,FCB.getLinkSurf(sideIndexB)); 
 
 
   return; 

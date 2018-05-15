@@ -101,18 +101,22 @@ class WWGWeight
 
   template<typename T>
   double distTrack(const Simulation&,const T&,
-		   const Geometry::Vec3D&,const double,
-		   const double,const double) const;
+		   const double,
+		   const Geometry::Vec3D&,
+		   const double,const double,
+		   const double) const;
 
   template<typename T>
   void wTrack(const Simulation&,const T&,
+	      const std::vector<double>&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const double,const double,const double);
 
-  template<typename T>
+  template<typename T,typename U>
   void CADISnorm(const Simulation&,const WWGWeight&,
+		 const std::vector<double>&,
 		 const std::vector<Geometry::Vec3D>&,
-		 const T&);
+		 const T&,const U&);
   
   
   void writeWWINP(std::ostream&) const;

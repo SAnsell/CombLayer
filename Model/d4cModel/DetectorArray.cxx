@@ -3,7 +3,7 @@
  
  * File:   d4cModel/DetectorArray.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -83,7 +84,7 @@ namespace d4cSystem
 {
 
 DetectorArray::DetectorArray(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   detIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(detIndex+1),nDet(0)
   /*!
@@ -94,10 +95,9 @@ DetectorArray::DetectorArray(const std::string& Key) :
 
 
 DetectorArray::DetectorArray(const DetectorArray& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  detIndex(A.detIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),centRadius(A.centRadius),tubeRadius(A.tubeRadius),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  detIndex(A.detIndex),cellIndex(A.cellIndex),
+  centRadius(A.centRadius),tubeRadius(A.tubeRadius),
   wallThick(A.wallThick),height(A.height),wallMat(A.wallMat),
   detMat(A.detMat),nDet(A.nDet),initAngle(A.initAngle),
   finalAngle(A.finalAngle),DPoints(A.DPoints)
@@ -120,11 +120,6 @@ DetectorArray::operator=(const DetectorArray& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       centRadius=A.centRadius;
       tubeRadius=A.tubeRadius;
       wallThick=A.wallThick;
@@ -154,12 +149,7 @@ DetectorArray::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DetectorArray","populate");
 
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   centRadius=Control.EvalVar<double>(keyName+"CentRadius");
   tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
@@ -178,17 +168,17 @@ DetectorArray::populate(const FuncDataBase& Control)
 }
 
 void
-DetectorArray::createUnitVector(const attachSystem::FixedComp& FC)
+DetectorArray::createUnitVector(const attachSystem::FixedComp& FC,
+				const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp for origin
   */
 {
   ELog::RegMethod RegA("DetectorArray","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+
+  applyOffset();
 
   return;
 }
@@ -299,32 +289,40 @@ DetectorArray::createTally(Simulation& System) const
    */
 {
   ELog::RegMethod RegA("DetectorArray","createTally");
-  int tNum=5;
-  for(size_t i=0;i<nDet;i++)
-    {
-      tallySystem::addF5Tally(System,tNum);      
-      tallySystem::setF5Position(System,tNum,DPoints[i]);
-      tallySystem::setTallyTime(System,tNum,"1.0 8log 1e8");
-      tNum+=10;
-    }
 
+  SimMCNP* SimPTR=dynamic_cast<SimMCNP*>(&System);
+  if (SimPTR)
+    {
+      int tNum=5;
+      for(size_t i=0;i<nDet;i++)
+	{
+	  tallySystem::addF5Tally(*SimPTR,tNum);      
+	  tallySystem::setF5Position(*SimPTR,tNum,DPoints[i]);
+	  tallySystem::setTallyTime(*SimPTR,tNum,"1.0 8log 1e8");
+	  tNum+=10;
+	}
+    }
+      
   return;
 }
 
 
 
 void
-DetectorArray::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+DetectorArray::createAll(Simulation& System,
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComp to add
+    \param sideIndex :: link point						
    */
 {
   ELog::RegMethod RegA("DetectorArray","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

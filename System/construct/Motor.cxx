@@ -86,7 +86,7 @@ Motor::Motor(const std::string& Key) :
   attachSystem::ContainedGroup("Axle","Plate","Outer"),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   motorIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(motorIndex+1),frontInner(0),backInner(0),
+  cellIndex(motorIndex+1),frontInner(0),backInner(0),revFlag(0),
   yFront(0.0),yBack(0.0),
   frontPlate(new constructSystem::boltRing(Key,"FrontPlate")),
   backPlate(new constructSystem::boltRing(Key,"BackPlate"))
@@ -183,7 +183,8 @@ Motor::populate(const FuncDataBase& Control)
   bodyLength=Control.EvalVar<double>(keyName+"BodyLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
-  revFlag=Control.EvalDefVar<int>(keyName+"RevMotor",0);
+  
+  revFlag=Control.EvalDefVar<int>(keyName+"Reverse",0);
   bodyRadius=Control.EvalVar<double>(keyName+"BodyRadius");
   axleRadius=Control.EvalVar<double>(keyName+"AxleRadius");
 

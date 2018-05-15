@@ -3,7 +3,7 @@
  
  * File:   lensModelInc/LensTally.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,9 @@ class Simulation;
 
 namespace lensSystem
 {
-  void addPointTally(Simulation&,const lensSystem::FlightCluster&,
+  void addPointTally(SimMCNP&,const lensSystem::FlightCluster&,
 		     const size_t,const double);
-  int addSurfTally(Simulation&,const lensSystem::FlightCluster&,
+  int addSurfTally(SimMCNP&,const lensSystem::FlightCluster&,
 		     const size_t,const double);
 }
 

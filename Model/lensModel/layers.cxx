@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/layers.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -76,6 +75,7 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "siModerator.h"
 #include "surfDIter.h"
 #include "ProtonFlight.h"
@@ -345,7 +345,7 @@ layers::createObjects(Simulation& System,
   std::string Wedge,Out;
   // Build Wedge Takeout
   Wedge=ModelSupport::getComposite(SMap,surIndex,"-127 ")+
-    CS.getLinkString(1);
+    CS.getLinkString(2);
   
   // Build Wedge units [Always build 1]
   for(int i=0;i<=static_cast<int>(nWedge);i++)
@@ -448,7 +448,7 @@ layers::createLinks(const attachSystem::FixedComp& CS)
     {
       FixedComp::setConnect(i,Origin,Y);
       FixedComp::setLinkSurf(i,SMap.realSurf(surIndex+127));
-      FixedComp::addLinkSurf(i,CS.getLinkSurf(0));
+      FixedComp::addLinkSurf(i,CS.getLinkSurf(1));
     }
 
   return;

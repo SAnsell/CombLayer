@@ -54,6 +54,7 @@
 #include "ChopperGenerator.h"
 #include "PipeGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "JawGenerator.h"
 #include "RotaryHoleGenerator.h"
@@ -95,7 +96,7 @@ ODINvariables(FuncDataBase& Control)
   FGen.setLayer(1,0.8,"Copper");
   FGen.setLayer(2,0.3,"Void");
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"odinFA",350.0, 4.423,1.806,  3.5,5.24 );
+  FGen.generateTaper(Control,"odinFA",350.0, 4.38,3.70,  3.3,5.26 );
 
   PipeGen.generatePipe(Control,"odinPipeB",8.0,46.0);
   FGen.setLayer(1,0.8,"Aluminium");

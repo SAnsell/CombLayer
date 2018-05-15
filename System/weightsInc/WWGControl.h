@@ -58,7 +58,7 @@ class WWGControl : public WeightControl
   
   void procMarkov(const mainSystem::inputParam&,const std::string&,
 		  const size_t);
-		  
+  void wwgSetParticles(const std::set<std::string>&);
   void wwgMesh(const mainSystem::inputParam&);
   void wwgVTK(const mainSystem::inputParam&);
   void wwgInitWeight();

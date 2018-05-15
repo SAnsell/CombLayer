@@ -81,7 +81,7 @@ class GuideBay : public attachSystem::ContainedGroup,
   void setCylBoundary(const int,const int);
 
   void outerMerge(Simulation&,GuideBay&);
-  void createGuideItems(Simulation&,const std::string&);
+  void createGuideItems(Simulation&,const std::string&,const std::string&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

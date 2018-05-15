@@ -3,7 +3,7 @@
  
  * File:   test/testContained.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,6 @@
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Rules.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
@@ -89,7 +86,8 @@ testContained::createSurfaces()
   ELog::RegMethod RegA("testContained","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
+  SurI.reset();
+  
   // First box :
   SurI.createSurface(1,"px -1");
   SurI.createSurface(2,"px 1");
@@ -211,9 +209,7 @@ testContained::testAddSurfString()
 
   typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 3 -4","( -1 : -3 : 4 : 2 )"));
-  
-
+  Tests.push_back(TTYPE("1 -2 3 -4","(4 : -3 : 2 : -1)"));
   
   ContainedComp C;
   for(const TTYPE& tc : Tests)

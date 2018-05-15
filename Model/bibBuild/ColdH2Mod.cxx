@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/ColdH2Mod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -75,7 +76,7 @@ namespace bibSystem
 {
 
 ColdH2Mod::ColdH2Mod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   coldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(coldIndex+1)
   /*!
@@ -86,10 +87,9 @@ ColdH2Mod::ColdH2Mod(const std::string& Key) :
 
 
 ColdH2Mod::ColdH2Mod(const ColdH2Mod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   coldIndex(A.coldIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
+  width(A.width),
   height(A.height),depth(A.depth),wallThick(A.wallThick),
   sideGap(A.sideGap),frontGap(A.frontGap),backGap(A.backGap),
   vertGap(A.vertGap),modMat(A.modMat),waterMat(A.waterMat),
@@ -112,13 +112,8 @@ ColdH2Mod::operator=(const ColdH2Mod& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -154,13 +149,8 @@ ColdH2Mod::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ColdH2Mod","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedOffset::populate(Control);
+  
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -189,25 +179,23 @@ ColdH2Mod::populate(const FuncDataBase& Control)
 
 void
 ColdH2Mod::createUnitVector(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ColdH2Mod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
 
 void
 ColdH2Mod::createSurfaces(const attachSystem::FixedComp& FC,
-			  const size_t sideIndex)
+			  const long int sideIndex)
   /*!
     Create planes for the silicon and Polyethene layers
     \param FC :: FixedComponent for front surface
@@ -394,8 +382,8 @@ ColdH2Mod::createAll(Simulation& System,
 
   populate(System.getDataBase());
 
-  createUnitVector(FC,orgIndex);
-  createSurfaces(FC,sideIndex);
+  createUnitVector(FC,orgIndex+1);
+  createSurfaces(FC,sideIndex+1);
   createObjects(System);
 
   createLinks();

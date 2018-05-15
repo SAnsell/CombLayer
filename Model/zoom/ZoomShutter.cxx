@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/ZoomShutter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -264,7 +264,7 @@ ZoomShutter::createInsert(Simulation& System)
       const collInsertBlock& ZB=iBlock.back();
       ItemZB.initialize(System,ZB);
       Out=ModelSupport::getComposite(SMap,surfIndex,"-17 ")+divideStr();
-      ItemZB.createAll(System,ZB.getLinkSurf(1),"",Out);
+      ItemZB.createAll(System,ZB.getLinkSurf(2),"",Out);
       iBlock.push_back(ItemZB);
     }
   processColletExclude(System,colletOuterCell,cutPt,iBlock.size());	  
@@ -292,8 +292,8 @@ ZoomShutter::processColletExclude(Simulation& System,const int cellN,
       if (!iBlock[i].equalExternal(ZB))
 	{
 	  if (firstCell)
-	    ZB.addOuterSurf(iBlock[firstCell].getLinkSurf(0));
-	  ZB.addOuterSurf(-ZB.getLinkSurf(1));
+	    ZB.addOuterSurf(iBlock[firstCell].getLinkSurf(1));
+	  ZB.addOuterSurf(ZB.getLinkSurf(-2));
 	  ZB.setInsertCell(cellN);
 	  ZB.insertObjects(System);
 	  firstCell=i;
@@ -302,7 +302,7 @@ ZoomShutter::processColletExclude(Simulation& System,const int cellN,
   // Always add one block:
   collInsertBlock& ZOut=iBlock.back();
   if (firstCell)
-    ZOut.addOuterSurf(-iBlock[firstCell].getLinkSurf(0));
+    ZOut.addOuterSurf(iBlock[firstCell].getLinkSurf(-1));
   ZOut.setInsertCell(cellN);
   ZOut.insertObjects(System);
   return;

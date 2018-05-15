@@ -52,6 +52,7 @@
 #include "ShieldGenerator.h"
 #include "FocusGenerator.h"
 #include "ChopperGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "PitGenerator.h"
 #include "PipeGenerator.h"

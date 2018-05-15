@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/Groove.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace moderatorSystem
 */
 
 class Groove : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
@@ -44,12 +44,6 @@ class Groove : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
-  double xyAngle;           ///< Angle relative to Target
-  double zAngle;            ///< Angle relative Target
-  double xStep;             ///< Offset on X to Target
-  double yStep;             ///< Offset on Y to Target [+ve forward]
-  double zStep;             ///< Offset on Z top Target
-
   double width;             ///< Total Width
   double height;            ///< Total height
   double depth;             ///< Total depth
@@ -76,7 +70,7 @@ class Groove : public attachSystem::ContainedComp,
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();

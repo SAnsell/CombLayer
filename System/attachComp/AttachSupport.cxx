@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -338,7 +338,7 @@ addToInsertControl(Simulation& System,
   ELog::RegMethod RegA("attachSuport[F]",
                        "addToInsertControl(CM,string,FC,CC)");
 
-  const size_t NPoint=FC.NConnect();
+  const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
   const std::string excludeStr=CC.getExclude();
 
   for(const int cN : BaseObj.getCells(cellName))
@@ -347,11 +347,9 @@ addToInsertControl(Simulation& System,
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  for(size_t j=0;j<NPoint;j++)
+	  for(const Geometry::Vec3D& IP : linkPts)	  
 	    {
-
-	      const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	      if (CRPtr->isValid(Pt))
+	      if (CRPtr->isValid(IP))
 		{
 		  CRPtr->addSurfString(excludeStr);
 		  break;
@@ -382,18 +380,18 @@ addToInsertControl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertControl");
 
-  const size_t NPoint=FC.NConnect();
+  const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
   const std::string excludeStr=CC.getExclude();
+
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  for(size_t j=0;j<NPoint;j++)
+	  for(const Geometry::Vec3D& IP : linkPts)	  
 	    {
-	      const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	      if (CRPtr->isValid(Pt))
+	      if (CRPtr->isValid(IP))
 		{
 		  CRPtr->addSurfString(excludeStr);
 		  break;
@@ -494,7 +492,7 @@ addToInsertSurfCtrl(Simulation& System,
    must be set. It is tested against all the ojbect with
    this object .
    \param System :: Simulation to use
-   \param CellA :: cell number [to test]
+   \param cellA :: cell number [to test]
    \param CC :: ContainedComp object to add to this
   */
 {
@@ -794,25 +792,6 @@ addToInsertForced(Simulation& System,
   return;
 }  
 
-double
-calcLinkDistance(const FixedComp& FC,const long int sideIndexA,
-		 const long int sideIndexB)
-/*!
-  Calculate the distance between two link point
-  \param FC :: FixedComp to use
-  \param sideIndexA :: First point +1
-  \param sideIndexB :: Second point +1 
-  \return distance between points
-*/
-
-{
-  ELog::RegMethod RegA("AttachSupport","calcLinkDistance");
-
-  const Geometry::Vec3D PtA=FC.getSignedLinkPt(sideIndexA);
-  const Geometry::Vec3D PtB=FC.getSignedLinkPt(sideIndexB);
-  return PtA.Distance(PtB);
-  
-}
 
 HeadRule
 unionLink(const attachSystem::FixedComp& FC,
@@ -830,7 +809,7 @@ unionLink(const attachSystem::FixedComp& FC,
   HeadRule Out;
 
   for(const long int LI : LIndex)
-    Out.addUnion(FC.getSignedLinkString(LI));
+    Out.addUnion(FC.getLinkString(LI));
 
 
   return Out;
@@ -851,7 +830,7 @@ intersectionLink(const attachSystem::FixedComp& FC,
   HeadRule Out;
 
   for(const long int LI : LIndex)
-    Out.addIntersection(FC.getSignedLinkString(LI));
+    Out.addIntersection(FC.getLinkString(LI));
 
   return Out;
 }

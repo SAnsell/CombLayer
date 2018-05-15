@@ -3,7 +3,7 @@
  
  * File:   essBuild/TESTBEAM.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -82,8 +82,9 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Motor.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Cryostat.h"
 
@@ -103,7 +104,7 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   ADisk(new constructSystem::DiskChopper(newName+"BladeA")),
   BDisk(new constructSystem::DiskChopper(newName+"BladeB")),
 
-  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")), 
+  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")), 
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
   T0Motor(new constructSystem::Motor(newName+"T0Motor")),
   CryoA(new constructSystem::Cryostat(newName+"CryoA"))
@@ -175,8 +176,9 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
   TwinA->createAll(System,FA,startIndex);
 
   ADisk->addInsertCell(TwinA->getCell("Void"));
-  ADisk->createAll(System,TwinA->getKey("Motor"),3,
-                   TwinA->getKey("BuildBeam"),-1);
+  ADisk->createAll(System,TwinA->getKey("MotorTop"),0,
+                   TwinA->getKey("Beam"),-1);
+  TwinA->insertAxle(System,*ADisk,attachSystem::CellMap());
   //  DiskA->createAll(System,
   return;
 }
@@ -233,7 +235,7 @@ TESTBEAM::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*testAxis,Control,GItem,1);

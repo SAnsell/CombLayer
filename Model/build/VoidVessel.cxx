@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/VoidVessel.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -91,8 +90,7 @@ namespace shutterSystem
 
 VoidVessel::VoidVessel(const std::string& Key)  : 
   attachSystem::FixedComp(Key,0),attachSystem::ContainedComp(),
-  voidIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(voidIndex+1),populated(0),steelCell(0)
+  steelCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -101,8 +99,7 @@ VoidVessel::VoidVessel(const std::string& Key)  :
 
 VoidVessel::VoidVessel(const VoidVessel& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  voidIndex(A.voidIndex),cellIndex(A.cellIndex),
-  populated(A.populated),voidOrigin(A.voidOrigin),vXoffset(A.vXoffset),
+  voidOrigin(A.voidOrigin),vXoffset(A.vXoffset),
   vThick(A.vThick),vGap(A.vGap),vSide(A.vSide),vBase(A.vBase),
   vTop(A.vTop),vBack(A.vBack),vFront(A.vFront),vFDepth(A.vFDepth),
   vForwardAngle(A.vForwardAngle),vWindowThick(A.vWindowThick),
@@ -134,7 +131,6 @@ VoidVessel::operator=(const VoidVessel& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       voidOrigin=A.voidOrigin;
       vXoffset=A.vXoffset;
       vThick=A.vThick;
@@ -178,15 +174,13 @@ VoidVessel::~VoidVessel()
 {}
 
 void
-VoidVessel::populate(const Simulation& System)
+VoidVessel::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
   ELog::RegMethod RegA("VoidVessel","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
    
   vThick=Control.EvalVar<double>(keyName+"Thick");
   vGap=Control.EvalVar<double>(keyName+"Gap");
@@ -225,7 +219,6 @@ VoidVessel::populate(const Simulation& System)
   vMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   vWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
       
-  populated = 1;
   return;
 }
 
@@ -233,6 +226,7 @@ void
 VoidVessel::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: FixedComp
   */
 {
   ELog::RegMethod RegA("VoidVessel","createUnitVector");
@@ -256,94 +250,94 @@ VoidVessel::createSurfaces()
   //
   // OUTER VOID
   //
-  ModelSupport::buildPlane(SMap,voidIndex+1,Origin-Y*(vFront+vGap),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+2,Origin+Y*(vBack+vGap),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+3,Origin-X*(vSide+vGap),X);
-  ModelSupport::buildPlane(SMap,voidIndex+4,Origin+X*(vSide+vGap),X);
-  ModelSupport::buildPlane(SMap,voidIndex+5,Origin-Z*(vBase+vGap),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+6,Origin+Z*(vTop+vGap),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(vFront+vGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(vBack+vGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(vSide+vGap),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(vSide+vGap),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(vBase+vGap),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(vTop+vGap),Z);
 
   Geometry::Vec3D EdgeAxis(Y);
   Geometry::Quaternion::calcQRotDeg(-vForwardAngle,Z).rotate(EdgeAxis);
   Geometry::Vec3D OP=Origin-X*vSide-Y*(vFront-vFDepth)-EdgeAxis*vGap;
-  ModelSupport::buildPlane(SMap,voidIndex+13,OP,EdgeAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+13,OP,EdgeAxis);
 
   EdgeAxis=Y;
   Geometry::Quaternion::calcQRotDeg(vForwardAngle,Z).rotate(EdgeAxis);
   OP=Origin+X*vSide-Y*(vFront-vFDepth)-EdgeAxis*vGap;
-  ModelSupport::buildPlane(SMap,voidIndex+14,OP,EdgeAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+14,OP,EdgeAxis);
   //
   // Outer METAL
   //
-  ModelSupport::buildPlane(SMap,voidIndex+21,Origin-Y*vFront,Y);
-  ModelSupport::buildPlane(SMap,voidIndex+22,Origin+Y*vBack,Y);
-  ModelSupport::buildPlane(SMap,voidIndex+23,Origin-X*vSide,X);
-  ModelSupport::buildPlane(SMap,voidIndex+24,Origin+X*vSide,X);
-  ModelSupport::buildPlane(SMap,voidIndex+25,Origin-Z*vBase,Z);
-  ModelSupport::buildPlane(SMap,voidIndex+26,Origin+Z*vTop,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*vFront,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*vBack,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*vSide,X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*vSide,X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*vBase,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*vTop,Z);
 
   EdgeAxis=Y;
   Geometry::Quaternion::calcQRotDeg(-vForwardAngle,Z).rotate(EdgeAxis);
   OP=Origin-X*vSide-Y*(vFront-vFDepth);
-  ModelSupport::buildPlane(SMap,voidIndex+33,OP,EdgeAxis);
-  ModelSupport::buildPlane(SMap,voidIndex+53,OP+EdgeAxis*vThick,EdgeAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+33,OP,EdgeAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+53,OP+EdgeAxis*vThick,EdgeAxis);
 
   EdgeAxis=Y;
   Geometry::Quaternion::calcQRotDeg(vForwardAngle,Z).rotate(EdgeAxis);
   OP=Origin+X*vSide-Y*(vFront-vFDepth);
-  ModelSupport::buildPlane(SMap,voidIndex+34,OP,EdgeAxis);
-  ModelSupport::buildPlane(SMap,voidIndex+54,OP+EdgeAxis*vThick,EdgeAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+34,OP,EdgeAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+54,OP+EdgeAxis*vThick,EdgeAxis);
 
 
   //
   // Inner METAL
   //
-  ModelSupport::buildPlane(SMap,voidIndex+41,Origin-Y*(vFront-vThick),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+42,Origin+Y*(vBack-vThick),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+43,Origin-X*(vSide-vThick),X);
-  ModelSupport::buildPlane(SMap,voidIndex+44,Origin+X*(vSide-vThick),X);
-  ModelSupport::buildPlane(SMap,voidIndex+45,Origin-Z*(vBase-vThick),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+46,Origin+Z*(vTop-vThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin-Y*(vFront-vThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+42,Origin+Y*(vBack-vThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+43,Origin-X*(vSide-vThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+44,Origin+X*(vSide-vThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(vBase-vThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(vTop-vThick),Z);
   
   // WINDOWS:
   // Inner metal:
-  ModelSupport::buildPlane(SMap,voidIndex+103,Origin-X*(vSide-vWindowThick),X);
-  ModelSupport::buildPlane(SMap,voidIndex+104,Origin+X*(vSide-vWindowThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(vSide-vWindowThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(vSide-vWindowThick),X);
 
   // West side [TOP]:
-  ModelSupport::buildPlane(SMap,voidIndex+105,Origin+Z*(vWindowWTopZ-vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+106,Origin+Z*(vWindowWTopZ+vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin+Z*(vWindowWTopZ-vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(vWindowWTopZ+vWindowView),Z);
 
-  ModelSupport::buildPlane(SMap,voidIndex+101,Origin+Y*(vWindowWTopOff-vWindowWTopLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+102,Origin+Y*(vWindowWTopOff+vWindowWTopLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(vWindowWTopOff-vWindowWTopLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(vWindowWTopOff+vWindowWTopLen/2.0),Y);
   
   // West Side [LOW]:
 
-  ModelSupport::buildPlane(SMap,voidIndex+115,Origin+Z*(vWindowWLowZ-vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+116,Origin+Z*(vWindowWLowZ+vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+111,Origin+Y*(vWindowWLowOff-vWindowWLowLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+112,Origin+Y*(vWindowWLowOff+vWindowWLowLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+115,Origin+Z*(vWindowWLowZ-vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(vWindowWLowZ+vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+Y*(vWindowWLowOff-vWindowWLowLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+112,Origin+Y*(vWindowWLowOff+vWindowWLowLen/2.0),Y);
 
   // East Side [HIGH]:
-  ModelSupport::buildPlane(SMap,voidIndex+125,Origin+Z*(vWindowETopZ-vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+126,Origin+Z*(vWindowETopZ+vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+121,Origin+Y*(vWindowETopOff-vWindowETopLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+122,Origin+Y*(vWindowETopOff+vWindowETopLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+125,Origin+Z*(vWindowETopZ-vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+126,Origin+Z*(vWindowETopZ+vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+121,Origin+Y*(vWindowETopOff-vWindowETopLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+122,Origin+Y*(vWindowETopOff+vWindowETopLen/2.0),Y);
   
   // East Side [LOW]:
-  ModelSupport::buildPlane(SMap,voidIndex+135,Origin+Z*(vWindowELowZ-vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+136,Origin+Z*(vWindowELowZ+vWindowView),Z);
-  ModelSupport::buildPlane(SMap,voidIndex+131,Origin+Y*(vWindowELowOff-vWindowELowLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,voidIndex+132,Origin+Y*(vWindowELowOff+vWindowELowLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+135,Origin+Z*(vWindowELowZ-vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+136,Origin+Z*(vWindowELowZ+vWindowView),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+131,Origin+Y*(vWindowELowOff-vWindowELowLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+132,Origin+Y*(vWindowELowOff+vWindowELowLen/2.0),Y);
 
   // Side windows : Complex:
-  const Geometry::Plane* sRPlane=SMap.realPtr<Geometry::Plane>(voidIndex+53);
-  const Geometry::Plane* sLPlane=SMap.realPtr<Geometry::Plane>(voidIndex+54);
-  const Geometry::Surface* sRSidePlane=SMap.realSurfPtr(voidIndex+43);
-  const Geometry::Surface* sLSidePlane=SMap.realSurfPtr(voidIndex+44);
-  const Geometry::Surface* sFlat=SMap.realSurfPtr(voidIndex+41);
-  const Geometry::Surface* sRoof=SMap.realSurfPtr(voidIndex+46);
-  const Geometry::Surface* sFloor=SMap.realSurfPtr(voidIndex+45);
+  const Geometry::Plane* sRPlane=SMap.realPtr<Geometry::Plane>(buildIndex+53);
+  const Geometry::Plane* sLPlane=SMap.realPtr<Geometry::Plane>(buildIndex+54);
+  const Geometry::Surface* sRSidePlane=SMap.realSurfPtr(buildIndex+43);
+  const Geometry::Surface* sLSidePlane=SMap.realSurfPtr(buildIndex+44);
+  const Geometry::Surface* sFlat=SMap.realSurfPtr(buildIndex+41);
+  const Geometry::Surface* sRoof=SMap.realSurfPtr(buildIndex+46);
+  const Geometry::Surface* sFloor=SMap.realSurfPtr(buildIndex+45);
 
   // Right Window:
   Geometry::Vec3D VPts[4];
@@ -359,11 +353,11 @@ VoidVessel::createSurfaces()
   Centre-=Z*Centre.dotProd(Z);
 
   // West side (right) [LOW] -- HYDROGEN:
-  ModelSupport::buildPlane(SMap,voidIndex+201,
+  ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Centre-CrossVec*(vWindowAngleLen-vWindowAngleROff),CrossVec);
-  ModelSupport::buildPlane(SMap,voidIndex+202,
+  ModelSupport::buildPlane(SMap,buildIndex+202,
 			   Centre+CrossVec*(vWindowAngleLen+vWindowAngleROff),CrossVec);
-  ModelSupport::buildPlane(SMap,voidIndex+203,Centre-Axis*(vThick-vWindowThick),Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+203,Centre-Axis*(vThick-vWindowThick),Axis);
 
   // LEFT WINDOW
   VPts[0]=SurInter::getPoint(sLPlane,sLSidePlane,sFloor);
@@ -378,11 +372,11 @@ VoidVessel::createSurfaces()
   Centre-=Z*Centre.dotProd(Z);
   
   // West side (right) [LOW] -- HYDROGEN:
-  ModelSupport::buildPlane(SMap,voidIndex+221,
+  ModelSupport::buildPlane(SMap,buildIndex+221,
 			   Centre-CrossVec*(vWindowAngleLen-vWindowAngleLOff),CrossVec);
-  ModelSupport::buildPlane(SMap,voidIndex+222,
+  ModelSupport::buildPlane(SMap,buildIndex+222,
 			   Centre+CrossVec*(vWindowAngleLen+vWindowAngleLOff),CrossVec);
-  ModelSupport::buildPlane(SMap,voidIndex+223,Centre-Axis*(vThick-vWindowThick),Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+223,Centre-Axis*(vThick-vWindowThick),Axis);
   return;
 }
 
@@ -398,29 +392,29 @@ VoidVessel::createObjects(Simulation& System,
   ELog::RegMethod RegA("VoidVessel","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,voidIndex,"1 -2 3 -4 5 -6 13 14 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 13 14 "
                          "(-21 : 22 : -23 : 24 : -25 : 26 : -33 : -34)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex,"21 -22 23 -24 25 -26 33 34 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 33 34 "
                                "(-41 : 42 : -43 : 44 : -45 : 46 : -53 : -54)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vMat,0.0,Out));
   steelCell=cellIndex-1;
 
   if (!Reflector)
   // Add inner object + Intersection 
-    Out=ModelSupport::getComposite(SMap,voidIndex,"41 -42 43 -44 45 -46 53 54 "
+    Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 "
 				   "#78000T ");
   else
     {
-      Out=ModelSupport::getComposite(SMap,voidIndex,"41 -42 43 -44 45 -46 53 54 ")+
+      Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 53 54 ")+
 	Reflector->getExclude();
     }
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Now add Outer surface:
-  Out=ModelSupport::getComposite(SMap,voidIndex,"1 -2 3 -4 5 -6 13 14");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 13 14");
   addOuterSurf(Out);
   
   return;
@@ -441,60 +435,66 @@ VoidVessel::createWindows(Simulation& System)
   std::string Out,outerInclude;
   
   // West Top
-  Out=ModelSupport::getComposite(SMap,voidIndex,"-103 23 101 -102 105 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-103 23 101 -102 105 -106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vWindowMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,voidIndex,"103 -43 101 -102 105 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"103 -43 101 -102 105 -106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,voidIndex,
+  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
 				  "( 43 : -101 : 102 : -105 : 106 ) ");
   steelObj->addSurfString(outerInclude);
 
   // West Low
-  Out=ModelSupport::getComposite(SMap,voidIndex,"-103 23 111 -112 115 -116");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-103 23 111 -112 115 -116");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vWindowMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex,"103 -43 111 -112 115 -116");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"103 -43 111 -112 115 -116");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,voidIndex,
+  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
 				  "( 43 : -111 : 112 : -115 : 116 )");
   steelObj->addSurfString(outerInclude);
 
   // East Top:
-  Out=ModelSupport::getComposite(SMap,voidIndex,"104 -24 121 -122 125 -126");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"104 -24 121 -122 125 -126");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vWindowMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex,"-104 44 121 -122 125 -126");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-104 44 121 -122 125 -126");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,voidIndex,
+  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
 				  "( -44 : -121 : 122 : -125 : 126 )");
   steelObj->addSurfString(outerInclude);
 
   // East Low:
-  Out=ModelSupport::getComposite(SMap,voidIndex,"104 -24 131 -132 135 -136");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"104 -24 131 -132 135 -136");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vWindowMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex,"-104 44 131 -132 135 -136");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-104 44 131 -132 135 -136");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,voidIndex,
+  outerInclude=ModelSupport::getComposite(SMap,buildIndex,
 				  "( -44 : -131 : 132 : -135 : 136 )");
   steelObj->addSurfString(outerInclude);
 
   // East Angle Low:
-  Out=ModelSupport::getComposite(SMap,voidIndex,"33 -203 201 -202 135 -136");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"33 -203 201 -202 135 -136");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vWindowMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex,"203 (-53:-43) -111 201 -202 135 -136");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "203 (-53:-43) -111 201 -202 135 -136");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,voidIndex,"((53 43) : -201 : 202 : -135 : 136)");
+
+  outerInclude=ModelSupport::getComposite
+    (SMap,buildIndex,"((53 43) : -201 : 202 : -135 : 136)");
   steelObj->addSurfString(outerInclude);
 
   // West Angle High:
-  Out=ModelSupport::getComposite(SMap,voidIndex,"34 -223 221 -222 105 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"34 -223 221 -222 105 -106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,vWindowMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex,"223 (-54:44) -121 221 -222 105 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "223 (-54:44) -121 221 -222 105 -106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  outerInclude=ModelSupport::getComposite(SMap,voidIndex,"((54 -44) : -221 : 222 : -105 : 106)");
+  
+  outerInclude=ModelSupport::getComposite
+    (SMap,buildIndex,"((54 -44) : -221 : 222 : -105 : 106)");
   steelObj->addSurfString(outerInclude);
   
 
@@ -530,7 +530,7 @@ VoidVessel::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("VoidVessel","createAll");
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System,Reflector);

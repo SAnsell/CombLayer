@@ -3,7 +3,7 @@
  
  * File:   delft/reactorTallyConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "NRange.h"
 #include "NList.h"
 #include "Tally.h"
@@ -68,6 +67,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "objectSupport.h"
 #include "FuelLoad.h"
@@ -78,41 +78,11 @@
 
 namespace tallySystem
 {
-
-reactorTallyConstruct::reactorTallyConstruct() :
-  fissionConstruct()
-  /*!
-    Constructor
-  */
-{}
-
-reactorTallyConstruct::reactorTallyConstruct(const reactorTallyConstruct& A) :
-  fissionConstruct(A)
-  /*!
-    Copy Constructor
-    \param A :: reactorTallyConstructor to copy
-  */
-{}
-
-reactorTallyConstruct&
-reactorTallyConstruct::operator=(const reactorTallyConstruct& A) 
-  /*!
-    Assignment operator
-    \param A :: Tally to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      fissionConstruct::operator=(A);
-    }
-  return *this;
-}
-
-int
-reactorTallyConstruct::processPower
-        (Simulation& System,const mainSystem::inputParam& IParam,
-	 const size_t Index) const
+ 
+void
+reactorTallyConstruct::processPower(SimMCNP& System,
+				    const mainSystem::inputParam& IParam,
+				    const size_t Index)
   /*!
     Add point tally (s) as needed
     \param System :: Simulation to add tallies
@@ -150,11 +120,11 @@ reactorTallyConstruct::processPower
   const std::string Comment=(Cmt % nTally % "ReactorGrid" ).str();
   TX->setComment(Comment);
 
-  return 0;
+  return;
 }
 
 void
-reactorTallyConstruct::writeHelp(std::ostream& OX) const
+reactorTallyConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream

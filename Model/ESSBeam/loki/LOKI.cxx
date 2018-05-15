@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKI.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -84,7 +85,7 @@
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "Aperture.h"
@@ -117,7 +118,7 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
   BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
@@ -129,7 +130,7 @@ LOKI::LOKI(const std::string& keyN) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   DDiskOutA(new constructSystem::DiskChopper(newName+"DBladeOutA")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
@@ -304,8 +305,8 @@ LOKI::buildOutGuide(Simulation& System,
   //Cut throught chopper pit for guide and pipe that are following it 
   PitACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   PitACut->addInsertCell(OutPitA->getCells("Collet"));
-  PitACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  PitACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   PitACut->createAll(System,OutPitA->getKey("Inner"),2);
   
   //Chopper unit
@@ -341,7 +342,7 @@ LOKI::buildOutGuide(Simulation& System,
   attachSystem::addToInsertForced(System,*AppA,*VPipeOutA);
 
   //Collimator block in first shielding
-  CollA->setInnerExclude(VPipeOutA->getSignedFullRule(9));
+  CollA->setInnerExclude(VPipeOutA->getFullRule(9));
   CollA->setOuter(ShieldA->getXSectionIn());
   CollA->addInsertCell(ShieldA->getCell("Void"));
   CollA->addInsertCell(VPipeOutA->getCell("OutVoid"));
@@ -359,7 +360,7 @@ LOKI::buildOutGuide(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
 
-  CollB->setInnerExclude(VPipeOutB->getSignedFullRule(9));
+  CollB->setInnerExclude(VPipeOutB->getFullRule(9));
   CollB->setOuter(ShieldB->getXSectionIn());
   CollB->addInsertCell(ShieldB->getCell("Void"));
   CollB->addInsertCell(VPipeOutB->getCell("OutVoid"));

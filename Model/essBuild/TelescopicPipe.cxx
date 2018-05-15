@@ -3,7 +3,7 @@
  
  * File:   essBuild/TelescopicPipe.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "FrontBackCut.h"
 
 #include "TelescopicPipe.h"
@@ -82,7 +84,7 @@ namespace essSystem
   
 TelescopicPipe::TelescopicPipe(const std::string& Key) :
   attachSystem::ContainedGroup(),attachSystem::FixedOffset(Key,3),
-  attachSystem::FrontBackCut(),
+  attachSystem::FrontBackCut(),attachSystem::CellMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1)
   /*!
@@ -93,7 +95,7 @@ TelescopicPipe::TelescopicPipe(const std::string& Key) :
 
 TelescopicPipe::TelescopicPipe(const TelescopicPipe& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
-  attachSystem::FrontBackCut(A),
+  attachSystem::FrontBackCut(A),attachSystem::CellMap(A),
   ptIndex(A.ptIndex),cellIndex(A.cellIndex),nSec(A.nSec),
   radius(A.radius),length(A.length),zCut(A.zCut),
   thick(A.thick),inMat(A.inMat),wallMat(A.wallMat)
@@ -117,6 +119,7 @@ TelescopicPipe::operator=(const TelescopicPipe& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       nSec=A.nSec;
       radius=A.radius;
@@ -229,8 +232,10 @@ TelescopicPipe::createObjects(Simulation& System)
   for(size_t i=0;i<nSec;i++)
     {
       const std::string SName="Sector"+std::to_string(i);
+
       FrontCap=(!i) ? frontRule() :
 	ModelSupport::getComposite(SMap,PT-100, " 2 ");
+      
       EndCap=(i+1 == nSec) ? backRule() : 
 	ModelSupport::getComposite(SMap,PT, " -2 ");
       

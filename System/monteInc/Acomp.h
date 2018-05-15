@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Acomp.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,9 +58,13 @@ enum JoinForm { Inter=0,Union=1 };
 class Acomp
 {
  private:
-  
+
+  /// Type of set for units
+  typedef std::set<int,AcompTools::unitsLessOrder> UTYPE; 
+
+  int trueFlag;                 ///< -1 : False : 0 [variable] : 1 True
   int Intersect;                ///<  Union/Intersection (0,1)
-  std::vector<int> Units;       ///< Units in list
+  UTYPE Units;       ///< Units in set
   std::vector<Acomp> Comp;      ///< Components in list
 
   void deleteComp();            ///< delete all of the Comp list
@@ -68,12 +72,15 @@ class Acomp
   //  void addCompPtr(Acomp*);      ///< add a Component intellegently
   void addUnitItem(const int);      ///< add an Unit intellgently
   void processIntersection(const std::string&);
-  void processIntersection2(const std::string&);
   void processUnion(const std::string&);
   int joinDepth();                      
-  int removeEqComp();                   
+  int removeEqComp();
+  bool removeFalseComp();
+  bool removeUnionPair();
+  bool removeEqUnion();                   
   int copySimilar(const Acomp&);        
 
+  bool hasUnitInUnit(const int) const;
   /// Adds a Binary state to the Component
   void addUnit(const std::vector<int>&,const BnId&);   
   void assignDNF(const std::vector<int>&,const std::vector<BnId>&);  
@@ -94,52 +101,111 @@ class Acomp
   static int hasPlus(const std::string&);
   static size_t checkWrongChar(const std::string&);
   void addTokens(const std::string&);
+
+  void upMoveComp();
+  void primativeAddItem(const Acomp&);
+  void processChange();
+
+  Acomp expandIII(const Acomp&) const;
+  Acomp expandIIU(const Acomp&) const;
+  Acomp expandUII(const Acomp&) const;
+  Acomp expandUIU(const Acomp&) const;
+
+  Acomp expandIUI(const Acomp&) const;
+  Acomp expandIUU(const Acomp&) const;
+  Acomp expandUUI(const Acomp&) const;
+  Acomp expandUUU(const Acomp&) const;
+
+ 
+  static Acomp interCombine(const int,const int);
+  static Acomp unionCombine(const int,const int);
+  static Acomp interCombine(const int,const Acomp&);
+  static Acomp unionCombine(const int,const Acomp&);
+  static Acomp interCombine(const Acomp&,const Acomp&);
+  static Acomp unionCombine(const Acomp&,const Acomp&);
   
-
-
  public:
 
-  Acomp(const JoinForm);   
+  static int unitStr(std::string);
+  static std::string strUnit(const int);
+  static std::string mapLogic(const std::map<int,int>&);
+  
+  Acomp(const JoinForm);
+  explicit Acomp(const int);   
   Acomp(const Acomp&);
   Acomp& operator=(const Acomp&); 
-  int operator==(const Acomp&) const; 
-  int operator!=(const Acomp&) const;         ///< Complementary operator
-  int operator<(const Acomp&) const;       
-  int operator>(const Acomp&) const;
+  bool operator==(const Acomp&) const; 
+  bool operator!=(const Acomp&) const;  
+  bool operator<(const Acomp&) const;       
+  bool operator>(const Acomp&) const;
   Acomp& operator+=(const Acomp&);
   Acomp& operator-=(const Acomp&);
   Acomp& operator*=(const Acomp&);
   ~Acomp();
 
+  Acomp& addIntersect(const int);
+  Acomp& addUnion(const int);
+  
+  // AcompExtra
+  Acomp componentExpand(const int,const Acomp&) const;
+  int merge();
+  bool clearNulls(); 
+  void clear();     //  this delete all
+  bool isEmpty() const;
+  bool isFalse() const { return trueFlag==-1; }
+  bool isTrue() const { return trueFlag==1; }
+  
+  
+  int getSinglet() const;
   const Acomp* itemC(const size_t) const;
-  int itemN(const size_t) const;   
 
-  std::pair<int,int> size() const; ///< get the size of the units and the Acomp sub-comp
-  int isSimple() const;            ///< true if only Units
-  int isDNF() const;               
-  int isCNF() const;               
-  int isNull() const;              
-  int isSingle() const;            
-  int contains(const Acomp&) const;  
-  int isInter() const { return Intersect; }   ///< Deterimine if inter/union
-  int isTrue(const std::map<int,int>&) const;   ///< Determine if the rule is true.
+  size_t countComponents() const;
+  std::pair<size_t,size_t> size() const;
+  bool isSinglet() const;
+  bool isSimple() const;
+  bool isDNF() const;               
+  bool isCNF() const;               
+  bool isNull() const;              
+  bool isSingle() const;        // one item
 
-  void Sort();                                     ///< Sort the Units+Comp items
-  void getLiterals(std::map<int,int>&) const;      ///< Get literals (+/- different)
-  void getAbsLiterals(std::map<int,int>&) const;   ///< Get literals (positve)
+  void resolveTrue(const int);
+  void removeNonCandidate(const int);
+  bool removeLiteral(const int);
+  bool removeSignedLiteral(const int);
+  
+  int contains(const int) const;
+  int contains(const Acomp&) const;
+  /// Deterimine if inter/union
+  int isInter() const { return Intersect; }  
+  int isTrue(const std::map<int,int>&) const;   
+  
+  void Sort();
+
+  void getLiterals(std::set<int>&) const;     
+  void getAbsLiterals(std::set<int>&) const;
+  bool hasLiteral(const int) const;
+  bool hasAbsLiteral(const int) const;
+  
   std::vector<int> getKeys() const;      
-  int logicalEqual(const Acomp&) const;
+  bool logicalEqual(const Acomp&) const;
+  int logicalCover(const Acomp&) const;
+  int logicalIntersectCover(const Acomp&) const;
+  
+  int makeDNFobject();                
+  int makeCNFobject();                
 
-  int makeDNFobject();                 ///< Make the object into DNF form (Sum of Products)
-  int makeCNFobject();                 ///< Make the object into CNF form (Product of Sums)
+  void expandBracket();
+  void expandCNFBracket();
 
-  void complement();                                  ///< Take complement of component
-  std::pair<Acomp,Acomp> algDiv(const Acomp&);        ///< Carry out Algebric division
-  void setString(const std::string&);                 ///< Processes a line of type abc'+efg
-  void writeFull(std::ostream&,const int =0) const;   ///< Full write out to determine state
-  std::string display() const;                        ///< Pretty print statment
-  std::string displayDepth(const int =0) const;       ///< Really pretty print statment of tree
-
+  void complement();
+  std::pair<Acomp,Acomp> algDiv(const Acomp&); 
+  void setString(const std::string&);          
+  void writeFull(std::ostream&,const int =0) const; 
+  std::string unitsDisplay() const;
+  std::string compDisplay(std::string = "") const;
+  std::string display() const;                      
+  std::string displayDepth(const int =0) const;     
+  
   void orString(const std::string&);
 
   void printImplicates(const std::vector<BnId>&,

@@ -161,16 +161,16 @@ BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+15,RG.getLinkPt(4)+Z*T,Z);
+  ModelSupport::buildPlane(SMap,surfIndex+15,RG.getLinkPt(5)+Z*T,Z);
 
   T+=coolThick;
   ModelSupport::buildPlane(SMap,surfIndex+21,Origin-Y*(Depth/2.0-T),Y);
   ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(4)+Z*T,Z);
+  ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(5)+Z*T,Z);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
 
   return;
 }

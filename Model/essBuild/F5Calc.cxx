@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/F5Calc.cxx
  *
- * Copyright (c) 2015 Konstantin Batkov
+ * Copyright (c) 2015-2017 Konstantin Batkov 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,9 @@ namespace tallySystem
 {
 
 F5Calc::F5Calc()
+  /*!
+    Constructor
+  */
 {}
 
 
@@ -63,6 +66,12 @@ F5Calc::~F5Calc()
   
 void
 F5Calc::SetTally(double lx,double ly,double lz)
+   /*!
+     Simple seter
+     \param lx ::  ??
+     \param ly ::  ??
+     \param lz ::  ??
+   */
 {
   F5(lx,ly,lz);
   return;
@@ -74,6 +83,9 @@ F5Calc::SetPoints(const Geometry::Vec3D& lB,
 		  const Geometry::Vec3D& lB2)
    /*!
      Simple seter
+     \param lB ::  ??
+     \param lC ::  ??
+     \param lB2 ::  ??
    */
 {
   B = lB;
@@ -190,12 +202,13 @@ F5Calc::CalculateNormalVector(const Geometry::Vec3D& O,
 
 Geometry::Vec3D
 F5Calc::CalculateProjectionOntoPlane
-    (const Geometry::Vec3D& NV,const Geometry::Vec3D& M,
+    (const Geometry::Vec3D& NV,
+     const Geometry::Vec3D& M,
      const Geometry::Vec3D& P) const
-/*!
- \param NV :: the normal vector of the plane
- \param M :: a point on the plane
- \param P :: a point which projection (P2) is calculated on the plane
+  /*!
+    \param NV :: the normal vector of the plane
+    \param M :: a point on the plane
+    \param P :: a point which projection (P2) is calculated on the plane
 */
 {
 
@@ -205,4 +218,4 @@ F5Calc::CalculateProjectionOntoPlane
 }
 
   
-}  //NAMESPACE tallySystem !!!!!!
+}  // NAMESPACE tallySystem 

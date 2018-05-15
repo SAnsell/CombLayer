@@ -3,7 +3,7 @@
  
  * File:   src/NTree.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ NTree::getInterval(const size_t index) const
       // Check negative??
       const double LDA=std::log(std::abs(DA));
       const double LDB=std::log(std::abs(DB));
-      const double step((LDB-LDA)/(NR+1));
+      const double step((LDB-LDA)/static_cast<double>(NR+1));
       double V(LDA);
       for(size_t i=0;i<NR;i++)
 	{
@@ -164,7 +164,7 @@ NTree::getInterval(const size_t index) const
 
   else  // Interval
     {
-      const double step((DB-DA)/(NR+1));
+      const double step((DB-DA)/static_cast<double>(NR+1));
       double V(DA);
       for(size_t i=0;i<NR;i++)
 	{

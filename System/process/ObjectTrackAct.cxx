@@ -183,6 +183,44 @@ ObjectTrackAct::getAttnSum(const long int objN) const
 }
 
 double
+ObjectTrackAct::getAttnSum(const long int objN,const double E) const
+  /*!
+    Calculate the sum in the material
+    \param objN :: Cell number to use
+    \return sum of distance in non-void
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","getAttnSum(E)");
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  std::map<long int,LineTrack>::const_iterator mc=Items.find(objN);
+  if (mc==Items.end())
+    throw ColErr::InContainerError<long int>(objN,"objN in Items");
+  
+  // Get Two Paired Vectors
+  const std::vector<MonteCarlo::Object*>& OVec=
+    mc->second.getObjVec();
+  const std::vector<double>& TVec=mc->second.getTrack();
+  
+  double sum(0.0);
+  for(size_t i=0;i<TVec.size();i++)
+    {
+      const long int matN=OVec[i]->getMat();
+      if (matN)
+	{
+	  const MonteCarlo::Material& matInfo=
+	    DB.getMaterial(static_cast<int>(matN));
+	  const double density=matInfo.getAtomDensity();
+	  const double AMean=matInfo.getMeanA();
+	  sum+=TVec[i]*std::pow(AMean,0.66)*density;
+	}
+    }
+  return sum/E;
+}
+
+double
 ObjectTrackAct::getDistance(const long int objN) const
   /*!
     Calculate the sum of the distance

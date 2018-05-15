@@ -342,8 +342,8 @@ MultiChannel::setFaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("MultiChannel","setFaces<FC>");
 
-  const int baseSurfN=FC.getSignedLinkSurf(BS);
-  const int topSurfN=FC.getSignedLinkSurf(TS);
+  const int baseSurfN=FC.getLinkSurf(BS);
+  const int topSurfN=FC.getLinkSurf(TS);
   setFaces(baseSurfN,topSurfN);
 
   return;
@@ -394,8 +394,8 @@ MultiChannel::setLeftRight(const attachSystem::FixedComp& FCA,
 {
   ELog::RegMethod RegA("MultiChannel","setLeftRight(FC)");
 
-  leftStruct=FCA.getSignedFullRule(lIndex);
-  rightStruct=FCB.getSignedFullRule(rIndex);
+  leftStruct=FCA.getFullRule(lIndex);
+  rightStruct=FCB.getFullRule(rIndex);
   setFlag |= 2;
   return;
 }

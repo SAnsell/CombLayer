@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/EngReflector.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,21 +42,14 @@ namespace ts1System
 */
 
 class EngReflector : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
   
   const int refIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle 
-  double zAngle;                ///< Angle 
-
-
   double radius;                ///< Reflector radius
   double width;                 ///< Reflector full width 
   double height;                ///< Reflector full height
@@ -103,8 +96,9 @@ class EngReflector : public attachSystem::ContainedComp,
   double inSWatCutYOffset;         ///< cut Y offset  
   double inSWatCutRadius;         ///< cut radius  
         
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createLinks();
@@ -119,9 +113,6 @@ class EngReflector : public attachSystem::ContainedComp,
 
   std::string getComposite(const std::string&) const;
   void addToInsertChain(attachSystem::ContainedComp& CC) const;
-  void addToInsertControl(Simulation&,
-			  const attachSystem::FixedComp&,
-			  attachSystem::ContainedComp& CC) const;
   // Main cell
   int getInnerCell() const { return refIndex+1; }
   std::vector<int> getCells() const;

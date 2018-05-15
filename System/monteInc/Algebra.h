@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monteInc/Algebra.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,11 @@ class Algebra
 {
  private:
 
-  std::map<int,std::string> SurfMap;    ///< Surface Map 
+  std::map<int,int> SurfMap;    ///< Surface Map
+
   Acomp F;                              ///< Factor
-  Acomp FplusImpl;                      ///< Factor with implicates
+
+  std::vector<std::pair<int,int>> ImplicateVec;   ///< implicate vector
   
  public:
 
@@ -55,16 +57,24 @@ class Algebra
   /// Accessor
   const Acomp& getComp() const { return F; }  
   
-  int operator==(const Algebra&) const;
-  int operator!=(const Algebra&) const;
+  bool operator==(const Algebra&) const;
+  bool operator!=(const Algebra&) const;
   Algebra& operator+=(const Algebra&);
   Algebra& operator-=(const Algebra&);
   Algebra& operator*=(const Algebra&);
   Algebra operator+(const Algebra&) const;
   Algebra operator-(const Algebra&) const;
   Algebra operator*(const Algebra&) const;
-  int logicalEqual(const Algebra&) const;
+  bool logicalEqual(const Algebra&) const;
 
+  void addImplicates(const std::vector<std::pair<int,int>>&);
+  bool constructShannonExpansion();
+  bool constructShannonDivision(const int);
+  size_t countComponents() const;
+
+  void expandBracket();
+  void expandCNFBracket();
+  void merge();
   void Complement();
   void makeDNF() { F.makeDNFobject(); }  ///< assessor to makeDNFobj
   void makeCNF() { F.makeCNFobject(); }  ///< assessor to makeCNFobj
@@ -73,14 +83,19 @@ class Algebra
   int setFunction(const std::string&);
   int setFunction(const Acomp&);
 
-  void addImplicate(const int,const int);
+  void resolveTrue(const std::string&);
+
+  std::string getSurfKey(const int) const;
+  int getSurfIndex(const int) const;
+  int getSurfIndex(std::string) const;
+
+  int convertMCNPSurf(const int) const;
 
   std::string display() const;
   std::ostream& write(std::ostream&) const;
   std::string writeMCNPX() const;
 
-  // Debug Functions::
-  int countLiterals() const;
+  size_t countLiterals() const;
 
 };
 

@@ -153,12 +153,7 @@ LayerPlate::getFrontSurface(const size_t layerIndex,
       const int SI(slabIndex+static_cast<int>(layerIndex)*10);
       return ModelSupport::getComposite(SMap,SI," 1 ");
     }
-  // FC Object
-  if (sideIndex>0) 
-    return FC.getLinkString(static_cast<size_t>(sideIndex-1));
-
-  // Negetive surface
-  return FC.getLinkComplement(static_cast<size_t>((-sideIndex)-1));
+  return FC.getLinkString(sideIndex);
 }
 
 std::string

@@ -3,7 +3,7 @@
  
  * File:   commonVar/TwinGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,22 +44,20 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 
 namespace setVariable
 {
 
 TwinGenerator::TwinGenerator() :
-  stepHeight(87.4),mainRadius(39.122),
-  innerRadius(36.0),innerTopStep(25.0),
-  innerLowStep(25.0),
+  TwinBaseGenerator(),
   
   portRadius(10.0),portOuter(12.65),
   portNBolt(24),portBoltRadius(0.4),
@@ -69,20 +67,57 @@ TwinGenerator::TwinGenerator() :
   viewBoltStep(1.0),viewNBolt(8),
   viewBoltRadius(0.3),
   viewWindowMat("SiCrystal"),viewMat("Aluminium"),
-  viewBoltMat("ChipIRSteel"),
-  
-  motorRadius(8.0),motorOuter(10.20),
-  motorNBolt(24),motorBoltRadius(0.5),
-  motorSealThick(0.2),motorSealMat("Poly"),
-  ringNBolt(12),lineNBolt(8),outerStep(0.5),
-  outerBoltRadius(0.8),outerBoltMat("ChipIRSteel"),
-  wallMat("Aluminium")
+  viewBoltMat("ChipIRSteel")
   /*!
     Constructor : All variables are set for 35cm radius disks
     with an overlap of 5cm. Values are scaled appropiately for
     most changes
   */
 {}
+
+TwinGenerator::TwinGenerator(const TwinGenerator& A) : 
+  TwinBaseGenerator(A),
+  portRadius(A.portRadius),portOuter(A.portOuter),
+  portNBolt(A.portNBolt),portBoltRadius(A.portBoltRadius),
+  viewWidth(A.viewWidth),viewHeight(A.viewHeight),
+  viewLength(A.viewLength),viewWindowThick(A.viewWindowThick),
+  viewBoltStep(A.viewBoltStep),viewNBolt(A.viewNBolt),
+  viewBoltRadius(A.viewBoltRadius),viewWindowMat(A.viewWindowMat),
+  viewMat(A.viewMat),viewBoltMat(A.viewBoltMat)
+  /*!
+    Copy constructor
+    \param A :: TwinGenerator to copy
+  */
+{}
+
+TwinGenerator&
+TwinGenerator::operator=(const TwinGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: TwinGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      TwinBaseGenerator::operator=(A);
+      portRadius=A.portRadius;
+      portOuter=A.portOuter;
+      portNBolt=A.portNBolt;
+      portBoltRadius=A.portBoltRadius;
+      viewWidth=A.viewWidth;
+      viewHeight=A.viewHeight;
+      viewLength=A.viewLength;
+      viewWindowThick=A.viewWindowThick;
+      viewBoltStep=A.viewBoltStep;
+      viewNBolt=A.viewNBolt;
+      viewBoltRadius=A.viewBoltRadius;
+      viewWindowMat=A.viewWindowMat;
+      viewMat=A.viewMat;
+      viewBoltMat=A.viewBoltMat;
+    }
+  return *this;
+}
 
 
 TwinGenerator::~TwinGenerator() 
@@ -98,15 +133,12 @@ TwinGenerator::setMainRadius(const double R)
     \param R :: Radius
   */
 {
-  stepHeight*=R/mainRadius;
-  motorRadius*=R/mainRadius;
-  motorOuter*=R/mainRadius;
   portRadius*=R/mainRadius;
   portOuter*=R/mainRadius;
   viewWidth*=R/mainRadius;
   viewHeight*=R/mainRadius;
   viewBoltStep*=R/mainRadius;
-  mainRadius=R;
+  TwinBaseGenerator::setMainRadius(R);
   return;
 }
 
@@ -141,26 +173,44 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("TwinGenerator","generateChopper");
 
-  Control.addVariable(keyName+"YStep",yStep);
+  TwinBaseGenerator::generateChopper
+    (Control,keyName,yStep,length,voidLength);
+  
 
-  Control.addVariable(keyName+"StepHeight",stepHeight); 
-  Control.addVariable(keyName+"Length",length);       
-  Control.addVariable(keyName+"MainRadius",mainRadius);
-  Control.addVariable(keyName+"InnerRadius",innerRadius);
-  Control.addVariable(keyName+"InnerTopStep",innerTopStep);
-  Control.addVariable(keyName+"InnerLowStep",innerLowStep);
-  Control.addVariable(keyName+"InnerVoid",voidLength);    
+  Control.addVariable(keyName+"FrontFlangeNBolts",24); 
+  Control.addVariable(keyName+"FrontFlangeBoltRadius",0.40); 
+  Control.addVariable(keyName+"FrontFlangeInnerRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"FrontFlangeOuterRadius",portOuter); // [5691.2]
+  Control.addVariable(keyName+"FrontFlangeAngleOffset",180.0/24.0);
+  Control.addVariable(keyName+"FrontFlangeThickness",2.0); // estimate
+  Control.addVariable(keyName+"FrontFlangeSealThick",0.2);
+  Control.addVariable(keyName+"FrontFlangeMainMat",wallMat);
+  Control.addVariable(keyName+"FrontFlangeBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"FrontFlangeSealMat","Poly");
 
+  Control.addVariable(keyName+"BackFlangeNBolts",24); 
+  Control.addVariable(keyName+"BackFlangeBoltRadius",0.40); 
+  Control.addVariable(keyName+"BackFlangeInnerRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"BackFlangeOuterRadius",portOuter); // [5691.2]
+  Control.addVariable(keyName+"BackFlangeAngleOffset",180.0/24.0);
+  Control.addVariable(keyName+"BackFlangeThickness",2.0); // estimate
+  Control.addVariable(keyName+"BackFlangeSealThick",0.2);
+  Control.addVariable(keyName+"BackFlangeMainMat",wallMat);
+  Control.addVariable(keyName+"BackFlangeBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"BackFlangeSealMat","Poly");
+
+  Control.addVariable(keyName+"BoltMat","ChipIRSteel");
+  
   Control.addVariable(keyName+"PortRadius",portRadius); 
   Control.addVariable(keyName+"PortOuter",portOuter); // [5691.2]
   Control.addVariable(keyName+"PortStep",0.0); // estimate
   Control.addVariable(keyName+"PortNBolt",portNBolt); 
   Control.addVariable(keyName+"PortBoltRadius",portBoltRadius); //M8 inc
-  Control.addVariable(keyName+"PortBoltAngOff",180.0/portNBolt);
+  Control.addVariable(keyName+"PortBoltAngOff",
+		      180.0/static_cast<double>(portNBolt));
   Control.addVariable(keyName+"PortSealThick",0.2);
   Control.addVariable(keyName+"PortSealMat","Poly");
 
-  Control.addVariable(keyName+"BoltMat","ChipIRSteel");
 
   const std::string kItem=
     "-("+keyName+"Length+"+keyName+"InnerVoid)/4.0";
@@ -199,36 +249,6 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBBoltStep",viewBoltStep);
   Control.addVariable(keyName+"IPortBBoltRadius",viewBoltRadius);
   Control.addVariable(keyName+"IPortBBoltMat",viewBoltMat);
-
-
-  // MOTOR
-  
-  Control.addVariable(keyName+"MotorAFlag",2);
-  Control.addVariable(keyName+"MotorARadius",motorRadius); 
-  Control.addVariable(keyName+"MotorAOuter",motorOuter); 
-  Control.addVariable(keyName+"MotorAStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorANBolt",motorNBolt); 
-  Control.addVariable(keyName+"MotorABoltRadius",motorBoltRadius); //M10 inc thread
-  Control.addVariable(keyName+"MotorASealThick",motorSealThick);  
-  Control.addVariable(keyName+"MotorASealMat",motorSealMat);
-
-  Control.addVariable(keyName+"MotorBFlag",2);
-  Control.addVariable(keyName+"MotorBRadius",motorRadius); 
-  Control.addVariable(keyName+"MotorBOuter",motorOuter); 
-  Control.addVariable(keyName+"MotorBStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorBNBolt",motorNBolt); 
-  Control.addVariable(keyName+"MotorBBoltRadius",motorBoltRadius); //M10 inc thread
-  Control.addVariable(keyName+"MotorBSealThick",motorSealThick);  
-  Control.addVariable(keyName+"MotorBSealMat",motorSealMat);
-
-
-  Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);
-  Control.addVariable(keyName+"OuterLineNBolt",lineNBolt);
-  Control.addVariable(keyName+"OuterBoltStep",outerStep);
-  Control.addVariable(keyName+"OuterBoltRadius",outerBoltRadius); 
-  Control.addVariable(keyName+"OuterBoltMat",outerBoltMat);
-
-  Control.addVariable(keyName+"WallMat","Aluminium");
 
   return;
 }

@@ -202,7 +202,6 @@ BeSurround::createObjects(Simulation& System,
   /*!
     Adds the BeamLne components
     \param System :: Simulation to add beamline to
-    \param FC :: FixecCom 
     \param ExcludeString :: internal structure
   */
 {

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/t1Uvariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -201,6 +201,7 @@ TS1upgrade(FuncDataBase& Control)
 
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("ProtonVoidViewRadius",4.0);          
+  Control.addVariable("BWindowYStep",5.0);
   Control.addVariable("BWindowRadius",4.0);          
   Control.addVariable("BWindowHeThick",21.725);  // He Thickness
   Control.addVariable("BWindowIncThick1",0.3);  // Inconel Thickness 1

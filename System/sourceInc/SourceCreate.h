@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceCreate.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,46 +22,94 @@
 #ifndef SDef_SourceCreate_h
 #define SDef_SourceCreate_h
 
+class Simulation;
+
 namespace SDef
 {
   class Source;
-  void createGaussianSource(Source&,const double,const double,const double);  
+  class SourceBase;
+  
+  std::shared_ptr<SourceBase> makeActivationSource(const std::string&);
+  
+  
+  std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
+			       const attachSystem::FixedComp&,const long int);
+  
+  std::string createBilbaoSource(const mainSystem::MITYPE&,
+				 const attachSystem::FixedComp&,const long int);
+  
+  std::string createD4CSource(const mainSystem::MITYPE&,
+			      const attachSystem::FixedComp&,
+			      const long int);
 
-  void createSimpleSource(Source&,const double,const double);
-  void createBeamSource(const FuncDataBase&,const std::string&,
-			const attachSystem::FixedComp&,const long int,
-			Source&);
-  void createBeamSource(const FuncDataBase&,const std::string&,Source&);
-  void createBilbaoSource(const FuncDataBase&,Source&);
-  void createD4CSource(const FuncDataBase&,Source&);
+  std::string createESSLinacSource(const mainSystem::MITYPE&,
+				   const attachSystem::FixedComp&,
+				   const long int);
+  
+  std::string createESSSource(const mainSystem::MITYPE&,
+		       const attachSystem::FixedComp&,const long int);
+  
+  std::string createESSPortSource(const mainSystem::MITYPE&,
+				  const attachSystem::FixedComp&,
+				  const long int);
+  
+  std::string createFlukaSource(const mainSystem::MITYPE&,const std::string&,
+				const attachSystem::FixedComp&,const long int);
 
-  void createESSLinacSource(const FuncDataBase&,Source&);
-  void createESSSource(const FuncDataBase&,Source&);
-  void createESSPortSource(const FuncDataBase&,const attachSystem::FixedComp*,
-			   const long int,Source&);
-  void createBeamSource(const FuncDataBase&,const std::string&,Source&);
-  void createBeamSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 Source&);
-  void createGammaSource(const FuncDataBase&,const std::string&,Source&);
-  void createGammaSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 Source&);
-  void createLensSource(const FuncDataBase&,Source&,
-			const attachSystem::FixedComp&);
-  void createPointSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 const Geometry::Vec3D&,Source&);
-  void createPointSource(const FuncDataBase&,const std::string&,
-			 const std::string&,Source&);
-  void createSinbadSource(const FuncDataBase&,Source&);
-  void createTS1Source(const FuncDataBase&,Source&);
-  void createTS1GaussianSource(const FuncDataBase&,Source&);
-  void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
-  void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
-  void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
-  void createTS2Source(const FuncDataBase&,Source&);
-  void createTS3ExptSource(const FuncDataBase&,Source&);
+
+  std::string createLaserSource(const mainSystem::MITYPE&,const std::string&);
+  std::string createGammaSource(const mainSystem::MITYPE&,const std::string&,
+				const attachSystem::FixedComp&,const long int);
+  
+  std::string createLensSource(const mainSystem::MITYPE&,
+			const attachSystem::FixedComp&,
+			const long int);
+  
+  std::string createPointSource(const mainSystem::MITYPE&,const std::string&,
+				const attachSystem::FixedComp&,
+				const long int);
+  
+  std::string createRectSource(const mainSystem::MITYPE&,const std::string&,
+			       const attachSystem::FixedComp&,const long int);
+
+  std::string createSinbadSource(const mainSystem::MITYPE&,
+				 const attachSystem::FixedComp&,
+				 const long int);
+  
+  std::string createTS1Source(const mainSystem::MITYPE&,
+			      const attachSystem::FixedComp&,
+			      const long int);
+  
+  std::string createTS1GaussianSource(const mainSystem::MITYPE&,
+				      const attachSystem::FixedComp&,
+				      const long int);
+
+    
+  std::string createWigglerSource
+    (const mainSystem::MITYPE&,const attachSystem::FixedComp&,const long int);
+
+
+  // Goran section:
+  std::string createTS1GaussianNewSource(const mainSystem::MITYPE&,
+				  const attachSystem::FixedComp&,
+				  const long int);  
+  
+  std::string createTS1MuonSource(const mainSystem::MITYPE&,
+				  const attachSystem::FixedComp&,
+				  const long int);
+  
+  std::string createTS1EPBCollSource(const mainSystem::MITYPE&,
+				     const attachSystem::FixedComp&,
+				     const long int);
+
+  // ---------------------------
+  
+  std::string createTS2Source(const mainSystem::MITYPE&,
+			      const attachSystem::FixedComp&,const long int);
+
+  
+  std::string createTS3ExptSource(const mainSystem::MITYPE&,
+			   const attachSystem::FixedComp&,const long int);
 }
 
 

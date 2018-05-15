@@ -3,7 +3,7 @@
  
  * File:   tally/pointConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,9 +71,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
 #include "LinkSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "Line.h"
 #include "SurfLine.h"
@@ -85,28 +85,13 @@
 namespace tallySystem
 {
 
-pointConstruct::pointConstruct() 
-  /// Constructor
-{}
-
-pointConstruct::pointConstruct(const pointConstruct&) 
-  /// Copy Constructor
-{}
-
-pointConstruct&
-pointConstruct::operator=(const pointConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 void
-pointConstruct::processPoint(Simulation& System,
+pointConstruct::processPoint(SimMCNP& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) const
+			     const size_t Index)
   /*!
     Add point tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -221,15 +206,15 @@ pointConstruct::processPoint(Simulation& System,
 }
 
 void
-pointConstruct::processPointWindow(Simulation& System,
+pointConstruct::processPointWindow(SimMCNP& System,
 				   const std::string& FObject,
 				   long int linkPt,
 				   const double beamDist,
 				   const double timeStep,
-				   const double windowOffset) const
+				   const double windowOffset)
   /*!
     Process a point tally in a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param beamDist :: Out distance Distance
@@ -254,8 +239,8 @@ pointConstruct::processPointWindow(Simulation& System,
 	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
       masterPlane=TPtr->getExitWindow(linkPt,Planes);
-      orgPoint= TPtr->getSignedLinkPt(linkPt); 
-      BAxis= TPtr->getSignedLinkAxis(linkPt);
+      orgPoint= TPtr->getLinkPt(linkPt); 
+      BAxis= TPtr->getLinkAxis(linkPt);
       TPoint=orgPoint+BAxis*beamDist;
       
       ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;
@@ -287,13 +272,13 @@ pointConstruct::processPointWindow(Simulation& System,
 }
 
 void
-pointConstruct::processPointFree(Simulation& System,
+pointConstruct::processPointFree(SimMCNP& System,
 				 const std::string& FObject,
 				 const long int linkPt,
-				 const double OD) const
+				 const double OD)
   /*!
     Process a point tally in a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param OD :: Out distance Distance
@@ -308,8 +293,8 @@ pointConstruct::processPointFree(Simulation& System,
     OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
     
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
-  TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
+  Geometry::Vec3D TPoint=TPtr->getLinkPt(linkPt);
+  TPoint+=TPtr->getLinkAxis(linkPt)*OD;
 
   std::vector<Geometry::Vec3D> EmptyVec;
   addF5Tally(System,tNum,TPoint,EmptyVec);
@@ -318,13 +303,13 @@ pointConstruct::processPointFree(Simulation& System,
 }
 
 void
-pointConstruct::processPointFree(Simulation& System,
+pointConstruct::processPointFree(SimMCNP& System,
 				 const std::string& FObject,
 				 const long int linkPt,
-				 const Geometry::Vec3D& DVec) const
+				 const Geometry::Vec3D& DVec)
 /*!
   Process a point tally in a registered object
-  \param System :: Simulation to add tallies
+  \param System :: SimMCNP to add tallies
   \param FObject :: Fixed/Twin name
   \param linkPt :: Link point [-ve for beam object]
   \param DVec :: Out distance Distance
@@ -340,7 +325,7 @@ pointConstruct::processPointFree(Simulation& System,
   
   
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  Geometry::Vec3D TPoint=TPtr->getLinkPt(linkPt);
   
   Geometry::Vec3D XDir,YDir,ZDir;
   TPtr->calcLinkAxis(linkPt,XDir,YDir,ZDir);
@@ -353,12 +338,12 @@ pointConstruct::processPointFree(Simulation& System,
 }
 
 void
-pointConstruct::processPointFree(Simulation& System,
+pointConstruct::processPointFree(SimMCNP& System,
 				 const Geometry::Vec3D& Point,
-				 const std::vector<Geometry::Vec3D>& VList) const
+				 const std::vector<Geometry::Vec3D>& VList)
   /*!
     Processes a grid tally : Requires variables and informaton 
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param Point :: Point deterctor Point
     \param VList :: Window vectors
   */
@@ -410,61 +395,8 @@ pointConstruct::calcWindowIntercept(const int bPlane,
   return VList;
 }
 
-
-void 
-pointConstruct::addBasicPointTally(Simulation& System,
-				   const attachSystem::FixedComp& FC,
-				   const size_t FCpoint,
-				   const double YStep) const
-  /*!
-    Adds a beamline tally to the system
-    \param System :: Simulation system
-    \param FC :: Guide unit to create tally after
-    \param FCpoint :: Point surface
-    \param YStep :: distance to step
-  */
-{
-  ELog::RegMethod RegA("pointConstruct","addBasicPointTally");
-
-  const masterRotate& MR=masterRotate::Instance();
-
-  const int tNum=System.nextTallyNum(5);
-  // Guide back point
-  Geometry::Vec3D Pt=FC.getLinkPt(FCpoint);
-  const Geometry::Vec3D TVec=FC.getLinkAxis(FCpoint);
-  Pt+=TVec*YStep;      // Add so not on boundary
-  ELog::EM<<"Tally "<<tNum<<" (point) = "
-	  <<MR.calcRotate(Pt)<<ELog::endDiag;
-  tallySystem::addF5Tally(System,tNum,Pt,			      
-			  std::vector<Geometry::Vec3D>());
-  return;
-}
-
 void
-pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
-				  Geometry::Vec3D& BOrigin,
-				  Geometry::Vec3D& BAxis)
-  /*!
-    Calculate the beam direction and origin given a shutter component
-    \param FC :: Component that might be TwinComp
-    \param BOrigin :: Output for Origin
-    \param BAxis :: Output for Axis
-   */
-{
-  ELog::RegMethod RegA("pointConstruct","calcBeamDirection");
-
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(&FC);
-  BAxis=(TwinPtr) ?  -TwinPtr->getBY() : FC.getLinkAxis(0);
-  
-  BOrigin=(TwinPtr) ?
-    TwinPtr->getBeamStart() : FC.getLinkPt(0); 
-  
-  return;
-}
-
-void
-pointConstruct::writeHelp(std::ostream& OX) const
+pointConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX:: Output stream

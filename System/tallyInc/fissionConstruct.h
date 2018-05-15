@@ -3,7 +3,7 @@
  
  * File:   tallyInc/fissionConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -49,17 +50,17 @@ class fissionConstruct
 
   static int convertRange(const std::string&,int&,int&);
 
+  /// private constructor
+  fissionConstruct() {}
+  
  public:
 
-  fissionConstruct();
-  fissionConstruct(const fissionConstruct&);
-  fissionConstruct& operator=(const fissionConstruct&);
-  virtual ~fissionConstruct() {}  ///< Destructor
 
-  virtual int processPower(Simulation&,const mainSystem::inputParam&,
-			   const size_t) const;
 
-  virtual void writeHelp(std::ostream&) const;
+  static int processPower(SimMCNP&,const mainSystem::inputParam&,
+			   const size_t);
+
+  static void writeHelp(std::ostream&);
 };
 
 }

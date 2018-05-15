@@ -3,7 +3,7 @@
  
  * File:   tally/fmeshTally.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <iterator>
+#include <array>
 #include <memory>
 #include <boost/format.hpp>
 
@@ -41,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -71,7 +73,10 @@ fmeshTally::fmeshTally(const int ID) :
 {}
 
 fmeshTally::fmeshTally(const fmeshTally& A) : 
-  Tally(A)
+  Tally(A),
+  typeID(A.typeID),keyWords(A.keyWords),
+  requireRotation(A.requireRotation),Pts(A.Pts),
+  minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
     \param A :: fmeshTally to copy
@@ -89,6 +94,12 @@ fmeshTally::operator=(const fmeshTally& A)
   if (this!=&A)
     {
       Tally::operator=(A);
+      typeID=A.typeID;
+      keyWords=A.keyWords;
+      requireRotation=A.requireRotation;
+      Pts=A.Pts;
+      minCoord=A.minCoord;
+      maxCoord=A.maxCoord;
     }
   return *this;
 }
@@ -153,6 +164,7 @@ int
 fmeshTally::addLine(const std::string& LX)
   /*!
     Add a line
+    \param LX :: Line to add
    */
 {
   return Tally::addLine(LX);
@@ -228,7 +240,8 @@ fmeshTally::writeCoordinates(std::ostream& OX) const
     \param OX :: Oupt stream
   */
 {
-  static char abc[]="ijk";
+  const static char abc[]="ijk";
+  
   std::ostringstream cx;
   for(size_t i=0;i<3;i++)
     {
@@ -258,13 +271,15 @@ fmeshTally::write(std::ostream& OX) const
       //GEOMETRY:
       cx<<"GEOM="<<"xyz"<<" ";
       cx<<"ORIGIN="<<MW.Num(minCoord)<<" ";
-            
       StrFunc::writeMCNPX(cx.str(),OX);
-      if (!getEnergy().empty())
+      cx.str("");
+
+      std::vector<double> EPts;
+      const size_t EN=getEnergy().writeVector(EPts);
+      if (EN)
 	{
-	  cx.str("");
-	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
+	  cx.str("");
 	}					 
       // if (!mshmf.empty())
       //   {
@@ -280,5 +295,4 @@ fmeshTally::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE tallySystem
-
 

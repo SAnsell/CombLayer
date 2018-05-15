@@ -3,7 +3,7 @@
  
  * File:   geometry/Plane.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -171,6 +172,7 @@ Plane::operator!=(const Plane& A) const
   return !(this->operator==(A));
 }
 
+
 int
 Plane::isEqual(const Plane& A) const
   /*!
@@ -185,10 +187,10 @@ Plane::isEqual(const Plane& A) const
   if (&A==this) return 1;
 
 
-  if (fabs(A.Dist-Dist)<=Geometry::zeroTol)
+  if (std::abs(A.Dist-Dist)<=Geometry::zeroTol)
     {
       if (A.NormV==NormV) return 1;
-      if (fabs(A.Dist)<=Geometry::zeroTol &&
+      if (std::abs(A.Dist)<=Geometry::zeroTol &&
 	  A.NormV== -NormV)
 	return -1;
       return 0;
@@ -653,7 +655,6 @@ Plane::writeFLUKA(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
 
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   const int ptype=planeType();
   if (!ptype)
     {

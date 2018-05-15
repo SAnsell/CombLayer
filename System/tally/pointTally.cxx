@@ -3,7 +3,7 @@
  
  * File:   tally/pointTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -629,7 +630,7 @@ pointTally::rotateMaster()
   const masterRotate& MR=masterRotate::Instance();
   MR.applyFull(Centre);
   for_each(Window.begin(),Window.end(),
-   	   [&MR](Geometry::Vec3D& v){MR.applyFull(v);});
+   	   [&MR](Geometry::Vec3D& v) { MR.applyFull(v); } );
   return;
 }
 
@@ -679,8 +680,6 @@ pointTally::write(std::ostream& OX) const
 
   if (!isActive())
     return;
-
-
   
   std::stringstream cx;
   if (IDnum)  // maybe default 
@@ -701,7 +700,7 @@ pointTally::write(std::ostream& OX) const
   if ( !Window.empty() )
     {
       if ( !mcnp6Out )
-        StrFunc::writeMCNPX(StrFunc::makeString("fu",IDnum),OX);
+        StrFunc::writeMCNPX("fu"+std::to_string(IDnum),OX);
       else
         writeMCNP6(OX);
     }

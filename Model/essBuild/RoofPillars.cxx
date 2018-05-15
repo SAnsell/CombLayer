@@ -82,6 +82,7 @@
 
 #include "World.h"
 #include "Bunker.h"
+#include "BunkerRoof.h"
 #include "pillarInfo.h"
 #include "RoofPillars.h"
 
@@ -120,20 +121,20 @@ RoofPillars::insertBeamCells(Simulation& System,
     \param halfWidth :: Half beam width
     \param XAxis :: XAxis direction
     \param EPts :: End points
-    \param innerCut :: cut string for pillar void
+    \param innerCut :: cut string for beam void
   */
 {
   ELog::RegMethod RegA("RoofPillars","insertBeamCells");
-  
+
   // horrizontal points:
   const std::array<Geometry::Vec3D,4> CPts=
     {{  EPts[0]-XAxis*halfWidth,
         EPts[0]+XAxis*halfWidth,
 	EPts[1]-XAxis*halfWidth,
         EPts[1]+XAxis*halfWidth
-      }};
-  
-  insertRoofCells(System,CPts,innerCut);
+      }};  
+  insertRoofCells(System,CPts,0.1,innerCut);
+
   return;
 }			      
 
@@ -162,45 +163,111 @@ RoofPillars::insertPillarCells(Simulation& System,
         CP+XAxis*WT-YAxis*DT,
         CP-XAxis*WT+YAxis*DT,
         CP+XAxis*WT+YAxis*DT }};
-
-  insertRoofCells(System,CPts,innerCut);
+  
+  insertRoofCells(System,CPts,0.1,innerCut);
   return;
 }
 
 void
 RoofPillars::insertRoofCells(Simulation& System,
 			     const std::array<Geometry::Vec3D,4>& CPts,
+			     const double innerStep,
 			     const std::string& innerCut)
   /*!
     Insert roof cells
     \param System :: Simulation system
     \param CPts :: plan points on layer of roof cross beam
+    \param innerStep :: distance to move points inward to recalc
     \param innerCut :: cut string for pillar void
   */
 {
   ELog::RegMethod RegA("RoofPillars","insertRoofCells");
 
+  static int cnt(0);
   const Geometry::Vec3D ZBase=
     SurInter::getLinePoint(Origin,Z,getBackRule(),getBackBridgeRule());
   const Geometry::Vec3D ZTop=ZBase+Z*topFootHeight;
 
-  
   System.populateCells();
   System.validateObjSurfMap();
 
   typedef std::map<int,MonteCarlo::Object*> OTYPE;
+
   OTYPE OMap;
   for(size_t i=0;i<4;i++)
     for(size_t j=0;j<4;j++)
       attachSystem::lineIntersect(System,CPts[i]+ZBase,CPts[j]+ZTop,OMap);
 
+  if (std::abs(innerStep)>Geometry::zeroTol)
+    {
+      const std::array<Geometry::Vec3D,4> IPts=
+	{{
+	  CPts[0]+(CPts[3]-CPts[0])*innerStep,
+	  CPts[1]+(CPts[2]-CPts[1])*innerStep,
+	  CPts[2]+(CPts[1]-CPts[2])*innerStep,
+	  CPts[3]+(CPts[0]-CPts[3])*innerStep
+	  }};
+      
+      for(size_t i=0;i<4;i++)
+	for(size_t j=0;j<4;j++)
+	  attachSystem::lineIntersect(System,IPts[i]+ZBase,IPts[j]+ZTop,OMap);
+
+      for(size_t i=0;i<2;i++)
+	for(size_t j=0;j<2;j++)
+	  {
+	    attachSystem::lineIntersect(System,CPts[i]+ZBase,IPts[j]+ZTop,OMap);
+	    attachSystem::lineIntersect(System,IPts[i]+ZBase,CPts[j]+ZTop,OMap);
+	    attachSystem::lineIntersect(System,CPts[i+2]+ZBase,
+					IPts[j+2]+ZTop,OMap);
+	    attachSystem::lineIntersect(System,IPts[i+2]+ZBase,
+					CPts[j+2]+ZTop,OMap);
+	  }
+    }
+  
+  if (cnt==84)
+    {
+      if (roofCells)
+	{
+	  // first make ordered set of possibles
+	  std::set<int> cellName;
+	  for(const OTYPE::value_type Vunit : OMap)
+	    {
+	      const int cellN(Vunit.second->getName());
+	      if (roofCells->hasCell(cellN))
+		cellName.insert(cellN);
+	    }
+
+	  // now check order components
+	  int prevCellN=0;
+	  for(const int cellN : cellName)
+	    {
+	      // check not consecutive and not in other group 
+	      if (prevCellN && prevCellN+1!=cellN && prevCellN+10000>cellN)
+		{
+		  for(int newCN=prevCellN+1;newCN<cellN;newCN++)
+		    {
+		      MonteCarlo::Object* NPtr=System.findQhull(newCN);
+		      if (NPtr)
+			{
+			  OMap.emplace(newCN,NPtr);
+			  ELog::EM<<"EMPLACE == "<<NPtr->getName()
+				  <<ELog::endDiag;
+			}
+		    }
+		}
+	      prevCellN=cellN;
+	    }
+	}
+    }
+
+  // make intersection:
   HeadRule IC(innerCut);
   IC.makeComplement();
   for(const OTYPE::value_type Vunit : OMap)
     Vunit.second->addSurfString(IC.display());
 
-  return;
-  
+  cnt++;
+  return;  
 }
   
 void
@@ -737,7 +804,7 @@ RoofPillars::createBeamObjects(Simulation& System,
 }
 
 void
-RoofPillars::createCrossBeams(Simulation& System) 
+RoofPillars::createCrossBeams(Simulation& System)
   /*!
     A system for construction long beams
     \param System :: Simulation to create objects in
@@ -769,7 +836,8 @@ RoofPillars::createCrossBeams(Simulation& System)
       
       // OBJECTS:
       const double halfWidth=beamWidth/2.0+beamWallThick+beamWallGap;
-      createBeamObjects(System,RI,fbBoundary.display(),topBeam,baseBeam,
+      createBeamObjects(System,
+			RI,fbBoundary.display(),topBeam,baseBeam,
 			halfWidth,XVec,EPts);
 
       RI+=100;
@@ -878,6 +946,8 @@ RoofPillars::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   insertPillars(System,bunkerObj);
+
+  roofCells=bunkerObj.getRoofObj();
   createCrossBeams(System);
   createLongBeams(System);
   return;

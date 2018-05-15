@@ -94,13 +94,14 @@ BeamDump::BeamDump(const std::string& Base,
   baseName(Base),active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Base :: Base name 
     \param Key :: Name for item in search
   */
-{}
+{
+}
 
-BeamDump::BeamDump(const BeamDump& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+BeamDump::BeamDump(const BeamDump& A) :
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   baseName(A.baseName),
   active(A.active),
@@ -119,8 +120,10 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
   frontWallHoleRad(A.frontWallHoleRad),
+
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
+
   frontInnerWallHeight(A.frontInnerWallHeight),
   frontInnerWallDepth(A.frontInnerWallDepth),
   frontInnerWallLength(A.frontInnerWallLength),
@@ -128,14 +131,23 @@ BeamDump::BeamDump(const BeamDump& A) :
   backInnerWallLength(A.backInnerWallLength),
   backInnerWallGapLength(A.backInnerWallGapLength),
   sideInnerWallThick(A.sideInnerWallThick),
-  sideWallThick(A.sideWallThick),floorLength(A.floorLength),
-  floorDepth(A.floorDepth),plate25Length(A.plate25Length),
-  plate25Depth(A.plate25Depth),plate38Depth(A.plate38Depth),
+  sideWallThick(A.sideWallThick),
+
+  floorLength(A.floorLength),
+  floorDepth(A.floorDepth),
+
+  plate25Length(A.plate25Length),
+  plate25Depth(A.plate25Depth),
+
+  plate38Depth(A.plate38Depth),
+
   roofThick(A.roofThick),
   roofOverhangLength(A.roofOverhangLength),
   innerRoofThick(A.innerRoofThick),
+
   vacPipeFrontInnerWallDist(A.vacPipeFrontInnerWallDist),
-  vacPipeLength(A.vacPipeLength),vacPipeRad(A.vacPipeRad),
+  vacPipeLength(A.vacPipeLength),
+  vacPipeRad(A.vacPipeRad),
   vacPipeSideWallThick(A.vacPipeSideWallThick),
   vacPipeLidRmax(A.vacPipeLidRmax),
   vacPipeLid1Length(A.vacPipeLid1Length),
@@ -143,11 +155,13 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeBaseLength(A.vacPipeBaseLength),
   vacPipeOuterConeOffset(A.vacPipeOuterConeOffset),
   vacPipeInnerConeTop(A.vacPipeInnerConeTop),
-  wallThick(A.wallThick),waterPipeRad(A.waterPipeRad),
+  wallThick(A.wallThick),
+  waterPipeRad(A.waterPipeRad),
   waterPipeLength(A.waterPipeLength),
   waterPipeOffsetX(A.waterPipeOffsetX),
   waterPipeOffsetZ(A.waterPipeOffsetZ),
   waterPipeDist(A.waterPipeDist)
+
   /*!
     Copy constructor
     \param A :: BeamDump to copy
@@ -170,6 +184,7 @@ BeamDump::operator=(const BeamDump& A)
       baseName=A.baseName;
       active=A.active;
       engActive=A.engActive;
+
       steelMat=A.steelMat;
       concMat=A.concMat;
       alMat=A.alMat;
@@ -177,13 +192,16 @@ BeamDump::operator=(const BeamDump& A)
       airMat=A.airMat;
       cuMat=A.cuMat;
       graphiteMat=A.graphiteMat;
+
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
       frontWallHoleRad=A.frontWallHoleRad;
+
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
+
       frontInnerWallHeight=A.frontInnerWallHeight;
       frontInnerWallDepth=A.frontInnerWallDepth;
       frontInnerWallLength=A.frontInnerWallLength;
@@ -192,14 +210,19 @@ BeamDump::operator=(const BeamDump& A)
       backInnerWallGapLength=A.backInnerWallGapLength;
       sideInnerWallThick=A.sideInnerWallThick;
       sideWallThick=A.sideWallThick;
+
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
+
       plate25Length=A.plate25Length;
       plate25Depth=A.plate25Depth;
+
       plate38Depth=A.plate38Depth;
+
       roofThick=A.roofThick;
       roofOverhangLength=A.roofOverhangLength;
       innerRoofThick=A.innerRoofThick;
+
       vacPipeFrontInnerWallDist=A.vacPipeFrontInnerWallDist;
       vacPipeLength=A.vacPipeLength;
       vacPipeRad=A.vacPipeRad;
@@ -216,6 +239,7 @@ BeamDump::operator=(const BeamDump& A)
       waterPipeOffsetX=A.waterPipeOffsetX;
       waterPipeOffsetZ=A.waterPipeOffsetZ;
       waterPipeDist=A.waterPipeDist;
+
     }
   return *this;
 }
@@ -230,7 +254,6 @@ BeamDump::clone() const
     return new BeamDump(*this);
 }
 
-  
 BeamDump::~BeamDump()
   /*!
     Destructor

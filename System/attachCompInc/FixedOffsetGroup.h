@@ -85,6 +85,10 @@ class FixedOffsetGroup  : public FixedGroup
   FixedOffsetGroup(const std::string&,const std::string&,
 		   const size_t,const std::string&,const size_t,
 		   const std::string&,const size_t);
+  FixedOffsetGroup(const std::string&,const std::string&,const size_t,
+		   const std::string&,const size_t,
+		   const std::string&,const size_t,
+		   const std::string&,const size_t);
   FixedOffsetGroup(const FixedOffsetGroup&);
   FixedOffsetGroup& operator=(const FixedOffsetGroup&);
   virtual ~FixedOffsetGroup() {}     ///< Destructor

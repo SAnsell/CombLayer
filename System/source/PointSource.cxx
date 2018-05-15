@@ -3,7 +3,7 @@
  
  * File:   source/PointSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,12 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -63,15 +57,16 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
-
+#include "inputSupport.h"
+#include "SourceBase.h"
 #include "PointSource.h"
 
 namespace SDef
 {
 
 PointSource::PointSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),particleType(1),
-  cutEnergy(0.0),angleSpread(0.0),weight(1.0)
+  FixedOffset(keyName,0),SourceBase(),
+  angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -79,10 +74,8 @@ PointSource::PointSource(const std::string& keyName) :
 {}
 
 PointSource::PointSource(const PointSource& A) : 
-  attachSystem::FixedOffset(A),
-  particleType(A.particleType),cutEnergy(A.cutEnergy),
-  angleSpread(A.angleSpread),
-  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
+  attachSystem::FixedOffset(A),SourceBase(A),
+  angleSpread(A.angleSpread)
   /*!
     Copy constructor
     \param A :: PointSource to copy
@@ -100,153 +93,43 @@ PointSource::operator=(const PointSource& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      particleType=A.particleType;
-      cutEnergy=A.cutEnergy;
+      SourceBase::operator=(A);
       angleSpread=A.angleSpread;
-      weight=A.weight;
-      Energy=A.Energy;
-      EWeight=A.EWeight;
     }
   return *this;
 }
 
+PointSource*
+PointSource::clone() const
+  /*!
+    Clone function 
+    \return new this
+  */
+{
+  return new PointSource(*this);
+}
+
+  
 PointSource::~PointSource() 
   /*!
     Destructor
   */
 {}
 
-int
-PointSource::populateEFile(const std::string& FName,
-			   const int colE,const int colP)
-  /*!
-    Load a distribution table
-    - Care is taken to add an extra energy with zero 
-    weight onto the table since we are using a
-    \param FName :: filename 
-    return 0 on failure / 1 on success
-  */
-{
-  ELog::RegMethod RegA("PointSource","loadEnergy");
-
-  const int eCol(colE);
-  const int iCol(colP);
-  
-  Energy.clear();
-  EWeight.clear();
-  
-  WorkData A;
-  if (FName.empty() || A.load(FName,eCol,iCol,0))
-    return 0;
-
-
-  A.xScale(1e-6);   // convert to MeV
-  A.binDivide(1.0);
-  DError::doubleErr IV=A.integrate(cutEnergy,1e38);
-  // Normalize A:
-  A/=IV;
-
-  Energy=A.getXdata();
-  if (Energy.size()<2)
-    {
-      ELog::EM<<"Failed to read energy/data from file:"<<FName<<ELog::endErr;
-      return 0;
-    }
-  Energy.push_back(2.0*Energy.back()-Energy[Energy.size()-2]);
-  const std::vector<DError::doubleErr>& Yvec=A.getYdata();
-
-  std::vector<DError::doubleErr>::const_iterator vc;
-  EWeight.push_back(0.0);
-  for(vc=Yvec.begin();vc!=Yvec.end();vc++)
-    EWeight.push_back(vc->getVal());
-  EWeight.push_back(0.0);
-  return (EWeight.empty()) ? 0 : 1;
-}
-
-int
-PointSource::populateEnergy(std::string EPts,std::string EProb)
-  /*!
-    Read two strings that are the Energy points and the 
-    \param EPts :: Energy Points string 
-    \param EProb :: Energy Prob String
-    \return 1 on success success
-   */
-{
-  ELog::RegMethod RegA("PointSource","populateEnergy");
-
-  Energy.clear();
-  EWeight.clear();
-
-  double eB(-1.0),eP;
-  
-  // if (!StrFunc::section(EPts,eA) || eA<0.0)
-  //   return 0;
-  while(StrFunc::section(EPts,eB) &&
-	StrFunc::section(EProb,eP))
-    {
-      if (!Energy.empty() && eB<=Energy.back())
-	throw ColErr::IndexError<double>(eB,Energy.back(),
-					 "Energy point not in sequence");
-      if (eP<0.0)
-	throw ColErr::IndexError<double>(eP,0.0,"Probablity eP negative");
-      Energy.push_back(eB);
-      EWeight.push_back(eP);
-    }
-  
-  if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
-    ELog::EM<<"Trailing line info \n"
-	    <<"Energy : "<<EPts<<"\n"
-  	    <<"Energy : "<<EProb<<ELog::endErr;
-  // single entry:
-  if (Energy.empty() && eB>0.0)
-    {
-      Energy.push_back(eB);
-      return 1;
-    }
-  // // Normalize 
-  // for(double& prob : EWeight)
-  //   prob/=sum;
-  return (EWeight.empty()) ? 0 : 1;
-}
-  
 void
-PointSource::populate(const FuncDataBase& Control)
+PointSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("PointSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
 
-  // default photon
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",1); 
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
+  angleSpread=mainSystem::getDefInput<double>(inputMap,"aSpread",0,0.0);
 
-  const std::string EList=
-    Control.EvalDefVar<std::string>(keyName+"Energy","");
-  const std::string EPList=
-    Control.EvalDefVar<std::string>(keyName+"EProb","");
-  const std::string EFile=
-    Control.EvalDefVar<std::string>(keyName+"EFile","");
-
-  if (!populateEFile(EFile,1,11) &&
-      !populateEnergy(EList,EPList) )
-    {
-      double E=Control.EvalDefVar<double>(keyName+"EStart",1.0); 
-      const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",0); 
-      const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",1.0); 
-      const double EStep((EEnd-E)/static_cast<double>(nE+1));
-      for(size_t i=0;i<nE;i++)
-	{
-	  Energy.push_back(E);
-	  EWeight.push_back(1.0);
-	  E+=EStep;
-	}
-      if (Energy.empty())
-	Energy.push_back(E);
-    }
   return;
 }
 
@@ -266,6 +149,18 @@ PointSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
+
+void
+PointSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("PointSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
   
 void
 PointSource::createSource(SDef::Source& sourceCard) const
@@ -276,70 +171,72 @@ PointSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("PointSource","createSource");
 
-  
-  sourceCard.setActive();
-
-  if (angleSpread>Geometry::zeroTol &&
-      angleSpread<180.0-Geometry::zeroTol)
-    {
-      sourceCard.setComp("vec",Y);
-      sourceCard.setComp("axs",Y);
-      sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         ///
-    }
+  sourceCard.setComp("vec",Y);
+  sourceCard.setComp("axs",Y);
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));   
   sourceCard.setComp("pos",Origin);
-    
-
-  // Energy:
-  if (Energy.size()>1)
-    {
-      SDef::SrcData D2(2);
-      SDef::SrcInfo SI2('A');
-      SDef::SrcProb SP2;
-      SP2.setData(EWeight);
-      SI2.setData(Energy);
-      D2.addUnit(SI2);
-      D2.addUnit(SP2);
-      sourceCard.setData("erg",D2);
-    }
-  else if (!Energy.empty())
-    sourceCard.setComp("erg",Energy.front());
+  SourceBase::createEnergySource(sourceCard);
 
   return;
 }  
 
 void
-PointSource::createAll(const FuncDataBase& Control,
-		       SDef::Source& sourceCard)
+PointSource::createAll(const mainSystem::MITYPE& inputMap,
+		       const attachSystem::FixedComp& FC,
+		       const long int linkIndex)
+
   /*!
     Create all the source
-    \param Control :: DataBase for variables
-    \param souceCard :: Source Term
+    \param inputMap :: DataBase for variables
+    \param FC :: Fixed point to get orientation from
+    \param linkIndex :: link Index						
    */
 {
-  ELog::RegMethod RegA("PointSource","createAll");
-  populate(Control);
-  createUnitVector(World::masterOrigin(),0);
+  ELog::RegMethod RegA("PointSource","createAll<inputMap,FC,linkIndex>");
+  populate(inputMap);
+  createUnitVector(FC,linkIndex);
+  return;
+}
+  
+void
+PointSource::write(std::ostream& OX) const
+  /*!
+    Write out as a MCNP source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("PointSource","write");
+
+  Source sourceCard;
   createSource(sourceCard);
+  sourceCard.write(OX);
+  return;
+
+}
+
+void
+PointSource::writePHITS(std::ostream& OX) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("PointSource","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
 }
 
 void
-PointSource::createAll(const FuncDataBase& Control,
-		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex,
-		       SDef::Source& sourceCard)
-
+PointSource::writeFLUKA(std::ostream& OX) const
   /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-    \param linkIndex :: link Index						
-   */
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
 {
-  ELog::RegMethod RegA("PointSource","createAll<FC,linkIndex>");
-  populate(Control);
-  createUnitVector(FC,linkIndex);
-  createSource(sourceCard);
+  ELog::RegMethod RegA("PointSource","writeFLUKA");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/BaseMap.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,9 @@ class BaseMap
 
   bool hasItem(const std::string&) const;
   bool hasItem(const std::string&,const size_t) const;
+
+  bool hasCell(const int) const;
+  bool hasCell(const std::string&,const int) const;
   
   void setItem(const std::string&,const int);
   void setItem(const std::string&,const size_t,const int);
@@ -75,7 +78,10 @@ class BaseMap
   std::vector<int> getItems(const std::string&) const;
   std::vector<int> getItems() const;
 
+  std::string findCell(const int) const;
 
+  bool registerExtra(const int,const int);
+  
   std::string removeItemNumber(const int,const size_t =0);
   int removeItem(const std::string&,const size_t =0);
   

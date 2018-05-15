@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/ODIN.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -58,13 +57,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Simulation.h"
-#include "debugMethod.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -76,7 +75,8 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "VacuumPipe.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Jaws.h"
 #include "LineShield.h"
@@ -108,36 +108,36 @@ ODIN::ODIN(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperAA(new constructSystem::ChopperUnit(newName+"ChopperAA")),
+  ChopperAA(new constructSystem::SingleChopper(newName+"ChopperAA")),
   DiskAA(new constructSystem::DiskChopper(newName+"DiskAA")),
-  ChopperAB(new constructSystem::ChopperUnit(newName+"ChopperAB")),
+  ChopperAB(new constructSystem::SingleChopper(newName+"ChopperAB")),
   DiskAB(new constructSystem::DiskChopper(newName+"DiskAB")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
   
-  ChopperFOC1(new constructSystem::ChopperUnit(newName+"ChopperFOC1")),
+  ChopperFOC1(new constructSystem::SingleChopper(newName+"ChopperFOC1")),
   FOC1Disk(new constructSystem::DiskChopper(newName+"FOC1Blade")),
   
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperFOC2(new constructSystem::ChopperUnit(newName+"ChopperFOC2")),
+  ChopperFOC2(new constructSystem::SingleChopper(newName+"ChopperFOC2")),
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  ChopperFOC3(new constructSystem::ChopperUnit(newName+"ChopperFOC3")),
+  ChopperFOC3(new constructSystem::SingleChopper(newName+"ChopperFOC3")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
-  ChopperFOC4(new constructSystem::ChopperUnit(newName+"ChopperFOC4")),
+  ChopperFOC4(new constructSystem::SingleChopper(newName+"ChopperFOC4")),
   FOC4Disk(new constructSystem::DiskChopper(newName+"FOC4Blade")),
 
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
@@ -153,7 +153,7 @@ ODIN::ODIN(const std::string& keyName) :
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
   OutBCut(new constructSystem::HoleShape(newName+"OutBCut")),
-  ChopOutFOC5(new constructSystem::ChopperUnit(newName+"ChopOutFOC5")),
+  ChopOutFOC5(new constructSystem::SingleChopper(newName+"ChopOutFOC5")),
   FOC5Disk(new constructSystem::DiskChopper(newName+"FOC5Blade")),
   
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
@@ -390,14 +390,14 @@ ODIN::buildOutGuide(Simulation& System,
   
   
   OutACut->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(1),
-                    OutPitA->getKey("Mid").getSignedFullRule(-1));
+  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(1),
+                    OutPitA->getKey("Mid").getFullRule(-1));
   OutACut->createAll(System,OutPitA->getKey("Inner"),1);
 
   OutBCut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutBCut->addInsertCell(OutPitA->getCells("Collet"));
-  OutBCut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutBCut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   OutBCut->createAll(System,OutPitA->getKey("Inner"),2);
   
     
@@ -446,8 +446,8 @@ ODIN::buildCave(Simulation& System,
   ShieldB->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("FeNose"));
-  CaveCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
-                    Cave->getKey("Inner").getSignedFullRule(1));
+  CaveCut->setFaces(Cave->getKey("Outer").getFullRule(-1),
+                    Cave->getKey("Inner").getFullRule(1));
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
 
   VPipeCaveA->addInsertCell(Cave->getCells("VoidNose"));
@@ -485,14 +485,13 @@ ODIN::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
-  ELog::debugMethod DA;
 
   ELog::EM<<"\nBuilding ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*odinAxis,Control,GItem,1);

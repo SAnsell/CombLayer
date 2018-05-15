@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   sourceInc/ActivationSource.h
-*
- * Copyright (c) 2004-2017 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,15 @@
 #ifndef SDef_ActivationSource_h
 #define SDef_ActivationSource_h
 
-namespace SDef
+namespace Geometry
 {
-  class Source;
+  class Plane;
 }
 
 namespace SDef
 {
-
+  class Source;
+  
 /*!
   \class ActivationSource
   \version 1.0
@@ -38,7 +39,8 @@ namespace SDef
   \brief Creates an active projection source
 */
 
-class ActivationSource 
+class ActivationSource :
+  public SourceBase
 {
  private:
 
@@ -53,6 +55,10 @@ class ActivationSource
   std::map<int,activeUnit> cellFlux;    ///< cell[active] : flux data
   std::vector<activeFluxPt> fluxPt;     ///< Flux emmision points [nps values]
 
+  Geometry::Plane* PPtr;          ///< Plane point
+  Geometry::Vec3D PlanePt;        ///< Plane point
+  Geometry::Vec3D PlaneAxis;      ///< Plane axis
+  double r2Power;                 ///< R power value
 
   Geometry::Vec3D weightPt;       ///< Centre weight intensity
   double weightDist;              ///< Centre weight scalar
@@ -73,7 +79,8 @@ class ActivationSource
   ActivationSource();
   ActivationSource(const ActivationSource&);
   ActivationSource& operator=(const ActivationSource&);
-  ~ActivationSource();
+  ActivationSource* clone() const;
+  virtual ~ActivationSource();
 
   /// Set number of output points
   void setNPoints(const size_t N) { nPoints=N; }
@@ -84,10 +91,19 @@ class ActivationSource
   void setScale(const double S) { externalScale=S; }  
   void setWeightPoint(const Geometry::Vec3D&,const double);
   
-
+  void setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		const double);
   void createOutput(const std::string&);
 
-  void createSource(Simulation&,const std::string&,const std::string&);
+  void createAll(const Simulation&,const std::string&,
+		 const std::string&);
+  
+  virtual void rotate(const localRotate&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
+  virtual void write(std::ostream&) const;
+
 };
 
 }

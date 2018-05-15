@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/simpleItemInc/SimpleITEM.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,6 @@ class simpleITEM : public attachSystem::CopiedComp
   /// Simple plate
   std::shared_ptr<insertSystem::insertPlate> Plate;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
  public:
   
   simpleITEM(const std::string&);

@@ -39,7 +39,7 @@ namespace constructSystem
   class Jaws;
   class DiskChopper;
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -86,7 +86,7 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
 
@@ -106,7 +106,7 @@ class VOR : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// FOC disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDisk;
   /// Collimator hole 
@@ -123,7 +123,7 @@ class VOR : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// FOC disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
   /// Collimator hole [front]

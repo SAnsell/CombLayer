@@ -3,7 +3,7 @@
  
  * File:   tallyInc/meshConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,12 +48,20 @@ namespace tallySystem
 class meshConstruct 
 {
  protected:
+  
+  /// Private constructor
+  meshConstruct() {}
+
 
   static const std::string& getDoseConversion();
   static const std::string& getPhotonDoseConversion();
   static const std::string& getProtonDoseConversion();
   static void calcXYZ(const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
+
+
+
+ public:
 
   static void getObjectMesh(const mainSystem::inputParam&,
 			    const size_t,const size_t,
@@ -67,24 +75,8 @@ class meshConstruct
 			    Geometry::Vec3D&,
 			    std::array<size_t,3>&);
 
- public:
-
-  meshConstruct();
-  meshConstruct(const meshConstruct&);
-  meshConstruct& operator=(const meshConstruct&);
-  virtual ~meshConstruct() {}  ///< Destructor
-
-  void processMesh(Simulation&,const mainSystem::inputParam&,
-		   const size_t) const;
-
-  virtual void rectangleMesh(Simulation&,const int,
-			     const std::string&,
-			     const Geometry::Vec3D&,
-			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&) const =0;
-
   
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

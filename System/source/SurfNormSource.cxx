@@ -3,7 +3,7 @@
  
  * File:   source/SurfNormSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,13 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -60,17 +53,18 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "WorkData.h"
-#include "World.h"
+#include "FixedOffset.h"
+#include "inputSupport.h"
+#include "SourceBase.h"
 #include "SurfNormSource.h"
 
 namespace SDef
 {
 
 SurfNormSource::SurfNormSource(const std::string& K) :
-  attachSystem::FixedComp(K,0),
-  particleType(1),angleSpread(0.0),surfNum(0),
-  cutEnergy(0.0),height(0.0),weight(1.0)
+  attachSystem::FixedOffset(K,0),SourceBase(),
+  angleSpread(0.0),surfNum(0),
+  width(0.0),height(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param K :: main keyname 
@@ -78,10 +72,9 @@ SurfNormSource::SurfNormSource(const std::string& K) :
 {}
 
 SurfNormSource::SurfNormSource(const SurfNormSource& A) : 
-  attachSystem::FixedComp(A),
-  particleType(A.particleType),angleSpread(A.angleSpread),
-  surfNum(A.surfNum),cutEnergy(A.cutEnergy),height(A.height),
-  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
+  attachSystem::FixedOffset(A),SourceBase(A),
+  angleSpread(A.angleSpread),
+  surfNum(A.surfNum),width(A.width),height(A.height)
   /*!
     Copy constructor
     \param A :: SurfNormSource to copy
@@ -98,15 +91,12 @@ SurfNormSource::operator=(const SurfNormSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
-      particleType=A.particleType;
+      attachSystem::FixedOffset::operator=(A);
+      SourceBase::operator=(A);
       angleSpread=A.angleSpread;
       surfNum=A.surfNum;
-      cutEnergy=A.cutEnergy;
       height=A.height;
-      weight=A.weight;
-      Energy=A.Energy;
-      EWeight=A.EWeight;
+      width=A.width;
     }
   return *this;
 }
@@ -117,129 +107,33 @@ SurfNormSource::~SurfNormSource()
   */
 {}
 
-void
-SurfNormSource::loadEnergy(const std::string& FName)
+
+SurfNormSource*
+SurfNormSource::clone() const
   /*!
-    Load a distribution table
-    - Care is taken to add an extra energy with zero 
-    weight onto the table since we are using a
-    \param FName :: filename 
+    Clone method
+    \return new (*this)
   */
 {
-  ELog::RegMethod RegA("SurfNormSource","loadEnergy");
-
-  const double current(60.0);
-  const int eCol(1);
-  const int iCol(11);
-  
-  Energy.clear();
-  EWeight.clear();
-  
-  WorkData A;
-  if (A.load(FName,eCol,iCol,0))
-    {
-      ELog::EM<<"Failed to read file:"<<FName<<ELog::endErr;
-      return;
-    }  
-
-  A.xScale(1e-6);
-  A.binDivide(1.0);
-  //  DError::doubleErr IV=A.integrate(cutEnergy,1e38);
-  DError::doubleErr IV=A.integrate(cutEnergy,1e38);
-  weight=IV.getVal()/(current*6.24150636309e12);
-  // Normalize A:
-  A/=IV;
-
-  Energy=A.getXdata();
-  if (Energy.size()<2 || weight<1e-12)
-    {
-      ELog::EM<<"Failed to read energy/data from file:"<<FName<<ELog::endErr;
-      return;
-    }
-  Energy.push_back(2.0*Energy.back()-Energy[Energy.size()-2]);
-  const std::vector<DError::doubleErr>& Yvec=A.getYdata();
-
-  std::vector<DError::doubleErr>::const_iterator vc;
-  EWeight.push_back(0.0);
-  for(vc=Yvec.begin();vc!=Yvec.end();vc++)
-    EWeight.push_back(vc->getVal());
-  EWeight.push_back(0.0);
-
-  return;
-}
-
-int
-SurfNormSource::populateEnergy(std::string EPts,std::string EProb)
-  /*!
-    Read two strings that are the Energy points and the 
-    \param EPts :: Energy Points string 
-    \param EProb :: Energy Prob String
-    \return 1 on success success
-   */
-{
-  ELog::RegMethod RegA("SurfNormSource","populateEnergy");
-
-  Energy.clear();
-  EWeight.clear();
-
-  double eB,eP;
-  
-  // if (!StrFunc::section(EPts,eA) || eA<0.0)
-  //   return 0;
-  while(StrFunc::section(EPts,eB) &&
-	StrFunc::section(EProb,eP))
-    {
-      if (!Energy.empty() && eB<=Energy.back())
-	throw ColErr::IndexError<double>(eB,Energy.back(),
-					 "Energy point not in sequence");
-      if (eP<0.0)
-	throw ColErr::IndexError<double>(eP,0.0,"Probablity eP negative");
-      Energy.push_back(eB);
-      EWeight.push_back(eP);
-    }
-  if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
-    ELog::EM<<"Trailing line info \n"
-	    <<"Energy : "<<EPts<<"\n"
-  	    <<"Energy : "<<EProb<<ELog::endErr;
-
-  // // Normalize 
-  // for(double& prob : EWeight)
-  //   prob/=sum;
-  return (EWeight.empty()) ? 0 : 1;
+  return new SurfNormSource(*this);
 }
   
 void
-SurfNormSource::populate(const FuncDataBase& Control)
+SurfNormSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Map varaibles
    */
 {
   ELog::RegMethod RegA("SurfNormSource","populate");
 
-  // default photon
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2); 
-  angleSpread=Control.EvalVar<double>(keyName+"ASpread");
-  height=Control.EvalVar<double>(keyName+"Height"); 
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
 
-  const std::string EList=
-    Control.EvalDefVar<std::string>(keyName+"Energy","");
-  const std::string EPList=
-    Control.EvalDefVar<std::string>(keyName+"EProb","");
+  angleSpread=mainSystem::getDefInput<double>(inputMap,"aSpread",0,0.0);
+  height=mainSystem::getDefInput<double>(inputMap,"height",0,0.0);
+  width=mainSystem::getDefInput<double>(inputMap,"width",0,0.0);
 
-  if (!populateEnergy(EList,EPList))
-    {
-      double E=Control.EvalVar<double>(keyName+"EStart"); 
-      const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
-      const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
-      const double EStep((EEnd-E)/static_cast<double>(nE+1));
-      for(size_t i=0;i<nE;i++)
-	{
-	  Energy.push_back(E);
-	  EWeight.push_back(1.0);
-	  E+=EStep;
-	}
-    }
   return;
 }
 
@@ -254,13 +148,23 @@ SurfNormSource::setSurf(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("SurfNormSource","setSurf");
-  ELog::EM<<"Surface == "<<FC.getKeyName()<<" "<<sideIndex<<ELog::endDiag;
-  ELog::EM<<"STR == "<<FC.getSignedLinkString(sideIndex)<<ELog::endDiag;
-  surfNum=FC.getSignedLinkSurf(sideIndex);
-  ELog::EM<<"Surface == "<<FC.getKeyName()<<ELog::endDiag;
+
+  surfNum=FC.getLinkSurf(sideIndex);
   return;
 }
   
+void
+SurfNormSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("SurfNormSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
+
   
 void
 SurfNormSource::createSource(SDef::Source& sourceCard) const
@@ -271,9 +175,8 @@ SurfNormSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("SurfNormSource","createSource");
   
-  sourceCard.setActive();
+  SourceBase::createEnergySource(sourceCard);
   sourceCard.setComp("sur",std::abs(surfNum));
-  sourceCard.setComp("par",particleType);            /// photon (2)
 
   // Direction:
 
@@ -299,45 +202,86 @@ SurfNormSource::createSource(SDef::Source& sourceCard) const
     }
       
 
-  // Energy:
-  if (Energy.size()>1)
-    {
-      SDef::SrcData D2(2);
-      SDef::SrcInfo SI2('A');
-      SDef::SrcProb SP2;
-      SP2.setData(EWeight);
-      SI2.setData(Energy);
-      D2.addUnit(SI2);
-      D2.addUnit(SP2);
-      sourceCard.setData("erg",D2);
-    }
-  else if (!Energy.empty())
-    sourceCard.setComp("erg",Energy.front());
-
   return;
 }  
 
 void
-SurfNormSource::createAll(const FuncDataBase& Control,
+SurfNormSource::createAll(const mainSystem::MITYPE& inputMap,
 			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex,
-			  SDef::Source& sourceCard)
+			  const long int sideIndex)
+
+  /*!
+    Create all the source
+    \param inputMap :: DataBase for variables
+    \param FC :: FixedComp to get surface from
+    \param sideIndex :: link point for surface
+  */
+{
+  ELog::RegMethod RegA("SurfNormSource","createAll<inputMap,FC,linkIndex>");
+
+  populate(inputMap);
+  setSurf(FC,sideIndex);
+  return;
+}
+
+void
+SurfNormSource::createAll(const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
 
   /*!
     Create all the source
     \param Control :: DataBase for variables
     \param FC :: FixedComp to get surface from
     \param sideIndex :: link point for surface
-    \param souceCard :: Source Term [output]
   */
 {
   ELog::RegMethod RegA("SurfNormSource","createAll<FC,linkIndex>");
 
-  populate(Control);
   setSurf(FC,sideIndex);
-  createSource(sourceCard);
   return;
 }
 
+
+void
+SurfNormSource::write(std::ostream& OX) const
+  /*!
+    Write out as a MCNP source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SurfNormSource","write");
+
+  Source sourceCard;
+  createSource(sourceCard);
+  sourceCard.write(OX);
+  return;
+
+}
+
+void
+SurfNormSource::writePHITS(std::ostream& OX) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SurfNormSource","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+SurfNormSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SurfNormSource","writeFLUKA");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
 
 } // NAMESPACE SDef

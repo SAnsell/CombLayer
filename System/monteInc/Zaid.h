@@ -37,9 +37,9 @@ class Zaid
 {
  private:
   
-  size_t index;           ///< Index number
-  size_t tag;             ///< 2 digit tag
-  char type;           ///< Type letter
+  size_t index;        ///< Index number (ZZZAAA)
+  size_t tag;          ///< 2 digit tag (library indentifier)
+  char type;           ///< Type letter (data class)
   double density;      ///< Number density
   
  public:
@@ -50,9 +50,12 @@ class Zaid
   ~Zaid() { }     ///< Destructor
 
   bool operator==(const Zaid&) const;
+  bool operator<(const Zaid&) const;
 
-  bool isEquavilent(const size_t,const size_t,const char) const;
+  bool isEquivalent(const size_t,const size_t,const char) const;
   size_t setZaid(const std::string&);
+  std::string getZaid() const;
+  std::string getFlukaName() const;
   void setDensity(const double); 
   /// Set a tag number
   void setTag(const size_t T) { tag=T % 100; }

@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "Rules.h"
+#include "writeSupport.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -66,7 +66,7 @@ namespace WeightSystem
 {
 
 WWG::WWG() :
-  ptype('n'),wupn(8.0),wsurv(1.4),maxsp(5),
+  pType({"n"}),wupn(8.0),wsurv(1.4),maxsp(5),
   mwhere(-1),mtime(0),switchn(-2),
   EBin({1e8}),WMesh(1,Grid)
   /*!
@@ -76,7 +76,7 @@ WWG::WWG() :
 {}
 
 WWG::WWG(const WWG& A) : 
-  ptype(A.ptype),wupn(A.wupn),wsurv(A.wsurv),maxsp(A.maxsp),
+  pType(A.pType),wupn(A.wupn),wsurv(A.wsurv),maxsp(A.maxsp),
   mwhere(A.mwhere),mtime(A.mtime),switchn(A.switchn),
   EBin(A.EBin),Grid(A.Grid),WMesh(A.WMesh)
   /*!
@@ -95,7 +95,7 @@ WWG::operator=(const WWG& A)
 {
   if (this!=&A)
     {
-      ptype=A.ptype;
+      pType=A.pType;
       wupn=A.wupn;
       wsurv=A.wsurv;
       maxsp=A.maxsp;
@@ -109,6 +109,16 @@ WWG::operator=(const WWG& A)
   return *this;
 }
 
+void
+WWG::setParticles(const std::set<std::string>& AP)
+  /*!
+    Set active particles
+    \param AP :: Active particle set
+   */
+{
+  pType=AP;
+  return;
+}
 
 void
 WWG::calcGridMidPoints() 
@@ -213,21 +223,24 @@ WWG::writeHead(std::ostream& OX) const
   ELog::RegMethod RegA("WWG","writeHead");
   
   std::ostringstream cx;
-  
-  cx.str("");  
-  cx<<"wwp:"<<ptype<<" ";
-  cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere
-    <<" "<<switchn<<" "<<mtime;
-  StrFunc::writeMCNPX(cx.str(),OX);
 
-  if (EBin.size()>15)
-    throw ColErr::RangeError<size_t>(EBin.size(),0,15,
-                                     "MCNP Energy Bin size limit");
-  cx.str("");
-  cx<<"wwge:"<<ptype<<" ";
-  for(const double E : EBin)
-    cx<<E<<" ";
-  StrFunc::writeMCNPX(cx.str(),OX);
+  for(const std::string& P : pType)
+    {
+      cx.str("");  
+      cx<<"wwp:"<<P<<" ";
+      cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere
+	<<" "<<switchn<<" "<<mtime;
+      StrFunc::writeMCNPX(cx.str(),OX);
+      
+      if (EBin.size()>15)
+	throw ColErr::RangeError<size_t>(EBin.size(),0,15,
+					 "MCNP Energy Bin size limit");
+      cx.str("");
+      cx<<"wwge:"<<P<<" ";
+      for(const double E : EBin)
+	cx<<E<<" ";
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
   
   return;
 }
@@ -237,7 +250,7 @@ WWG::powerRange(const double pR)
   /*!
     After normalization calculate W^p
     \param pR :: power value
-   */
+  */
 {
   ELog::RegMethod RegA("WWG","powerRange");
 
@@ -246,7 +259,8 @@ WWG::powerRange(const double pR)
 }
 
 void
-WWG::scaleRange(const double minR,const double maxR,
+WWG::scaleRange(const double minR,
+		const double maxR,
 		const double fullRange)
   /*!
     Normalize the mesh to have a max at 1.0
@@ -307,19 +321,35 @@ WWG::writeWWINP(const std::string& FName) const
 {
   ELog::RegMethod RegA("WWG","writeWWINP");
   
-    
+  boost::format TopFMT("%10i%10i%10i%10i%28s\n");
+  boost::format neFMT("%10i");
+  const std::string date("10/07/15 15:37:51");
+
+  const size_t nParticle(pType.size());
   std::ofstream OX;
   OX.open(FName.c_str());
+  
+  // IF[1] : timeIndependent : No. particleType : 10(rectangular) : date
+  OX<<(TopFMT % 1 % 1  % nParticle % 10 % date);
 
-  Grid.writeWWINP(OX,1,EBin.size());
-  size_t itemCnt=0;
-  for(const double& E : EBin)
-    StrFunc::writeLine(OX,E,itemCnt,6);
-  if (itemCnt!=0)
-    OX<<std::endl;
-  itemCnt=0;
 
-  WMesh.writeWWINP(OX);
+  for(size_t i=0;i<nParticle;i++)
+    {
+      OX<<(neFMT % EBin.size());
+      if ( ((i+1) % 7) == 0) OX<<std::endl;
+    }
+  if (nParticle % 7) OX<<std::endl;
+  
+  Grid.writeWWINP(OX);
+  for(size_t i=0;i<nParticle;i++)
+    {
+      size_t itemCnt=0;
+      for(const double& E : EBin)
+	StrFunc::writeLine(OX,E,itemCnt,6);
+      if (itemCnt!=0)
+	OX<<std::endl;
+      WMesh.writeWWINP(OX);
+    }
   
   OX.close();
 		       
@@ -337,14 +367,13 @@ WWG::writeVTK(const std::string& FName,
 {
   ELog::RegMethod RegA("WWG","writeVTK");
 
-
   if (FName.empty()) return;
   std::ofstream OX(FName.c_str());
 
   const long int XSize=WMesh.getXSize();
   const long int YSize=WMesh.getYSize();
   const long int ZSize=WMesh.getZSize();
-
+  
   boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;

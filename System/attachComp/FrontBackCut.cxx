@@ -3,7 +3,7 @@
  
  * File:   attach/FrontBackCut.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,6 +118,36 @@ FrontBackCut::~FrontBackCut()
 {}
 
 void
+FrontBackCut::setFront(const FrontBackCut& FSurf)
+  /*!
+    Set a front wall
+    \param FSurf :: Front object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+
+  frontCut=FSurf.frontCut;
+  frontDivider=FSurf.frontDivider;
+  activeFront=1;
+  return;
+}
+
+void
+FrontBackCut::setBack(const FrontBackCut& BSurf)
+  /*!
+    Set a back wall
+    \param BSurf :: back object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+
+  backCut=BSurf.backCut;
+  backDivider=BSurf.backDivider;
+  activeBack=1;
+  return;
+}
+
+void
 FrontBackCut::setFront(const int FSurf)
   /*!
     Set a front wall
@@ -196,8 +226,8 @@ FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
   ELog::RegMethod RegA("FrontBackCut","setFront");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  frontCut=WFC.getSignedMainRule(sideIndex);
-  frontDivider=WFC.getSignedCommonRule(sideIndex);
+  frontCut=WFC.getMainRule(sideIndex);
+  frontDivider=WFC.getCommonRule(sideIndex);
   frontCut.populateSurf();
   frontDivider.populateSurf();
   activeFront=1;
@@ -216,8 +246,8 @@ FrontBackCut::setBack(const attachSystem::FixedComp& WFC,
   ELog::RegMethod RegA("FrontBackCut","setBack");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  backCut=WFC.getSignedMainRule(sideIndex);
-  backDivider=WFC.getSignedCommonRule(sideIndex);
+  backCut=WFC.getMainRule(sideIndex);
+  backDivider=WFC.getCommonRule(sideIndex);
   backCut.populateSurf();
   backDivider.populateSurf();
   activeBack=1;
@@ -285,6 +315,17 @@ FrontBackCut::frontRule() const
 }
 
 std::string
+FrontBackCut::frontComplement() const
+  /*!
+    Accessor to front rule (complement)
+    \return frontRule.cmp with divider
+  */
+{
+  return (activeFront) ?
+    frontCut.complement().display()+frontDivider.display() : "" ;    
+}
+
+std::string
 FrontBackCut::backRule() const
   /*!
     Accessor to back rule
@@ -293,6 +334,17 @@ FrontBackCut::backRule() const
 {
   return (activeBack) ?
     backCut.display()+backDivider.display() : "";    
+}
+
+std::string
+FrontBackCut::backComplement() const
+  /*!
+    Accessor to back rule
+    \return backRule with divider
+  */
+{
+  return (activeBack) ?
+    backCut.complement().display()+backDivider.display() : "";    
 }
 
 std::string
@@ -382,5 +434,132 @@ FrontBackCut::createBackLinks(attachSystem::FixedComp& FC,
   return;
 }
 
+void
+FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
+			      const int surfIndex,
+			      const int dFlag,
+			      const Geometry::Vec3D& YAxis,
+			      const double length) const
+  /*!
+    Support function to calculate the shifted surface fo the front
+    \param SMap :: Surface register
+    \param index :: offset index
+    \param dFlag :: direction flag
+    \param YAxis :: Axid for shift of sphere/cylinder
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
+  getShiftedSurf(SMap,frontCut,surfIndex,dFlag,YAxis,length);
+  return;
+}
+
+void
+FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
+			     const int surfIndex,
+			     const int dFlag,
+			     const Geometry::Vec3D& YAxis,
+			     const double length) const
+  /*!
+    Support function to calculate the shifted surface fo the back
+    \param SMap :: Surface register
+    \param surfIndex :: offset index
+    \param dFlag :: direction flag
+    \param YAxis :: Axid for shift of sphere/cylinder
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
+  
+  getShiftedSurf(SMap,backCut,surfIndex,dFlag,YAxis,length);
+  return;
+}
+
+
+void
+FrontBackCut::getShiftedSurf(ModelSupport::surfRegister& SMap,
+			     const HeadRule& HR,
+			     const int index,
+			     const int dFlag,
+			     const Geometry::Vec3D& YAxis,
+			     const double length)
+  /*!
+    Support function to calculate the shifted surface
+    \parma SMap :: local surface register
+    \param HR :: HeadRule to extract plane surf
+    \param index :: offset index
+    \param dFlag :: direction of surface axis (relative to HR.Plane)
+    \param YAxis :: Direction of cylindical shift
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getShiftedSurf");
+  
+  std::set<int> FS=HR.getSurfSet();
+  for(const int& SN : FS)
+    {
+      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
+
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(SPtr);
+      if (PPtr)
+	{
+	  if (SN*dFlag>0)
+	    ModelSupport::buildShiftedPlane(SMap,index,PPtr,dFlag*length);
+	  else
+	    ModelSupport::buildShiftedPlaneReversed(SMap,index,PPtr,dFlag*length);
+	  
+	  return;
+	}
+      
+      const Geometry::Cylinder* CPtr=
+	dynamic_cast<const Geometry::Cylinder*>(SPtr);
+      // Cylinder case:
+      if (CPtr)
+	{
+	  if (SN>0)
+	    ModelSupport::buildCylinder
+	      (SMap,index,CPtr->getCentre()+YAxis*length,
+	       CPtr->getNormal(),CPtr->getRadius());
+	  else
+	    ModelSupport::buildCylinder
+	      (SMap,index,CPtr->getCentre()-YAxis*length,
+	       CPtr->getNormal(),CPtr->getRadius());
+	  return;
+	}
+    }
+  
+  throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
+} 
+  
+Geometry::Vec3D
+FrontBackCut::frontInterPoint(const Geometry::Vec3D& Centre,
+			      const Geometry::Vec3D& CAxis) const
+  /*!
+    Calculate the intersection point on the front  points
+    \param Centre :: Centre point of line
+    \param CAxis :: Axis of line
+    \return intersection point
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","frontInterPoint");
+
+  return SurInter::getLinePoint(Centre,CAxis,frontCut,frontDivider);  
+}
+
+Geometry::Vec3D
+FrontBackCut::backInterPoint(const Geometry::Vec3D& Centre,
+			      const Geometry::Vec3D& CAxis) const
+  /*!
+    Calculate the intersection point on the  back points
+    \param Centre :: Centre point of line
+    \param CAxis :: Axis of line
+    \return intersection point
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","backInterPoint");
+
+  return SurInter::getLinePoint(Centre,CAxis,backCut,backDivider);  
+}
   
 }  // NAMESPACE attachSystem

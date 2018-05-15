@@ -97,7 +97,7 @@ DREAMvariables(FuncDataBase& Control)
   FGen.setLayer(1,0.8,"Copper");
   FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
-  FGen.generateTaper(Control,"dreamFA",350.0,9.49,2.75,2.39,3.79);
+  FGen.generateTaper(Control,"dreamFA",350.0, 7.630,2.96, 4.0,4.0);
 
   PipeGen.setWindow(-2.0,0);
   PipeGen.setMat("Copper");

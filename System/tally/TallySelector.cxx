@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,255 +54,38 @@
 #include "MainProcess.h"
 #include "inputParam.h"
 #include "addInsertObj.h"
+#include "Simulation.h"
+#include "SimMCNP.h"
+
 #include "TallySelector.h"
-
-#include "pointConstruct.h"
-#include "meshConstruct.h"
-#include "tmeshConstruct.h"
-#include "fmeshConstruct.h"
-#include "fluxConstruct.h"
-#include "heatConstruct.h"
-#include "fissionConstruct.h"
-#include "itemConstruct.h"
-#include "surfaceConstruct.h"
-#include "sswConstruct.h"
-#include "tallyConstructFactory.h"
-#include "tallyConstruct.h"
-
-int
-tallySelection(Simulation& System,const mainSystem::inputParam& IParam)
-  /*!
-    An amalgumation of values to determine what sort of tallies to put
-    in the system.
-    \param System :: Simulation to add tallies
-    \param IP :: InputParam
-    \return flag to indicate that more work is required after renumbering
-  */
-{
-  ELog::RegMethod RegA("TallySelector","tallySelection(basic)");
-
-  tallySystem::tallyConstructFactory FC;
-  tallySystem::tallyConstruct& TallyBuilder=
-    tallySystem::tallyConstruct::Instance(&FC);
-
-  return TallyBuilder.tallySelection(System,IParam);
-}
 
 
 void
-tallyAddition(Simulation& System,
-	      const mainSystem::inputParam& IParam)
-  /*
-    Adds components to the model -- should NOT be here
-    \param System :: Simulation to get tallies from 
-    \param IParam :: Parameters
+pointTallyWeights(SimMCNP& System,
+		    const mainSystem::inputParam& IParam)
+  /*!
+    Normalize the weights after the main processing event
+    \param System :: simulation to use
+    \param IParam :: Parameter
   */
+    
 {
-  ELog::RegMethod RegA("TallySelector[F]","Addition");
-  const size_t nP=IParam.setCnt("TAdd");
-  for(size_t index=0;index<nP;index++)
-    {
-      const std::string eMess
-	("Insufficient item for TAdd["+StrFunc::makeString(index)+"]");
-      const std::string key=
-	IParam.getValueError<std::string>("TAdd",index,0,eMess);
-      
-      if(key=="help")
-	{
-	  ELog::EM<<"TAdd Help "<<ELog::endBasic;
-	  ELog::EM<<
-	    " -- cylinder object FixedComp linkPt +Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- cylinder free Vec3D(x,y,z) Vec3D(nx,ny,nz) radius \n";
-	  ELog::EM<<
-	    " -- plate object fixedComp linkPt +Vec3D(x,y,z) "
-	    "xSize zSize {ySize=0.1} {mat=Void}\n";
-	  ELog::EM<<
-	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
-	    "xSize zSize {ySize=0.1} {mat=Void}\n";
-	  ELog::EM<<
-	    " -- sphere object FixedComp linkPt +Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- sphere free Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- grid object FixedComp linkPt +Vec3D(x,y,z) "
-	    " NL length thick gap mat \n";
-	  ELog::EM<<
-	    " -- grid free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis)"
-	    " NL length thick gap mat \n";
-	  ELog::EM<<ELog::endBasic;
-	  ELog::EM<<ELog::endErr;
-          return;
-	}
-      const std::string PType=
-	IParam.getValueError<std::string>("TAdd",index,1,eMess);
-
-      std::string FName,LName;
-      Geometry::Vec3D VPos,YAxis,ZAxis;
-      if (key=="Plate" || key=="plate")
-	{
-	  size_t ptI;
-	  const std::string PName="insertPlate"+StrFunc::makeString(index);
-	  if (PType=="object")
-	    {
-	      ptI=4;
-	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	    }
-	  else if (PType=="free")
-	    {
-	      ptI=2;
-              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-              ZAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"plate type");
-	  
-	  const double XW=
-	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
-	  const double ZH=
-	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
-	  const double YT=
-	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
-	  const std::string mat=
-            IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
-	  
-	  if (PType=="object")
-	    constructSystem::addInsertPlateCell
-	      (System,PName,FName,LName,VPos,XW,YT,ZH,mat);
-	  else
-	    constructSystem::addInsertPlateCell
-	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
-	  
-	}
-      else if (key=="Grid" || key=="Grid")
-	{
-	  size_t ptI;
-	  const std::string PName="insertGrid"+StrFunc::makeString(index);
-	  if (PType=="object")
-	    {
-	      ptI=4;
-	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	    }
-	  else if (PType=="free")
-	    {
-	      ptI=2;
-              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-              ZAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"plate type");
-	  
-	  const size_t NL=
-	    IParam.getValueError<size_t>("TAdd",index,ptI,eMess);
-	  const double length=
-	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
-	  const double thick=
-	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
-	  const double gap=
-	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+3);
-	  const std::string mat=
-            IParam.getDefValue<std::string>("Void","TAdd",index,ptI+4);
-	  
-	  if (PType=="object")
-	    constructSystem::addInsertGridCell
-	      (System,PName,FName,LName,VPos,NL,length,thick,gap,mat);
-	  else
-	    constructSystem::addInsertGridCell
-	      (System,PName,VPos,YAxis,ZAxis,NL,length,thick,gap,mat);
-	  
-	}
-      else if (key=="Sphere" || key=="sphere")
-	{
-	  const std::string PName="insertSphere"+StrFunc::makeString(index);
-	  size_t ptI;
-	  if (PType=="object")
-	    {
-	      const std::string FName=
-		IParam.getValueError<std::string>("TAdd",index,2,eMess);
-	      const std::string LName=
-		IParam.getValueError<std::string>("TAdd",index,3,eMess);
-	      ptI=4;
-	    }
-	  else
-	    ptI=2;
-	  
-	  VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	  const double radius=
-	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
-	  const std::string mat=
-	    IParam.getDefValue<std::string>("Void","TAdd",index,ptI+1);
-
-	  if (PType=="object")
-	    constructSystem::addInsertSphereCell
-	      (System,PName,FName,LName,VPos,radius,mat);
-	  else if (PType=="free")
-	    {
-	      constructSystem::addInsertSphereCell
-		(System,PName,VPos,radius,mat);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
-	}
-
-      else if (key=="Cylinder" || key=="cylinder")
-	{
-	  const std::string PName="insertCylinder"+StrFunc::makeString(index);
-
-          size_t ptI;
-	  if (PType=="object")
-	    {
-	      ptI=4;
-	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	    }
-	  else if (PType=="free")
-	    {
-	      ptI=2;
-              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"cylinder type");
-	  
-	  const double radius=
-	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
-	  const double length=
-	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
-	  const std::string mat=
-	    IParam.getDefValue<std::string>("Void","TAdd",index,ptI+2);
-          
-	  if (PType=="object")
-	    constructSystem::addInsertCylinderCell
-	      (System,PName,FName,LName,VPos,radius,length,mat);
-	  else if (PType=="free")
-	    {
-	      constructSystem::addInsertCylinderCell
-		(System,PName,VPos,YAxis,radius,length,mat);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
-	}
-      else
-        throw ColErr::InContainerError<std::string>
-          (key,"key not known in TAdd");
-    }
+  ELog::RegMethod RegA("TallySelector","pointTallyWeights");
   
+  // This shoudl be elsewhere
+  if (IParam.flag("tallyWeight"))
+    tallySystem::addPointPD(System);
+
   return;
 }
 
+
 void
-tallyModification(Simulation& System,
+tallyModification(SimMCNP& System,
 		  const mainSystem::inputParam& IParam)
   /*!
     Applies a large number of modifications to the tally system
-    \param System :: Simulation to get tallies from 
+    \param System :: SimMCNP to get tallies from 
     \param IParam :: Parameters
   */
 {
@@ -471,20 +254,15 @@ tallyModification(Simulation& System,
 }
 
 void
-tallyRenumberWork(Simulation&,const mainSystem::inputParam&)
+tallyRenumberWork(SimMCNP&,const mainSystem::inputParam&)
   /*!
     An amalgumation of values to determine what sort of tallies to put
     in the system.
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: InputParam
   */
 {
   ELog::RegMethod RegA("TallySelector","tallyRenumberWork");
-
-
-  // tallySystem::tallyConstructFactory FC;
-  // tallySystem::tallyConstruct TallyBuilder(FC);
-  // TallyBuilder.tallyRenumber(System,IParam);
  
   return;
 }

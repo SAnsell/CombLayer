@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "channel.h"
 #include "boxValues.h"
@@ -86,9 +87,9 @@ namespace ts1System
 
 PressVessel::PressVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,12),
+  attachSystem::FixedOffset(Key,12),
   pvIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pvIndex+1),populated(0),
+  cellIndex(pvIndex+1),
   outerWallCell(0),IVoidCell(0),targetLen(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -97,12 +98,10 @@ PressVessel::PressVessel(const std::string& Key)  :
 {}
 
 PressVessel::PressVessel(const PressVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  pvIndex(A.pvIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  pvIndex(A.pvIndex),cellIndex(A.cellIndex),
   outerWallCell(A.outerWallCell),IVoidCell(A.IVoidCell),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
+  width(A.width),
   height(A.height),length(A.length),frontLen(A.frontLen),
   sideWallThick(A.sideWallThick),topWallThick(A.topWallThick),
   frontWallThick(A.frontWallThick),cutX(A.cutX),cutY(A.cutY),
@@ -138,16 +137,10 @@ PressVessel::operator=(const PressVessel& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       outerWallCell=A.outerWallCell;
       IVoidCell=A.IVoidCell;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -200,22 +193,15 @@ PressVessel::~PressVessel()
 {}
 
 void
-PressVessel::populate(const Simulation& System)
+PressVessel::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("PressVessel","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -282,32 +268,23 @@ PressVessel::populate(const Simulation& System)
   sideHeight=Control.EvalVar<double>(keyName+"SideHeight");
   sideWidth=Control.EvalVar<double>(keyName+"SideWidth");
 
-  populated |= 1;
   return;
 }
   
 void
-PressVessel::createUnitVector(const attachSystem::FixedComp& FC)
+PressVessel::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Down the beamline
     \param FC :: FixedComp for origin and axis
+    \param sideIndex :: SideIndex link point
   */
 {
   ELog::RegMethod RegA("PressVessel","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -584,6 +561,7 @@ PressVessel::addProtonLine(Simulation& System,
    /*!
      Adds a proton line up to the edge of the reflector
      \param System :: Simulation to add
+     \param RefSurfBoundary :: reflector outside boundary
      \return proton cell nubmer
    */
 {
@@ -639,7 +617,6 @@ PressVessel::createLinks()
   FixedComp::setConnect(11,Origin+Y*length,-Y);
   FixedComp::setLinkSurf(11,SMap.realSurf(pvIndex+2));
 
-
   return;
 }
 
@@ -683,9 +660,9 @@ PressVessel::buildFeedThrough(Simulation& System)
       const double sX((i % 2) ? -1 : 1);
       const double sZ((i / 2) ? -1 : 1);
 //       ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
-      const Geometry::Vec3D PStart=getLinkPt(0)+Y*cutY+
+      const Geometry::Vec3D PStart=getLinkPt(1)+Y*cutY+
 	        X*sX*sideXOffset+Z*sZ*(sideZCenter-sideHeight);
-      const Geometry::Vec3D PEnd=getLinkPt(1)+
+      const Geometry::Vec3D PEnd=getLinkPt(2)+
 	        X*sX*sideXOffset+Z*sZ*(sideZCenter-sideHeight);
 
       SideWaterChannel.addPoint(PStart);
@@ -703,8 +680,8 @@ PressVessel::buildFeedThrough(Simulation& System)
 //      const double sX((i % 2) ? -1 : 1);
 //      const double sZ((i / 2) ? -1 : 1);
 //       ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
-      const Geometry::Vec3D PStart=getLinkPt(1)+X*begXstep[i];
-      const Geometry::Vec3D PEnd=getLinkPt(11)+X*begXstep[i];
+      const Geometry::Vec3D PStart=getLinkPt(2)+X*begXstep[i];
+      const Geometry::Vec3D PEnd=getLinkPt(12)+X*begXstep[i];
 
       EndWaterChannel.addPoint(PStart);
       EndWaterChannel.addPoint(PEnd);
@@ -719,17 +696,19 @@ PressVessel::buildFeedThrough(Simulation& System)
 
 void
 PressVessel::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: FixedComp for origin
+    \param sideIndex :: Offset point
   */
 {
   ELog::RegMethod RegA("PressVessel","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

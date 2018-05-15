@@ -3,7 +3,7 @@
  
  * File:   essBuild/VOR.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -83,7 +83,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "LineShield.h"
 #include "HoleShape.h"
 #include "DHut.h"
@@ -107,7 +107,7 @@ VOR::VOR(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -119,7 +119,7 @@ VOR::VOR(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   FOCDisk(new constructSystem::DiskChopper(newName+"FOCDisk")),
   FOCExitPort(new constructSystem::HoleShape(newName+"FOCExitPort")),
 
@@ -128,7 +128,7 @@ VOR::VOR(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOCDiskB")),
   FOCEntryPortB(new constructSystem::HoleShape(newName+"FOCEntryPortB")),
   FOCExitPortB(new constructSystem::HoleShape(newName+"FOCExitPortB")),
@@ -329,7 +329,7 @@ VOR::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
 
 
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*vorAxis,Control,GItem,1);
@@ -376,8 +376,8 @@ VOR::build(Simulation& System,
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));
-  FOCExitPort->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                       OutPitA->getKey("Mid").getSignedFullRule(-2));
+  FOCExitPort->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                       OutPitA->getKey("Mid").getFullRule(-2));
   FOCExitPort->createAll(System,OutPitA->getKey("Inner"),2);
 
 
@@ -386,15 +386,15 @@ VOR::build(Simulation& System,
   OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
 
   FOCEntryPortB->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
-			  OutPitB->getKey("Mid").getSignedFullRule(-1));
+  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getFullRule(1),
+			  OutPitB->getKey("Mid").getFullRule(-1));
   FOCEntryPortB->createAll(System,OutPitB->getKey("Inner"),1);
 
   
   FOCExitPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   FOCExitPortB->addInsertCell(OutPitB->getCells("Collet"));
-  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
-                       OutPitB->getKey("Mid").getSignedFullRule(-2));
+  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
+                       OutPitB->getKey("Mid").getFullRule(-2));
   FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
 
   // shielding between PitA and P it B
@@ -438,8 +438,8 @@ VOR::build(Simulation& System,
 
   CavePort->addInsertCell(Cave->getCells("Steel"));
   CavePort->setCutFaceFlag(1);
-  CavePort->setFaces(Cave->getKey("Inner").getSignedFullRule(1),
-		     Cave->getKey("Mid").getSignedFullRule(-1));
+  CavePort->setFaces(Cave->getKey("Inner").getFullRule(1),
+		     Cave->getKey("Mid").getFullRule(-1));
   CavePort->createAll(System,FocusOutC->getKey("Guide0"),2);
 
   Tank->addInsertCell(Cave->getCells("Void"));

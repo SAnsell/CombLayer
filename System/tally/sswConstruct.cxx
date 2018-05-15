@@ -3,7 +3,7 @@
  
  * File:   tally/sswConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "SurfMap.h"
 #include "LinkSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 
 #include "inputParam.h"
 
@@ -83,28 +84,13 @@
 namespace tallySystem
 {
 
-sswConstruct::sswConstruct() 
-  /// Constructor
-{}
-
-sswConstruct::sswConstruct(const sswConstruct&) 
-  /// Copy Constructor
-{}
-
-sswConstruct&
-sswConstruct::operator=(const sswConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
-int
-sswConstruct::processSSW(Simulation& System,
+void
+sswConstruct::processSSW(SimMCNP& System,
 			 const mainSystem::inputParam& IParam,
-			 const size_t Index) const
+			 const size_t Index) 
 /*!
     Add ssw tally as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -138,7 +124,7 @@ sswConstruct::processSSW(Simulation& System,
       
       const long int sideIndex(attachSystem::getLinkIndex(linkPt));
       const std::set<int> OutSurf=
-        FCPtr->getSignedMainRule(sideIndex).getSurfSet();
+        FCPtr->getMainRule(sideIndex).getSurfSet();
       for(const int CN : OutSurf)
         SList.push_back(CN);
     }
@@ -164,13 +150,13 @@ sswConstruct::processSSW(Simulation& System,
 
   tallySystem::sswTally* SSWX=tallySystem::addSSWTally(System);
   SSWX->addSurfaces(SList);
-  // additional work needed on renumbering (?)
-  return 1;
+
+  return;
 }
 
 
 void
-sswConstruct::writeHelp(std::ostream& OX) const
+sswConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: output stream

@@ -3,7 +3,7 @@
  
  * File:   supportInc/Binary.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 /*!
   \class Binary
-  \brief display class for binary numbers
+  \brief Display class for binary numbers
   \version 1.0
   \date Jan 2006 
   \author S. Ansell
@@ -35,17 +35,17 @@ class Binary
 private:
 
   unsigned long int num;      ///< Number stored
-  int pad;                    ///< number of padding zeros
-
+  unsigned long int pad;      ///< number of padding zeros
+ 
 public:
   
   Binary();
-  Binary(const unsigned long int&,const int =0);
-  Binary(const std::vector<int>&,const int =0);
-  Binary(const std::string&,const int =0);
-  Binary(const std::string&,const unsigned int,const int =0);
-  Binary(const char*,const unsigned int,const int =0);
-  Binary(const unsigned char*,const unsigned int,const int =0);
+  Binary(const unsigned long int&,const unsigned long int =0);
+  Binary(const std::vector<int>&,const unsigned long int =0);
+  Binary(const std::string&,const unsigned long int =0);
+  Binary(const std::string&,const unsigned int,const unsigned long int  =0);
+  Binary(const char*,const unsigned int,const unsigned long int =0);
+  Binary(const unsigned char*,const unsigned int,const unsigned long int =0);
   Binary(const Binary&);
   Binary& operator=(const Binary&);
   ~Binary();
@@ -54,6 +54,10 @@ public:
   operator unsigned long int () const { return num; }
   /// Set Padding
   void setPad(const int P) { pad=P; }
+
+  /// Set Padding
+  unsigned long int getPad() const { return pad; }
+
   /// Accessor to the number
   unsigned long int getNumber() const { return num; }
   
@@ -61,7 +65,7 @@ public:
   void setNum(const unsigned long int&);
 
   void write(std::ostream&) const;
-  void write(std::ostream&,const int) const;
+  void write(std::ostream&,const unsigned long int) const;
 };
 
 std::ostream&

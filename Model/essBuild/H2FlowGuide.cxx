@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2FlowGuide.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -262,7 +262,8 @@ H2FlowGuide::createObjects(Simulation& System,
       (innerCell,"H2Wing inner Cell not found");
   
   std::string Out;
-  const std::string topBottomStr=HW.getLinkString(12)+HW.getLinkString(13);
+  const std::string topBottomStr=HW.getLinkString(13)+
+    HW.getLinkString(14);
   HeadRule wallExclude;
   // base
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");

@@ -89,7 +89,9 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setPipe(4.5,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
-  
+
+  Control.addVariable("lokiStopPoint",0);  
+  Control.addVariable("lokiStartPoint",0);  
   Control.addVariable("lokiAxisXStep",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisXYAngle",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisZAngle",0.0);
@@ -97,8 +99,7 @@ LOKIvariables(FuncDataBase& Control)
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
-  FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0);
-
+  FGen.generateBender(Control,"lokiBA",350.0,3.0,3.0,2.5,2.5,6125.0,90.0);
 
   Control.addVariable("lokiBlockShutterHeight",66.3);
   Control.addVariable("lokiBlockShutterWidth",38.8);

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/trex/beamlineSupport.cxx
+ * File:   ESSBeam/common/beamlineSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,7 @@ setBeamAxis(attachSystem::FixedOffset& beamAxis,
 	    const int reverseZ)
   /*!
     Set the primary direction object
+    \param beamAxis :: axis to rotate
     \param Control :: Database of variables
     \param GItem :: Guide Item to copy
     \param reverseZ :: Reverse axis [-1 Z is -ve / 0 no change / 1 Z is +ve]
@@ -98,15 +99,16 @@ setBeamAxis(attachSystem::FixedOffset& beamAxis,
   
   beamAxis.populate(Control);
   beamAxis.createUnitVector(GItem);
-  beamAxis.setLinkCopy(0,GItem.getKey("Main"),0);
-  beamAxis.setLinkCopy(1,GItem.getKey("Main"),1);
-  beamAxis.setLinkCopy(2,GItem.getKey("Beam"),0);
-  beamAxis.setLinkCopy(3,GItem.getKey("Beam"),1);
-  
+  beamAxis.setLinkSignedCopy(0,GItem.getKey("Main"),1);
+  beamAxis.setLinkSignedCopy(1,GItem.getKey("Main"),2);
+  beamAxis.setLinkSignedCopy(2,GItem.getKey("Beam"),1);
+  beamAxis.setLinkSignedCopy(3,GItem.getKey("Beam"),2);
+
+  // change to unsigned !!!
+  beamAxis.linkShift(2); 
   beamAxis.linkShift(3);
-  beamAxis.linkShift(4);
+  beamAxis.linkAngleRotate(2);
   beamAxis.linkAngleRotate(3);
-  beamAxis.linkAngleRotate(4);
 
   beamAxis.applyOffset();
 

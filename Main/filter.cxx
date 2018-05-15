@@ -3,7 +3,7 @@
  
  * File:   Main/filter.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,6 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "Simulation.h" 
-#include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -75,10 +74,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
-#include "tallyConstructFactory.h"
 #include "World.h"
 #include "SimInput.h"
 

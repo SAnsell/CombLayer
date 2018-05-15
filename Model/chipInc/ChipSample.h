@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/ChipSample.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ namespace hutchSystem
 */
 
 class ChipSample : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
@@ -43,14 +43,8 @@ class ChipSample : public attachSystem::ContainedComp,
   const std::string baseName;    ///< Base key name
   const int csIndex;             ///< Index of surface offset
   int cellIndex;                 ///< Cell index
-  int populated;                 ///< 1:var
 
   int tableNum;             ///< Table number
-  double zAngle;            ///< Z angle rotation
-  double xyAngle;           ///< XY angle rotation
-  double XStep;             ///< Step across beamline
-  double YStep;             ///< Step down beamline
-  double ZLift;             ///< Step up
 
   double width;             ///< Full Width
   double height;            ///< Full Height
@@ -58,8 +52,9 @@ class ChipSample : public attachSystem::ContainedComp,
 
   int defMat;               ///< Material
   
-  void populate(const Simulation&);
-  void createUnitVector(const FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

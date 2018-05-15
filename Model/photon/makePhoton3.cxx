@@ -144,7 +144,7 @@ makePhoton3::build(Simulation& System,
   ModContObj->createAll(System,*Chamber,0);
 
   ModObj->addInsertCell(ModContObj->getCell("Void"));
-  ModObj->setOuter(ModContObj->getSignedFullRule(9));    
+  ModObj->setOuter(ModContObj->getFullRule(9));    
   ModObj->createAll(System,ModContObj->getBackFlange(),7);
 
   BaseSupport->addInsertCell(Chamber->getCell("Void"));

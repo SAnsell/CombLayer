@@ -3,7 +3,7 @@
  
  * File:   essBuild/FREIA.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -85,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
@@ -110,28 +110,28 @@ FREIA::FREIA(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
   FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   BendE(new beamlineSystem::GuideLine(newName+"BE")),
   
-  ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
+  ChopperD(new constructSystem::SingleChopper(newName+"ChopperD")),
   WBC2Disk(new constructSystem::DiskChopper(newName+"WBC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   BendF(new beamlineSystem::GuideLine(newName+"BF")),
 
-  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
+  ChopperE(new constructSystem::SingleChopper(newName+"ChopperE")),
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
@@ -140,10 +140,10 @@ FREIA::FREIA(const std::string& keyName) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
 
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
   JawPit(new constructSystem::ChopperPit(newName+"JawPit")),
@@ -360,8 +360,8 @@ FREIA::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   OutACut->createAll(System,FocusWall->getKey("Guide0"),2);
 
   // 15m WBC chopper
@@ -429,13 +429,13 @@ FREIA::buildHut(Simulation& System,
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
-                        JawPit->getKey("Mid").getSignedFullRule(-2));
+  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
+                        JawPit->getKey("Mid").getFullRule(-2));
   OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getSignedFullRule(-1),
-                         JawPit->getKey("Inner").getSignedFullRule(1));
+  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
+                         JawPit->getKey("Inner").getFullRule(1));
   OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
 
   return;
@@ -521,7 +521,7 @@ FREIA::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());  
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*freiaAxis,Control,GItem,1);
@@ -557,13 +557,13 @@ FREIA::build(Simulation& System,
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
-                        JawPit->getKey("Mid").getSignedFullRule(-2));
+  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
+                        JawPit->getKey("Mid").getFullRule(-2));
   OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getSignedFullRule(-1),
-                         JawPit->getKey("Inner").getSignedFullRule(1));
+  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
+                         JawPit->getKey("Inner").getFullRule(1));
   OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
   
   return;

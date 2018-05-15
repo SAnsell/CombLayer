@@ -192,7 +192,7 @@ CH4Pipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("CH4Pipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getSignedLinkPt(sideIndex);
+  Origin=CUnit.getLinkPt(sideIndex);
 
   return;
 }

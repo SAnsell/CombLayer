@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/ConcreteWall.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "VacVessel.h"
@@ -84,7 +85,7 @@ namespace bibSystem
 {
 
 ConcreteWall::ConcreteWall(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   wallIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(wallIndex+1)
   /*!
@@ -94,10 +95,9 @@ ConcreteWall::ConcreteWall(const std::string& Key)  :
 {}
 
 ConcreteWall::ConcreteWall(const ConcreteWall& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   wallIndex(A.wallIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),innerRadius(A.innerRadius),
+  innerRadius(A.innerRadius),
   thickness(A.thickness),height(A.height),base(A.base),
   mat(A.mat)
   /*!
@@ -117,13 +117,8 @@ ConcreteWall::operator=(const ConcreteWall& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       innerRadius=A.innerRadius;
       thickness=A.thickness;
       height=A.height;
@@ -141,22 +136,15 @@ ConcreteWall::~ConcreteWall()
 {}
 
 void
-ConcreteWall::populate(const Simulation& System)
+ConcreteWall::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database to use
  */
 {
   ELog::RegMethod RegA("ConcreteWall","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-
+  FixedOffset::populate(Control);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   thickness=Control.EvalVar<double>(keyName+"WallThick");
@@ -170,25 +158,23 @@ ConcreteWall::populate(const Simulation& System)
   
 void
 ConcreteWall::createUnitVector(const attachSystem::FixedComp& FC,
-			       const size_t sideIndex)
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ConcreteWall","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex);      // Aqui pide el punto
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
   
 void
 ConcreteWall::createSurfaces(const attachSystem::FixedComp& ReflFC,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create All the surfaces
     \param ReflFC :: Inner wall of reflector
@@ -198,9 +184,10 @@ ConcreteWall::createSurfaces(const attachSystem::FixedComp& ReflFC,
   ELog::RegMethod RegA("ConcreteWall","createSurface");
   // rotation of axis:
 
-  SMap.addMatch(wallIndex+7,ReflFC.getLinkSurf(sideIndex));
-  SMap.addMatch(wallIndex+1,ReflFC.getLinkSurf((sideIndex+1) % 3));
-  SMap.addMatch(wallIndex+2,ReflFC.getLinkSurf((sideIndex+2) % 3));
+  const long int SI(std::abs(sideIndex));
+  SMap.addMatch(wallIndex+7,ReflFC.getLinkSurf(SI));
+  SMap.addMatch(wallIndex+1,ReflFC.getLinkSurf(1+((SI+1) % 3)));
+  SMap.addMatch(wallIndex+2,ReflFC.getLinkSurf(1+((SI+2) % 3)));
 
   ModelSupport::buildCylinder(SMap,wallIndex+17,Origin,Z,innerRadius);
   ModelSupport::buildCylinder(SMap,wallIndex+27,Origin,Z,innerRadius+thickness);
@@ -283,10 +270,10 @@ ConcreteWall::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ConcreteWall","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC,originIndex);
-  createSurfaces(RefFC,sideIndex);
+  createUnitVector(FC,originIndex+1);
+  createSurfaces(RefFC,sideIndex+1);
   createObjects(System);
   createLinks();
   insertObjects(System);
@@ -294,4 +281,4 @@ ConcreteWall::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE bibSystem

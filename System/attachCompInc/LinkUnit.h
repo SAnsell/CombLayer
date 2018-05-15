@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/LinkUnit.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,8 @@ class LinkUnit
   const HeadRule& getMainRule() const;
   const HeadRule& getCommonRule() const;
 
+  /// Check is complete
+  bool isComplete() const { return ((populated & 3) == 3); }
   /// Check Axis 
   bool hasAxis() const { return (populated & 1); }
   /// Check Connection
@@ -106,7 +108,8 @@ class LinkUnit
   void addBridgeSurf(const HeadRule&);
 
   void applyRotation(const localRotate&);
-  void populateSurf(); 
+  void populateSurf();
+  
 };
 
 }

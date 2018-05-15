@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/InsertComp.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,23 +50,19 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "InsertComp.h"
 
 namespace attachSystem
 {
 
-InsertComp::InsertComp() :
-  outerSurf(0)
+InsertComp::InsertComp() 
   /*!
     Constructor 
   */
 {}
 
 InsertComp::InsertComp(const InsertComp& A) : 
-  outerSurf((A.outerSurf) ? A.outerSurf->clone() : 0)
+  outerSurf(A.outerSurf)
   /*!
     Copy constructor
     \param A :: InsertComp to copy
@@ -83,8 +79,7 @@ InsertComp::operator=(const InsertComp& A)
 {
   if (this!=&A)
     {
-      delete outerSurf;
-      outerSurf=(A.outerSurf) ? A.outerSurf->clone() : 0;
+      outerSurf=A.outerSurf;
     }
   return *this;
 }
@@ -94,9 +89,7 @@ InsertComp::~InsertComp()
   /*!
     Deletion operator
   */
-{
-  delete outerSurf;
-}
+{}
 
 void
 InsertComp::setInterSurf(const std::string& SList) 
@@ -106,10 +99,7 @@ InsertComp::setInterSurf(const std::string& SList)
   */
 {
   ELog::RegMethod RegA("InsertComp","addInterSurf(std::string)");
-  MonteCarlo::Object Obj(1,0,0.0,SList);
-  // Null object : Set and return
-  delete outerSurf;
-  outerSurf=Obj.topRule()->clone();
+  outerSurf.procString(SList);
   return;
 }
 
@@ -118,43 +108,11 @@ InsertComp::addInterSurf(const int SN)
   /*!
     Add a surface to the output
     \param SN :: Surface number [inward looking]
-    \todo : Put this in Rule??
   */
 {
   ELog::RegMethod RegA("InsertComp","addInterSurf");
-  // Null object : Set and return
-  if (!outerSurf)
-    {
-      outerSurf=new SurfPoint(static_cast<Geometry::Surface*>(0),SN);
-      return;
-    }
-  // This is an intersection and we want to add our rule at the base
-  // Find first item that is not an intersection
-  Rule* RPtr(outerSurf);
-  std::deque<Rule*> curLevel;
-  curLevel.push_back(outerSurf);
-  while(!curLevel.empty())
-    {
-      RPtr=curLevel.front();
-      curLevel.pop_front();
-      if (RPtr->type()!=1)   // Success not an intersection
-	{
-	  Rule* parent=RPtr->getParent();     // grandparent
-	  Rule* sA=RPtr;
-	  Rule* sB=new SurfPoint(0,SN);
-	  Rule* Item=new Intersection(parent,sA,sB);
-	  // Find place ot insert it
-	  if (!parent)
-	    outerSurf=Item;
-	  else
-	    parent->setLeaf(Item,parent->findLeaf(RPtr));
-	  return;
-	}
-      curLevel.push_back(RPtr->leaf(0));
-      curLevel.push_back(RPtr->leaf(1));
-    }
-  ELog::EM<<"Failed on rule structure  "<<ELog::endErr;
-  throw ColErr::ExitAbort(RegA.getFull());
+
+  outerSurf.addIntersection(SN);
   return;
 }
 
@@ -166,43 +124,7 @@ InsertComp::addInterSurf(const std::string& SList)
   */
 {
   ELog::RegMethod RegA("InsertComp","addInterSurf(std::string)");
-  MonteCarlo::Object Obj(1,0,0.0,SList);
-  if (Obj.topRule())
-    {
-      // Null object : Set and return
-      if (!outerSurf)
-	{
-	  outerSurf=Obj.topRule()->clone();
-	  return;
-	}
-      // This is an intersection and we want to add our rule at the base
-      // Find first item that is not an intersection
-      Rule* RPtr(outerSurf);
-      std::deque<Rule*> curLevel;
-      curLevel.push_back(outerSurf);
-      while(!curLevel.empty())
-	{
-	  RPtr=curLevel.front();
-	  curLevel.pop_front();
-	  if (RPtr->type()!=1)   // Success not an intersection
-	    {
-	      Rule* parent=RPtr->getParent();     // grandparent
-	      Rule* sA=RPtr;
-	      Rule* sB=Obj.topRule()->clone();
-	      Rule* Item=new Intersection(parent,sA,sB);
-	      // Find place ot insert it
-	      if (!parent)
-		outerSurf=Item;
-	      else
-		parent->setLeaf(Item,parent->findLeaf(RPtr));
-	      return;
-	    }
-	  curLevel.push_back(RPtr->leaf(0));
-	  curLevel.push_back(RPtr->leaf(1));
-	}
-      ELog::EM<<"Failed on rule structure  "<<ELog::endErr;
-      exit(1);
-    }
+  outerSurf.addIntersection(SList);
   return;
 }
 
@@ -214,14 +136,7 @@ InsertComp::getExclude() const
   */
 {
   ELog::RegMethod RegA("InsertComp","getExclude");
-
-  if (outerSurf)
-    {
-      MonteCarlo::Algebra AX;
-      AX.setFunctionObjStr("#("+outerSurf->display()+")");
-      return AX.writeMCNPX(); 
-   }
-  return "";
+  return outerSurf.complement().display();
 }
 
 

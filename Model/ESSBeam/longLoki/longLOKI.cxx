@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKI.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
@@ -93,6 +93,7 @@
 #include "RentrantBS.h"
 #include "LokiHut.h"
 #include "VacTank.h"
+#include "beamlineSupport.h"
 
 #include "longLOKI.h"
 
@@ -205,33 +206,6 @@ longLOKI::~longLOKI()
   */
 {}
 
-void
-longLOKI::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("longLOKI","setBeamAxis");
-
-  lokiAxis->populate(Control);
-  lokiAxis->createUnitVector(GItem);
-  lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-
-  lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  // BEAM needs to be rotated:
-  lokiAxis->linkAngleRotate(3);
-  lokiAxis->linkAngleRotate(4);
-  
-    if (reverseZ)
-      lokiAxis->reverseZ();
-  return;
-}
   
 void 
 longLOKI::build(Simulation& System,
@@ -250,7 +224,7 @@ longLOKI::build(Simulation& System,
   ELog::RegMethod RegA("longLOKI","build");
   ELog::EM<<"\nBuilding longLOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*lokiAxis,System.getDataBase(),GItem,0);
   ELog::EM<<"SET LOKI AXIS"<<ELog::endDiag;
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));

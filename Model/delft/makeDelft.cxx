@@ -3,7 +3,7 @@
  
  * File:   delft/makeDelft.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Source.h"
+#include "inputSupport.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
@@ -283,6 +285,7 @@ makeDelft::setSource(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
   
   if (IParam.flag("kcode"))
     {
@@ -290,12 +293,13 @@ makeDelft::setSource(Simulation& System,
       std::ostringstream cx;
       for(size_t i=0;i<NItems;i++)
 	cx<<IParam.getValue<std::string>("kcode",i)<<" ";
-      SDef::KCode& KCard=System.getPC().getKCodeCard();
+      
+      SDef::KCode KCard;
       KCard.setLine(cx.str());
 
       if (IParam.flag("ksrcMat"))
 	{
-	  const int fissileZaid=IParam.getDefValue<int>(0,"ksrcMat",0,0);
+	  const size_t fissileZaid=IParam.getDefValue<size_t>(0,"ksrcMat",0,0);
 	  std::vector<int> fuelCells=
 	    GridPlate->getFuelCells(System,fissileZaid);
 
@@ -315,6 +319,7 @@ makeDelft::setSource(Simulation& System,
 	    }
 	  ELog::EM<<"Fission size == "<<FissionVec.size()<<ELog::endDiag;
 	  KCard.setKSRC(FissionVec);
+	  SDB.registerSource("kcode",KCard);
 	}
     }
 
@@ -408,7 +413,6 @@ makeDelft::buildModerator(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-
   ColdPress->addInsertCell(Pool->getCells("Water"));
   ColdPress->addInsertCell(74123);
   ColdPress->createAll(System,FC,sideIndex);
@@ -437,8 +441,8 @@ makeDelft::buildModerator(Simulation& System,
       BePtr->addInsertCell(Pool->getCells("Water"));
       if (Pool->getCells("Water").empty())
 	BePtr->addInsertCell(voidCell);
-      HeadRule CPCut(ColdPress->getSignedFullRule(1));
-      CPCut.addUnion(ColdPress->getSignedFullRule(3));
+      HeadRule CPCut(ColdPress->getFullRule(1));
+      CPCut.addUnion(ColdPress->getFullRule(3));
       BePtr->createAll(System,FC,sideIndex,
 		       FlightB->getExclude()+FlightC->getExclude()+
 		       CPCut.display());

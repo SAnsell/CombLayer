@@ -3,7 +3,7 @@
  
  * File:   src/ReadFunctions.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -66,15 +67,10 @@
 #include "FItem.h"
 #include "FuncDataBase.h"
 #include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "DBMaterial.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"

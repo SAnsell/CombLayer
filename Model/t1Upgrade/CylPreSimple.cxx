@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CylPreSimple.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,11 +151,11 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   FLpts.clear();
   FLunit.clear();
 
-  const size_t modLink(Mod.NConnect());
-  if (modLink<4)
-    throw ColErr::IndexError<size_t>(4,modLink,"Moderator LU size");
+  const long int modLink(static_cast<long int>(Mod.NConnect())+1);
+  if (modLink<5)
+    throw ColErr::IndexError<long int>(4,modLink,"Moderator LU size");
   
-  Geometry::Vec3D OutPt=Mod.getLinkPt(0);  // 0 origin : ?
+  Geometry::Vec3D OutPt=Mod.getLinkPt(1);  // first outer surface
   innerRadius=OutPt.Distance(Origin);
   ELog::EM<<"Inner radius == "<<innerRadius<<ELog::endDiag;
 
@@ -164,7 +164,7 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   Geometry::Vec3D ZDownPt;
   double ZUpCos(-1.0);
   double ZDownCos(1.0);
-  for(size_t i=1;i<modLink;i++)
+  for(long int i=2;i<modLink;i++)
     {
       const Geometry::Vec3D OutAxis=Mod.getLinkAxis(i);
       const double DP=OutAxis.dotProd(Z);
@@ -193,8 +193,6 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   return;
 }
   
-
-
 void
 CylPreSimple::populate(const FuncDataBase& Control)
   /*!
@@ -486,7 +484,7 @@ CylPreSimple::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkSurf");
+  ELog::RegMethod RegA("CylPreSimple","getLayerSurf");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -523,7 +521,7 @@ CylPreSimple::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkString");
+  ELog::RegMethod RegA("CylPreSimple","getLayerString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -589,8 +587,12 @@ CylPreSimple::createFlightPoint(const attachSystem::FixedComp& FLine)
   
 {
   ELog::RegMethod RegA("CylPreSimple","createFlightPoint");
+
+  if (FLine.NConnect()<6)
+    throw ColErr::IndexError<size_t>
+      (6,FLine.NConnect(),"FLine: "+FLine.getKeyName()+" LU size");
   
-  for(size_t i=2;i<6;i++)
+  for(long int i=3;i<=6;i++)
     {
       const Geometry::Vec3D Pt=FLine.getLinkPt(i);
       const Geometry::Vec3D Ax=FLine.getLinkAxis(i);

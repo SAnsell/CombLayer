@@ -19,7 +19,7 @@ attachSystem::addToInsertLineCtrl(System, *Mug, *Spoon);
 \subsubsection{addToInsertForced}
 
 The outer surface of the Spoon is excluded from the HeadRule of every single cell of Mug.
-Even if Mug contains cells which do not intersect with Spoon (e.g. its handle).
+Even if Mug contains cells which do not intersect with Spoon (e.g. its handle, see \figref{fig:forced}).
 {\it Forced} means {\it do it and do not think about it}, but at the same time it means that
 {\it I have got something wrong somewhere.}  Normally this is that insufficient link points have been added
 to the object, or that the object is a set of split (single cell) volumes.  However, there is the additional
@@ -28,6 +28,17 @@ This can be checked by adding a
 \prog{SimProcess::writeIndexSim(System,"OutputFilename.txt",0);}
 in the code just before the call to insertForced. If there are undefined volumes then the model is not in a state that
 any of the \prog{addToInsert} algorithms except \prog{addToInsertForced} can be used. 
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \drawMug{0}{0}{}
+    \drawSpoon{2}{1}{dashed}
+  \end{tikzpicture}
+  \caption{addToInsertForced: all cells of Spoon are excluded from all cells of Mug including non intersecting cells. In this example, the Spoon is excluded from the Mug handle even though
+  they do not intersect.}
+  \label{fig:forced}
+\end{figure}
 
 
 \subsubsection{addToInsertSurfCtrl}
@@ -39,15 +50,16 @@ The process is as follows:
 \begin{enumerate}
 
 \item{Deconvolves both the Spoon's containedComponent boundary into surfaces.}
-\item{Loop over each cell in Mug : MCell}
+\item Deconvolves the Mug into surfaces.
+\item{Triple Loops over surfaces of both Mug and Spoon}
   \begin{enumerate}
-  \item{Calculate intersection of each surface:surface:surface triplet from the set of CC surfaces and MCell surface}
-  \item{If a point is within CC and the MCell exclude the CC from the
-    MCell and goto next cell}
+  \item{Calculate intersection of each surface:surface:surface triplet}
+  \item{If a point is within CC and the Mug Cells exclude the CC from the
+    MCell}
   \end{enumerate}
 \end{enumerate}
    
-Thus the spoon is inserted only into those cells of Mug which it intersects.
+Thus the spoon is inserted only into those cells of Mug which it intersects~(\figref{fig:surfctrl}).
 
 It is not always better to call {\tt addToInsertSurfCtrl} instead of
 {\tt addToInsertForced} in cases that if is certain that an
@@ -55,22 +67,144 @@ intersection can must take place (particularly if the CC / Inserting
 cells have large numbers of surfaces).
 
 {\tt addToInsertSurfCtrl} is a very expensive function to call,
-because you have to check all the surface triplets. So, it runs a bit
-slower than addToInsertForced, but the geometry will be faster.  The
-two remaining methods provide similar functionality but with less
+because you have to check all the surface triplets. So, it runs significantly
+slower than addToInsertForced, but the geometry will be faster.
+
+\begin{figure}
+  \centering
+  \subfloat[Cell 3 is excluded from cell 1; cells 2 and 4 not changed]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \drawSpoon{2}{4}{dashed}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+
+      \node[legend,blue,fill=white] at (2.25,4.5) {3};
+      \node[legend,blue,fill=white] at (2.25,6) {4};
+    \end{tikzpicture}
+  } \quad
+  \subfloat[None of the cells are modified]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \drawSpoon{5}{1}{dashed}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+
+      \node[legend,blue,fill=white] at (5.25,2) {3};
+      \node[legend,blue,fill=white] at (5.25,3) {4};
+    \end{tikzpicture}
+  }
+  \caption{addToInsertSurfCtrl: only needed cells are excluded}
+  \label{fig:surfctrl}
+\end{figure}
+
+The two remaining methods provide similar functionality but with less
 computational overhead, however, there are cell constructs which will
 cause them to fail.
+
 
 \subsubsection{addToInsertControl}
 
 It's a very simple method. The link points from Spoon are uses as a test for each of the cells within Mug. 
-The method checks if any of these link point fit inside each of the cells of Mug. If it does, then it cuts Spoon from the Mug cell.
+The method checks if any of these link point fit inside each of the cells of Mug. If it does, then it cuts Spoon from the Mug cell~(\figref{fig:control}).
 It is possible to add a vector of link points to check as a parameter to limit the search.
+
+\begin{figure}
+  \centering
+  \subfloat[Cell 3 is excluded from cell 1 since cell 3 has a link point inside cell 1.
+  Cell 4 is excluded from cell 1 since Mug has a link point which is located inside cell 4.
+  Cells 2 is not modifed.]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (2,5) circle (2pt);
+
+      \drawSpoon{1.8}{3}{dashed}
+      \node[legend,blue,fill=white] at (2.05,3.5) {3};
+      \node[legend,blue,fill=white] at (2.05,5.5) {4};
+      \draw[blue] (2.05,3) circle (2pt);
+    \end{tikzpicture}
+  } \quad
+  \subfloat[Intersection is not made because none of the link points are located in another component.
+  Geometry is broken. In order to fix it,
+  either define more link points or use another volume inclusion method.]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (-1.53,2) circle (2pt);
+      \draw[red] (-1,2) circle (2pt);
+      \draw[red] (0,2.5) circle (2pt);
+
+      \drawSpoon{-0.85}{-1}{dashed}
+      \node[legend,blue,fill=white] at (-0.6,-0.3) {3};
+      \node[legend,blue,fill=white] at (-0.6,3.5) {4};
+      \draw[blue] (-0.6,4) circle (2pt);
+      \draw[blue] (-0.6,0.5) circle (2pt);
+    \end{tikzpicture}
+  }
+  \caption{addToInsertControl: intersection relies on the link points}
+  \label{fig:control}
+\end{figure}
 
 \subsubsection{addToInsertLineCtrl}
 
-Imagine we have a (big) contained component~(Mug) and some (small)
-object which clips it~(Spoon). The link points are {\bf not} in the
-Mug~(therefore {\bf addToInsertControl} can not be used), but the
-lines which connect them are in the Mug.  The method checks the lines
-connecting the link points and sorts out the intersections.
+If  we have a (big) contained component~(Mug) and some (small)
+object which clips it~(Spoon) and we are not certain that the link points 
+are contained within each Mug cell, then  {\bf addToInsertControl} can not be reliably used.
+However, addToInsertLineCtrl adds an additional check to addToInsertControl, because it 
+constructs all the connecting lines between the link points, and if the line 
+intersects the other cell, an intersection is made~(\figref{fig:linectrl}).
+
+\begin{figure}
+  \centering
+  \subfloat[Intersection is not made because the line connecting two link points intersects
+  cell 4 outside of a cell belonging to the Mug]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (-1.53,2) circle (2pt);
+      \draw[red] (-1,2) circle (2pt);
+      \draw[red] (0,2.5) circle (2pt);
+
+      \drawSpoon{-0.85}{-1}{dashed}
+      \node[legend,blue,fill=white] at (-0.6,-0.3) {3};
+      \node[legend,blue,fill=white] at (-0.7,3.5) {4};
+
+     \draw[olive] (-1.53,2) -- (0,2.5);
+    \end{tikzpicture}
+  } \quad
+  \subfloat[Cell 4 is excluded from cell 2 since at least one line connecting two
+link points intersects the Mug handle at a point which is valid within the spoon 
+(shown by red filled circles)]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (-1.53,2) circle (2pt);
+      \draw[red] (-1,2) circle (2pt);
+      \draw[red] (0,2.5) circle (2pt);
+
+      \drawSpoon{-0.85}{-1}{dashed}
+      \node[legend,blue,fill=white] at (-0.6,-0.3) {3};
+      \node[legend,blue,fill=white] at (-0.7,3.5) {4};
+      \draw[blue] (-0.6,4) circle (2pt);
+      \draw[blue] (-0.6,0.5) circle (2pt);
+
+     \draw[olive] (-0.6,0.5) -- (-0.6,4);
+     \draw[olive] (-1.53,2) -- (0,2.5); 
+
+     \draw[olive] (-1.53,2) -- (-0.6,4);
+
+     \draw[fill=red] (-0.6,3.27) circle (3pt);
+     \draw[fill=red] (-0.6,2.8) circle (3pt);
+     \draw[fill=red] (-0.6,1.21) circle (3pt);
+     \draw[fill=red] (-0.6,0.8) circle (3pt);
+
+   \end{tikzpicture}
+  }
+  \caption{addToInsertLineCtrl: intersection relies on the lines connecting link points (not all link points and connections are shown).}
+  \label{fig:linectrl}
+\end{figure}

@@ -367,11 +367,11 @@ RotaryCollimator::createLinks()
       size_t index(0);
       for(size_t i=0;i<nHole;i++)
         {
-          holeFC.setLinkCopy(index,*Holes[i],0);
-          holeFC.setLinkCopy(index+1,*Holes[i],1);
-          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(0)+
-                                      Holes[i]->getLinkPt(1))/2.0);
-          holeFC.setConnect(index+2,midPt,Holes[i]->getSignedLinkAxis(1));
+          holeFC.setLinkSignedCopy(index,*Holes[i],1);
+          holeFC.setLinkSignedCopy(index+1,*Holes[i],2);
+          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(1)+
+                                      Holes[i]->getLinkPt(2))/2.0);
+          holeFC.setConnect(index+2,midPt,Holes[i]->getLinkAxis(1));
           index+=3;
         }
     }

@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/makeT1Eng.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -310,11 +310,11 @@ makeT1Eng::buildWaterPipe(Simulation& System)
 
   
 void 
-makeT1Eng::build(Simulation* SimPtr,
-		     const mainSystem::inputParam& IParam)
+makeT1Eng::build(Simulation& System,
+                 const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
@@ -326,7 +326,7 @@ makeT1Eng::build(Simulation* SimPtr,
       IParam.compValue("I",std::string("Target")))
     {
       TarObj->addInsertCell(voidCell);
-      TarObj->createAll(*SimPtr,World::masterOrigin());
+      TarObj->createAll(System,World::masterOrigin());
       return;
     }
 
@@ -336,111 +336,120 @@ makeT1Eng::build(Simulation* SimPtr,
        !IParam.compValue("E",std::string("Reflector")) )) 
     {
     //  VoidObj->addInsertCell(74123);  
-      VoidObj->createAll(*SimPtr);
+      VoidObj->createAll(System);
       
       BulkObj->addInsertCell(voidCell);  
-      BulkObj->createAll(*SimPtr,IParam,*VoidObj);
+      BulkObj->createAll(System,IParam,*VoidObj);
 
-      MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-      MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+      MonoTopObj->createAll(System,3,*VoidObj,*BulkObj);
+      MonoBaseObj->createAll(System,2,*VoidObj,*BulkObj);
       voidCell=VoidObj->getVoidCell();
     }
   else
     {
-      VoidObj->createStatus(*SimPtr);
+      VoidObj->createStatus(System);
     }
   
   RefObj->addInsertCell(voidCell);
-  RefObj->createAll(*SimPtr,World::masterOrigin());
+  RefObj->createAll(System,World::masterOrigin());
 
   RefObj->addToInsertChain(*TarObj);
-  TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
-  TarObj->createAll(*SimPtr,World::masterOrigin());
-  //  TarObjModify->createAll(*SimPtr,*TarObj);
+  //asfasdf
+  TarObj->setRefPlates(-RefObj->getLinkSurf(3),0);
+  TarObj->createAll(System,World::masterOrigin());
+  //  TarObjModify->createAll(System,*TarObj);
 
   // Allows the reflector to be excluded if need be:
   if (IParam.flag("exclude") &&
       IParam.compValue("E",std::string("Reflector")))
     {
-      SimPtr->voidObject(RefObj->getKeyName());
+      System.voidObject(RefObj->getKeyName());
       return;
     }
   
   TarObj->addProtonLineInsertCell(RefObj->getCells());
-  TarObj->addProtonLine(*SimPtr,*RefObj,-3);
+  TarObj->addProtonLine(System,*RefObj,-3);
 
-  TriMod->createAll(*SimPtr,World::masterOrigin(),0,0);
-  RefObj->addToInsertControl(*SimPtr,*TriMod,*TriMod);
+  TriMod->createAll(System,World::masterOrigin(),0,0);
+  attachSystem::addToInsertControl
+    (System,*RefObj,"Reflector",*TriMod,*TriMod);
 
-  ColdCentObj->createAll(SimPtr->getDataBase(),World::masterOrigin());
-
-  H2Mod->createAll(*SimPtr,*ColdCentObj,0,0);
-  RefObj->addToInsertControl(*SimPtr,*H2Mod,*H2Mod); //
   
-  H2PMod->createAll(*SimPtr,*H2Mod,4,0);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*H2PMod,*H2Mod); //
-  RefObj->addToInsertControl(*SimPtr,*H2PMod,*H2PMod);
-//  RefObj->addToInsertControl(*SimPtr,*H2Mod,*H2Mod);
+  ColdCentObj->createAll(System.getDataBase(),World::masterOrigin());
 
-  CH4Mod->createAll(*SimPtr,*ColdCentObj,0,0);
-  RefObj->addToInsertControl(*SimPtr,*CH4Mod,*CH4Mod);
+  H2Mod->createAll(System,*ColdCentObj,0,0);
+  attachSystem::addToInsertControl
+    (System,*RefObj,"Reflector",*H2Mod,*H2Mod);
 
-  CH4PMod->createAll(*SimPtr,*CH4Mod,5,0);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,*CH4Mod);
-  RefObj->addToInsertControl(*SimPtr,*CH4PMod,*CH4PMod);
+    
+  H2PMod->createAll(System,*H2Mod,4,0);
+  attachSystem::addToInsertSurfCtrl(System,*H2PMod,*H2Mod); //
+  attachSystem::addToInsertControl
+    (System,*RefObj,"Reflector",*H2PMod,*H2PMod);
+
+
+  CH4Mod->createAll(System,*ColdCentObj,0,0);
+  attachSystem::addToInsertControl
+    (System,*RefObj,"Reflector",*CH4Mod,*CH4Mod);
+
+  CH4PMod->createAll(System,*CH4Mod,5,0);
+  attachSystem::addToInsertSurfCtrl(System,*CH4PMod,*CH4Mod);
+  attachSystem::addToInsertControl
+    (System,*RefObj,"Reflector",*CH4PMod,*CH4PMod);
 
   // Test is moderators intersect
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2PMod);  
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2Mod);
+  attachSystem::addToInsertSurfCtrl(System,*CH4Mod,*H2PMod);  
+  attachSystem::addToInsertSurfCtrl(System,*CH4Mod,*H2Mod);
   
   // FLIGHTLINES:
-  const std::string Out=RefObj->getLinkComplement(2);
+  const std::string Out=RefObj->getLinkString(3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(TriFLA->getCC("outer"));
-  TriFLA->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(0));
 
+  TriFLA->createAll(System,*TriMod,*TriMod,TriMod->getSideIndex(0));
+  RefObj->insertComponent(System,"Reflector",TriFLA->getCC("outer"));
+  
   TriFLB->addBoundarySurf("inner",Out);  
   TriFLB->addBoundarySurf("outer",Out);  
-  TriFLB->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(1));
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getCC("outer"));  
+  TriFLB->createAll(System,*TriMod,*TriMod,TriMod->getSideIndex(1));
+  RefObj->insertComponent(System,"Reflector",TriFLB->getCC("outer"));
+  //  attachSystem::addToInsertSurfCtrl(System,*RefObj,TriFLB->getCC("outer"));  
 
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(H2FL->getCC("outer"));
-  H2FL->createAll(*SimPtr,1,1,*H2Mod);
-
+  H2FL->createAll(System,1,1,*H2Mod);
+  RefObj->insertComponent(System,"Reflector",H2FL->getCC("outer"));
+  
   CH4FLA->addBoundarySurf("inner",Out);  
   CH4FLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(CH4FLA->getCC("outer"));
-  CH4FLA->createAll(*SimPtr,*CH4Mod,*CH4Mod);
-
+  CH4FLA->createAll(System,*CH4Mod,*CH4Mod);
+  RefObj->insertComponent(System,"Reflector",CH4FLA->getCC("outer"));
+  
   CH4FLB->addBoundarySurf("inner",Out);  
   CH4FLB->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(CH4FLB->getCC("outer"));
+  CH4FLB->createAll(System,*CH4Mod,*CH4Mod);
+  RefObj->insertComponent(System,"Reflector",CH4FLB->getCC("outer"));
 
-  CH4FLB->createAll(*SimPtr,*CH4Mod,*CH4Mod);
-
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,*H2PMod);  
+  attachSystem::addToInsertSurfCtrl(System,*CH4PMod,*H2PMod);  
   
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+  attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 				    H2FL->getCC("outer"));  
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+  attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 				    CH4FLA->getCC("outer"));  
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+  attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 				    CH4FLA->getCC("outer"));  
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
+  attachSystem::addToInsertSurfCtrl(System,*CH4PMod,
 				    CH4FLB->getCC("outer"));  
 
-  //  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,*CH4Mod);
+  //  attachSystem::addToInsertSurfCtrl(System,*RefObj,*CH4Mod);
 
-  H2FL->processIntersectMajor(*SimPtr,*CH4FLB,"inner","outer");
-  CH4FLB->processIntersectMinor(*SimPtr,*H2FL,"inner","outer");
+  H2FL->processIntersectMajor(System,*CH4FLB,"inner","outer");
+  CH4FLB->processIntersectMinor(System,*H2FL,"inner","outer");
 
-    buildCH4Pipe(*SimPtr);
-    buildH2Pipe(*SimPtr);
-//    buildH2Pipe(*SimPtr,H2ModName);    
-  //  buildWaterPipe(*SimPtr);
+    buildCH4Pipe(System);
+    buildH2Pipe(System);
+//    buildH2Pipe(System,H2ModName);    
+  //  buildWaterPipe(System);
 
   return;
 }

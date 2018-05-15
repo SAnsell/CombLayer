@@ -132,32 +132,6 @@ BlockAddition::~BlockAddition()
   */
 {}
 
-std::string
-BlockAddition::getLinkComplement(const size_t sideIndex) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  if (active)
-    return FixedComp::getLinkComplement(sideIndex);
-  return std::string("");
-}
-
-std::string
-BlockAddition::getLinkString(const size_t sideIndex) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param sideIndex :: Link number
-    \return String of link
-  */
-{
-  if (active)
-    return FixedComp::getLinkString(sideIndex);
-  return std::string("");
-}
-
 void
 BlockAddition::populate(const FuncDataBase& Control)
   /*!
@@ -316,7 +290,7 @@ void
 BlockAddition::createObjects(Simulation& System,
 			     const attachSystem::LayerComp& PMod,
 			     const size_t layerIndex,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the block object
     \param System :: Simulation to add results
@@ -331,9 +305,9 @@ BlockAddition::createObjects(Simulation& System,
 
   if (active)
     {
-      Out=PMod.getLayerString(layerIndex,static_cast<long int>(sideIndex+1));
+      Out=PMod.getLayerString(layerIndex,sideIndex);
       preModInner=rotateItem(Out);
-      Out=PMod.getLayerString(layerIndex+2,static_cast<long int>(sideIndex+1));
+      Out=PMod.getLayerString(layerIndex+2,sideIndex);
       preModOuter=rotateItem(Out);
 
       Out=ModelSupport::getComposite(SMap,blockIndex,"1 -2 3 -4 5 -6 ");
@@ -532,7 +506,7 @@ BlockAddition::createAll(Simulation& System,
 			 const Geometry::Vec3D& O,
 			 const attachSystem::LayerComp& CylPreMod,
 			 const size_t layerIndex,
-			 const size_t sideIndex)
+			 const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation

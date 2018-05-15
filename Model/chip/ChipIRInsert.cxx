@@ -78,6 +78,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -471,7 +472,7 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
   PbA->addBoundarySurf(this->getCompContainer("inner"));
   PbA->setInsertCell(chipInnerVoid);
-  PbA->createAll(System,*this,0);
+  PbA->createAll(System,*this,1);
   OR.addObject(PbA);
 
   // Outer
@@ -480,7 +481,7 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
   PbB->addBoundarySurf(this->getCompContainer("outer"));
   PbB->setInsertCell(chipOuterVoid);
-  PbB->createAll(System,*this,1);
+  PbB->createAll(System,*this,2);
   OR.addObject(PbB);
 
   return;

@@ -55,6 +55,7 @@ private:
   int testSetObject();
   int testSetObjectExtra();
   int testTrackCell();
+  int testWriteFluka();
 
 public:
   

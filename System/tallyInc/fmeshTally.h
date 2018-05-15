@@ -3,7 +3,7 @@
  
  * File:   tallyInc/fmeshTally.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,10 @@ class fmeshTally : public Tally
 
   int requireRotation;           ///< rotation to the mesh
   
-  std::array<size_t,3> Pts;     ///< N-Points
+  std::array<size_t,3> Pts;      ///< N-Points
   Geometry::Vec3D minCoord;      ///< Min coordinate
   Geometry::Vec3D maxCoord;      ///< Max coordinate
-
+  
   void writeMesh(std::ostream&) const;
   
  public:

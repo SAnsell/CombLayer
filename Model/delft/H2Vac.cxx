@@ -246,7 +246,7 @@ H2Vac::getSurfacePoint(const attachSystem::FixedComp& FC,
   for(size_t i=0;i<=layerIndex;i++)
     sumVec+=DPtr[SI][i];
   
-  return FC.getSignedLinkPt(sideIndex)+XYZ*sumVec;
+  return FC.getLinkPt(sideIndex)+XYZ*sumVec;
 }
 
 void
@@ -275,7 +275,7 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
 
 
   if (sideRadius<Geometry::zeroTol)
-    sideRadius=(Origin-FC.getLinkPt(2)).abs();
+    sideRadius=FC.getLinkDistance(0,3);
   
   ELog::EM<<"Side radius == "<<sideRadius<<ELog::endDiag;
 

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef attachSystem_FixedComp_h
 #define attachSystem_FixedComp_h
 
+class Simulation;
 class localRotate;
 class HeadRule;
 /*!
@@ -45,25 +46,41 @@ namespace attachSystem
 
 class FixedComp  
 {
+ private:
+
+  std::string getUSLinkString(const size_t) const;
+  std::string getUSLinkComplement(const size_t) const;
+  int getUSLinkSurf(const size_t) const;
+  
  protected:
   
   const std::string keyName;       ///< Key Name
   ModelSupport::surfRegister SMap; ///< Surface register
+  const int buildIndex;            ///< Index of surface offset
+  int cellIndex;                   ///< Cell index    
 
-  Geometry::Vec3D X;            ///< X-coordinate [shutter x]
-  Geometry::Vec3D Y;            ///< Y-coordinate [shutter y]
+  std::map<std::string,size_t> keyMap; ///< Keynames to linkPt index
+  
+  Geometry::Vec3D X;            ///< X-coordinate 
+  Geometry::Vec3D Y;            ///< Y-coordinate 
   Geometry::Vec3D Z;            ///< Z-coordinate 
   Geometry::Vec3D Origin;       ///< Origin  
 
   Geometry::Vec3D beamOrigin;    ///< Neutron origin [if different]
   Geometry::Vec3D beamAxis;      ///< Neutron direction [if different]
   Geometry::Vec3D orientateAxis; ///< Axis for reorientation
-  long int primeAxis;      ///< X/Y/Z Axis for reorientation [-ve for delay]
+  long int primeAxis;            ///< X/Y/Z Axis for reorientation 
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
   
   void makeOrthogonal();
+
+  const HeadRule& getUSMainRule(const size_t) const;
+  const HeadRule& getUSCommonRule(const size_t) const;
   
+  void setUSLinkComplement(const size_t,const FixedComp&,const size_t);
+  void setUSLinkCopy(const size_t,const FixedComp&,const size_t);
+
  public:
 
   static void computeZOffPlane(const Geometry::Vec3D&,
@@ -88,6 +105,7 @@ class FixedComp
   void createUnitVector(const FixedComp&);
   void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   void createUnitVector(const FixedComp&,const long int);
+  void createUnitVector(const FixedComp&,const long int,const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&,const Geometry::Vec3D&);
 
@@ -101,8 +119,8 @@ class FixedComp
   void applyFullRotate(const double,const double,const double,
 		       const Geometry::Vec3D&);
 
-  void linkAngleRotate(const long int,const double,const double);
-  void linkShift(const long int,const double,const double,const double);
+  void linkAngleRotate(const size_t,const double,const double);
+  void linkShift(const size_t,const double,const double,const double);
 
   void reverseZ();
   
@@ -111,7 +129,7 @@ class FixedComp
 		      const Geometry::Vec3D&);
   void setBasicExtent(const double,const double,const double);
 
-  void setLinkSurf(const size_t,const FixedComp&,const size_t);
+
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);
@@ -126,14 +144,11 @@ class FixedComp
   void addLinkComp(const size_t,const std::string&);
   void addLinkComp(const size_t,const HeadRule&);
 
-  void setBridgeSurf(const size_t,const FixedComp&,const size_t);
   void setBridgeSurf(const size_t,const int);
   void setBridgeSurf(const size_t,const HeadRule&);
   void addBridgeSurf(const size_t,const int);
   void addBridgeSurf(const size_t,const std::string&);
 
-  void setLinkComponent(const size_t,const FixedComp&,const size_t);
-  void setLinkCopy(const size_t,const FixedComp&,const size_t);
   void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
 
 
@@ -151,47 +166,45 @@ class FixedComp
   virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
 
   virtual int getExitWindow(const long int,std::vector<int>&) const;
-  virtual int getMasterSurf(const size_t) const;
-			 
+
+
+  void nameSideIndex(const size_t,const std::string&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }
   void setNConnect(const size_t);
+
+  const LinkUnit& getSignedRefLU(const long int)  const;
   const LinkUnit& getLU(const size_t)  const;
-
-  LinkUnit& getSignedLU(const long int);
-  const LinkUnit& getSignedLU(const long int)  const; 
-
-
-  virtual int getLinkSurf(const size_t) const;
-  virtual const Geometry::Vec3D& getLinkPt(const size_t) const;
-  virtual const Geometry::Vec3D& getLinkAxis(const size_t) const;
+  LinkUnit& getLU(const size_t);
   
-  virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
-  virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
-  virtual std::string getSignedLinkString(const long int) const;
+  LinkUnit getSignedLU(const long int) const;
+  long int getSideIndex(const std::string&) const;
+
+  
+  std::vector<Geometry::Vec3D> getAllLinkPts() const;
+
+  Geometry::Vec3D getLinkPt(const std::string&) const;
+  Geometry::Vec3D getLinkAxis(const std::string&) const;
+  int getLinkSurf(const std::string&) const;
+  
+  virtual Geometry::Vec3D getLinkPt(const long int) const;
+  virtual Geometry::Vec3D getLinkAxis(const long int) const;
+  virtual std::string getLinkString(const long int) const;
   virtual double getLinkDistance(const long int,const long int) const;
-  virtual int getSignedLinkSurf(const long int) const;
+  virtual int getLinkSurf(const long int) const;
   
-  HeadRule getSignedFullRule(const long int) const;
-  HeadRule getSignedMainRule(const long int) const;
-  HeadRule getSignedCommonRule(const long int) const;
+  HeadRule getFullRule(const long int) const;
+
+  HeadRule getMainRule(const long int) const;
+  HeadRule getCommonRule(const long int) const;
   
-  const HeadRule& getMainRule(const size_t) const;
-  const HeadRule& getCommonRule(const size_t) const;
-
-  virtual std::string getLinkString(const size_t) const;
-  virtual std::string getLinkComplement(const size_t) const;
-  virtual std::string getBridgeComplement(const size_t) const;
-
-  virtual std::string getCommonString(const size_t) const;
-  virtual std::string getCommonComplement(const size_t) const;
-
-  virtual std::string getMasterString(const size_t) const;
-  virtual std::string getMasterComplement(const size_t) const;
-
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 
+  /// access next cell if need
+  int nextCell() { return cellIndex++; }
+  /// access next cell as neede
+  int getNextCell() const { return cellIndex; }
 
   const Geometry::Vec3D& getExit() const;
   const Geometry::Vec3D& getExitNorm() const;
@@ -207,6 +220,12 @@ class FixedComp
   virtual void applyRotation(const Geometry::Vec3D&,const double);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+  std::vector<int> splitObject(Simulation&,const int,const int);
+  std::vector<int> splitObject(Simulation&,const int,const int,
+			       const Geometry::Vec3D&,const Geometry::Vec3D&);
+  std::vector<int> splitObject(Simulation&,const int,const int,
+			       const std::vector<Geometry::Vec3D>&,
+			       const std::vector<Geometry::Vec3D>&);
 };
 
 }

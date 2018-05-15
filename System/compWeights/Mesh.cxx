@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weights/Mesh.cxx
+ * File:   compWeights/Mesh.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h" 
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -55,7 +56,7 @@ namespace compSystem
 Mesh::Mesh() : 
   type(XYZ)			   
   /*!
-    Cconstructor [makes XYZ mesh]
+    Constructor [makes XYZ mesh]
   */
 {}
 

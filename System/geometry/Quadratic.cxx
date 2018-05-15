@@ -3,7 +3,7 @@
  
  * File:   geometry/Quadratic.cxx
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "mathSupport.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -595,7 +595,6 @@ Quadratic::writeFLUKA(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
   
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);
   cx<<"QUA s"<<getName();
   // write all 10 items in order: as xy xz yz coeffients
@@ -619,11 +618,11 @@ Quadratic::writePOVRay(std::ostream& OX) const
   
   OX<<"#declare s"<<getName()<<" = quadric{ \n"
     <<"<"
-    <<MW.Num(BaseEqn[0])<<" "<<MW.Num(BaseEqn[1])<<" "<<MW.Num(BaseEqn[2])
+    <<MW.Num(BaseEqn[0])<<","<<MW.Num(BaseEqn[1])<<","<<MW.Num(BaseEqn[2])
     <<">,<"
-    <<MW.Num(BaseEqn[3])<<" "<<MW.Num(BaseEqn[4])<<" "<<MW.Num(BaseEqn[5])
+    <<MW.Num(BaseEqn[3])<<","<<MW.Num(BaseEqn[4])<<","<<MW.Num(BaseEqn[5])
     <<">,<"
-    <<MW.Num(BaseEqn[6])<<" "<<MW.Num(BaseEqn[7])<<" "<<MW.Num(BaseEqn[8])
+    <<MW.Num(BaseEqn[6])<<","<<MW.Num(BaseEqn[7])<<","<<MW.Num(BaseEqn[8])
     <<">,"<<MW.Num(BaseEqn[9])<<"\n"<<" }"<<std::endl;  
   return;
 }

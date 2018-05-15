@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedGroup.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ class ContainedGroup
  public:
 
   ContainedGroup();
+  explicit ContainedGroup(const std::string&);
   ContainedGroup(const std::string&,const std::string&);
   ContainedGroup(const std::string&,const std::string&,
 		 const std::string&);
@@ -63,7 +64,8 @@ class ContainedGroup
   ContainedGroup(const ContainedGroup&);
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
- 
+
+  virtual const HeadRule& getOuterSurf(const std::string&) const;
   virtual std::string getExclude(const std::string&) const;
   virtual std::string getContainer(const std::string&) const;
   virtual std::string getCompExclude(const std::string&) const;

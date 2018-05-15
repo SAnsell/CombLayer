@@ -3,7 +3,7 @@
  
  * File:   physics/ExtConstructor.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,11 +74,6 @@
 #include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 
 #include "PhysImp.h"
@@ -168,12 +163,12 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
 
 
 void
-ExtConstructor::processUnit(Simulation& System,
+ExtConstructor::processUnit(PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
     Add ext component 
-    \param System :: Simulation to get physics/fixed points
+    \param PC :: Physics cards
     \param IParam :: Main input parameters
     \param Index :: index of the -wExt card
    */
@@ -202,7 +197,7 @@ ExtConstructor::processUnit(Simulation& System,
       ("procZone ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 
   ZUnits.sortZone();
-  ExtControl& EC=System.getPC().getExtCard();
+  ExtControl& EC=PC.getExtCard();
     
   if (!procType(StrItem,EC))
     throw ColErr::InvalidLine

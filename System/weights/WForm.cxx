@@ -3,7 +3,7 @@
  
  * File:   weights/WForm.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 namespace WeightSystem
 {
 
-WForm::WForm()  :  ptype('n'),
+WForm::WForm()  :  pType("n"),
   wupn(2.0),wsurv(0.7*wupn),maxsp(5),
   mwhere(0),mtime(0)
   /*!
@@ -57,7 +57,7 @@ WForm::WForm()  :  ptype('n'),
   */
 {} 
 
-WForm::WForm(const char c)  :  ptype(c),
+WForm::WForm(const std::string& P)  :  pType(P),
   wupn(2.0),wsurv(0.7*wupn),maxsp(5),
   mwhere(0),mtime(0)
   /*!
@@ -67,7 +67,7 @@ WForm::WForm(const char c)  :  ptype(c),
 {}
 
 WForm::WForm(const WForm& A) : 
-  ptype(A.ptype),Energy(A.Energy),wupn(A.wupn),wsurv(A.wsurv),
+  pType(A.pType),Energy(A.Energy),wupn(A.wupn),wsurv(A.wsurv),
   maxsp(A.maxsp),mwhere(A.mwhere),mtime(A.mtime)
   /*!
     Copy constructor
@@ -85,7 +85,7 @@ WForm::operator=(const WForm& A)
 {
   if (this!=&A)
     {
-      ptype=A.ptype;
+      pType=A.pType;
       Energy=A.Energy;
       wupn=A.wupn;
       wsurv=A.wsurv;

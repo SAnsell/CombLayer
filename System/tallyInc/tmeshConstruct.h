@@ -3,7 +3,7 @@
  
  * File:   tallyInc/tmeshConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ namespace mainSystem
 }
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -49,21 +50,23 @@ class tmeshConstruct : public meshConstruct
 {
  private:
 
+  /// private constructor
+  tmeshConstruct() {}
 	         
  public:
 
-  tmeshConstruct();
-  tmeshConstruct(const tmeshConstruct&);
-  tmeshConstruct& operator=(const tmeshConstruct&);
-  virtual ~tmeshConstruct() {}  ///< Destructor
-
-  virtual void rectangleMesh(Simulation&,const int,
+  static void processMesh(SimMCNP&,
+			  const mainSystem::inputParam&,
+			  const size_t);  
+  
+  
+  static void rectangleMesh(SimMCNP&,const int,
 			     const std::string&,
 			     const Geometry::Vec3D&,
 			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&) const;
+			     const std::array<size_t,3>&);
 
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   process/VolSum.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "ObjSurfMap.h"
 #include "neutron.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LineTrack.h"
 #include "volUnit.h"
 #include "VolSum.h"
@@ -179,7 +180,7 @@ VolSum::populateAll(const Simulation& System)
 
   
 void
-VolSum::populateTally(const Simulation& System)
+VolSum::populateTally(const SimMCNP& System)
   /*!
     The big population call
     \param System :: Simulation system
@@ -187,8 +188,8 @@ VolSum::populateTally(const Simulation& System)
 {
   ELog::RegMethod RegA("VolSum","populateTally");
   
-  const Simulation::TallyTYPE& TM=System.getTallyMap();
-  Simulation::TallyTYPE::const_iterator mc;
+  const SimMCNP::TallyTYPE& TM=System.getTallyMap();
+  SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=TM.begin();mc!=TM.end();mc++)
     {
       const tallySystem::cellFluxTally* cellPtr=

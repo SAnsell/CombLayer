@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -518,10 +517,15 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
   ELog::RegMethod RegA("ReactorGrid","getCellOrigin");
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
+
+  const double halfWidth=2.0*static_cast<double>(i+1)-
+    static_cast<double>(NX+1);
+  const double halfDepth=2.0*static_cast<double>(j+1)-
+    static_cast<double>(NY+1);
   
   return Origin+
-    X*(Width*static_cast<double>(2*i-NX+1)/static_cast<double>(2*NX))+
-    X*(Depth*static_cast<double>(2*j-NY+1)/static_cast<double>(2*NY));
+    X*(Width*halfWidth/static_cast<double>(2*NX))+
+    Y*(Depth*halfDepth/static_cast<double>(2*NY));
 }
 
 
@@ -584,7 +588,7 @@ void
 ReactorGrid::createLinks()
   /*!
     Create the linked units
-   */
+  */
 {
   ELog::RegMethod RegA("ReactorGrid","createLinks");
 
@@ -630,7 +634,7 @@ ReactorGrid::fuelCentres() const
 
 std::vector<int>
 ReactorGrid::getFuelCells(const Simulation& System,
-			  const int zaid) const
+			  const size_t zaid) const
   /*!
     Get a comprehensive list of all cells
     \param System :: Simualation to check cell existance
@@ -808,4 +812,4 @@ ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
 
 ///\endcond TEMPLATE
 
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE delftSystem

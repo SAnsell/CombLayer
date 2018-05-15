@@ -3,7 +3,7 @@
  
  * File:   source/BeamSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,16 +43,13 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
+#include "inputSupport.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -63,15 +61,17 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "particleConv.h"
 
+#include "SourceBase.h"
 #include "BeamSource.h"
 
 namespace SDef
 {
 
 BeamSource::BeamSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),
-  cutEnergy(0.0)
+  FixedOffset(keyName,0),SourceBase(),
+  radius(1.0),angleSpread(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -79,10 +79,8 @@ BeamSource::BeamSource(const std::string& keyName) :
 {}
 
 BeamSource::BeamSource(const BeamSource& A) : 
-  attachSystem::FixedOffset(A),
-  particleType(A.particleType),cutEnergy(A.cutEnergy),
-  radius(A.radius),angleSpread(A.angleSpread),
-  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
+  attachSystem::FixedOffset(A),SourceBase(A),
+  radius(A.radius),angleSpread(A.angleSpread)
   /*!
     Copy constructor
     \param A :: BeamSource to copy
@@ -100,13 +98,9 @@ BeamSource::operator=(const BeamSource& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      particleType=A.particleType;
-      cutEnergy=A.cutEnergy;
+      SourceBase::operator=(A);
       radius=A.radius;
       angleSpread=A.angleSpread;
-      weight=A.weight;
-      Energy=A.Energy;
-      EWeight=A.EWeight;
     }
   return *this;
 }
@@ -117,144 +111,34 @@ BeamSource::~BeamSource()
   */
 {}
 
-int
-BeamSource::populateEFile(const std::string& FName,
-			   const int colE,const int colP)
+BeamSource*
+BeamSource::clone() const
   /*!
-    Load a distribution table
-    - Care is taken to add an extra energy with zero 
-    weight onto the table since we are using a
-    \param FName :: filename 
-    return 0 on failure / 1 on success
+    Clone constructor
+    \return copy of this
   */
 {
-  ELog::RegMethod RegA("BeamSource","loadEnergy");
-
-  const int eCol(colE);
-  const int iCol(colP);
-  
-  Energy.clear();
-  EWeight.clear();
-  
-  WorkData A;
-  if (FName.empty() || A.load(FName,eCol,iCol,0))
-    return 0;
-
-
-  A.xScale(1e-6);   // convert to MeV
-  A.binDivide(1.0);
-  DError::doubleErr IV=A.integrate(cutEnergy,1e38);
-  // Normalize A:
-  A/=IV;
-
-  Energy=A.getXdata();
-  if (Energy.size()<2)
-    {
-      ELog::EM<<"Failed to read energy/data from file:"<<FName<<ELog::endErr;
-      return 0;
-    }
-  Energy.push_back(2.0*Energy.back()-Energy[Energy.size()-2]);
-  const std::vector<DError::doubleErr>& Yvec=A.getYdata();
-
-  std::vector<DError::doubleErr>::const_iterator vc;
-  EWeight.push_back(0.0);
-  for(vc=Yvec.begin();vc!=Yvec.end();vc++)
-    EWeight.push_back(vc->getVal());
-  EWeight.push_back(0.0);
-  return (EWeight.empty()) ? 0 : 1;
+  return new BeamSource(*this);
 }
-
-int
-BeamSource::populateEnergy(std::string EPts,std::string EProb)
-  /*!
-    Read two strings that are the Energy points and the 
-    \param EPts :: Energy Points string 
-    \param EProb :: Energy Prob String
-    \return 1 on success success
-   */
-{
-  ELog::RegMethod RegA("BeamSource","populateEnergy");
-
-  Energy.clear();
-  EWeight.clear();
-
-  double eB,eP;
   
-  // if (!StrFunc::section(EPts,eA) || eA<0.0)
-  //   return 0;
-  while(StrFunc::section(EPts,eB) &&
-	StrFunc::section(EProb,eP))
-    {
-      if (!Energy.empty() && eB<=Energy.back())
-	throw ColErr::IndexError<double>(eB,Energy.back(),
-					 "Energy point not in sequence");
-      if (eP<0.0)
-	throw ColErr::IndexError<double>(eP,0.0,"Probablity eP negative");
-      Energy.push_back(eB);
-      EWeight.push_back(eP);
-    }
-  if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
-    ELog::EM<<"Trailing line info \n"
-	    <<"Energy : "<<EPts<<"\n"
-  	    <<"Energy : "<<EProb<<ELog::endErr;
-
-    // single entry:
-  if (Energy.empty() && eB>0.0)
-    {
-      Energy.push_back(eB);
-      return 1;
-    }
-
-  // // Normalize 
-  // for(double& prob : EWeight)
-  //   prob/=sum;
-  return (EWeight.empty()) ? 0 : 1;
-}
+  
   
 void
-BeamSource::populate(const FuncDataBase& Control)
+BeamSource::populate(const ITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("BeamSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   // default neutron
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",1);
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
+  
+  angleSpread=mainSystem::getDefInput(inputMap,"aSpread",0,0.0);
+  radius=mainSystem::getDefInput(inputMap,"radius",0,radius);
 
-
-  const std::string EList=
-    Control.EvalDefVar<std::string>(keyName+"Energy","");
-  const std::string EPList=
-    Control.EvalDefVar<std::string>(keyName+"EProb","");
-  const std::string EFile=
-    Control.EvalDefVar<std::string>(keyName+"EFile","");
-
-  if (!populateEFile(EFile,1,11) &&
-      !populateEnergy(EList,EPList))
-    {
-      double defEnergy(1.0);
-      StrFunc::convert(EList,defEnergy);
-      
-      double E=Control.EvalDefVar<double>(keyName+"EStart",defEnergy); 
-      ELog::EM<<"Default energy == "<<E<<ELog::endDiag;
-      const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
-      const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
-      const double EStep((EEnd-E)/static_cast<double>(nE+1));
-      for(size_t i=0;i<nE;i++)
-	{
-	  Energy.push_back(E);
-	  EWeight.push_back(1.0);
-	  E+=EStep;
-	}
-      if (Energy.empty())
-	Energy.push_back(E);
-    }
   return;
 }
 
@@ -263,7 +147,7 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int linkIndex)
   /*!
     Create the unit vector
-    \param FC :: Fixed Componenet
+    \param FC :: Fixed Component
     \param linkIndex :: Link index [signed for opposite side]
    */
 {
@@ -271,25 +155,36 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
+  return;
+}
 
+void
+BeamSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("BeamSource","rotate");
+  FixedComp::applyRotation(LR);  
   return;
 }
   
 void
 BeamSource::createSource(SDef::Source& sourceCard) const
   /*!
-    Creates a gamma bremstraual source
+    Creates a simple beam sampled uniformly in a
+    circle
     \param sourceCard :: Source system
   */
 {
   ELog::RegMethod RegA("BeamSource","createSource");
-  
-  sourceCard.setActive();
 
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
-  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
+  sourceCard.setComp("ara",M_PI*radius*radius);         
+    
   sourceCard.setComp("pos",Origin);
   
   // RAD
@@ -302,61 +197,126 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   D1.addUnit(SI1);
   D1.addUnit(SP1);
   sourceCard.setData("rad",D1);
-  
 
-  // Energy:
-  if (Energy.size()>1)
-    {
-      SDef::SrcData D2(2);
-      SDef::SrcInfo SI2('A');
-      SDef::SrcProb SP2;
-      SP2.setData(EWeight);
-      SI2.setData(Energy);
-      D2.addUnit(SI2);
-      D2.addUnit(SP2);
-      sourceCard.setData("erg",D2);
-    }
-  else if (!Energy.empty())
-    sourceCard.setComp("erg",Energy.front());
+  SourceBase::createEnergySource(sourceCard);
 
   return;
 }  
 
 void
-BeamSource::createAll(const FuncDataBase& Control,
-		       SDef::Source& sourceCard)
+BeamSource::createAll(const attachSystem::FixedComp& FC,
+		      const long int linkIndex)
+  /*!
+    Create all with out using Control variables
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
+  */
+{
+  ELog::RegMethod RegA("BeamSource","createAll(FC)");
+  createUnitVector(FC,linkIndex);
+  return;
+}
+
+  
+void
+BeamSource::createAll(const ITYPE& inputMap,
+		      const attachSystem::FixedComp& FC,
+		      const long int linkIndex)
+
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param souceCard :: Source Term
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
    */
 {
-  ELog::RegMethod RegA("BeamSource","createAll");
-  populate(Control);
-  createUnitVector(World::masterOrigin(),0);
-  createSource(sourceCard);
+  ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
+  populate(inputMap);
+  createUnitVector(FC,linkIndex);
+
   return;
 }
 
 void
-BeamSource::createAll(const FuncDataBase& Control,
-		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex,
-		       SDef::Source& sourceCard)
-
+BeamSource::write(std::ostream& OX) const
   /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-    \param linkIndex :: link Index						
-   */
+    Write out as a MCNP source system
+    \param OX :: Output stream
+  */
 {
-  ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
-  populate(Control);
-  createUnitVector(FC,linkIndex);
+  ELog::RegMethod RegA("BeamSource","write");
+
+  Source sourceCard;
   createSource(sourceCard);
+  sourceCard.write(OX);
   return;
 }
+
+void
+BeamSource::writePHITS(std::ostream& OX) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("BeamSource","writePHITS");
+
+  boost::format fFMT("%1$11.6g%|14t|");
+
+  const double phi=180.0*acos(Y[0])/M_PI;
+  
+  OX<<"  s-type =  1        # axial source \n";
+  OX<<"  r0 =   "<<(fFMT % radius)   <<"   # radius [cm]\n";
+  OX<<"  x0 =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
+  OX<<"  y0 =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
+  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
+  OX<<"  z1 =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
+  OX<<" dir =   "<<(fFMT % Y[2])     <<" dir cosine direction of Z\n";
+  OX<<" phi =   "<<(fFMT % phi)      <<" phi angle to X axis [deg]\n";
+  if (angleSpread>Geometry::zeroTol)
+    OX<<" dom =   "<<(fFMT % angleSpread)<<" solid angle to X axis [deg]\n";
+
+  OX<<std::endl;
+  return;
+}
+
+void
+BeamSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("BeamSource","writeFLUKA");
+
+  const particleConv& PC=particleConv::Instance();
+
+  // can be two for an energy range
+  if (Energy.size()!=1)
+    throw ColErr::SizeError<size_t>
+      (Energy.size(),1,"Energy only single point supported");
+
+  std::ostringstream cx;
+  // energy : energy divirgence : angle spread [mrad]
+  // radius : innerRadius : -1 t o means radius
+  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
+    <<" "<<radius<<" 0.0 -1.0 ";
+  cx<<StrFunc::toUpperString(particleType);
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+
+  // Y Axis is Z in fluka, X is X
+  cx<<"BEAMAXES "<<X<<" "<<Y;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+  cx<<"BEAMPOS "<<Origin;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");  
+  
+  return;
+}
+
+
 
 
 } // NAMESPACE SDef

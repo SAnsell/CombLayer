@@ -3,7 +3,7 @@
  
  * File:   process/LayerDivide1D.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -259,7 +259,7 @@ LayerDivide1D::checkDivide() const
    */
 {
   ELog::RegMethod RegA("LayerDivide1D","checkDivide");
-  if (!(AWall.first*AWall.second))
+  if (AWall.first*AWall.second==0)
     throw ColErr::EmptyValue<int>("Section A not set");
   return;
 }
@@ -369,8 +369,8 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
         ModelSupport::getComposite(SMap,aIndex,"1 -2");
       
       const int Mat(AMat[i]);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,ACut+divider));
-      attachSystem::CellMap::addCell("LD1:"+layerNum,cellIndex-1);
+      CellMap::makeCell("LD1:"+layerNum,System,cellIndex++,Mat,0.0,
+			ACut+divider);
     }
   System.removeCell(cellN);
 

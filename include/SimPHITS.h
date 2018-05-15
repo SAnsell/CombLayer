@@ -3,7 +3,7 @@
  
  * File:   include/SimPHITS.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #ifndef SimPHITS_h
 #define SimPHITS_h
 
+class localRotate;
+
 /*!
   \class SimPHITS
   \brief Modifides Simulation to output PHITS input file
@@ -33,9 +35,13 @@ class SimPHITS : public Simulation
 {
  private:
 
+  size_t nps;                          ///< number of particles to run
+  long int rndSeed;                    ///< RND seed
+  
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
