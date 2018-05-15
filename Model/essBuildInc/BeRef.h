@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BeRef.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,13 +44,16 @@ class BeRef : public attachSystem::ContainedComp,
 
   const int refIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  int engActive;                  ///< Engineering active flag
+  int engActive;                  ///< Engineering active
+  
   /// Inner components inside Reflector (eng detail)
-  std::shared_ptr<BeRefInnerStructure> InnerComp;   
+  std::shared_ptr<BeRefInnerStructure> InnerCompTop;
+  /// Inner components inside Reflector (eng detail)
+  std::shared_ptr<BeRefInnerStructure> InnerCompLow;
 
   double radius;                  ///< Radius
   double height;                  ///< Height
+  double depth;                  ///< depth 
   double wallThick;               ///< Wall thickness
   double wallThickLow;            ///< Wall thickness of the side near the target wheel. Separated from wallThick in order to optimise wrapping with CapMod
 
@@ -64,7 +67,12 @@ class BeRef : public attachSystem::ContainedComp,
   int topWallMat;                 ///< wall Material (upper tier) 
   int lowWallMat;                 ///< wall Material (lower tier)
   int targSepMat;                 ///< Separator Mat
-  
+
+  // Void cylinder below the Target Wheel
+  // needed only for 1-moderator models
+  double voidCylRadius; ///< Void cylinder radius
+  double voidCylDepth; ///< Void cylinder depth
+
   // Functions:
 
   void populateWithDef(const FuncDataBase&,const double,const double,

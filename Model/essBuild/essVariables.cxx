@@ -111,7 +111,7 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TopBFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("TopBFlightXYAngle", .0);
   Control.addVariable("TopBFlightZAngle",0.0);
-  Control.addVariable("TopBFlightAngleZTop",0.0);  // Step down angle
+  Control.addVariable("TopBFlightAngleZTop",0.0);  //x Step down angle
   Control.addVariable("TopBFlightAngleZBase",0.0); // Step up angle
   Control.addVariable("TopBFlightHeight",4.6);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopBFlightWidth", 10.7);     // Full width
@@ -120,14 +120,10 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
   
-  Control.addVariable("BeRefXStep",0.0);  
-  Control.addVariable("BeRefYStep",0.0);  
-  Control.addVariable("BeRefZStep",0.0);
-  Control.addVariable("BeRefXYAngle",0.0); 
-  Control.addVariable("BeRefZAngle",0.0);
-  Control.addVariable("BeRefRadius",34.3);
-  Control.addVariable("BeRefHeight",74.2);
-  Control.addVariable("BeRefWallThick",3.0);
+  Control.addVariable("BeRefRadius",35.0);
+  Control.addVariable("BeRefHeight",37.3);
+  Control.addVariable("BeRefDepth",37.3);
+  Control.addVariable("BeRefWallThick",0.3);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
@@ -182,18 +178,9 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("BulkNLayer",3);
 
   Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
-  /*!
-    \todo : This is ugly conterintuative
-    and going to break if anyone make a change
-  */
 
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+"
-                "TopBeRefWaterDiscHeight0+TopBeRefWaterDiscDepth0+"
-		"TopBeRefWaterDiscHeight1+0.2");
-  Control.addVariable("BulkHeight1");
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0"
-		"+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");
-  Control.addVariable("BulkDepth1");
+  Control.addVariable("BulkHeight1",38.0);
+  Control.addVariable("BulkDepth1",38.0);
   Control.addVariable("BulkMat1","Void");
 
   Control.addVariable("BulkRadius2",65.0);

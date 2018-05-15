@@ -297,6 +297,7 @@ OpticsHutch::createObjects(Simulation& System)
   int HI(hutIndex);
 
   std::list<int> matList({skinMat,pbMat,skinMat});
+  ELog::EM<<"Skng == "<<matList.front()<<ELog::endDiag;
   for(const std::string& layer : {"Inner","Lead","Outer"})
     {
       const int mat=matList.front();
