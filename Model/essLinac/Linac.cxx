@@ -287,7 +287,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 				 SMap.realSurf(sS));
 
 	std::string OutA = getLinkString(lpS);
-	std::string OutB = getLinkComplement(lsS);
+	std::string OutB = getLinkString(-lsS);
 
 	surroundRule.setInnerRule(OutA);
 	surroundRule.setOuterRule(OutB);
@@ -352,7 +352,8 @@ Linac::buildTSW(Simulation& System) const
       // addInsertCell would not work since sometimes we split the air cell by layerProccess
       // wall->addInsertCell(this->getCells("air"));
       // instead, we call addToInsertControl
-      wall->createAll(System,*this,12,13,14,15);
+
+      wall->createAll(System,*this,13,14,15,16);
       attachSystem::addToInsertControl(System,*this,*wall);
     }
   return;
@@ -422,7 +423,7 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 -24 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  layerProcess(System, "air", 10, 11, nAirLayers, airMat);
+  layerProcess(System, "air", 11, 12, nAirLayers, airMat);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
@@ -503,6 +504,7 @@ Linac::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);
 
+
   beamDump->createAll(System,*this,0);
   attachSystem::addToInsertLineCtrl(System,*this,*beamDump);
 
@@ -510,8 +512,8 @@ Linac::createAll(Simulation& System,
   attachSystem::addToInsertControl(System,*this,*faradayCup);
 
   //  attachSystem::addToInsertControl(System,*beamDump,*faradayCup);
-
   createDTL(System, 10);
+
   buildTSW(System);
 
   return;

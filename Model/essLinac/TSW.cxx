@@ -213,7 +213,7 @@ TSW::layerProcess(Simulation& System, const std::string& cellName,
 			     SMap.realSurf(sS));
 
     std::string OutA = getLinkString(lpS);
-    std::string OutB = getLinkComplement(lsS);
+    std::string OutB = getLinkString(-lsS);
 
     surroundRule.setInnerRule(OutA);
     surroundRule.setOuterRule(OutB);
@@ -278,7 +278,7 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,X);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+X*(width),X);
 
-  const double linacWidth = FC.getLinkDistance(wall1+1, wall2+1);
+  const double linacWidth = FC.getLinkDistance(wall1, wall2);
   const double L = (Index%2) ? linacWidth-length : length;
 
   const int w1 = FC.getLinkSurf(static_cast<size_t>(wall1));
@@ -321,7 +321,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   else
     setCell("wall",cellIndex-1);
 
-  layerProcess(System, "wall", 2, 6, nLayers, wallMat);
+  layerProcess(System, "wall", 3, 7, nLayers, wallMat);
 
   Out=FC.getLinkString(static_cast<size_t>(wall1)) +
     FC.getLinkString(static_cast<size_t>(wall2)) +
@@ -343,8 +343,8 @@ TSW::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createLinks");
 
-  FixedComp::setLinkSignedCopy(0,FC,-(wall1+1));
-  FixedComp::setLinkSignedCopy(1,FC,-(wall2+1));
+  FixedComp::setLinkSignedCopy(0,FC,-wall1);
+  FixedComp::setLinkSignedCopy(1,FC,-wall2);
 
   FixedComp::setConnect(2,Origin-Y*(length/2.0),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+1));
@@ -352,8 +352,8 @@ TSW::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setConnect(3,Origin-Y*(length/2.0)+X*(width),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+2));
 
-  FixedComp::setLinkSignedCopy(4,FC,-(floor+1));
-  FixedComp::setLinkSignedCopy(5,FC,-(roof+1));
+  FixedComp::setLinkSignedCopy(4,FC,-floor);
+  FixedComp::setLinkSignedCopy(5,FC,-roof);
 
   FixedComp::setConnect(6,Origin-Y*(length/2.0)+X*(width),X);
   FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+2));
@@ -389,7 +389,7 @@ TSW::createAll(Simulation& System,
   ELog::RegMethod RegA("TSW","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,-(wall1+1));
+  createUnitVector(FC,-wall1);
   createSurfaces(FC,wall1,wall2);
   createLinks(FC,wall1,wall2,floor,roof);
   createObjects(System,FC,wall1,wall2,floor,roof);
