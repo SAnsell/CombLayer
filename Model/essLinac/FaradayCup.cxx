@@ -243,7 +243,7 @@ FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
 			     SMap.realSurf(sS));
 
     std::string OutA = getLinkString(lpS);
-    std::string OutB = getLinkComplement(lsS);
+    std::string OutB = getLinkString(-lsS);
 
     surroundRule.setInnerRule(OutA);
     surroundRule.setOuterRule(OutB);
@@ -537,15 +537,19 @@ FaradayCup::createAll(Simulation& System,
   ELog::RegMethod RegA("FaradayCup","createAll");
 
   populate(System.getDataBase());
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);
 
-  const size_t j=nShieldLayers-1;
-  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
-  layerProcess(System, "LateralShield" + std::to_string(j), 7, 5, 20, shieldMat[j]);
+  if (active)
+    {
+      const size_t j=nShieldLayers-1;
+      layerProcess(System, "ForwardShield" + std::to_string(j), 7, 2, 10, shieldMat[j]);
+      layerProcess(System, "LateralShield" + std::to_string(j), 8, 6, 20, shieldMat[j]);
+    }
 
   return;
 }
