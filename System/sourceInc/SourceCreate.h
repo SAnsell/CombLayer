@@ -53,6 +53,10 @@ namespace SDef
 				  const attachSystem::FixedComp&,
 				  const long int);
   
+  std::string createFlukaExternal(const mainSystem::MITYPE&,const std::string&,
+				  const attachSystem::FixedComp&,
+				  const long int);
+  
   std::string createFlukaSource(const mainSystem::MITYPE&,const std::string&,
 				const attachSystem::FixedComp&,const long int);
 

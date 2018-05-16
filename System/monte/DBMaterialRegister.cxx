@@ -1180,8 +1180,8 @@ DBMaterial::initMaterial()
   
 
   // Material #140: Hydrogen gas for vacuum pipes (Brem production)
-  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
-  MObj.setMaterial(140,"H2Gas","1001.70c 0.001","",MLib);
+  // Total atom density 2.981e-5 -  300K 0.08988 g/litre
+  MObj.setMaterial(140,"H2Gas","1001.70c 2.981e-5","",MLib);
   setMaterial(MObj);
 
   return;

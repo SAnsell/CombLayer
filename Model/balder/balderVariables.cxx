@@ -352,7 +352,6 @@ opticsVariables(FuncDataBase& Control)
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
   
-
   // joined and open
   GateGen.setCF<setVariable::CF100>();
   GateGen.generateValve(Control,"BalderGateC",0.0,0);
@@ -361,6 +360,13 @@ opticsVariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF100>();    
   PipeGen.generatePipe(Control,"BalderDriftC",0,54.4); 
 
+  Control.addVariable("BalderBeamStopZStep",-2.0);
+  Control.addVariable("BalderBeamStopWidth",4.0);
+  Control.addVariable("BalderBeamStopHeight",3.2);
+  Control.addVariable("BalderBeamStopDepth",6.0);
+  Control.addVariable("BalderBeamStopDefMat","Tungsten");
+
+  
   // SLITS
   JawGen.setCF<setVariable::CF100>();
   JawGen.setLength(4.0);

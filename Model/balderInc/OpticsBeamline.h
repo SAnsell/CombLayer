@@ -22,6 +22,11 @@
 #ifndef xraySystem_OpticsBeamline_h
 #define xraySystem_OpticsBeamline_h
 
+namespace insertSystem
+{
+  class insertPlate;
+}
+
 namespace constructSystem
 {
   class SupplyPipe;
@@ -129,6 +134,9 @@ class OpticsBeamline :
 
   /// Large drift chamber post mono
   std::shared_ptr<constructSystem::VacuumPipe> driftC;
+
+  /// Beam stop
+  std::shared_ptr<insertSystem::insertPlate> beamStop;
 
   /// Slits [first pair]
   std::shared_ptr<constructSystem::JawValve> slitsA;

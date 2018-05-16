@@ -73,6 +73,8 @@
 #include "World.h"
 #include "AttachSupport.h"
 
+#include "insertObject.h"
+#include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
@@ -126,6 +128,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   monoBellowB(new constructSystem::Bellows(newName+"MonoBellowB")),
   gateC(new constructSystem::GateValve(newName+"GateC")),
   driftC(new constructSystem::VacuumPipe(newName+"DriftC")),
+  beamStop(new insertSystem::insertPlate(newName+"BeamStop")),
   slitsA(new constructSystem::JawValve(newName+"SlitsA")),
   shieldPipe(new constructSystem::PortTube(newName+"ShieldPipe")),
   pipeD(new constructSystem::Bellows(newName+"BellowD")),
@@ -176,6 +179,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(monoBellowB);
   OR.addObject(gateC);
   OR.addObject(driftC);
+  OR.addObject(beamStop);
   OR.addObject(slitsA);
   OR.addObject(shieldPipe);
   OR.addObject(pipeD);
@@ -355,6 +359,9 @@ OpticsBeamline::buildObjects(Simulation& System)
   driftC->registerSpaceCut(1,2);
   driftC->createAll(System,*gateC,2);
 
+  beamStop->addInsertCell(driftC->getCell("Void"));
+  beamStop->createAll(System,*driftC,0);
+  
   slitsA->addInsertCell(ContainedComp::getInsertCells());
   slitsA->setFront(*driftC,2);
   slitsA->registerSpaceCut(1,2);
@@ -369,7 +376,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeD->setFront(*shieldPipe,2);
   pipeD->registerSpaceCut(1,2);
   pipeD->createAll(System,*shieldPipe,2);
-
 
   gateD->addInsertCell(ContainedComp::getInsertCells());
   gateD->setFront(*pipeD,2);
