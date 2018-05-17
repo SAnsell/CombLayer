@@ -240,7 +240,9 @@ KlystronGallery::createSurfaces()
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,
-			   Origin+X*(widthLeft)+Z*(height+roofThick),topNorm);
+			   Origin+X*(widthLeft)+
+			   Z*(height+roofThick/cos(roofAngle*M_PI/180)),
+			   topNorm);
 
   return;
 }
