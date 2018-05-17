@@ -306,20 +306,30 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   const int wmat = (Index%2) ? airMat : wallMat;
   const int amat = (Index%2) ? wallMat : airMat;
 
-  const std::string tb =  FC.getLinkString(static_cast<size_t>(floor)) +
+  const std::string tb =
+    FC.getLinkString(static_cast<size_t>(floor)) +
     FC.getLinkString(static_cast<size_t>(roof));
-  std::string Out = FC.getLinkString(static_cast<size_t>(wall1)) +
-    ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ") + tb;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out));
 
-  Out=FC.getLinkString(static_cast<size_t>(wall2)) +
-    ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 ") + tb;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out));
+  const double linacWidth(FC.getLinkDistance(wall1, wall2));
+  const double doorWidth(linacWidth-length);
 
-  if (wmat==wallMat)
-    setCell("wall",cellIndex-2);
-  else
-    setCell("wall",cellIndex-1);
+  std::string Out(ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ")+tb);
+  std::string Out1;
+  if ((wmat == wallMat) || (doorWidth>0))
+    {
+      Out1 = FC.getLinkString(static_cast<size_t>(wall1)) + Out;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out1));
+      if (wmat==wallMat)
+	setCell("wall", cellIndex-1);
+    }
+
+  if ((amat==wallMat) || (doorWidth>0))
+    {
+      Out1=FC.getLinkString(static_cast<size_t>(wall2)) + Out;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out1));
+      if (amat==wallMat)
+	setCell("wall", cellIndex-1);
+    }
 
   layerProcess(System, "wall", 3, 7, nLayers, wallMat);
 
