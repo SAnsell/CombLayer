@@ -291,7 +291,7 @@ DTL::createObjects(Simulation& System)
 
   std::string Out;
   // back plane of last PMQ:
-  SMap.addMatch(surfIndex+23,pmq.back()->getLinkSurf(1));
+  SMap.addMatch(surfIndex+23,pmq.back()->getLinkSurf(2));
   // back plane of the DTL intertank
   ModelSupport::buildShiftedPlane(SMap,surfIndex+24,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+23),
@@ -335,7 +335,7 @@ DTL::createLinks()
 {
   ELog::RegMethod RegA("DTL","createLinks");
 
-  const double length = Origin.Distance(pmq.back()->getLinkPt(1));
+  const double length = Origin.Distance(pmq.back()->getLinkPt(2));
   ELog::EM << keyName << " total length: " << length << " delta: " << 768.76-length << ELog::endDiag;
 
   FixedComp::setConnect(0,Origin,-Y);
