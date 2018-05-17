@@ -47,7 +47,8 @@ class KlystronGallery : public attachSystem::ContainedComp,
 
   double lengthBack;            ///< length backward the proton beam direction
   double lengthFront;           ///< length forward to the proton beam direction
-  double width;                 ///< Width
+  double widthLeft;             ///< Inner width towards x+
+  double widthRight;            ///< Inner width towards x-
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall

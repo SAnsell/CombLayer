@@ -103,7 +103,8 @@ KlystronGallery::KlystronGallery(const KlystronGallery& A) :
   engActive(A.engActive),
   lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
-  width(A.width),
+  widthLeft(A.widthLeft),
+  widthRight(A.widthRight),
   height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -129,7 +130,8 @@ KlystronGallery::operator=(const KlystronGallery& A)
       engActive=A.engActive;
       lengthBack=A.lengthBack;
       lengthFront=A.lengthFront;
-      width=A.width;
+      widthLeft=A.widthLeft;
+      widthRight=A.widthRight;
       height=A.height;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
@@ -168,7 +170,8 @@ KlystronGallery::populate(const FuncDataBase& Control)
 
   lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
   lengthFront=Control.EvalVar<double>(keyName+"LengthFront");
-  width=Control.EvalVar<double>(keyName+"Width");
+  widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
+  widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -206,8 +209,8 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
