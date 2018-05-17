@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/KlystronGallery.cxx
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -96,12 +96,15 @@ KlystronGallery::KlystronGallery(const std::string& Key)  :
   */
 {}
 
-KlystronGallery::KlystronGallery(const KlystronGallery& A) : 
+KlystronGallery::KlystronGallery(const KlystronGallery& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),width(A.width),height(A.height),
+  lengthBack(A.lengthBack),
+  lengthFront(A.lengthFront),
+  width(A.width),
+  height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -124,7 +127,8 @@ KlystronGallery::operator=(const KlystronGallery& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      length=A.length;
+      lengthBack=A.lengthBack;
+      lengthFront=A.lengthFront;
       width=A.width;
       height=A.height;
       wallThick=A.wallThick;
@@ -143,8 +147,8 @@ KlystronGallery::clone() const
 {
     return new KlystronGallery(*this);
 }
-  
-KlystronGallery::~KlystronGallery() 
+
+KlystronGallery::~KlystronGallery()
   /*!
     Destructor
   */
@@ -162,7 +166,8 @@ KlystronGallery::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
+  lengthFront=Control.EvalVar<double>(keyName+"LengthFront");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -172,7 +177,7 @@ KlystronGallery::populate(const FuncDataBase& Control)
 
   return;
 }
-  
+
 void
 KlystronGallery::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -189,7 +194,7 @@ KlystronGallery::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 KlystronGallery::createSurfaces()
   /*!
@@ -198,8 +203,8 @@ KlystronGallery::createSurfaces()
 {
   ELog::RegMethod RegA("KlystronGallery","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
@@ -209,7 +214,7 @@ KlystronGallery::createSurfaces()
 
   return;
 }
-  
+
 void
 KlystronGallery::createObjects(Simulation& System)
   /*!
@@ -228,7 +233,7 @@ KlystronGallery::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 KlystronGallery::createLinks()
   /*!
@@ -239,13 +244,13 @@ KlystronGallery::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 KlystronGallery::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -264,7 +269,7 @@ KlystronGallery::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

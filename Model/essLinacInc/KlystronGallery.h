@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/KlystronGallery.h
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_KlystronGallery_h
@@ -45,23 +45,24 @@ class KlystronGallery : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
-  double length;                ///< Total length including void
+  double lengthBack;            ///< length backward the proton beam direction
+  double lengthFront;           ///< length forward to the proton beam direction
   double width;                 ///< Width
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   KlystronGallery(const std::string&);
@@ -69,7 +70,7 @@ class KlystronGallery : public attachSystem::ContainedComp,
   KlystronGallery& operator=(const KlystronGallery&);
   virtual KlystronGallery* clone() const;
   virtual ~KlystronGallery();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -77,5 +78,5 @@ class KlystronGallery : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 
