@@ -108,7 +108,9 @@ KlystronGallery::KlystronGallery(const KlystronGallery& A) :
   height(A.height),
   depth(A.depth),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  roofThick(A.roofThick),
+  floorThick(A.floorThick),
+  airMat(A.airMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: KlystronGallery to copy
@@ -136,7 +138,9 @@ KlystronGallery::operator=(const KlystronGallery& A)
       height=A.height;
       depth=A.depth;
       wallThick=A.wallThick;
-      mainMat=A.mainMat;
+      roofThick=A.roofThick;
+      floorThick=A.floorThick;
+      airMat=A.airMat;
       wallMat=A.wallMat;
     }
   return *this;
@@ -177,8 +181,10 @@ KlystronGallery::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -218,6 +224,15 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
 
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
+
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
+
   return;
 }
 
@@ -232,8 +247,12 @@ KlystronGallery::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
 
   return;

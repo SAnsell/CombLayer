@@ -53,8 +53,10 @@ class KlystronGallery : public attachSystem::ContainedComp,
   double depth;                 ///< Inner depth
 
   double wallThick;             ///< Thickness of wall
+  double roofThick; ///< Roof thickness
+  double floorThick; ///< Floor thickness
 
-  int mainMat;                   ///< main material
+  int airMat;                   ///< main material
   int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);
