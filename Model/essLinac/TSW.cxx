@@ -159,7 +159,7 @@ TSW::~TSW()
 
 void
 TSW::layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS,
+		    const long int& lpS, const long int& lsS,
 		    const size_t& N, const int& mat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
@@ -176,8 +176,8 @@ TSW::layerProcess(Simulation& System, const std::string& cellName,
     if (N<=1)
       return;
 
-    const int pS = getLinkSurf(lpS);
-    const int sS = getLinkSurf(lsS);
+    const long int pS(getLinkSurf(lpS));
+    const long int sS(getLinkSurf(lsS));
 
     const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
     MonteCarlo::Object* wallObj(0);
@@ -209,8 +209,8 @@ TSW::layerProcess(Simulation& System, const std::string& cellName,
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;
 
-    surroundRule.setSurfPair(SMap.realSurf(pS),
-			     SMap.realSurf(sS));
+    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
+			     SMap.realSurf(static_cast<int>(sS)));
 
     std::string OutA = getLinkString(lpS);
     std::string OutB = getLinkString(-lsS);
@@ -281,7 +281,7 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   const double linacWidth = FC.getLinkDistance(wall1, wall2);
   const double L = (Index%2) ? linacWidth-length : length;
 
-  const int w1 = FC.getLinkSurf(static_cast<size_t>(wall1));
+  const int w1 = FC.getLinkSurf(wall1);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+4,
 				  SMap.realPtr<Geometry::Plane>(w1),
 				  L);
@@ -307,8 +307,8 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   const int amat = (Index%2) ? wallMat : airMat;
 
   const std::string tb =
-    FC.getLinkString(static_cast<size_t>(floor)) +
-    FC.getLinkString(static_cast<size_t>(roof));
+    FC.getLinkString(floor) +
+    FC.getLinkString(roof);
 
   const double linacWidth(FC.getLinkDistance(wall1, wall2));
   const double doorWidth(linacWidth-length);
@@ -317,7 +317,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   std::string Out1;
   if ((wmat == wallMat) || (doorWidth>0))
     {
-      Out1 = FC.getLinkString(static_cast<size_t>(wall1)) + Out;
+      Out1 = FC.getLinkString(wall1) + Out;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out1));
       if (wmat==wallMat)
 	setCell("wall", cellIndex-1);
@@ -325,7 +325,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   if ((amat==wallMat) || (doorWidth>0))
     {
-      Out1=FC.getLinkString(static_cast<size_t>(wall2)) + Out;
+      Out1=FC.getLinkString(wall2) + Out;
       System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out1));
       if (amat==wallMat)
 	setCell("wall", cellIndex-1);
@@ -333,8 +333,8 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   layerProcess(System, "wall", 3, 7, nLayers, wallMat);
 
-  Out=FC.getLinkString(static_cast<size_t>(wall1)) +
-    FC.getLinkString(static_cast<size_t>(wall2)) +
+  Out=FC.getLinkString(wall1) +
+    FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
 
   addOuterSurf(Out);

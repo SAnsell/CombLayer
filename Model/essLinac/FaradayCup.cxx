@@ -189,7 +189,7 @@ FaradayCup::~FaradayCup()
 
 void
 FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS,
+		    const long int& lpS, const long int& lsS,
 		    const size_t& N, const int& mat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
@@ -206,8 +206,8 @@ FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
     if (N<=1)
       return;
 
-    const int pS = getLinkSurf(lpS);
-    const int sS = getLinkSurf(lsS);
+    const long int pS(getLinkSurf(lpS));
+    const long int sS(getLinkSurf(lsS));
 
     const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
     MonteCarlo::Object* wallObj(0);
@@ -239,8 +239,8 @@ FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;
 
-    surroundRule.setSurfPair(SMap.realSurf(pS),
-			     SMap.realSurf(sS));
+    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
+			     SMap.realSurf(static_cast<int>(sS)));
 
     std::string OutA = getLinkString(lpS);
     std::string OutB = getLinkString(-lsS);

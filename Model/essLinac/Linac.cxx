@@ -206,7 +206,7 @@ Linac::populate(const FuncDataBase& Control)
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   floorWidthLeft=Control.EvalVar<double>(keyName+"FloorWidthLeft");
   floorWidthRight=Control.EvalVar<double>(keyName+"FloorWidthRight");
-  nAirLayers=Control.EvalDefVar<int>(keyName+"NAirLayers", 1);
+  nAirLayers=Control.EvalDefVar<size_t>(keyName+"NAirLayers", 1);
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -235,8 +235,8 @@ Linac::createUnitVector(const attachSystem::FixedComp& FC,
 
 void
 Linac::layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS,
-		    const int& nLayers, const int& mat)
+		    const long int& lpS, const long int& lsS,
+		    const size_t& nLayers, const int& mat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
@@ -269,7 +269,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 
 	double baseFrac = 1.0/nLayers;
 	ModelSupport::surfDivide DA;
-	for(int i=1;i<nLayers;i++)
+	for(size_t i=1;i<nLayers;i++)
 	  {
 	    DA.addFrac(baseFrac);
 	    DA.addMaterial(mat);
