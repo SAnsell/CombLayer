@@ -280,16 +280,16 @@ createESSLinacSource(const mainSystem::MITYPE& inputMap,
   ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
   sourceDataBase& SDB=sourceDataBase::Instance();
 
-  const double E =    Control.EvalDefVar<double>("sdefEnergy",  74.0);
-  const double xStart=Control.EvalDefVar<double>("sdefXPos",     0.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",  3550.0);
-  const double zStart=Control.EvalDefVar<double>("sdefZPos",     0.0);
+  const double E=mainSystem::getDefInput<double>(inputMap,"energy",0,74.0);
+  const double x0=mainSystem::getDefInput<double>(inputMap,"pos",0,0.0);
+  const double y0=mainSystem::getDefInput<double>(inputMap,"pos",1,3550.0);
+  const double z0=mainSystem::getDefInput<double>(inputMap,"pos",2,0.0);
 
   PointSource PSource("essLinac");
     
   PSource.setEnergy(E);
   PSource.setParticle(9);
-  PSource.setOffset(xStart,yStart,zStart);
+  PSource.setOffset(x0,y0,z0);
   PSource.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(PSource.getKeyName(),PSource);
