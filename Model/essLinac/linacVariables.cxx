@@ -293,6 +293,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGWidthLeft", 1000);
   Control.addVariable("KGWidthRight", 1000);
   Control.addVariable("KGHeight", 1000);
+  Control.addVariable("KGDepth", 1000);
   Control.addVariable("KGWallThick", 100);
   Control.addVariable("KGWallMat", "SkanskaConcrete");
   Control.addVariable("KGMainMat", "Air");
