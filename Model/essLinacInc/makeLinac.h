@@ -26,7 +26,7 @@
 namespace essSystem
 {
   class Linac;
-
+  class KlystronGallery;
       
   /*!
     \class makeLinac
@@ -40,7 +40,8 @@ class makeLinac
 {
  private:
   
-  std::shared_ptr<Linac> LinacTunnel;   ///< Linac
+  std::shared_ptr<Linac> LinacTunnel;   ///< Linac tunnel
+  std::shared_ptr<KlystronGallery> KG;  ///< Klystron gallery
 
  public:
   

@@ -74,13 +74,15 @@
 #include "LinkSupport.h"
 
 #include "Linac.h"
+#include "KlystronGallery.h"
 #include "makeLinac.h"
 
 namespace essSystem
 {
 
 makeLinac::makeLinac() :
-  LinacTunnel(new Linac("Linac"))
+  LinacTunnel(new Linac("Linac")),
+  KG(new KlystronGallery("KG"))
  /*!
     Constructor
  */
@@ -88,7 +90,8 @@ makeLinac::makeLinac() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(LinacTunnel);      
+  OR.addObject(LinacTunnel);
+  OR.addObject(KG);
 }
 
 
@@ -114,6 +117,9 @@ makeLinac::build(Simulation& System,
   
   LinacTunnel->addInsertCell(voidCell);
   LinacTunnel->createAll(System,World::masterOrigin(),0);
+
+  KG->addInsertCell(voidCell);
+  KG->createAll(System,World::masterOrigin(),0);
 
   return;
 }

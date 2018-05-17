@@ -286,6 +286,16 @@ EssLinacVariables(FuncDataBase& Control)
   // automaticall generated pmqVariables.cxx by the optics2var script
   EssLinacPMQVariables(Control);
 
+  // Klystron Gallery
+  Control.addVariable("KGEngineeringActive", 0);
+  Control.addVariable("KGLength", 1000);
+  Control.addVariable("KGWidth", 1000);
+  Control.addVariable("KGHeight", 1000);
+  Control.addVariable("KGWallThick", 100);
+  Control.addVariable("KGWallMat", "SkanskaConcrete");
+  Control.addVariable("KGMainMat", "Air");
+  Control.addVariable("KGXStep", 2000);
+
   return;
 }
 
