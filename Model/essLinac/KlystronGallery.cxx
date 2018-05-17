@@ -110,6 +110,7 @@ KlystronGallery::KlystronGallery(const KlystronGallery& A) :
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   floorThick(A.floorThick),
+  roofAngle(A.roofAngle),
   airMat(A.airMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -140,6 +141,7 @@ KlystronGallery::operator=(const KlystronGallery& A)
       wallThick=A.wallThick;
       roofThick=A.roofThick;
       floorThick=A.floorThick;
+      roofAngle=A.roofAngle;
       airMat=A.airMat;
       wallMat=A.wallMat;
     }
@@ -183,6 +185,7 @@ KlystronGallery::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+  roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -222,7 +225,12 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
+
+  Geometry::Vec3D topNorm(Z);
+  Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
+
+  ModelSupport::buildPlane(SMap,surfIndex+6,
+			   Origin+X*(widthLeft)+Z*(height),topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
@@ -231,7 +239,8 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,
+			   Origin+X*(widthLeft)+Z*(height+roofThick),topNorm);
 
   return;
 }

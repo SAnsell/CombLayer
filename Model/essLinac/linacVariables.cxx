@@ -290,13 +290,15 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGEngineeringActive", 0);
   Control.addParse<double>("KGLengthBack", "LinacLengthBack");
   Control.addParse<double>("KGLengthFront", "LinacLengthFront");
-  Control.addVariable("KGWidthLeft", 1000);
-  Control.addVariable("KGWidthRight", 1000);
-  Control.addVariable("KGHeight", 1000);
-  Control.addVariable("KGDepth", 1000);
+  // KG dimensions are measured from ESS-0308575 (email from Pontus 16.05)
+  Control.addVariable("KGWidthLeft", 800);
+  Control.addVariable("KGWidthRight", 800);
+  Control.addVariable("KGHeight", 758.8/2);
+  Control.addVariable("KGDepth", 758.8/2);
   Control.addVariable("KGWallThick", 100);
   Control.addVariable("KGRoofThick", 100);
   Control.addVariable("KGFloorThick", 100);
+  Control.addVariable("KGRoofAngle", 4);
   Control.addVariable("KGWallMat", "SkanskaConcrete");
   Control.addVariable("KGAirMat", "Air");
   Control.addVariable("KGXStep", 2000);

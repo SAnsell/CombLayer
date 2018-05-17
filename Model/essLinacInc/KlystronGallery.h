@@ -49,12 +49,13 @@ class KlystronGallery : public attachSystem::ContainedComp,
   double lengthFront;           ///< length forward to the proton beam direction
   double widthLeft;             ///< Inner width towards x+
   double widthRight;            ///< Inner width towards x-
-  double height;                ///< Inner height
+  double height;                ///< Inner height of the x+ (taller) side wall
   double depth;                 ///< Inner depth
 
   double wallThick;             ///< Thickness of wall
   double roofThick; ///< Roof thickness
   double floorThick; ///< Floor thickness
+  double roofAngle; ///< Roof tilting angle
 
   int airMat;                   ///< main material
   int wallMat;                   ///< wall material
