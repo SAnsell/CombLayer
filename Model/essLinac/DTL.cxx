@@ -185,10 +185,10 @@ DTL::createPMQ(Simulation& System, const long int lp)
       OR.addObject(p);
       if (i==0)
 	{
-	  p->createAll(System, *this, lp+1);
+	  p->createAll(System, *this, lp);
 	} else
 	{
-      	  p->createAll(System, *pmq[i-1],1+1);
+	  p->createAll(System, *pmq[i-1],2);
 	}
       
       pmq.push_back(p);
@@ -389,7 +389,7 @@ DTL::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createPMQ(System, -1);
+  createPMQ(System, 0);
   createObjects(System);
   createLinks();
   insertObjects(System);

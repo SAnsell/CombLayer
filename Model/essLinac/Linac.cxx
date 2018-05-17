@@ -321,10 +321,10 @@ Linac::createDTL(Simulation& System, const long int lp)
       OR.addObject(d);
       if (i==0)
       	{
-      	  d->createAll(System, *this, lp+1);
+	  d->createAll(System, *this, lp);
       	} else
       	{
-      	  d->createAll(System, *dtl[i-1],1+1);
+	  d->createAll(System, *dtl[i-1],2);
       	}
 
       attachSystem::addToInsertControl(System,*this,*d); // works
@@ -512,7 +512,7 @@ Linac::createAll(Simulation& System,
   attachSystem::addToInsertControl(System,*this,*faradayCup);
 
   //  attachSystem::addToInsertControl(System,*beamDump,*faradayCup);
-  createDTL(System, 10);
+  createDTL(System, 11);
 
   buildTSW(System);
 
