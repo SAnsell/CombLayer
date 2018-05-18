@@ -108,7 +108,7 @@ Berm::Berm(const Berm& A) :
   height(A.height),
   depth(A.depth),
   roofAngle(A.roofAngle),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat)
   /*!
     Copy constructor
     \param A :: Berm to copy
@@ -137,7 +137,6 @@ Berm::operator=(const Berm& A)
       depth=A.depth;
       roofAngle=A.roofAngle;
       mainMat=A.mainMat;
-      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -179,7 +178,6 @@ Berm::populate(const FuncDataBase& Control)
   roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }

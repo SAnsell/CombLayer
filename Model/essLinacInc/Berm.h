@@ -54,7 +54,6 @@ class Berm : public attachSystem::ContainedComp,
   double roofAngle;             ///< Roof tilting angle
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
