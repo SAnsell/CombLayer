@@ -298,7 +298,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGWallThick", 20);
   Control.addVariable("KGRoofThick", 27.6); // check
   Control.addVariable("KGFloorThick", 20);
-  Control.addVariable("KGRoofAngle", 4); // calculated
+  Control.addVariable("KGRoofAngle", 4.0); // calculated
   Control.addVariable("KGWallMat", "SkanskaConcrete");
   Control.addVariable("KGAirMat", "Air");
   // 130 and 570 are stub legs lengths
@@ -313,9 +313,9 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("BermHeight", 500+557.692);
   Control.addVariable("BermWidthLeft", 4000);
   Control.addVariable("BermWidthRight", 3500);
-  Control.addVariable("BermWallThick", 20);
   Control.addVariable("BermMainMat", "Void");
   Control.addVariable("BermWallMat", "Aluminium");
+  Control.addVariable("BermRoofAngle", 4.76);
 
   return;
 }

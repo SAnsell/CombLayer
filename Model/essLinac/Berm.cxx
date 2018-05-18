@@ -103,9 +103,10 @@ Berm::Berm(const Berm& A) :
   engActive(A.engActive),
   lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
-  widthLeft(A.widthLeft),height(A.height),
+  widthLeft(A.widthLeft),
   widthRight(A.widthRight),
-  wallThick(A.wallThick),
+  height(A.height),
+  roofAngle(A.roofAngle),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -132,7 +133,7 @@ Berm::operator=(const Berm& A)
       widthLeft=A.widthLeft;
       widthRight=A.widthRight;
       height=A.height;
-      wallThick=A.wallThick;
+      roofAngle=A.roofAngle;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -172,7 +173,7 @@ Berm::populate(const FuncDataBase& Control)
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
   widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -212,7 +213,11 @@ Berm::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+
+  Geometry::Vec3D topNorm(Z);
+  Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0)-X*widthRight,
+			   topNorm);
 
   return;
 }

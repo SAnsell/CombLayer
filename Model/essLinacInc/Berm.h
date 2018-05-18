@@ -50,8 +50,7 @@ class Berm : public attachSystem::ContainedComp,
   double widthLeft;   ///< Width towards x+
   double widthRight;  ///< Width towards x-
   double height;      ///< Min height at x-
-
-  double wallThick;             ///< Thickness of wall
+  double roofAngle;             ///< Roof tilting angle
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
