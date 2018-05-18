@@ -278,8 +278,24 @@ KlystronGallery::createLinks()
 {
   ELog::RegMethod RegA("KlystronGallery","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin-Y*(lengthBack+wallThick),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+11));
+
+  FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
+
+  FixedComp::setConnect(2,Origin-X*(widthLeft+wallThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+13));
+
+  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
+
+  FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
+
+  FixedComp::setConnect(5,Origin+X*(widthRight)+
+			Z*(height+roofThick/cos(roofAngle*M_PI/180)),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
 
   return;
 }
