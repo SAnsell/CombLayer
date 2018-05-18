@@ -455,6 +455,7 @@ createFlukaSource(const mainSystem::MITYPE& inputMap,
 
   GX.createAll(inputMap,FC,sideIndex);
 
+  ELog::EM<<"GX == "<<GX.getKeyName()<<ELog::endDiag;
   SDB.registerSource(GX.getKeyName(),GX);  
   return GX.getKeyName();      
 }

@@ -126,7 +126,6 @@ sourceSelection(Simulation& System,
   const std::string sdefType=IParam.getValue<std::string>("sdefType");
   std::string sName;
   
-
   if (sdefType.empty() && IParam.hasKey("kcode") &&
       IParam.flag("kcode"))
     sName="kcode";
@@ -188,9 +187,6 @@ sourceSelection(Simulation& System,
   else if (sdefType=="Beam" || sdefType=="beam")
     sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
 
-  else if (sdefType=="FlukaSource" || sdefType=="flukaSource")
-    sName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
-
   else if (sdefType=="Rectangle" || sdefType=="rectangle")
     sName=SDef::createRectSource(inputMap,"rectSource",FC,linkIndex);
 
@@ -224,7 +220,12 @@ sourceSelection(Simulation& System,
 	"Point :: Test point source\n"
 	"Beam :: Test Beam [Radial] source \n"
 	"Wiggler :: Wiggler Source for balder \n"
-	"D4C :: D4C neutron beam"<<ELog::endBasic;
+	"D4C :: D4C neutron beam\n\n"
+	
+	"FlukaSource :: Source [external] fluka output \n"
+
+	      <<ELog::endBasic;
+      
     }
 
   if (!IParam.flag("sdefVoid") && !sName.empty())
@@ -347,8 +348,5 @@ activationSelection(Simulation& System,
 
   return;
 }
-  
-  
-
-  
+    
 } // NAMESPACE SDef

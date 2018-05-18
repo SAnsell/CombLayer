@@ -68,6 +68,23 @@
 namespace SDef
 {
 
+std::ostream&
+operator<<(std::ostream& OX,const SDef::unitTYPE& unit)
+  /*!
+    Write out the unit type
+    \param OX :: Output stream
+    \param Unit :: Unit values
+  */
+{
+  ELog::EM<<"ASDFSADF "<<unit.first<<ELog::endDiag;
+  if (unit.first==1 || unit.first==-1)
+    OX<<unit.second;
+  else
+    OX<<"-";
+  return OX;
+}
+  
+  
 FlukaSource::FlukaSource(const std::string& keyName) : 
   FixedOffset(keyName,0),SourceBase()
   /*!
@@ -277,8 +294,6 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("FlukaSource","writeFLUKA");
 
-  const particleConv& PC=particleConv::Instance();
-
   // can be two for an energy range
   if (Energy.size()!=1)
     throw ColErr::SizeError<size_t>
@@ -299,8 +314,12 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
   cx.str("");
   cx<<"BEAMPOS "<<Origin;
   StrFunc::writeFLUKA(cx.str(),OX);
+
   cx.str("");
-  OX<<"SOURCE"<<std::endl;
+  cx<<"SOURCE ";
+  for(size_t i=0;i<6;i++)
+    cx<<" "<<sValues[i];
+  StrFunc::writeFLUKA(cx.str(),OX);
   
   return;
 }

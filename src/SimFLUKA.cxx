@@ -99,7 +99,7 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   alignment(A.alignment),defType(A.defType),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
-  nps(A.nps),rndSeed(A.rndSeed),
+  nps(A.nps),rndSeed(A.rndSeed),sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
@@ -123,6 +123,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
+      sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
 	FTItem.emplace(TM.first,TM.second->clone());
@@ -176,6 +177,9 @@ SimFLUKA::setDefaultPhysics(const std::string& dName)
 
 void
 SimFLUKA::clearTally()
+  /*!
+    Remove all the tallies
+  */
 {
   for(FTallyTYPE::value_type& mc : FTItem)
     delete mc.second;
@@ -471,6 +475,14 @@ SimFLUKA::writeSource(std::ostream& OX) const
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
       SPtr->writeFLUKA(OX);
     }
+  if (!sourceExtraName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceExtraName,
+					     "SourceExtra not known");
+      SPtr->writeFLUKA(OX);
+    }
+
   OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }

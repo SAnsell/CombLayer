@@ -74,6 +74,9 @@
 #include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "insertObject.h"
+#include "insertSphere.h"
+#include "insertShell.h"
 
 #include "Cryostat.h"
 #include "TwinBase.h"
@@ -117,9 +120,16 @@ makeSingleItem::build(Simulation& System,
 
   int voidCell(74123);
 
-  constructSystem::SingleChopper AS("singleChopper");
-  AS.addInsertCell(voidCell);
-  AS.createAll(System,World::masterOrigin(),0);
+  insertSystem::insertSphere Target("target");
+  insertSystem::insertShell surround("shield");
+
+  Target.addInsertCell(voidCell);
+  Target.createAll(System,World::masterOrigin(),0);
+  
+  
+  //  constructSystem::SingleChopper AS("singleChopper");
+  //  AS.addInsertCell(voidCell);
+  //  AS.createAll(System,World::masterOrigin(),0);
 
 //  constructSystem::CryoMagnetBase A("CryoB");
 //  A.addInsertCell(voidCell);

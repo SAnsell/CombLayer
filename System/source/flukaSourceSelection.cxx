@@ -117,18 +117,20 @@ flukaSourceSelection(Simulation& System,
   ELog::EM<<"SDEF TYPE == "<<sdefType<<ELog::endDiag;
 
   if (sdefType=="Wiggler")                       // blader wiggler
-    {
-      sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
-    }
+    sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
+
   else if (sdefType=="Beam" || sdefType=="beam")
-    {
-      sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
-    }
+    sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
+
+  else if (sdefType=="external" || sdefType=="External")
+    sName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+
   else
     {
       ELog::EM<<"sdefType :\n"
 	"Beam :: Test Beam [Radial] source \n"
 	"Wiggler :: Wiggler Source for balder \n"
+	"External :: External source from source.f \n"
 	      <<ELog::endBasic;
     }
   ELog::EM<<"Source name == "<<sName<<ELog::endDiag;

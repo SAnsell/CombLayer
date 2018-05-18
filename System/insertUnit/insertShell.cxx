@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   insertUnit/insertSphere.cxx
+ * File:   insertUnit/insertShell.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -82,12 +82,12 @@
 #include "ContainedComp.h"
 #include "World.h"
 #include "insertObject.h"
-#include "insertSphere.h"
+#include "insertShell.h"
 
 namespace insertSystem
 {
 
-insertSphere::insertSphere(const std::string& Key)  :
+insertShell::insertShell(const std::string& Key)  :
   insertObject(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -95,107 +95,124 @@ insertSphere::insertSphere(const std::string& Key)  :
   */
 {}
 
-insertSphere::insertSphere(const insertSphere& A) :
-  insertObject(A),radius(A.radius)
+insertShell::insertShell(const insertShell& A) : 
+  insertObject(A),
+  innerRadius(A.innerRadius),outerRadius(A.outerRadius),
+  innerMat(A.innerMat)
   /*!
     Copy constructor
-    \param A :: insertSphere to copy
+    \param A :: insertShell to copy
   */
 {}
 
-insertSphere&
-insertSphere::operator=(const insertSphere& A)
+insertShell&
+insertShell::operator=(const insertShell& A)
   /*!
     Assignment operator
-    \param A :: insertSphere to copy
+    \param A :: insertShell to copy
     \return *this
   */
 {
   if (this!=&A)
     {
       insertObject::operator=(A);
-      radius=A.radius;
+      innerRadius=A.innerRadius;
+      outerRadius=A.outerRadius;
+      innerMat=A.innerMat;
     }
   return *this;
 }
 
-
-insertSphere::~insertSphere() 
+insertShell::~insertShell() 
   /*!
     Destructor
   */
 {}
 
 void
-insertSphere::populate(const FuncDataBase& Control)
+insertShell::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Data Base
   */
 {
-  ELog::RegMethod RegA("insertSphere","populate");
+  ELog::RegMethod RegA("insertShell","populate");
   
   if (!populated)
     {
       insertObject::populate(Control);
-      radius=Control.EvalVar<double>(keyName+"Radius");
+      innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+      outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+      innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",-1);
     }
   return;
 }
 
 void
-insertSphere::createSurfaces()
+insertShell::createSurfaces()
   /*!
     Create all the surfaces
   */
 {
-  ELog::RegMethod RegA("insertSphere","createSurface");
+  ELog::RegMethod RegA("insertShell","createSurface");
 
-  ModelSupport::buildSphere(SMap,ptIndex+7,Origin,radius);
+  ModelSupport::buildSphere(SMap,ptIndex+7,Origin,innerRadius);
+  ModelSupport::buildSphere(SMap,ptIndex+17,Origin,outerRadius);
 
-  setSurf("Surf",SMap.realSurf(ptIndex+7));
+  setSurf("InnerSurf",SMap.realSurf(ptIndex+7));
+  setSurf("OuterSurf",SMap.realSurf(ptIndex+17));
   return;
 }
 
 void
-insertSphere::createLinks()
+insertShell::createLinks()
   /*!
     Create link points
   */
 {
-  ELog::RegMethod RegA("insertSphere","createLinks");
+  ELog::RegMethod RegA("insertShell","createLinks");
 
-  FixedComp::setNConnect(6);
+  FixedComp::setNConnect(12);
   const Geometry::Vec3D Dir[3]={Y,X,Z};
 
   for(size_t i=0;i<6;i++)
     {
       const double SN((i%2) ? 1.0 : -1.0);
-      FixedComp::setConnect(i,Origin+Dir[i/2]*radius,Dir[i/2]*SN);
+      FixedComp::setConnect(i,Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
       FixedComp::setLinkSurf(i,SMap.realSurf(ptIndex+7));
+      FixedComp::setConnect(i+6,Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
+      FixedComp::setLinkSurf(i+6,SMap.realSurf(ptIndex+17));
     }
+  
   return;
 }
 
 void
-insertSphere::createObjects(Simulation& System)
+insertShell::createObjects(Simulation& System)
   /*!
     Create the spherical volume
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("insertSphere","createObjects");
+  ELog::RegMethod RegA("insertShell","createObjects");
   
   std::string Out=
-    ModelSupport::getComposite(SMap,ptIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
-  addCell("Main",cellIndex-1);
+    ModelSupport::getComposite(SMap,ptIndex," 7 -17 ");
+  CellMap::makeCell("Main",System,cellIndex++,defMat,0.0,Out);
+
+  if (innerMat>=0)
+    {
+      Out=ModelSupport::getComposite(SMap,ptIndex," -7 ");
+      CellMap::makeCell("Void",System,cellIndex++,innerMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,ptIndex," -17 ");
+    }
+
   addOuterSurf(Out);
   return;
 }
 
 void
-insertSphere::findObjects(Simulation& System)
+insertShell::findObjects(Simulation& System)
   /*!
     Insert the objects into the main simulation. It is separated
     from creation since we need to determine those object that 
@@ -203,7 +220,7 @@ insertSphere::findObjects(Simulation& System)
     \param System :: Simulation to add object to
   */
 {
-  ELog::RegMethod RegA("insertSphere","findObjects");
+  ELog::RegMethod RegA("insertShell","findObjects");
 
   System.populateCells();
   System.validateObjSurfMap();
@@ -218,24 +235,35 @@ insertSphere::findObjects(Simulation& System)
 
       // normal directions
       const std::array<Geometry::Vec3D,6> XYZ=
-	{ { -X,-Y,-Z,X,Y,Z } }; 
+	{ { -X,-Y,-Z,X,Y,Z } };
+      Geometry::Vec3D TP(Origin);
       for(size_t i=0;i<6;i++)
         {          
-          Geometry::Vec3D TP(Origin);
-	  TP+=XYZ[i]*radius;
+	  TP=Origin+XYZ[i]*innerRadius;
+          OPtr=System.findCell(TP,OPtr);
+          if (OPtr)
+            ICells.insert(OPtr->getName());
+	  TP=Origin+XYZ[i]*outerRadius;
           OPtr=System.findCell(TP,OPtr);
           if (OPtr)
             ICells.insert(OPtr->getName());
         }
+      
       // sqrt directions // and normal directions
-      const double RR=radius/sqrt(2);
+      const double innerRR=innerRadius/sqrt(2);
+      const double outerRR=outerRadius/sqrt(2);
       for(size_t i=0;i<6;i++)
 	for(size_t j=i;j<6;j++)
 	  {
 	    if (i!=((j+3) % 6))
 	      {
 		Geometry::Vec3D TP(Origin);
-		TP+=(XYZ[i]+XYZ[j])*RR;
+		TP=Origin+(XYZ[i]+XYZ[j])*innerRR;
+		OPtr=System.findCell(TP,OPtr);
+		if (OPtr)
+		  ICells.insert(OPtr->getName());
+
+		TP=Origin+(XYZ[i]+XYZ[j])*outerRR;
 		OPtr=System.findCell(TP,OPtr);
 		if (OPtr)
 		  ICells.insert(OPtr->getName());
@@ -249,38 +277,49 @@ insertSphere::findObjects(Simulation& System)
 }
 
 void
-insertSphere::setValues(const double R,const int Mat)
+insertShell::setValues(const double iR,const double oR,
+		       const int IMat,const int Mat)
   /*!
     Set the values and populate flag
-    \param R :: Radius
-    \param Mat :: Material number
+    \param iR :: Inner Radius
+    \param oR :: Outer Radius
+    \param IMat :: Inner Material number [-1 : not included]
+    \param Mat :: Material number (outer shell)
+
    */
 {
-  radius=R;
+  innerRadius=iR;
+  outerRadius=oR;
   defMat=Mat;
+  innerMat=IMat;
   populated=1;
   return;
 }
 
 void
-insertSphere::setValues(const double R,const std::string& MatName)
+insertShell::setValues(const double iR,const double oR,
+		       const std::string& InnerName,
+		       const std::string& MatName)
   /*!
     Set the values and populate flag
-    \param R :: Radius
+    \param iR :: Inner Radius
+    \param oR :: Outer Radius
+    \param InnerName :: Inner Material number
     \param MatName :: Material number
    */
 {
   ELog::RegMethod RegA("insertPlate","setValues(string)");
   
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
-  radius=R;
+  innerRadius=iR;
+  outerRadius=oR;
   defMat=DB.processMaterial(MatName);
   populated=1;
   return;
 }
 
 void
-insertSphere::mainAll(Simulation& System)
+insertShell::mainAll(Simulation& System)
   /*!
     Common part to createAll:
     Note: the strnage order -- create links and findObject
@@ -291,7 +330,7 @@ insertSphere::mainAll(Simulation& System)
     \param System :: Simulation
    */
 {
-  ELog::RegMethod RegA("insertSphere","mainAll");
+  ELog::RegMethod RegA("insertShell","mainAll");
   
   createSurfaces();
   createLinks();
@@ -304,7 +343,7 @@ insertSphere::mainAll(Simulation& System)
 
 
 void
-insertSphere::createAll(Simulation& System,
+insertShell::createAll(Simulation& System,
 			const Geometry::Vec3D& OG,
 			const attachSystem::FixedComp& FC)
   /*!
@@ -314,7 +353,7 @@ insertSphere::createAll(Simulation& System,
     \param FC :: Linear component to set axis etc
   */
 {
-  ELog::RegMethod RegA("insertSphere","createAll");
+  ELog::RegMethod RegA("insertShell","createAll");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,0);
@@ -325,7 +364,7 @@ insertSphere::createAll(Simulation& System,
 }
 
 void
-insertSphere::createAll(Simulation& System,
+insertShell::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int lIndex)
   /*!
@@ -335,7 +374,7 @@ insertSphere::createAll(Simulation& System,
     \param lIndex :: link Index
   */
 {
-  ELog::RegMethod RegA("insertSphere","createAll");
+  ELog::RegMethod RegA("insertShell","createAll");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
@@ -346,7 +385,7 @@ insertSphere::createAll(Simulation& System,
 }
 
 void
-insertSphere::createAll(Simulation& System,
+insertShell::createAll(Simulation& System,
 			const Geometry::Vec3D& Orig)
   /*!
     Generic function to create everything
@@ -354,7 +393,7 @@ insertSphere::createAll(Simulation& System,
     \param Orig :: Centre
   */
 {
-  ELog::RegMethod RegA("insertSphere","createAll");
+  ELog::RegMethod RegA("insertShell","createAll");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(World::masterOrigin(),0);
