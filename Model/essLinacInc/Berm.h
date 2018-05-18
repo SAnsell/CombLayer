@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/Berm.h
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_Berm_h
@@ -45,23 +45,24 @@ class Berm : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
-  double length;                ///< Total length including void
+  double lengthBack;  ///< length backward to the proton beam direction
+  double lengthFront; ///< length forward to the proton beam direction
   double width;                 ///< Width
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   Berm(const std::string&);
@@ -69,7 +70,7 @@ class Berm : public attachSystem::ContainedComp,
   Berm& operator=(const Berm&);
   virtual Berm* clone() const;
   virtual ~Berm();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -77,5 +78,5 @@ class Berm : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 

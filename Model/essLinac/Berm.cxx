@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/Berm.cxx
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -96,12 +96,14 @@ Berm::Berm(const std::string& Key)  :
   */
 {}
 
-Berm::Berm(const Berm& A) : 
+Berm::Berm(const Berm& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),width(A.width),height(A.height),
+  lengthBack(A.lengthBack),
+  lengthFront(A.lengthFront),
+  width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -124,7 +126,8 @@ Berm::operator=(const Berm& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      length=A.length;
+      lengthBack=A.lengthBack;
+      lengthFront=A.lengthFront;
       width=A.width;
       height=A.height;
       wallThick=A.wallThick;
@@ -143,8 +146,8 @@ Berm::clone() const
 {
     return new Berm(*this);
 }
-  
-Berm::~Berm() 
+
+Berm::~Berm()
   /*!
     Destructor
   */
@@ -162,7 +165,8 @@ Berm::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
+  lengthFront=Control.EvalVar<double>(keyName+"LengthFront");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -172,7 +176,7 @@ Berm::populate(const FuncDataBase& Control)
 
   return;
 }
-  
+
 void
 Berm::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -189,7 +193,7 @@ Berm::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 Berm::createSurfaces()
   /*!
@@ -198,8 +202,8 @@ Berm::createSurfaces()
 {
   ELog::RegMethod RegA("Berm","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
@@ -209,7 +213,7 @@ Berm::createSurfaces()
 
   return;
 }
-  
+
 void
 Berm::createObjects(Simulation& System)
   /*!
@@ -228,7 +232,7 @@ Berm::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 Berm::createLinks()
   /*!
@@ -239,13 +243,13 @@ Berm::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 Berm::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -264,7 +268,7 @@ Berm::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

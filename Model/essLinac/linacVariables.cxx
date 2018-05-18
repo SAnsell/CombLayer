@@ -306,6 +306,16 @@ EssLinacVariables(FuncDataBase& Control)
 			   "LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570");
   Control.addVariable("KGZStep", 629.4);
 
+  // Berm
+  Control.addVariable("BermEngineeringActive", 0);
+  Control.addParse<double>("BermLengthBack", "LinacLengthBack+100");
+  Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
+  Control.addVariable("BermHeight", 500+557.692);
+  Control.addVariable("BermWidth", 900);
+  Control.addVariable("BermWallThick", 20);
+  Control.addVariable("BermMainMat", "Void");
+  Control.addVariable("BermWallMat", "Aluminium");
+
   return;
 }
 
