@@ -75,6 +75,7 @@
 
 #include "Linac.h"
 #include "KlystronGallery.h"
+#include "Berm.h"
 #include "makeLinac.h"
 
 namespace essSystem
@@ -82,7 +83,8 @@ namespace essSystem
 
 makeLinac::makeLinac() :
   LinacTunnel(new Linac("Linac")),
-  KG(new KlystronGallery("KG"))
+  KG(new KlystronGallery("KG")),
+  berm(new Berm("Berm"))
  /*!
     Constructor
  */
@@ -92,6 +94,7 @@ makeLinac::makeLinac() :
 
   OR.addObject(LinacTunnel);
   OR.addObject(KG);
+  OR.addObject(berm);
 }
 
 
@@ -114,6 +117,9 @@ makeLinac::build(Simulation& System,
   ELog::RegMethod RegA("makeLinac","build");
 
   int voidCell(74123);
+
+  berm->addInsertCell(voidCell);
+  berm->createAll(System,World::masterOrigin(),0);
   
   LinacTunnel->addInsertCell(voidCell);
   LinacTunnel->createAll(System,World::masterOrigin(),0);
