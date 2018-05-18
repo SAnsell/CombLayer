@@ -126,11 +126,7 @@ makeLinac::build(Simulation& System,
   berm->addInsertCell(voidCell);
   berm->createAll(System,*LinacTunnel,0,*KG,3,5);
   
- //  attachSystem::addToInsertLineCtrl(System,*berm,*LinacTunnel);
-  ELog::EM << "Forced" << ELog::endCrit;
-  // either LineCtrl or LinacTunnel->addInsertCell(berm->getMainCell())
-  attachSystem::addToInsertForced(System,*berm,*LinacTunnel);
-
+  attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
 
   return;
 }
