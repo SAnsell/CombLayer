@@ -53,7 +53,7 @@ class Berm : public attachSystem::ContainedComp,
   double depth;       ///< Depth
   double roofAngle;             ///< Roof tilting angle
 
-  int mainMat;                   ///< main material
+  int mat;            ///< soil material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

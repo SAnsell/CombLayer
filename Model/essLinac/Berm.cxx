@@ -108,7 +108,7 @@ Berm::Berm(const Berm& A) :
   height(A.height),
   depth(A.depth),
   roofAngle(A.roofAngle),
-  mainMat(A.mainMat)
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: Berm to copy
@@ -136,7 +136,7 @@ Berm::operator=(const Berm& A)
       height=A.height;
       depth=A.depth;
       roofAngle=A.roofAngle;
-      mainMat=A.mainMat;
+      mat=A.mat;
     }
   return *this;
 }
@@ -177,7 +177,7 @@ Berm::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }
@@ -234,7 +234,7 @@ Berm::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
   addOuterSurf(Out);
 
