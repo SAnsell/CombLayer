@@ -106,6 +106,7 @@ Berm::Berm(const Berm& A) :
   widthLeft(A.widthLeft),
   widthRight(A.widthRight),
   height(A.height),
+  depth(A.depth),
   roofAngle(A.roofAngle),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -133,6 +134,7 @@ Berm::operator=(const Berm& A)
       widthLeft=A.widthLeft;
       widthRight=A.widthRight;
       height=A.height;
+      depth=A.depth;
       roofAngle=A.roofAngle;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -173,6 +175,7 @@ Berm::populate(const FuncDataBase& Control)
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
   widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
   roofAngle=Control.EvalVar<double>(keyName+"RoofAngle");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -212,11 +215,11 @@ Berm::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
 
   Geometry::Vec3D topNorm(Z);
   Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0)-X*widthRight,
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height)-X*widthRight,
 			   topNorm);
 
   return;
