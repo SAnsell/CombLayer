@@ -47,8 +47,9 @@ class Berm : public attachSystem::ContainedComp,
 
   double lengthBack;  ///< length backward to the proton beam direction
   double lengthFront; ///< length forward to the proton beam direction
-  double width;                 ///< Width
-  double height;                ///< height
+  double widthLeft;   ///< Width towards x+
+  double widthRight;  ///< Width towards x-
+  double height;      ///< Min height at x-
 
   double wallThick;             ///< Thickness of wall
 
