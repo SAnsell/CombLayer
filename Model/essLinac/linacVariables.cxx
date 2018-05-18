@@ -312,8 +312,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
   Control.addVariable("BermHeight", 550);
   Control.addVariable("BermDepth",  500);
-  Control.addVariable("BermWidthLeft", 4000);
-  Control.addVariable("BermWidthRight", 3500);
+  Control.addVariable("BermWidthLeft", 3500);
+  Control.addVariable("BermWidthRight", 4000);
   Control.addVariable("BermMainMat", "Void");
   Control.addVariable("BermWallMat", "Aluminium");
   Control.addVariable("BermRoofAngle", 4.76);

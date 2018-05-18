@@ -212,8 +212,8 @@ Berm::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
 

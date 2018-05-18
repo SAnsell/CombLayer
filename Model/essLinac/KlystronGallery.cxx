@@ -221,8 +221,8 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
 
@@ -230,17 +230,17 @@ KlystronGallery::createSurfaces()
   Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+6,
-			   Origin+X*(widthLeft)+Z*(height),topNorm);
+			   Origin+X*(widthRight)+Z*(height),topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,
-			   Origin+X*(widthLeft)+
+			   Origin+X*(widthRight)+
 			   Z*(height+roofThick/cos(roofAngle*M_PI/180)),
 			   topNorm);
 
