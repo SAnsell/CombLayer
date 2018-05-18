@@ -60,7 +60,8 @@ class Berm : public attachSystem::ContainedComp,
 			const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const long int);
   void createLinks();
 
  public:
@@ -71,7 +72,8 @@ class Berm : public attachSystem::ContainedComp,
   virtual Berm* clone() const;
   virtual ~Berm();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int,const long int);
 
 };
 

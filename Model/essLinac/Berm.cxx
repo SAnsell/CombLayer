@@ -224,19 +224,29 @@ Berm::createSurfaces()
 }
 
 void
-Berm::createObjects(Simulation& System)
+Berm::createObjects(Simulation& System,const attachSystem::FixedComp& KG,
+		    const long int kgSide,const long int kgFloor)
+
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
+    \param KG :: Klystron Gallery (for wrapping)
+    \param kgSide :: Klystron Gallery side link point
+    \param kgFloor :: Klystron Gallery floor link point
   */
 {
   ELog::RegMethod RegA("Berm","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 5 -6 ") +
+    KG.getLinkString(kgSide);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-
   addOuterSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 ") +
+    KG.getLinkString(-kgSide) + KG.getLinkString(kgFloor);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  addOuterUnionSurf(Out);
 
   return;
 }
@@ -261,13 +271,19 @@ Berm::createLinks()
 
 void
 Berm::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+		const attachSystem::FixedComp& FC,
+		const long int sideIndex,
+		const attachSystem::FixedComp& KG,
+		const long int kgSide,
+		const long int kgFloor)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param sideIndex :: link point for origin
+    \param KG :: Klystron Gallery (for wrapping)
+    \param kgSide :: Klystron Gallery side link point
+    \param kgFloor :: Klystron Gallery floor link point
   */
 {
   ELog::RegMethod RegA("Berm","createAll");
@@ -275,7 +291,7 @@ Berm::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System);
+  createObjects(System,KG,kgSide,kgFloor);
   createLinks();
   insertObjects(System);
 
