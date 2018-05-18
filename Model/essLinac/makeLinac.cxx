@@ -121,11 +121,13 @@ makeLinac::build(Simulation& System,
   berm->addInsertCell(voidCell);
   berm->createAll(System,World::masterOrigin(),0);
   
-  LinacTunnel->addInsertCell(voidCell);
-  LinacTunnel->createAll(System,World::masterOrigin(),0);
+  LinacTunnel->createAll(System,*berm,0);
+  //  attachSystem::addToInsertLineCtrl(System,*berm,*LinacTunnel);
+  ELog::EM << "Forced" << ELog::endCrit;
+  attachSystem::addToInsertForced(System,*berm,*LinacTunnel);
 
   KG->addInsertCell(voidCell);
-  KG->createAll(System,World::masterOrigin(),0);
+  KG->createAll(System,*LinacTunnel,0);
 
   return;
 }
