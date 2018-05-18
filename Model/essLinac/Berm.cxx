@@ -217,7 +217,7 @@ Berm::createSurfaces()
 
   Geometry::Vec3D topNorm(Z);
   Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height)-X*widthRight,
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height)-X*widthLeft,
 			   topNorm);
 
   return;
@@ -260,8 +260,23 @@ Berm::createLinks()
 {
   ELog::RegMethod RegA("Berm","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin-Y*(lengthBack),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(lengthFront),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(widthLeft),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
+
+  FixedComp::setConnect(3,Origin+X*(widthRight),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
+
+  FixedComp::setConnect(4,Origin-Z*(depth),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(5,Origin+Z*(height)-X*(widthLeft),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
 
   return;
 }
