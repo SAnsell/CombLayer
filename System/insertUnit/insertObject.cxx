@@ -151,7 +151,8 @@ insertObject::populate(const FuncDataBase& Control)
   if (!populated)
     {
       FixedOffset::populate(Control);      
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
+      defMat=ModelSupport::EvalMat<int>
+	(Control,keyName+"DefMat",keyName+"Mat");
       populated=1;
     }
   return;

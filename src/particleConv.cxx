@@ -378,6 +378,18 @@ particleConv::mcnpToFLUKA(const int ID) const
  
 
 const std::string&
+particleConv::nameToMCNP(const std::string& particleName) const
+  /*!
+    Get MCNP name base on particle name
+    \param particleName :: generic name to find
+    \return phits name
+  */
+{
+  const pName& PN = getNamePItem(particleName);
+  return PN.mcnpName;
+}
+
+const std::string&
 particleConv::nameToPHITS(const std::string& particleName) const
   /*!
     Get PHITS name base on particle name

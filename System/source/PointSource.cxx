@@ -129,6 +129,8 @@ PointSource::populate(const mainSystem::MITYPE& inputMap)
   SourceBase::populate(inputMap);
 
   angleSpread=mainSystem::getDefInput<double>(inputMap,"aSpread",0,0.0);
+  angleSpread=
+    mainSystem::getDefInput<double>(inputMap,"angleSpread",0,angleSpread);
 
   return;
 }
@@ -171,9 +173,12 @@ PointSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("PointSource","createSource");
 
-  sourceCard.setComp("vec",Y);
-  sourceCard.setComp("axs",Y);
-  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));   
+  if (angleSpread<360.0)
+    {
+      sourceCard.setComp("vec",Y);
+      sourceCard.setComp("axs",Y);
+      sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
+    }
   sourceCard.setComp("pos",Origin);
   SourceBase::createEnergySource(sourceCard);
 

@@ -109,6 +109,7 @@ class particleConv
 
   bool hasName(const std::string&) const;
 
+  const std::string& nameToMCNP(const std::string&) const;
   const std::string& nameToPHITS(const std::string&) const;
   const std::string& nameToFLUKA(const std::string&) const;
   

@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -75,6 +75,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "insertObject.h"
+#include "insertPlate.h"
 #include "insertSphere.h"
 #include "insertShell.h"
 
@@ -120,13 +121,32 @@ makeSingleItem::build(Simulation& System,
 
   int voidCell(74123);
 
-  insertSystem::insertSphere Target("target");
-  insertSystem::insertShell surround("shield");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  std::shared_ptr<insertSystem::insertSphere> 
+    Target(new insertSystem::insertSphere("Target"));
+  std::shared_ptr<insertSystem::insertShell>
+    Surround(new insertSystem::insertShell("Shield"));
+  std::shared_ptr<insertSystem::insertPlate>
+    Tube(new insertSystem::insertPlate("Tube"));
 
-  Target.addInsertCell(voidCell);
-  Target.createAll(System,World::masterOrigin(),0);
-  
-  
+	    
+  OR.addObject(Target);
+  OR.addObject(Tube);
+  OR.addObject(Surround);
+	  
+  Target->addInsertCell(voidCell);
+  Target->createAll(System,World::masterOrigin(),0);
+
+  Surround->addInsertCell(voidCell);
+  Surround->createAll(System,World::masterOrigin(),0);
+
+  Tube->addInsertCell(voidCell);
+  Tube->addInsertCell(Surround->getCell("Main"));
+  Tube->createAll(System,World::masterOrigin(),0);
+
+
   //  constructSystem::SingleChopper AS("singleChopper");
   //  AS.addInsertCell(voidCell);
   //  AS.createAll(System,World::masterOrigin(),0);
