@@ -241,6 +241,17 @@ SimFLUKA::getTally(const int TI) const
 }
 
 void
+SimFLUKA::setExtraSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
+  */
+{
+  sourceExtraName=S;
+  return;
+}
+
+void
 SimFLUKA::processActiveMaterials() const
   /*!
     Set materials as active in DBMaterail Database

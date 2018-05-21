@@ -256,7 +256,7 @@ renumberCells(Simulation& System,const inputParam& IParam)
       // int cRange=IParam.getValue<int>("cellRange",1);
 
       size_t i=0;
-      const size_t dataCnt(IParam.dataCnt("renum"));
+      const size_t dataCnt(IParam.itemCnt("renum"));
       while(i<dataCnt)
 	{
 	  const std::string& Name=

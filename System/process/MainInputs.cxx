@@ -118,7 +118,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
 
   IParam.regFlag("sdefVoid","sdefVoid");
-  IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
+  IParam.regMulti("sdefType","sdefType",10,0);
   IParam.regItem("sdefFile","sdefFile");
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);

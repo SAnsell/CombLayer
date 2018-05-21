@@ -509,7 +509,7 @@ setDefaultPhysics(SimMCNP& System,
   PC.setPrintNum(IParam.getValue<std::string>("printTable"));
 
   // If Reactor stuff set and void
-  if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
+  if (IParam.hasKey("kcode") && IParam.itemCnt("kcode"))
     {
       setReactorPhysics(PC,Control,IParam);
       return;

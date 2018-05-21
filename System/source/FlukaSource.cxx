@@ -76,7 +76,6 @@ operator<<(std::ostream& OX,const SDef::unitTYPE& unit)
     \param Unit :: Unit values
   */
 {
-  ELog::EM<<"ASDFSADF "<<unit.first<<ELog::endDiag;
   if (unit.first==1 || unit.first==-1)
     OX<<unit.second;
   else
@@ -205,7 +204,7 @@ FlukaSource::rotate(const localRotate& LR)
 }
   
 void
-FlukaSource::createSource(SDef::Source& sourceCard) const
+FlukaSource::createSource(SDef::Source&) const
   /*!
     Creates a simple beam sampled uniformly in a
     circle
@@ -213,14 +212,6 @@ FlukaSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("FlukaSource","createSource");
-
-  sourceCard.setComp("vec",Y);
-  sourceCard.setComp("axs",Y);
-    
-  sourceCard.setComp("pos",Origin);
-  
-  SourceBase::createEnergySource(sourceCard);
-
   return;
 }  
 
@@ -300,20 +291,6 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
       (Energy.size(),1,"Energy only single point supported");
 
   std::ostringstream cx;
-  // energy : energy divirgence : angle spread [mrad]
-  // radius : innerRadius : -1 t o means radius
-  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<" - "
-    <<" "<<" - "<<" - - ";
-  cx<<StrFunc::toUpperString(particleType);
-  StrFunc::writeFLUKA(cx.str(),OX);
-  cx.str("");
-
-  // Y Axis is Z in fluka, X is X
-  cx<<"BEAMAXES "<<X<<" "<<Y;
-  StrFunc::writeFLUKA(cx.str(),OX);
-  cx.str("");
-  cx<<"BEAMPOS "<<Origin;
-  StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
   cx<<"SOURCE ";

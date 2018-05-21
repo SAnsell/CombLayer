@@ -1539,7 +1539,9 @@ Simulation::voidObject(const std::string& ObjName)
 int
 Simulation::splitObject(const int CA,const int SN)
   /*!
-    Split a cell into two based on surface 
+    Split a cell into two based on surface. Does not do 
+    any optimizatoin of the new cells. Uses the Shannon derivative
+    to produce the system
     Note the original surface is in the negative direction
     \param CA :: Cell number
     \param SN :: surface number
@@ -1547,9 +1549,6 @@ Simulation::splitObject(const int CA,const int SN)
    */
 {
   ELog::RegMethod RegA("Simulation","splitObject");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   MonteCarlo::Object* CPtr = findQhull(CA);
   if (!CPtr)

@@ -111,31 +111,43 @@ flukaSourceSelection(Simulation& System,
   const long int linkIndex=(DSnd.empty()) ?  0 :
     attachSystem::getLinkIndex(DSnd) % 1000;
 
-  // NOTE: No return to allow active SSW systems  
-  const std::string sdefType=IParam.getValue<std::string>("sdefType");
+  // NOTE: No return to allow active SSW systems
+  const size_t NSDef(IParam.setCnt("sdefType"));
+  ELog::EM<<"NSDEF == "<<NSDef<<ELog::endDiag;
   std::string sName;
-  ELog::EM<<"SDEF TYPE == "<<sdefType<<ELog::endDiag;
-
-  if (sdefType=="Wiggler")                       // blader wiggler
-    sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
-
-  else if (sdefType=="Beam" || sdefType=="beam")
-    sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
-
-  else if (sdefType=="external" || sdefType=="External")
-    sName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
-
-  else
+  std::string eName;
+  for(size_t sdefIndex=0;sdefIndex<NSDef;sdefIndex++)
     {
-      ELog::EM<<"sdefType :\n"
-	"Beam :: Test Beam [Radial] source \n"
-	"Wiggler :: Wiggler Source for balder \n"
-	"External :: External source from source.f \n"
-	      <<ELog::endBasic;
+      const std::string sdefType=IParam.getValue<std::string>
+	("sdefType",sdefIndex,0);
+
+      ELog::EM<<"SDEF TYPE ["<<sdefIndex<<"] == "<<sdefType<<ELog::endDiag;
+      
+      if (sdefType=="Wiggler")                       // blader wiggler
+	sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
+      
+      else if (sdefType=="Beam" || sdefType=="beam")
+	sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
+      
+      else if (sdefType=="external" || sdefType=="External" ||
+	       sdefType=="source" || sdefType=="Source")
+	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+      
+      else
+	{
+	  ELog::EM<<"sdefType :\n"
+	    "Beam :: Test Beam [Radial] source \n"
+	    "Wiggler :: Wiggler Source for balder \n"
+	    "External :: External source from source.f \n"
+		  <<ELog::endBasic;
+	}
     }
   ELog::EM<<"Source name == "<<sName<<ELog::endDiag;
+
   if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
+  if (!eName.empty())
+    System.setExtraSourceName(eName);
   
   return;
 }

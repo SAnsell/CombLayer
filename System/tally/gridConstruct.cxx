@@ -116,7 +116,7 @@ gridConstruct::processGrid(SimMCNP& System,
   ELog::EM<<"NItems = "<<NItems<<ELog::endDiag;
   ELog::EM<<"T = "<<NItemsT<<":"
 	  <<IParam.flag("TGrid")<<":"
-	  <<IParam.dataCnt("TGrid")<<ELog::endDiag;
+	  <<IParam.itemCnt("TGrid")<<ELog::endDiag;
 
   //    NItems<<ELog::endDiag;
 
