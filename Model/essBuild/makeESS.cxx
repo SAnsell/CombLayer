@@ -164,6 +164,9 @@ makeESS::makeESS() :
     Constructor
  */
 {
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   OR.addObject(Reflector);
   OR.addObject(PBeam);
   OR.addObject(pbip);
