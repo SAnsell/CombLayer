@@ -72,9 +72,11 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "FrontBackCut.h"
 
 #include "Linac.h"
 #include "KlystronGallery.h"
+#include "Stub.h"
 #include "Berm.h"
 #include "makeLinac.h"
 
@@ -84,7 +86,8 @@ namespace essSystem
 makeLinac::makeLinac() :
   LinacTunnel(new Linac("Linac")),
   KG(new KlystronGallery("KG")),
-  berm(new Berm("Berm"))
+  berm(new Berm("Berm")),
+  stub(new Stub("Stub"))
  /*!
     Constructor
  */
@@ -95,6 +98,7 @@ makeLinac::makeLinac() :
   OR.addObject(LinacTunnel);
   OR.addObject(KG);
   OR.addObject(berm);
+  OR.addObject(stub);
 }
 
 
@@ -127,6 +131,13 @@ makeLinac::build(Simulation& System,
   berm->createAll(System,*LinacTunnel,0,*KG,3,5);
   
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
+
+  stub->setFront(*KG,3);
+  stub->setBack(*LinacTunnel,-14);
+  stub->createAll(System,*LinacTunnel,0);
+  attachSystem::addToInsertSurfCtrl(System,*berm,*stub);
+  ELog::EM << "FixMe: use only first leg" << ELog::endDiag;
+  attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,*stub);
 
   return;
 }

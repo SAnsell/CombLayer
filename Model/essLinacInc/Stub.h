@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class Stub : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::FrontBackCut
 {
  private:
 
@@ -45,7 +46,7 @@ class Stub : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
-  double length;                ///< Total length including void
+  std::vector<double> length;        ///< Length of each length
   double width;                 ///< Width
   double height;                ///< height
 

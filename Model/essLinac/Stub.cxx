@@ -79,7 +79,7 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
-
+#include "FrontBackCut.h"
 #include "Stub.h"
 
 namespace essSystem
@@ -88,6 +88,7 @@ namespace essSystem
 Stub::Stub(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
+  attachSystem::FrontBackCut(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -99,6 +100,7 @@ Stub::Stub(const std::string& Key)  :
 Stub::Stub(const Stub& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::FrontBackCut(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
@@ -122,6 +124,7 @@ Stub::operator=(const Stub& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
@@ -162,7 +165,14 @@ Stub::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  const size_t Nlegs(3);
+  for (size_t i=0; i<Nlegs-1; i++)
+    {
+      const double L = Control.EvalVar<double>(keyName+"Length"+
+					       std::to_string(i+1));
+      length.push_back(L);
+    }
+
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -198,14 +208,25 @@ Stub::createSurfaces()
 {
   ELog::RegMethod RegA("Stub","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(width/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(width/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(length[0]),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+14,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+4),
+				  -height);
+    
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+15,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
+				  length[1]-height);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+16,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
+				  length[1]);
 
   return;
 }
@@ -219,11 +240,22 @@ Stub::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Stub","createObjects");
 
+  ELog::EM << " back: " << backRule() << ELog::endDiag;
+  ELog::EM << "front: " << frontRule() << ELog::endDiag;
+  
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 -6 ")+backRule();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
   addOuterSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 14 -4 6 -16 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  addOuterUnionSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 15 -16 ")+frontRule();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  addOuterUnionSurf(Out);
 
   return;
 }
@@ -237,6 +269,8 @@ Stub::createLinks()
 {
   ELog::RegMethod RegA("Stub","createLinks");
 
+  //  FrontBackCut::createLinks(*this, Origin, Y);
+  
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
   

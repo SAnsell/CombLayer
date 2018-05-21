@@ -317,6 +317,17 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("BermMat", "ClayTillLera");
   Control.addVariable("BermRoofAngle", 4.76);
 
+  // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
+  // Lengths are defined as in Sullivan, page 68
+  Control.addVariable("StubEngineeringActive", 0);
+  Control.addParse<double>("StubLength1", "340.0+LinacWidthLeft+LinacWallThick");
+  Control.addVariable("StubLength2", 610.0);
+  Control.addVariable("StubWidth",   240.0);
+  Control.addVariable("StubHeight",  210.0);
+  Control.addVariable("StubWallThick", 10);
+  Control.addVariable("StubMainMat", "Void");
+  Control.addVariable("StubWallMat", "SkanskaConcrete");
+
   return;
 }
 
