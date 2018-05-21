@@ -67,7 +67,6 @@
 #include "SourceBase.h"
 #include "BeamSource.h"
 #include "FlukaSource.h"
-#include "FlukaExternal.h"
 #include "RectangleSource.h"
 #include "GammaSource.h"
 #include "GaussBeamSource.h"
@@ -412,25 +411,6 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
   return GX.getKeyName();      
 }
 
-std::string
-createFlukaExternal(const mainSystem::MITYPE& inputMap,
-		    const std::string& keyName,
-		    const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
-  /*!
-    
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createFlukaExternal");
-
-  sourceDataBase& SDB=sourceDataBase::Instance();
-  FlukaExternal GX(keyName);
-
-  GX.createAll(inputMap,FC,sideIndex);
-
-  SDB.registerSource(GX.getKeyName(),GX);  
-  return GX.getKeyName();      
-}
 
 
 std::string

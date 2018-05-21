@@ -120,6 +120,8 @@ createInputs(inputParam& IParam)
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regMulti("sdefType","sdefType",10,0);
   IParam.regItem("sdefFile","sdefFile");
+  IParam.regMulti("sdefSource","sdefSource",1000,0);
+  IParam.regMulti("sdefSourceName","sdefSourceName",1000,0);
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);
   
@@ -242,6 +244,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
+  IParam.setDesc("sdefSource","Extra data for source.F");
   
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("T","Tally type [set to -1 to see all help]");

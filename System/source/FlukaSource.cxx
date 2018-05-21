@@ -138,8 +138,7 @@ FlukaSource::clone() const
   return new FlukaSource(*this);
 }
   
-  
-  
+ 
 void
 FlukaSource::populate(const ITYPE& inputMap)
   /*!
@@ -153,13 +152,12 @@ FlukaSource::populate(const ITYPE& inputMap)
   SourceBase::populate(inputMap);
 
 
-  const size_t NPts=mainSystem::sizeInput(inputMap,"sourceVar");
+  const size_t NPts=mainSystem::sizeInput(inputMap,"source");
   for(size_t index=0;index<NPts && index<12;index++)
     {
       double D;
       const std::string IStr=
-	mainSystem::getInput<std::string>(inputMap,"sourceVar",index);
-      
+	mainSystem::getInput<std::string>(inputMap,"source",index);
       if (StrFunc::convert(IStr,D))
 	sValues[index]=unitTYPE(1,IStr);
       else if (!IStr.empty() &&
@@ -169,7 +167,7 @@ FlukaSource::populate(const ITYPE& inputMap)
     }
   
   sourceName=mainSystem::getDefInput<std::string>
-			   (inputMap,"sourceName",0,"");
+			   (inputMap,"sdefSourceName",0,"");
   
   
   return;
