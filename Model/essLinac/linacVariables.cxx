@@ -314,7 +314,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("BermDepth",  500);
   Control.addVariable("BermWidthLeft", 3500);
   Control.addVariable("BermWidthRight", 4000);
-  Control.addVariable("BermMat", "Void");
+  Control.addVariable("BermMat", "ClayTillLera");
   Control.addVariable("BermRoofAngle", 4.76);
 
   return;
