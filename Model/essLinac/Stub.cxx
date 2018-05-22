@@ -217,6 +217,14 @@ Stub::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(width/2.0+wallThick),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(width/2.0+wallThick),Y);
+
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(length[0]+wallThick),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+
   ModelSupport::buildShiftedPlane(SMap,surfIndex+104,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+4),
 				  -height);
@@ -229,6 +237,17 @@ Stub::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
 				  length[1]);
 
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+114,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+104),
+				  -wallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+115,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+105),
+				  -wallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+116,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+106),
+				  wallThick);
   return;
 }
   
@@ -245,8 +264,17 @@ Stub::createObjects(Simulation& System)
   attachSystem::ContainedGroup::addCC("Full");
 
   attachSystem::ContainedGroup::addCC("Leg1");
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 -6 ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -4 15 -16 (-1:2:4:-5) ")+backRule();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -104 6 -16 ")+backRule();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -4 15 -16 ")+backRule();
   addOuterSurf("Leg1",Out);
   addOuterUnionSurf("Full",Out);
 
