@@ -293,8 +293,8 @@ EssLinacVariables(FuncDataBase& Control)
   // KG dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   Control.addVariable("KGWidthLeft", 800);
   Control.addVariable("KGWidthRight", 800);
-  Control.addVariable("KGHeight", 758.8/2);
-  Control.addVariable("KGDepth", 758.8/2);
+  Control.addVariable("KGHeight", 647/2.0);
+  Control.addVariable("KGDepth", 647/2.0);
   Control.addVariable("KGWallThick", 20);
   Control.addVariable("KGRoofThick", 27.6); // check
   Control.addVariable("KGFloorThick", 20);
@@ -304,7 +304,7 @@ EssLinacVariables(FuncDataBase& Control)
   // 130 and 570 are stub legs lengths
   Control.addParse<double>("KGXStep",
 			   "LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570");
-  Control.addVariable("KGZStep", 629.4);
+  Control.addVariable("KGZStep", 573.5);
 
   // Berm
   Control.addVariable("BermEngineeringActive", 0);

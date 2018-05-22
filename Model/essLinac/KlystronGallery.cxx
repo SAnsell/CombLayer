@@ -230,7 +230,7 @@ KlystronGallery::createSurfaces()
   Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+6,
-			   Origin+X*(widthRight)+Z*(height),topNorm);
+			   Origin-X*(widthLeft)+Z*(height),topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
@@ -240,7 +240,7 @@ KlystronGallery::createSurfaces()
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,
-			   Origin+X*(widthRight)+
+			   Origin-X*(widthLeft)+
 			   Z*(height+roofThick/cos(roofAngle*M_PI/180)),
 			   topNorm);
 
@@ -293,7 +293,7 @@ KlystronGallery::createLinks()
   FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
 
-  FixedComp::setConnect(5,Origin+X*(widthRight)+
+  FixedComp::setConnect(5,Origin-X*(widthLeft)+
 			Z*(height+roofThick/cos(roofAngle*M_PI/180)),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
 
