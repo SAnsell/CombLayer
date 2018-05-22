@@ -325,7 +325,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("StubWidth",   240.0);
   Control.addVariable("StubHeight",  210.0);
   Control.addVariable("StubWallThick", 10);
-  Control.addVariable("StubMainMat", "Void");
+  Control.addVariable("StubMainMat", "Air");
   Control.addVariable("StubWallMat", "SkanskaConcrete");
 
   return;

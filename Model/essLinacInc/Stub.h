@@ -35,7 +35,7 @@ namespace essSystem
   \brief Stub
 */
 
-class Stub : public attachSystem::ContainedComp,
+class Stub : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::FrontBackCut
 {

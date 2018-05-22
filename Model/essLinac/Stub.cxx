@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
@@ -86,7 +87,7 @@ namespace essSystem
 {
 
 Stub::Stub(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup(),
   attachSystem::FixedOffset(Key,6),
   attachSystem::FrontBackCut(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -98,7 +99,7 @@ Stub::Stub(const std::string& Key)  :
 {}
 
 Stub::Stub(const Stub& A) : 
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
@@ -122,7 +123,7 @@ Stub::operator=(const Stub& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
@@ -244,18 +245,25 @@ Stub::createObjects(Simulation& System)
   ELog::EM << "front: " << frontRule() << ELog::endDiag;
   
   std::string Out;
+  attachSystem::ContainedGroup::addCC("Full");
 
+  attachSystem::ContainedGroup::addCC("Leg1");
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 -6 ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addOuterSurf(Out);
+  addOuterSurf("Leg1",Out);
+  addOuterUnionSurf("Full",Out);
 
+  attachSystem::ContainedGroup::addCC("Leg2");
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 14 -4 6 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addOuterUnionSurf(Out);
+  addOuterUnionSurf("Leg2",Out);
+  addOuterUnionSurf("Full",Out);
 
+  attachSystem::ContainedGroup::addCC("Leg3");
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 15 -16 ")+frontRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addOuterUnionSurf(Out);
+  addOuterUnionSurf("Leg3",Out);
+  addOuterUnionSurf("Full",Out);
 
   return;
 }
