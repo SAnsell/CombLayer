@@ -274,13 +274,23 @@ Stub::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -104 6 -16 ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -4 15 -16 ")+backRule();
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -14 15 -16 ")+backRule();
   addOuterSurf("Leg1",Out);
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg2");
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 -4 6 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 4 -14 15 -105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+   				 " 11 -12 114 -4 16 -105 (-1:2:-104:4:-16:105) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 114 -14 6 -116 ");
   addOuterUnionSurf("Leg2",Out);
   addOuterUnionSurf("Full",Out);
 
