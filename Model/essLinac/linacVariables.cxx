@@ -287,7 +287,6 @@ EssLinacVariables(FuncDataBase& Control)
   EssLinacPMQVariables(Control);
 
   // Klystron Gallery
-  Control.addVariable("KGEngineeringActive", 0);
   Control.addParse<double>("KGLengthBack", "LinacLengthBack");
   Control.addParse<double>("KGLengthFront", "LinacLengthFront");
   // KG dimensions are measured from ESS-0308575 (email from Pontus 16.05)
@@ -307,7 +306,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGZStep", 573.5);
 
   // Berm
-  Control.addVariable("BermEngineeringActive", 0);
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100");
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
   Control.addVariable("BermHeight", 550);
@@ -319,7 +317,6 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
-  Control.addVariable("Stub1EngineeringActive", 0);
   Control.addParse<double>("Stub1Length1", "340.0+LinacWidthLeft+LinacWallThick");
   Control.addVariable("Stub1Length2", 610.0);
   Control.addVariable("Stub1Width",   240.0);

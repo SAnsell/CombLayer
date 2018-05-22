@@ -43,8 +43,6 @@ class KlystronGallery : public attachSystem::ContainedComp,
   const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  int engActive;                ///< Engineering active flag
-
   double lengthBack;            ///< length backward the proton beam direction
   double lengthFront;           ///< length forward to the proton beam direction
   double widthLeft;             ///< Inner width towards x-

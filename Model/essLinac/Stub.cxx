@@ -103,7 +103,6 @@ Stub::Stub(const Stub& A) :
   attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -127,7 +126,6 @@ Stub::operator=(const Stub& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
-      engActive=A.engActive;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -164,7 +162,6 @@ Stub::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Stub","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   const size_t Nlegs(3);
   for (size_t i=0; i<Nlegs-1; i++)

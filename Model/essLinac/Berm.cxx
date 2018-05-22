@@ -100,7 +100,6 @@ Berm::Berm(const Berm& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  engActive(A.engActive),
   lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
   widthLeft(A.widthLeft),
@@ -128,7 +127,6 @@ Berm::operator=(const Berm& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      engActive=A.engActive;
       lengthBack=A.lengthBack;
       lengthFront=A.lengthFront;
       widthLeft=A.widthLeft;
@@ -167,7 +165,6 @@ Berm::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Berm","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
   lengthFront=Control.EvalVar<double>(keyName+"LengthFront");

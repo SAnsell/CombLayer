@@ -100,7 +100,6 @@ KlystronGallery::KlystronGallery(const KlystronGallery& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  engActive(A.engActive),
   lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
   widthLeft(A.widthLeft),
@@ -131,7 +130,6 @@ KlystronGallery::operator=(const KlystronGallery& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      engActive=A.engActive;
       lengthBack=A.lengthBack;
       lengthFront=A.lengthFront;
       widthLeft=A.widthLeft;
@@ -174,7 +172,6 @@ KlystronGallery::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("KlystronGallery","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
   lengthFront=Control.EvalVar<double>(keyName+"LengthFront");
