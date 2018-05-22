@@ -93,7 +93,6 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
 #include "ReadFunctions.h"

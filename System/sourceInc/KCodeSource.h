@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   include/KCode.h
+ * File:   include/KCodeSource.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_KCode_h
-#define SDef_KCode_h
+#ifndef SDef_KCodeSource_h
+#define SDef_KCodeSource_h
 
 class Simulation;
 
@@ -29,20 +29,21 @@ namespace SDef
   class Source;
   
 /*!
-  \class KCode
+  \class KCodeSource
   \version 1.0
   \date July 2009
   \author S.Ansell
-  \brief KCode Term
+  \brief KCodeSource Term
   
   Generic kcode term 
 */
 
-class KCode :
+class KCodeSource :
   public SourceBase
 {
  private:
 
+  const std::string keyName;
   /// Kcode :nsrck rkk ikz kct msrk knrm mrkp kc8
   double rkk;                     ///< keff 
   std::vector<int> defFlag;       ///< Default values
@@ -52,12 +53,15 @@ class KCode :
 
  public:
    
-  KCode();
-  KCode(const KCode&);
-  KCode& operator=(const KCode&);
-  virtual KCode* clone() const;
-  virtual ~KCode();
+  KCodeSource(const std::string&);
+  KCodeSource(const KCodeSource&);
+  KCodeSource& operator=(const KCodeSource&);
+  virtual KCodeSource* clone() const;
+  virtual ~KCodeSource();
 
+  /// accessor
+  const std::string& getKeyName() {return keyName;}
+  
   void setKSRC(const std::vector<Geometry::Vec3D>&); 
   void setLine(const std::string&);
 

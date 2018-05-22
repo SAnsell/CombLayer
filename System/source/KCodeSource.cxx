@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   src/KCode.cxx
+ * File:   src/KCodeSource.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -56,33 +56,35 @@
 #include "localRotate.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
-#include "KCode.h"
+#include "KCodeSource.h"
 
 namespace SDef
 {
 
-KCode::KCode() : SourceBase(),
-  rkk(1.0),defFlag(8,0),vals(8)
+KCodeSource::KCodeSource(const std::string& KN) :
+  SourceBase(),
+  keyName(KN),rkk(1.0),defFlag(8,0),vals(8)
   /*!
     Constructor with default list
+    \param KN :: Keyname
   */
 {}
 
-KCode::KCode(const KCode& A) :
-  SourceBase(A),
+KCodeSource::KCodeSource(const KCodeSource& A) :
+  SourceBase(A),keyName(A.keyName),
   rkk(A.rkk),defFlag(A.defFlag),
   vals(A.vals),ksrc(A.ksrc)
   /*!
     Copy constructor
-    \param A :: KCode to copy
+    \param A :: KCodeSource to copy
   */
 {}
 
-KCode&
-KCode::operator=(const KCode& A)
+KCodeSource&
+KCodeSource::operator=(const KCodeSource& A)
   /*!
     Assignment operator
-    \param A :: KCode to copy
+    \param A :: KCodeSource to copy
     \return *this
   */
 {
@@ -97,24 +99,24 @@ KCode::operator=(const KCode& A)
   return *this;
 }
 
-KCode::~KCode()
+KCodeSource::~KCodeSource()
   /*!
     Destructor
   */
 {}
 
-KCode*
-KCode::clone() const
+KCodeSource*
+KCodeSource::clone() const
   /*!
     Clone constructor
     \return copy of this
   */
 {
-  return new KCode(*this);
+  return new KCodeSource(*this);
 }
   
 void
-KCode::setKSRC(const std::vector<Geometry::Vec3D>& Pts)
+KCodeSource::setKSRC(const std::vector<Geometry::Vec3D>& Pts)
   /*!
     Set the ksrc terms
     \param Pts :: Points to use
@@ -125,13 +127,13 @@ KCode::setKSRC(const std::vector<Geometry::Vec3D>& Pts)
 }
 
 void
-KCode::setLine(const std::string& KLine)
+KCodeSource::setLine(const std::string& KLine)
   /*!
     Sets the kcode line
     \param KLine :: Line to process
   */
 {
-  ELog::RegMethod RegA("KCode","setLine");
+  ELog::RegMethod RegA("KCodeSource","setLine");
 
   std::string Line=KLine;
   
@@ -162,26 +164,26 @@ KCode::setLine(const std::string& KLine)
 
 
 void
-KCode::writePHITS(std::ostream&) const
+KCodeSource::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("KCode","writePHITS");
+  ELog::RegMethod RegA("KCodeSource","writePHITS");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
 }
 
 void
-KCode::writeFLUKA(std::ostream&) const
+KCodeSource::writeFLUKA(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("KCode","writeFLUKA");
+  ELog::RegMethod RegA("KCodeSource","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
@@ -189,13 +191,13 @@ KCode::writeFLUKA(std::ostream&) const
 
 
 void
-KCode::write(std::ostream& OX) const
+KCodeSource::write(std::ostream& OX) const
   /*!
     Basic MCNPX writout function
     \param OX :: Output stream
    */
 {
-  ELog::RegMethod RegA("KCode","write");
+  ELog::RegMethod RegA("KCodeSource","write");
 
   std::ostringstream cx;
   cx<<"kcode";

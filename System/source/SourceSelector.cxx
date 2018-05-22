@@ -62,6 +62,8 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "PhysCard.h"
@@ -69,7 +71,13 @@
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "Object.h"
+#include "Qhull.h"
 #include "Simulation.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"
 #include "localRotate.h"
@@ -87,7 +95,51 @@
 
 namespace SDef
 {
+
+std::vector<Geometry::Vec3D>
+getCellsContainingZaid(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const std::string& FuelName,
+		       const size_t zaid)
+ /*!
+   
+  */
+{
+  ELog::RegMethod RegA("","getCellsContainingZaid");
+
+  const ModelSupport::DBMaterial& DB= 
+    ModelSupport::DBMaterial::Instance();
   
+  const attachSystem::CellMap* CM=
+    dynamic_cast<const attachSystem::CellMap*>(&FC);
+  if (!CM)
+    throw ColErr::InContainerError<std::string>
+      (FC.getKeyName(),"No FuelElements available");
+  
+  const std::vector<int> fuelCells=CM->getCells(FuelName);
+  
+  // points to start kcode from
+  std::vector<Geometry::Vec3D> FissionVec;
+  for(const int CN : fuelCells)
+    {
+      MonteCarlo::Qhull* OPtr=System.findQhull(CN);
+      if (OPtr)
+	{
+	  const int matN=OPtr->getMat();
+	  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
+	  if (cellMat.hasZaid(zaid,0,0) && 
+	      OPtr->calcVertex())
+	    {
+	      const Geometry::Vec3D& CPt(OPtr->getCofM());
+	      if (OPtr->isValid(CPt))
+		FissionVec.push_back(CPt);
+	    }
+	}
+    }
+  return FissionVec;
+}
+  
+
 void 
 sourceSelection(Simulation& System,
 		const mainSystem::inputParam& IParam)
@@ -126,10 +178,18 @@ sourceSelection(Simulation& System,
   const std::string sdefType=IParam.getValue<std::string>("sdefType");
   std::string sName;
   
-  if (sdefType.empty() && IParam.hasKey("kcode") &&
-      IParam.flag("kcode"))
-    sName="kcode";
-
+  if (sdefType=="kcode")
+    {
+      std::string tmp;
+      std::string kCodeVec=IParam.getFull("sdefType",0);
+      const size_t ZAID=IParam.getDefValue<size_t>(0,"ksrcMat",0,0);
+      if (ZAID && StrFunc::section(kCodeVec,tmp))
+	{
+	  const std::vector<Geometry::Vec3D> fuelVector=
+	    getCellsContainingZaid(System,FC,"fuel",ZAID);
+	  sName=SDef::createKCodeSource(kCodeVec,fuelVector);
+	}
+    }
   else if (sdefType=="TS1")                            // parabolic source
     sName=SDef::createTS1Source(inputMap,FC,linkIndex);
 

@@ -389,7 +389,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   const double phtModel=IParam.getValue<double>("photonModel");
 
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
-
+  ELog::EM<<"ECL == "<<elcAdd<<ELog::endDiag;
   PC.setMode("n p "+PList+elcAdd);
   PC.setPrintNum("10 110");
   

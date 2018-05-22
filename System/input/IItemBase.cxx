@@ -501,6 +501,7 @@ IItem::writeSet(std::ostream& OX,const size_t setIndex) const
   /*!
     Complex functiion to convert the system into a string
     \param OX :: Output stream
+    \param setIndex :: Set index number
   */
 {
   ELog::RegMethod RegA("IItem","writeSet");

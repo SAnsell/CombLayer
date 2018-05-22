@@ -358,6 +358,7 @@ createDelftInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
   IParam.regDefItem<std::string>("buildType","buildType",1,"Full");
+
   IParam.regMulti("kcode","kcode",1000);
   IParam.regMulti("ksrcMat","ksrcMat",1000);
   IParam.regMulti("ksrcVec","ksrcVec",1000);
@@ -375,6 +376,11 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
   IParam.setDesc("fuelXML","Read the Fuel config from an XMLfile");
 
+  IParam.setValue("sdefType",std::string("kcode"));
+  IParam.setValue("sdefType",std::string("kcode"),1);
+  IParam.setValue("sdefType",std::string("kcode"),2);
+  IParam.setValue("sdefType",std::string("kcode"),3);
+  
   return;
 }
 

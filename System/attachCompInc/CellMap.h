@@ -112,8 +112,9 @@ class CellMap  : public BaseMap
 		       const FixedComp&,const long int) const;
 
   void makeCell(const std::string&,
-		    Simulation&,const int,const int,const double,
-		    const std::string&);
+		Simulation&,const int,const int,const double,
+		const std::string&);
+  
   void deleteCell(Simulation&,const std::string&,const size_t =0);
 
   std::pair<int,double>

@@ -90,6 +90,7 @@ findInput(const MITYPE& inputMap,const std::string& keyName,
     \param keyName :: keyname
     \param index :: Index offset in found vector
     \param OutValue :: Default value if not found /result space
+    \return true if object exists in correct form
   */
 {
   MITYPE::const_iterator mc;

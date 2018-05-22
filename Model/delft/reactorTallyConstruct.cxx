@@ -66,6 +66,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
