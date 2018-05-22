@@ -86,8 +86,7 @@ namespace essSystem
 makeLinac::makeLinac() :
   LinacTunnel(new Linac("Linac")),
   KG(new KlystronGallery("KG")),
-  berm(new Berm("Berm")),
-  stub(new Stub("Stub",1))
+  berm(new Berm("Berm"))
  /*!
     Constructor
  */
@@ -98,7 +97,6 @@ makeLinac::makeLinac() :
   OR.addObject(LinacTunnel);
   OR.addObject(KG);
   OR.addObject(berm);
-  OR.addObject(stub);
 }
 
 
@@ -121,6 +119,8 @@ makeLinac::build(Simulation& System,
   ELog::RegMethod RegA("makeLinac","build");
 
   int voidCell(74123);
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
@@ -132,14 +132,18 @@ makeLinac::build(Simulation& System,
 
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
 
-  stub->setFront(*KG,-7);
-  stub->setBack(*LinacTunnel,-14);
-  stub->createAll(System,*LinacTunnel,0);
-
-  attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
-  attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,stub->getCC("Leg1"));
-  attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
-
+  const size_t Nstubs(2);
+  for (size_t i=0; i<Nstubs; i++)
+    {
+      std::shared_ptr<Stub> stub(new Stub("Stub", i+1));
+      OR.addObject(stub);
+      stub->setFront(*KG,-7);
+      stub->setBack(*LinacTunnel,-14);
+      stub->createAll(System,*LinacTunnel,0);
+      attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
+      attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,stub->getCC("Leg1"));
+      attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
+    }
   return;
 }
 

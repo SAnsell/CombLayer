@@ -321,9 +321,15 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub1Length2", 610.0);
   Control.addVariable("Stub1Width",   240.0);
   Control.addVariable("Stub1Height",  210.0);
-  Control.addVariable("Stub1WallThick", 20);
+  Control.addVariable("Stub1WallThick", 20); // ???
   Control.addVariable("Stub1MainMat", "Air");
-  Control.addVariable("Stub1WallMat", "SkanskaConcrete");
+  Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // ???
+
+  const double Stub1YStep(1500.0); // arbitrary value
+  Control.addVariable("Stub1YStep", Stub1YStep);
+
+  Control.copyVarSet("Stub1", "Stub2");
+  Control.addVariable("Stub2YStep", 1916.5+Stub1YStep); // measured
 
   return;
 }
