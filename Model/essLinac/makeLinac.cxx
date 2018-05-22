@@ -132,11 +132,13 @@ makeLinac::build(Simulation& System,
   
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
 
-  stub->setFront(*KG,3);
+  stub->setFront(*KG,-7);
   stub->setBack(*LinacTunnel,-14);
   stub->createAll(System,*LinacTunnel,0);
+
   attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,stub->getCC("Leg1"));
+  attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
 
   return;
 }
