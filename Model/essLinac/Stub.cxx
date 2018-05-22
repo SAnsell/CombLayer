@@ -86,11 +86,11 @@
 namespace essSystem
 {
 
-Stub::Stub(const std::string& Key)  :
+Stub::Stub(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup(),
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffset(Key+std::to_string(Index),12),
   attachSystem::FrontBackCut(),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.

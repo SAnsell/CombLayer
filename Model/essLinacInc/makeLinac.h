@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essLinacInc/makeLinac.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_makeLinac_h
@@ -37,23 +37,23 @@ namespace essSystem
     \date February 2017
     \brief Builds ESS Linac
   */
-  
+
 class makeLinac
 {
  private:
-  
+
   std::shared_ptr<Linac> LinacTunnel;   ///< Linac tunnel
   std::shared_ptr<KlystronGallery> KG;  ///< Klystron gallery
   std::shared_ptr<Berm> berm;           ///< Berm
   std::shared_ptr<Stub> stub;           ///< Stub
 
  public:
-  
+
   makeLinac();
   makeLinac(const makeLinac&);
   makeLinac& operator=(const makeLinac&);
   ~makeLinac();
-  
+
   void build(Simulation&,const mainSystem::inputParam&);
 
 };

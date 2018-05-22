@@ -319,14 +319,14 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
-  Control.addVariable("StubEngineeringActive", 0);
-  Control.addParse<double>("StubLength1", "340.0+LinacWidthLeft+LinacWallThick");
-  Control.addVariable("StubLength2", 610.0);
-  Control.addVariable("StubWidth",   240.0);
-  Control.addVariable("StubHeight",  210.0);
-  Control.addVariable("StubWallThick", 20);
-  Control.addVariable("StubMainMat", "Air");
-  Control.addVariable("StubWallMat", "SkanskaConcrete");
+  Control.addVariable("Stub1EngineeringActive", 0);
+  Control.addParse<double>("Stub1Length1", "340.0+LinacWidthLeft+LinacWallThick");
+  Control.addVariable("Stub1Length2", 610.0);
+  Control.addVariable("Stub1Width",   240.0);
+  Control.addVariable("Stub1Height",  210.0);
+  Control.addVariable("Stub1WallThick", 20);
+  Control.addVariable("Stub1MainMat", "Air");
+  Control.addVariable("Stub1WallMat", "SkanskaConcrete");
 
   return;
 }

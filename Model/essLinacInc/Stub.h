@@ -65,7 +65,7 @@ class Stub : public attachSystem::ContainedGroup,
   
  public:
 
-  Stub(const std::string&);
+  Stub(const std::string&,const size_t);
   Stub(const Stub&);
   Stub& operator=(const Stub&);
   virtual Stub* clone() const;

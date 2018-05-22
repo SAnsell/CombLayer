@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/makeLinac.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -87,7 +87,7 @@ makeLinac::makeLinac() :
   LinacTunnel(new Linac("Linac")),
   KG(new KlystronGallery("KG")),
   berm(new Berm("Berm")),
-  stub(new Stub("Stub"))
+  stub(new Stub("Stub",1))
  /*!
     Constructor
  */
@@ -108,7 +108,7 @@ makeLinac::~makeLinac()
   */
 {}
 
-void 
+void
 makeLinac::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
@@ -129,7 +129,7 @@ makeLinac::build(Simulation& System,
 
   berm->addInsertCell(voidCell);
   berm->createAll(System,*LinacTunnel,0,*KG,3,5);
-  
+
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
 
   stub->setFront(*KG,-7);
