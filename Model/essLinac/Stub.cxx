@@ -217,15 +217,15 @@ Stub::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+14,
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+104,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+4),
 				  -height);
     
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+15,
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+105,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
 				  length[1]-height);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+16,
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+106,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
 				  length[1]);
 
@@ -241,9 +241,6 @@ Stub::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Stub","createObjects");
 
-  ELog::EM << " back: " << backRule() << ELog::endDiag;
-  ELog::EM << "front: " << frontRule() << ELog::endDiag;
-  
   std::string Out;
   attachSystem::ContainedGroup::addCC("Full");
 
@@ -254,13 +251,13 @@ Stub::createObjects(Simulation& System)
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg2");
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 14 -4 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 -4 6 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
   addOuterUnionSurf("Leg2",Out);
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg3");
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 15 -16 ")+frontRule();
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 105 -106 ")+frontRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
   addOuterUnionSurf("Leg3",Out);
   addOuterUnionSurf("Full",Out);
