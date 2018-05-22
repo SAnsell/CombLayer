@@ -113,7 +113,7 @@ flukaSourceSelection(Simulation& System,
 
   // NOTE: No return to allow active SSW systems
   const size_t NSDef(IParam.setCnt("sdefType"));
-  ELog::EM<<"NSDEF == "<<NSDef<<ELog::endDiag;
+
   std::string sName;
   std::string eName;
   for(size_t sdefIndex=0;sdefIndex<NSDef;sdefIndex++)

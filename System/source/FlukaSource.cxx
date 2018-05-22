@@ -294,6 +294,13 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
   cx<<"SOURCE ";
   for(size_t i=0;i<6;i++)
     cx<<" "<<sValues[i];
+  cx<<" "<<sourceName;
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  cx.str("");
+  cx<<"SOURCE ";  
+  cx<<X<<" "<<Y;
+  cx<<" &";
   StrFunc::writeFLUKA(cx.str(),OX);
   
   return;

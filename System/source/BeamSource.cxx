@@ -305,18 +305,17 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
 
-  // Y Axis is Z in fluka, X is X
+  //Y Axis is Z in fluka, X is X
   cx<<"BEAMAXES "<<X<<" "<<Y;
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
+
+  // Note the cos directs fro the beamPos are for particle
+  // leaving the beam NOT the orientation of the disk
   cx<<"BEAMPOS "<<Origin;
   StrFunc::writeFLUKA(cx.str(),OX);
-  cx.str("");  
-  
+
   return;
 }
-
-
-
-
+  
 } // NAMESPACE SDef
