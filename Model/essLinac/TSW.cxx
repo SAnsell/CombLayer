@@ -3,7 +3,7 @@
 
  * File:   essBuild/TSW.cxx
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -278,13 +278,10 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,X);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+X*(width),X);
 
-  const double linacWidth = FC.getLinkDistance(wall1, wall2);
-  const double L = (Index%2) ? linacWidth-length : length;
-
   const int w1 = FC.getLinkSurf(wall1);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+4,
 				  SMap.realPtr<Geometry::Plane>(w1),
-				  L);
+				  length);
   return;
 }
 
@@ -303,40 +300,27 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createObjects");
 
-  const int wmat = (Index%2) ? airMat : wallMat;
-  const int amat = (Index%2) ? wallMat : airMat;
+  const std::string tb(FC.getLinkString(floor) + FC.getLinkString(roof));
+  const std::string side(ModelSupport::getComposite(SMap,surfIndex," 1 -2 "));
+  const std::string common(side+tb);
 
-  const std::string tb =
-    FC.getLinkString(floor) +
-    FC.getLinkString(roof);
-
-  const double linacWidth(FC.getLinkDistance(wall1, wall2));
-  const double doorWidth(linacWidth-length);
-
-  std::string Out(ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ")+tb);
-  std::string Out1;
-  if ((wmat == wallMat) || (doorWidth>0))
-    {
-      Out1 = FC.getLinkString(wall1) + Out;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out1));
-      if (wmat==wallMat)
-	setCell("wall", cellIndex-1);
-    }
-
-  if ((amat==wallMat) || (doorWidth>0))
-    {
-      Out1=FC.getLinkString(wall2) + Out;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out1));
-      if (amat==wallMat)
-	setCell("wall", cellIndex-1);
-    }
+  std::string Out = common+FC.getLinkString(wall1) +
+    ModelSupport::getComposite(SMap,surfIndex," -4 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  setCell("wall", cellIndex-1);
 
   layerProcess(System, "wall", 3, 7, nLayers, wallMat);
 
-  Out=FC.getLinkString(wall1) +
-    FC.getLinkString(wall2) +
-    ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
+  const double linacWidth(FC.getLinkDistance(wall1, wall2));
 
+  if (linacWidth-length>Geometry::zeroTol)
+    {
+      Out = common+FC.getLinkString(wall2) +
+	ModelSupport::getComposite(SMap,surfIndex," 4 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+    }
+
+  Out=common+FC.getLinkString(wall1) + FC.getLinkString(wall2);
   addOuterSurf(Out);
 
   return;

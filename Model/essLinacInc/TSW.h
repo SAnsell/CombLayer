@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/TSW.h
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ namespace essSystem
 
 /*!
   \class TSW
-  \version 1.0
+  \version 1.1
   \author Konstantin Batkov
   \date 31 Aug 2017
   \brief Temporary shielding wall
