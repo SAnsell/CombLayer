@@ -65,7 +65,7 @@ MaxIVVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("setVariable","maxivVariables");
-  
+
 // -----------
 // GLOBAL stuff
 // -----------
@@ -109,7 +109,9 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       decltype(VarInit.equal_range("")) rangePair
 	= VarInit.equal_range(beam);
       for(mc=rangePair.first;mc!=rangePair.second;mc++)
-	mc->second(Control);
+	{
+	  mc->second(Control);
+	}
     }  
   return;
 }  

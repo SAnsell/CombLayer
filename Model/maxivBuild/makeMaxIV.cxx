@@ -86,7 +86,14 @@ makeMaxIV::makeMaxIV()
  /*!
     Constructor
  */
-{}
+{
+  // Require registration of THIS world
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  std::shared_ptr<attachSystem::FixedComp> worldPtr=
+    std::make_shared<attachSystem::FixedComp>(World::masterOrigin());
+  OR.addObject(worldPtr);
+}
 
 
 makeMaxIV::~makeMaxIV()
@@ -95,8 +102,6 @@ makeMaxIV::~makeMaxIV()
   */
 {}
 
-
-  
 void
 makeMaxIV::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)

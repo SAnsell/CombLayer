@@ -118,7 +118,7 @@ main(int argc,char* argv[])
       // The big variable setting
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       const std::set<std::string> beamlines=
-        IParam.getComponents<std::string>("beamlines",1);
+        IParam.getComponents<std::string>("beamlines",0);
       setVariable::MaxIVVariables(SimPtr->getDataBase(),beamlines);
 
       InputModifications(SimPtr,IParam,Names);

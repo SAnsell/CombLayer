@@ -76,7 +76,6 @@ masterOrigin()
   */
 {
   static attachSystem::FixedComp MO("World",0);
-  
   return MO;
 }
 
@@ -88,8 +87,7 @@ masterZMinusOrigin()
     \return Fixed Unit
   */
 {
-  static attachSystem::FixedComp MO("World",0);
-  
+  static attachSystem::FixedComp MO("World",0);  
   return MO;
 }
 
