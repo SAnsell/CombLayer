@@ -97,6 +97,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacCopperMat","Silver%Copper%0.015"); // Copper + 0.015% weight Ag since Ag is a gamma source (YJL said)
   Control.addVariable("LinacCopperMat","Copper");
   Control.addVariable("LinacGraphiteMat","Graphite");
+  Control.addVariable("LinacSoilMat", "ClayTillLera");
 
 
   // Temporary shielding walls

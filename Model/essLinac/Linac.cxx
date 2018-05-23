@@ -129,6 +129,7 @@ Linac::Linac(const Linac& A) :
   floorWidthRight(A.floorWidthRight),
   nAirLayers(A.nAirLayers),
   airMat(A.airMat),wallMat(A.wallMat),
+  soilMat(A.soilMat),
   nTSW(A.nTSW),
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
@@ -168,6 +169,7 @@ Linac::operator=(const Linac& A)
       nAirLayers=A.nAirLayers;
       airMat=A.airMat;
       wallMat=A.wallMat;
+      soilMat=A.soilMat;
       nTSW=A.nTSW;
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
@@ -210,6 +212,7 @@ Linac::populate(const FuncDataBase& Control)
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
   nTSW=Control.EvalVar<size_t>(keyName+"NTSW");
   nDTL=Control.EvalDefVar<size_t>(keyName+"NDTLTanks", 5);
 
@@ -419,9 +422,9 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -13 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,soilMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 -24 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,soilMat,0.0,Out));
 
   layerProcess(System, "air", 11, 12, nAirLayers, airMat);
 
@@ -471,7 +474,7 @@ Linac::createLinks()
 
   FixedComp::setConnect(13,Origin+X*(widthLeft),-X);
   FixedComp::setLinkSurf(13,-SMap.realSurf(surfIndex+4));
-  
+
   FixedComp::setConnect(14,Origin-Z*(depth),Z);
   FixedComp::setLinkSurf(14,SMap.realSurf(surfIndex+5));
 

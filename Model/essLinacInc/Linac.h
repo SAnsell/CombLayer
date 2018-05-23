@@ -67,6 +67,7 @@ class Linac : public attachSystem::ContainedComp,
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
+  int soilMat; ///< Soil material
 
   size_t nTSW;                   ///< Number of TSWs
 
