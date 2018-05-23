@@ -320,17 +320,17 @@ EssLinacVariables(FuncDataBase& Control)
   // Lengths are defined as in Sullivan, page 68
   Control.addParse<double>("Stub1Length1", "340.0+LinacWidthLeft+LinacWallThick");
   Control.addVariable("Stub1Length2", 610.0);
-  Control.addVariable("Stub1Width",   240.0);
+  Control.addVariable("Stub1Width",   240.0); // Mars: 180, Pontus: 240
   Control.addVariable("Stub1Height",  210.0);
   Control.addVariable("Stub1WallThick", 20); // ???
   Control.addVariable("Stub1MainMat", "Air");
   Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // ???
 
-  const double Stub1YStep(1500.0); // arbitrary value
+  const double Stub1YStep(1875.0); // MARS
   Control.addVariable("Stub1YStep", Stub1YStep);
 
   Control.copyVarSet("Stub1", "Stub2");
-  Control.addVariable("Stub2YStep", 1916.5+Stub1YStep); // measured
+  Control.addVariable("Stub2YStep", 1916.5+Stub1YStep); // measured + MARS
 
   // Stub walls in the Klystron Gallery
   Control.addVariable("StubWall1Length",  260.0); // measured
