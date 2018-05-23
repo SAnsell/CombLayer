@@ -306,12 +306,6 @@ StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   // layerProcess(System, "wall", 3, 7, nLayers, wallMat);
 
-  Out = ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 6");
-  Out += FC.getLinkString(roof);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4")+
-    FC.getLinkString(floor)+FC.getLinkString(roof);
   addOuterSurf(Out);
 
   return;
