@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/makeBalder.cxx
+ * File: balder/BALDER.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -93,23 +93,25 @@
 #include "FrontEnd.h"
 #include "OpticsBeamline.h"
 #include "ConnectZone.h"
-#include "makeBalder.h"
+#include "BALDER.h"
 
 namespace xraySystem
 {
 
-makeBalder::makeBalder() :
-  frontCave(new FrontEndCave("BalderFrontEnd")),
-  frontBeam(new FrontEnd("BalderFrontBeam")),
-  joinPipe(new constructSystem::VacuumPipe("BalderJoinPipe")),
-  opticsHut(new OpticsHutch("BalderOptics")),
-  opticsBeam(new OpticsBeamline("Balder")),
-  joinPipeB(new constructSystem::LeadPipe("BalderJoinPipeB")),
-  connectZone(new ConnectZone("BalderConnect")),
-  joinPipeC(new constructSystem::LeadPipe("BalderJoinPipeC")),
-  exptHut(new ExperimentalHutch("BalderExpt"))
+BALDER::BALDER(const std::string& KN) :
+  attachSystem::CopiedComp("Balder",KN),
+  frontCave(new FrontEndCave(newName+"FrontEnd")),
+  frontBeam(new FrontEnd(newName+"FrontBeam")),
+  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
+  opticsHut(new OpticsHutch(newName+"Optics")),
+  opticsBeam(new OpticsBeamline(newName+"")),
+  joinPipeB(new constructSystem::LeadPipe(newName+"JoinPipeB")),
+  connectZone(new ConnectZone(newName+"Connect")),
+  joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
+  exptHut(new ExperimentalHutch(newName+"Expt"))
   /*!
     Constructor
+    \param KN :: Keyname
   */
 {
   ModelSupport::objectRegister& OR=
@@ -125,28 +127,30 @@ makeBalder::makeBalder() :
   OR.addObject(exptHut);
 }
 
-makeBalder::~makeBalder()
+BALDER::~BALDER()
   /*!
     Destructor
    */
 {}
 
 void 
-makeBalder::build(Simulation& System,
-		  const mainSystem::inputParam& IParam)
+BALDER::build(Simulation& System,
+		  const attachSystem::FixedComp& FCOrigin,
+		  const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param IParam :: Input parameters
+    \param FCOrigin :: Start origin
+    \param sideIndex :: link point for origin
    */
 {
   // For output stream
-  ELog::RegMethod RControl("makeBalder","build");
+  ELog::RegMethod RControl("BALDER","build");
 
   int voidCell(74123);
  
   frontCave->addInsertCell(voidCell);
-  frontCave->createAll(System,World::masterOrigin(),0);
+  frontCave->createAll(System,FCOrigin,sideIndex);
   const HeadRule caveVoid=frontCave->getCellHR(System,"Void");
   
   frontBeam->addInsertCell(frontCave->getCell("Void"));

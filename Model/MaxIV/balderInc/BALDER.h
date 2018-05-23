@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/makeBalder.h
+ * File:   balderInc/BALDER.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_makeBalder_h
-#define xraySystem_makeBalder_h
+#ifndef xraySystem_BALDER_h
+#define xraySystem_BALDER_h
 
 namespace constructSystem
 {
@@ -57,14 +57,14 @@ namespace xraySystem
   class FrontEnd;
   
   /*!
-    \class makeBalder
+    \class BALDER
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class makeBalder
+class BALDER : public attachSystem::CopiedComp
 {
  private:
 
@@ -100,12 +100,13 @@ class makeBalder
   
  public:
   
-  makeBalder();
-  makeBalder(const makeBalder&);
-  makeBalder& operator=(const makeBalder&);
-  ~makeBalder();
+  BALDER(const std::string&);
+  BALDER(const BALDER&);
+  BALDER& operator=(const BALDER&);
+  ~BALDER();
   
-  void build(Simulation&,const mainSystem::inputParam&);
+  void build(Simulation&,const attachSystem::FixedComp&,
+	     const long int);
 
 };
 

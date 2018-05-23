@@ -748,7 +748,7 @@ makeESS::makeBeamLine(Simulation& System,
 
   for(size_t j=0;j<NSet;j++)
     {
-      const size_t NItems=IParam.itemCnt("beamlines",0);
+      const size_t NItems=IParam.itemCnt("beamlines",j);
       size_t index=1;
       while(index<NItems)  // min of two items
 	{

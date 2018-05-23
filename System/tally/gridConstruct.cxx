@@ -261,8 +261,8 @@ gridConstruct::applyMultiGrid(SimMCNP& System,
       tallySystem::setF5Position(System,tNum,TPos);
       tallySystem::setTallyTime(System,tNum,"1.0 8log 1e8");
 	  
-      ELog::FM<<"GRID TALLY POSITION "<<NI<<" : "
-	      <<MR.calcRotate(TPos)<<ELog::endDiag;
+      // ELog::EM<<"GRID TALLY POSITION "<<NI<<" : "
+      // 	      <<MR.calcRotate(TPos)<<ELog::endDiag;
 	  
       ELog::EM<<"F"<<tNum<<" ["<<NI+initNPD<<"] Pos == "
 	      <<MR.calcRotate(TPos)<<ELog::endDiag;

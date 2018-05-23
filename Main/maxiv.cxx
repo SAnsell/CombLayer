@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/balder.cxx
+ * File:   Main/maxiv.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -80,8 +80,8 @@
 #include "ImportControl.h"
 #include "World.h"
 
-
-#include "makeBalder.h"
+#include "DefUnitsMaxIV.h"
+#include "makeMaxIV.h"
 
 MTRand RNG(12345UL);
 
@@ -89,7 +89,6 @@ MTRand RNG(12345UL);
 namespace ELog 
 {
   ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
@@ -118,11 +117,14 @@ main(int argc,char* argv[])
 
       // The big variable setting
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-      setVariable::balderVariables(SimPtr->getDataBase());
+      const std::set<std::string> beamlines=
+        IParam.getComponents<std::string>("beamlines",1);
+      setVariable::MaxIVVariables(SimPtr->getDataBase(),beamlines);
+
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
       
-      xraySystem::makeBalder BObj;
+      xraySystem::makeMaxIV BObj;
       World::createOuterObjects(*SimPtr);
       BObj.build(*SimPtr,IParam);
 

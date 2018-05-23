@@ -8,18 +8,18 @@ use strict;
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","essBeamline","bilbau",
-		"filter","singleItem","balder","testMain"); 
+		"filter","singleItem","maxiv","testMain"); 
 
 
 
 ## Model Directory
-my @modelLibDir=qw( bibBuild bnctBuild build chip 
-                    cuBlock d4cModel delft epbBuild essBuild
-                    gammaBuild imat lensModel moderator 
-                    muon pipeBuild photon sinbadBuild snsBuild t1Build 
-                    t1Engineer t1Upgrade t3Model zoom );
+##my @modelLibDir=qw( bibBuild bnctBuild build chip 
+##                    cuBlock d4cModel delft epbBuild essBuild
+##                    gammaBuild imat lensModel moderator 
+##                    muon pipeBuild photon sinbadBuild snsBuild t1Build 
+##                    t1Engineer t1Upgrade t3Model zoom );
 
-my @modelNames= @modelLibDir;
+##my @modelNames= @modelLibDir;
 
 
 ## GENERAL Directory 
@@ -63,10 +63,12 @@ $gM->addIncDir("",\@incdir);
 $gM->findSubIncDir("System");
 $gM->findSubIncDir("Model");
 $gM->findSubIncDir("Model/ESSBeam");
+$gM->findSubIncDir("Model/MaxIV");
 
 $gM->findSubSrcDir("Model");
 $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
+$gM->findSubSrcDir("Model/MaxIV");
 $gM->findSubSrcDir("","Aunit");
 
 $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
@@ -82,7 +84,8 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "commonVar","simpleItem","physics","simMC",
 			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			     "insertUnit","flukaProcess","flukaPhysics","flukaTally","tally",
+			     "insertUnit","flukaProcess","flukaPhysics",
+			     "flukaTally","tally",
 			     "source","instrument","work"
     	 	             ]);
 
@@ -102,7 +105,7 @@ $gM->addDepUnit("essBeamline",
 			     "funcBase","log","construct","md5",
 			     "process","world","monte","geometry",
                              "mersenne","src","xml","poly","weights",
-			      "global","attachComp","visit","essConstruct",
+			     "global","attachComp","visit","essConstruct",
                              "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
 			     "nmx","nnbar","odin","skadi","testBeam",
@@ -111,18 +114,31 @@ $gM->addDepUnit("essBeamline",
 			     "commonVar","simpleItem","physics","simMC",
 			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			     "insertUnit","flukaProcess","flukaPhysics","flukaTally","tally","source",
+			     "insertUnit","flukaProcess","flukaPhysics",
+			      "flukaTally","tally","source",
 			      "instrument","work"
     	 	             ]);
-$gM->addDepUnit("balder", ["balder","visit","src","simMC",
+$gM->addDepUnit("maxiv", ["maxivBuild","visit","src","simMC",
+			  "construct","physics","input","process",
+			  "transport","scatMat","endf","crystal",
+			  "source","monte","funcBase","log","monte",
+			  "flukaProcess","flukaPhysics","flukaTally","tally",
+			  "geometry","mersenne","src","world","work",
+			  "xml","poly","support","weights",
+			  "balder","cosax","commonBeam",
+			  "insertUnit","md5",
+			  "global","constructVar","physics","simMC",
+			  "scatMat","endf","crystal","transport",
+			  "attachComp","visit","poly"]);
+
+$gM->addDepUnit("coSax", ["coSax","visit","src","simMC",
 			   "construct","physics","input","process",
 			   "transport","scatMat","endf","crystal",
 			   "source","monte","funcBase","log","monte",
 			   "flukaProcess","flukaPhysics","flukaTally","tally",
-                            "geometry","mersenne",
-			   "src","world","work","xml","poly",
-			   "support","weights","insertUnit","md5",
-			   "global","constructVar","physics","simMC",
+                           "geometry","mersenne","src","world","work",
+			   "xml","poly","support","weights","insertUnit",
+	   		   "md5","global","constructVar","physics","simMC",
 			   "scatMat","endf","crystal","transport",
 			   "attachComp","visit","poly"]);
 

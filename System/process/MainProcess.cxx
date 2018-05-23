@@ -105,10 +105,6 @@ activateLogging(ELog::RegMethod& RControl)
   ELog::EM.setAction(ELog::error);       // Exit on Error
   ELog::EM.setColour();
 
-  ELog::FM.setNBasePtr(RControl.getBasePtr());
-  ELog::FM.setActive(255);
-  ELog::FM.setTypeFlag(0);
-
   ELog::RN.setNBasePtr(0);
   ELog::RN.setActive(255);
   ELog::RN.setTypeFlag(0);
