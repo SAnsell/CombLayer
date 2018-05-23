@@ -332,6 +332,16 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("Stub1", "Stub2");
   Control.addVariable("Stub2YStep", 1916.5+Stub1YStep); // measured
 
+  // Stub walls in the Klystron Gallery
+  Control.addVariable("StubWall1Length",  260.0); // measured
+  Control.addVariable("StubWall1Width",   50.0); // measured
+  Control.addVariable("StubWall1Height",  300.0); // measured
+  Control.addVariable("StubWall1Mat",   "SkanskaConcrete"); // ???
+  Control.addVariable("StubWall1AirMat",   "Air");
+  Control.addVariable("StubWall1YStep",   350.0); // ???
+
+  Control.copyVarSet("StubWall1", "StubWall2");
+
   return;
 }
 

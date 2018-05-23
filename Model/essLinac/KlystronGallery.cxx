@@ -87,7 +87,7 @@ namespace essSystem
 
 KlystronGallery::KlystronGallery(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedOffset(Key,9),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -296,6 +296,12 @@ KlystronGallery::createLinks()
 
   FixedComp::setConnect(6,Origin-X*(widthLeft),X);
   FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+3));
+
+  FixedComp::setConnect(7,Origin-Z*(depth),Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(8,Origin-X*(widthLeft)+Z*(height),-Z);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
 
   return;
 }
