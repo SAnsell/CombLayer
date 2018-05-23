@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/COSAX.cxx
+ * File: cosax/cosaxOpticsLine.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -64,6 +64,7 @@
 #include "ContainedComp.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
+#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -72,106 +73,142 @@
 #include "World.h"
 #include "AttachSupport.h"
 
+#include "insertObject.h"
+#include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "LeadPipe.h"
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PortTube.h"
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
+#include "MonoVessel.h"
+#include "MonoCrystals.h"
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
-#include "FrontEndCave.h"
-#include "FrontEnd.h"
+#include "Mirror.h"
 #include "cosaxOpticsLine.h"
-#include "ConnectZone.h"
-#include "COSAX.h"
 
 namespace xraySystem
 {
 
-COSAX::COSAX(const std::string& KN) :
-  attachSystem::CopiedComp("Balder",KN),
-  frontCave(new FrontEndCave(newName+"FrontEnd")),
-  frontBeam(new FrontEnd(newName+"FrontBeam")),
-  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new cosaxOpticsLine(newName+"OpticsLine"))
-  /*!
+// Note currently uncopied:
+  
+cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
+  attachSystem::CopiedComp(Key,Key),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(newName,2),
+  
+  pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
+  triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe"))
+
+    /*!
     Constructor
-    \param KN :: Keyname
+    \param Key :: Name of construction key
+    \param Index :: Index number
   */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
-  OR.addObject(frontCave);
-  OR.addObject(frontBeam);
-  OR.addObject(joinPipe);
-  
-  OR.addObject(opticsHut);
-  OR.addObject(opticsBeam);
-  
+  OR.addObject(pipeInit);
+  OR.addObject(triggerPipe);
 }
-
-COSAX::~COSAX()
+  
+cosaxOpticsLine::~cosaxOpticsLine()
   /*!
     Destructor
    */
 {}
 
+void
+cosaxOpticsLine::populate(const FuncDataBase& Control)
+  /*!
+    Populate the intial values [movement]
+   */
+{
+  FixedOffset::populate(Control);
+  return;
+}
+
+void
+cosaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
+  /*!
+    Create the unit vectors
+    Note that the FC:in and FC:out are tied to Main
+    -- rotate position Main and then Out/In are moved relative
+
+    \param FC :: Fixed component to link to
+    \param sideIndex :: Link point and direction [0 for origin]
+  */
+{
+  ELog::RegMethod RegA("cosaxOpticsLine","createUnitVector");
+
+  FixedOffset::createUnitVector(FC,sideIndex);
+  applyOffset();
+
+  return;
+}
+
+
+void
+cosaxOpticsLine::buildObjects(Simulation& System)
+  /*!
+    Build all the objects relative to the main FC
+    point.
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("cosaxOpticsLine","buildObjects");
+  
+  pipeInit->addInsertCell(ContainedComp::getInsertCells());
+  pipeInit->registerSpaceCut(1,2);
+  pipeInit->createAll(System,*this,0);
+
+  triggerPipe->addInsertCell(ContainedComp::getInsertCells());
+  triggerPipe->registerSpaceCut(1,2);
+  triggerPipe->createAll(System,*pipeInit,2);
+  
+  lastComp=triggerPipe;  
+
+  return;
+}
+
+void
+cosaxOpticsLine::createLinks()
+  /*!
+    Create a front/back link
+   */
+{
+  setLinkSignedCopy(0,*pipeInit,1);
+  setLinkSignedCopy(1,*lastComp,2);
+  return;
+}
+  
+  
 void 
-COSAX::build(Simulation& System,
-		  const attachSystem::FixedComp& FCOrigin,
-		  const long int sideIndex)
+cosaxOpticsLine::createAll(Simulation& System,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param FCOrigin :: Start origin
-    \param sideIndex :: link point for origin
+    \param FC :: Fixed component
+    \param sideIndex :: link point
    */
 {
   // For output stream
-  ELog::RegMethod RControl("COSAX","build");
+  ELog::RegMethod RControl("cosaxOpticsLine","build");
 
-  int voidCell(74123);
- 
-  frontCave->addInsertCell(voidCell);
-  frontCave->createAll(System,FCOrigin,sideIndex);
-  const HeadRule caveVoid=frontCave->getCellHR(System,"Void");
-  
-  frontBeam->addInsertCell(frontCave->getCell("Void"));
-  frontBeam->createAll(System,*frontCave,-1);
-
-  opticsHut->addInsertCell(voidCell);
-  opticsHut->createAll(System,*frontCave,2);
-
-  joinPipe->addInsertCell(frontCave->getCell("Void"));
-  joinPipe->addInsertCell(frontCave->getCell("FrontWallHole"));
-  joinPipe->addInsertCell(opticsHut->getCell("Void"));
-  
-  joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
-  joinPipe->setFront(*frontBeam,2);
-  joinPipe->setSpaceLinkCopy(0,*opticsHut,1);
-  joinPipe->registerSpaceCut(0,2);
-  joinPipe->createAll(System,*frontBeam,2);
-
-  joinPipe->clear();
-  joinPipe->setPrimaryCell(caveVoid);
-  joinPipe->registerSpaceCut(1,0);
-  joinPipe->insertObjects(System);
-
-  System.removeCell(frontCave->getCell("Void"));
-
-  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
-  opticsBeam->createAll(System,*joinPipe,2);
-
-
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  buildObjects(System);
+  createLinks();
   return;
 }
 

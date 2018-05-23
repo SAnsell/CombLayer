@@ -126,7 +126,7 @@ $gM->addDepUnit("maxiv", ["maxivBuild","visit","src","simMC",
 			  "geometry","mersenne","src","world","work",
 			  "xml","poly","support","weights",
 			  "balder","cosax","commonBeam",
-			  "insertUnit","md5",
+			  "insertUnit","md5","construct",
 			  "global","constructVar","physics","simMC",
 			  "scatMat","endf","crystal","transport",
 			  "attachComp","visit","poly"]);

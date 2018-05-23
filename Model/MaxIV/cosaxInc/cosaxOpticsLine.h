@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/COSAX.h
+ * File:   balderInc/cosaxOpticsLine.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_COSAX_h
-#define xraySystem_COSAX_h
+#ifndef xraySystem_cosaxOpticsLine_h
+#define xraySystem_cosaxOpticsLine_h
+
+namespace insertSystem
+{
+  class insertPlate;
+}
 
 namespace constructSystem
 {
@@ -28,13 +33,11 @@ namespace constructSystem
   class CrossPipe;
   class VacuumPipe;
   class Bellows;
-  class LeadPipe;
   class VacuumBox;
   class portItem;
   class PortTube;
   class GateValve;
   class JawValve;
-    
 }
 
 
@@ -50,50 +53,49 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
-  class ExperimentalHutch;
-  class cosaxOpticsLine;
-  class FrontEndCave;
-  class ConnectZone;
-  class FrontEnd;
-  
-  
+  class MonoVessel;
+  class MonoCrystals;
+  class FlangeMount;
+  class Mirror;
+    
   /*!
-    \class COSAX
+    \class cosaxOpticsLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class COSAX : public attachSystem::CopiedComp
+class cosaxOpticsLine :
+  public attachSystem::CopiedComp,
+  public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset
 {
  private:
 
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
-  /// Front end cave volume
-  std::shared_ptr<FrontEndCave> frontCave;
+  /// Shared point to use for last component:
+  std::shared_ptr<attachSystem::FixedComp> lastComp;
 
-  /// the components in the front end
-  std::shared_ptr<FrontEnd> frontBeam;
+  /// Inital bellow
+  std::shared_ptr<constructSystem::Bellows> pipeInit;
+  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
+
+
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void buildObjects(Simulation&);
+  void createLinks();
   
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
-
-  /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
-  /// Optics beamlines 
-  std::shared_ptr<cosaxOpticsLine> opticsBeam;
-    
  public:
   
-  COSAX(const std::string&);
-  COSAX(const COSAX&);
-  COSAX& operator=(const COSAX&);
-  ~COSAX();
+  cosaxOpticsLine(const std::string&);
+  cosaxOpticsLine(const cosaxOpticsLine&);
+  cosaxOpticsLine& operator=(const cosaxOpticsLine&);
+  ~cosaxOpticsLine();
   
-  void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

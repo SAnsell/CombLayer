@@ -76,6 +76,7 @@
 #include "LinkSupport.h"
 
 #include "BALDER.h"
+#include "COSAX.h"
 
 #include "makeMaxIV.h"
 
@@ -142,7 +143,11 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	    {
 	      BALDER BL("Balder");
 	      BL.build(System,*FCOrigin,linkIndex);
-	      
+	    }
+	  else if (BL=="COSAX")
+	    {
+	      COSAX BL("Cosax");
+	      BL.build(System,*FCOrigin,linkIndex);
 	    }
 	}
     }

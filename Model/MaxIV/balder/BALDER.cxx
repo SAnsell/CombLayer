@@ -122,6 +122,7 @@ BALDER::BALDER(const std::string& KN) :
   OR.addObject(joinPipe);
   
   OR.addObject(opticsHut);
+  OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut);
@@ -178,9 +179,6 @@ BALDER::build(Simulation& System,
   
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
-
-  // special:
-  //  System.removeCell(opticsHut->getCell("Void"));  
   
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));

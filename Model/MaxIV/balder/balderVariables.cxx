@@ -65,6 +65,9 @@
 namespace setVariable
 {
 
+namespace balderVar
+{
+  
 void
 frontCaveVariables(FuncDataBase& Control,
 		   const double YStep)
@@ -75,7 +78,7 @@ frontCaveVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
-  
+
   Control.addVariable("BalderFrontEndWallYStep",YStep);
   Control.addVariable("BalderFrontEndFrontWallThick",160.0);
   
@@ -527,6 +530,8 @@ connectingVariables(FuncDataBase& Control)
 
   return;
 }
+
+}  // NAMESPACE balderVar
   
 void
 BALDERvariables(FuncDataBase& Control)
@@ -545,7 +550,6 @@ BALDERvariables(FuncDataBase& Control)
   setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
-
 
   
   Control.addVariable("BalderOpticsDepth",100.0);
@@ -570,21 +574,21 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsHoleZStep",5.0);
   Control.addVariable("BalderOpticsHoleRadius",7.0);
 
-  frontCaveVariables(Control,500.0);  // Set to middle
-  frontEndVariables(Control,"BalderFrontBeam");  
+  balderVar::frontCaveVariables(Control,500.0);  // Set to middle
+  balderVar::frontEndVariables(Control,"BalderFrontBeam");  
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
   PipeGen.setAFlangeCF<setVariable::CF120>(); 
   PipeGen.generatePipe(Control,"BalderJoinPipe",0,195.0);
   
-  opticsVariables(Control);
+  balderVar::opticsVariables(Control);
 
   LeadPipeGen.setCF<setVariable::CF40>();
   LeadPipeGen.setCladdingThick(0.5);
   LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,34.0);
 
-  connectingVariables(Control);
+  balderVar::connectingVariables(Control);
 
 
   LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",0,80.0);
