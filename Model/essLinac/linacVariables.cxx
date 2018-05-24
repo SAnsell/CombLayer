@@ -296,7 +296,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGHeight", 647/2.0);
   Control.addVariable("KGDepth", 647/2.0);
   Control.addVariable("KGWallThick", 20);
-  Control.addVariable("KGRoofThick", 27.6); // check
+  Control.addVariable("KGRoofThick", 27.6);
   Control.addVariable("KGFloorThick", 20);
   Control.addVariable("KGRoofAngle", 4.0); // calculated
   Control.addVariable("KGWallMat", "SkanskaConcrete");
@@ -311,22 +311,23 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
   Control.addVariable("BermHeight", 550);
   Control.addVariable("BermDepth",  500);
-  Control.addVariable("BermWidthLeft", 4000); // check
-  Control.addVariable("BermWidthRight", 3500); // check
+  Control.addVariable("BermWidthLeft", 4000);
+  Control.addVariable("BermWidthRight", 3500);
   Control.addVariable("BermMat", "ClayTillLera");
-  Control.addVariable("BermRoofAngle", 4.76);
+  Control.addVariable("BermRoofAngle", 4.76); // approx
 
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
-  Control.addParse<double>("Stub1Length1", "340.0+LinacWidthLeft+LinacWallThick");
-  Control.addVariable("Stub1Length2", 610.0); // check
+  Control.addVariable("Stub1WallThick", 30); // MARS
+  Control.addParse<double>("Stub1Length1",
+			   "340.0+LinacWidthRight+LinacWallThick-Stub1WallThick");
+  Control.addParse<double>("Stub1Length2", "610.0-2*Stub1WallThick");
   Control.addVariable("Stub1Width",   180.0);
   Control.addVariable("Stub1Height",  150.0);
-  Control.addVariable("Stub1WallThick", 20); // ???
   Control.addVariable("Stub1MainMat", "Air");
-  Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // ???
+  Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // check
 
-  const double Stub1YStep(1875.0); // MARS
+  const double Stub1YStep(1845.0); // MARS
   Control.addVariable("Stub1YStep", Stub1YStep);
 
   Control.copyVarSet("Stub1", "Stub2");
@@ -336,11 +337,12 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("StubWall1Length",  260.0);
   Control.addVariable("StubWall1Width",   50.0);
   Control.addVariable("StubWall1Height",  300.0);
-  Control.addVariable("StubWall1Mat",   "SkanskaConcrete"); // ???
+  Control.addVariable("StubWall1Mat",   "SkanskaConcrete"); // check
   Control.addVariable("StubWall1AirMat",   "Air");
-  Control.addVariable("StubWall1YStep",   350.0); // ???
+  Control.addVariable("StubWall1YStep",   235.0); 
 
   Control.copyVarSet("StubWall1", "StubWall2");
+  Control.addVariable("StubWall2YStep",   350.0);
 
   return;
 }
