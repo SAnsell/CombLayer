@@ -89,7 +89,7 @@ namespace essSystem
 
 FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key,8),
+  attachSystem::FixedOffset(Base+Key,7),
   attachSystem::CellMap(),
   baseName(Base),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -489,9 +489,6 @@ FaradayCup::createLinks()
       // for layerProccess
       FixedComp::setConnect(6,Origin+Y*(shieldForwardLength[n-1]),Y);
       FixedComp::setLinkSurf(6,SMap.realSurf(SI-10+2));
-      FixedComp::setConnect(7,Origin-Z*(shieldDepth[n]),Z);
-      FixedComp::setLinkSurf(7,SMap.realSurf(SI+5));
-      ELog::EM << "Why instead of lp7 can't layerProccess use link point 4 with reverse direction?" << ELog::endDiag;
     } else
     {
       FixedComp::setConnect(0,Origin,-Y);
@@ -548,7 +545,7 @@ FaradayCup::createAll(Simulation& System,
     {
       const size_t j=nShieldLayers-1;
       layerProcess(System, "ForwardShield" + std::to_string(j), 7, 2, 10, shieldMat[j]);
-      layerProcess(System, "LateralShield" + std::to_string(j), 8, 6, 20, shieldMat[j]);
+      layerProcess(System, "LateralShield" + std::to_string(j), -5, 6, 20, shieldMat[j]);
     }
 
   return;
