@@ -264,11 +264,61 @@ opticsVariables(FuncDataBase& Control)
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
 
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
+  CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,preName+"TriggerPipe",0.0,15.0,15.0);  // ystep/height/depth
-
   
+  CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
+    (Control,preName+"GaugeA",0.0,11.0,11.0);  // ystep/height/depth
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowA",0,17.0);
+
+  PipeGen.setCF<CF63>();
+  PipeGen.generatePipe(Control,preName+"CollPipeA",0,10.0);
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF63>();
+  PTubeGen.setBPortCF<CF40>();
+  PTubeGen.setPortLength(-6.0,-5.0);
+  // ystep/radius length
+  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
+  Control.addVariable(preName+"FilterBoxANPorts",4);
+
+  PItemGen.setCF<setVariable::CF40>(4.0);
+  // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
+  Geometry::Vec3D PPos(0,3.5,0);
+  const Geometry::Vec3D XVec(-1,0,0);
+  const std::string portName=preName+"FilterBoxAPort";
+  PItemGen.generatePort(Control,portName+"0",PPos,XVec);
+  PItemGen.generatePort(Control,portName+"1",-PPos,XVec);
+
+  // ion pump port
+  PItemGen.setCF<setVariable::CF100>(7.5);
+  PItemGen.generatePort(Control,portName+"2",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,-1));
+  // Main flange for diamond filter
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"3",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+
+  FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite");  // 22 rotation
+  FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
+
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+
+
+  BellowGen.setCF<setVariable::CF40>();
+
+  BellowGen.generateBellow(Control,preName+"Bellow",0,6.0);
+
   return;
 }
 

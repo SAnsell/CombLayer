@@ -87,15 +87,63 @@ FlangeMount::FlangeMount(const std::string& Key) :
   attachSystem::ContainedGroup("Flange","Body"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1),inBeam(1),bladeCentreActive(0)
+  inBeam(1),bladeCentreActive(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
+FlangeMount::FlangeMount(const FlangeMount& A) : 
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),  
+  plateThick(A.plateThick),plateRadius(A.plateRadius),
+  threadRadius(A.threadRadius),threadLength(A.threadLength),
+  inBeam(A.inBeam),bladeXYAngle(A.bladeXYAngle),
+  bladeLift(A.bladeLift),bladeThick(A.bladeThick),
+  bladeWidth(A.bladeWidth),bladeHeight(A.bladeHeight),
+  threadMat(A.threadMat),bladeMat(A.bladeMat),plateMat(A.plateMat),
+  bladeCentreActive(A.bladeCentreActive),bladeCentre(A.bladeCentre)
+  /*!
+    Copy constructor
+    \param A :: FlangeMount to copy
+  */
+{}
 
+FlangeMount&
+FlangeMount::operator=(const FlangeMount& A)
+  /*!
+    Assignment operator
+    \param A :: FlangeMount to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      plateThick=A.plateThick;
+      plateRadius=A.plateRadius;
+      threadRadius=A.threadRadius;
+      threadLength=A.threadLength;
+      inBeam=A.inBeam;
+      bladeXYAngle=A.bladeXYAngle;
+      bladeLift=A.bladeLift;
+      bladeThick=A.bladeThick;
+      bladeWidth=A.bladeWidth;
+      bladeHeight=A.bladeHeight;
+      threadMat=A.threadMat;
+      bladeMat=A.bladeMat;
+      plateMat=A.plateMat;
+      bladeCentreActive=A.bladeCentreActive;
+      bladeCentre=A.bladeCentre;
+    }
+  return *this;
+}
 
 FlangeMount::~FlangeMount() 
   /*!
@@ -188,13 +236,13 @@ FlangeMount::createSurfaces()
   // front planes
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(vacIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*plateThick,Y);
-  ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,plateRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*plateThick,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,plateRadius);
   
-  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,threadRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,threadRadius);
 
   const double lift((inBeam) ? 0.0 : bladeLift);
   Geometry::Vec3D PX(X);
@@ -207,12 +255,12 @@ FlangeMount::createSurfaces()
     (Geometry::Quaternion::calcQRotDeg(bladeXYAngle,Y));
   QR.rotate(PX);
   QR.rotate(PY);
-  ModelSupport::buildPlane(SMap,vacIndex+101,BCent-PY*(bladeThick/2.0),PY);
-  ModelSupport::buildPlane(SMap,vacIndex+102,BCent+PY*(bladeThick/2.0),PY);
-  ModelSupport::buildPlane(SMap,vacIndex+103,BCent-PX*(bladeWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,vacIndex+104,BCent+PX*(bladeWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,vacIndex+105,BCent-PZ*(bladeHeight/2.0),PZ);
-  ModelSupport::buildPlane(SMap,vacIndex+106,BCent+PZ*(bladeHeight/2.0),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+101,BCent-PY*(bladeThick/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,BCent+PY*(bladeThick/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,BCent-PX*(bladeWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,BCent+PX*(bladeWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+105,BCent-PZ*(bladeHeight/2.0),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+106,BCent+PZ*(bladeHeight/2.0),PZ);
 
   return;
 }
@@ -232,17 +280,17 @@ FlangeMount::createObjects(Simulation& System)
   const std::string frontStr=frontRule();  
   const std::string frontComp=frontComplement();
   // Flange
-  Out=ModelSupport::getComposite(SMap,vacIndex," -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
   makeCell("Void",System,cellIndex++,plateMat,0.0,Out+frontStr);
   addOuterSurf("Flange",Out+frontStr);
   
   // Thread
-  Out=ModelSupport::getComposite(SMap,vacIndex," -17 -105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -105 ");
   makeCell("Thread",System,cellIndex++,threadMat,0.0,Out+frontComp);
   addOuterSurf("Body",Out+frontComp);
 
   // blade
-  Out=ModelSupport::getComposite(SMap,vacIndex," 101 -102 103 -104 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
   addOuterUnionSurf("Body",Out+frontComp);
       

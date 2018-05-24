@@ -289,7 +289,8 @@ PortTubeGenerator::setCF()
 void
 PortTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
-				const double yStep,const double radius,
+				const double yStep,
+				const double radius,
 				const double length) const
  /*!
     Primary funciton for setting the variables
@@ -305,21 +306,25 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
+  double L=length;
+  if (portATubeLength<0) L+=portATubeLength;
+  if (portBTubeLength<0) L+=portBTubeLength;
+  
   Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Length",L);
   Control.addVariable(keyName+"WallThick",wallThick);
 	
   Control.addVariable(keyName+"InPortXStep",portAXStep);
   Control.addVariable(keyName+"InPortZStep",portAZStep);
   Control.addVariable(keyName+"InPortThick",portAWallThick);
   Control.addVariable(keyName+"InPortRadius",portATubeRadius);
-  Control.addVariable(keyName+"InPortLen",portATubeLength);
+  Control.addVariable(keyName+"InPortLen",std::abs(portATubeLength));
 
   Control.addVariable(keyName+"OutPortXStep",portBXStep);
   Control.addVariable(keyName+"OutPortZStep",portBZStep);
   Control.addVariable(keyName+"OutPortThick",portBWallThick);
   Control.addVariable(keyName+"OutPortRadius",portBTubeRadius);
-  Control.addVariable(keyName+"OutPortLen",portBTubeLength);
+  Control.addVariable(keyName+"OutPortLen",std::abs(portBTubeLength));
 
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
   Control.addVariable(keyName+"FlangeALength",flangeALen);

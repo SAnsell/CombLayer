@@ -104,8 +104,13 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   attachSystem::FixedOffset(newName,2),
   
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe"))
-
+  triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
+  gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
+  bellowA(new constructSystem::Bellows(newName+"BellowA")),
+  collPipeA(new constructSystem::VacuumPipe(newName+"CollPipeA")),
+  filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
+  filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
+  gateA(new constructSystem::GateValve(newName+"GateA"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -117,6 +122,12 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
+  OR.addObject(gaugeA);
+  OR.addObject(bellowA);
+  OR.addObject(collPipeA);
+  OR.addObject(filterBoxA);
+  OR.addObject(filterStick);
+  OR.addObject(gateA);
 }
   
 cosaxOpticsLine::~cosaxOpticsLine()
@@ -173,8 +184,35 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   triggerPipe->addInsertCell(ContainedComp::getInsertCells());
   triggerPipe->registerSpaceCut(1,2);
   triggerPipe->createAll(System,*pipeInit,2);
+
+  gaugeA->addInsertCell(ContainedComp::getInsertCells());
+  gaugeA->registerSpaceCut(1,2);
+  gaugeA->createAll(System,*triggerPipe,2);
+
+  bellowA->addInsertCell(ContainedComp::getInsertCells());
+  bellowA->registerSpaceCut(1,2);
+  bellowA->createAll(System,*gaugeA,2);
+
+  collPipeA->addInsertCell(ContainedComp::getInsertCells());
+  collPipeA->registerSpaceCut(1,2);
+  collPipeA->createAll(System,*bellowA,2);
+
+  filterBoxA->addInsertCell(ContainedComp::getInsertCells());
+  filterBoxA->registerSpaceCut(1,2);
+  filterBoxA->createAll(System,*collPipeA,2);
+
+  const constructSystem::portItem& PI=filterBoxA->getPort(3);
+  filterStick->addInsertCell("Flange",filterBoxA->getBuildCell());
+  filterStick->addInsertCell("Body",PI.getCell("Void"));
+  filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
+  filterStick->setBladeCentre(PI,0);
+  filterStick->createAll(System,PI,2);
+
+  gateA->addInsertCell(ContainedComp::getInsertCells());
+  gateA->registerSpaceCut(1,2);
+  gateA->createAll(System,*filterBoxA,2);
   
-  lastComp=triggerPipe;  
+  lastComp=gateA;
 
   return;
 }

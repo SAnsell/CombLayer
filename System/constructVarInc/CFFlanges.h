@@ -39,7 +39,7 @@ struct CF40
   static constexpr double innerRadius=1.25;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=2.7;
-  static constexpr double flangeLength=1.0;
+  static constexpr double flangeLength=0.5;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
   static constexpr size_t nBolts=6;
@@ -58,7 +58,7 @@ struct CF50
   static constexpr double innerRadius=2.55;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=4.3;
-  static constexpr double flangeLength=1.0;
+  static constexpr double flangeLength=0.5;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
   static constexpr size_t nBolts=8;
@@ -77,7 +77,7 @@ struct CF63
   static constexpr double innerRadius=3.2;
   static constexpr double wallThick=0.5;
   static constexpr double flangeRadius=5.7;
-  static constexpr double flangeLength=1.0;
+  static constexpr double flangeLength=0.8;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
   static constexpr size_t nBolts=8;

@@ -78,9 +78,24 @@ class cosaxOpticsLine :
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
+  /// vauucm trigger system
   std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
+  /// first ion pump
+  std::shared_ptr<constructSystem::CrossPipe> gaugeA;
+  /// bellows after ion pump to filter
+  std::shared_ptr<constructSystem::Bellows> bellowA;
+  /// Vacuum pipe for collimator
+  std::shared_ptr<constructSystem::VacuumPipe> collPipeA;
+  /// Filter tube
+  std::shared_ptr<constructSystem::PortTube> filterBoxA;
+  /// Filter stick [only one blade type -- fix]
+  std::shared_ptr<xraySystem::FlangeMount> filterStick;
+  /// First gate valve
+  std::shared_ptr<constructSystem::GateValve> gateA;
+  /// bellows after gateA ->view
+  std::shared_ptr<constructSystem::Bellows> bellowB;
 
-
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

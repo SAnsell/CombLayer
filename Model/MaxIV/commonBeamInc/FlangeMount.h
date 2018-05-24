@@ -44,9 +44,6 @@ class FlangeMount :
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double plateThick;            ///< Top plate thickness
   double plateRadius;           ///< plate radius
 
