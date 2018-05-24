@@ -88,6 +88,7 @@ class PortTube :
 
   void splitVoidPorts(Simulation&,const std::string&,const int,const int);
   void addInsertPortCells(const int);
+  void intersectPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

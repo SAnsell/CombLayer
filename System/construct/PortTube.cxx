@@ -494,7 +494,32 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
   
   return;
 }
+
+void
+PortTube::intersectPorts(Simulation& System,
+			 const size_t aIndex,
+			 const size_t bIndex) const
+  /*!
+    Overlaps two ports if the intersect because of size
+    Currently does not check that they don't intersect.
+    \param System :: Simulation
+    \param aIndex :: Inner port
+    \param aIndex :: Outer port
+   */
+{
+  ELog::RegMethod RegA("PortTube","intersectPorts");
+
+  if (aIndex==bIndex || aIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(aIndex,Ports.size(),
+				     "Port does not exist");
+  if (bIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(bIndex,Ports.size(),
+				     "Port does not exist");
+
+  Ports[aIndex].intersectPair(System,Ports[bIndex]);
   
+  return;
+}
   
 void
 PortTube::createAll(Simulation& System,

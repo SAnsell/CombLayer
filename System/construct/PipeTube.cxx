@@ -315,7 +315,7 @@ PipeTube::getPort(const size_t index) const
 
 
 void
-PipeTube::addInsertPortCells(const int CN)
+PipeTube::addInsertPortCells(const int CN) 
   /*!
     Add a cell to the ports insert list
     \param CN :: Cell number
@@ -324,6 +324,34 @@ PipeTube::addInsertPortCells(const int CN)
   portCells.insert(CN);
   return;
 }
+
+void
+PipeTube::intersectPorts(Simulation& System,
+			 const size_t aIndex,
+			 const size_t bIndex) const
+  /*!
+    Overlaps two ports if the intersect because of size
+    Currently does not check that they don't intersect.
+    \param System :: Simulation
+    \param aIndex :: Inner port
+    \param aIndex :: Outer port
+   */
+{
+  ELog::RegMethod RegA("PortTube","intersectPorts");
+
+  if (aIndex==bIndex || aIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(aIndex,Ports.size(),
+				     "Port does not exist");
+  if (bIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(bIndex,Ports.size(),
+				     "Port does not exist");
+
+  Ports[aIndex].intersectPair(System,Ports[bIndex]);
+  
+  return;
+}
+
+
 
 void
 PipeTube::splitVoidPorts(Simulation& System,const std::string& splitName,
@@ -368,6 +396,7 @@ PipeTube::splitVoidPorts(Simulation& System,const std::string& splitName,
   
   return;
 }
+
   
   
 void

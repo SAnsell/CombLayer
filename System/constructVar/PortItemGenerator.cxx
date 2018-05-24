@@ -60,8 +60,8 @@ namespace setVariable
 
 PortItemGenerator::PortItemGenerator() :
   length(12.0),radius(5.0),wallThick(0.5),
-  flangeLen(1.0),flangeRadius(1.0)
-
+  flangeLen(1.0),flangeRadius(1.0),
+  outerVoid(1)
   /*!
     Constructor and defaults
   */
@@ -69,7 +69,8 @@ PortItemGenerator::PortItemGenerator() :
 
 PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) : 
   length(A.length),radius(A.radius),wallThick(A.wallThick),
-  flangeLen(A.flangeLen),flangeRadius(A.flangeRadius)
+  flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
+  outerVoid(A.outerVoid)
   /*!
     Copy constructor
     \param A :: PortItemGenerator to copy
@@ -91,6 +92,7 @@ PortItemGenerator::operator=(const PortItemGenerator& A)
       wallThick=A.wallThick;
       flangeLen=A.flangeLen;
       flangeRadius=A.flangeRadius;
+      outerVoid=A.outerVoid;
     }
   return *this;
 }
@@ -173,6 +175,8 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Centre",C);
   Control.addVariable(keyName+"Axis",A.unit());
+
+  Control.addVariable(keyName+"OuterVoid",static_cast<int>(outerVoid));
   
   return;
 

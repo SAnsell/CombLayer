@@ -96,8 +96,10 @@ class cosaxOpticsLine :
   /// bellows after gateA ->view
   std::shared_ptr<constructSystem::Bellows> bellowB;
   
-  /// Vacuum pipe for collimator
+  /// diamon screen(?)
   std::shared_ptr<constructSystem::PipeTube> screenPipeA;
+  /// View/something(?)
+  std::shared_ptr<constructSystem::PipeTube> screenPipeB;
 
   
   void populate(const FuncDataBase&);

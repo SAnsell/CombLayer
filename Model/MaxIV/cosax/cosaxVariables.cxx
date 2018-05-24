@@ -319,14 +319,24 @@ opticsVariables(FuncDataBase& Control)
   BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
 
   SimpleTubeGen.setCF<CF40>();
-    // ystep/radius length
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,25.0);
+  SimpleTubeGen.setBFlangeCF<CF63>();
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
   Control.addVariable(preName+"ScreenPipeANPorts",1);
   PItemGen.setCF<setVariable::CF40>(4.0);
   PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(-1,0,0));
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+
   
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
+  Control.addVariable(preName+"ScreenPipeBNPorts",2);
+  PItemGen.setCF<setVariable::CF63>(4.0);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,preName+"ScreenPipeBPort0",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(Control,preName+"ScreenPipeBPort1",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+
   return;
 }
 

@@ -53,8 +53,6 @@ class portItem :
  private:
 
   size_t statusFlag;         ///< Flag to check object correct
-  int portIndex;             ///< port surface offset
-  int cellIndex;             ///< cell number
 
   double externalLength;     ///< Length of item 
   double radius;             ///< radius of pipe
@@ -62,6 +60,8 @@ class portItem :
   double flangeRadius;       ///< flange radius
   double flangeLength;       ///< flange thick(length)
   double plateThick;         ///< Plate on flange [if thick>0]
+
+  bool outerVoid;            ///< Make outer void
   
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
@@ -70,8 +70,6 @@ class portItem :
   std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
-
-
   
   void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
@@ -102,8 +100,8 @@ class portItem :
 
   void constructTrack(Simulation&);
   
-  void calcMaxCut(const std::string&,const size_t);
-    
+  void intersectPair(Simulation&,const portItem&) const;
+  
 				       
 };
   

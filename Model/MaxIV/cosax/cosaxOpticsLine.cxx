@@ -112,7 +112,8 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
-  screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA"))
+  screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
+  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -130,6 +131,7 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(filterStick);
   OR.addObject(gateA);
   OR.addObject(screenPipeA);
+  OR.addObject(screenPipeB);
 }
   
 cosaxOpticsLine::~cosaxOpticsLine()
@@ -217,8 +219,13 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   screenPipeA->addInsertCell(ContainedComp::getInsertCells());
   screenPipeA->registerSpaceCut(1,2);
   screenPipeA->createAll(System,*gateA,2);
-  
-  lastComp=screenPipeA;
+
+  screenPipeB->addInsertCell(ContainedComp::getInsertCells());
+  screenPipeB->registerSpaceCut(1,2);
+  screenPipeB->createAll(System,*screenPipeA,2);
+
+  screenPipeB->intersectPorts(System,0,1);
+  lastComp=screenPipeB;
 
   return;
 }
