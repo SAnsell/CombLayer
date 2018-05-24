@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/VacBoxGenerator.cxx
+ * File:   constructVar/PortTubeGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -301,7 +301,7 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
     \param length :: length of box - ports
   */
 {
-  ELog::RegMethod RegA("PortTubeGenerator","generatorBox");
+  ELog::RegMethod RegA("PortTubeGenerator","generatorTube");
   
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange

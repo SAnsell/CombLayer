@@ -55,6 +55,7 @@
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
+#include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
@@ -96,7 +97,6 @@ frontCaveVariables(FuncDataBase& Control,const double YStep)
   Control.addVariable("CosaxFrontEndRoofThick",80.0);
 
   Control.addVariable("CosaxFrontEndFrontHoleRadius",7.0);
-
   
   Control.addVariable("CosaxFrontEndFrontWallMat","Concrete");
   Control.addVariable("CosaxFrontEndWallMat","Concrete");
@@ -251,6 +251,7 @@ opticsVariables(FuncDataBase& Control)
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
@@ -314,11 +315,18 @@ opticsVariables(FuncDataBase& Control)
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
-
   BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
 
-  BellowGen.generateBellow(Control,preName+"Bellow",0,6.0);
-
+  SimpleTubeGen.setCF<CF40>();
+    // ystep/radius length
+  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,25.0);
+  Control.addVariable(preName+"ScreenPipeANPorts",1);
+  PItemGen.setCF<setVariable::CF40>(4.0);
+  PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(-1,0,0));
+  
   return;
 }
 

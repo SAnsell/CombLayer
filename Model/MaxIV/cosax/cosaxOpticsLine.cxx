@@ -81,6 +81,7 @@
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PortTube.h"
+#include "PipeTube.h"
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
@@ -110,11 +111,11 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   collPipeA(new constructSystem::VacuumPipe(newName+"CollPipeA")),
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  gateA(new constructSystem::GateValve(newName+"GateA"))
+  gateA(new constructSystem::GateValve(newName+"GateA")),
+  screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA"))
     /*!
     Constructor
     \param Key :: Name of construction key
-    \param Index :: Index number
   */
 {
   ModelSupport::objectRegister& OR=
@@ -128,6 +129,7 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(filterBoxA);
   OR.addObject(filterStick);
   OR.addObject(gateA);
+  OR.addObject(screenPipeA);
 }
   
 cosaxOpticsLine::~cosaxOpticsLine()
@@ -211,8 +213,12 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   gateA->addInsertCell(ContainedComp::getInsertCells());
   gateA->registerSpaceCut(1,2);
   gateA->createAll(System,*filterBoxA,2);
+
+  screenPipeA->addInsertCell(ContainedComp::getInsertCells());
+  screenPipeA->registerSpaceCut(1,2);
+  screenPipeA->createAll(System,*gateA,2);
   
-  lastComp=gateA;
+  lastComp=screenPipeA;
 
   return;
 }

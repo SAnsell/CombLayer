@@ -36,6 +36,7 @@ namespace constructSystem
   class VacuumBox;
   class portItem;
   class PortTube;
+  class PipeTube;
   class GateValve;
   class JawValve;
 }
@@ -94,6 +95,9 @@ class cosaxOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// bellows after gateA ->view
   std::shared_ptr<constructSystem::Bellows> bellowB;
+  
+  /// Vacuum pipe for collimator
+  std::shared_ptr<constructSystem::PipeTube> screenPipeA;
 
   
   void populate(const FuncDataBase&);

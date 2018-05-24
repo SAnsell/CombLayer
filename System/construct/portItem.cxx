@@ -378,6 +378,8 @@ portItem::constructOuterFlange(Simulation& System,
     }
   else
     Out=ModelSupport::getComposite(SMap,portIndex," -2 -27  1 ");
+
+  Out+=midSurf;
   
   addOuterSurf(Out);
 
