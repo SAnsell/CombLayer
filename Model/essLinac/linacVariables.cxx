@@ -319,9 +319,9 @@ EssLinacVariables(FuncDataBase& Control)
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
   Control.addParse<double>("Stub1Length1", "340.0+LinacWidthLeft+LinacWallThick");
-  Control.addVariable("Stub1Length2", 610.0);
-  Control.addVariable("Stub1Width",   240.0); // Mars: 180, Pontus: 240
-  Control.addVariable("Stub1Height",  210.0);
+  Control.addVariable("Stub1Length2", 610.0); // check
+  Control.addVariable("Stub1Width",   180.0);
+  Control.addVariable("Stub1Height",  150.0);
   Control.addVariable("Stub1WallThick", 20); // ???
   Control.addVariable("Stub1MainMat", "Air");
   Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // ???
