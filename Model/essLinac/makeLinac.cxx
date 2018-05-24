@@ -129,7 +129,7 @@ makeLinac::build(Simulation& System,
   KG->createAll(System,*LinacTunnel,0);
 
   berm->addInsertCell(voidCell);
-  berm->createAll(System,*LinacTunnel,0,*KG,3,5);
+  berm->createAll(System,*LinacTunnel,0,*KG,4,5);
 
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
 
@@ -138,8 +138,8 @@ makeLinac::build(Simulation& System,
     {
       std::shared_ptr<Stub> stub(new Stub("Stub", i+1));
       OR.addObject(stub);
-      stub->setFront(*KG,-7);
-      stub->setBack(*LinacTunnel,-14);
+      stub->setFront(*KG,7);
+      stub->setBack(*LinacTunnel,-13);
       stub->createAll(System,*LinacTunnel,0);
       attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
       attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,stub->getCC("Leg1"));
@@ -147,7 +147,7 @@ makeLinac::build(Simulation& System,
 
       std::shared_ptr<StubWall> wall(new StubWall("","StubWall", i+1));
       OR.addObject(wall);
-      wall->createAll(System,*stub, -1, *KG, 8, 9);
+      wall->createAll(System,*stub, 1, *KG, 8, 9);
       attachSystem::addToInsertSurfCtrl(System,*KG,*wall);
     }
   return;

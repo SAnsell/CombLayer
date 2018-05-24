@@ -472,7 +472,7 @@ Linac::createLinks()
   FixedComp::setConnect(12,Origin-X*(widthRight),X);
   FixedComp::setLinkSurf(12,SMap.realSurf(surfIndex+3));
 
-  FixedComp::setConnect(13,Origin+X*(widthLeft),-X);
+  FixedComp::setConnect(13,Origin+X*(widthLeft),-X); // check left/right/location
   FixedComp::setLinkSurf(13,-SMap.realSurf(surfIndex+4));
 
   FixedComp::setConnect(14,Origin-Z*(depth),Z);

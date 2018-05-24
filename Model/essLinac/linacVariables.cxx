@@ -303,7 +303,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGAirMat", "Air");
   // 130 and 570 are stub legs lengths
   Control.addParse<double>("KGXStep",
-			   "LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570");
+			   "-(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570)"); // check
   Control.addVariable("KGZStep", 573.5);
 
   // Berm
@@ -311,8 +311,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
   Control.addVariable("BermHeight", 550);
   Control.addVariable("BermDepth",  500);
-  Control.addVariable("BermWidthLeft", 3500);
-  Control.addVariable("BermWidthRight", 4000);
+  Control.addVariable("BermWidthLeft", 4000); // check
+  Control.addVariable("BermWidthRight", 3500); // check
   Control.addVariable("BermMat", "ClayTillLera");
   Control.addVariable("BermRoofAngle", 4.76);
 
@@ -333,9 +333,9 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub2YStep", 1916.5+Stub1YStep); // measured + MARS
 
   // Stub walls in the Klystron Gallery
-  Control.addVariable("StubWall1Length",  260.0); // measured
-  Control.addVariable("StubWall1Width",   50.0); // measured
-  Control.addVariable("StubWall1Height",  300.0); // measured
+  Control.addVariable("StubWall1Length",  260.0);
+  Control.addVariable("StubWall1Width",   50.0);
+  Control.addVariable("StubWall1Height",  300.0);
   Control.addVariable("StubWall1Mat",   "SkanskaConcrete"); // ???
   Control.addVariable("StubWall1AirMat",   "Air");
   Control.addVariable("StubWall1YStep",   350.0); // ???

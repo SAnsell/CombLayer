@@ -209,7 +209,7 @@ Stub::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(width/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(width/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(length[0]),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin-X*(length[0]),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
@@ -217,14 +217,14 @@ Stub::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(width/2.0+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(width/2.0+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(length[0]+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin-X*(length[0]+wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+104,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+4),
-				  -height);
+				  height);
     
   ModelSupport::buildShiftedPlane(SMap,surfIndex+105,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
@@ -236,7 +236,7 @@ Stub::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+114,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+104),
-				  -wallThick);
+				  wallThick);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+115,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+105),
@@ -262,51 +262,51 @@ Stub::createObjects(Simulation& System)
 
   attachSystem::ContainedGroup::addCC("Leg1");
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 -6 ")+backRule();
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 5 -6 ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 -4 15 -16 (-1:2:4:-5) ")+backRule();
+				 " 11 -12 4 15 -16 (-1:2:-4:-5) ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -104 6 -16 ")+backRule();
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 6 -16 ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 -14 15 -16 ")+backRule();
+				 " 11 -12 14 15 -16 ")+backRule();
   addOuterSurf("Leg1",Out);
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg2");
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 -4 6 -106 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -104 4 6 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 4 -14 15 -105 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -4 14 15 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-   				 " 11 -12 114 -4 16 -105 (-1:2:-104:4:-16:105) ");
+				 " 11 -12 -114 4 16 -105 (-1:2:104:-4:-16:105) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 114 -14 6 -116 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -114 14 6 -116 ");
   addOuterSurf("Leg2",Out);
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg3");
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 105 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+frontRule()));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 114 105 -116 (-1:2:-104:-105:106) ");
+				 " 11 -12 -114 105 -116 (-1:2:104:-105:106) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 115 -105 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -14 115 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 4 115 -116 ")+frontRule();
+				 " 11 -12 -4 115 -116 ")+frontRule();
   addOuterSurf("Leg3",Out);
   addOuterUnionSurf("Full",Out);
 

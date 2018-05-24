@@ -224,10 +224,10 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
 
   Geometry::Vec3D topNorm(Z);
-  Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
+  Geometry::Quaternion::calcQRotDeg(roofAngle,Y).rotate(topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+6,
-			   Origin-X*(widthLeft)+Z*(height),topNorm);
+			   Origin+X*(widthRight)+Z*(height),topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
@@ -237,7 +237,7 @@ KlystronGallery::createSurfaces()
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,
-			   Origin-X*(widthLeft)+
+			   Origin+X*(widthRight)+
 			   Z*(height+roofThick/cos(roofAngle*M_PI/180)),
 			   topNorm);
 
@@ -290,17 +290,17 @@ KlystronGallery::createLinks()
   FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
 
-  FixedComp::setConnect(5,Origin-X*(widthLeft)+
+  FixedComp::setConnect(5,Origin+X*(widthRight)+
 			Z*(height+roofThick/cos(roofAngle*M_PI/180)),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
 
-  FixedComp::setConnect(6,Origin-X*(widthLeft),X);
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+3));
+  FixedComp::setConnect(6,Origin+X*(widthRight),X);
+  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+4));
 
   FixedComp::setConnect(7,Origin-Z*(depth),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+5));
 
-  FixedComp::setConnect(8,Origin-X*(widthLeft)+Z*(height),-Z);
+  FixedComp::setConnect(8,Origin+X*(widthRight)+Z*(height),-Z);
   FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
 
   return;
