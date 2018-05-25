@@ -159,8 +159,8 @@ FrontEndCave::createSurfaces()
   ModelSupport::buildPlane(SMap,wigIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,wigIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,wigIndex+3,Origin-X*outerGap,X);
-  ModelSupport::buildPlane(SMap,wigIndex+4,Origin+
-			   X*(ringRadius+ringGap),X); // mid line divider
+  // mid line divider
+  ModelSupport::buildPlane(SMap,wigIndex+4,Origin+X*(ringRadius+ringGap),X); 
   ModelSupport::buildCylinder(SMap,wigIndex+7,
 			      Origin+X*(ringRadius+ringGap),Z,ringRadius); 
   ModelSupport::buildPlane(SMap,wigIndex+5,Origin-Z*floorDepth,Z);

@@ -728,6 +728,49 @@ HeadRule::getOppositeSurfaces() const
   return out;
 }
 
+const Geometry::Surface*
+HeadRule::getSurface(const int SN) const
+  /*!
+    Get a specific surface 
+    \param SN :: Surface number
+    \return Pointer to surface
+   */
+{
+  ELog::RegMethod RegA("HeadRule","getSurface");
+  
+  const Geometry::Surface* nullOut(0);
+  if (!HeadNode) return nullOut;
+
+  const int absSN(std::abs(SN));
+  const SurfPoint* SP;
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type())             // MUST BE INTERSECTION/Union
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
+	  if (SP && SP->getKeyN()==absSN)
+	    return SP->getKey();
+	}
+    }
+  return nullOut;
+}
 
 std::vector<const Geometry::Surface*>
 HeadRule::getSurfaces() const

@@ -96,6 +96,7 @@ class HeadRule
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
+  const Geometry::Surface* getSurface(const int) const;
   std::vector<const Geometry::Surface*> getSurfaces() const;
   std::vector<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;

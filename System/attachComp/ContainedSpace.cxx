@@ -51,6 +51,10 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Sphere.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "SurInter.h"
@@ -65,6 +69,7 @@
 #include "FuncDataBase.h"
 #include "Simulation.h"
 #include "AttachSupport.h"
+#include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "BaseMap.h"
@@ -257,7 +262,7 @@ ContainedSpace::calcBoundary(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("ContainedSpace","calcBoundary(System)");
-  
+
   const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
@@ -267,6 +272,81 @@ ContainedSpace::calcBoundary(const Simulation& System,
   return calcBoundary(objHR,NDivide,ALink,BLink);
 }
 
+std::map<int,const Geometry::Surface*>
+ContainedSpace::createSurfMap(const HeadRule& objHR)
+  /*!
+    Create a map of surface number / surface 
+    for the HeadRule object [assuming it is populated]
+    \param objHR :: Object head rule
+    \return map (int,surface)
+  */
+{
+  ELog::RegMethod Rega("ContainedSpace","createSurfMap");
+
+  std::map<int,const Geometry::Surface*> OutMap;
+  
+  std::vector<const Geometry::Surface*> SVec=
+    objHR.getSurfaces();
+
+  for(const Geometry::Surface* SPtr : SVec)
+    {
+      if (SPtr)
+	OutMap.emplace(SPtr->getName(),SPtr);
+    }
+  return OutMap;
+}
+
+int
+ContainedSpace::testPlaneDivider
+(const std::map<int,const Geometry::Surface*>& activeSurf,
+ const int SN,const Geometry::Vec3D& impactPt,
+ const Geometry::Vec3D& axis)
+  /*!
+    Test if a surface has a divider
+    \param activeSurf ::						
+  */
+{
+  ELog::RegMethod RegA("ContainedSpace","testPlaneDivider");
+
+  typedef std::map<int,const Geometry::Surface*> MTYPE;
+  if (SN<0)
+    {
+      MTYPE::const_iterator mc;
+      mc=activeSurf.find(-SN);
+      if (mc!=activeSurf.end())
+	{
+	  const Geometry::Surface* SPtr=mc->second;
+	  if (dynamic_cast<const Geometry::Cylinder*>(SPtr) ||
+	      dynamic_cast<const Geometry::Sphere*>(SPtr) )
+	    {
+	      for(const MTYPE::value_type& TUnit : activeSurf)
+		{
+		  const Geometry::Plane* TPtr=
+		    dynamic_cast<const Geometry::Plane*>(TUnit.second);
+		  if (TPtr)
+		    {
+		      const double DProd=TPtr->getNormal().dotProd(axis);
+		      if (1.0-(std::abs(DProd))<Geometry::zeroTol)
+			{
+			  Geometry::Vec3D Impact =
+			    SurInter::getLinePoint(impactPt,axis,TPtr);
+			  ELog::EM<<"AXIS == "<<axis<<" "<<impactPt<<ELog::endDiag;
+			  ELog::EM<<"NEW SN == "<<SN<<ELog::endDiag;
+			  ELog::EM<<"PLane SN == "<<TPtr->getName()<<ELog::endDiag;
+			  ELog::EM<<"PLane SN == "<<Impact<<ELog::endDiag;
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+  
+  return 0;
+}
+				 
+
+  
 HeadRule
 ContainedSpace::calcBoundary(const HeadRule& objHR,
 			     const size_t NDivide,
@@ -275,7 +355,7 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
   /*!
     Construct a bounding box in a cell based on the 
     link surfaces
-    \param objHR :: Headrule of boundary
+    \param objHR :: HeadRule of boundary
     \param NDivide :: division in link point
     \param ALink :: first link point
     \param BLink :: second link point
@@ -321,6 +401,9 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
       throw ColErr::InContainerError<Geometry::Vec3D>
 	(CPoint,"CPoint out of object");
     }
+
+  std::map<int,const Geometry::Surface*> objSurfMap=
+    createSurfMap(objHR);
   
   const std::vector<Geometry::Vec3D> CP=
     {
@@ -337,11 +420,19 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
 	  const Geometry::Vec3D Axis=XX*cos(angle)+ZZ*sin(angle);
 	  double D;
 	  const int SN=objHR.trackSurf(Org,Axis,D,linkSN);
-	  if (SN)
-	    surfN.insert(-SN);
+	  if (SN && surfN.find(-SN)==surfN.end())
+	    {
+	      surfN.insert(-SN);
+	      // test if cylinder/sphere and extra plane exist
+	      const int divideSN=
+		testPlaneDivider(objSurfMap,SN,Org+Axis*(D*1.1),Axis);
+	      if (divideSN)
+		surfN.insert(-divideSN);
+	    }
 	  angle+=angleStep;
 	}
     }
+  ELog::EM<<"Cell =="<<objHR<<ELog::endDiag;
   // forward going trajectory
   if (!ALink.isComplete() || !BLink.isComplete())
     {
@@ -358,7 +449,10 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
   for(const int SN : fullSurfN)
     {
       if (surfN.find(SN) == surfN.end())
-	outBox.removeItems(SN);
+	{
+	  ELog::EM<<"REMOVE SN == "<<SN<<ELog::endDiag;
+	  outBox.removeItems(SN);
+	}
     }
   
   // Check for no negative repeats:
@@ -467,6 +561,11 @@ ContainedSpace::buildWrapCell(Simulation& System,
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
 
+  if (cCell==1030011)
+    {
+      ELog::EM<<"New cell == "<<cCell<<ELog::endDiag;
+      ELog::EM<<newOuterVoid<<ELog::endDiag;
+    }
 
   CellMap* CMapPtr=dynamic_cast<CellMap*>(this);
   if (CMapPtr)
@@ -536,8 +635,13 @@ ContainedSpace::insertObjects(Simulation& System)
     
   if ((primaryCell || primaryBBox.hasRule()) && buildCell)
     {
+      if (buildCell==1030011)
+	ELog::EM<<"----------------------------------"<<ELog::endDiag;
       calcBoundaryBox(System);
       buildWrapCell(System,primaryCell,buildCell);
+      if (buildCell==1030011)
+	ELog::EM<<"----------------------------------"<<ELog::endErr;
+	    
     }
   
   if (!noPrimaryInsert && primaryCell && buildCell)

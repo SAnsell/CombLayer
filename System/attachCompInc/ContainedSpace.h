@@ -48,7 +48,7 @@ class ContainedSpace  : public ContainedComp
   bool active;                         ///< Space active
   bool noPrimaryInsert;                ///< Dont plcace BBox into primary
 
-  size_t nDirection;                   ///< No of direction of cut
+  size_t nDirection;                   ///< Number of directions to cut
   double instepFrac;                   ///< Step between FC points
   int primaryCell;                     ///< Master cell [for BBox]
   int buildCell;                       ///< Space for new cell
@@ -62,7 +62,16 @@ class ContainedSpace  : public ContainedComp
   std::pair<long int,long int> ABLink; ///< Link surfaces if set
 
   void initialize();
-    
+  static int testPlaneDivider(const std::map<int,const Geometry::Surface*>&,
+			      const int,
+			      const Geometry::Vec3D&,
+			      const Geometry::Vec3D&);
+
+
+  static std::map<int,const Geometry::Surface*>
+    createSurfMap(const HeadRule&);
+
+  
  public:
 
   ContainedSpace();
