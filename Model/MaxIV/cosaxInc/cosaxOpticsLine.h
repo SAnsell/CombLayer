@@ -54,6 +54,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
+  class BremColl;
   class MonoVessel;
   class MonoCrystals;
   class FlangeMount;
@@ -86,7 +87,7 @@ class cosaxOpticsLine :
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Vacuum pipe for collimator
-  std::shared_ptr<constructSystem::VacuumPipe> collPipeA;
+  std::shared_ptr<xraySystem::BremColl> bremCollA;
   /// Filter tube
   std::shared_ptr<constructSystem::PortTube> filterBoxA;
   /// Filter stick [only one blade type -- fix]

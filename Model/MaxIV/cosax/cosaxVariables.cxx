@@ -51,6 +51,7 @@
 #include "PipeGenerator.h"
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "BremCollGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
@@ -249,14 +250,13 @@ opticsVariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
-  setVariable::VacBoxGenerator VBoxGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::FlangeMountGenerator FlangeGen;
-  setVariable::MirrorGenerator MirrGen;
+  setVariable::BremCollGenerator BremGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -277,8 +277,8 @@ opticsVariables(FuncDataBase& Control)
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,17.0);
 
-  PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,preName+"CollPipeA",0,10.0);
+  BremGen.setCF<CF63>();
+  BremGen.generateColl(Control,preName+"BremCollA",0,6.5);
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();
@@ -287,7 +287,7 @@ opticsVariables(FuncDataBase& Control)
   // ystep/radius length
   PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
   Control.addVariable(preName+"FilterBoxANPorts",4);
-
+  
   PItemGen.setCF<setVariable::CF40>(4.0);
   // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
   Geometry::Vec3D PPos(0,3.5,0);

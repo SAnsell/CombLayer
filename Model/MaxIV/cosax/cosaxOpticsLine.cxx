@@ -85,6 +85,7 @@
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
+#include "BremColl.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValve.h"
@@ -108,7 +109,7 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collPipeA(new constructSystem::VacuumPipe(newName+"CollPipeA")),
+  bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
@@ -126,7 +127,7 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(triggerPipe);
   OR.addObject(gaugeA);
   OR.addObject(bellowA);
-  OR.addObject(collPipeA);
+  OR.addObject(bremCollA);
   OR.addObject(filterBoxA);
   OR.addObject(filterStick);
   OR.addObject(gateA);
@@ -197,13 +198,13 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*gaugeA,2);
 
-  collPipeA->addInsertCell(ContainedComp::getInsertCells());
-  collPipeA->registerSpaceCut(1,2);
-  collPipeA->createAll(System,*bellowA,2);
+  bremCollA->addInsertCell(ContainedComp::getInsertCells());
+  bremCollA->registerSpaceCut(1,2);
+  bremCollA->createAll(System,*bellowA,2);
 
   filterBoxA->addInsertCell(ContainedComp::getInsertCells());
   filterBoxA->registerSpaceCut(1,2);
-  filterBoxA->createAll(System,*collPipeA,2);
+  filterBoxA->createAll(System,*bremCollA,2);
 
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Flange",filterBoxA->getBuildCell());
