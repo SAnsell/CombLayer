@@ -1,4 +1,4 @@
-/********************************************************************* 
+ /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/ContainedSpace.cxx
@@ -303,45 +303,42 @@ ContainedSpace::testPlaneDivider
  const Geometry::Vec3D& axis)
   /*!
     Test if a surface has a divider
-    \param activeSurf ::						
+    \param activeSurf :: Map of surface numbers : Surface Ptr
+    \param SN :: Surface that may need a divide plane
+    \param impactPt :: Point that the surface was intersect with line
+    \param Axis :: Axis direction of line
   */
 {
   ELog::RegMethod RegA("ContainedSpace","testPlaneDivider");
 
   typedef std::map<int,const Geometry::Surface*> MTYPE;
-  if (SN<0)
+  if (SN>=0) return 0;
+  
+  MTYPE::const_iterator mc;
+  mc=activeSurf.find(-SN);
+  if (mc==activeSurf.end()) return 0;
+  const Geometry::Surface* SPtr=mc->second;
+
+  if (!dynamic_cast<const Geometry::Cylinder*>(SPtr) &&
+      !dynamic_cast<const Geometry::Sphere*>(SPtr) )
+    return 0;
+  
+  for(const MTYPE::value_type& TUnit : activeSurf)
     {
-      MTYPE::const_iterator mc;
-      mc=activeSurf.find(-SN);
-      if (mc!=activeSurf.end())
+      const Geometry::Plane* TPtr=
+	dynamic_cast<const Geometry::Plane*>(TUnit.second);
+      if (TPtr)
 	{
-	  const Geometry::Surface* SPtr=mc->second;
-	  if (dynamic_cast<const Geometry::Cylinder*>(SPtr) ||
-	      dynamic_cast<const Geometry::Sphere*>(SPtr) )
+	  const double DProd=TPtr->getNormal().dotProd(axis);
+	  if (1.0-(std::abs(DProd))<0.5)
 	    {
-	      for(const MTYPE::value_type& TUnit : activeSurf)
-		{
-		  const Geometry::Plane* TPtr=
-		    dynamic_cast<const Geometry::Plane*>(TUnit.second);
-		  if (TPtr)
-		    {
-		      const double DProd=TPtr->getNormal().dotProd(axis);
-		      if (1.0-(std::abs(DProd))<Geometry::zeroTol)
-			{
-			  Geometry::Vec3D Impact =
-			    SurInter::getLinePoint(impactPt,axis,TPtr);
-			  ELog::EM<<"AXIS == "<<axis<<" "<<impactPt<<ELog::endDiag;
-			  ELog::EM<<"NEW SN == "<<SN<<ELog::endDiag;
-			  ELog::EM<<"PLane SN == "<<TPtr->getName()<<ELog::endDiag;
-			  ELog::EM<<"PLane SN == "<<Impact<<ELog::endDiag;
-			}
-		    }
-		}
+	      Geometry::Vec3D Impact =
+		SurInter::getLinePoint(impactPt,axis,TPtr);
+	      if (SPtr->side(Impact)<0)
+		return (DProd<0.0) ? -TUnit.first : TUnit.first;
 	    }
 	}
     }
-
-  
   return 0;
 }
 				 
@@ -432,7 +429,6 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
 	  angle+=angleStep;
 	}
     }
-  ELog::EM<<"Cell =="<<objHR<<ELog::endDiag;
   // forward going trajectory
   if (!ALink.isComplete() || !BLink.isComplete())
     {
@@ -449,10 +445,7 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
   for(const int SN : fullSurfN)
     {
       if (surfN.find(SN) == surfN.end())
-	{
-	  ELog::EM<<"REMOVE SN == "<<SN<<ELog::endDiag;
-	  outBox.removeItems(SN);
-	}
+	outBox.removeItems(SN);
     }
   
   // Check for no negative repeats:
@@ -561,12 +554,6 @@ ContainedSpace::buildWrapCell(Simulation& System,
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
 
-  if (cCell==1030011)
-    {
-      ELog::EM<<"New cell == "<<cCell<<ELog::endDiag;
-      ELog::EM<<newOuterVoid<<ELog::endDiag;
-    }
-
   CellMap* CMapPtr=dynamic_cast<CellMap*>(this);
   if (CMapPtr)
     CMapPtr->addCell("OuterSpace",cCell);
@@ -635,13 +622,8 @@ ContainedSpace::insertObjects(Simulation& System)
     
   if ((primaryCell || primaryBBox.hasRule()) && buildCell)
     {
-      if (buildCell==1030011)
-	ELog::EM<<"----------------------------------"<<ELog::endDiag;
       calcBoundaryBox(System);
-      buildWrapCell(System,primaryCell,buildCell);
-      if (buildCell==1030011)
-	ELog::EM<<"----------------------------------"<<ELog::endErr;
-	    
+      buildWrapCell(System,primaryCell,buildCell);	    
     }
   
   if (!noPrimaryInsert && primaryCell && buildCell)
