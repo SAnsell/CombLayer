@@ -101,6 +101,8 @@ class cosaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> screenPipeA;
   /// View/something(?)
   std::shared_ptr<constructSystem::PipeTube> screenPipeB;
+  /// Primary jaw (Box)
+  std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
 
   
   void populate(const FuncDataBase&);

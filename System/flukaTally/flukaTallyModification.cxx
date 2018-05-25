@@ -91,9 +91,24 @@ getActiveTally(SimFLUKA& Sim,const std::string& tName)
     }
   return Out;
 }
+
+int
+setBinaryOutput(SimFLUKA& Sim,const int tNumber) 
+  /*!
+    Set the binary file
+    \param Sim :: System to access tally tables
+    \param tNumber :: Tally number [0 for all]
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setBinaryOutput");
+
+  
+}
+  
   
 int
-setParticleType(SimFLUKA& Sim,const int tNumber,
+setParticleType(SimFLUK&A Sim,const int tNumber,
                 const std::string& partType) 
   /*!
     Get the last tally point based on the tallynumber

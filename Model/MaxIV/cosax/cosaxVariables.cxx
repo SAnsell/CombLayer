@@ -255,6 +255,7 @@ opticsVariables(FuncDataBase& Control)
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
+  setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
 
@@ -336,6 +337,15 @@ opticsVariables(FuncDataBase& Control)
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0));
   PItemGen.generatePort(Control,preName+"ScreenPipeBPort1",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+
+
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,preName+"PrimeJawBox",
+		      0.0,30.0,15.0,15.0,53.15);
 
   return;
 }
