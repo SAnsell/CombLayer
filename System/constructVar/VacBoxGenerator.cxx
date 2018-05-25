@@ -129,7 +129,7 @@ void
 VacBoxGenerator::setAPortCF()
   /*!
     Setter for Port A
-   */
+  */
 {
   portATubeRadius=CF::innerRadius;
   portAWallThick=CF::wallThick;

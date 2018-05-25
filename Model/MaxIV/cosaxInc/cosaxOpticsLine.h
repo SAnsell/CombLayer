@@ -103,7 +103,12 @@ class cosaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> screenPipeB;
   /// Primary jaw (Box)
   std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
-
+  /// Bellow to gate on mono
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+  /// First gate valve
+  std::shared_ptr<constructSystem::GateValve> gateB;
+  /// Mono box
+  std::shared_ptr<constructSystem::VacuumBox> monoBox;
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

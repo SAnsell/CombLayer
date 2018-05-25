@@ -115,7 +115,10 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   gateA(new constructSystem::GateValve(newName+"GateA")),
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
   screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
-  primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox"))
+  primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),  
+  gateB(new constructSystem::GateValve(newName+"GateB")),
+  monoBox(new constructSystem::VacuumBox(newName+"MonoBox"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -135,6 +138,9 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(screenPipeA);
   OR.addObject(screenPipeB);
   OR.addObject(primeJawBox);
+  OR.addObject(bellowC);
+  OR.addObject(gateB);
+  OR.addObject(monoBox);
 }
   
 cosaxOpticsLine::~cosaxOpticsLine()
@@ -188,6 +194,7 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   pipeInit->registerSpaceCut(1,2);
   pipeInit->createAll(System,*this,0);
 
+  
   triggerPipe->addInsertCell(ContainedComp::getInsertCells());
   triggerPipe->registerSpaceCut(1,2);
   triggerPipe->createAll(System,*pipeInit,2);
@@ -195,6 +202,7 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   gaugeA->addInsertCell(ContainedComp::getInsertCells());
   gaugeA->registerSpaceCut(1,2);
   gaugeA->createAll(System,*triggerPipe,2);
+
 
   bellowA->addInsertCell(ContainedComp::getInsertCells());
   bellowA->registerSpaceCut(1,2);
@@ -204,9 +212,14 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   bremCollA->registerSpaceCut(1,2);
   bremCollA->createAll(System,*bellowA,2);
 
+
   filterBoxA->addInsertCell(ContainedComp::getInsertCells());
   filterBoxA->registerSpaceCut(1,2);
   filterBoxA->createAll(System,*bremCollA,2);
+
+  filterBoxA->splitObject(System,1001,filterBoxA->getCell("OuterSpace"),
+  			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+
 
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Flange",filterBoxA->getBuildCell());
@@ -214,6 +227,7 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
   filterStick->setBladeCentre(PI,0);
   filterStick->createAll(System,PI,2);
+
 
   gateA->addInsertCell(ContainedComp::getInsertCells());
   gateA->registerSpaceCut(1,2);
@@ -223,17 +237,31 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   screenPipeA->registerSpaceCut(1,2);
   screenPipeA->createAll(System,*gateA,2);
 
+
   screenPipeB->addInsertCell(ContainedComp::getInsertCells());
   screenPipeB->registerSpaceCut(1,2);
   screenPipeB->createAll(System,*screenPipeA,2);
   screenPipeB->intersectPorts(System,0,1);
-  
+
+
   primeJawBox->addInsertCell(ContainedComp::getInsertCells());
   primeJawBox->registerSpaceCut(1,2);
   primeJawBox->createAll(System,*screenPipeB,2);
 
+  bellowC->addInsertCell(ContainedComp::getInsertCells());
+  bellowC->registerSpaceCut(1,2);
+  bellowC->createAll(System,*primeJawBox,2);
 
-  lastComp=screenPipeB;
+
+  gateB->addInsertCell(ContainedComp::getInsertCells());
+  gateB->registerSpaceCut(1,2);
+  gateB->createAll(System,*bellowC,2);
+
+  monoBox->addInsertCell(ContainedComp::getInsertCells());
+  monoBox->registerSpaceCut(1,2);
+  monoBox->createAll(System,*gateB,2);
+
+  lastComp=monoBox;
 
   return;
 }

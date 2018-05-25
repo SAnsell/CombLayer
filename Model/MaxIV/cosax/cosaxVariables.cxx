@@ -347,6 +347,20 @@ opticsVariables(FuncDataBase& Control)
   VBoxGen.generateBox(Control,preName+"PrimeJawBox",
 		      0.0,30.0,15.0,15.0,53.15);
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
+  
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateB",0.0,0);
+
+  VBoxGen.setAPortCF<CF40>();
+  VBoxGen.setBPortCF<CF63>();
+  VBoxGen.setPortLength(3.5,3.0); // La/Lb
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,30.0,15.0,15.0,53.15);
+
+
   return;
 }
 
