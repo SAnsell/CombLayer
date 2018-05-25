@@ -103,12 +103,11 @@ setBinaryOutput(SimFLUKA& Sim,const int tNumber)
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setBinaryOutput");
 
-  
+  return 0;
 }
   
-  
 int
-setParticleType(SimFLUK&A Sim,const int tNumber,
+setParticleType(SimFLUKA& Sim,const int tNumber,
                 const std::string& partType) 
   /*!
     Get the last tally point based on the tallynumber

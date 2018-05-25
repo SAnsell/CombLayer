@@ -48,6 +48,8 @@ namespace flukaSystem
   
   int setParticleType(SimFLUKA&,const int,const std::string&);
 
+  int setBinaryOutput(SimFLUKA&,const int);
+
     
 }  // namespace flukaSystem 
 
