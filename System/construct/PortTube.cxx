@@ -94,12 +94,12 @@ PortTube::PortTube(const PortTube& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   radius(A.radius),
-  wallThick(A.wallThick),length(A.length),inPortXStep(A.inPortXStep),
-  inPortZStep(A.inPortZStep),inPortRadius(A.inPortRadius),
-  inPortLen(A.inPortLen),inPortThick(A.inPortThick),
-  outPortXStep(A.outPortXStep),outPortZStep(A.outPortZStep),
-  outPortRadius(A.outPortRadius),outPortLen(A.outPortLen),
-  outPortThick(A.outPortThick),flangeARadius(A.flangeARadius),
+  wallThick(A.wallThick),length(A.length),portAXStep(A.portAXStep),
+  portAZStep(A.portAZStep),portARadius(A.portARadius),
+  portALen(A.portALen),portAThick(A.portAThick),
+  portBXStep(A.portBXStep),portBZStep(A.portBZStep),
+  portBRadius(A.portBRadius),portBLen(A.portBLen),
+  portBThick(A.portBThick),flangeARadius(A.flangeARadius),
   flangeALength(A.flangeALength),flangeBRadius(A.flangeBRadius),
   flangeBLength(A.flangeBLength),voidMat(A.voidMat),
   wallMat(A.wallMat),PCentre(A.PCentre),PAxis(A.PAxis),
@@ -128,16 +128,16 @@ PortTube::operator=(const PortTube& A)
       radius=A.radius;
       wallThick=A.wallThick;
       length=A.length;
-      inPortXStep=A.inPortXStep;
-      inPortZStep=A.inPortZStep;
-      inPortRadius=A.inPortRadius;
-      inPortLen=A.inPortLen;
-      inPortThick=A.inPortThick;
-      outPortXStep=A.outPortXStep;
-      outPortZStep=A.outPortZStep;
-      outPortRadius=A.outPortRadius;
-      outPortLen=A.outPortLen;
-      outPortThick=A.outPortThick;
+      portAXStep=A.portAXStep;
+      portAZStep=A.portAZStep;
+      portARadius=A.portARadius;
+      portALen=A.portALen;
+      portAThick=A.portAThick;
+      portBXStep=A.portBXStep;
+      portBZStep=A.portBZStep;
+      portBRadius=A.portBRadius;
+      portBLen=A.portBLen;
+      portBThick=A.portBThick;
       flangeARadius=A.flangeARadius;
       flangeALength=A.flangeALength;
       flangeBRadius=A.flangeBRadius;
@@ -175,22 +175,22 @@ PortTube::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
-  inPortXStep=Control.EvalDefVar<double>(keyName+"InPortXStep",0.0);
-  inPortZStep=Control.EvalDefVar<double>(keyName+"InPortZStep",0.0);
-  inPortRadius=Control.EvalPair<double>(keyName+"InPortRadius",
+  portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
+  portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
+  portARadius=Control.EvalPair<double>(keyName+"PortARadius",
 				       keyName+"PortRadius");
-  inPortLen=Control.EvalPair<double>(keyName+"InPortLen",
+  portALen=Control.EvalPair<double>(keyName+"PortALen",
 				       keyName+"PortLen");
-  inPortThick=Control.EvalPair<double>(keyName+"InPortThick",
+  portAThick=Control.EvalPair<double>(keyName+"PortAThick",
 				       keyName+"PortThick");
 
-  outPortXStep=Control.EvalDefVar<double>(keyName+"OutPortXStep",0.0);
-  outPortZStep=Control.EvalDefVar<double>(keyName+"OutPortZStep",0.0);
-  outPortRadius=Control.EvalPair<double>(keyName+"OutPortRadius",
+  portBXStep=Control.EvalDefVar<double>(keyName+"PortBXStep",0.0);
+  portBZStep=Control.EvalDefVar<double>(keyName+"PortBZStep",0.0);
+  portBRadius=Control.EvalPair<double>(keyName+"PortBRadius",
 				       keyName+"PortRadius");
-  outPortLen=Control.EvalPair<double>(keyName+"OutPortLen",
+  portBLen=Control.EvalPair<double>(keyName+"PortBLen",
 				       keyName+"PortLen");
-  outPortThick=Control.EvalPair<double>(keyName+"OutPortThick",
+  portBThick=Control.EvalPair<double>(keyName+"PortBThick",
 				       keyName+"PortThick");
 
 
@@ -247,8 +247,14 @@ PortTube::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("PortTube","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  Origin+=Y*(inPortLen+wallThick+length/2.0);
   applyOffset();
+  
+  Origin+=
+    Y*(portALen+wallThick+length/2.0)-
+    X*portAXStep-
+    Z*portAZStep;
+
+
 
   return;
 }
@@ -266,13 +272,13 @@ PortTube::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(inPortLen+wallThick+length/2.0),Y);
+			       Origin-Y*(portALen+wallThick+length/2.0),Y);
       setFront(SMap.realSurf(buildIndex+101));
     }
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+202,
-			       Origin+Y*(outPortLen+wallThick+length/2.0),Y);
+			       Origin+Y*(portBLen+wallThick+length/2.0),Y);
       setBack(-SMap.realSurf(buildIndex+202));
     }
 
@@ -287,21 +293,21 @@ PortTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   // port
-  const Geometry::Vec3D inOrg=Origin+X*inPortXStep+Z*inPortZStep;
-  const Geometry::Vec3D outOrg=Origin+X*outPortXStep+Z*outPortZStep;
+  const Geometry::Vec3D inOrg=Origin+X*portAXStep+Z*portAZStep;
+  const Geometry::Vec3D outOrg=Origin+X*portBXStep+Z*portBZStep;
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,inOrg,Y,inPortRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,outOrg,Y,outPortRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,inOrg,Y,portARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,outOrg,Y,portBRadius);
 
   ModelSupport::buildCylinder(SMap,buildIndex+117,inOrg,Y,
-			      inPortRadius+inPortThick);
+			      portARadius+portAThick);
   ModelSupport::buildCylinder(SMap,buildIndex+217,outOrg,Y,
-			      outPortRadius+outPortThick);
+			      portBRadius+portBThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+111,Origin-
-			   Y*(inPortLen+wallThick-flangeALength+length/2.0),Y);
+			   Y*(portALen+wallThick-flangeALength+length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+212,Origin+
-			   Y*(outPortLen+wallThick-flangeBLength+length/2.0),Y);
+			   Y*(portBLen+wallThick-flangeBLength+length/2.0),Y);
 
   // flange:
   ModelSupport::buildCylinder(SMap,buildIndex+127,inOrg,Y,
@@ -330,12 +336,12 @@ PortTube::createObjects(Simulation& System)
   makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
 
   // plates front/back
-  if ((inPortRadius+inPortThick-(radius+wallThick))< -Geometry::zeroTol)
+  if ((portARadius+portAThick-(radius+wallThick))< -Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
       makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
     }
-  if ((outPortRadius+outPortThick-radius-wallThick)< -Geometry::zeroTol)
+  if ((portBRadius+portBThick-radius-wallThick)< -Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 217 ");
       makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
@@ -386,8 +392,8 @@ PortTube::createLinks()
   ELog::RegMethod RegA("PortTube","createLinks");
 
   // port centre
-  const Geometry::Vec3D inOrg=Origin+X*inPortXStep+Z*inPortZStep;
-  const Geometry::Vec3D outOrg=Origin+X*outPortXStep+Z*outPortZStep;
+  const Geometry::Vec3D inOrg=Origin+X*portAXStep+Z*portAZStep;
+  const Geometry::Vec3D outOrg=Origin+X*portBXStep+Z*portBZStep;
   
   FrontBackCut::createFrontLinks(*this,inOrg,Y); 
   FrontBackCut::createBackLinks(*this,outOrg,Y);  

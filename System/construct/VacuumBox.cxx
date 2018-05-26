@@ -247,7 +247,12 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // after rotation
   if (!centreOrigin)
-    Origin+=Y*(portATubeLength+feFront+voidLength/2.0);
+    Origin+=Y*(portATubeLength+feFront+voidLength/2.0)-
+      X*portAXStep-
+      Z*portAZStep;
+
+
+  
   return;
 }
 

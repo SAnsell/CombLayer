@@ -93,6 +93,7 @@
 #include "JawValve.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
+#include "MonoBox.h"
 #include "cosaxOpticsLine.h"
 
 namespace xraySystem
@@ -118,7 +119,12 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),  
   gateB(new constructSystem::GateValve(newName+"GateB")),
-  monoBox(new constructSystem::VacuumBox(newName+"MonoBox"))
+  monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
+  slitsA(new constructSystem::JawValve(newName+"SlitsA")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  slitsB(new constructSystem::JawValve(newName+"SlitsB"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -141,6 +147,11 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(gateB);
   OR.addObject(monoBox);
+  OR.addObject(slitsA);
+  OR.addObject(bellowD);
+  OR.addObject(diagBoxA);
+  OR.addObject(bellowE);
+  OR.addObject(slitsB);      
 }
   
 cosaxOpticsLine::~cosaxOpticsLine()
@@ -261,7 +272,31 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   monoBox->registerSpaceCut(1,2);
   monoBox->createAll(System,*gateB,2);
 
-  lastComp=monoBox;
+  slitsA->addInsertCell(ContainedComp::getInsertCells());
+  //  slitsA->setFront(*driftC,2);
+  slitsA->registerSpaceCut(1,2);
+  slitsA->createAll(System,*monoBox,2);
+
+  bellowD->addInsertCell(ContainedComp::getInsertCells());
+  bellowD->registerSpaceCut(1,2);
+  bellowD->createAll(System,*slitsA,2);
+
+  diagBoxA->addInsertCell(ContainedComp::getInsertCells());
+  diagBoxA->registerSpaceCut(1,2);
+  diagBoxA->createAll(System,*bellowD,2);
+
+  bellowE->addInsertCell(ContainedComp::getInsertCells());
+  bellowE->registerSpaceCut(1,2);
+  bellowE->createAll(System,*diagBoxA,2);
+
+  lastComp=bellowE;
+  return;
+  
+  slitsB->addInsertCell(ContainedComp::getInsertCells());
+  slitsB->registerSpaceCut(1,2);
+  slitsB->createAll(System,*bellowE,2);
+
+  lastComp=slitsB;
 
   return;
 }

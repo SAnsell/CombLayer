@@ -47,17 +47,17 @@ class PortTube :
   double wallThick;           ///< wall thickness of main tube
   double length;              ///< Main length
   
-  double inPortXStep;       ///< Out Port
-  double inPortZStep;       ///< Out Port
-  double inPortRadius;      ///< Out Port
-  double inPortLen;         ///< Out Port
-  double inPortThick;       ///< Out Port
+  double portAXStep;       ///< Out Port
+  double portAZStep;       ///< Out Port
+  double portARadius;      ///< Out Port
+  double portALen;         ///< Out Port
+  double portAThick;       ///< Out Port
 
-  double outPortXStep;       ///< Out Port
-  double outPortZStep;       ///< Out Port
-  double outPortRadius;      ///< Out Port
-  double outPortLen;         ///< Out Port
-  double outPortThick;       ///< Out Port
+  double portBXStep;       ///< Out Port
+  double portBZStep;       ///< Out Port
+  double portBRadius;      ///< Out Port
+  double portBLen;         ///< Out Port
+  double portBThick;       ///< Out Port
 
   double flangeARadius;        ///< Joining Flange radius
   double flangeALength;        ///< Joining Flange length

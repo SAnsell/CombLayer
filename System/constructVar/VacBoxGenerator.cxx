@@ -292,7 +292,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("VacBoxGenerator","generatorBox");
   
-
+  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"VoidHeight",height);

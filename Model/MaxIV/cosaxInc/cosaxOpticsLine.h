@@ -55,10 +55,10 @@ namespace xraySystem
 {
   class OpticsHutch;
   class BremColl;
-  class MonoVessel;
-  class MonoCrystals;
   class FlangeMount;
   class Mirror;
+  class MonoCrystals;
+  class MonoBox;
     
   /*!
     \class cosaxOpticsLine
@@ -108,8 +108,18 @@ class cosaxOpticsLine :
   /// First gate valve
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Mono box
-  std::shared_ptr<constructSystem::VacuumBox> monoBox;
-  
+  std::shared_ptr<xraySystem::MonoBox> monoBox;
+  // jaws after mono
+  std::shared_ptr<constructSystem::JawValve> slitsA;
+  /// Bellow to diagnositics
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Diagnostic unit 1:
+  std::shared_ptr<constructSystem::PortTube> diagBoxA;
+  /// Bellow from diagnositics
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  // jaws for first mirror
+  std::shared_ptr<constructSystem::JawValve> slitsB;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
