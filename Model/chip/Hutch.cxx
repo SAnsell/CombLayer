@@ -3,7 +3,7 @@
  
  * File:   chip/Hutch.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1083,7 +1083,6 @@ ChipIRHutch::layerProcess(Simulation& System)
     {
       ModelSupport::surfDivide DA;
       DA.addLayers(nWestDivide,westFrac,westMatList);
-      const std::vector<std::pair<int,int> > AX={{24,1024}};
       DA.procSurfDivide(System,SMap,layerCells["westOuter"],
 			hutchIndex,cellIndex,1501,
 			{{24,1024}},"24","-1024");
@@ -1091,7 +1090,7 @@ ChipIRHutch::layerProcess(Simulation& System)
       DA.procSurfDivide(System,SMap,layerCells["westFront"],
       			hutchIndex,cellIndex,1601,
       			{{4,1004},{11,1011}}," 4:-11 ","1011 -1004");
-}
+    }
 
   return;
 }

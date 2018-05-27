@@ -281,6 +281,8 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   bellowD->registerSpaceCut(1,2);
   bellowD->createAll(System,*slitsA,2);
 
+  lastComp=bellowD;
+  return;
   diagBoxA->addInsertCell(ContainedComp::getInsertCells());
   diagBoxA->registerSpaceCut(1,2);
   diagBoxA->createAll(System,*bellowD,2);
