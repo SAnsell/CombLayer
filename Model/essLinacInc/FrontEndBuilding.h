@@ -59,6 +59,7 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const long int,
 		     const long int,const long int);
   void createLinks();
 
@@ -71,6 +72,7 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   virtual ~FrontEndBuilding();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
+		 const long int,const long int,
 		 const long int,const long int);
 
 };
