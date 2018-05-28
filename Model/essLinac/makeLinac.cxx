@@ -129,7 +129,7 @@ makeLinac::build(Simulation& System,
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
   feb->addInsertCell(voidCell);
-  feb->createAll(System,*LinacTunnel,1);
+  feb->createAll(System,*LinacTunnel,1,-5,-15);
   
   KG->addInsertCell(voidCell);
   KG->createAll(System,*LinacTunnel,0);

@@ -216,22 +216,35 @@ FrontEndBuilding::createSurfaces()
 }
 
 void
-FrontEndBuilding::createObjects(Simulation& System)
+FrontEndBuilding::createObjects(Simulation& System,
+				const attachSystem::FixedComp &FC,
+				const long int floorIndexLow,
+				const long int floorIndexTop)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
+    \param floorIndexLow :: bottom floor lp
+    \param floorIndexTop :: top floor lp
   */
 {
   ELog::RegMethod RegA("FrontEndBuilding","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 -6 ") +
+    FC.getLinkString(-floorIndexTop);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -1 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ") +
+    FC.getLinkString(floorIndexLow) + FC.getLinkString(floorIndexTop);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -1 3 -4 -6 ") +
+      FC.getLinkString(floorIndexLow);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -2 3 -4 -6 ") +
+      FC.getLinkString(floorIndexLow);
   addOuterSurf(Out);
 
   return;
@@ -257,13 +270,17 @@ FrontEndBuilding::createLinks()
 
 void
 FrontEndBuilding::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+			    const attachSystem::FixedComp& FC,
+			    const long int sideIndex,
+			    const long int floorIndexLow,
+			    const long int floorIndexTop)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param sideIndex :: link point for origin
+    \param floorIndexLow :: bottom floor lp
+    \param floorIndexTop :: top floor lp
   */
 {
   ELog::RegMethod RegA("FrontEndBuilding","createAll");
@@ -271,7 +288,7 @@ FrontEndBuilding::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System);
+  createObjects(System,FC,floorIndexLow,floorIndexTop);
   createLinks();
   insertObjects(System);
 
