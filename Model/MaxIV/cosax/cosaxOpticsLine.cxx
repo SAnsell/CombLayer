@@ -295,8 +295,8 @@ cosaxOpticsLine::buildObjects(Simulation& System)
 			   diagBoxA->getBuildCell(),
 			   {0,1, 1,2});
 
-  lastComp=diagBoxA;
-  return;
+  diagBoxA->splitObject(System,-11,diagBoxA->getCell("SplitOuter",0));
+  diagBoxA->splitObject(System,12,diagBoxA->getCell("SplitOuter",2));
 
   bellowE->addInsertCell(ContainedComp::getInsertCells());
   bellowE->registerSpaceCut(1,2);

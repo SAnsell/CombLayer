@@ -538,7 +538,6 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
     {
       if (Ports[i].getY().dotProd(Axis)<Geometry::zeroTol)
 	{
-	  ELog::EM<<"FOUND == "<<PCentre[i]<<ELog::endDiag;
 	  if (preFlag)
 	    {
 	      const Geometry::Vec3D CPt=
@@ -550,12 +549,10 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
 	  
 	}
     }
-  ELog::EM<<"ASFASDF "<<SplitOrg.size()<<" "<<SplitAxis.size()<<ELog::endDiag;
   const std::vector<int> cells=
     FixedComp::splitObject(System,offsetCN,CN,
 			   SplitOrg,SplitAxis);
 
-  ELog::EM<<"ASFASDF "<<ELog::endDiag;
   if (!splitName.empty())
   for(const int CN : cells)
     CellMap::addCell(splitName,CN);
