@@ -77,7 +77,7 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacEngineeringActive",1);
 
-  Control.addVariable("LinacLengthBack",905.3); // MARS
+  Control.addVariable("LinacLengthBack",-398.6+20); // rbfrend2-9100
   Control.addVariable("LinacLengthFront",51044.4); // MARS
   Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011
   Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011
@@ -305,16 +305,6 @@ EssLinacVariables(FuncDataBase& Control)
 			   "-(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570)"); // check
   Control.addVariable("KGZStep", 573.5);
 
-  // Berm
-  Control.addParse<double>("BermLengthBack", "LinacLengthBack+100");
-  Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
-  Control.addVariable("BermHeight", 550);
-  Control.addVariable("BermDepth",  500);
-  Control.addVariable("BermWidthLeft", 4000);
-  Control.addVariable("BermWidthRight", 3500);
-  Control.addVariable("BermMat", "ClayTillLera");
-  Control.addVariable("BermRoofAngle", 4.76); // approx
-
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
   Control.addVariable("Stub1WallThick", 30); // MARS
@@ -343,13 +333,23 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("StubWall1", "StubWall2");
   Control.addVariable("StubWall2YStep",   350.0);
 
-  Control.addVariable("FEBLength",   350.0);
+  Control.addVariable("FEBLength",   2000.0); // ???
   Control.addVariable("FEBWidthLeft", 1765.0);
   Control.addVariable("FEBWidthRight", 514.0);
   Control.addVariable("FEBHeight",   350.0);
   Control.addVariable("FEBWallThick", 20.0);
   Control.addVariable("FEBMainMat",   "Air"); // ???
   Control.addVariable("FEBWallMat",   "SkanskaConcrete"); // ???
+
+  // Berm
+  Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
+  Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
+  Control.addVariable("BermHeight", 550);
+  Control.addVariable("BermDepth",  500);
+  Control.addVariable("BermWidthLeft", 4000);
+  Control.addVariable("BermWidthRight", 3500);
+  Control.addVariable("BermMat", "ClayTillLera");
+  Control.addVariable("BermRoofAngle", 4.76); // approx
 
   return;
 }
