@@ -228,7 +228,10 @@ FrontEndBuilding::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -1 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;

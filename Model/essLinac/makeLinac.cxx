@@ -139,6 +139,7 @@ makeLinac::build(Simulation& System,
 
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
   attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
+  attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
 
   const size_t Nstubs(2);
   for (size_t i=0; i<Nstubs; i++)
