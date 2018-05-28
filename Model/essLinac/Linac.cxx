@@ -385,7 +385,6 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
 
-  //  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
@@ -421,14 +420,10 @@ Linac::createObjects(Simulation& System)
   // wall bottom slab
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -24 15 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -13 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,soilMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 14 -24 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,soilMat,0.0,Out));
 
   layerProcess(System, "air", 11, 12, nAirLayers, airMat);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -24 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," (1 -12 13 -14 15 -16) : (1 -12 23 -24 15 -5) ");
   addOuterSurf(Out);
 
   return;
