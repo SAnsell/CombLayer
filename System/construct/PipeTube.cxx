@@ -131,6 +131,7 @@ PipeTube::populate(const FuncDataBase& Control)
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT;
+  int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
@@ -145,6 +146,9 @@ PipeTube::populate(const FuncDataBase& Control)
       W=Control.EvalPair<double>(portName,portBase,"Wall");
       FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
       FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
+      OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
+
+      if (OFlag) windowPort.setWrapVolume();
       windowPort.setMain(L,R,W);
       windowPort.setFlange(FR,FT);
       windowPort.setMaterial(voidMat,wallMat);

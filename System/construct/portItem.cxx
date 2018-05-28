@@ -85,7 +85,7 @@ namespace constructSystem
 portItem::portItem(const std::string& Key) :
   attachSystem::FixedComp(Key,4),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  statusFlag(0),radius(0.0),wall(0.0),
+  statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
   voidMat(0),wallMat(0),plateMat(0)
   /*!
@@ -97,11 +97,11 @@ portItem::portItem(const std::string& Key) :
 portItem::portItem(const portItem& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  statusFlag(A.statusFlag),
+  statusFlag(A.statusFlag),outerFlag(A.outerFlag),
   externalLength(A.externalLength),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),plateThick(A.plateThick),
-  outerVoid(A.outerVoid),voidMat(A.voidMat),wallMat(A.wallMat),
+  voidMat(A.voidMat),wallMat(A.wallMat),
   plateMat(A.plateMat),outerCell(A.outerCell),
   refComp(A.refComp),exitPoint(A.exitPoint)
   /*!
@@ -125,13 +125,13 @@ portItem::operator=(const portItem& A)
       attachSystem::CellMap::operator=(A);
       
       statusFlag=A.statusFlag;
+      outerFlag=A.outerFlag;
       externalLength=A.externalLength;
       radius=A.radius;
       wall=A.wall;
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
       plateThick=A.plateThick;
-      outerVoid=A.outerVoid;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
       plateMat=A.plateMat;
@@ -216,7 +216,7 @@ portItem::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   refComp=FC.getKeyName();
-  statusFlag |= 1;
+  statusFlag=1;
   return;
 }
 
@@ -376,7 +376,7 @@ portItem::constructOuterFlange(Simulation& System,
       makeCell("Plate",System,cellIndex++,plateMat,0.0,Out);
     }
   
-  if (outerVoid)
+  if (outerFlag)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
       makeCell("OutVoid",System,cellIndex++,0,0.0,Out+midSurf);
@@ -395,7 +395,6 @@ portItem::constructOuterFlange(Simulation& System,
       addOuterUnionSurf(Out+midSurf);
     }
   
-
   // Mid port exclude
   const std::string tubeExclude=
     ModelSupport::getComposite(SMap,buildIndex," ( 17 : -1 )");
@@ -501,7 +500,7 @@ portItem::constructTrack(Simulation& System)
   ELog::RegMethod RegA("portItem","constructTrack");
 
 
-  if ((statusFlag & 1)!=1)
+  if (!statusFlag)
     {
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
       return;

@@ -84,7 +84,10 @@ class COSAX : public attachSystem::CopiedComp
   std::shared_ptr<OpticsHutch> opticsHut;
   /// Optics beamlines 
   std::shared_ptr<cosaxOpticsLine> opticsBeam;
-    
+
+  /// Pipe joining frontend to optics hut
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+
  public:
   
   COSAX(const std::string&);

@@ -259,6 +259,8 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   primeJawBox->registerSpaceCut(1,2);
   primeJawBox->createAll(System,*screenPipeB,2);
 
+
+  
   bellowC->addInsertCell(ContainedComp::getInsertCells());
   bellowC->registerSpaceCut(1,2);
   bellowC->createAll(System,*primeJawBox,2);
@@ -267,6 +269,8 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   gateB->addInsertCell(ContainedComp::getInsertCells());
   gateB->registerSpaceCut(1,2);
   gateB->createAll(System,*bellowC,2);
+
+
 
   monoBox->addInsertCell(ContainedComp::getInsertCells());
   monoBox->registerSpaceCut(1,2);
@@ -278,20 +282,26 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   slitsA->registerSpaceCut(1,2);
   slitsA->createAll(System,*monoBox,2);
 
+
   bellowD->addInsertCell(ContainedComp::getInsertCells());
   bellowD->registerSpaceCut(1,2);
   bellowD->createAll(System,*slitsA,2);
 
+
   diagBoxA->addInsertCell(ContainedComp::getInsertCells());
   diagBoxA->registerSpaceCut(1,2);
   diagBoxA->createAll(System,*bellowD,2);
+  diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
+			   diagBoxA->getBuildCell(),
+			   {0,1, 1,2});
+
+  lastComp=diagBoxA;
+  return;
 
   bellowE->addInsertCell(ContainedComp::getInsertCells());
   bellowE->registerSpaceCut(1,2);
   bellowE->createAll(System,*diagBoxA,2);
 
-  lastComp=bellowE;
-  return;
   
   slitsB->addInsertCell(ContainedComp::getInsertCells());
   slitsB->registerSpaceCut(1,2);

@@ -26,6 +26,7 @@
 #include <cmath>
 #include <complex>
 #include <list>
+#include <utility>
 #include <vector>
 #include <set>
 #include <map>
@@ -211,6 +212,7 @@ PortTube::populate(const FuncDataBase& Control)
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT;
+  int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
@@ -225,9 +227,13 @@ PortTube::populate(const FuncDataBase& Control)
       W=Control.EvalPair<double>(portName,portBase,"Wall");
       FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
       FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
+      OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
+
+      if (OFlag) windowPort.setWrapVolume();
       windowPort.setMain(L,R,W);
       windowPort.setFlange(FR,FT);
       windowPort.setMaterial(voidMat,wallMat);
+
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
@@ -459,7 +465,56 @@ PortTube::addInsertPortCells(const int CN)
 
 void
 PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
-			 const int offsetCN,const int CN)
+			 const int offsetCN,const int CN,
+	   const std::vector<size_t>& portVec)
+  /*!
+    Split the void cell and store divition planes
+    Only use those port that a close to orthogonal with Y axis
+    \param System :: Simulation to use
+    \param splitName :: Name for cell output
+    \param offsetCN :: output offset number
+    \param CN :: Cell number to split
+    \param portPair :: Standard pair
+   */
+{
+  ELog::RegMethod RegA("PortTube","splitVoidPorts");
+
+  std::vector<Geometry::Vec3D> SplitOrg;
+  std::vector<Geometry::Vec3D> SplitAxis;
+
+  for(size_t i=1;i<portVec.size();i+=2)
+    {
+      //      const size_t AIndex=portVec[i].first;
+      //      const size_t BIndex=portVec[i].second;
+      const size_t AIndex=portVec[i-1];
+      const size_t BIndex=portVec[i];
+      
+      if (AIndex==BIndex || AIndex>=PCentre.size() ||
+	  BIndex>=PCentre.size())
+	throw ColErr::IndexError<size_t>
+	  (AIndex,BIndex,"Port number too large for"+keyName);
+      
+      const Geometry::Vec3D CPt=
+	(PCentre[AIndex]+PCentre[BIndex])/2.0;
+      SplitOrg.push_back(CPt);
+      SplitAxis.push_back(Y);
+    }
+ 
+
+  const std::vector<int> cells=
+    FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
+      
+  if (!splitName.empty())
+  for(const int CN : cells)
+    CellMap::addCell(splitName,CN);
+  
+  return;
+}
+
+void
+PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
+			 const int offsetCN,const int CN,
+			 const Geometry::Vec3D& inobjAxis)
   /*!
     Split the void cell and store divition planes
     Only use those port that a close to orthogonal with Y axis
@@ -471,29 +526,36 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
 {
   ELog::RegMethod RegA("PortTube","splitVoidPorts");
 
+  const Geometry::Vec3D Axis=(X*inobjAxis[0]+
+			      Y*inobjAxis[1]+
+			      Z*inobjAxis[2]).unit();
+  
   std::vector<Geometry::Vec3D> SplitOrg;
   std::vector<Geometry::Vec3D> SplitAxis;
 
   size_t preFlag(0);
   for(size_t i=0;i<PCentre.size();i++)
     {
-      if (Ports[i].getY().dotProd(Y)<Geometry::zeroTol)
+      if (Ports[i].getY().dotProd(Axis)<Geometry::zeroTol)
 	{
+	  ELog::EM<<"FOUND == "<<PCentre[i]<<ELog::endDiag;
 	  if (preFlag)
 	    {
 	      const Geometry::Vec3D CPt=
 		(PCentre[preFlag-1]+PCentre[i])/2.0;
 	      SplitOrg.push_back(CPt);
-	      SplitAxis.push_back(Geometry::Vec3D(0,1,0));
+	      SplitAxis.push_back(Axis);
 	    }
 	  preFlag=i+1;
 	  
 	}
     }
+  ELog::EM<<"ASFASDF "<<SplitOrg.size()<<" "<<SplitAxis.size()<<ELog::endDiag;
   const std::vector<int> cells=
     FixedComp::splitObject(System,offsetCN,CN,
 			   SplitOrg,SplitAxis);
 
+  ELog::EM<<"ASFASDF "<<ELog::endDiag;
   if (!splitName.empty())
   for(const int CN : cells)
     CellMap::addCell(splitName,CN);

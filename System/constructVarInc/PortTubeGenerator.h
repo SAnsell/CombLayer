@@ -57,7 +57,7 @@ class PortTubeGenerator
   double flangeARadius;       ///< Flange radius
   double flangeBLen;          ///< Flange length
   double flangeBRadius;       ///< Flange radius
-    
+  
   std::string voidMat;          ///< Primary default mat
   std::string wallMat;          ///< Primary default mat
 

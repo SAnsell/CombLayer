@@ -285,7 +285,8 @@ diagUnit(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D PPos(0.0,DLength/4.0,0);
-  
+
+  PItemGen.setOuterVoid(1);
   PItemGen.setCF<setVariable::CF40>(2.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
   PItemGen.setCF<setVariable::CF63>(4.0);
@@ -504,7 +505,10 @@ COSAXvariables(FuncDataBase& Control)
   cosaxVar::opticsVariables(Control);
   cosaxVar::monoVariables(Control);
   cosaxVar::diagUnit(Control,"DiagBoxA");  
-  
+
+
+  PipeGen.generatePipe(Control,"CosaxJoinPipeB",0,1195.0);
+
   return;
 }
 

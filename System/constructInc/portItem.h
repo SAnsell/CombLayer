@@ -52,8 +52,9 @@ class portItem :
 {
  private:
 
-  size_t statusFlag;         ///< Flag to check object correct
-
+  bool statusFlag;           ///< Flag to check object correct
+  bool outerFlag;            ///< Make outer void
+  
   double externalLength;     ///< Length of item 
   double radius;             ///< radius of pipe
   double wall;               ///< wall thick
@@ -61,7 +62,7 @@ class portItem :
   double flangeLength;       ///< flange thick(length)
   double plateThick;         ///< Plate on flange [if thick>0]
 
-  bool outerVoid;            ///< Make outer void
+
   
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
@@ -97,7 +98,9 @@ class portItem :
   void setMaterial(const int,const int);
   void setFlange(const double,const double);
   void setCoverPlate(const double,const int= -1);
-
+  /// surround the object
+  void setWrapVolume() { outerFlag=1; }
+  
   void constructTrack(Simulation&);
   
   void intersectPair(Simulation&,const portItem&) const;

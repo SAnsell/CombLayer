@@ -101,7 +101,8 @@ COSAX::COSAX(const std::string& KN) :
   frontBeam(new FrontEnd(newName+"FrontBeam")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new cosaxOpticsLine(newName+"OpticsLine"))
+  opticsBeam(new cosaxOpticsLine(newName+"OpticsLine")),
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -116,6 +117,7 @@ COSAX::COSAX(const std::string& KN) :
   
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
+  OR.addObject(joinPipeB);
   
 }
 
@@ -171,6 +173,15 @@ COSAX::build(Simulation& System,
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
 
+  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
+  joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->setSpaceLinkCopy(1,*opticsHut,
+			 opticsHut->getSideIndex("-innerBack"));
+  joinPipeB->registerSpaceCut(1,0);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
+  System.removeCell(opticsHut->getCell("Void"));
 
   return;
 }

@@ -86,7 +86,10 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
-  void splitVoidPorts(Simulation&,const std::string&,const int,const int);
+  void splitVoidPorts(Simulation&,const std::string&,const int,
+		      const int,const std::vector<size_t>&);
+  void splitVoidPorts(Simulation&,const std::string&,const int,
+		      const int,const Geometry::Vec3D&);
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;

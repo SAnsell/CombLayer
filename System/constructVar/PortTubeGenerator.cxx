@@ -182,7 +182,7 @@ PortTubeGenerator::setBPort(const double R,const double L,
   /*!
     Set both the ports
     \param R :: radius of port tube
-    \param R :: lenght of port tube
+    \param L :: length of port tube
     \param T :: Thickness of port tube
    */
 {
@@ -333,7 +333,7 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-       
+  
   return;
 
 }
