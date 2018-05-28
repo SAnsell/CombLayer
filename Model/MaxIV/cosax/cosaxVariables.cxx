@@ -131,7 +131,7 @@ frontEndVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      110.0,30.0,15.0,15.0,210.0);
+		      115.0,30.0,15.0,15.0,210.0);
 
   // Wiggler
   Control.addVariable(frontKey+"WigglerLength",200.0);

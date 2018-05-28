@@ -271,9 +271,10 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   monoBox->addInsertCell(ContainedComp::getInsertCells());
   monoBox->registerSpaceCut(1,2);
   monoBox->createAll(System,*gateB,2);
+  monoBox->splitObject(System,2001,monoBox->getCell("OuterSpace"),
+		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
   slitsA->addInsertCell(ContainedComp::getInsertCells());
-  //  slitsA->setFront(*driftC,2);
   slitsA->registerSpaceCut(1,2);
   slitsA->createAll(System,*monoBox,2);
 
@@ -281,8 +282,6 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   bellowD->registerSpaceCut(1,2);
   bellowD->createAll(System,*slitsA,2);
 
-  lastComp=bellowD;
-  return;
   diagBoxA->addInsertCell(ContainedComp::getInsertCells());
   diagBoxA->registerSpaceCut(1,2);
   diagBoxA->createAll(System,*bellowD,2);

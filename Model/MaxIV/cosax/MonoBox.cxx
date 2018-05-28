@@ -344,12 +344,13 @@ MonoBox::createObjects(Simulation& System)
 
   // Screen void
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 1003 -1004 (-11:12:13:14) 5 -6");
+    (SMap,buildIndex,"1001 -1002 1003 -1004 (-11:12:-13:14) 5 -6 "
+     " (11:127) (-12:227)");
   CellMap::makeCell("ScreenVoid",System,cellIndex++,0,0.0,Out);
 
     
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 15 -16 ");
+    (SMap,buildIndex," 1001 -1002 1003 -1004 25 -26 ");
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
   addOuterUnionSurf(Out);
