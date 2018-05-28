@@ -344,6 +344,14 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("StubWall1", "StubWall2");
   Control.addVariable("StubWall2YStep",   350.0);
 
+  Control.addVariable("FEBLength",   350.0);
+  Control.addVariable("FEBWidthLeft", 1765.0);
+  Control.addVariable("FEBWidthRight", 514.0);
+  Control.addVariable("FEBHeight",   350.0);
+  Control.addVariable("FEBWallThick",   350.0);
+  Control.addVariable("FEBMainMat",   "Air"); // ???
+  Control.addVariable("FEBWallMat",   "SkanskaConcrete"); // ???
+
   return;
 }
 

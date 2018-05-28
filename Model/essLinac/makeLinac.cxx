@@ -74,6 +74,7 @@
 #include "LinkSupport.h"
 #include "FrontBackCut.h"
 
+#include "FrontEndBuilding.h"
 #include "Linac.h"
 #include "KlystronGallery.h"
 #include "Stub.h"
@@ -85,6 +86,7 @@ namespace essSystem
 {
 
 makeLinac::makeLinac() :
+  feb(new FrontEndBuilding("FEB")),
   LinacTunnel(new Linac("Linac")),
   KG(new KlystronGallery("KG")),
   berm(new Berm("Berm"))
@@ -95,6 +97,7 @@ makeLinac::makeLinac() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(feb);
   OR.addObject(LinacTunnel);
   OR.addObject(KG);
   OR.addObject(berm);
@@ -125,6 +128,9 @@ makeLinac::build(Simulation& System,
 
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
+  feb->addInsertCell(voidCell);
+  feb->createAll(System,*LinacTunnel,1);
+  
   KG->addInsertCell(voidCell);
   KG->createAll(System,*LinacTunnel,0);
 
@@ -132,6 +138,7 @@ makeLinac::build(Simulation& System,
   berm->createAll(System,*LinacTunnel,0,*KG,4,5);
 
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
+  attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
 
   const size_t Nstubs(2);
   for (size_t i=0; i<Nstubs; i++)

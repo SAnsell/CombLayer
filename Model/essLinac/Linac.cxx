@@ -385,7 +385,7 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
 
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
+  //  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
@@ -416,19 +416,19 @@ Linac::createObjects(Simulation& System)
 
   // side walls and roof
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 13 -14 5 -16 (-1:2:-3:4:6) ");
+				 " 1 -12 13 -14 5 -16 (-1:2:-3:4:6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   // wall bottom slab
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -5 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -24 15 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -13 5 -16 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -13 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,soilMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 -24 5 -16 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 14 -24 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,soilMat,0.0,Out));
 
   layerProcess(System, "air", 11, 12, nAirLayers, airMat);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
 
   return;
@@ -444,8 +444,8 @@ Linac::createLinks()
   ELog::RegMethod RegA("Linac","createLinks");
 
   // outer links
-  FixedComp::setConnect(0,Origin-Y*(lengthBack+wallThick),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+11));
+  FixedComp::setConnect(0,Origin-Y*(lengthBack),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));

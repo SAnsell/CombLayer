@@ -28,6 +28,7 @@ namespace essSystem
   class Linac;
   class KlystronGallery;
   class Berm;
+  class FrontEndBuilding;
 
   /*!
     \class makeLinac
@@ -41,6 +42,7 @@ class makeLinac
 {
  private:
 
+  std::shared_ptr<FrontEndBuilding> feb; ///< Front end building
   std::shared_ptr<Linac> LinacTunnel;   ///< Linac tunnel
   std::shared_ptr<KlystronGallery> KG;  ///< Klystron gallery
   std::shared_ptr<Berm> berm;           ///< Berm
