@@ -129,7 +129,6 @@ Linac::Linac(const Linac& A) :
   floorWidthRight(A.floorWidthRight),
   nAirLayers(A.nAirLayers),
   airMat(A.airMat),wallMat(A.wallMat),
-  soilMat(A.soilMat),
   nTSW(A.nTSW),
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
@@ -169,7 +168,6 @@ Linac::operator=(const Linac& A)
       nAirLayers=A.nAirLayers;
       airMat=A.airMat;
       wallMat=A.wallMat;
-      soilMat=A.soilMat;
       nTSW=A.nTSW;
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
@@ -212,7 +210,6 @@ Linac::populate(const FuncDataBase& Control)
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  soilMat=ModelSupport::EvalMat<int>(Control,keyName+"SoilMat");
   nTSW=Control.EvalVar<size_t>(keyName+"NTSW");
   nDTL=Control.EvalDefVar<size_t>(keyName+"NDTLTanks", 5);
 
@@ -469,7 +466,7 @@ Linac::createLinks()
 
   FixedComp::setConnect(13,Origin+X*(widthLeft),-X); // check left/right/location
   FixedComp::setLinkSurf(13,-SMap.realSurf(surfIndex+4));
-
+  
   FixedComp::setConnect(14,Origin-Z*(depth),Z);
   FixedComp::setLinkSurf(14,SMap.realSurf(surfIndex+5));
 
