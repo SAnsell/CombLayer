@@ -72,6 +72,8 @@ class PortTubeGenerator
   template<typename CF> void setCF();
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();
+  template<typename CF> void setAFlangeCF();
+  template<typename CF> void setBFlangeCF();
 
   /// set wall thickness  
   void setWallThick(const double T) { wallThick=T; }

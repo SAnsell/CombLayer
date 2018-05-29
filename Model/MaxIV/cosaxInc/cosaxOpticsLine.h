@@ -109,16 +109,25 @@ class cosaxOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
-  // jaws after mono
-  std::shared_ptr<constructSystem::JawValve> slitsA;
+  // ate
+  std::shared_ptr<constructSystem::GateValve> gateC;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Diagnostic unit 1:
   std::shared_ptr<constructSystem::PortTube> diagBoxA;
   /// Bellow from diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  // jaws for first mirror
-  std::shared_ptr<constructSystem::JawValve> slitsB;
+  // Gate fro first mirror
+  std::shared_ptr<constructSystem::GateValve> gateD;
+
+  /// Mirror box 
+  std::shared_ptr<constructSystem::VacuumBox> mirrorA;
+  // Gate fro first mirror
+  std::shared_ptr<constructSystem::GateValve> gateE;
+  /// Bellow to diagnositics
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// Diagnostic unit 1:
+  std::shared_ptr<constructSystem::PortTube> diagBoxB;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

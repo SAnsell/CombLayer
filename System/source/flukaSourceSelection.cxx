@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/SourceSelector.cxx
+ * File:   source/flukaSourceSelector.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

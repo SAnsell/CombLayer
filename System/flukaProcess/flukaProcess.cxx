@@ -197,9 +197,10 @@ setDefaultPhysics(SimFLUKA& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
-  
-  System.setNPS(IParam.getValue<size_t>("nps"));
+  ELog::RegMethod RegA("flukaProcess[F]","setDefaultPhysics");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
   System.setRND(IParam.getValue<long int>("random"));
 
 
