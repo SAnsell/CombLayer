@@ -217,7 +217,7 @@ PortTubeGenerator::setBPortOffset(const double XS,const double ZS)
   portBZStep=ZS;
   return;
 }
-  
+ 
 void
 PortTubeGenerator::setAFlange(const double R,const double L)
   /*!
@@ -263,7 +263,7 @@ template<typename CF>
 void
 PortTubeGenerator::setBPortCF()
   /*!
-    Setter for prot B
+    Setter for port B
    */
 {
   portBTubeRadius=CF::innerRadius;
@@ -274,6 +274,34 @@ PortTubeGenerator::setBPortCF()
   return;
 }
 
+
+template<typename CF>
+void
+PortTubeGenerator::setAFlangeCF()
+  /*!
+    Set all the flange values 
+    based on CF template
+   */
+{
+  flangeARadius=CF::flangeRadius;
+  flangeALen=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+PortTubeGenerator::setBFlangeCF()
+  /*!
+    Set all the flange values 
+    based on CF template
+   */
+{
+  flangeBRadius=CF::flangeRadius;
+  flangeBLen=CF::flangeLength;
+  return;
+}
+
+  
 template<typename CF>
 void
 PortTubeGenerator::setCF()
@@ -346,12 +374,20 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   template void PortTubeGenerator::setAPortCF<CF40>();
   template void PortTubeGenerator::setAPortCF<CF63>();
   template void PortTubeGenerator::setAPortCF<CF100>();
-  template void PortTubeGenerator::setAPortCF<CF120>();
+  template void PortTubeGenerator::setAPortCF<CF120>(); 
   template void PortTubeGenerator::setBPortCF<CF40>();
   template void PortTubeGenerator::setBPortCF<CF63>();
   template void PortTubeGenerator::setBPortCF<CF100>();
   template void PortTubeGenerator::setBPortCF<CF120>();
-  
+  template void PortTubeGenerator::setAFlangeCF<CF40>();
+  template void PortTubeGenerator::setAFlangeCF<CF63>();
+  template void PortTubeGenerator::setAFlangeCF<CF100>();
+  template void PortTubeGenerator::setAFlangeCF<CF120>();
+  template void PortTubeGenerator::setBFlangeCF<CF40>();
+  template void PortTubeGenerator::setBFlangeCF<CF63>();
+  template void PortTubeGenerator::setBFlangeCF<CF100>();
+  template void PortTubeGenerator::setBFlangeCF<CF120>();
+ 
 ///\endcond TEMPLATE
 
 }  // NAMESPACE setVariable

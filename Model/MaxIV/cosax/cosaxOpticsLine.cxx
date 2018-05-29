@@ -120,11 +120,15 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),  
   gateB(new constructSystem::GateValve(newName+"GateB")),
   monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
-  slitsA(new constructSystem::JawValve(newName+"SlitsA")),
+  gateC(new constructSystem::GateValve(newName+"GateC")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  slitsB(new constructSystem::JawValve(newName+"SlitsB"))
+  gateD(new constructSystem::GateValve(newName+"GateD")),
+  mirrorA(new constructSystem::VacuumBox(newName+"MirrorA")),
+  gateE(new constructSystem::GateValve(newName+"GateE")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),  
+  diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -147,11 +151,14 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(gateB);
   OR.addObject(monoBox);
-  OR.addObject(slitsA);
+  OR.addObject(gateC);
   OR.addObject(bellowD);
   OR.addObject(diagBoxA);
   OR.addObject(bellowE);
-  OR.addObject(slitsB);      
+  OR.addObject(gateD);
+  OR.addObject(mirrorA);
+  OR.addObject(gateE);
+  OR.addObject(diagBoxB);
 }
   
 cosaxOpticsLine::~cosaxOpticsLine()
@@ -278,14 +285,14 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   monoBox->splitObject(System,2001,monoBox->getCell("OuterSpace"),
 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
-  slitsA->addInsertCell(ContainedComp::getInsertCells());
-  slitsA->registerSpaceCut(1,2);
-  slitsA->createAll(System,*monoBox,2);
+  gateC->addInsertCell(ContainedComp::getInsertCells());
+  gateC->registerSpaceCut(1,2);
+  gateC->createAll(System,*monoBox,2);
 
 
   bellowD->addInsertCell(ContainedComp::getInsertCells());
   bellowD->registerSpaceCut(1,2);
-  bellowD->createAll(System,*slitsA,2);
+  bellowD->createAll(System,*gateC,2);
 
 
   diagBoxA->addInsertCell(ContainedComp::getInsertCells());
@@ -295,20 +302,43 @@ cosaxOpticsLine::buildObjects(Simulation& System)
 			   diagBoxA->getBuildCell(),
 			   {0,1, 1,2});
 
-  lastComp=diagBoxA;
-  return;
+  diagBoxA->splitObject(System,-11,diagBoxA->getCell("SplitOuter",0));
+  diagBoxA->splitObject(System,12,diagBoxA->getCell("SplitOuter",2));
 
   bellowE->addInsertCell(ContainedComp::getInsertCells());
   bellowE->registerSpaceCut(1,2);
   bellowE->createAll(System,*diagBoxA,2);
 
   
-  slitsB->addInsertCell(ContainedComp::getInsertCells());
-  slitsB->registerSpaceCut(1,2);
-  slitsB->createAll(System,*bellowE,2);
+  gateD->addInsertCell(ContainedComp::getInsertCells());
+  gateD->registerSpaceCut(1,2);
+  gateD->createAll(System,*bellowE,2);
 
-  lastComp=slitsB;
+  mirrorA->addInsertCell(ContainedComp::getInsertCells());
+  mirrorA->registerSpaceCut(1,2);
+  mirrorA->createAll(System,*gateD,2);
 
+  gateE->addInsertCell(ContainedComp::getInsertCells());
+  gateE->registerSpaceCut(1,2);
+  gateE->createAll(System,*mirrorA,2);
+
+  bellowF->addInsertCell(ContainedComp::getInsertCells());
+  bellowF->registerSpaceCut(1,2);
+  bellowF->createAll(System,*gateE,2);
+
+  diagBoxB->addInsertCell(ContainedComp::getInsertCells());
+  diagBoxB->registerSpaceCut(1,2);
+  diagBoxB->createAll(System,*bellowF,2);
+  // diagBoxB->splitVoidPorts(System,"SplitOuter",2001,
+  // 			   diagBoxB->getBuildCell(),
+  // 			   {0,1, 1,2});
+
+  // diagBoxB->splitObject(System,-11,diagBoxB->getCell("SplitOuter",0));
+  // diagBoxB->splitObject(System,12,diagBoxB->getCell("SplitOuter",2));
+  
+  
+ 
+  lastComp=diagBoxB;
   return;
 }
 

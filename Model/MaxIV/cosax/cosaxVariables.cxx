@@ -251,17 +251,38 @@ monoVariables(FuncDataBase& Control)
 }
 
 void
-diagUnit(FuncDataBase& Control,
-	 const std::string& postName)
+mirrorBox(FuncDataBase& Control,const std::string& Name)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
-    \param postName :: component name
+    \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("","diagUnit");
+  setVariable::MonoBoxGenerator VBoxGen;
 
-  const std::string preName("CosaxOpticsLine");
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
+
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,Name,0.0,53.1,23.6,29.5,124.0);
+
+  return;
+}
+
+void
+diagUnit(FuncDataBase& Control,const std::string& Name)
+  /*!
+    Construct variables for the diagnostic units
+    \param Control :: Database
+    \param Name :: component name
+  */
+{
+  ELog::RegMethod RegA("cosaxVariables[F]","diagUnit");
+
+
   const double DLength(55.0);         // diag length [checked]
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -272,15 +293,16 @@ diagUnit(FuncDataBase& Control,
   // length 425+ 75 (a) 50 b
   PTubeGen.setCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
+  PTubeGen.setBFlangeCF<CF63>();
   PTubeGen.setPortLength(-5.0,-7.5);
   PTubeGen.setAPortOffset(2.45,0);
   PTubeGen.setBPortOffset(2.45,0);
   
   // ystep/radius length
-  PTubeGen.generateTube(Control,preName+postName,0.0,7.5,DLength);
-  Control.addVariable(preName+postName+"NPorts",7);
+  PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
+  Control.addVariable(Name+"NPorts",7);
 
-  const std::string portName=preName+postName+"Port";
+  const std::string portName=Name+"Port";
   const Geometry::Vec3D MidPt(0,0,0);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -291,6 +313,63 @@ diagUnit(FuncDataBase& Control,
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
   PItemGen.setCF<setVariable::CF63>(4.0);
   PItemGen.generatePort(Control,portName+"1",MidPt,ZVec);
+  PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
+  // view port
+  PItemGen.setCF<setVariable::CF63>(8.0);
+  PItemGen.generatePort(Control,portName+"3",
+			Geometry::Vec3D(0,DLength/5.0,0),
+			Geometry::Vec3D(-1,-1,0));
+
+    //  flange for diamond filter view
+  PItemGen.setCF<setVariable::CF40>(4.0);
+  PItemGen.generatePort(Control,portName+"4",
+			Geometry::Vec3D(0,0.3*DLength,0),XVec);
+  PItemGen.generatePort(Control,portName+"5",
+			Geometry::Vec3D(0,0.3*DLength,0),-XVec);
+
+  // ion pump port
+  PItemGen.setCF<setVariable::CF100>(7.5);
+  PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
+
+  return;
+}
+
+void
+diagUnit2(FuncDataBase& Control,const std::string& Name)
+  /*!
+    Construct variables for the small diagnostic units
+    \param Control :: Database
+    \param Name :: component name
+  */
+{
+  ELog::RegMethod RegA("cosaxVariables[F]","diagUnit");
+
+
+  const double DLength(35.0);         // diag length [checked]
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  
+  PTubeGen.setMat("Stainless304");
+
+  // ports offset by 24.5mm in x direction
+  // length 425+ 75 (a) 50 b
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(-5.0,-5.0);
+  // ystep/radius length
+  PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
+  Control.addVariable(Name+"NPorts",4);
+
+  const std::string portName=Name+"Port";
+  const Geometry::Vec3D MidPt(0,0,0);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D PPos(0.0,DLength/6.0,0);
+
+  PItemGen.setOuterVoid(1);
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.generatePort(Control,portName+"1",MidPt,XVec);
   PItemGen.generatePort(Control,portName+"2",PPos,ZVec);
   // view port
   PItemGen.setCF<setVariable::CF63>(8.0);
@@ -426,34 +505,39 @@ opticsVariables(FuncDataBase& Control)
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
   
-  GateGen.setCF<setVariable::CF40>();
+  GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
-  // SLITS
-  JawGen.setCF<setVariable::CF63>();
-  JawGen.setLength(4.0);
-  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
-  JawGen.generateSlits(Control,preName+"SlitsA",0.0,0.8,0.8);
+  cosaxVar::monoVariables(Control);
+
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
 
-  // diag unit 1 :
+  cosaxVar::diagUnit(Control,preName+"DiagBoxA");
+
   
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
-  // SLITS
-  JawGen.setCF<setVariable::CF100>();
-  JawGen.setLength(8.0);
-  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
-  JawGen.generateSlits(Control,preName+"SlitsB",0.0,0.8,0.8);
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateD",0.0,0);
   
+  cosaxVar::mirrorBox(Control,preName+"MirrorA");
 
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+
+  cosaxVar::diagUnit2(Control,preName+"DiagBoxB");
+  
   return;
 }
 
@@ -503,8 +587,6 @@ COSAXvariables(FuncDataBase& Control)
 
   cosaxVar::opticsCaveVariables(Control);
   cosaxVar::opticsVariables(Control);
-  cosaxVar::monoVariables(Control);
-  cosaxVar::diagUnit(Control,"DiagBoxA");  
 
 
   PipeGen.generatePipe(Control,"CosaxJoinPipeB",0,1195.0);
