@@ -236,26 +236,17 @@ FrontEndBuilding::createObjects(Simulation& System,
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ") +
-    FC.getLinkString(floorIndexTop) +
-    FC.getLinkString(roofIndexLow);
+    FC.getLinkString(floorIndexTop) + FC.getLinkString(roofIndexLow);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ") +
-    FC.getLinkString(-floorIndexLow) + FC.getLinkString(-floorIndexTop);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  HeadRule HR;
+  HR.procString(Out);
+  HR.makeComplement();
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ") +
-    FC.getLinkString(-roofIndexLow) + FC.getLinkString(-roofIndexTop);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 ") +
+    FC.getLinkString(-floorIndexLow) + FC.getLinkString(-roofIndexTop);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -1 3 -4 ") +
-    FC.getLinkString(-floorIndexLow) +
-    FC.getLinkString(-roofIndexTop);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -2 3 -4 ") +
-    FC.getLinkString(-floorIndexLow) +
-    FC.getLinkString(-roofIndexTop);
   addOuterSurf(Out);
 
   return;
