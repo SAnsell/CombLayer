@@ -376,7 +376,6 @@ opticsVariables(FuncDataBase& Control)
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,"BalderSlitsA",0.0,0.8,0.8);
 
-
   PTubeGen.setCF<CF100>();
   PTubeGen.setPortLength(1.0,1.0);
   // ystep/width/height/depth/length

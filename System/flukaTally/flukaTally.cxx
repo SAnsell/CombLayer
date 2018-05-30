@@ -204,8 +204,7 @@ flukaTally::setDoseType(const std::string& P,
   const flukaGenParticle& FG=flukaGenParticle::Instance();
   
   auxParticle=StrFunc::toUpperString(FG.nameToFLUKA(P));
-  
-  const std::string Dupper=StrFunc::toUpperString(D);
+   const std::string Dupper=StrFunc::toUpperString(D);
   if (validDose.find(Dupper)==validDose.end())
     throw ColErr::InContainerError<std::string>(D,"Dose type not known");
 

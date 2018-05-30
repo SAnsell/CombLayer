@@ -152,6 +152,10 @@ setDoseType(SimFLUKA& Sim,const std::string& tName,
   const std::set<flukaTally*> ATallySet=
     getActiveTally(Sim,tName);
 
+  if (ATallySet.empty())
+    throw ColErr::InContainerError<std::string>
+      (tName,"Unknown tally");
+  
   for(flukaTally* mc: ATallySet)
     mc->setDoseType(particle,doseType);
 
