@@ -209,6 +209,9 @@ FrontEndBuilding::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+wallThick),Y);
 
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
+
   return;
 }
 
