@@ -108,6 +108,9 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   shieldWall1Offset(A.shieldWall1Offset),
   shieldWall1Thick(A.shieldWall1Thick),
   shieldWall1Length(A.shieldWall1Length),
+  shieldWall2Offset(A.shieldWall2Offset),
+  shieldWall2Thick(A.shieldWall2Thick),
+  shieldWall2Length(A.shieldWall2Length),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -136,6 +139,9 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       shieldWall1Offset=A.shieldWall1Offset;
       shieldWall1Thick=A.shieldWall1Thick;
       shieldWall1Length=A.shieldWall1Length;
+      shieldWall2Offset=A.shieldWall2Offset;
+      shieldWall2Thick=A.shieldWall2Thick;
+      shieldWall2Length=A.shieldWall2Length;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -177,6 +183,9 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   shieldWall1Offset=Control.EvalVar<double>(keyName+"ShieldWall1Offset");
   shieldWall1Thick=Control.EvalVar<double>(keyName+"ShieldWall1Thick");
   shieldWall1Length=Control.EvalVar<double>(keyName+"ShieldWall1Length");
+  shieldWall2Offset=Control.EvalVar<double>(keyName+"ShieldWall2Offset");
+  shieldWall2Thick=Control.EvalVar<double>(keyName+"ShieldWall2Thick");
+  shieldWall2Length=Control.EvalVar<double>(keyName+"ShieldWall2Length");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -224,8 +233,18 @@ FrontEndBuilding::createSurfaces()
   // shield wall 1
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldWall1Length),Y);
   ModelSupport::buildPlane(SMap,surfIndex+103,Origin+X*(shieldWall1Offset),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,
-			   Origin+X*(shieldWall1Offset+shieldWall1Thick),X);
+   ModelSupport::buildPlane(SMap,surfIndex+104,
+  			   Origin+X*(shieldWall1Offset+shieldWall1Thick),X);
+
+  // shield wall 2
+  ModelSupport::buildPlane(SMap,surfIndex+201,Origin+Y*(shieldWall2Offset),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+202,Origin+Y*(shieldWall2Offset+shieldWall2Thick),Y);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+204,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+104),
+				  shieldWall2Length);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+213,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+204),
+				  -shieldWall2Thick);
 
   return;
 }
@@ -252,17 +271,35 @@ FrontEndBuilding::createObjects(Simulation& System,
   const std::string airTB(FC.getLinkString(floorIndexTop) +
 			  FC.getLinkString(roofIndexLow));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -103 ")+airTB;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -103 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 103 -104 ")+airTB;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 103 -104 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 103 -104 ")+airTB;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 103 -104 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 -4 ")+airTB;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 201 -202 104 -204 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -102 213 -204 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 213 -204 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 201 -202 204 -4 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -201 104 -4 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -2 204 -4 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -2 104 -213 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ")+airTB;

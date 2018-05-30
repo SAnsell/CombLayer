@@ -49,9 +49,12 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall
-  double shieldWall1Offset; ///< Shield wall1 offset
-  double shieldWall1Thick; ///< Shield wall thick
-  double shieldWall1Length; ///< Shield wall1 length
+  double shieldWall1Offset; ///< Shield wall 1 offset
+  double shieldWall1Thick;  ///< Shield wall 1 thick
+  double shieldWall1Length; ///< Shield wall 1 length
+  double shieldWall2Offset; ///< Shield wall 2 offset
+  double shieldWall2Thick;  ///< Shield wall 2 thick
+  double shieldWall2Length; ///< Shield wall 2 length
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
