@@ -105,6 +105,9 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   widthRight(A.widthRight),
   height(A.height),
   wallThick(A.wallThick),
+  shieldWall1Offset(A.shieldWall1Offset),
+  shieldWall1Thick(A.shieldWall1Thick),
+  shieldWall1Length(A.shieldWall1Length),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -130,6 +133,9 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       widthRight=A.widthRight;
       height=A.height;
       wallThick=A.wallThick;
+      shieldWall1Offset=A.shieldWall1Offset;
+      shieldWall1Thick=A.shieldWall1Thick;
+      shieldWall1Length=A.shieldWall1Length;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -168,6 +174,9 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  shieldWall1Offset=Control.EvalVar<double>(keyName+"ShieldWall1Offset");
+  shieldWall1Thick=Control.EvalVar<double>(keyName+"ShieldWall1Thick");
+  shieldWall1Length=Control.EvalVar<double>(keyName+"ShieldWall1Length");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -212,6 +221,12 @@ FrontEndBuilding::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft+wallThick),X);
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
 
+  // shield wall 1
+  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldWall1Length),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin+X*(shieldWall1Offset),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,
+			   Origin+X*(shieldWall1Offset+shieldWall1Thick),X);
+
   return;
 }
 
@@ -234,10 +249,23 @@ FrontEndBuilding::createObjects(Simulation& System,
   ELog::RegMethod RegA("FrontEndBuilding","createObjects");
 
   std::string Out;
+  const std::string airTB(FC.getLinkString(floorIndexTop) +
+			  FC.getLinkString(roofIndexLow));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ") +
-    FC.getLinkString(floorIndexTop) + FC.getLinkString(roofIndexLow);
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -103 ")+airTB;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 103 -104 ")+airTB;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 103 -104 ")+airTB;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 -4 ")+airTB;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ")+airTB;
 
   HeadRule HR;
   HR.procString(Out);

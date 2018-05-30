@@ -287,7 +287,7 @@ EssLinacVariables(FuncDataBase& Control)
   EssLinacPMQVariables(Control);
 
   // Klystron Gallery
-  Control.addParse<double>("KGLengthBack", "LinacLengthBack");
+  Control.addParse<double>("KGLengthBack", "LinacLengthBack-100"); // -100 to avoid intersection with FEB
   Control.addParse<double>("KGLengthFront", "LinacLengthFront");
   // KG dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   Control.addVariable("KGWidthLeft", 800);
@@ -333,13 +333,16 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("StubWall1", "StubWall2");
   Control.addVariable("StubWall2YStep",   350.0);
 
-  Control.addVariable("FEBLength",   2000.0); // ???
-  Control.addVariable("FEBWidthLeft", 1765.0);
-  Control.addVariable("FEBWidthRight", 514.0);
-  Control.addVariable("FEBHeight",   350.0);
-  Control.addVariable("FEBWallThick", 20.0);
+  Control.addVariable("FEBLength",   2000.0);   // ???
+  Control.addVariable("FEBWidthRight", 1765.0); // ???
+  Control.addVariable("FEBWidthLeft", 514.0);   // ???
+  Control.addVariable("FEBHeight",   350.0); // ???
+  Control.addVariable("FEBWallThick", 20.0); // ???
   Control.addVariable("FEBMainMat",   "Air"); // ???
   Control.addVariable("FEBWallMat",   "SkanskaConcrete"); // ???
+  Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
+  Control.addVariable("FEBShieldWall1Thick", 100.0);
+  Control.addVariable("FEBShieldWall1Length", 1700.0);
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
