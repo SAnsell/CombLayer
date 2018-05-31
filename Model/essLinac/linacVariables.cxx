@@ -348,6 +348,9 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("FEBShieldWall2Thick", "FEBShieldWall1Thick");
   Control.addVariable("FEBShieldWall2Length", 500.0);
 
+  Control.addVariable("FEBLedgeLength", 500.0);
+  Control.addVariable("FEBLedgeWidth", 500.0);
+
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");

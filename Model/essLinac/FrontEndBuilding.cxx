@@ -111,6 +111,8 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   shieldWall2Offset(A.shieldWall2Offset),
   shieldWall2Thick(A.shieldWall2Thick),
   shieldWall2Length(A.shieldWall2Length),
+  ledgeLength(A.ledgeLength),
+  ledgeWidth(A.ledgeWidth),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -142,6 +144,8 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       shieldWall2Offset=A.shieldWall2Offset;
       shieldWall2Thick=A.shieldWall2Thick;
       shieldWall2Length=A.shieldWall2Length;
+      ledgeLength=A.ledgeLength;
+      ledgeWidth=A.ledgeWidth;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -186,6 +190,8 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   shieldWall2Offset=Control.EvalVar<double>(keyName+"ShieldWall2Offset");
   shieldWall2Thick=Control.EvalVar<double>(keyName+"ShieldWall2Thick");
   shieldWall2Length=Control.EvalVar<double>(keyName+"ShieldWall2Length");
+  ledgeLength=Control.EvalVar<double>(keyName+"LedgeLength");
+  ledgeWidth=Control.EvalVar<double>(keyName+"LedgeWidth");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -245,6 +251,28 @@ FrontEndBuilding::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,surfIndex+213,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+204),
 				  -shieldWall2Thick);
+
+  // ledge
+  ModelSupport::buildPlane(SMap,surfIndex+301,
+			   Origin+Y*(length-ledgeLength)/2.0,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+302,
+			   Origin+Y*(length+ledgeLength)/2.0,Y);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+303,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+13),
+				  -ledgeWidth);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+311,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+301),
+				  -wallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+312,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+302),
+				  wallThick);
+
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+313,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+303),
+				  -wallThick);
 
   return;
 }
@@ -313,6 +341,11 @@ FrontEndBuilding::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
 
   addOuterSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 301 -302 303 -13 ")+airTB;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+  addOuterUnionSurf(Out);
 
   return;
 }
