@@ -46,7 +46,6 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   double length;                ///< Total length including void
   double widthLeft;             ///< Width left x-
   double widthRight; ///< Width right x+
-  double height;                ///< height
 
   double wallThick;             ///< Thickness of wall
   double shieldWall1Offset; ///< Shield wall 1 offset

@@ -103,7 +103,6 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   length(A.length),
   widthLeft(A.widthLeft),
   widthRight(A.widthRight),
-  height(A.height),
   wallThick(A.wallThick),
   shieldWall1Offset(A.shieldWall1Offset),
   shieldWall1Thick(A.shieldWall1Thick),
@@ -136,7 +135,6 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       length=A.length;
       widthLeft=A.widthLeft;
       widthRight=A.widthRight;
-      height=A.height;
       wallThick=A.wallThick;
       shieldWall1Offset=A.shieldWall1Offset;
       shieldWall1Thick=A.shieldWall1Thick;
@@ -182,7 +180,6 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
   widthRight=Control.EvalVar<double>(keyName+"WidthRight");
-  height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   shieldWall1Offset=Control.EvalVar<double>(keyName+"ShieldWall1Offset");
   shieldWall1Thick=Control.EvalVar<double>(keyName+"ShieldWall1Thick");
