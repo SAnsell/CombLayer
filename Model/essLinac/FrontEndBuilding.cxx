@@ -112,6 +112,7 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   shieldWall2Length(A.shieldWall2Length),
   ledgeLength(A.ledgeLength),
   ledgeWidth(A.ledgeWidth),
+  ledgeWallThick(A.ledgeWallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -144,6 +145,7 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       shieldWall2Length=A.shieldWall2Length;
       ledgeLength=A.ledgeLength;
       ledgeWidth=A.ledgeWidth;
+      ledgeWallThick=A.ledgeWallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -189,6 +191,7 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   shieldWall2Length=Control.EvalVar<double>(keyName+"ShieldWall2Length");
   ledgeLength=Control.EvalVar<double>(keyName+"LedgeLength");
   ledgeWidth=Control.EvalVar<double>(keyName+"LedgeWidth");
+  ledgeWallThick=Control.EvalVar<double>(keyName+"LedgeWallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -261,15 +264,15 @@ FrontEndBuilding::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+311,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+301),
-				  -wallThick);
+				  -ledgeWallThick);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+312,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+302),
-				  wallThick);
+				  ledgeWallThick);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+313,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+303),
-				  -wallThick);
+				  -ledgeWallThick);
 
   return;
 }

@@ -56,6 +56,7 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   double shieldWall2Length; ///< Shield wall 2 length
   double ledgeLength; ///< Ledge length
   double ledgeWidth; ///< Ledge width
+  double ledgeWallThick; ///< Ledge wall thick
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
