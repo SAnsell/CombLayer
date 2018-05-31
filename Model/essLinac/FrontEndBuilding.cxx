@@ -338,11 +338,14 @@ FrontEndBuilding::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 ") +
     FC.getLinkString(-floorIndexLow) + FC.getLinkString(-roofIndexTop);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 301 -302 303 -13 ")+airTB;
+  // gap in the wall for the ledge
+  Out += ModelSupport::getComposite(SMap,surfIndex," (-301:302:3:") +
+    FC.getLinkString(-floorIndexTop)+":"+FC.getLinkString(-roofIndexLow)+")";
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 301 -302 303 -3 ")+airTB;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
   HR.procString(Out);
