@@ -345,6 +345,13 @@ FrontEndBuilding::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 301 -302 303 -13 ")+airTB;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
+  HR.procString(Out);
+  HR.makeComplement();
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 311 -312 313 -13 ") +
+  FC.getLinkString(-floorIndexLow) + FC.getLinkString(-roofIndexTop);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+
   addOuterUnionSurf(Out);
 
   return;
