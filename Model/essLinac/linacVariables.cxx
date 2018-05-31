@@ -288,13 +288,13 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Klystron Gallery
   Control.addParse<double>("KGLengthBack", "LinacLengthBack-100"); // -100 to avoid intersection with FEB
-  Control.addParse<double>("KGLengthFront", "LinacLengthFront");
+  Control.addVariable("KGWallThick", 20);
+  Control.addParse<double>("KGLengthFront", "37957.5-KGWallThick"); // ESS-0025905, number is approx
   // KG dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   Control.addVariable("KGWidthLeft", 800);
   Control.addVariable("KGWidthRight", 800);
   Control.addVariable("KGHeight", 647/2.0);
   Control.addVariable("KGDepth", 647/2.0);
-  Control.addVariable("KGWallThick", 20);
   Control.addVariable("KGRoofThick", 27.6);
   Control.addVariable("KGFloorThick", 20);
   Control.addVariable("KGRoofAngle", 4.0); // calculated
@@ -316,11 +316,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub1MainMat", "Air");
   Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // check
 
-  const double Stub1YStep(1845.0); // MARS
-  Control.addVariable("Stub1YStep", Stub1YStep);
+  Control.addVariable("Stub1YStep", 1845.0); // ESS-0025905 and MARS
 
   Control.copyVarSet("Stub1", "Stub2");
-  Control.addVariable("Stub2YStep", 1916.5+Stub1YStep); // measured + MARS
+  Control.addVariable("Stub2YStep", 3761.5); // ESS-0025905 and MARS
 
   // Stub walls in the Klystron Gallery
   Control.addVariable("StubWall1Length",  260.0);
@@ -333,23 +332,23 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("StubWall1", "StubWall2");
   Control.addVariable("StubWall2YStep",   350.0);
 
-  Control.addVariable("FEBLength",   2000.0);   // ???
-  Control.addVariable("FEBWidthRight", 1765.0); // ???
-  Control.addVariable("FEBWidthLeft", 514.0);   // ???
-  Control.addVariable("FEBHeight",   350.0); // ???
-  Control.addVariable("FEBWallThick", 20.0); // ???
+  Control.addVariable("FEBLength",     2000.0);
+  Control.addVariable("FEBWidthRight", 2667.0);
+  Control.addVariable("FEBWidthLeft",   514.0);
+  Control.addVariable("FEBWallThick",    50.0);
   Control.addVariable("FEBMainMat",   "Air"); // ???
   Control.addVariable("FEBWallMat",   "SkanskaConcrete"); // ???
   Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
   Control.addVariable("FEBShieldWall1Thick", 100.0);
-  Control.addVariable("FEBShieldWall1Length", 1700.0);
+  Control.addVariable("FEBShieldWall1Length", 1678.0);
 
-  Control.addVariable("FEBShieldWall2Offset", 1300.0);
+  Control.addVariable("FEBShieldWall2Offset", 1300.0); //???
   Control.addParse<double>("FEBShieldWall2Thick", "FEBShieldWall1Thick");
-  Control.addVariable("FEBShieldWall2Length", 500.0);
+  Control.addVariable("FEBShieldWall2Length", 500.0); //???
 
-  Control.addVariable("FEBLedgeLength", 500.0);
-  Control.addVariable("FEBLedgeWidth", 500.0);
+  Control.addVariable("FEBLedgeLength", 500.0); //???
+  Control.addVariable("FEBLedgeWidth", 500.0); //???
+  Control.addVariable("FEBLedgeWallThick", 70.0); //???
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
