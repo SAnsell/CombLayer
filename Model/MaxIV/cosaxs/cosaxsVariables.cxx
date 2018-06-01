@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   cosax/cosaxVariables.cxx
+ * File:   cosaxs/cosaxsVariables.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -64,11 +64,12 @@
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
+#include "JawFlangeGenerator.h"
 
 namespace setVariable
 {
 
-namespace cosaxVar
+namespace cosaxsVar
 {
   
 void
@@ -79,31 +80,31 @@ frontCaveVariables(FuncDataBase& Control,const double YStep)
     \param YStep :: offset
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","frontCaveVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","frontCaveVariables");
 
-  Control.addVariable("CosaxFrontEndWallYStep",YStep);
-  Control.addVariable("CosaxFrontEndFrontWallThick",160.0);
+  Control.addVariable("CosaxsFrontEndWallYStep",YStep);
+  Control.addVariable("CosaxsFrontEndFrontWallThick",160.0);
   
-  Control.addVariable("CosaxFrontEndLength",2100.0);
-  Control.addVariable("CosaxFrontEndRingGap",75.0);
-  Control.addVariable("CosaxFrontEndRingRadius",4000.0);
-  Control.addVariable("CosaxFrontEndRingThick",80.0);
+  Control.addVariable("CosaxsFrontEndLength",2100.0);
+  Control.addVariable("CosaxsFrontEndRingGap",75.0);
+  Control.addVariable("CosaxsFrontEndRingRadius",4000.0);
+  Control.addVariable("CosaxsFrontEndRingThick",80.0);
 
-  Control.addVariable("CosaxFrontEndOuterGap",75.0);
-  Control.addVariable("CosaxFrontEndOuterThick",80.0);
+  Control.addVariable("CosaxsFrontEndOuterGap",75.0);
+  Control.addVariable("CosaxsFrontEndOuterThick",80.0);
 
-  Control.addVariable("CosaxFrontEndFloorDepth",75.0);
-  Control.addVariable("CosaxFrontEndFloorThick",80.0);
+  Control.addVariable("CosaxsFrontEndFloorDepth",75.0);
+  Control.addVariable("CosaxsFrontEndFloorThick",80.0);
 
-  Control.addVariable("CosaxFrontEndRoofHeight",75.0);
-  Control.addVariable("CosaxFrontEndRoofThick",80.0);
+  Control.addVariable("CosaxsFrontEndRoofHeight",75.0);
+  Control.addVariable("CosaxsFrontEndRoofThick",80.0);
 
-  Control.addVariable("CosaxFrontEndFrontHoleRadius",7.0);
+  Control.addVariable("CosaxsFrontEndFrontHoleRadius",7.0);
   
-  Control.addVariable("CosaxFrontEndFrontWallMat","Concrete");
-  Control.addVariable("CosaxFrontEndWallMat","Concrete");
-  Control.addVariable("CosaxFrontEndFloorMat","Concrete");
-  Control.addVariable("CosaxFrontEndRoofMat","Concrete");
+  Control.addVariable("CosaxsFrontEndFrontWallMat","Concrete");
+  Control.addVariable("CosaxsFrontEndWallMat","Concrete");
+  Control.addVariable("CosaxsFrontEndFloorMat","Concrete");
+  Control.addVariable("CosaxsFrontEndRoofMat","Concrete");
   return;
 }
   
@@ -116,7 +117,7 @@ frontEndVariables(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","frontEndVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","frontEndVariables");
 
   setVariable::PipeGenerator PipeGen;
   setVariable::PortTubeGenerator PTubeGen;
@@ -194,9 +195,9 @@ opticsCaveVariables(FuncDataBase& Control)
     \param Control :: Database
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","opticsCaveVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","opticsCaveVariables");
 
-  const std::string preName("CosaxOpticsHut");
+  const std::string preName("CosaxsOpticsHut");
 
   Control.addVariable(preName+"Depth",132.0);
   Control.addVariable(preName+"Height",250.0);
@@ -230,8 +231,8 @@ monoVariables(FuncDataBase& Control)
     \param Control :: DataBase to use
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","monoVariables");
-  const std::string preName("CosaxOpticsLine");
+  ELog::RegMethod RegA("cosaxsVariables[F]","monoVariables");
+  const std::string preName("CosaxsOpticsLine");
   
   setVariable::MonoBoxGenerator VBoxGen;
 
@@ -280,7 +281,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","diagUnit");
+  ELog::RegMethod RegA("cosaxsVariables[F]","diagUnit");
 
 
   const double DLength(55.0);         // diag length [checked]
@@ -342,7 +343,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","diagUnit");
+  ELog::RegMethod RegA("cosaxsVariables[F]","diagUnit");
 
 
   const double DLength(35.0);         // diag length [checked]
@@ -399,9 +400,9 @@ opticsVariables(FuncDataBase& Control)
     \param Control :: Function data base
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","opticsVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","opticsVariables");
 
-  const std::string preName("CosaxOpticsLine");
+  const std::string preName("CosaxsOpticsLine");
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
@@ -414,6 +415,7 @@ opticsVariables(FuncDataBase& Control)
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
+  setVariable::JawFlangeGenerator JawFlangeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -511,7 +513,7 @@ opticsVariables(FuncDataBase& Control)
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
-  cosaxVar::monoVariables(Control);
+  cosaxsVar::monoVariables(Control);
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
@@ -519,7 +521,7 @@ opticsVariables(FuncDataBase& Control)
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
 
-  cosaxVar::diagUnit(Control,preName+"DiagBoxA");
+  cosaxsVar::diagUnit(Control,preName+"DiagBoxA");
 
   
   BellowGen.setCF<setVariable::CF63>();
@@ -528,7 +530,7 @@ opticsVariables(FuncDataBase& Control)
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
   
-  cosaxVar::mirrorBox(Control,preName+"MirrorA");
+  cosaxsVar::mirrorBox(Control,preName+"MirrorA");
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
@@ -536,7 +538,10 @@ opticsVariables(FuncDataBase& Control)
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
 
-  cosaxVar::diagUnit2(Control,preName+"DiagBoxB");
+  cosaxsVar::diagUnit2(Control,preName+"DiagBoxB");
+
+  JawFlangeGenerator JFlanGen;
+  JFlanGen.generateFlange(Control,preName+"JawBUnit0");
   
   return;
 }
@@ -548,8 +553,8 @@ connectingVariables(FuncDataBase& Control)
     \param Control :: DataBase
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","connectingVariables");
-  const std::string baseName="CosaxConnect";
+  ELog::RegMethod RegA("cosaxsVariables[F]","connectingVariables");
+  const std::string baseName="CosaxsConnect";
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
 
@@ -557,17 +562,17 @@ connectingVariables(FuncDataBase& Control)
   return;
 }
 
-}  // NAMESPACE cosaxVAR
+}  // NAMESPACE cosaxsVAR
   
 void
-COSAXvariables(FuncDataBase& Control)
+COSAXSvariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
     -- This version is for Photon Moderator
     \param Control :: Function data base to add constants too
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","cosaxVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","cosaxsVariables");
 
 
   Control.addVariable("sdefType","Wiggler");
@@ -577,19 +582,19 @@ COSAXvariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   
-  cosaxVar::frontCaveVariables(Control,500.0);  // Set to middle
-  cosaxVar::frontEndVariables(Control,"CosaxFrontBeam");  
+  cosaxsVar::frontCaveVariables(Control,500.0);  // Set to middle
+  cosaxsVar::frontEndVariables(Control,"CosaxsFrontBeam");  
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
   PipeGen.setAFlangeCF<setVariable::CF120>(); 
-  PipeGen.generatePipe(Control,"CosaxJoinPipe",0,195.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,195.0);
 
-  cosaxVar::opticsCaveVariables(Control);
-  cosaxVar::opticsVariables(Control);
+  cosaxsVar::opticsCaveVariables(Control);
+  cosaxsVar::opticsVariables(Control);
 
 
-  PipeGen.generatePipe(Control,"CosaxJoinPipeB",0,1195.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,1195.0);
 
   return;
 }

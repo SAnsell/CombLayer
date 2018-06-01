@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/COSAX.cxx
+ * File: balder/COSAXS.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -61,6 +61,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
@@ -85,23 +87,24 @@
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValve.h"
+#include "JawFlange.h"
 #include "FlangeMount.h"
 #include "FrontEndCave.h"
 #include "FrontEnd.h"
-#include "cosaxOpticsLine.h"
+#include "cosaxsOpticsLine.h"
 #include "ConnectZone.h"
-#include "COSAX.h"
+#include "COSAXS.h"
 
 namespace xraySystem
 {
 
-COSAX::COSAX(const std::string& KN) :
+COSAXS::COSAXS(const std::string& KN) :
   attachSystem::CopiedComp("Balder",KN),
   frontCave(new FrontEndCave(newName+"FrontEnd")),
   frontBeam(new FrontEnd(newName+"FrontBeam")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new cosaxOpticsLine(newName+"OpticsLine")),
+  opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
   /*!
     Constructor
@@ -121,14 +124,14 @@ COSAX::COSAX(const std::string& KN) :
   
 }
 
-COSAX::~COSAX()
+COSAXS::~COSAXS()
   /*!
     Destructor
    */
 {}
 
 void 
-COSAX::build(Simulation& System,
+COSAXS::build(Simulation& System,
 		  const attachSystem::FixedComp& FCOrigin,
 		  const long int sideIndex)
   /*!
@@ -139,7 +142,7 @@ COSAX::build(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("COSAX","build");
+  ELog::RegMethod RControl("COSAXS","build");
 
   int voidCell(74123);
  

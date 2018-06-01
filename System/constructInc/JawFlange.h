@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_JawFlange_h
-#define xraySystem_JawFlange_h
+#ifndef constructSystem_JawFlange_h
+#define constructSystem_JawFlange_h
 
 class Simulation;
 

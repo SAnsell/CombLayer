@@ -199,12 +199,12 @@ JawFlange::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+101));
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
   
   // back planes
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-
+  FrontBackCut::setBack(SMap.realSurf(buildIndex+2));
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   return;
@@ -240,9 +240,11 @@ JawFlange::createLinks()
   ELog::RegMethod RegA("JawFlange","createLinks");
 
   //stufff for intersection
+  attachSystem::FixedComp& mainFC=getKey("Main");
+  //attachSystem::FixedComp& beamFC=getKey("Beam");
 
-
-  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  
+  FrontBackCut::createLinks(mainFC,Origin,Y);  //front and back
 
   return;
 }

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/cosaxOpticsLine.h
+ * File:   cosaxsInc/cosaxsOpticsLine.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxOpticsLine_h
-#define xraySystem_cosaxOpticsLine_h
+#ifndef xraySystem_cosaxsOpticsLine_h
+#define xraySystem_cosaxsOpticsLine_h
 
 namespace insertSystem
 {
@@ -61,14 +61,14 @@ namespace xraySystem
   class MonoBox;
     
   /*!
-    \class cosaxOpticsLine
+    \class cosaxsOpticsLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class cosaxOpticsLine :
+class cosaxsOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
@@ -129,6 +129,9 @@ class cosaxOpticsLine :
   /// Diagnostic unit 1:
   std::shared_ptr<constructSystem::PortTube> diagBoxB;
 
+  /// Diag Box B :: Jaw units
+  std::array<std::shared_ptr<constructSystem::JawFlange>,1> jawComp;
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -137,10 +140,10 @@ class cosaxOpticsLine :
   
  public:
   
-  cosaxOpticsLine(const std::string&);
-  cosaxOpticsLine(const cosaxOpticsLine&);
-  cosaxOpticsLine& operator=(const cosaxOpticsLine&);
-  ~cosaxOpticsLine();
+  cosaxsOpticsLine(const std::string&);
+  cosaxsOpticsLine(const cosaxsOpticsLine&);
+  cosaxsOpticsLine& operator=(const cosaxsOpticsLine&);
+  ~cosaxsOpticsLine();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

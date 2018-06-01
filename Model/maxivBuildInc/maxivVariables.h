@@ -37,7 +37,7 @@ namespace setVariable
     
   // MAXIV Beamlines
   void BALDERvariables(FuncDataBase&);
-  void COSAXvariables(FuncDataBase&);
+  void COSAXSvariables(FuncDataBase&);
 
 }
 

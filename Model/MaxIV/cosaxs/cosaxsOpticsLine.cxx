@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: cosax/cosaxOpticsLine.cxx
+ * File: cosaxs/cosaxsOpticsLine.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -61,6 +61,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
@@ -90,18 +92,19 @@
 #include "MonoCrystals.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+//#include "JawValve.h"
+#include "JawFlange.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
 #include "MonoBox.h"
-#include "cosaxOpticsLine.h"
+#include "cosaxsOpticsLine.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
+cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -128,7 +131,10 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   mirrorA(new constructSystem::VacuumBox(newName+"MirrorA")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
-  diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB"))
+  diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
+  jawComp({
+      std::make_shared<constructSystem::JawFlange>(newName+"JawBUnit0")
+	})
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -159,16 +165,18 @@ cosaxOpticsLine::cosaxOpticsLine(const std::string& Key) :
   OR.addObject(mirrorA);
   OR.addObject(gateE);
   OR.addObject(diagBoxB);
+  
+
 }
   
-cosaxOpticsLine::~cosaxOpticsLine()
+cosaxsOpticsLine::~cosaxsOpticsLine()
   /*!
     Destructor
    */
 {}
 
 void
-cosaxOpticsLine::populate(const FuncDataBase& Control)
+cosaxsOpticsLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
    */
@@ -178,7 +186,7 @@ cosaxOpticsLine::populate(const FuncDataBase& Control)
 }
 
 void
-cosaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
+cosaxsOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -189,7 +197,7 @@ cosaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("cosaxOpticsLine","createUnitVector");
+  ELog::RegMethod RegA("cosaxsOpticsLine","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -199,14 +207,14 @@ cosaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-cosaxOpticsLine::buildObjects(Simulation& System)
+cosaxsOpticsLine::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("cosaxOpticsLine","buildObjects");
+  ELog::RegMethod RegA("cosaxsOpticsLine","buildObjects");
   
   pipeInit->addInsertCell(ContainedComp::getInsertCells());
   pipeInit->registerSpaceCut(1,2);
@@ -329,6 +337,13 @@ cosaxOpticsLine::buildObjects(Simulation& System)
   diagBoxB->addInsertCell(ContainedComp::getInsertCells());
   diagBoxB->registerSpaceCut(1,2);
   diagBoxB->createAll(System,*bellowF,2);
+
+  const constructSystem::portItem& DPI=diagBoxB->getPort(0);
+  jawComp[0]->addInsertCell(DPI.getCell("Void"));
+  jawComp[0]->createAll(System,DPI,1,*diagBoxB,0);
+  
+  
+
   // diagBoxB->splitVoidPorts(System,"SplitOuter",2001,
   // 			   diagBoxB->getBuildCell(),
   // 			   {0,1, 1,2});
@@ -343,7 +358,7 @@ cosaxOpticsLine::buildObjects(Simulation& System)
 }
 
 void
-cosaxOpticsLine::createLinks()
+cosaxsOpticsLine::createLinks()
   /*!
     Create a front/back link
    */
@@ -355,7 +370,7 @@ cosaxOpticsLine::createLinks()
   
   
 void 
-cosaxOpticsLine::createAll(Simulation& System,
+cosaxsOpticsLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -366,7 +381,7 @@ cosaxOpticsLine::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("cosaxOpticsLine","build");
+  ELog::RegMethod RControl("cosaxsOpticsLine","build");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

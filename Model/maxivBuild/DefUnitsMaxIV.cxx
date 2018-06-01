@@ -112,7 +112,7 @@ setMaxIVSingle(defaultConfig& A,
   static const MapTYPE beamDef=
     {
       { "BALDER", "World 0"},
-      { "COSAX", "World 0"}
+      { "COSAXS", "World 0"}
     };
   size_t beamLineIndex(0);
 

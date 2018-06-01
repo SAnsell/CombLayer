@@ -98,7 +98,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
-     {"COSAX",     &COSAXvariables}
+     {"COSAXS",    &COSAXSvariables}
    });
 
   

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/COSAX.h
+ * File:   balderInc/COSAXS.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_COSAX_h
-#define xraySystem_COSAX_h
+#ifndef xraySystem_COSAXS_h
+#define xraySystem_COSAXS_h
 
 namespace constructSystem
 {
@@ -51,21 +51,21 @@ namespace xraySystem
 {
   class OpticsHutch;
   class ExperimentalHutch;
-  class cosaxOpticsLine;
+  class cosaxsOpticsLine;
   class FrontEndCave;
   class ConnectZone;
   class FrontEnd;
   
   
   /*!
-    \class COSAX
+    \class COSAXS
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class COSAX : public attachSystem::CopiedComp
+class COSAXS : public attachSystem::CopiedComp
 {
  private:
 
@@ -83,17 +83,17 @@ class COSAX : public attachSystem::CopiedComp
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
   /// Optics beamlines 
-  std::shared_ptr<cosaxOpticsLine> opticsBeam;
+  std::shared_ptr<cosaxsOpticsLine> opticsBeam;
 
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
 
  public:
   
-  COSAX(const std::string&);
-  COSAX(const COSAX&);
-  COSAX& operator=(const COSAX&);
-  ~COSAX();
+  COSAXS(const std::string&);
+  COSAXS(const COSAXS&);
+  COSAXS& operator=(const COSAXS&);
+  ~COSAXS();
   
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);
