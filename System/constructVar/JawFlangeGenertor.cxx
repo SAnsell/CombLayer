@@ -104,6 +104,27 @@ JawFlangeGenerator::generateFlange(FuncDataBase& Control,
   
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
+
+  // stuff for jaws:
+  const std::string jawName=keyName+"Jaw";
+  Control.addVariable(jawName+"Gap",jawGap);
+  Control.addVariable(jawName+"XOpen",xOpen);
+  Control.addVariable(jawName+"XOpen",xOpen);
+  Control.addVariable(jawName+"XOffset",0.0);
+  Control.addVariable(jawName+"XThick",jawThick);
+  Control.addVariable(jawName+"XHeight",jawWidth);  // note reverse
+  Control.addVariable(jawName+"XWidth",jawHeight);  // note reverse
+
+  Control.addVariable(jawName+"ZOpen",zOpen);
+  Control.addVariable(jawName+"ZOffset",0.0);
+  Control.addVariable(jawName+"ZThick",jawThick);
+  Control.addVariable(jawName+"ZHeight",jawHeight); 
+  Control.addVariable(jawName+"ZWidth",jawWidth);  
+  
+  
+  Control.addVariable(jawName+"XJawMat",jawMat);
+  Control.addVariable(jawName+"ZJawMat",jawMat);
+
        
   return;
 

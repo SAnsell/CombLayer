@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Face.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,10 +101,14 @@ class Face
 
 /*!
   \struct TriGrp
-  \brief Structure to hold clusters of line inter sections
+  \brief Structure to hold clusters of line intersections
   \version 1.0
   \author S. Ansell
   \date March 2011
+
+  Two lines : one point is normally common
+
+
 */
 class TriGrp
 {
