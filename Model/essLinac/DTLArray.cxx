@@ -30,8 +30,8 @@
 #include <set>
 #include <map>
 #include <string>
-#include <algorithm>
 #include <memory>
+#include <numeric>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -155,8 +155,7 @@ DTLArray::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("DTLArray","populate");
 
   FixedOffset::populate(Control);
-  nDTL=Control.EvalPair<int>(baseName,"","NDTLTanks");
-  ELog::EM << nDTL << ELog::endDiag;
+  nDTL=Control.EvalVar<size_t>(baseName+"NDTLTanks");
 
   return;
 }
@@ -167,11 +166,12 @@ DTLArray::createLinks()
   Construct all the linksx
  */
 {
-  size_t N(0);
-  for (const std::shared_ptr<DTL> d: dtl)
-      N += d->NConnect();
-  FixedComp::setNConnect(N);
-  ELog::EM << "Use std::accumulate with lambda function here" << ELog::endCrit;
+  const int N = std::accumulate(dtl.begin(),dtl.end(),0,
+				[](size_t total,std::shared_ptr<DTL> d)
+				{
+				  return total+d->NConnect();
+				});
+  FixedComp::setNConnect(static_cast<size_t>(N));
 
   size_t i(0);
   for (const std::shared_ptr<DTL> d: dtl) {

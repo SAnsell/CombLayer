@@ -41,7 +41,7 @@ class DTLArray : public attachSystem::CopiedComp,
 {
  private:
   const std::string baseName;    ///< Base name
-  int nDTL;                ///< Number of DTL tanks
+  size_t nDTL;                ///< Number of DTL tanks
   std::vector<std::shared_ptr<DTL> > dtl; ///< array of DTL sections
   
   void populate(const FuncDataBase&);
