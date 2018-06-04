@@ -86,6 +86,8 @@
 #include "CellMap.h"
 #include "BeamDump.h"
 #include "FaradayCup.h"
+#include "CopiedComp.h"
+#include "DTLArray.h"
 #include "DTL.h"
 #include "TSW.h"
 #include "Linac.h"
@@ -99,7 +101,8 @@ Linac::Linac(const std::string& Key)  :
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump")),
-  faradayCup(new FaradayCup(Key,"FaradayCup"))
+  faradayCup(new FaradayCup(Key,"FaradayCup")),
+  dtlArray(new DTLArray(Key,"DTLArray"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -109,6 +112,7 @@ Linac::Linac(const std::string& Key)  :
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
   OR.addObject(beamDump);
   OR.addObject(faradayCup);
+  OR.addObject(dtlArray);
 }
 
 Linac::Linac(const Linac& A) :
@@ -133,7 +137,8 @@ Linac::Linac(const Linac& A) :
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
   nDTL(A.nDTL),
-  dtl(A.dtl)
+  dtl(A.dtl),
+  dtlArray(A.dtlArray)
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -173,6 +178,7 @@ Linac::operator=(const Linac& A)
       *faradayCup=*A.faradayCup;
       nDTL=A.nDTL;
       dtl=A.dtl;
+      *dtlArray=*A.dtlArray;
     }
   return *this;
 }
@@ -330,8 +336,6 @@ Linac::createDTL(Simulation& System, const long int lp)
       attachSystem::addToInsertControl(System,*this,*d); // works
       dtl.push_back(d);
     }
-  ELog::EM << "Remove substruction of last DTL from FaradayCup" << ELog::endDiag;
-  attachSystem::addToInsertLineCtrl(System,*dtl.back(),*faradayCup);
 }
 
 void
@@ -508,6 +512,7 @@ Linac::createAll(Simulation& System,
 
   //  attachSystem::addToInsertControl(System,*beamDump,*faradayCup);
   createDTL(System, 11);
+  dtlArray->createAll(System,*this,11);
 
   buildTSW(System);
 
