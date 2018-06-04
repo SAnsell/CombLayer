@@ -332,23 +332,25 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("StubWall1", "StubWall2");
   Control.addVariable("StubWall2YStep",   350.0);
 
+  // FEB dimensions are measured from the STEP file received from
+  // Carl-Johan 31.05.2018
   Control.addVariable("FEBLength",     2000.0);
   Control.addVariable("FEBWidthRight", 2667.0);
   Control.addVariable("FEBWidthLeft",   514.0);
   Control.addVariable("FEBWallThick",    50.0);
-  Control.addVariable("FEBMainMat",   "Air"); // ???
-  Control.addVariable("FEBWallMat",   "SkanskaConcrete"); // ???
+  Control.addVariable("FEBMainMat",   "Air");
+  Control.addVariable("FEBWallMat",   "SkanskaConcrete");
   Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
   Control.addVariable("FEBShieldWall1Thick", 100.0);
   Control.addVariable("FEBShieldWall1Length", 1678.0);
 
-  Control.addVariable("FEBShieldWall2Offset", 1300.0); //???
+  Control.addVariable("FEBShieldWall2Offset", 1000.0);
   Control.addParse<double>("FEBShieldWall2Thick", "FEBShieldWall1Thick");
-  Control.addVariable("FEBShieldWall2Length", 500.0); //???
+  Control.addVariable("FEBShieldWall2Length", 800.0);
 
-  Control.addVariable("FEBLedgeLength", 500.0); //???
-  Control.addVariable("FEBLedgeWidth", 500.0); //???
-  Control.addVariable("FEBLedgeWallThick", 70.0); //???
+  Control.addVariable("FEBLedgeLength", 1100.0);
+  Control.addVariable("FEBLedgeWidth",   377.0);
+  Control.addVariable("FEBLedgeWallThick", 70.0);
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
