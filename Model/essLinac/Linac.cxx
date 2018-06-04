@@ -87,8 +87,8 @@
 #include "BeamDump.h"
 #include "FaradayCup.h"
 #include "CopiedComp.h"
-#include "DTLArray.h"
 #include "DTL.h"
+#include "DTLArray.h"
 #include "TSW.h"
 #include "Linac.h"
 
@@ -102,7 +102,7 @@ Linac::Linac(const std::string& Key)  :
   cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump")),
   faradayCup(new FaradayCup(Key,"FaradayCup")),
-  dtlArray(new DTLArray(Key,"DTLArray"))
+  dtl(new DTLArray(Key,"DTLArray"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -112,7 +112,7 @@ Linac::Linac(const std::string& Key)  :
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
   OR.addObject(beamDump);
   OR.addObject(faradayCup);
-  OR.addObject(dtlArray);
+  OR.addObject(dtl);
 }
 
 Linac::Linac(const Linac& A) :
@@ -137,8 +137,7 @@ Linac::Linac(const Linac& A) :
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
   nDTL(A.nDTL),
-  dtl(A.dtl),
-  dtlArray(A.dtlArray)
+  dtl(A.dtl)
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -177,8 +176,7 @@ Linac::operator=(const Linac& A)
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
       nDTL=A.nDTL;
-      dtl=A.dtl;
-      *dtlArray=*A.dtlArray;
+      *dtl=*A.dtl;
     }
   return *this;
 }
@@ -305,38 +303,6 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
       }
   }
 
-
-void
-Linac::createDTL(Simulation& System, const long int lp)
-{
-  /*!
-    Create the DTL tanks
-    \param lp :: link point for the origin of the 1st DTL tank
-   */
-  ELog::RegMethod RegA("Linac","createDTL");
-
-  if (nDTL<1)
-    return;
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  for (size_t i=0; i<nDTL; i++)
-    {
-      std::shared_ptr<DTL> d(new DTL(keyName,"DTL",i+1));
-      OR.addObject(d);
-      if (i==0)
-      	{
-	  d->createAll(System, *this, lp);
-      	} else
-      	{
-	  d->createAll(System, *dtl[i-1],2);
-      	}
-
-      attachSystem::addToInsertControl(System,*this,*d); // works
-      dtl.push_back(d);
-    }
-}
 
 void
 Linac::buildTSW(Simulation& System) const
@@ -510,9 +476,8 @@ Linac::createAll(Simulation& System,
   faradayCup->createAll(System,*this,0);
   attachSystem::addToInsertControl(System,*this,*faradayCup);
 
-  //  attachSystem::addToInsertControl(System,*beamDump,*faradayCup);
-  createDTL(System, 11);
-  dtlArray->createAll(System,*this,11);
+  dtl->createAll(System,*this,11);
+  attachSystem::addToInsertControl(System,*this,*dtl);
 
   buildTSW(System);
 

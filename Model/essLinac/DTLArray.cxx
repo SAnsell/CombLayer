@@ -81,6 +81,7 @@
 #include "mergeTemplate.h"
 #include "CellMap.h"
 #include "CopiedComp.h"
+#include "AttachSupport.h"
 
 #include "DTL.h"
 #include "DTLArray.h"
@@ -90,6 +91,7 @@ namespace essSystem
 
 DTLArray::DTLArray(const std::string& baseKey,const std::string& Key)  :
   attachSystem::CopiedComp(Key,Key),
+  attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,6),
   baseName(baseKey)
   /*!
@@ -100,6 +102,7 @@ DTLArray::DTLArray(const std::string& baseKey,const std::string& Key)  :
 
 DTLArray::DTLArray(const DTLArray& A) : 
   attachSystem::CopiedComp(A),
+  attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
   nDTL(A.nDTL),
@@ -157,6 +160,16 @@ DTLArray::populate(const FuncDataBase& Control)
 
   return;
 }
+
+void
+DTLArray::createLinks()
+/*!
+  Construct all the linksx
+ */
+{
+  copyLinkObjects(*dtl.front());
+  setUSLinkCopy(1, *dtl.back(),1);
+}
   
 void
 DTLArray::createAll(Simulation& System,
@@ -172,6 +185,32 @@ DTLArray::createAll(Simulation& System,
   ELog::RegMethod RegA("DTLArray","createAll");
 
   populate(System.getDataBase());
+
+  if (nDTL<1)
+    return;
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::string Out;
+  for (size_t i=0; i<nDTL; i++)
+    {
+      std::shared_ptr<DTL> d(new DTL(baseName,"DTL",i+1));
+      OR.addObject(d);
+      if (i==0)
+      	{
+	  d->createAll(System, FC, sideIndex);
+	  Out=d->getLinkString(-1)+" "+std::to_string(d->getLinkSurf(-3))+" ";
+      	} else
+      	{
+	  d->createAll(System, *dtl[i-1],2);
+      	}
+      dtl.push_back(d);
+    }
+  Out+=dtl.back()->getLinkString(-2);
+  addOuterSurf(Out);
+
+  createLinks();
 
   return;
 }

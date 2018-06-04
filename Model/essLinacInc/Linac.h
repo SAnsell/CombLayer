@@ -30,7 +30,6 @@ namespace essSystem
   class BeamDump;
   class FaradayCup;
   class DTLArray;
-  class DTL;
   class TSW;
 
   /*!
@@ -74,13 +73,11 @@ class Linac : public attachSystem::ContainedComp,
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
   std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup
   size_t nDTL; ///< number of DTL tanks
-  std::vector<std::shared_ptr<DTL> > dtl; ///< array of DTL sections
-  std::shared_ptr<DTLArray> dtlArray;   /// array of DTL tanks
+  std::shared_ptr<DTLArray> dtl;   /// array of DTL tanks
 
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const long int& lpS, const long int& lsS, const size_t&, const int&);
 
-  void createDTL(Simulation&, const long int);
   void buildTSW(Simulation& system) const;
 
   void populate(const FuncDataBase&);

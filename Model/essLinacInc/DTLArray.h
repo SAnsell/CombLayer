@@ -36,6 +36,7 @@ namespace essSystem
 */
 
 class DTLArray : public attachSystem::CopiedComp,
+  public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
 {
  private:
@@ -44,6 +45,7 @@ class DTLArray : public attachSystem::CopiedComp,
   std::vector<std::shared_ptr<DTL> > dtl; ///< array of DTL sections
   
   void populate(const FuncDataBase&);
+  void createLinks();
 
  public:
 
@@ -52,7 +54,7 @@ class DTLArray : public attachSystem::CopiedComp,
   DTLArray& operator=(const DTLArray&);
   virtual DTLArray* clone() const;
   virtual ~DTLArray();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
