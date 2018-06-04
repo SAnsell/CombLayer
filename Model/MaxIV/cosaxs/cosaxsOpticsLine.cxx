@@ -133,7 +133,8 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
   diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
   jawComp({
-      std::make_shared<constructSystem::JawFlange>(newName+"JawBUnit0")
+      std::make_shared<constructSystem::JawFlange>(newName+"JawBUnit0"),
+      std::make_shared<constructSystem::JawFlange>(newName+"JawBUnit1")
 	})
     /*!
     Constructor
@@ -338,12 +339,17 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   diagBoxB->registerSpaceCut(1,2);
   diagBoxB->createAll(System,*bellowF,2);
 
-  const constructSystem::portItem& DPI=diagBoxB->getPort(0);
-  jawComp[0]->setFillRadius(DPI,3,DPI.getCell("Void"));
-  jawComp[0]->addInsertCell(diagBoxB->getCell("Void"));
-  jawComp[0]->createAll(System,DPI,-2,*diagBoxB,0);
+
   
-  
+  for(size_t index=0;index<2;index++)
+    {
+      const constructSystem::portItem& DPI=diagBoxB->getPort(index);
+      jawComp[index]->setFillRadius(DPI,3,DPI.getCell("Void"));
+      jawComp[index]->addInsertCell(diagBoxB->getCell("Void"));
+      if (index)
+	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
+      jawComp[index]->createAll(System,DPI,-2,*diagBoxB,0);
+    }
 
   // diagBoxB->splitVoidPorts(System,"SplitOuter",2001,
   // 			   diagBoxB->getBuildCell(),

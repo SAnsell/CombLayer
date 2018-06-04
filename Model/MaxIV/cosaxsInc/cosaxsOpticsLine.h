@@ -130,7 +130,7 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::PortTube> diagBoxB;
 
   /// Diag Box B :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,1> jawComp;
+  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawComp;
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

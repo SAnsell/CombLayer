@@ -59,14 +59,46 @@ namespace setVariable
 {
 
 JawFlangeGenerator::JawFlangeGenerator() :
-  radius(3.0),length(5.0),
-  jawStep(0.0),jawOpen(1.0),
+  radius(3.0),length(5.0),jawStep(0.0),jawOpen(1.0),
   jawWidth(4.0),jawHeight(1.0),
   jawThick(0.5),jawMat("Tantalum")
   /*!
     Constructor and defaults
   */
 {}
+
+JawFlangeGenerator::JawFlangeGenerator(const JawFlangeGenerator& A) : 
+  radius(A.radius),length(A.length),jawStep(A.jawStep),
+  jawOpen(A.jawOpen),jawWidth(A.jawWidth),jawHeight(A.jawHeight),
+  jawThick(A.jawThick),jawMat(A.jawMat)
+  /*!
+    Copy constructor
+    \param A :: JawFlangeGenerator to copy
+  */
+{}
+
+JawFlangeGenerator&
+JawFlangeGenerator::operator=(const JawFlangeGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: JawFlangeGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      radius=A.radius;
+      length=A.length;
+      jawStep=A.jawStep;
+      jawOpen=A.jawOpen;
+      jawWidth=A.jawWidth;
+      jawHeight=A.jawHeight;
+      jawThick=A.jawThick;
+      jawMat=A.jawMat;
+    }
+  return *this;
+}
+
 
 JawFlangeGenerator::~JawFlangeGenerator() 
  /*!

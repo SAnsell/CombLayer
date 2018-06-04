@@ -366,7 +366,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D PPos(0.0,DLength/6.0,0);
 
-  PItemGen.setOuterVoid(1);
+  PItemGen.setOuterVoid(1);  // create boundary round flange
   PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.generatePort(Control,portName+"0",-PPos,ZVec);
   PItemGen.setCF<setVariable::CF63>(5.0);
@@ -542,6 +542,7 @@ opticsVariables(FuncDataBase& Control)
 
   JawFlangeGenerator JFlanGen;
   JFlanGen.generateFlange(Control,preName+"JawBUnit0");
+  JFlanGen.generateFlange(Control,preName+"JawBUnit1");
   
   return;
 }

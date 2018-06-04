@@ -295,7 +295,7 @@ JawFlange::createObjects(Simulation& System)
   // Jaws
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 103 -104 -105 115");
-  makeCell("BaseJaw",System,cellIndex++,jawMat+1,0.0,Out);
+  makeCell("BaseJaw",System,cellIndex++,jawMat,0.0,Out);
   
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 103 -104 106 -116");
@@ -313,7 +313,6 @@ JawFlange::createObjects(Simulation& System)
     (SMap,buildIndex,"-2 (-101 : 102 : -103 : 104 : -115 : 116)");
   makeCell("Void",System,cellIndex++,voidMat,3,Out+frontStr+cylStr);
 
-  ELog::EM<<"Front == "<<frontStr<<ELog::endDiag;
   // create jaws
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 ");  
   addOuterSurf(Out+cylStr);

@@ -211,8 +211,8 @@ PortTube::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT;
-  int OFlag;
+  double L,R,W,FR,FT,PT;
+  int PMat,OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
@@ -227,11 +227,15 @@ PortTube::populate(const FuncDataBase& Control)
       W=Control.EvalPair<double>(portName,portBase,"Wall");
       FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
       FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
+      PT=Control.EvalDefPair<double>(portName,portBase,"PlateThick",0.0);
+      PMat=ModelSupport::EvalDefMat<int>
+	(Control,portName+"PlateMat",portBase+"PlateMat",wallMat);
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
 
       if (OFlag) windowPort.setWrapVolume();
       windowPort.setMain(L,R,W);
       windowPort.setFlange(FR,FT);
+      windowPort.setCoverPlate(PT,PMat);
       windowPort.setMaterial(voidMat,wallMat);
 
       PCentre.push_back(Centre);
