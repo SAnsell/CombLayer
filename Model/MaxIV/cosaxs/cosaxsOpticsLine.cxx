@@ -339,8 +339,9 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   diagBoxB->createAll(System,*bellowF,2);
 
   const constructSystem::portItem& DPI=diagBoxB->getPort(0);
-  jawComp[0]->addInsertCell(DPI.getCell("Void"));
-  jawComp[0]->createAll(System,DPI,1,*diagBoxB,0);
+  jawComp[0]->setFillRadius(DPI,3,DPI.getCell("Void"));
+  jawComp[0]->addInsertCell(diagBoxB->getCell("Void"));
+  jawComp[0]->createAll(System,DPI,-2,*diagBoxB,0);
   
   
 

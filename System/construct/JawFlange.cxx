@@ -79,7 +79,6 @@
 #include "SurfMap.h"
 #include "SurInter.h"
 
-#include "JawUnit.h"
 #include "JawFlange.h" 
 
 namespace constructSystem
@@ -89,7 +88,7 @@ JawFlange::JawFlange(const std::string& Key) :
   attachSystem::FixedOffsetGroup(Key,"Main",2,"Beam",2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  JItem(Key+"Jaw")
+  cutCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -114,16 +113,43 @@ JawFlange::populate(const FuncDataBase& Control)
   
   attachSystem::FixedOffsetGroup::populate(Control);
 
-  // Void + Fe special:
+  // If length -ve then extra from beam-flange length
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
 
+  jYStep=Control.EvalVar<double>(keyName+"JYStep");
+  jOpen=Control.EvalVar<double>(keyName+"JOpen");
+  jThick=Control.EvalVar<double>(keyName+"JThick");
+  jHeight=Control.EvalVar<double>(keyName+"JHeight");
+  jWidth=Control.EvalVar<double>(keyName+"JWidth");
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-
-
+  jawMat=ModelSupport::EvalMat<int>(Control,keyName+"JawMat");
+  
   return;
 }
 
+void
+JawFlange::setFillRadius(const attachSystem::FixedComp& portFC,
+			 const long int radiusIndex,
+			 const int cellNumber)
+  /*!
+    Give a cylindical (or contained) link surface and the 
+    cell that will be completely removed. 
+    \param portFC :: Port FixedComp
+    \param radiusIndex :: link point to a radial surface 
+    \param cellNubmer :: cell to remove
+  */
+{
+  ELog::RegMethod Rega("JawFlange","setFillRadius");
+
+  cylRule=portFC.getFullRule(radiusIndex);
+  cutCell=cellNumber;
+  return;
+}
+
+
+  
 
 void
 JawFlange::createUnitVector(const attachSystem::FixedComp& mFC,
@@ -150,7 +176,7 @@ JawFlange::createUnitVector(const attachSystem::FixedComp& mFC,
 
   calcBeamCentre();
   applyOffset();
-  
+
   setDefault("Main");
   return;
 }
@@ -164,7 +190,9 @@ JawFlange::calcBeamCentre()
     the beam centre to the main axis
   */
 {
-  const attachSystem::FixedComp& mainFC=getKey("Main");
+  ELog::RegMethod RegA("JawFlange","calcBeamCentre");
+  
+  attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
   const Geometry::Vec3D& MC(mainFC.getCentre());
@@ -182,7 +210,10 @@ JawFlange::calcBeamCentre()
     mainLine.closestPoints(beamLine).second;
   
   beamFC.setCentre(cPt);
-
+  // make Y vertical (going in)
+  if ((MC-cPt).dotProd(mainFC.getY())<0.0)
+    mainFC.reOrientate(1,-mainFC.getY());
+  
   return;    
 }
 
@@ -196,17 +227,54 @@ JawFlange::createSurfaces()
 {
   ELog::RegMethod RegA("JawFlange","createSurfaces");
 
+  const attachSystem::FixedComp& mainFC=getKey("Main");
+  const attachSystem::FixedComp& beamFC=getKey("Beam");
+  
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,-Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));	    
     }
   
   // back planes
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  const double defLength(Origin.Distance(beamFC.getCentre()));
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin-Y*(defLength+length),-Y);
   FrontBackCut::setBack(SMap.realSurf(buildIndex+2));
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  if (!cutCell)
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+      cylRule.procSurfNum(-SMap.realSurf(buildIndex+7));
+    }
+
+  // calc position
+  const Geometry::Vec3D& beamY=beamFC.getY();
+  const Geometry::Vec3D& mainY=mainFC.getY();
+  const Geometry::Vec3D xVec=(beamY*mainY).unit();
+
+    
+  const Geometry::Vec3D beamOrg=beamFC.getCentre()+beamY*jYStep;
+
+  ModelSupport::buildPlane(SMap,buildIndex+101,
+			   beamOrg-beamY*(jThick/2.0),beamY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+			   beamOrg+beamY*(jThick/2.0),beamY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,
+			   beamOrg-xVec*(jWidth/2.0),xVec);
+  ModelSupport::buildPlane(SMap,buildIndex+104,
+			   beamOrg+xVec*(jWidth/2.0),xVec);
+
+  ModelSupport::buildPlane(SMap,buildIndex+105,
+			   beamOrg-mainY*(jOpen/2.0),mainY);
+  ModelSupport::buildPlane(SMap,buildIndex+115,
+			   beamOrg-mainY*(jHeight+jOpen/2.0),mainY);
+
+  ModelSupport::buildPlane(SMap,buildIndex+106,
+			   beamOrg+mainY*(jOpen/2.0),mainY);
+  ModelSupport::buildPlane(SMap,buildIndex+116,
+			   beamOrg+mainY*(jHeight+jOpen/2.0),mainY);
+
   return;
 }
 
@@ -221,12 +289,36 @@ JawFlange::createObjects(Simulation& System)
 
   std::string Out;
 
-  const std::string frontStr=frontRule();  // 101
-  // Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
+  const std::string frontStr=frontRule();
+  const std::string cylStr=cylRule.display();  
 
-  addOuterSurf(Out);
+  // Jaws
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 103 -104 -105 115");
+  makeCell("BaseJaw",System,cellIndex++,jawMat+1,0.0,Out);
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 103 -104 106 -116");
+  makeCell("TopJaw",System,cellIndex++,jawMat,0.0,Out);
+
+  if (jOpen>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -102 103 -104 105 -106");
+      makeCell("JawGap",System,cellIndex++,voidMat,0.0,Out);
+    }
+
+  // Void
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-2 (-101 : 102 : -103 : 104 : -115 : 116)");
+  makeCell("Void",System,cellIndex++,voidMat,3,Out+frontStr+cylStr);
+
+  ELog::EM<<"Front == "<<frontStr<<ELog::endDiag;
+  // create jaws
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 ");  
+  addOuterSurf(Out+cylStr);
+  if (cutCell)
+    System.removeCell(cutCell);
   return;
 }
   
@@ -242,26 +334,9 @@ JawFlange::createLinks()
   //stufff for intersection
   attachSystem::FixedComp& mainFC=getKey("Main");
   //attachSystem::FixedComp& beamFC=getKey("Beam");
-
   
   FrontBackCut::createLinks(mainFC,Origin,Y);  //front and back
 
-  return;
-}
-
-void
-JawFlange::createJaws(Simulation& System)
-  /*!
-    Create the jaws
-    \param System :: Simuation to use
-   */
-{
-  ELog::RegMethod RegA("JawFlange","creatJaws");
-
-  const attachSystem::FixedComp& beamFC=getKey("Beam");
-  JItem.addInsertCell(this->getCells("Void"));
-  
-  JItem.createAll(System,beamFC,0);
   return;
 }
   
@@ -288,7 +363,6 @@ JawFlange::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);   
-  createJaws(System);
   
   return;
 }

@@ -59,7 +59,10 @@ namespace setVariable
 {
 
 JawFlangeGenerator::JawFlangeGenerator() :
-  radius(3.0),length(5.0)
+  radius(3.0),length(5.0),
+  jawStep(0.0),jawOpen(1.0),
+  jawWidth(4.0),jawHeight(1.0),
+  jawThick(0.5),jawMat("Tantalum")
   /*!
     Constructor and defaults
   */
@@ -101,31 +104,21 @@ JawFlangeGenerator::generateFlange(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("JawFlangeGenerator","generateFlange");
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
 
   // stuff for jaws:
-  const std::string jawName=keyName+"Jaw";
-  Control.addVariable(jawName+"Gap",jawGap);
-  Control.addVariable(jawName+"XOpen",xOpen);
-  Control.addVariable(jawName+"XOpen",xOpen);
-  Control.addVariable(jawName+"XOffset",0.0);
-  Control.addVariable(jawName+"XThick",jawThick);
-  Control.addVariable(jawName+"XHeight",jawWidth);  // note reverse
-  Control.addVariable(jawName+"XWidth",jawHeight);  // note reverse
 
-  Control.addVariable(jawName+"ZOpen",zOpen);
-  Control.addVariable(jawName+"ZOffset",0.0);
-  Control.addVariable(jawName+"ZThick",jawThick);
-  Control.addVariable(jawName+"ZHeight",jawHeight); 
-  Control.addVariable(jawName+"ZWidth",jawWidth);  
+  Control.addVariable(keyName+"JYStep",0.0);
+  Control.addVariable(keyName+"JOpen",jawOpen);
+  Control.addVariable(keyName+"JThick",jawThick);
+  Control.addVariable(keyName+"JHeight",jawHeight); 
+  Control.addVariable(keyName+"JWidth",jawWidth);
   
-  
-  Control.addVariable(jawName+"XJawMat",jawMat);
-  Control.addVariable(jawName+"ZJawMat",jawMat);
+  Control.addVariable(keyName+"VoidMat","Void");
+  Control.addVariable(keyName+"JawMat",jawMat);
 
-       
   return;
 
 }

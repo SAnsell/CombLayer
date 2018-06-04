@@ -291,6 +291,7 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
 
   if (AIndex)
     {
+	
       FixedComp::setConnect(0,LT.getPoint(AIndex-1),-Y);
       FixedComp::setLinkSurf(0,-LT.getSurfIndex(AIndex-1));
     }
@@ -310,14 +311,14 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
   else
     {
       FixedComp::setConnect(1,exitPoint+Y*externalLength,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
     }
 
+  FixedComp::setConnect(2,exitPoint+Y*(externalLength/2.0)+X*radius,X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
-  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+1));
- 
+
+  FixedComp::setConnect(3,exitPoint+Y*(externalLength/2.0)+X*(wall+radius),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
   return;
 }
 

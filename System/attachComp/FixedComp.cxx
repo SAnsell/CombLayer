@@ -385,7 +385,7 @@ FixedComp::reOrientate(const size_t index,
   if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
   
-  Geometry::Vec3D axisDir(ADir.unit());  
+  const Geometry::Vec3D axisDir(ADir.unit());  
 
   std::vector<Geometry::Vec3D*> AVec({&X,&Y,&Z});
 

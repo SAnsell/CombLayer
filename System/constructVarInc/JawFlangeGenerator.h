@@ -43,10 +43,11 @@ class JawFlangeGenerator
   double radius;                ///< Void radius
   double length;                ///< void length
   
+  double jawStep;               ///< Step along beam direction
+  double jawOpen;               ///< gap between jaws
   double jawWidth;              ///< Width of both jaws  (xbeam)
   double jawHeight;             ///< height of both jaws (above beam)
   double jawThick;              ///< thickness [in beam]
-  double jawGap;                ///< separation [if any]
   
   std::string jawMat;           ///< Jaw material
    

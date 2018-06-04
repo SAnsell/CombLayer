@@ -43,14 +43,22 @@ class JawFlange :
   public attachSystem::FrontBackCut
 {
  private:
-  
+
   double length;                ///< Void length
   double radius;                ///< Void radius
-  
-  JawUnit JItem;                ///< Paired Jaw [contolled by this]
-  
-  int voidMat;                  ///< Void material
 
+  double jOpen;                 ///< Jaw-gap
+  double jYStep;                ///< Step in beam direction
+  double jThick;                ///< Blade thickness [beam]
+  double jHeight;               ///< Height in flange direction
+  double jWidth;                ///< length beam x flange
+
+  int voidMat;                  ///< Void material
+  int jawMat;                   ///< Jaw material
+
+  HeadRule cylRule;             ///< Cylinder/Surround rule
+  int cutCell;                  ///< Cell to cut
+  
   void calcBeamCentre();
   
   void populate(const FuncDataBase&);
@@ -60,8 +68,6 @@ class JawFlange :
   void createObjects(Simulation&);
   void createLinks();
 
-  void createJaws(Simulation&);
-  
  public:
 
   JawFlange(const std::string&);
@@ -69,6 +75,8 @@ class JawFlange :
   JawFlange& operator=(const JawFlange&);
   virtual ~JawFlange();
 
+  void setFillRadius(const attachSystem::FixedComp&,
+		     const long int,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const attachSystem::FixedComp&,
 		 const long int);
