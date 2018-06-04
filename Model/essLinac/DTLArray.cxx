@@ -167,8 +167,17 @@ DTLArray::createLinks()
   Construct all the linksx
  */
 {
-  copyLinkObjects(*dtl.front());
-  setUSLinkCopy(1, *dtl.back(),1);
+  size_t N(0);
+  for (const std::shared_ptr<DTL> d: dtl)
+      N += d->NConnect();
+  FixedComp::setNConnect(N);
+  ELog::EM << "Use std::accumulate with lambda function here" << ELog::endCrit;
+
+  size_t i(0);
+  for (const std::shared_ptr<DTL> d: dtl) {
+    for (size_t j=0; j<d->NConnect(); j++)
+      setUSLinkCopy(i++, *d, j);
+  }
 }
   
 void
