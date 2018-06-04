@@ -45,7 +45,9 @@ class PortItemGenerator
   
   double flangeLen;          ///< Flange length
   double flangeRadius;       ///< Flange radius
-
+  double plateThick;
+  std::string plateMat;
+  
   bool outerVoid;            ///< Construct outer void
   
  public:
@@ -61,6 +63,8 @@ class PortItemGenerator
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad
   void setFlange(const double,const double);
+  // set 
+  void setPlate(const double,const std::string&);
 
   /// accessor to outerVoid
   void setOuterVoid(const bool F) { outerVoid=F; }

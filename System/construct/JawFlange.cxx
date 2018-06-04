@@ -143,7 +143,7 @@ JawFlange::setFillRadius(const attachSystem::FixedComp& portFC,
 {
   ELog::RegMethod Rega("JawFlange","setFillRadius");
 
-  cylRule=portFC.getFullRule(radiusIndex);
+  cylRule=portFC.getMainRule(radiusIndex);
   cutCell=cellNumber;
   return;
 }
@@ -236,9 +236,10 @@ JawFlange::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,-Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));	    
     }
-  
+
   // back planes
   const double defLength(Origin.Distance(beamFC.getCentre()));
+    
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin-Y*(defLength+length),-Y);
   FrontBackCut::setBack(SMap.realSurf(buildIndex+2));
 
@@ -311,7 +312,7 @@ JawFlange::createObjects(Simulation& System)
   // Void
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-2 (-101 : 102 : -103 : 104 : -115 : 116)");
-  makeCell("Void",System,cellIndex++,voidMat,3,Out+frontStr+cylStr);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+cylStr);
 
   // create jaws
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 ");  

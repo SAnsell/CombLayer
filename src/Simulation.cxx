@@ -1548,7 +1548,6 @@ Simulation::splitObject(const int CA,const int SN)
    */
 {
   ELog::RegMethod RegA("Simulation","splitObject");
-
   MonteCarlo::Object* CPtr = findQhull(CA);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CA,"Cell not found");

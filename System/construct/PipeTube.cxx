@@ -341,7 +341,7 @@ PipeTube::intersectPorts(Simulation& System,
     \param aIndex :: Outer port
    */
 {
-  ELog::RegMethod RegA("PortTube","intersectPorts");
+  ELog::RegMethod RegA("PipeTube","intersectPorts");
 
   if (aIndex==bIndex || aIndex>=Ports.size())
     throw ColErr::IndexError<size_t>(aIndex,Ports.size(),
@@ -390,9 +390,9 @@ PipeTube::splitVoidPorts(Simulation& System,const std::string& splitName,
 	  
 	}
     }
+  
   const std::vector<int> cells=
-    FixedComp::splitObject(System,offsetCN,CN,
-			   SplitOrg,SplitAxis);
+    FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
   for(const int CN : cells)

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/FlangeMount.cxx
+ * File:   commonBeam/FlangeMount.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -239,8 +239,11 @@ FlangeMount::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*plateThick,Y);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,plateRadius);
+  if (plateThick>Geometry::zeroTol)
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*plateThick,Y);
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,plateRadius);
+    }
   
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,threadRadius);
 
@@ -276,13 +279,15 @@ FlangeMount::createObjects(Simulation& System)
 
   std::string Out;
 
-
   const std::string frontStr=frontRule();  
   const std::string frontComp=frontComplement();
   // Flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
-  makeCell("Void",System,cellIndex++,plateMat,0.0,Out+frontStr);
-  addOuterSurf("Flange",Out+frontStr);
+  if (plateThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
+      makeCell("Plate",System,cellIndex++,plateMat,0.0,Out+frontStr);
+      addOuterSurf("Flange",Out+frontStr);
+    }
   
   // Thread
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -105 ");

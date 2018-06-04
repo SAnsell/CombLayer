@@ -230,6 +230,7 @@ PortTube::populate(const FuncDataBase& Control)
       PT=Control.EvalDefPair<double>(portName,portBase,"PlateThick",0.0);
       PMat=ModelSupport::EvalDefMat<int>
 	(Control,portName+"PlateMat",portBase+"PlateMat",wallMat);
+
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
 
       if (OFlag) windowPort.setWrapVolume();

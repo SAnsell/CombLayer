@@ -95,7 +95,7 @@ class portItem :
 
   void addOuterCell(const int);
   void setMain(const double,const double,const double);
-  void setMaterial(const int,const int);
+  void setMaterial(const int,const int,const int = -3);
   void setFlange(const double,const double);
   void setCoverPlate(const double,const int= -1);
   /// surround the object

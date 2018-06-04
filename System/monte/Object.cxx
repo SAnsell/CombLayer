@@ -682,6 +682,7 @@ Object::getImplicatePairs(const int SN) const
   /*!
     Determine all the implicate pairs for the object
     The map is plane A has (sign A) implies plane B has (sign B)
+    \param SN :: Number of force side
     \return Map of surf -> surf
   */
 {

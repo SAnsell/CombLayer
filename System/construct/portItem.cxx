@@ -83,7 +83,7 @@ namespace constructSystem
 {
 
 portItem::portItem(const std::string& Key) :
-  attachSystem::FixedComp(Key,4),
+  attachSystem::FixedComp(Key,5),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
@@ -191,15 +191,18 @@ portItem::setCoverPlate(const double T,const int M)
 }
 
 void
-portItem::setMaterial(const int V,const int W)
+portItem::setMaterial(const int V,const int W,
+		      const int PM)
   /*!
     Sets the materials
     \param V :: Void mat
     \param W :: Wall Mat.
+    \param PM :: Plate Material [-ve for default]
    */
 {
   voidMat=V;
   wallMat=W;
+  plateMat=(PM<0) ? wallMat : PM;
   return;
 }
 
@@ -289,9 +292,9 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
 {
   ELog::RegMethod RegA("portItem","createLinks");
 
+  FixedComp::nameSideIndex(0,"BasePoint");
   if (AIndex)
     {
-	
       FixedComp::setConnect(0,LT.getPoint(AIndex-1),-Y);
       FixedComp::setLinkSurf(0,-LT.getSurfIndex(AIndex-1));
     }
@@ -302,7 +305,8 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
     }
 
   const Geometry::Vec3D exitPoint=LT.getPoint(BIndex+1);
-
+  
+  FixedComp::nameSideIndex(1,"OuterPlate");
   if (plateThick>Geometry::zeroTol)
     {
       FixedComp::setConnect(1,exitPoint+Y*(externalLength+plateThick),Y);
@@ -311,14 +315,23 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
   else
     {
       FixedComp::setConnect(1,exitPoint+Y*externalLength,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
 
+  FixedComp::nameSideIndex(2,"InnerRadius");
   FixedComp::setConnect(2,exitPoint+Y*(externalLength/2.0)+X*radius,X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
+  FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
 
+  FixedComp::nameSideIndex(3,"OuterRadius");
   FixedComp::setConnect(3,exitPoint+Y*(externalLength/2.0)+X*(wall+radius),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
+
+  FixedComp::nameSideIndex(4,"InnerPlate");
+  FixedComp::setConnect(4,exitPoint+Y*externalLength,Y);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+2));
+
   return;
 }
 
@@ -479,15 +492,18 @@ portItem::intersectPair(Simulation& System,
 			const portItem& Outer) const
   /*!
     Intersect two port
-    \param Simulation 
+    \param Simulation :: Simulation to use
+    \param Simulation :: Simulation to use
   */
 {
   ELog::RegMethod RegA("portItem","intersectPair");
 
-  Outer.insertComponent(System,"Wall",getFullRule(-3));
-  
-  this->insertComponent(System,"Wall",Outer.getFullRule(-4));
-  this->insertComponent(System,"Void",Outer.getFullRule(-3));
+  const HeadRule mainComp(getFullRule(3).complement());
+  Outer.insertComponent(System,"Wall",mainComp);
+  const HeadRule outerComp(Outer.getFullRule(3).complement());
+  const HeadRule outerWallComp(Outer.getFullRule(4).complement());
+  this->insertComponent(System,"Wall",outerWallComp);
+  this->insertComponent(System,"Void",outerComp);
   return;
 }
   

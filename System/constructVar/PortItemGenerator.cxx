@@ -61,6 +61,7 @@ namespace setVariable
 PortItemGenerator::PortItemGenerator() :
   length(12.0),radius(5.0),wallThick(0.5),
   flangeLen(1.0),flangeRadius(1.0),
+  plateThick(0.0),plateMat("Aluminium"),
   outerVoid(1)
   /*!
     Constructor and defaults
@@ -117,6 +118,7 @@ PortItemGenerator::setCF(const double L)
   wallThick=CF::wallThick;
   flangeLen=CF::flangeLength;
   flangeRadius=CF::flangeRadius;
+  plateThick=CF::flangeLength;
   
   return;
 }
@@ -152,6 +154,20 @@ PortItemGenerator::setFlange(const double R,const double L)
 }
 
 void
+PortItemGenerator::setPlate(const double T,const std::string& PM)
+  /*!
+    Set all the flange values
+    \param R :: radius of flange
+    \param L :: length
+   */
+{
+  plateThick=T;
+  plateMat=PM;
+  return;
+}
+  
+
+void
 PortItemGenerator::generatePort(FuncDataBase& Control,
 				const std::string& keyName,
 				const Geometry::Vec3D& C,
@@ -172,6 +188,7 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
+  Control.addVariable(keyName+"PlateThick",plateThick);
 
   Control.addVariable(keyName+"Centre",C);
   Control.addVariable(keyName+"Axis",A.unit());

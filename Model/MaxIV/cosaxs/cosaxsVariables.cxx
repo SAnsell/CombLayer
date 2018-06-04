@@ -244,8 +244,8 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
-
-  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,30.0,15.0,15.0,53.15);
+  // height+depth == 452mm  -- 110/ 342
+  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
 
 
   return;
@@ -318,7 +318,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   // view port
   PItemGen.setCF<setVariable::CF63>(8.0);
   PItemGen.generatePort(Control,portName+"3",
-			Geometry::Vec3D(0,DLength/5.0,0),
+			Geometry::Vec3D(0,DLength/4.5,0),
 			Geometry::Vec3D(-1,-1,0));
 
     //  flange for diamond filter view
@@ -355,6 +355,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
   PTubeGen.setCF<CF40>();
+  PTubeGen.setAFlangeCF<CF63>();
   PTubeGen.setPortLength(-5.0,-5.0);
   // ystep/radius length
   PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
@@ -388,6 +389,10 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   // ion pump port
   PItemGen.setCF<setVariable::CF100>(7.5);
   PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
+
+  JawFlangeGenerator JFlanGen;
+  JFlanGen.generateFlange(Control,Name+"JawBUnit0");
+  JFlanGen.generateFlange(Control,Name+"JawBUnit1");
 
   return;
 }
@@ -467,6 +472,7 @@ opticsVariables(FuncDataBase& Control)
 			Geometry::Vec3D(0,0,1));
 
   FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setPlate(0.0,0.0,"Void");
   FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite");  // 22 rotation
   FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
 
@@ -540,9 +546,13 @@ opticsVariables(FuncDataBase& Control)
 
   cosaxsVar::diagUnit2(Control,preName+"DiagBoxB");
 
-  JawFlangeGenerator JFlanGen;
-  JFlanGen.generateFlange(Control,preName+"JawBUnit0");
-  JFlanGen.generateFlange(Control,preName+"JawBUnit1");
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateF",0.0,0);
+
+  cosaxsVar::mirrorBox(Control,preName+"MirrorB");
   
   return;
 }

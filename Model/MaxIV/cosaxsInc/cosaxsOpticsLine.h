@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef xraySystem_cosaxsOpticsLine_h
@@ -131,7 +131,14 @@ class cosaxsOpticsLine :
 
   /// Diag Box B :: Jaw units
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawComp;
-  
+
+  /// Bellow to mirror B
+  std::shared_ptr<constructSystem::Bellows> bellowG;
+  // Gate valve
+  std::shared_ptr<constructSystem::GateValve> gateF;
+  /// Mirror box B
+  std::shared_ptr<constructSystem::VacuumBox> mirrorB;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

@@ -92,7 +92,6 @@
 #include "MonoCrystals.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-//#include "JawValve.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
@@ -133,9 +132,13 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
   diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
   jawComp({
-      std::make_shared<constructSystem::JawFlange>(newName+"JawBUnit0"),
-      std::make_shared<constructSystem::JawFlange>(newName+"JawBUnit1")
-	})
+      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawBUnit0"),
+      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawBUnit1")
+	}),
+
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),  
+  gateF(new constructSystem::GateValve(newName+"GateF")),
+  mirrorB(new constructSystem::VacuumBox(newName+"MirrorB"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -165,9 +168,11 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   OR.addObject(gateD);
   OR.addObject(mirrorA);
   OR.addObject(gateE);
+  OR.addObject(bellowF);
   OR.addObject(diagBoxB);
-  
-
+  OR.addObject(bellowG);
+  OR.addObject(gateF);
+  OR.addObject(mirrorB);
 }
   
 cosaxsOpticsLine::~cosaxsOpticsLine()
@@ -244,16 +249,16 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   filterBoxA->registerSpaceCut(1,2);
   filterBoxA->createAll(System,*bremCollA,2);
 
+  ELog::EM<<"OuterSpace == "<<filterBoxA->getCell("OuterSpace")<<ELog::endDiag;
   filterBoxA->splitObject(System,1001,filterBoxA->getCell("OuterSpace"),
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
 
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
-  filterStick->addInsertCell("Flange",filterBoxA->getBuildCell());
   filterStick->addInsertCell("Body",PI.getCell("Void"));
   filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
   filterStick->setBladeCentre(PI,0);
-  filterStick->createAll(System,PI,2);
+  filterStick->createAll(System,PI,PI.getSideIndex("InnerPlate"));
 
 
   gateA->addInsertCell(ContainedComp::getInsertCells());
@@ -274,7 +279,6 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   primeJawBox->addInsertCell(ContainedComp::getInsertCells());
   primeJawBox->registerSpaceCut(1,2);
   primeJawBox->createAll(System,*screenPipeB,2);
-
 
   
   bellowC->addInsertCell(ContainedComp::getInsertCells());
@@ -338,27 +342,25 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   diagBoxB->addInsertCell(ContainedComp::getInsertCells());
   diagBoxB->registerSpaceCut(1,2);
   diagBoxB->createAll(System,*bellowF,2);
-
-
   
   for(size_t index=0;index<2;index++)
     {
       const constructSystem::portItem& DPI=diagBoxB->getPort(index);
-      jawComp[index]->setFillRadius(DPI,3,DPI.getCell("Void"));
+      jawComp[index]->setFillRadius
+	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+      
       jawComp[index]->addInsertCell(diagBoxB->getCell("Void"));
       if (index)
 	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-      jawComp[index]->createAll(System,DPI,-2,*diagBoxB,0);
+      jawComp[index]->createAll
+	(System,DPI,DPI.getSideIndex("InnerPlate"),*diagBoxB,0);
     }
+  diagBoxB->splitVoidPorts(System,"SplitOuter",2001,
+			   diagBoxB->getBuildCell(),{0,2});
 
-  // diagBoxB->splitVoidPorts(System,"SplitOuter",2001,
-  // 			   diagBoxB->getBuildCell(),
-  // 			   {0,1, 1,2});
-
-  // diagBoxB->splitObject(System,-11,diagBoxB->getCell("SplitOuter",0));
-  // diagBoxB->splitObject(System,12,diagBoxB->getCell("SplitOuter",2));
-  
-  
+  diagBoxB->splitObject(System,-11,diagBoxB->getCell("SplitOuter",0));
+  diagBoxB->splitObject(System,12,diagBoxB->getCell("SplitOuter",1));
+ 
  
   lastComp=diagBoxB;
   return;

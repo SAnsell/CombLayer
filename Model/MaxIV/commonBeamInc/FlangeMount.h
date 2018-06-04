@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/FlangeMount.h
+ * File:   commonBeamInc/FlangeMount.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
