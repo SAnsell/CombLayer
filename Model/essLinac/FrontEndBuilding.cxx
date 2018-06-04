@@ -110,6 +110,9 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   shieldWall2Offset(A.shieldWall2Offset),
   shieldWall2Thick(A.shieldWall2Thick),
   shieldWall2Length(A.shieldWall2Length),
+  shieldWall3Offset(A.shieldWall3Offset),
+  shieldWall3Thick(A.shieldWall3Thick),
+  shieldWall3Length(A.shieldWall3Length),
   ledgeLength(A.ledgeLength),
   ledgeWidth(A.ledgeWidth),
   ledgeWallThick(A.ledgeWallThick),
@@ -143,6 +146,9 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       shieldWall2Offset=A.shieldWall2Offset;
       shieldWall2Thick=A.shieldWall2Thick;
       shieldWall2Length=A.shieldWall2Length;
+      shieldWall3Offset=A.shieldWall3Offset;
+      shieldWall3Thick=A.shieldWall3Thick;
+      shieldWall3Length=A.shieldWall3Length;
       ledgeLength=A.ledgeLength;
       ledgeWidth=A.ledgeWidth;
       ledgeWallThick=A.ledgeWallThick;
@@ -189,6 +195,9 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   shieldWall2Offset=Control.EvalVar<double>(keyName+"ShieldWall2Offset");
   shieldWall2Thick=Control.EvalVar<double>(keyName+"ShieldWall2Thick");
   shieldWall2Length=Control.EvalVar<double>(keyName+"ShieldWall2Length");
+  shieldWall3Offset=Control.EvalVar<double>(keyName+"ShieldWall3Offset");
+  shieldWall3Thick=Control.EvalVar<double>(keyName+"ShieldWall3Thick");
+  shieldWall3Length=Control.EvalVar<double>(keyName+"ShieldWall3Length");
   ledgeLength=Control.EvalVar<double>(keyName+"LedgeLength");
   ledgeWidth=Control.EvalVar<double>(keyName+"LedgeWidth");
   ledgeWallThick=Control.EvalVar<double>(keyName+"LedgeWallThick");
@@ -239,7 +248,7 @@ FrontEndBuilding::createSurfaces()
   // shield wall 1
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldWall1Length),Y);
   ModelSupport::buildPlane(SMap,surfIndex+103,Origin+X*(shieldWall1Offset),X);
-   ModelSupport::buildPlane(SMap,surfIndex+104,
+  ModelSupport::buildPlane(SMap,surfIndex+104,
   			   Origin+X*(shieldWall1Offset+shieldWall1Thick),X);
 
   // shield wall 2
@@ -273,6 +282,14 @@ FrontEndBuilding::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,surfIndex+313,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+303),
 				  -ledgeWallThick);
+
+  // shield wall 3
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+402,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+2),
+				  -shieldWall3Length);
+  ModelSupport::buildPlane(SMap,surfIndex+403,Origin+X*(shieldWall3Offset),X);
+  ModelSupport::buildPlane(SMap,surfIndex+404,
+			   Origin+X*(shieldWall3Offset+shieldWall3Thick),X);
 
   return;
 }
@@ -326,7 +343,17 @@ FrontEndBuilding::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 202 -2 204 -4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -2 104 -213 ");
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -402 104 -213 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 404 -213 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 403 -404 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 -403 104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
 

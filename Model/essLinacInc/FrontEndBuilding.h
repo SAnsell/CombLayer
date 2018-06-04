@@ -54,6 +54,9 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   double shieldWall2Offset; ///< Shield wall 2 offset
   double shieldWall2Thick;  ///< Shield wall 2 thick
   double shieldWall2Length; ///< Shield wall 2 length
+  double shieldWall3Offset; ///< Shield wall 3 offset
+  double shieldWall3Thick;  ///< Shield wall 3 thickness
+  double shieldWall3Length; ///< Shield wall 3 length
   double ledgeLength; ///< Ledge length
   double ledgeWidth; ///< Ledge width
   double ledgeWallThick; ///< Ledge wall thick
