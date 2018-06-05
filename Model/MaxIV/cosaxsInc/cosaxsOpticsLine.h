@@ -126,11 +126,10 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateE;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowF;
-  /// Diagnostic unit 1:
+  /// Diagnostic unit 2:
   std::shared_ptr<constructSystem::PortTube> diagBoxB;
-
   /// Diag Box B :: Jaw units
-  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawComp;
+  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompB;
 
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowG;
@@ -138,7 +137,25 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateF;
   /// Mirror box B
   std::shared_ptr<constructSystem::VacuumBox> mirrorB;
+  // Gate valve
+  std::shared_ptr<constructSystem::GateValve> gateG;
+  /// Bellow to mirror B
+  std::shared_ptr<constructSystem::Bellows> bellowH;
 
+  /// Diagnostic unit 3:
+  std::shared_ptr<constructSystem::PortTube> diagBoxC;
+  /// Diag Box C :: Jaw units
+  std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompC;
+
+  /// Bellow to end station
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+
+
+
+  
+  void constructDiag(Simulation&,constructSystem::PortTube&,
+		     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
+		     const attachSystem::FixedComp&,const long int);
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

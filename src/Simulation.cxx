@@ -440,10 +440,13 @@ Simulation::removeCell(const int cellNumber)
   OTYPE::iterator vc=OList.find(cellNumber);
   if (vc==OList.end())
     throw ColErr::InContainerError<int>(cellNumber,"cellNumber in OList");
+
+  OSMPtr->removeObject(vc->second);
   
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
   ST.checkDelete(this,vc->second);
   delete vc->second;
+
   OList.erase(vc);
 
   OR.removeActiveCell(cellNumber);

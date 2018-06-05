@@ -391,8 +391,8 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   PItemGen.generatePort(Control,portName+"6",MidPt,-ZVec);
 
   JawFlangeGenerator JFlanGen;
-  JFlanGen.generateFlange(Control,Name+"JawBUnit0");
-  JFlanGen.generateFlange(Control,Name+"JawBUnit1");
+  JFlanGen.generateFlange(Control,Name+"JawUnit0");
+  JFlanGen.generateFlange(Control,Name+"JawUnit1");
 
   return;
 }
@@ -553,6 +553,14 @@ opticsVariables(FuncDataBase& Control)
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   cosaxsVar::mirrorBox(Control,preName+"MirrorB");
+
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateG",0.0,0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
+
+  cosaxsVar::diagUnit2(Control,preName+"DiagBoxC");
   
   return;
 }

@@ -522,19 +522,20 @@ portItem::constructTrack(Simulation& System)
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
       return;
     }
+
+	
   createSurfaces();
-  
   System.populateCells();
   System.validateObjSurfMap();
 
+ 
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
-
+  
   size_t AIndex,BIndex;
 
   calcBoundaryCrossing(LT,AIndex,BIndex);
   constructOuterFlange(System,LT,AIndex,BIndex);
-
   createLinks(LT,AIndex,BIndex);
   return;
 }

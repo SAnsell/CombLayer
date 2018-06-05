@@ -432,7 +432,6 @@ PortTube::createPorts(Simulation& System)
 
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
-      
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System);
     }
@@ -608,10 +607,10 @@ PortTube::createAll(Simulation& System,
   createUnitVector(FC,FIndex);
   createSurfaces();    
   createObjects(System);
-  
+
+
   createLinks();
-  
-  insertObjects(System);   
+  insertObjects(System);
   createPorts(System);
 
   return;

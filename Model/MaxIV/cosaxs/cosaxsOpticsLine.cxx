@@ -131,14 +131,21 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   gateE(new constructSystem::GateValve(newName+"GateE")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
   diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
-  jawComp({
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawBUnit0"),
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawBUnit1")
+  jawCompB({
+      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit0"),
+      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit1")
 	}),
 
   bellowG(new constructSystem::Bellows(newName+"BellowG")),  
   gateF(new constructSystem::GateValve(newName+"GateF")),
-  mirrorB(new constructSystem::VacuumBox(newName+"MirrorB"))
+  mirrorB(new constructSystem::VacuumBox(newName+"MirrorB")),
+  gateG(new constructSystem::GateValve(newName+"GateG")),
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),  
+  diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
+  jawCompC({
+      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
+      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
+	})
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -173,6 +180,9 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   OR.addObject(bellowG);
   OR.addObject(gateF);
   OR.addObject(mirrorB);
+  OR.addObject(gateG);
+  OR.addObject(bellowH);
+  OR.addObject(diagBoxC);
 }
   
 cosaxsOpticsLine::~cosaxsOpticsLine()
@@ -211,6 +221,45 @@ cosaxsOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+cosaxsOpticsLine::constructDiag
+(Simulation& System, constructSystem::PortTube& diagBoxItem,
+ std::array<std::shared_ptr<constructSystem::JawFlange>,2>& jawComp,
+ const attachSystem::FixedComp& FC,const long int linkPt)
+  /*!
+    Construct a diagnostic box
+    \param System :: Simulation for building
+    \param diagBoxItem :: Diagnostic box item
+    \param FC :: FixedComp for start point
+    \param linkPt :: side index
+   */
+{
+  ELog::RegMethod RegA("cosaxOpticsLine","constructDiag");
+  
+  diagBoxItem.addInsertCell(ContainedComp::getInsertCells());
+  diagBoxItem.registerSpaceCut(1,2);
+  diagBoxItem.createAll(System,FC,linkPt);
+
+  for(size_t index=0;index<2;index++)
+    {
+      const constructSystem::portItem& DPI=diagBoxItem.getPort(index);
+      jawComp[index]->setFillRadius
+	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
+      
+      jawComp[index]->addInsertCell(diagBoxItem.getCell("Void"));
+      if (index)
+	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
+      jawComp[index]->createAll
+	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
+    }
+  diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
+			   diagBoxItem.getBuildCell(),{0,2});
+
+  diagBoxItem.splitObject(System,-11,diagBoxItem.getCell("SplitOuter",0));
+  diagBoxItem.splitObject(System,12,diagBoxItem.getCell("SplitOuter",1));
+  return;
+}
+  
 
 void
 cosaxsOpticsLine::buildObjects(Simulation& System)
@@ -249,7 +298,6 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   filterBoxA->registerSpaceCut(1,2);
   filterBoxA->createAll(System,*bremCollA,2);
 
-  ELog::EM<<"OuterSpace == "<<filterBoxA->getCell("OuterSpace")<<ELog::endDiag;
   filterBoxA->splitObject(System,1001,filterBoxA->getCell("OuterSpace"),
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
@@ -339,30 +387,29 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   bellowF->registerSpaceCut(1,2);
   bellowF->createAll(System,*gateE,2);
 
-  diagBoxB->addInsertCell(ContainedComp::getInsertCells());
-  diagBoxB->registerSpaceCut(1,2);
-  diagBoxB->createAll(System,*bellowF,2);
-  
-  for(size_t index=0;index<2;index++)
-    {
-      const constructSystem::portItem& DPI=diagBoxB->getPort(index);
-      jawComp[index]->setFillRadius
-	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
-      
-      jawComp[index]->addInsertCell(diagBoxB->getCell("Void"));
-      if (index)
-	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-      jawComp[index]->createAll
-	(System,DPI,DPI.getSideIndex("InnerPlate"),*diagBoxB,0);
-    }
-  diagBoxB->splitVoidPorts(System,"SplitOuter",2001,
-			   diagBoxB->getBuildCell(),{0,2});
+  constructDiag(System,*diagBoxB,jawCompB,*bellowF,2);
+  bellowG->addInsertCell(ContainedComp::getInsertCells());
+  bellowG->registerSpaceCut(1,2);
+  bellowG->createAll(System,*diagBoxB,2);
 
-  diagBoxB->splitObject(System,-11,diagBoxB->getCell("SplitOuter",0));
-  diagBoxB->splitObject(System,12,diagBoxB->getCell("SplitOuter",1));
- 
- 
-  lastComp=diagBoxB;
+  gateF->addInsertCell(ContainedComp::getInsertCells());
+  gateF->registerSpaceCut(1,2);
+  gateF->createAll(System,*bellowG,2);
+
+  mirrorB->addInsertCell(ContainedComp::getInsertCells());
+  mirrorB->registerSpaceCut(1,2);
+  mirrorB->createAll(System,*gateF,2);
+
+  gateG->addInsertCell(ContainedComp::getInsertCells());
+  gateG->registerSpaceCut(1,2);
+  gateG->createAll(System,*mirrorB,2);
+  
+  bellowH->addInsertCell(ContainedComp::getInsertCells());
+  bellowH->registerSpaceCut(1,2);
+  bellowH->createAll(System,*gateG,2);
+
+  constructDiag(System,*diagBoxC,jawCompC,*bellowH,2);
+  lastComp=diagBoxC;
   return;
 }
 

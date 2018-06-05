@@ -328,6 +328,42 @@ ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
     }
   return;
 }
+
+
+void
+ObjSurfMap::removeObject(const MonteCarlo::Object* OPtr)
+  /*!
+    Remove a specific object.
+    Expensive call to remove all instances of the cell nubmer
+    from the OSM.
+    \param cellNumber :: Cell to remove
+  */
+{
+  ELog::RegMethod Rega("ObjSurfMap","removeObject");
+
+  const int cellNumber(OPtr->getName());
+  
+  OSTYPE::iterator mc=OSurfMap.find(cellNumber);
+  if (mc!=OSurfMap.end())
+    {
+      const std::set<int>& surfIndex=mc->second;
+      for(const int SN : surfIndex)
+	{
+	  OMTYPE::iterator sm=SMap.find(SN);
+	  if (sm!=SMap.end())
+	    {
+	      STYPE& ObjVec=sm->second;
+	      STYPE::iterator objITER=find(ObjVec.begin(),ObjVec.end(),OPtr);
+	      if (objITER!=ObjVec.end())
+		ObjVec.erase(objITER);
+	      if (ObjVec.empty())
+		SMap.erase(sm);
+	    }
+	}
+      OSurfMap.erase(mc);
+    }
+  return;
+}
   
 const std::set<int>&
 ObjSurfMap::connectedObjects(const int cellNumber) const
