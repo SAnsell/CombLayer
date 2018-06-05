@@ -80,7 +80,7 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
-
+#include "World.h"
 #include "AttachSupport.h"
 
 #include "CellMap.h"
@@ -470,7 +470,7 @@ Linac::createAll(Simulation& System,
   insertObjects(System);
 
 
-  dtl->createAll(System,*this,11);
+  dtl->createAll(System,World::masterOrigin(),0);
   attachSystem::addToInsertControl(System,*this,*dtl);
 
   // Beam dump and Faraday Cup are built with respect to the end of last DTL

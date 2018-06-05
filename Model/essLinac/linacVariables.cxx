@@ -76,8 +76,8 @@ EssLinacVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
   Control.addVariable("LinacEngineeringActive",1);
-
-  Control.addVariable("LinacLengthBack",-398.6+20); // rbfrend2-9100
+  const double dtl1Start(1103.6973); // email from Carl-Johan 5 Jun 2018
+  Control.addVariable("LinacLengthBack",-dtl1Start);
   Control.addVariable("LinacLengthFront",51044.4); // MARS
   Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011
   Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011
@@ -105,7 +105,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight");
   // To be optimised
   Control.addVariable("LinacTSW0Width", 70.0);
-  Control.addVariable("LinacTSW0XStep", 3960.0);
+  Control.addVariable("LinacTSW0XStep", 4760.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0NLayers", 1); // for biasing
@@ -231,7 +231,7 @@ EssLinacVariables(FuncDataBase& Control)
   // page 21
   // PMQ parameters are from:
   // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
-  Control.addParse<double>("LinacDTL1YStep", "398.6 + LinacLengthBack");  // MARS
+  Control.addVariable("LinacDTL1YStep", dtl1Start);
 
   Control.addVariable("LinacDTL1EngineeringActive", 0);
   //  Control.addVariable("LinacDTL1Length", 768.76);
