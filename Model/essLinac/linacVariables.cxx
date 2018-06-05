@@ -120,7 +120,7 @@ EssLinacVariables(FuncDataBase& Control)
   // Beam dump
   Control.addVariable("LinacBeamDumpActive", 0);
   
-  Control.addVariable("LinacBeamDumpYStep",-10); // just to have Origin in the middle of its front wall
+  Control.addVariable("LinacBeamDumpYStep",100); // arbitrary number to put if after last DTL
 
   // Exact definition of borated concrete needed [email 3 Nov 2016]
   Control.addVariable("LinacBeamDumpConcreteMat", "SkanskaConcrete%Boron%99");
@@ -185,7 +185,7 @@ EssLinacVariables(FuncDataBase& Control)
   
   // Faraday cup
   Control.addVariable("LinacFaradayCupActive", 1.0);
-  Control.addVariable("LinacFaradayCupYStep", 3770.0); // after DTL4
+  Control.addVariable("LinacFaradayCupYStep", 206.3397); // arbitrary distance from the end of last DTL
   // Dimensions are based on email from LT 13 Mar 2017 (Fc_design.pdf)
   Control.addVariable("LinacFaradayCupEngineeringActive", 1);
   Control.addVariable("LinacFaradayCupLength", 3.2);

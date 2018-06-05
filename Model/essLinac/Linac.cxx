@@ -470,14 +470,17 @@ Linac::createAll(Simulation& System,
   insertObjects(System);
 
 
-  beamDump->createAll(System,*this,0);
-  attachSystem::addToInsertLineCtrl(System,*this,*beamDump);
-
-  faradayCup->createAll(System,*this,0);
-  attachSystem::addToInsertControl(System,*this,*faradayCup);
-
   dtl->createAll(System,*this,11);
   attachSystem::addToInsertControl(System,*this,*dtl);
+
+  // Beam dump and Faraday Cup are built with respect to the end of last DTL
+  const long int backLP(static_cast<long int>(dtl->NConnect()-4));
+
+  beamDump->createAll(System,*dtl,backLP);
+  attachSystem::addToInsertControl(System,*this,*beamDump);
+
+  faradayCup->createAll(System,*dtl,backLP);
+  attachSystem::addToInsertControl(System,*this,*faradayCup);
 
   buildTSW(System);
 
