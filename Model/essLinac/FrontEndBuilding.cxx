@@ -113,9 +113,9 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   shieldWall3Offset(A.shieldWall3Offset),
   shieldWall3Thick(A.shieldWall3Thick),
   shieldWall3Length(A.shieldWall3Length),
-  ledgeLength(A.ledgeLength),
-  ledgeWidth(A.ledgeWidth),
-  ledgeWallThick(A.ledgeWallThick),
+  dropHatchLength(A.dropHatchLength),
+  dropHatchWidth(A.dropHatchWidth),
+  dropHatchWallThick(A.dropHatchWallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -149,9 +149,9 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       shieldWall3Offset=A.shieldWall3Offset;
       shieldWall3Thick=A.shieldWall3Thick;
       shieldWall3Length=A.shieldWall3Length;
-      ledgeLength=A.ledgeLength;
-      ledgeWidth=A.ledgeWidth;
-      ledgeWallThick=A.ledgeWallThick;
+      dropHatchLength=A.dropHatchLength;
+      dropHatchWidth=A.dropHatchWidth;
+      dropHatchWallThick=A.dropHatchWallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -198,9 +198,9 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   shieldWall3Offset=Control.EvalVar<double>(keyName+"ShieldWall3Offset");
   shieldWall3Thick=Control.EvalVar<double>(keyName+"ShieldWall3Thick");
   shieldWall3Length=Control.EvalVar<double>(keyName+"ShieldWall3Length");
-  ledgeLength=Control.EvalVar<double>(keyName+"LedgeLength");
-  ledgeWidth=Control.EvalVar<double>(keyName+"LedgeWidth");
-  ledgeWallThick=Control.EvalVar<double>(keyName+"LedgeWallThick");
+  dropHatchLength=Control.EvalVar<double>(keyName+"DropHatchLength");
+  dropHatchWidth=Control.EvalVar<double>(keyName+"DropHatchWidth");
+  dropHatchWallThick=Control.EvalVar<double>(keyName+"DropHatchWallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -261,27 +261,27 @@ FrontEndBuilding::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(surfIndex+204),
 				  -shieldWall2Thick);
 
-  // ledge
+  // Drop Hatch
   ModelSupport::buildPlane(SMap,surfIndex+301,
-			   Origin+Y*(length-ledgeLength)/2.0,Y);
+			   Origin+Y*(length-dropHatchLength)/2.0,Y);
   ModelSupport::buildPlane(SMap,surfIndex+302,
-			   Origin+Y*(length+ledgeLength)/2.0,Y);
+			   Origin+Y*(length+dropHatchLength)/2.0,Y);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+303,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+13),
-				  -ledgeWidth);
+				  -dropHatchWidth);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+311,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+301),
-				  -ledgeWallThick);
+				  -dropHatchWallThick);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+312,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+302),
-				  ledgeWallThick);
+				  dropHatchWallThick);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+313,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+303),
-				  -ledgeWallThick);
+				  -dropHatchWallThick);
 
   // shield wall 3
   ModelSupport::buildShiftedPlane(SMap,surfIndex+402,
@@ -367,7 +367,7 @@ FrontEndBuilding::createObjects(Simulation& System,
     FC.getLinkString(-floorIndexLow) + FC.getLinkString(-roofIndexTop);
   addOuterSurf(Out);
 
-  // gap in the wall for the ledge
+  // gap in the wall for the dropHatch
   Out += ModelSupport::getComposite(SMap,surfIndex," (-301:302:3:") +
     FC.getLinkString(-floorIndexTop)+":"+FC.getLinkString(-roofIndexLow)+")";
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));

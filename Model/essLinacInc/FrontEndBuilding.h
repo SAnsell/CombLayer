@@ -57,9 +57,9 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   double shieldWall3Offset; ///< Shield wall 3 offset
   double shieldWall3Thick;  ///< Shield wall 3 thickness
   double shieldWall3Length; ///< Shield wall 3 length
-  double ledgeLength; ///< Ledge length
-  double ledgeWidth; ///< Ledge width
-  double ledgeWallThick; ///< Ledge wall thick
+  double dropHatchLength;   ///< Drop Hatch length
+  double dropHatchWidth;    ///< Drop Hatch width
+  double dropHatchWallThick;///< Drop Hatch wall thick
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
