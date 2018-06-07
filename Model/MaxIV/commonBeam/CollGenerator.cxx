@@ -59,7 +59,7 @@ namespace setVariable
 {
 
 CollGenerator::CollGenerator() :
-  radius(6.1),minLength(-0.66),
+  radius(4.0),minLength(-0.8235),
   AWidth(2.6),minWidth(2.0),
   BWidth(2.6),AHeight(1.8),
   minHeight(1.6),BHeight(1.8),
@@ -141,6 +141,32 @@ CollGenerator::setMain(const double R,const std::string& M,
   radius=R;
   mat=M;
   voidMat=VM;
+  return;
+}
+
+void
+CollGenerator::setFrontGap(const double W,const double H)
+  /*!
+    Set the front void window
+    \param W :: front width opening
+    \param H :: front height opening
+   */
+{
+  AWidth=W;
+  AHeight=H;
+  return;
+}
+	
+void
+CollGenerator::setBackGap(const double W,const double H)
+  /*!
+    Set the back void window
+    \param W :: front width opening
+    \param H :: front height opening
+   */
+{
+  BWidth=W;
+  BHeight=H;
   return;
 }
 				  

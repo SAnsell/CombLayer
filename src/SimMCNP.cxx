@@ -494,7 +494,6 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
   
-  ELog::EM<<"Surface size == "<<SurMap.size()<<ELog::endDiag;
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->write(OX);
 

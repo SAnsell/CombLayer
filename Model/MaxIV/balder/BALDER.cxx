@@ -153,7 +153,7 @@ BALDER::build(Simulation& System,
   frontCave->addInsertCell(voidCell);
   frontCave->createAll(System,FCOrigin,sideIndex);
   const HeadRule caveVoid=frontCave->getCellHR(System,"Void");
-  
+
   frontBeam->addInsertCell(frontCave->getCell("Void"));
   frontBeam->createAll(System,*frontCave,-1);
 
@@ -163,7 +163,7 @@ BALDER::build(Simulation& System,
   joinPipe->addInsertCell(frontCave->getCell("Void"));
   joinPipe->addInsertCell(frontCave->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
-  
+
   joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipe->setFront(*frontBeam,2);
   joinPipe->setSpaceLinkCopy(0,*opticsHut,1);

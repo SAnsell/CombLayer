@@ -29,15 +29,15 @@ namespace insertSystem
 
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
   class Bellows;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
+  class CrossPipe;
   class GateValve;
-  class JawValve;
+  class portItem;
+  class PipeTube;
+  class PortTube;
+  class SupplyPipe;
+  class VacuumBox;
+  class VacuumPipe; 
 }
 
 
@@ -80,16 +80,26 @@ class FrontEnd :
   std::shared_ptr<Wiggler> wiggler;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
+  /// bellow infront of collimator
+  std::shared_ptr<constructSystem::Bellows> bellowA;
   /// box for collimator
-  std::shared_ptr<constructSystem::PortTube> collTubeA;
+  std::shared_ptr<constructSystem::PipeTube> collTubeA;
   /// collimator A
   std::shared_ptr<xraySystem::SqrCollimator> collA;
-  /// dipole connection pipe
+  /// bellow after collimator
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// Mask1:2 connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
+  /// bellow after collimator
+  std::shared_ptr<constructSystem::Bellows> bellowC;
   /// box for collimator
-  std::shared_ptr<constructSystem::PortTube> collTubeB;
+  std::shared_ptr<constructSystem::PipeTube> collTubeB;
   /// collimator B
   std::shared_ptr<xraySystem::SqrCollimator> collB;
+  /// box for collimator C (joined to B)
+  std::shared_ptr<constructSystem::PipeTube> collTubeC;
+  /// collimator C
+  std::shared_ptr<xraySystem::SqrCollimator> collC;
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// Pipe from collimator B to join pipe

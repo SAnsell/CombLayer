@@ -64,12 +64,11 @@ class CollGenerator
   CollGenerator& operator=(const CollGenerator&);
   ~CollGenerator();
 
-
   void setMain(const double,const std::string&,const std::string&);
   void setMinSize(const double,const double,const double);
-  void setAPort(const double,const double);
-  void setBPort(const double,const double);
-  
+  void setFrontGap(const double,const double);
+  void setBackGap(const double,const double);
+
   void generateColl(FuncDataBase&,const std::string&,
 		    const double,const double) const;
 

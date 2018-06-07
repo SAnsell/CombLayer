@@ -55,6 +55,7 @@
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
+#include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
@@ -117,13 +118,15 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables[F]","frontEndVariables");
 
+  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
   
   PipeGen.setWindow(-2.0,0.0);   // no window
-
+  PipeGen.setMat("Stainless304");
+  
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF120>();
@@ -147,40 +150,64 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"WigglerVoidMat",0);
   Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
 
-  PipeGen.setCF<CF120>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,700.0);
-  
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setWallThick(1.0);
-  PTubeGen.setCF<CF120>();
-  PTubeGen.setPortLength(5.0,5.0); // La/Lb
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",
-		       0.0,30.0,200.0);
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
   Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-
-  PipeGen.setCF<CF120>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,400.0);
-
   // collimator block
+
+  CollGen.setFrontGap(2.62,1.86);  //1033.8
+  CollGen.setBackGap(1.54,1.42);
+  CollGen.setMinSize(29.0,1.2,1.24);
   CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
-  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
+  
+  PipeGen.setCF<CF100>();
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutDiskLength",1.0);
-  Control.addVariable(frontKey+"ECutDiskRadius",6.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
-  
-  
-  
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",
-		       0.0,30.0,200.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
+
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
   Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
+
+  CollGen.setFrontGap(2.13,2.146);
+  CollGen.setBackGap(0.756,0.432);
+  CollGen.setMinSize(32.0,0.680,0.358);
+  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.2);
+
+  // linked pipe tube
+  SimpleTubeGen.setCF<CF40>();
+  SimpleTubeGen.setAFlangeCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
+  Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
+
+  CollGen.setMain(1.20,"Copper","Void");
+  CollGen.setFrontGap(0.84,0.582);
+  CollGen.setBackGap(0.750,0.357);
+  CollGen.setMinSize(12.0,0.730,0.16);
+  CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF120>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,325.0);
+  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,463.0);
 
   return;
 }
@@ -571,7 +598,15 @@ BALDERvariables(FuncDataBase& Control)
 
   Control.addVariable("BalderOpticsHoleXStep",0.0);
   Control.addVariable("BalderOpticsHoleZStep",5.0);
-  Control.addVariable("BalderOpticsHoleRadius",7.0);
+  Control.addVariable("BalderOpticsHoleRadius",3.5);
+
+  Control.addVariable("BalderOpticsExtraYStep",0.0);
+  Control.addVariable("BalderOpticsExtraLength",10.0);
+  Control.addVariable("BalderOpticsExtraHeight",80.0);
+  Control.addVariable("BalderOpticsExtraWidth",80.0);
+  Control.addVariable("BalderOpticsExtraWall",0.8);
+  Control.addVariable("BalderOpticsExtraMat","Lead");
+  Control.addVariable("BalderOpticsExtraWall","Stainless304");
 
   balderVar::frontCaveVariables(Control,500.0);  // Set to middle
   balderVar::frontEndVariables(Control,"BalderFrontBeam");  

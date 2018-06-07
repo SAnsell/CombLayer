@@ -35,7 +35,8 @@ namespace constructSystem
   */
   
 class PipeCollimator : public attachSystem::ContainedSpace,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:

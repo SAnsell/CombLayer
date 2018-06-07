@@ -80,6 +80,7 @@
 #include "Bellows.h"
 #include "VacuumBox.h"
 #include "portItem.h"
+#include "PipeTube.h"
 #include "PortTube.h"
 #include "Wiggler.h"
 #include "SqrCollimator.h"
@@ -99,11 +100,16 @@ FrontEnd::FrontEnd(const std::string& Key) :
   wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
   wiggler(new Wiggler(newName+"Wiggler")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
-  collTubeA(new constructSystem::PortTube(newName+"CollimatorTubeA")),
+  bellowA(new constructSystem::Bellows(newName+"BellowA")),
+  collTubeA(new constructSystem::PipeTube(newName+"CollimatorTubeA")),
   collA(new xraySystem::SqrCollimator(newName+"CollA")),
+  bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
-  collTubeB(new constructSystem::PortTube(newName+"CollimatorTubeB")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  collTubeB(new constructSystem::PipeTube(newName+"CollimatorTubeB")),
   collB(new xraySystem::SqrCollimator(newName+"CollB")),
+  collTubeC(new constructSystem::PipeTube(newName+"CollimatorTubeC")),
+  collC(new xraySystem::SqrCollimator(newName+"CollC")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe"))
   /*!
@@ -118,11 +124,16 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(wigglerBox);
   OR.addObject(wiggler);
   OR.addObject(dipolePipe);
+  OR.addObject(bellowA);
   OR.addObject(collTubeA);
   OR.addObject(collA);
+  OR.addObject(bellowB);
   OR.addObject(collABPipe);
+  OR.addObject(bellowC);    
   OR.addObject(collTubeB);
   OR.addObject(collB);
+  OR.addObject(collTubeC);
+  OR.addObject(collC);
   OR.addObject(eCutDisk);
   OR.addObject(flightPipe);
 }
@@ -186,39 +197,53 @@ FrontEnd::buildObjects(Simulation& System)
   dipolePipe->setFront(*wigglerBox,2);
   dipolePipe->createAll(System,*wigglerBox,2);
 
+  bellowA->addInsertCell(ContainedComp::getInsertCells());
+  bellowA->registerSpaceCut(1,2);
+  bellowA->createAll(System,*dipolePipe,2);
+
   collTubeA->addInsertCell(ContainedComp::getInsertCells());
   collTubeA->registerSpaceCut(1,2);
-  collTubeA->setFront(*dipolePipe,2);
-  collTubeA->createAll(System,*dipolePipe,2);
+  collTubeA->createAll(System,*bellowA,2);
 
   collA->addInsertCell(collTubeA->getCell("Void"));
   collA->createAll(System,*collTubeA,0);
 
+  bellowB->addInsertCell(ContainedComp::getInsertCells());
+  bellowB->registerSpaceCut(1,2);
+  bellowB->createAll(System,*collTubeA,2);
+
   collABPipe->addInsertCell(ContainedComp::getInsertCells());
   collABPipe->registerSpaceCut(1,2);
-  collABPipe->setFront(*collTubeA,2);
-  collABPipe->createAll(System,*collTubeA,2);
+  collABPipe->createAll(System,*bellowB,2);
+
+  bellowC->addInsertCell(ContainedComp::getInsertCells());
+  bellowC->registerSpaceCut(1,2);
+  bellowC->createAll(System,*collABPipe,2);
 
   collTubeB->addInsertCell(ContainedComp::getInsertCells());
   collTubeB->registerSpaceCut(1,2);
-  collTubeB->setFront(*collABPipe,2);
-  collTubeB->createAll(System,*collABPipe,2);
+  collTubeB->createAll(System,*bellowC,2);
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
 
+
+  collTubeC->addInsertCell(ContainedComp::getInsertCells());
+  collTubeC->registerSpaceCut(1,2);
+  collTubeC->createAll(System,*collTubeB,2);
+
+  collC->addInsertCell(collTubeC->getCell("Void"));
+  collC->createAll(System,*collTubeC,0);
+  
   eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(collTubeB->getCell("Void"));
-  eCutDisk->createAll(System,*collB,2);
-  
-  
+  eCutDisk->addInsertCell(collTubeC->getCell("Void"));
+  eCutDisk->createAll(System,*collC,2);
+   
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
   flightPipe->registerSpaceCut(1,2);
-  flightPipe->setFront(*collTubeB,2);
-  flightPipe->createAll(System,*collTubeB,2);
+  flightPipe->createAll(System,*collTubeC,2);
   
   lastComp=flightPipe;
-
   return;
 }
 

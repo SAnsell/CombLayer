@@ -61,6 +61,7 @@
 #include "FixedComp.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+#include "particleConv.h"
 #include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
@@ -99,6 +100,7 @@ tmeshConstruct::rectangleMesh(SimMCNP& System,const int type,
 {
   ELog::RegMethod RegA("tmeshConstruct","rectangleMesh");
 
+  const particleConv& pConv=particleConv::Instance();
   // Find next available number
   int tallyN(type);
   while(System.getTally(tallyN))
@@ -112,8 +114,12 @@ tmeshConstruct::rectangleMesh(SimMCNP& System,const int type,
   MT.setIndex(MPts);
   MT.setActive(1);
   MT.setKeyWords("");
-      
-  if (KeyWords=="DOSE")
+
+  if (pConv.hasName(KeyWords))
+    {
+      MT.setParticles(pConv.nameToMCNP(KeyWords));
+    }
+  else if (KeyWords=="DOSE")
     {
       MT.setResponse(getDoseConversion());
     }
