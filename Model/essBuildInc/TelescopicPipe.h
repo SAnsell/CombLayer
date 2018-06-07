@@ -46,6 +46,7 @@ class TelescopicPipe : public attachSystem::ContainedGroup,
   TelescopicPipe(const std::string&);
   TelescopicPipe(const TelescopicPipe&);
   TelescopicPipe& operator=(const TelescopicPipe&);
+    virtual TelescopicPipe *clone() const;
   virtual ~TelescopicPipe();
    
   void createAll(Simulation&,const attachSystem::FixedComp&,

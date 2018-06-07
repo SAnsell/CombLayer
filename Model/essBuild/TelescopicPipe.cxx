@@ -132,6 +132,15 @@ TelescopicPipe::operator=(const TelescopicPipe& A)
   return *this;
 }
    
+TelescopicPipe*  
+TelescopicPipe::clone() const
+  /*!
+    Virtual copy constructor
+    \return new (this)
+  */
+{
+  return new TelescopicPipe(*this);
+}
 
 TelescopicPipe::~TelescopicPipe()
   /*!
