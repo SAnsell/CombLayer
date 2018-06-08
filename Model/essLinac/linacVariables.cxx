@@ -327,10 +327,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("StubWall1Height",  300.0);
   Control.addVariable("StubWall1Mat",   "SkanskaConcrete"); // check
   Control.addVariable("StubWall1AirMat",   "Air");
-  Control.addVariable("StubWall1YStep",   235.0); 
+  Control.addVariable("StubWall1YStep",   350.0);
 
   Control.copyVarSet("StubWall1", "StubWall2");
-  Control.addVariable("StubWall2YStep",   350.0);
+  Control.addVariable("StubWall2YStep",   235.0);
 
   // FEB dimensions are measured from the STEP file received from
   // Carl-Johan 31.05.2018
