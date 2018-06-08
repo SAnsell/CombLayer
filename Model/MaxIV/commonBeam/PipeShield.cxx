@@ -89,6 +89,45 @@ PipeShield::PipeShield(const std::string& Key) :
     \param Key :: Key name for variables
   */
 {}
+
+PipeShield::PipeShield(const PipeShield& A) : 
+  attachSystem::ContainedSpace(A),
+  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
+  height(A.height),width(A.width),length(A.length),
+  clearGap(A.clearGap),wallThick(A.wallThick),mat(A.mat),
+  wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: PipeShield to copy
+  */
+{}
+
+PipeShield&
+PipeShield::operator=(const PipeShield& A)
+  /*!
+    Assignment operator
+    \param A :: PipeShield to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      height=A.height;
+      width=A.width;
+      length=A.length;
+      clearGap=A.clearGap;
+      wallThick=A.wallThick;
+      mat=A.mat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
   
 void
 PipeShield::populate(const FuncDataBase& Control)
@@ -143,7 +182,6 @@ PipeShield::createSurfaces()
     }
   if (!isActive("back"))
     {
-      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
@@ -182,10 +220,6 @@ PipeShield::createObjects(Simulation& System)
   const std::string bStr(getRuleStr("back"));
   const std::string rStr(getRuleStr("inner"));
 
-  ELog::EM<<"Front == "<<fStr<<ELog::endDiag;
-  ELog::EM<<"Back == "<<bStr<<ELog::endDiag;
-  
-  ELog::EM<<"Inner == "<<rStr<<ELog::endDiag;
   // inner clearance gap
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   Out+=fStr+bStr+rStr;
