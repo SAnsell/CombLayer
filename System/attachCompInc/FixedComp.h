@@ -167,7 +167,6 @@ class FixedComp
 
   virtual int getExitWindow(const long int,std::vector<int>&) const;
 
-
   void nameSideIndex(const size_t,const std::string&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
@@ -193,10 +192,14 @@ class FixedComp
   virtual std::string getLinkString(const long int) const;
   virtual double getLinkDistance(const long int,const long int) const;
   virtual int getLinkSurf(const long int) const;
-  
+
+  HeadRule getFullRule(const std::string&) const;
   HeadRule getFullRule(const long int) const;
 
   HeadRule getMainRule(const long int) const;
+  HeadRule getMainRule(const std::string&) const;
+
+  HeadRule getCommonRule(const std::string&) const;
   HeadRule getCommonRule(const long int) const;
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;

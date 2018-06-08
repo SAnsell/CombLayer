@@ -79,7 +79,7 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutIndex+1)
@@ -359,6 +359,14 @@ OpticsHutch::createLinks()
   setConnect(2,Origin+Y*length,-Y);
   setLinkSurf(2,-SMap.realSurf(hutIndex+2));
   nameSideIndex(2,"innerBack");
+
+  setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*length,-Y);
+  setLinkSurf(7,-SMap.realSurf(hutIndex+2));  
+  nameSideIndex(7,"exitHole");
+
+  setConnect(8,Origin+X*holeXStep+Z*(holeRadius+holeZStep)+Y*length,-Z);
+  setLinkSurf(8,SMap.realSurf(hutIndex+107));  
+  nameSideIndex(8,"exitHoleRadius");
 
   
   return;

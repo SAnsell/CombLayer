@@ -87,6 +87,48 @@ SqrCollimator::SqrCollimator(const std::string& Key) :
   */
 {}
   
+SqrCollimator::SqrCollimator(const SqrCollimator& A) : 
+  attachSystem::ContainedSpace(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  radius(A.radius),length(A.length),innerAWidth(A.innerAWidth),
+  innerAHeight(A.innerAHeight),minLength(A.minLength),
+  innerMinWidth(A.innerMinWidth),innerMinHeight(A.innerMinHeight),
+  innerBWidth(A.innerBWidth),innerBHeight(A.innerBHeight),
+  mat(A.mat),voidMat(A.voidMat)
+  /*!
+    Copy constructor
+    \param A :: SqrCollimator to copy
+  */
+{}
+
+SqrCollimator&
+SqrCollimator::operator=(const SqrCollimator& A)
+  /*!
+    Assignment operator
+    \param A :: SqrCollimator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      radius=A.radius;
+      length=A.length;
+      innerAWidth=A.innerAWidth;
+      innerAHeight=A.innerAHeight;
+      minLength=A.minLength;
+      innerMinWidth=A.innerMinWidth;
+      innerMinHeight=A.innerMinHeight;
+      innerBWidth=A.innerBWidth;
+      innerBHeight=A.innerBHeight;
+      mat=A.mat;
+      voidMat=A.voidMat;
+    }
+  return *this;
+}
 
 void
 SqrCollimator::populate(const FuncDataBase& Control)

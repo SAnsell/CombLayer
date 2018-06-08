@@ -124,7 +124,7 @@ FrontBackCut::setFront(const FrontBackCut& FSurf)
     \param FSurf :: Front object
   */
 {
-  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+  ELog::RegMethod RegA("FrontBackCut","setFront(FrontBackCut)");
 
   frontCut=FSurf.frontCut;
   frontDivider=FSurf.frontDivider;
@@ -139,7 +139,7 @@ FrontBackCut::setBack(const FrontBackCut& BSurf)
     \param BSurf :: back object
   */
 {
-  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+  ELog::RegMethod RegA("FrontBackCut","setBack(FrontBackCut)");
 
   backCut=BSurf.backCut;
   backDivider=BSurf.backDivider;
@@ -261,6 +261,8 @@ FrontBackCut::setFrontDivider(const std::string& FDRule)
     \param FDRule :: Front divider rule
   */
 {
+  ELog::RegMethod RegA("FrontBackCut","setFrontDivider");
+
   if (!frontDivider.procString(FDRule))
     throw ColErr::InvalidLine(FDRule,"FDRule failed");
   frontDivider.populateSurf();
@@ -286,6 +288,7 @@ FrontBackCut::setBackDivider(const std::string& BDRule)
     \param BDRule :: Back divider rule
   */
 {
+  ELog::RegMethod RegA("FrontBackCut","setBackDivider");
   if (!backDivider.procString(BDRule))
     throw ColErr::InvalidLine(BDRule,"BDRule failed");
   backDivider.populateSurf();
@@ -449,7 +452,8 @@ FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
+  ELog::RegMethod RegA("FrontBackCut","getShiftedFront");
+  
   getShiftedSurf(SMap,frontCut,surfIndex,dFlag,YAxis,length);
   return;
 }

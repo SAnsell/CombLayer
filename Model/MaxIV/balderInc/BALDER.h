@@ -34,7 +34,6 @@ namespace constructSystem
   class PortTube;
   class GateValve;
   class JawValve;
-    
 }
 
 
@@ -55,6 +54,7 @@ namespace xraySystem
   class FrontEndCave;
   class ConnectZone;
   class FrontEnd;
+  class PipeShield;
   
   /*!
     \class BALDER
@@ -87,6 +87,8 @@ class BALDER : public attachSystem::CopiedComp
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
+  /// Pipe shield on inner of optics hutch
+  std::shared_ptr<xraySystem::PipeShield> pShield;
 
   /// Connection between hutches
   std::shared_ptr<xraySystem::ConnectZone> connectZone;

@@ -57,6 +57,7 @@ namespace xraySystem
   class MonoCrystals;
   class FlangeMount;
   class Mirror;
+  class PipeShield;
     
   /*!
     \class OpticsBeamline

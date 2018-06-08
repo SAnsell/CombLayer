@@ -401,15 +401,19 @@ SplitFlangePipe::createLinks()
   FixedComp::setConnect(8,Origin+Z*(radius+bellowThick),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+27));
-  
+
+  FixedComp::nameSideIndex(7,"outerPipe");
+  FixedComp::nameSideIndex(0,"front");
+  FixedComp::nameSideIndex(1,"back");
+  FixedComp::nameSideIndex(2,"innerPipe");
 
   return;
 }
   
 void
 SplitFlangePipe::setFront(const attachSystem::FixedComp& FC,
-		     const long int sideIndex,
-		     const bool joinFlag)
+			  const long int sideIndex,
+			  const bool joinFlag)
   /*!
     Set front surface
     \param FC :: FixedComponent 
@@ -418,7 +422,6 @@ SplitFlangePipe::setFront(const attachSystem::FixedComp& FC,
    */
 {
   ELog::RegMethod RegA("SplitFlangePipe","setFront");
-
   
   FrontBackCut::setFront(FC,sideIndex);
   if (joinFlag)

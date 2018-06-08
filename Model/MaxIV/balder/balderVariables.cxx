@@ -622,6 +622,16 @@ BALDERvariables(FuncDataBase& Control)
   LeadPipeGen.setCladdingThick(0.5);
   LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,34.0);
 
+
+  Control.addVariable("BalderPShieldLength",10.0);
+  Control.addVariable("BalderPShieldWidth",80.0);
+  Control.addVariable("BalderPShieldHeight",80.0);
+  Control.addVariable("BalderPShieldWallThick",0.5);
+  Control.addVariable("BalderPShieldClearGap",1.0);
+  Control.addVariable("BalderPShieldWallMat","Stainless304");
+  Control.addVariable("BalderPShieldMat","Lead");
+  
+  
   balderVar::connectingVariables(Control);
 
 

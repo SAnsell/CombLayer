@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/SqrCollimator.h
+ * File:   constructInc/PipeShield.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,56 +19,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_SqrCollimator_h
-#define xraySystem_SqrCollimator_h
+#ifndef xraySystem_PipeShield_h
+#define xraySystem_PipeShield_h
 
 class Simulation;
 
 namespace xraySystem
 {
   /*!
-    \class SqrCollimator
+    \class PipeShield
     \version 1.0
     \author S. Ansell
-    \date June 2015
-    \brief Variable detemine hole type
+    \date June 2018
+    \brief Extra beam stop for opticshutch
   */
   
-class SqrCollimator : public attachSystem::ContainedSpace,
+class PipeShield : public attachSystem::ContainedSpace,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::ExternalCut
 {
  private:
 
-  double radius;                ///< Main radius
-  double length;                ///< thickness of collimator
-  
-  double innerAWidth;           ///< front width
-  double innerAHeight;          ///< front height
-  
-  double minLength;               ///< point of min closure
-  double innerMinWidth;           ///< min width at closure
-  double innerMinHeight;          ///< min height at closure
-
-  double innerBWidth;           ///< back width
-  double innerBHeight;          ///< back height 
-  
-  int mat;                      ///< material
-  int voidMat;                  ///< inner material
+  double height;                 ///< thickness of collimator
+  double width;                  ///< main width
+  double length;                 ///< thickness of collimator
+  double clearGap;               ///< clearance gap
+  double wallThick;              ///< wall thickness
+  int mat;                       ///< material
+  int wallMat;                   ///< wall material
   
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
   
  public:
   
-  SqrCollimator(const std::string&);
-  SqrCollimator(const SqrCollimator&);
-  SqrCollimator& operator=(const SqrCollimator&);
-  virtual ~SqrCollimator() {}  ///< Destructor
+  PipeShield(const std::string&);
+  PipeShield(const PipeShield&);
+  PipeShield& operator=(const PipeShield&);
+  virtual ~PipeShield() {}  ///< Destructor
 
   void populate(const FuncDataBase&);
 
