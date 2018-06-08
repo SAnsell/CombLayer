@@ -307,30 +307,30 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
-  Control.addVariable("Stub1WallThick", 30); // MARS
-  Control.addParse<double>("Stub1Length1",
-			   "340.0+LinacWidthRight+LinacWallThick-Stub1WallThick");
-  Control.addParse<double>("Stub1Length2", "610.0-2*Stub1WallThick");
-  Control.addVariable("Stub1Width",   180.0);
-  Control.addVariable("Stub1Height",  150.0);
-  Control.addVariable("Stub1MainMat", "Air");
-  Control.addVariable("Stub1WallMat", "SkanskaConcrete"); // check
+  Control.addVariable("Stub100WallThick", 30); // MARS
+  Control.addParse<double>("Stub100Length1",
+			   "340.0+LinacWidthRight+LinacWallThick-Stub100WallThick");
+  Control.addParse<double>("Stub100Length2", "610.0-2*Stub100WallThick");
+  Control.addVariable("Stub100Width",   180.0);
+  Control.addVariable("Stub100Height",  150.0);
+  Control.addVariable("Stub100MainMat", "Air");
+  Control.addVariable("Stub100WallMat", "SkanskaConcrete"); // check
 
-  Control.addVariable("Stub1YStep", 1845.0); // ESS-0025905 and MARS
+  Control.addVariable("Stub100YStep", 1845.0); // ESS-0025905 and MARS
 
-  Control.copyVarSet("Stub1", "Stub2");
-  Control.addVariable("Stub2YStep", 3761.5); // ESS-0025905 and MARS
+  Control.copyVarSet("Stub100", "Stub110");
+  Control.addVariable("Stub110YStep", 3761.5); // ESS-0025905 and MARS
 
   // Stub walls in the Klystron Gallery
-  Control.addVariable("StubWall1Length",  260.0);
-  Control.addVariable("StubWall1Width",   50.0);
-  Control.addVariable("StubWall1Height",  300.0);
-  Control.addVariable("StubWall1Mat",   "SkanskaConcrete"); // check
-  Control.addVariable("StubWall1AirMat",   "Air");
-  Control.addVariable("StubWall1YStep",   350.0);
+  Control.addVariable("StubWall100Length",  260.0);
+  Control.addVariable("StubWall100Width",   50.0);
+  Control.addVariable("StubWall100Height",  300.0);
+  Control.addVariable("StubWall100Mat",   "SkanskaConcrete"); // check
+  Control.addVariable("StubWall100AirMat",   "Air");
+  Control.addVariable("StubWall100YStep",   350.0);
 
-  Control.copyVarSet("StubWall1", "StubWall2");
-  Control.addVariable("StubWall2YStep",   235.0);
+  Control.copyVarSet("StubWall100", "StubWall110");
+  Control.addVariable("StubWall110YStep",   235.0);
 
   // FEB dimensions are measured from the STEP file received from
   // Carl-Johan 31.05.2018
