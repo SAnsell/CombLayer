@@ -79,6 +79,28 @@ ExternalCut::ExternalCut()
   */
 {}
 
+ExternalCut::ExternalCut(const ExternalCut& A) : 
+  cutItems(A.cutItems)
+  /*!
+    Copy constructor
+    \param A :: ExternalCut to copy
+  */
+{}
+
+ExternalCut&
+ExternalCut::operator=(const ExternalCut& A)
+  /*!
+    Assignment operator
+    \param A :: ExternalCut to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      cutItems=A.cutItems;
+    }
+  return *this;
+}
 
 ExternalCut::~ExternalCut()
   /*!
