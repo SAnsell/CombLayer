@@ -174,6 +174,7 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
 	PC.setEMF(keyName,MN,VV[0],VV[1]);
       break;
     case 3:
+      ELog::EM<<"Key "<<keyName<<ELog::endDiag;
       for(const int MN : activeCell)
 	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
       break;

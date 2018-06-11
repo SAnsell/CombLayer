@@ -126,8 +126,10 @@ tallyModification(SimFLUKA& System,
 	    ("TMod",i,3,"Emax for "+key);
 	  const size_t NE=IParam.getValueError<size_t>
 	    ("TMod",i,4,"NPTS for "+key);
-	  const int EFlag=IParam.getDefValue<int>(0,"TMod",i,5);
-          flukaSystem::setEnergy(System,tName,EA,EB,NE,EFlag);
+	  const std::string EFlag=
+	    IParam.getDefValue<std::string>("log","TMod",i,5);
+	  const bool lFlag=(StrFunc::toLowerString(EFlag)=="log" ? 1 : 0);
+          flukaSystem::setEnergy(System,tName,EA,EB,NE,lFlag);
         }
       else if(key=="angle")
         {

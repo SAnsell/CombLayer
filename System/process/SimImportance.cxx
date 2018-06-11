@@ -69,6 +69,7 @@
 #include "SimFLUKA.h"
 #include "MainProcess.h"
 #include "flukaProcess.h"
+#include "flukaDefPhysics.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -102,7 +103,7 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   if (flukaPtr)
     {
       mainSystem::renumberCells(*flukaPtr,IParam);
-      flukaSystem::setDefaultPhysics(*flukaPtr,IParam);
+      flukaSystem::setModelPhysics(*flukaPtr,IParam);
       return;
     }
 

@@ -77,6 +77,7 @@
 #include "inputSupport.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
 
@@ -519,8 +520,8 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
 
-  ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
-  //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+  ELog::EM<<"HERE "<<ELog::endDiag;
+  ModelSupport::setDefaultPhysics(*SimFLUKAPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
   //

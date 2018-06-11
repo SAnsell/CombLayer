@@ -138,7 +138,8 @@ flukaSourceSelection(Simulation& System,
 	  ELog::EM<<"sdefType :\n"
 	    "Beam :: Test Beam [Radial] source \n"
 	    "Wiggler :: Wiggler Source for balder \n"
-	    "External :: External source from source.f \n"
+	    "External/Sourece :: External source from source.f \n"
+	    
 		  <<ELog::endBasic;
 	}
     }

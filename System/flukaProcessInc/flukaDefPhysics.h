@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/DefPhysics.h
+ * File:   processInc/FlukaDefPhysics.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,11 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_DefPhysics_h
-#define ModelSupport_DefPhysics_h
+#ifndef flukaSystem_FlukaDefPhysics_h
+#define flukaSyste_FlukaDefPhysics_h
 
 class Simulation;
-class SimMCNP;
 class SimFLUKA;
 class FuncDataBase;
 
@@ -32,32 +31,13 @@ namespace mainSystem
   class inputParam;
 }
 
-namespace physicsSystem
+namespace flukaSystem
 {
-  class LSwitchCard;
-  class PhysicsCards;
-}
+  class flukaPhysics;
 
-namespace ModelSupport
-{
-  void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
-  void setGenericPhysics(SimMCNP&,const std::string&);
-  
-  void procOffset(const mainSystem::inputParam&,const size_t);
-  void procAngle(const mainSystem::inputParam&,const size_t);
-
-
-
-  void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
-			 const double); 
-  void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
-			 const mainSystem::inputParam&); 
-  void setDefRotation(const mainSystem::inputParam&);
-
-  
-  void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
-  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
-  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
+  void setModelPhysics(SimFLUKA&, const mainSystem::inputParam&);
+    
+  void setXrayPhysics(flukaPhysics&,const mainSystem::inputParam&);
 }
 
 

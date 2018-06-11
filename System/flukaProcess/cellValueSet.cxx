@@ -639,7 +639,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 		cx<<UC<<" ";
 	    }
 	  cx<<tag;
-		      
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
     }
@@ -680,7 +679,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  const int AB=std::get<1>(tc);
 	  SArray[0]=(AA<0) ? getStrIndex(AA) : std::to_string(AA);
 	  SArray[1]=(AB<0) ? getStrIndex(AB) : std::to_string(AB);
-	  
 	  for(size_t i=0;i<N;i++)
 	    {
 	      if (dArray[i].first==1)

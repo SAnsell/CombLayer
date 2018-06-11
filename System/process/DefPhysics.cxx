@@ -76,6 +76,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "SimFLUKA.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
@@ -84,6 +85,12 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "cellValueSet.h"
+#include "pairValueSet.h"
+#include "flukaProcess.h"
+#include "flukaPhysics.h"
+#include "flukaImpConstructor.h"
+#include "flukaDefPhysics.h"
 #include "DefPhysics.h"
 
 namespace ModelSupport
@@ -600,12 +607,25 @@ setDefaultPhysics(SimMCNP& System,
       physicsSystem::PStandard* pe=
 	PC.addPhysCard<physicsSystem::PStandard>("phys","e");
       pe->setValues(1,maxEnergy);
-
     }
-
-  
   return; 
 }
 
+void 
+setDefaultPhysics(SimFLUKA& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","setDefaultPhysics");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
 
 } // NAMESPACE ModelSupport

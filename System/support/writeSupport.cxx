@@ -79,11 +79,12 @@ flukaNum(const double D)
   static boost::format FMTnum("%1$10.5f");
   static boost::format FMTlnum("%1$10.5g");
 
-  if (D < 1e5 && D > -1e4)
+  if (D < 1e5 && D > -1e4 &&
+      (std::abs(D)>1e-5 || std::abs(D)<1e-15))
     {
       // test if 1 dp sufficiently accurate
-      if ( std::abs(std::round(D*10000.0)-D*10000.0)
-	   <Geometry::zeroTol*1000)
+      if (std::abs(std::round(D*10000.0)-D*10000.0)
+	  <Geometry::zeroTol) 
 	return (FMTnum % D).str();
     }
   
@@ -107,6 +108,7 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
   size_t i(1);
   long int I;
   double D;
+
   for (std::string& w : whats)
     {
       if (w=="-") w=" ";
@@ -117,7 +119,9 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 	  if (StrFunc::convert(w,I))
 	    OX<<flukaNum(I);
 	  else if (StrFunc::convert(w,D))
-	    OX<<flukaNum(D);
+	    {
+	      OX<<flukaNum(D);
+	    }
 	  else if (w.size()>10)
 	    throw ColErr::InvalidLine(w,"String to long for FLUKA");
 	  else

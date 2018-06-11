@@ -164,11 +164,11 @@ FlukaSource::populate(const ITYPE& inputMap)
 	       IStr!="-" &&
 	       StrFunc::toUpperString(IStr)!="DEF")
 	sValues[index]=unitTYPE(-1,IStr);
-    }
-  
-  sourceName=mainSystem::getDefInput<std::string>
-			   (inputMap,"sdefSourceName",0,"");
-  
+    }      
+  if (mainSystem::hasInput(inputMap,"logWeight"))
+    sourceName="log";
+
+  ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
   
   return;
 }
