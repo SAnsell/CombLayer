@@ -323,7 +323,7 @@ StubWall::createSurfaces(const attachSystem::FixedComp& FC,const long int floor)
 
 void
 StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
-		   const long int floor,const long int roof)
+		   const long int floor)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -372,7 +372,7 @@ StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
 void
 StubWall::createLinks(const attachSystem::FixedComp& FC,
-		 const long int floor,const long int roof)
+		 const long int floor)
 /*!
     Create all the linkes
   */
@@ -398,9 +398,6 @@ StubWall::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setConnect(5,getLinkPt(5)+Z*height,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
 
-  //   for (int i=0; i<=6; i++)
-  //     ELog::EM << "lp " << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
-
   return;
 }
 
@@ -412,8 +409,7 @@ StubWall::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex,
 		    const attachSystem::FixedComp& FC1,
-		    const long int floor,
-		    const long int roof)
+		    const long int floor)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -429,8 +425,8 @@ StubWall::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces(FC1,floor);
-  createLinks(FC1,floor,roof);
-  createObjects(System,FC1,floor,roof);
+  createLinks(FC1,floor);
+  createObjects(System,FC1,floor);
   insertObjects(System);
 
   return;

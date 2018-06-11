@@ -71,9 +71,9 @@ class StubWall : public attachSystem::ContainedComp,
 
   void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,const long int);
+		     const long int);
   void createLinks(const attachSystem::FixedComp&,
-		   const long int,const long int);
+		   const long int);
 
  public:
 
@@ -84,7 +84,7 @@ class StubWall : public attachSystem::ContainedComp,
   virtual ~StubWall();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int,const long int);
+		 const attachSystem::FixedComp&,const long int);
 
 };
 

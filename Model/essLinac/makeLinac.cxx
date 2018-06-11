@@ -155,7 +155,7 @@ makeLinac::build(Simulation& System,
 
       std::shared_ptr<StubWall> wall(new StubWall("","StubWall", 100+i*10));
       OR.addObject(wall);
-      wall->createAll(System,*stub, 1, *KG, 8, 9);
+      wall->createAll(System,*stub, 1, *KG, 8);
       attachSystem::addToInsertSurfCtrl(System,*KG,*wall);
     }
   return;
