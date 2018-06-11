@@ -281,27 +281,38 @@ KlystronGallery::createLinks()
   FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
 
-  FixedComp::setConnect(2,Origin-X*(widthLeft+wallThick),-X);
+  FixedComp::setConnect(2,Origin-X*(widthLeft+wallThick)+
+			Y*((lengthFront-lengthBack)/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick),X);
+  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick)+
+			Y*((lengthFront-lengthBack)/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
+  FixedComp::setConnect(4,Origin-Z*(depth+floorThick)+
+			Y*((lengthFront-lengthBack)/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
 
   FixedComp::setConnect(5,Origin+X*(widthRight)+
-			Z*(height+roofThick/cos(roofAngle*M_PI/180)),Z);
+			Z*(height+roofThick/cos(roofAngle*M_PI/180))+
+			Y*((lengthFront-lengthBack)/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
 
-  FixedComp::setConnect(6,Origin+X*(widthRight),X);
+  FixedComp::setConnect(6,Origin+X*(widthRight)+
+			Y*((lengthFront-lengthBack)/2.0),X);
   FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+4));
 
-  FixedComp::setConnect(7,Origin-Z*(depth),Z);
+  FixedComp::setConnect(7,Origin-Z*(depth)+
+			Y*((lengthFront-lengthBack)/2.0),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+5));
 
-  FixedComp::setConnect(8,Origin+X*(widthRight)+Z*(height),-Z);
+  FixedComp::setConnect(8,Origin+X*(widthRight)+Z*(height)+
+			Y*((lengthFront-lengthBack)/2.0),-Z);
   FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
+
+  //  for (int i=0; i<=9; i++)
+  //     ELog::EM << "KG lp " << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
+
 
   return;
 }
