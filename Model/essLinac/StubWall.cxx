@@ -114,7 +114,7 @@ StubWall::StubWall(const StubWall& A) :
   nLayers(A.nLayers),
   wallMat(A.wallMat),
   airMat(A.airMat),
-  pensActive(A.pensActive)
+  gapActive(A.gapActive)
   /*!
     Copy constructor
     \param A :: StubWall to copy
@@ -141,7 +141,7 @@ StubWall::operator=(const StubWall& A)
       nLayers=A.nLayers;
       wallMat=A.wallMat;
       airMat=A.airMat;
-      pensActive=A.pensActive;
+      gapActive=A.gapActive;
     }
   return *this;
 }
@@ -246,7 +246,7 @@ StubWall::populate(const FuncDataBase& Control)
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
-  pensActive=Control.EvalDefVar<int>(keyName+"PensActive",0);
+  gapActive=Control.EvalDefVar<int>(keyName+"PensActive",0);
 
   return;
 }
@@ -307,7 +307,7 @@ StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
-  if (pensActive)
+  if (gapActive)
     {
       layerProcess(System, "wall", -5,6,3,wallMat);
       setCell("MidWall", cellIndex-2);
