@@ -112,9 +112,13 @@ StubWall::StubWall(const StubWall& A) :
   length(A.length),width(A.width),
   height(A.height),
   nLayers(A.nLayers),
-  wallMat(A.wallMat),
-  airMat(A.airMat),
-  gapActive(A.gapActive)
+  mat(A.mat),
+  gapActive(A.gapActive),
+  gapMat(A.gapMat),
+  gapOffset(A.gapOffset),
+  gapWidth(A.gapWidth),
+  gapHeight(A.gapHeight),
+  gapDist(A.gapDist)
   /*!
     Copy constructor
     \param A :: StubWall to copy
@@ -139,9 +143,13 @@ StubWall::operator=(const StubWall& A)
       width=A.width;
       height=A.height;
       nLayers=A.nLayers;
-      wallMat=A.wallMat;
-      airMat=A.airMat;
+      mat=A.mat;
       gapActive=A.gapActive;
+      gapMat=A.gapMat;
+      gapOffset=A.gapOffset;
+      gapWidth=A.gapWidth;
+      gapHeight=A.gapHeight;
+      gapDist=A.gapDist;
     }
   return *this;
 }
@@ -164,19 +172,26 @@ StubWall::~StubWall()
 
 void
 StubWall::layerProcess(Simulation& System, const std::string& cellName,
-		    const long int& lpS, const long int& lsS,
-		    const size_t& N, const int& mat)
+		       const long int& lpS, const long int& lsS,
+		       const std::vector<double>& frac,
+		       const std::vector<int>& fracMat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
     \param cellName :: StubWall wall cell name
     \param lpS :: link pont of primary surface
     \param lsS :: link point of secondary surface
-    \param N :: number of layers to divide to
-    \param mat :: material
+    \param frac :: vector of fractions
+    \param fracMat :: vector of materials
   */
 {
     ELog::RegMethod RegA("StubWall","layerProcess");
+
+    const size_t N(frac.size()+1);
+
+    if (N!=fracMat.size())
+      throw ColErr::SizeError<size_t>(N,fracMat.size(),
+				   "size of fracMat must be equal to the size of frac+1");
 
     if (N<=1)
       return;
@@ -198,15 +213,15 @@ StubWall::layerProcess(Simulation& System, const std::string& cellName,
       throw ColErr::InContainerError<int>(wallCell,
 					  "Cell '" + cellName + "' not found");
 
-    double baseFrac = 1.0/N;
+    double baseFrac = frac[0];
     ModelSupport::surfDivide DA;
     for(size_t i=1;i<N;i++)
       {
 	DA.addFrac(baseFrac);
-	DA.addMaterial(mat);
-	baseFrac += 1.0/N;
+	DA.addMaterial(fracMat[i-1]);
+	baseFrac += frac[i];
       }
-    DA.addMaterial(mat);
+    DA.addMaterial(fracMat.back());
 
     DA.setCellN(wallCell);
     DA.setOutNum(cellIndex, surfIndex+10000);
@@ -244,9 +259,25 @@ StubWall::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
-  gapActive=Control.EvalDefVar<int>(keyName+"PensActive",0);
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+
+  gapActive=Control.EvalDefVar<int>(keyName+"GapActive",0);
+  if (gapActive)
+    {
+      gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
+      gapOffset=Control.EvalVar<double>(keyName+"GapOffset");
+      gapWidth=Control.EvalVar<double>(keyName+"GapWidth");
+      gapHeight=Control.EvalVar<double>(keyName+"GapHeight");
+      gapDist=Control.EvalVar<double>(keyName+"GapDist");
+    }
+  else
+    {
+      gapMat = 0;
+      gapOffset = 0.0;
+      gapWidth = 0.0;
+      gapHeight = 0.0;
+      gapDist = 0.0;
+    }
 
   return;
 }
@@ -304,14 +335,33 @@ StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   std::string Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 -6");
   Out += FC.getLinkString(floor);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   setCell("wall", cellIndex-1);
 
   if (gapActive)
     {
-      layerProcess(System, "wall", -5,6,3,wallMat);
-      setCell("MidWall", cellIndex-2);
-      layerProcess(System, "MidWall", -3,4,5,wallMat);
+      std::vector<double> frac;
+      frac.push_back(gapOffset/height);
+      frac.push_back(gapHeight/height);
+
+      std::vector<int> fracMat;
+      for (int i=0; i<3; i++)
+	fracMat.push_back(mat);
+
+      layerProcess(System, "wall", -5,6,frac,fracMat);
+      setCell("GapLevel", cellIndex-2);
+
+      frac.clear();
+      frac.push_back((length-2*gapWidth-gapDist)/length/2.0);
+      frac.push_back(gapWidth/length);
+      frac.push_back(gapDist/length);
+      frac.push_back(gapWidth/length);
+
+      fracMat.clear();
+      for (int i=0; i<5; i++)
+	fracMat.push_back(i%2 ? gapMat : mat);
+
+      layerProcess(System, "GapLevel", -3,4,frac,fracMat);
     }
 
   addOuterSurf(Out);

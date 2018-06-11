@@ -51,13 +51,19 @@ class StubWall : public attachSystem::ContainedComp,
   double height;                ///< Height
   size_t nLayers;               ///< Number of layers for variance reduction
 
-  int wallMat;                  ///< Wall material
-  int airMat;                   ///< Air material
+  int mat;                  ///< Wall material
+
   int gapActive; ///< True if penetration holes are active
+  int gapMat; ///< Penetration material
+  double gapOffset; ///< Distance from the floor
+  double gapWidth; ///< Width of each penetration
+  double gapHeight; ///< Height of each penetration
+  double gapDist; ///< Distance between the gaps
 
   void layerProcess(Simulation& System, const std::string& cellName,
-		    const long int& lpS, const long int& lsS, const size_t&,
-		    const int&);
+		    const long int& lpS, const long int& lsS,
+		    const std::vector<double>&,
+		    const std::vector<int>&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
