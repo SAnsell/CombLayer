@@ -109,8 +109,9 @@ StubWall::StubWall(const StubWall& A) :
   baseName(A.baseName),
   Index(A.Index),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  length(A.length),width(A.width),nLayers(A.nLayers),
+  length(A.length),width(A.width),
   height(A.height),
+  nLayers(A.nLayers),
   wallMat(A.wallMat),
   airMat(A.airMat),
   pensActive(A.pensActive)
@@ -180,8 +181,8 @@ StubWall::layerProcess(Simulation& System, const std::string& cellName,
     if (N<=1)
       return;
 
-    const long int pS(getLinkSurf(lpS));
-    const long int sS(getLinkSurf(lsS));
+    const int pS(getLinkSurf(lpS));
+    const int sS(getLinkSurf(lsS));
 
     const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
     MonteCarlo::Object* wallObj(0);
@@ -213,11 +214,10 @@ StubWall::layerProcess(Simulation& System, const std::string& cellName,
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;
 
-    surroundRule.setSurfPair(SMap.realSurf(static_cast<int>(pS)),
-			     SMap.realSurf(static_cast<int>(sS)));
+    surroundRule.setSurfPair(SMap.realSurf(pS),SMap.realSurf(sS));
 
-    std::string OutA = getLinkString(lpS);
-    std::string OutB = getLinkString(-lsS);
+    std::string OutA(getLinkString(lpS));
+    std::string OutB(getLinkString(-lsS));
 
     surroundRule.setInnerRule(OutA);
     surroundRule.setOuterRule(OutB);
@@ -307,7 +307,12 @@ StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
-  // layerProcess(System, "wall", 3, 7, nLayers, wallMat);
+  if (pensActive)
+    {
+      layerProcess(System, "wall", -5,6,3,wallMat);
+      setCell("MidWall", cellIndex-2);
+      layerProcess(System, "MidWall", -3,4,5,wallMat);
+    }
 
   addOuterSurf(Out);
 
@@ -338,7 +343,7 @@ StubWall::createLinks(const attachSystem::FixedComp& FC,
 
   FixedComp::setConnect(4,Origin+Z*(FC.getLinkPt(8).Z())+
 			Y*(width/2.0),-Z);
-  FixedComp::setLinkSurf(4,-FC.getLinkSurf(8));
+  FixedComp::setLinkSurf(4,-FC.getLinkSurf(floor));
 
   FixedComp::setConnect(5,getLinkPt(5)+Z*height,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
