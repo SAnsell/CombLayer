@@ -53,6 +53,7 @@ class StubWall : public attachSystem::ContainedComp,
 
   int wallMat;                  ///< Wall material
   int airMat;                   ///< Air material
+  int pensActive; ///< True if penetration holes are active
 
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const long int& lpS, const long int& lsS, const size_t&,

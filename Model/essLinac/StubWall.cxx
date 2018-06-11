@@ -112,7 +112,8 @@ StubWall::StubWall(const StubWall& A) :
   length(A.length),width(A.width),nLayers(A.nLayers),
   height(A.height),
   wallMat(A.wallMat),
-  airMat(A.airMat)
+  airMat(A.airMat),
+  pensActive(A.pensActive)
   /*!
     Copy constructor
     \param A :: StubWall to copy
@@ -139,6 +140,7 @@ StubWall::operator=(const StubWall& A)
       nLayers=A.nLayers;
       wallMat=A.wallMat;
       airMat=A.airMat;
+      pensActive=A.pensActive;
     }
   return *this;
 }
@@ -244,6 +246,7 @@ StubWall::populate(const FuncDataBase& Control)
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  pensActive=Control.EvalDefVar<int>(keyName+"PensActive",0);
 
   return;
 }
@@ -321,24 +324,27 @@ StubWall::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("StubWall","createLinks");
 
-  ELog::EM << "Implement link points" << ELog::endDiag;
-  
-  // FixedComp::setConnect(2,Origin-Y*(length/2.0),-X);
-  // FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin,Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(surfIndex+1));
 
-  // FixedComp::setConnect(3,Origin-Y*(length/2.0)+X*(width),X);
-  // FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+2));
+  FixedComp::setConnect(1,Origin+Y*(width),-Y);
+  FixedComp::setLinkSurf(1,-SMap.realSurf(surfIndex+2));
 
-  // FixedComp::setLinkSignedCopy(4,FC,-floor);
-  // FixedComp::setLinkSignedCopy(5,FC,-roof);
+  FixedComp::setConnect(2,Origin-X*(length/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
 
-  // FixedComp::setConnect(6,Origin-Y*(length/2.0)+X*(width),X);
-  // FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+2));
+  FixedComp::setConnect(3,Origin+X*(length/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
 
-  // ELog::EM << "check the links" << ELog::endCrit;
+  FixedComp::setConnect(4,Origin+Z*(FC.getLinkPt(8).Z())+
+			Y*(width/2.0),-Z);
+  FixedComp::setLinkSurf(4,-FC.getLinkSurf(8));
 
-  // for (int i=0; i<=6; i++)
-  //   ELog::EM << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
+  FixedComp::setConnect(5,getLinkPt(5)+Z*height,Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
+
+  //   for (int i=0; i<=6; i++)
+  //     ELog::EM << "lp " << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
 
   return;
 }
