@@ -87,7 +87,7 @@ namespace essSystem
 
 FrontEndBuilding::FrontEndBuilding(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,10),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -304,6 +304,7 @@ FrontEndBuilding::createObjects(Simulation& System,
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
+    \param FC :: central origin
     \param floorIndexLow :: bottom floor lp
     \param floorIndexTop :: top floor lp
     \param roofIndexLow :: bottom roof lp
@@ -389,15 +390,54 @@ FrontEndBuilding::createObjects(Simulation& System,
 
 
 void
-FrontEndBuilding::createLinks()
+FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
+			      const long int floor,const long int roof)
   /*!
     Create all the linkes
+    \param FC :: central origin
+    \param floor :: floor link point
+    \param roof  :: roof link point
   */
 {
   ELog::RegMethod RegA("FrontEndBuilding","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(length+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
+
+  FixedComp::setConnect(2,Origin-
+			X*(widthLeft+wallThick+dropHatchWidth+dropHatchWallThick)+
+			Y*((length+wallThick)/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+313));
+
+  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick)+
+			Y*((length+wallThick)/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
+
+  FixedComp::setConnect(4,Origin+Z*FC.getLinkPt(floor).Z()+
+			Y*((length+wallThick)/2.0),-Z);
+  FixedComp::setLinkSurf(4,FC.getLinkSurf(floor));
+
+  FixedComp::setConnect(5,Origin+Z*FC.getLinkPt(roof).Z()+
+			Y*((length+wallThick)/2.0),Z);
+  FixedComp::setLinkSurf(5,FC.getLinkSurf(roof));
+
+  FixedComp::setConnect(6,Origin+X*(shieldWall1Offset+shieldWall1Thick/2.0),-Y);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(7,Origin+X*(shieldWall1Offset+shieldWall1Thick/2.0)+
+   			Y*(shieldWall1Length),Y);
+  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+102));
+
+  FixedComp::setConnect(8,Origin+X*(shieldWall1Offset)+
+  			Y*(shieldWall1Length/2.0),-X);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+103));
+
+  FixedComp::setConnect(9,Origin+X*(shieldWall1Offset+shieldWall1Thick)+
+  			Y*(shieldWall1Length/2.0),X);
+  FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+104));
 
   return;
 }
@@ -430,7 +470,7 @@ FrontEndBuilding::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System,FC,floorIndexLow,floorIndexTop,roofIndexLow,roofIndexTop);
-  createLinks();
+  createLinks(FC,floorIndexLow,roofIndexTop);
   insertObjects(System);
 
   return;

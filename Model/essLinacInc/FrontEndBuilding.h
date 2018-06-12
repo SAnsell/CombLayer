@@ -72,7 +72,7 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,
 		     const long int,const long int);
-  void createLinks();
+  void createLinks(const attachSystem::FixedComp&,const long int,const long int);
 
  public:
 
