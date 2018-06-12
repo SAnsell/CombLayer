@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class FrontEndBuilding : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
@@ -64,6 +65,11 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
 
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const long int& lpS, const long int& lsS,
+		    const std::vector<double>&,
+		    const std::vector<int>&);
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -72,7 +78,9 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,
 		     const long int,const long int);
-  void createLinks(const attachSystem::FixedComp&,const long int,const long int);
+  void createLinks(const attachSystem::FixedComp&,
+		     const long int,const long int,
+		     const long int,const long int);
 
  public:
 

@@ -80,6 +80,8 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
+#include "CellMap.h"
+
 #include "FrontEndBuilding.h"
 
 namespace essSystem
@@ -87,7 +89,8 @@ namespace essSystem
 
 FrontEndBuilding::FrontEndBuilding(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,10),
+  attachSystem::FixedOffset(Key,12),
+  attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -99,6 +102,7 @@ FrontEndBuilding::FrontEndBuilding(const std::string& Key)  :
 FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),
   widthLeft(A.widthLeft),
@@ -135,6 +139,7 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       length=A.length;
       widthLeft=A.widthLeft;
@@ -173,6 +178,81 @@ FrontEndBuilding::~FrontEndBuilding()
     Destructor
   */
 {}
+
+void
+FrontEndBuilding::layerProcess(Simulation& System, const std::string& cellName,
+			       const long int& lpS, const long int& lsS,
+			       const std::vector<double>& frac,
+			       const std::vector<int>& fracMat)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: shielding wall cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+    \param frac :: vector of fractions
+    \param fracMat :: vector of materials
+  */
+{
+    ELog::RegMethod RegA("FrontEndBuilding","layerProcess");
+
+    const size_t N(frac.size()+1);
+
+    if (N!=fracMat.size())
+      throw ColErr::SizeError<size_t>(N,fracMat.size(),
+				   "size of fracMat must be equal to the size of frac+1");
+
+    if (N<=1)
+      return;
+
+    const int pS(getLinkSurf(lpS));
+    const int sS(getLinkSurf(lsS));
+
+    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+    MonteCarlo::Object* wallObj(0);
+    int wallCell(0);
+
+    if (CM)
+      {
+	wallCell=CM->getCell(cellName);
+	wallObj=System.findQhull(wallCell);
+      }
+
+    if (!wallObj)
+      throw ColErr::InContainerError<int>(wallCell,
+					  "Cell '" + cellName + "' not found");
+
+    double baseFrac = frac[0];
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<N;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(fracMat[i-1]);
+	baseFrac += frac[i];
+      }
+    DA.addMaterial(fracMat.back());
+
+    DA.setCellN(wallCell);
+    DA.setOutNum(cellIndex, surfIndex+10000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(SMap.realSurf(pS),SMap.realSurf(sS));
+
+    std::string OutA(getLinkString(lpS));
+    std::string OutB(getLinkString(-lsS));
+
+    surroundRule.setInnerRule(OutA);
+    surroundRule.setOuterRule(OutB);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System);
+
+    cellIndex=DA.getCellNum();
+
+    return;
+}
 
 void
 FrontEndBuilding::populate(const FuncDataBase& Control)
@@ -322,6 +402,7 @@ FrontEndBuilding::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 103 -104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
+  setCell("ShieldingWall1",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 103 -104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
@@ -385,18 +466,34 @@ FrontEndBuilding::createObjects(Simulation& System,
 
   addOuterUnionSurf(Out);
 
+  // Penetrations A and B in ShieldingWall1
+  std::vector<double> frac;
+  frac.push_back(0.3);
+  frac.push_back(0.3);
+
+  std::vector<int> fracMat;
+  for (int i=0; i<3; i++)
+    fracMat.push_back(wallMat);
+
+  layerProcess(System, "ShieldingWall1", 11, -12, frac,fracMat);
+
   return;
 }
 
 
 void
 FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
-			      const long int floor,const long int roof)
+			      const long int floorIndexLow,
+			      const long int floorIndexTop,
+			      const long int roofIndexLow,
+			      const long int roofIndexTop)
   /*!
     Create all the linkes
     \param FC :: central origin
-    \param floor :: floor link point
-    \param roof  :: roof link point
+    \param floorIndexLow :: bottom floor lp
+    \param floorIndexTop :: top floor lp
+    \param roofIndexLow :: bottom roof lp
+    \param roofIndexTop :: top roof lp
   */
 {
   ELog::RegMethod RegA("FrontEndBuilding","createLinks");
@@ -416,13 +513,13 @@ FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
 			Y*((length+wallThick)/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
 
-  FixedComp::setConnect(4,Origin+Z*FC.getLinkPt(floor).Z()+
+  FixedComp::setConnect(4,Origin+Z*FC.getLinkPt(floorIndexLow).Z()+
 			Y*((length+wallThick)/2.0),-Z);
-  FixedComp::setLinkSurf(4,FC.getLinkSurf(floor));
+  FixedComp::setLinkSurf(4,FC.getLinkSurf(floorIndexLow));
 
-  FixedComp::setConnect(5,Origin+Z*FC.getLinkPt(roof).Z()+
+  FixedComp::setConnect(5,Origin+Z*FC.getLinkPt(roofIndexTop).Z()+
 			Y*((length+wallThick)/2.0),Z);
-  FixedComp::setLinkSurf(5,FC.getLinkSurf(roof));
+  FixedComp::setLinkSurf(5,FC.getLinkSurf(roofIndexTop));
 
   FixedComp::setConnect(6,Origin+X*(shieldWall1Offset+shieldWall1Thick/2.0),-Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+1));
@@ -438,6 +535,21 @@ FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setConnect(9,Origin+X*(shieldWall1Offset+shieldWall1Thick)+
   			Y*(shieldWall1Length/2.0),X);
   FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+104));
+
+  FixedComp::setConnect(10,Origin+Z*FC.getLinkPt(floorIndexTop).Z()+
+			Y*((length+wallThick)/2.0),-Z);
+  FixedComp::setLinkSurf(10,FC.getLinkSurf(floorIndexTop));
+
+  FixedComp::setConnect(11,Origin+Z*FC.getLinkPt(roofIndexLow).Z()+
+			Y*((length+wallThick)/2.0),Z);
+  FixedComp::setLinkSurf(11,FC.getLinkSurf(roofIndexLow));
+
+  // size_t N = NConnect();
+  // //  N = 8;
+  // for (size_t i=0; i<=N; i++)
+  //   {
+  //     ELog::EM << keyName << ": " << i << "\t" << getLinkPt(i) << "\t" << getLinkString(i) << ELog::endDiag;
+  //   }
 
   return;
 }
@@ -469,8 +581,8 @@ FrontEndBuilding::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  createLinks(FC,floorIndexLow,floorIndexTop,roofIndexLow,roofIndexTop);
   createObjects(System,FC,floorIndexLow,floorIndexTop,roofIndexLow,roofIndexTop);
-  createLinks(FC,floorIndexLow,roofIndexTop);
   insertObjects(System);
 
   return;
