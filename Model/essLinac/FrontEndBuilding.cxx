@@ -120,7 +120,8 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   dropHatchLength(A.dropHatchLength),
   dropHatchWidth(A.dropHatchWidth),
   dropHatchWallThick(A.dropHatchWallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  gapMat(A.gapMat)
   /*!
     Copy constructor
     \param A :: FrontEndBuilding to copy
@@ -159,6 +160,7 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       dropHatchWallThick=A.dropHatchWallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      gapMat=A.gapMat;
     }
   return *this;
 }
@@ -284,6 +286,7 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
 
   return;
 }
@@ -468,16 +471,28 @@ FrontEndBuilding::createObjects(Simulation& System,
 
   // Penetrations A and B in ShieldingWall1
   std::vector<double> frac;
-  frac.push_back(0.3);
-  frac.push_back(0.3);
+  frac.push_back(0.2);
+  frac.push_back(0.2);
+  frac.push_back(0.2);
+  frac.push_back(0.2);
 
   std::vector<int> fracMat;
-  for (int i=0; i<3; i++)
+  for (int i=0; i<5; i++)
     fracMat.push_back(wallMat);
 
-  layerProcess(System, "ShieldingWall1", 11, -12, frac,fracMat);
-  setCell("GapLevel", cellIndex-2);
-  layerProcess(System, "GapLevel", -7, 8, frac,fracMat);
+  layerProcess(System, "ShieldingWall1", -7, 8, frac,fracMat);
+  setCell("PenA", cellIndex-2);
+  setCell("PenB", cellIndex-4);
+
+  frac.clear();
+  for (int i=0; i<4; i++)
+    frac.push_back(1/5.0);
+
+  fracMat.clear();
+  for (int i=0; i<5; i++)
+    fracMat.push_back(i%2 ? gapMat : wallMat);
+  layerProcess(System, "PenA", 11, -12, frac,fracMat);
+  layerProcess(System, "PenB", 11, -12, frac,fracMat);
 
   return;
 }

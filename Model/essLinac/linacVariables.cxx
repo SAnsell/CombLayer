@@ -345,6 +345,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("FEBWallThick",    50.0);
   Control.addVariable("FEBMainMat",   "Air");
   Control.addVariable("FEBWallMat",   "SkanskaConcrete");
+  Control.addVariable("FEBGapMat",   "Void");
   Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
   Control.addVariable("FEBShieldWall1Thick", 100.0);
   Control.addVariable("FEBShieldWall1Length", 1678.0);
