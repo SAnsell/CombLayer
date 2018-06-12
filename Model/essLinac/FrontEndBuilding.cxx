@@ -123,7 +123,11 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   mainMat(A.mainMat),wallMat(A.wallMat),
   gapMat(A.gapMat),
   gapALength(A.gapALength),
-  gapBLength(A.gapBLength)
+  gapAHeightLow(A.gapAHeightLow),
+  gapAHeightTop(A.gapAHeightTop),
+  gapBLength(A.gapBLength),
+  gapBHeightLow(A.gapBHeightLow),
+  gapBHeightTop(A.gapBHeightTop)
   /*!
     Copy constructor
     \param A :: FrontEndBuilding to copy
@@ -164,7 +168,11 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       wallMat=A.wallMat;
       gapMat=A.gapMat;
       gapALength=A.gapALength;
+      gapAHeightLow=A.gapAHeightLow;
+      gapAHeightTop=A.gapAHeightTop;
       gapBLength=A.gapBLength;
+      gapBHeightLow=A.gapBHeightLow;
+      gapBHeightTop=A.gapBHeightTop;
     }
   return *this;
 }
@@ -292,7 +300,11 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
   gapALength=Control.EvalVar<double>(keyName+"GapALength");
+  gapAHeightLow=Control.EvalVar<double>(keyName+"GapAHeightLow");
+  gapAHeightTop=Control.EvalVar<double>(keyName+"GapAHeightTop");
   gapBLength=Control.EvalVar<double>(keyName+"GapBLength");
+  gapBHeightLow=Control.EvalVar<double>(keyName+"GapBHeightLow");
+  gapBHeightTop=Control.EvalVar<double>(keyName+"GapBHeightTop");
 
   return;
 }
@@ -477,28 +489,34 @@ FrontEndBuilding::createObjects(Simulation& System,
 
   // Penetrations A and B in ShieldingWall1
   std::vector<double> frac;
+  frac.push_back(gapBLength/shieldWall1Length);
   frac.push_back(0.2);
   frac.push_back(gapALength/shieldWall1Length);
-  frac.push_back(0.2);
-  frac.push_back(gapBLength/shieldWall1Length);
 
   std::vector<int> fracMat;
-  for (int i=0; i<5; i++)
+  for (int i=0; i<4; i++)
     fracMat.push_back(wallMat);
 
   layerProcess(System, "ShieldingWall1", -7, 8, frac,fracMat);
-  setCell("PenA", cellIndex-2);
-  setCell("PenB", cellIndex-4);
+  setCell("PenetrationA", cellIndex-2);
+  setCell("PenetrationB", cellIndex-4);
 
+  const double totalHeight(getLinkDistance(11,12));
   frac.clear();
-  for (int i=0; i<4; i++)
-    frac.push_back(1/5.0);
+  frac.push_back(gapBHeightLow/totalHeight);
+  frac.push_back(1/5.0);
+  frac.push_back(gapBHeightTop/totalHeight);
 
   fracMat.clear();
-  for (int i=0; i<5; i++)
-    fracMat.push_back(i%2 ? gapMat : wallMat);
-  layerProcess(System, "PenA", 11, -12, frac,fracMat);
-  layerProcess(System, "PenB", 11, -12, frac,fracMat);
+  for (int i=0; i<4; i++)
+    fracMat.push_back(i%2 ? wallMat : gapMat);
+  layerProcess(System, "PenetrationB", 11, -12, frac,fracMat);
+
+  frac.clear();
+  frac.push_back(gapAHeightLow/totalHeight);
+  frac.push_back(1/15.0);
+  frac.push_back(gapAHeightTop/totalHeight);
+  layerProcess(System, "PenetrationA", 11, -12, frac,fracMat);
 
   return;
 }
