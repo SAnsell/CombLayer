@@ -121,7 +121,9 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   dropHatchWidth(A.dropHatchWidth),
   dropHatchWallThick(A.dropHatchWallThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
-  gapMat(A.gapMat)
+  gapMat(A.gapMat),
+  gapALength(A.gapALength),
+  gapBLength(A.gapBLength)
   /*!
     Copy constructor
     \param A :: FrontEndBuilding to copy
@@ -161,6 +163,8 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       gapMat=A.gapMat;
+      gapALength=A.gapALength;
+      gapBLength=A.gapBLength;
     }
   return *this;
 }
@@ -287,6 +291,8 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
+  gapALength=Control.EvalVar<double>(keyName+"GapALength");
+  gapBLength=Control.EvalVar<double>(keyName+"GapBLength");
 
   return;
 }
@@ -472,9 +478,9 @@ FrontEndBuilding::createObjects(Simulation& System,
   // Penetrations A and B in ShieldingWall1
   std::vector<double> frac;
   frac.push_back(0.2);
+  frac.push_back(gapALength/shieldWall1Length);
   frac.push_back(0.2);
-  frac.push_back(0.2);
-  frac.push_back(0.2);
+  frac.push_back(gapBLength/shieldWall1Length);
 
   std::vector<int> fracMat;
   for (int i=0; i<5; i++)

@@ -66,6 +66,8 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
 
   int gapMat; ///< Penetration material
+  double gapALength; ///< Penetration A length
+  double gapBLength; ///< Penetration B length
 
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const long int& lpS, const long int& lsS,
