@@ -347,13 +347,14 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("FEBWallMat",   "SkanskaConcrete");
   Control.addVariable("FEBGapMat",   "Void"); // ???
   Control.addVariable("FEBGapALength", 180.0);
-  Control.addParse<double>("FEBGapBLength", "FEBGapALength");
   Control.addVariable("FEBGapAHeightLow", 100.0);
-  Control.addParse<double>("FEBGapBHeightLow", "FEBGapAHeightLow");
   Control.addVariable("FEBGapAHeightTop", 130.0);
-  Control.addParse<double>("FEBGapBHeightTop", "FEBGapAHeightTop");
   Control.addVariable("FEBGapADist", 90.0);
-  Control.addParse<double>("FEBGapBDist", "FEBGapADist");
+  Control.addParse<double>("FEBGapBLength",    "FEBGapALength");
+  Control.addParse<double>("FEBGapBHeightLow", "FEBGapAHeightLow");
+  Control.addParse<double>("FEBGapBHeightTop", "FEBGapAHeightTop");
+  Control.addParse<double>("FEBGapBDist",      "FEBGapADist");
+  Control.addVariable("FEBGapABDist", 635.03);
 
   Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
   Control.addVariable("FEBShieldWall1Thick", 100.0);

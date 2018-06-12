@@ -129,7 +129,8 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   gapBLength(A.gapBLength),
   gapBHeightLow(A.gapBHeightLow),
   gapBHeightTop(A.gapBHeightTop),
-  gapBDist(A.gapBDist)
+  gapBDist(A.gapBDist),
+  gapABDist(A.gapABDist)
   /*!
     Copy constructor
     \param A :: FrontEndBuilding to copy
@@ -177,6 +178,7 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       gapBHeightLow=A.gapBHeightLow;
       gapBHeightTop=A.gapBHeightTop;
       gapBDist=A.gapBDist;
+      gapABDist=A.gapABDist;
     }
   return *this;
 }
@@ -311,6 +313,7 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   gapBHeightLow=Control.EvalVar<double>(keyName+"GapBHeightLow");
   gapBHeightTop=Control.EvalVar<double>(keyName+"GapBHeightTop");
   gapBDist=Control.EvalVar<double>(keyName+"GapBDist");
+  gapABDist=Control.EvalVar<double>(keyName+"GapABDist");
 
   return;
 }
@@ -500,7 +503,7 @@ FrontEndBuilding::createObjects(Simulation& System,
 
   std::vector<double> frac;
   frac.push_back(gapBLength/shieldWall1Length);
-  frac.push_back(0.2);
+  frac.push_back(gapABDist/shieldWall1Length);
   frac.push_back(gapALength/shieldWall1Length);
 
   layerProcess(System, "ShieldingWall1", -7, 8, frac,fracMat);
