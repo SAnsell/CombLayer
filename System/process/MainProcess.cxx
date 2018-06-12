@@ -520,7 +520,6 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
 
-  ELog::EM<<"HERE "<<ELog::endDiag;
   ModelSupport::setDefaultPhysics(*SimFLUKAPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);

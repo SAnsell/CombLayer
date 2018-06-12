@@ -129,7 +129,7 @@ frontEndVariables(FuncDataBase& Control,
   
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF120>();
+  VBoxGen.setCF<CF40>();
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",

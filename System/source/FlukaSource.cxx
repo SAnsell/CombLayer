@@ -151,7 +151,6 @@ FlukaSource::populate(const ITYPE& inputMap)
   attachSystem::FixedOffset::populate(inputMap);
   SourceBase::populate(inputMap);
 
-
   const size_t NPts=mainSystem::sizeInput(inputMap,"source");
   for(size_t index=0;index<NPts && index<12;index++)
     {
@@ -166,7 +165,7 @@ FlukaSource::populate(const ITYPE& inputMap)
 	sValues[index]=unitTYPE(-1,IStr);
     }      
   if (mainSystem::hasInput(inputMap,"logWeight"))
-    sourceName="log";
+    sourceName="LOG";
 
   ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
   

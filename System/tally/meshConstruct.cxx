@@ -117,9 +117,10 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
       Cube[i+5]=BPos;
       Cube[i+5][i]=APos[i];
     }
-  
+
   Geometry::Vec3D Pt=A.getX()*Cube[0][0]+
     A.getY()*Cube[0][1]+A.getZ()*Cube[0][2];
+
   Geometry::Vec3D PtMax(Pt);
   Geometry::Vec3D PtMin(Pt);
   for(size_t i=1;i<8;i++)
@@ -131,7 +132,8 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
 	  if (Pt[j]<PtMin[j]) PtMin[j]=Pt[j];
 	}
     }
-  
+
+  ELog::EM<<"Center == "<<A.getCentre()<<ELog::endDiag;
   APos=PtMin+A.getCentre();
   BPos=PtMax+A.getCentre();
 
@@ -152,8 +154,8 @@ meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
     \param offset :: start point in T card to take position from
-    \param APt :: Low box coorner
-    \param BPt :: Upper box coorner
+    \param APt :: Low box corner [relative to base link pt]
+    \param BPt :: Upper box corner [relative to base link pt]
     \param Nxyz :: number of points
   */
 {
