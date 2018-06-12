@@ -476,6 +476,8 @@ FrontEndBuilding::createObjects(Simulation& System,
     fracMat.push_back(wallMat);
 
   layerProcess(System, "ShieldingWall1", 11, -12, frac,fracMat);
+  setCell("GapLevel", cellIndex-2);
+  layerProcess(System, "GapLevel", -7, 8, frac,fracMat);
 
   return;
 }
@@ -521,6 +523,7 @@ FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
 			Y*((length+wallThick)/2.0),Z);
   FixedComp::setLinkSurf(5,FC.getLinkSurf(roofIndexTop));
 
+  // ShieldingWall1
   FixedComp::setConnect(6,Origin+X*(shieldWall1Offset+shieldWall1Thick/2.0),-Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+1));
 
