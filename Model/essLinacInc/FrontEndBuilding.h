@@ -69,9 +69,11 @@ class FrontEndBuilding : public attachSystem::ContainedComp,
   double gapALength; ///< Penetration A length
   double gapAHeightLow; ///< Height of lower gap in Penetration A
   double gapAHeightTop; ///< Height of upper gap in Penetration A
+  double gapADist; ///< Distance between Top and Low gaps in Penetration A
   double gapBLength; ///< Penetration B length
   double gapBHeightLow; ///< Height of lower gap in Penetration B
   double gapBHeightTop; ///< Height of upper gap in Penetration B
+  double gapBDist; ///< Distance between Top and Low gaps in Penetration B
 
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const long int& lpS, const long int& lsS,

@@ -352,6 +352,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("FEBGapBHeightLow", "FEBGapAHeightLow");
   Control.addVariable("FEBGapAHeightTop", 130.0);
   Control.addParse<double>("FEBGapBHeightTop", "FEBGapAHeightTop");
+  Control.addVariable("FEBGapADist", 90.0);
+  Control.addParse<double>("FEBGapBDist", "FEBGapADist");
 
   Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
   Control.addVariable("FEBShieldWall1Thick", 100.0);

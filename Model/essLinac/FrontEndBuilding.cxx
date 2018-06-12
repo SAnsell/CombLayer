@@ -125,9 +125,11 @@ FrontEndBuilding::FrontEndBuilding(const FrontEndBuilding& A) :
   gapALength(A.gapALength),
   gapAHeightLow(A.gapAHeightLow),
   gapAHeightTop(A.gapAHeightTop),
+  gapADist(A.gapADist),
   gapBLength(A.gapBLength),
   gapBHeightLow(A.gapBHeightLow),
-  gapBHeightTop(A.gapBHeightTop)
+  gapBHeightTop(A.gapBHeightTop),
+  gapBDist(A.gapBDist)
   /*!
     Copy constructor
     \param A :: FrontEndBuilding to copy
@@ -170,9 +172,11 @@ FrontEndBuilding::operator=(const FrontEndBuilding& A)
       gapALength=A.gapALength;
       gapAHeightLow=A.gapAHeightLow;
       gapAHeightTop=A.gapAHeightTop;
+      gapADist=A.gapADist;
       gapBLength=A.gapBLength;
       gapBHeightLow=A.gapBHeightLow;
       gapBHeightTop=A.gapBHeightTop;
+      gapBDist=A.gapBDist;
     }
   return *this;
 }
@@ -302,9 +306,11 @@ FrontEndBuilding::populate(const FuncDataBase& Control)
   gapALength=Control.EvalVar<double>(keyName+"GapALength");
   gapAHeightLow=Control.EvalVar<double>(keyName+"GapAHeightLow");
   gapAHeightTop=Control.EvalVar<double>(keyName+"GapAHeightTop");
+  gapADist=Control.EvalVar<double>(keyName+"GapADist");
   gapBLength=Control.EvalVar<double>(keyName+"GapBLength");
   gapBHeightLow=Control.EvalVar<double>(keyName+"GapBHeightLow");
   gapBHeightTop=Control.EvalVar<double>(keyName+"GapBHeightTop");
+  gapBDist=Control.EvalVar<double>(keyName+"GapBDist");
 
   return;
 }
@@ -488,34 +494,37 @@ FrontEndBuilding::createObjects(Simulation& System,
   addOuterUnionSurf(Out);
 
   // Penetrations A and B in ShieldingWall1
+  std::vector<int> fracMat;
+  for (int i=0; i<4; i++)
+    fracMat.push_back(wallMat);
+
   std::vector<double> frac;
   frac.push_back(gapBLength/shieldWall1Length);
   frac.push_back(0.2);
   frac.push_back(gapALength/shieldWall1Length);
 
-  std::vector<int> fracMat;
-  for (int i=0; i<4; i++)
-    fracMat.push_back(wallMat);
-
   layerProcess(System, "ShieldingWall1", -7, 8, frac,fracMat);
   setCell("PenetrationA", cellIndex-2);
   setCell("PenetrationB", cellIndex-4);
 
-  const double totalHeight(getLinkDistance(11,12));
-  frac.clear();
-  frac.push_back(gapBHeightLow/totalHeight);
-  frac.push_back(1/5.0);
-  frac.push_back(gapBHeightTop/totalHeight);
-
   fracMat.clear();
   for (int i=0; i<4; i++)
     fracMat.push_back(i%2 ? wallMat : gapMat);
+
+  const double totalHeight(getLinkDistance(11,12));
+
+  frac.clear();
+  frac.push_back(gapBHeightLow/totalHeight);
+  frac.push_back(gapBDist/totalHeight);
+  frac.push_back(gapBHeightTop/totalHeight);
+
   layerProcess(System, "PenetrationB", 11, -12, frac,fracMat);
 
   frac.clear();
   frac.push_back(gapAHeightLow/totalHeight);
-  frac.push_back(1/15.0);
+  frac.push_back(gapADist/totalHeight);
   frac.push_back(gapAHeightTop/totalHeight);
+
   layerProcess(System, "PenetrationA", 11, -12, frac,fracMat);
 
   return;
