@@ -379,11 +379,11 @@ StubWall::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("StubWall","createLinks");
 
-  FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(width),-Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(surfIndex+2));
+  FixedComp::setConnect(1,Origin+Y*(width),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(length/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
