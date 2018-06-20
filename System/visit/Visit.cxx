@@ -198,34 +198,37 @@ Visit::populateLine(const Simulation& System,
 
   // First get max N
   const size_t IMax=getMaxIndex();
-  const long int IA = nPts[(IMax+1) % 3];
-  const long int IB = nPts[(IMax+2) % 3];
-  const long int IC = nPts[IMax];
-    
-  MonteCarlo::Object* ObjPtr(0);
-  Geometry::Vec3D aVec;
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+  const size_t IA = (IMax) ? 0: 1;
+  const size_t IB = (IMax!=2) ? 2 : 1;
   
+  const long int nA = nPts[IA];
+  const long int nB = nPts[IB];
+  const long int nC = nPts[IMax];
+    
+  Geometry::Vec3D aVec;  
   const bool aEmptyFlag=Active.empty();
 
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
     stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
 		  
-  const Geometry::Vec3D XStep=
-    (IMax==0) ? Geometry::Vec3D(0,1,0) : Geometry::Vec3D(1,0,0);
-  const Geometry::Vec3D YStep=
-    (IMax!=2) ? Geometry::Vec3D(0,0,1) : Geometry::Vec3D(0,1,0);
-  const Geometry::Vec3D longStep=
-    (IMax==1) ? (YStep*XStep)*XYZ[IMax] : (XStep*YStep)*XYZ[IMax];
+  const Geometry::Vec3D XStep=(IMax==0) ?
+    Geometry::Vec3D(0,1,0)*stepXYZ[IA] :
+    Geometry::Vec3D(1,0,0)*stepXYZ[IA];
 
-  for(long int i=0;i<IA;i++)
-    for(long int j=0;j<IB;j++)
-      {
+  const Geometry::Vec3D YStep=(IMax!=2) ?
+    Geometry::Vec3D(0,0,1)*stepXYZ[IB] :
+    Geometry::Vec3D(0,1,0)*stepXYZ[IB];
+
+  const Geometry::Vec3D longStep=
+    (IMax==1) ? (YStep*XStep).unit()*XYZ[IMax] :
+    (XStep*YStep).unit()*XYZ[IMax];
+  
+  for(long int i=0;i<nA;i++)
+    for(long int j=0;j<nB;j++)
+      { 
 	std::vector<double> distVec;
-	std::vector<int> matVec;
+	std::vector<MonteCarlo::Object*> cellVec;
 	
 	const Geometry::Vec3D aVec=Origin+
 	  XStep*(static_cast<double>(i)+0.5)+
@@ -233,29 +236,20 @@ Visit::populateLine(const Simulation& System,
 
 	ModelSupport::LineTrack OTrack(aVec,aVec+longStep);
 	OTrack.calculate(System);
-	OTrack.createMatPath(matVec,distVec);
+	OTrack.createCellPath(cellVec,distVec);
 
-	long int index=0;
 	double aim=XYZ[IMax];
-	double aFrac(0.0);
-	for(size_t ii=0;ii<matVec.size();ii++)
+	double T=0.0;
+	long int index(0);
+	for(size_t ii=0;ii<cellVec.size();ii++)
 	  {
-	    double T=distVec[ii];
-	    const double preFrac(aFrac);
-	    const long int mid=Visit::procDist(aim,stepXYZ[IMax],T,aFrac);
-	    const int mValue=matVec[ii];
+	    T+=distVec[ii];
+	    const long int mid=Visit::procPoint(T,stepXYZ[IMax]);
+	    const double mValue=getResult(cellVec[ii]);
 	    
-	    getMeshUnit(IMax,index,i,j)+=preFrac*mValue;
-	    for(long int pI=1;pI<mid;pI++)
-	      getMeshUnit(IMax,++index,i,j)+=mValue;
-	    
+	    for(long int cnt=0;cnt<mid;cnt++)
+	      getMeshUnit(IMax,index++,i,j)=mValue;
 
-	    if (mid)
-	      getMeshUnit(IMax,++index,i,j)+=mValue;
-
-	    ELog::EM<<"Out["<<ii<<"] == "<<distVec[ii]
-		    <<" "<<matVec[ii]<<ELog::endDiag;
-	    ELog::EM<<"-----"<<ELog::endErr;
 	  }
       }
   
@@ -263,14 +257,22 @@ Visit::populateLine(const Simulation& System,
 }
 
 double&
-Visit::getMeshUnit(const size_t IMax,const long int index,
+Visit::getMeshUnit(const size_t posIndex,const long int index,
 		   const long int i,const long int j)
+  /*!
+    Get mesh unit based on posIndex being index place [0-2]
+    and i,j begin the other two coordinates
+    \param posIndex :: Index Max
+    \param i :: other index in mesh
+    \param j :: other index in mesh
+    \return mesh[i][j] / [index]
+  */
 { 
-  if (IMax==0)
+  if (posIndex==0)
     return mesh[index][i][j];
-  else if (IMax==1)
+  else if (posIndex==1)
     return mesh[i][index][j];
-
+  
   return mesh[i][j][index];
 }
   
@@ -300,6 +302,21 @@ Visit::procDist(double& fullLen,const double lStep,
       aFrac+=unitLen/lStep; // this is negative and deal with a<1.0
       fullLen+=aFrac*lStep;
     }
+  return outCnt;
+}
+
+long int
+Visit::procPoint(double& unitLen,const double lStep)
+  /*!
+    \param unitLen :: Single unit length
+    \param lStep :: Step length
+    \return number to increase
+  */
+{
+  ELog::RegMethod RegA("Visit","procPoint");
+
+  const long int outCnt=static_cast<long int>(unitLen/lStep);
+  unitLen -= static_cast<double>(outCnt)*lStep;
   return outCnt;
 }
  
@@ -341,7 +358,6 @@ Visit::populatePoint(const Simulation& System,
 	      // Active Set Code:
 	      if (!aEmptyFlag)
 		{
-
 		  const std::string rangeStr=OR.inRange(ObjPtr->getName());
 		  if (Active.find(rangeStr)!=Active.end())
 		    mesh[i][j][k]=getResult(ObjPtr);

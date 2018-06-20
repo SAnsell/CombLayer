@@ -59,9 +59,11 @@ class Visit
   Triple<long int> nPts;              ///< Number x points
   boost::multi_array<double,3> mesh;  ///< results mesh
 
+  static long int procDist(double&,const double,double,double&);
+  static long int procPoint(double&,const double);
+
   double getResult(const MonteCarlo::Object*) const;
   size_t getMaxIndex() const;
-  static long int procDist(double&,const double,double,double&);
 
   double& getMeshUnit(const size_t,const long int,const long in
 		      ,const long int);

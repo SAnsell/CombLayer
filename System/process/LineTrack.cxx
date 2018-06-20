@@ -393,13 +393,27 @@ LineTrack::createMatPath(std::vector<int>& mVec,
 {
   ELog::RegMethod RegA("LineTrack ","createMatPath");
   
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
   for(size_t i=0;i<Cells.size();i++)
     {
       const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
       mVec.push_back(matN);
+      aVec.push_back(Track[i]);
+    }
+  return;
+}
+
+void
+LineTrack::createCellPath(std::vector<MonteCarlo::Object*>& cellVec,
+			 std::vector<double>& aVec) const
+  /*!
+    Calculate track components
+    \param cellVec :: Object Ptr vector
+    \param aVec :: Track distance
+  */
+{
+  for(size_t i=0;i<Cells.size();i++)
+    {
+      cellVec.push_back(ObjVec[i]);
       aVec.push_back(Track[i]);
     }
   return;
