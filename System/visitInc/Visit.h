@@ -3,7 +3,7 @@
  
  * File:   visitInc/Visit.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,19 +45,26 @@ class Visit
  public:
 
   /// Types of information to plot
-  enum class VISITenum : int { cellID=0,material=1,density=2,weight=3};
+  enum class VISITenum : int
+  { cellID=0,material=1,density=2,weight=3};
 
  private:
   
   VISITenum outType;          ///< Output type
+  bool lineAverage;           ///< set line average
+  
   Geometry::Vec3D Origin;     ///< Origin
   Geometry::Vec3D XYZ;        ///< XYZ extent
 
-  Triple<long int> nPts;        ///< Number x points
+  Triple<long int> nPts;              ///< Number x points
   boost::multi_array<double,3> mesh;  ///< results mesh
 
   double getResult(const MonteCarlo::Object*) const;
+  size_t getMaxIndex() const;
+  static long int procDist(double&,const double,double,double&);
 
+  double& getMeshUnit(const size_t,const long int,const long in
+		      ,const long int);
  public:
 
   Visit();
@@ -65,13 +72,16 @@ class Visit
   Visit& operator=(const Visit&);
   ~Visit();
 
+  /// make an average over the line from beginning to end
+  void setLineForm() { lineAverage=1; }
   void setType(const VISITenum&);
   void setBox(const Geometry::Vec3D&,
               const Geometry::Vec3D&);
   void setIndex(const size_t,const size_t,const size_t);
 
-  void populate(const Simulation*);
-  void populate(const Simulation*,const std::set<std::string>&);
+  void populateLine(const Simulation&,const std::set<std::string>&);
+  void populatePoint(const Simulation&,const std::set<std::string>&);
+  void populate(const Simulation&,const std::set<std::string>&);
   void writeVTK(const std::string&) const;
 };
 

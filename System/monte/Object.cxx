@@ -1000,7 +1000,7 @@ Object::forwardIntercept(const Geometry::Vec3D& IP,
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects).
-    This does not descriminate between ingoing and outgoing
+    This does descriminate between ingoing and outgoing
     tracks.
 
     \param IP :: Initial point

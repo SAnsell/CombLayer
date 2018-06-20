@@ -383,6 +383,29 @@ LineTrack::getPoint(const size_t Index) const
 }
 
 void
+LineTrack::createMatPath(std::vector<int>& mVec,
+			 std::vector<double>& aVec) const
+  /*!
+    Calculate track components
+    \param mVec :: Material vector
+    \param aVec :: Attenuation  distance
+  */
+{
+  ELog::RegMethod RegA("LineTrack ","createMatPath");
+  
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  for(size_t i=0;i<Cells.size();i++)
+    {
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      mVec.push_back(matN);
+      aVec.push_back(Track[i]);
+    }
+  return;
+}
+
+void
 LineTrack::createAttenPath(std::vector<long int>& cVec,
 			   std::vector<double>& aVec) const
   /*!

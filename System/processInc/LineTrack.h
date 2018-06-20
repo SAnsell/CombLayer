@@ -103,6 +103,8 @@ class LineTrack
   double getTotalDist() const { return aimDist; }
 
   void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
+  void createMatPath(std::vector<int>&,std::vector<double>&) const;
+  
   void write(std::ostream&) const;
 };
 

@@ -49,8 +49,6 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -61,18 +59,21 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
+#include "LineTrack.h"
 #include "Visit.h"
 
 Visit::Visit() :
-  outType(VISITenum::cellID),nPts(0,0,0)
+  outType(VISITenum::cellID),
+  lineAverage(0),nPts(0,0,0)
   /*!
     Constructor
   */
 {}
 
 Visit::Visit(const Visit& A) : 
-  outType(A.outType),Origin(A.Origin),
-  XYZ(A.XYZ),nPts(A.nPts),mesh(A.mesh)
+  outType(A.outType),lineAverage(A.lineAverage),
+  Origin(A.Origin),XYZ(A.XYZ),nPts(A.nPts),
+  mesh(A.mesh)
   /*!
     Copy constructor
     \param A :: Visit to copy
@@ -90,6 +91,7 @@ Visit::operator=(const Visit& A)
   if (this!=&A)
     {
       outType=A.outType;
+      lineAverage=A.lineAverage;
       Origin=A.Origin;
       XYZ=A.XYZ;
       nPts=A.nPts;
@@ -103,6 +105,19 @@ Visit::~Visit()
     Destructor
    */
 {}
+
+size_t
+Visit::getMaxIndex() const
+  /*!
+    Get largest index [preference to Z]
+    \return Max index [0-2]
+  */						
+{
+  if (nPts[0]>nPts[1])
+    return (nPts[0]>nPts[2]) ? 0 : 2;
+  
+  return (nPts[1]>nPts[2]) ? 1 : 2;
+}
 
 void 
 Visit::setBox(const Geometry::Vec3D& startPt,
@@ -171,11 +186,129 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
 }
 
 void
-Visit::populate(const Simulation* SimPtr,
-		const std::set<std::string>& Active)
+Visit::populateLine(const Simulation& System,
+		    const std::set<std::string>& Active)
+  /*!
+    The big population call with lines
+    \param System :: Simulation system
+    \param Active :: Active set of cells to use (ranged)
+   */
+{
+  ELog::RegMethod RegA("Visit","populateLine");
+
+  // First get max N
+  const size_t IMax=getMaxIndex();
+  const long int IA = nPts[(IMax+1) % 3];
+  const long int IB = nPts[(IMax+2) % 3];
+  const long int IC = nPts[IMax];
+    
+  MonteCarlo::Object* ObjPtr(0);
+  Geometry::Vec3D aVec;
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  const bool aEmptyFlag=Active.empty();
+
+  double stepXYZ[3];
+  for(size_t i=0;i<3;i++)
+    stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
+		  
+  const Geometry::Vec3D XStep=
+    (IMax==0) ? Geometry::Vec3D(0,1,0) : Geometry::Vec3D(1,0,0);
+  const Geometry::Vec3D YStep=
+    (IMax!=2) ? Geometry::Vec3D(0,0,1) : Geometry::Vec3D(0,1,0);
+  const Geometry::Vec3D longStep=
+    (IMax==1) ? (YStep*XStep)*XYZ[IMax] : (XStep*YStep)*XYZ[IMax];
+
+  for(long int i=0;i<IA;i++)
+    for(long int j=0;j<IB;j++)
+      {
+	std::vector<double> distVec;
+	std::vector<int> matVec;
+	
+	const Geometry::Vec3D aVec=Origin+
+	  XStep*(static_cast<double>(i)+0.5)+
+	  YStep*(static_cast<double>(j)+0.5);
+
+	ModelSupport::LineTrack OTrack(aVec,aVec+longStep);
+	OTrack.calculate(System);
+	OTrack.createMatPath(matVec,distVec);
+
+	long int index=0;
+	double aim=XYZ[IMax];
+	double aFrac(0.0);
+	for(size_t ii=0;ii<matVec.size();ii++)
+	  {
+	    double T=distVec[ii];
+	    const double preFrac(aFrac);
+	    const long int mid=Visit::procDist(aim,stepXYZ[IMax],T,aFrac);
+	    const int mValue=matVec[ii];
+	    
+	    getMeshUnit(IMax,index,i,j)+=preFrac*mValue;
+	    for(long int pI=1;pI<mid;pI++)
+	      getMeshUnit(IMax,++index,i,j)+=mValue;
+	    
+
+	    if (mid)
+	      getMeshUnit(IMax,++index,i,j)+=mValue;
+
+	    ELog::EM<<"Out["<<ii<<"] == "<<distVec[ii]
+		    <<" "<<matVec[ii]<<ELog::endDiag;
+	    ELog::EM<<"-----"<<ELog::endErr;
+	  }
+      }
+  
+  return;
+}
+
+double&
+Visit::getMeshUnit(const size_t IMax,const long int index,
+		   const long int i,const long int j)
+{ 
+  if (IMax==0)
+    return mesh[index][i][j];
+  else if (IMax==1)
+    return mesh[i][index][j];
+
+  return mesh[i][j][index];
+}
+  
+long int
+Visit::procDist(double& fullLen,const double lStep,
+		double unitLen,double& aFrac)
+  /*!
+    \param fullLen :: Length remain
+    \param unitLen :: Single unit length
+    \param aFrac :: Frac of first unit
+    \param bFrac :: Frac of last unit
+    \return number to increase
+   */
+{
+  ELog::RegMethod RegA("Visit","procDist");
+
+  long int outCnt(-1);
+  while(unitLen>Geometry::zeroTol)
+    {
+      fullLen -= aFrac*lStep;
+      unitLen -= aFrac*lStep;
+      aFrac=1.0;
+      outCnt++;
+    }
+  if (unitLen<0.0)
+    {
+      aFrac+=unitLen/lStep; // this is negative and deal with a<1.0
+      fullLen+=aFrac*lStep;
+    }
+  return outCnt;
+}
+ 
+void
+Visit::populatePoint(const Simulation& System,
+		     const std::set<std::string>& Active)
   /*!
     The big population call
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param Active :: Active set of cells to use (ranged)
    */
 {
@@ -203,7 +336,7 @@ Visit::populate(const Simulation* SimPtr,
 	    {
 	      aVec[2]=stepXYZ[2]*(0.5+static_cast<double>(k));
 	      const Geometry::Vec3D Pt=Origin+aVec;
-	      ObjPtr=SimPtr->findCell(Pt,ObjPtr);
+	      ObjPtr=System.findCell(Pt,ObjPtr);
 
 	      // Active Set Code:
 	      if (!aEmptyFlag)
@@ -228,16 +361,21 @@ Visit::populate(const Simulation* SimPtr,
 }
 
 void
-Visit::populate(const Simulation* SimPtr)
+Visit::populate(const Simulation& System,
+		const std::set<std::string>& Active)
   /*!
     The big population call
     \param SimPtr :: Simulation system
+    \param Active Cells
    */
 {
   ELog::RegMethod RegA("Visit","populate(sim)");
 
-  std::set<std::string> Empty;
-  populate(SimPtr,Empty);
+  if (lineAverage)
+    populateLine(System,Active);
+  else
+    populatePoint(System,Active);
+  
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   processInc/ObjectTrackAct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,12 +73,18 @@ class ObjectTrackAct
   void clearAll();
 
   double getMatSum(const long int) const;
+
   double getAttnSum(const long int) const;
   double getAttnSum(const long int,const double) const;
   double getDistance(const long int) const;
+
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
+
+  const LineTrack& getLine(const long int) const;
   void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
+  void createMatPath(std::vector<int>&,std::vector<double>&) const;
+  
   virtual void write(std::ostream&) const =0;
 
 };

@@ -149,8 +149,8 @@ createInputs(inputParam& IParam)
     
   IParam.regFlag("void","void");
   IParam.regItem("vtkMesh","vtkMesh",1);
-  IParam.regFlag("vtk","vtk");
-  IParam.regFlag("vcell","vcell");
+  IParam.regItem("vtk","vtk",0);
+  IParam.regItem("vtkType","vtkType",1);
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
 
@@ -264,7 +264,6 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
   IParam.setDesc("vtkMesh","Define mesh for MD5/VTK");
-  IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");

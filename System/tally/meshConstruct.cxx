@@ -143,15 +143,16 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
 
 void
 meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
+			     const std::string& itemName,
 			     const size_t Index,
 			     const size_t offset,
 			     Geometry::Vec3D& APt,
 			     Geometry::Vec3D& BPt,
-			     std::array<size_t,3>& Nxyz)
-			     
+			     std::array<size_t,3>& Nxyz)     
   /*!
     Get mesh grid for the tally
     \param IParam :: Main input parameters
+    \param itemName :: Name to search
     \param Index :: index of the -T card
     \param offset :: start point in T card to take position from
     \param APt :: Low box corner [relative to base link pt]
@@ -163,16 +164,16 @@ meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
 
   size_t itemIndex(offset+2);   
   const std::string place=
-    IParam.getValueError<std::string>("tally",Index,offset,"position not given");
+    IParam.getValueError<std::string>(itemName,Index,offset,"position not given");
   const std::string linkName=
-    IParam.getValueError<std::string>("tally",Index,offset+1,"front/back/side not given");      
+    IParam.getValueError<std::string>(itemName,Index,offset+1,"front/back/side not given");      
 
-  APt=IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
-  BPt=IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
+  APt=IParam.getCntVec3D(itemName,Index,itemIndex,"Low Corner");
+  BPt=IParam.getCntVec3D(itemName,Index,itemIndex,"High Corner");
   
-  Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
-  Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
-  Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
+  Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
+  Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
+  Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
   
   calcXYZ(place,linkName,APt,BPt);
   
@@ -181,6 +182,7 @@ meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
 
 void
 meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
+			   const std::string& itemName,
 			   const size_t Index,
 			   const size_t Offset,
 			   Geometry::Vec3D& APt,
@@ -202,12 +204,12 @@ meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
 
   size_t itemIndex(Offset);
 
-  APt=IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
-  BPt=IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
+  APt=IParam.getCntVec3D(itemName,Index,itemIndex,"Low Corner");
+  BPt=IParam.getCntVec3D(itemName,Index,itemIndex,"High Corner");
   
   // Rotation:
   const std::string revStr=
-    IParam.getDefValue<std::string>("","tally",Index,itemIndex);
+    IParam.getDefValue<std::string>("",itemName,Index,itemIndex);
   if (revStr=="r") 
     {
       ELog::EM<<"Reverse rotating"<<ELog::endDiag;
@@ -215,14 +217,12 @@ meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
       BPt=MR.reverseRotate(BPt);
     }
       
-  Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
-  Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
-  Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
+  Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
+  Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
+  Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
   
   return;
 }
-
-
   
 const std::string& 
 meshConstruct::getDoseConversion()

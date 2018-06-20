@@ -233,7 +233,9 @@ void
 WWGControl::wwgCreate(const Simulation& System,
                       const mainSystem::inputParam& IParam)
   /*!
-    Calculate a WWG weights based 
+    Calculate a WWG weights based. This calls the tracking
+    system to calculate the attenuation from the source/adjoint
+    to the cell in readiness for the expected Markov process [if used]
     \param System :: Simulation
     \param IParam :: Input deck
    */

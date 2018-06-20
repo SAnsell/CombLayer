@@ -69,8 +69,6 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "SurInter.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "AttachSupport.h"
 
 #include "Debug.h"
