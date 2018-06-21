@@ -202,8 +202,8 @@ Mug::createSurfaces()
   ModelSupport::buildPlane(SMap,mugIndex+101,Origin-Y*(wallThick/2.0),Y);
   ModelSupport::buildPlane(SMap,mugIndex+102,Origin+Y*(wallThick/2.0),Y);
 
-  ModelSupport::buildCylinder(SMap,mugIndex+107,Origin+X*radius,Y,handleRadius);
-  ModelSupport::buildCylinder(SMap,mugIndex+117,Origin+X*radius,Y,
+  ModelSupport::buildCylinder(SMap,mugIndex+107,Origin+X*radius+Z*handleOffset,Y,handleRadius);
+  ModelSupport::buildCylinder(SMap,mugIndex+117,Origin+X*radius+Z*handleOffset,Y,
 			      handleRadius+wallThick);
 
   return; 
