@@ -207,7 +207,8 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF120>(); // was 2cm (why?)
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.setBFlangeCF<setVariable::CF63>(); 
   PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,463.0);
 
   return;
@@ -614,7 +615,6 @@ BALDERvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
-  PipeGen.setAFlangeCF<setVariable::CF120>(); 
   PipeGen.generatePipe(Control,"BalderJoinPipe",0,195.0);
   
   balderVar::opticsVariables(Control);
