@@ -203,6 +203,8 @@ Mug::createSurfaces()
   ModelSupport::buildPlane(SMap,mugIndex+102,Origin+Y*(wallThick/2.0),Y);
 
   ModelSupport::buildCylinder(SMap,mugIndex+107,Origin+X*radius,Y,handleRadius);
+  ModelSupport::buildCylinder(SMap,mugIndex+117,Origin+X*radius,Y,
+			      handleRadius+wallThick);
 
   return; 
 }
@@ -228,10 +230,13 @@ Mug::createObjects(Simulation& System)
 
   // Handle
   Out=ModelSupport::getComposite(SMap,mugIndex," 3 17 101 -102 -107 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,mugIndex," 3 17 101 -102 107 -117");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,mugIndex,
-				 " (15 -6 -17) : (3 17 101 -102 -107) ");
+				 " (15 -6 -17) : (3 17 101 -102 -117) ");
   addOuterSurf(Out);
 
   return; 
