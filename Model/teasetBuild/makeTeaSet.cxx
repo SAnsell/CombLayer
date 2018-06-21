@@ -74,7 +74,7 @@
 #include "GroupOrigin.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "teaSet.h"
+#include "Mug.h"
 
 #include "makeTeaSet.h"
 
@@ -82,9 +82,7 @@ namespace teaSetSystem
 {
 
 makeTeaSet::makeTeaSet() :
-  ATube(new teaSetSystem::teaSet("ATube")),
-  BTube(new teaSetSystem::teaSet("BTube")),
-  CTube(new teaSetSystem::teaSet("CTube"))
+  ATube(new teaSetSystem::Mug("Mug"))
   /*!
     Constructor
   */
@@ -93,15 +91,11 @@ makeTeaSet::makeTeaSet() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(ATube);
-  OR.addObject(BTube);
-  OR.addObject(CTube);
 
 }
 
 makeTeaSet::makeTeaSet(const makeTeaSet& A) : 
-  ATube(new teaSetSystem::teaSet(*(A.ATube))),
-  BTube(new teaSetSystem::teaSet(*(A.BTube))),
-  CTube(new teaSetSystem::teaSet(*(A.CTube)))
+  ATube(new teaSetSystem::Mug(*(A.ATube)))
   /*!
     Copy constructor
     \param A :: makeTeaSet to copy
@@ -119,8 +113,6 @@ makeTeaSet::operator=(const makeTeaSet& A)
   if (this!=&A)
     {
       *ATube=*A.ATube;
-      *BTube=*A.BTube;
-      *CTube=*A.CTube;
     }
   return *this;
 }
@@ -147,12 +139,6 @@ makeTeaSet::build(Simulation* SimPtr,
 
   ATube->addInsertCell(voidCell);
   ATube->createAll(*SimPtr,World::masterOrigin(),0);
-
-  BTube->addInsertCell(voidCell);
-  BTube->createAll(*SimPtr,*ATube,2);
-
-  CTube->addInsertCell(voidCell);
-  CTube->createAll(*SimPtr,*BTube,2);
   return;
 }
 

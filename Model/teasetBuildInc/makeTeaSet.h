@@ -33,7 +33,7 @@
 
 namespace teaSetSystem
 {
-  class teaSet;
+  class Mug;
   /*!
     \class makeTeaSet
     \version 1.0
@@ -47,9 +47,7 @@ class makeTeaSet
  private:
 
 
-  std::shared_ptr<teaSetSystem::teaSet> ATube;   ///< pre-tube
-  std::shared_ptr<teaSetSystem::teaSet> BTube;   ///< Main tube
-  std::shared_ptr<teaSetSystem::teaSet> CTube;   ///< collector tube
+  std::shared_ptr<teaSetSystem::Mug> ATube;   ///< pre-tube
 
 
  public:

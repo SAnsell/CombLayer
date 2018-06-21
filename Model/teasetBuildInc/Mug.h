@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   teaSetInc/teaSet.h
+ * File:   teaSetInc/Mug.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,58 +19,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef teaSetSystem_teaSet_h
-#define teaSetSystem_teaSet_h
+#ifndef teaSetSystem_Mug_h
+#define teaSetSystem_Mug_h
 
 class Simulation;
 
 namespace teaSetSystem
 {
 /*!
-  \class teaSet
-  \author S. Ansell
+  \class Mug
+  \author K. Batkov
   \version 1.0
-  \date May 2015
-  \brief Simple teaSet with layers
-
-  Constructed from the front point
+  \date June 2018
+  \brief Example of simple geometry
 */
 
-class teaSet : public attachSystem::ContainedComp,
+class Mug : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
   
-  const int tubeIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
+  const int teaIndex;       ///< Index of surface offset
+  int cellIndex;            ///< Cell index
 
-  double length;            ///< Total length
-  double height;            ///< Total height 
-  double width;             ///< Total width
+  double radius;            ///< Mug inner radius
+  double height;            ///< Mug height 
+  double wallThick;         ///< Mug wall thick
 
-  double innerHeight;       ///< innerHeight
-  double innerWidth;        ///< innerWidth
+  double handleRadius;      ///< Mug handle inner radius
+  double handleOffset;      ///< Mug handle vertical offset
 
   int wallMat;              ///< wall material
 
-  size_t nWallLayers;       ///< Layers in wall
-  std::vector<double> wallFracList;
-  std::vector<int> wallMatList; 
-  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void layerProcess(Simulation&);
 
  public:
 
-  teaSet(const std::string&);
-  teaSet(const teaSet&);
-  teaSet& operator=(const teaSet&);
-  ~teaSet();
+  Mug(const std::string&);
+  Mug(const Mug&);
+  Mug& operator=(const Mug&);
+  ~Mug();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

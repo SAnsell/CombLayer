@@ -63,48 +63,13 @@ TeaSetVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("teaSetVariables[F]","TeaSetVariables");
   
-  Control.addVariable("ATubeLength",350.0);
-  Control.addVariable("ATubeWidth",100.0);
-  Control.addVariable("ATubeHeight",100.0);
-  Control.addVariable("ATubeInnerWidth",10.0);
-  Control.addVariable("ATubeInnerHeight",10.0);
-  Control.addVariable("ATubeWallMat","Stainless304");
+  Control.addVariable("MugRadius",350.0);
+  Control.addVariable("MugHeight",100.0);
+  Control.addVariable("MugWallThick",100.0);
+  Control.addVariable("MugHandleRadius",10.0);
+  Control.addVariable("MugHandleOffset",10.0);
+  Control.addVariable("MugWallMat","Stainless304");
 
-  Control.addVariable("ATubeNWallLayers",3);
-  Control.addVariable("ATubeWLayerThick0",3.0);
-  Control.addVariable("ATubeWLayerThick1",4.0);
-  Control.addVariable("ATubeWLayerThick2",5.0);
-  Control.addVariable("ATubeWLayerThick3",5.0);
-
-  Control.addVariable("BTubeLength",350.0);
-  Control.addVariable("BTubeWidth",100.0);
-  Control.addVariable("BTubeHeight",100.0);
-  Control.addVariable("BTubeInnerWidth",10.0);
-  Control.addVariable("BTubeInnerHeight",10.0);
-  Control.addVariable("BTubeWallMat","H2O");
-
-  Control.addVariable("BTubeNWallLayers",3);
-  Control.addVariable("BTubeWLayerThick0",3.0);
-  Control.addVariable("BTubeWLayerThick1",4.0);
-  Control.addVariable("BTubeWLayerThick2",5.0);
-  Control.addVariable("BTubeWLayerThick3",5.0);
-  
-
-  Control.addVariable("CTubeLength",350.0);
-  Control.addVariable("CTubeWidth",100.0);
-  Control.addVariable("CTubeHeight",100.0);
-  Control.addVariable("CTubeInnerWidth",10.0);
-  Control.addVariable("CTubeInnerHeight",10.0);
-  Control.addVariable("CTubeWallMat","Stainless304");
-
-  Control.addVariable("CTubeNWallLayers",6);
-  Control.addVariable("CTubeWLayerThick0",3.0);
-  Control.addVariable("CTubeWLayerThick1",4.0);
-  Control.addVariable("CTubeWLayerThick2",5.0);
-  Control.addVariable("CTubeWLayerThick3",5.0);
-  Control.addVariable("CTubeWLayerThick4",5.0);
-  Control.addVariable("CTubeWLayerThick5",5.0);
-  
   Control.addVariable("pointSourceXStep",1.0);
   Control.addVariable("diskSourceXStep",0.0);
   Control.addVariable("diskSourceYStep",1.0);
