@@ -40,7 +40,7 @@ class Mug : public attachSystem::ContainedComp,
 {
  private:
   
-  const int teaIndex;       ///< Index of surface offset
+  const int mugIndex;       ///< Index of surface offset
   int cellIndex;            ///< Cell index
 
   double radius;            ///< Mug inner radius

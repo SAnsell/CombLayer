@@ -86,8 +86,8 @@ namespace teaSetSystem
 Mug::Mug(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  teaIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(teaIndex+1)
+  mugIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(mugIndex+1)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -97,7 +97,7 @@ Mug::Mug(const std::string& Key) :
 Mug::Mug(const Mug& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),attachSystem::CellMap(A),
-  teaIndex(A.teaIndex),cellIndex(A.cellIndex),
+  mugIndex(A.mugIndex),cellIndex(A.cellIndex),
   radius(A.radius),height(A.height),wallThick(A.wallThick),
   handleRadius(A.handleRadius),handleOffset(A.handleOffset),
   wallMat(A.wallMat)
@@ -185,17 +185,10 @@ Mug::createSurfaces()
 {
   ELog::RegMethod RegA("Mug","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,teaIndex+1,Origin-Y*(radius/2.0),Y);
-  ModelSupport::buildPlane(SMap,teaIndex+2,Origin+Y*(radius/2.0),Y);  
-  ModelSupport::buildPlane(SMap,teaIndex+3,Origin-X*(wallThick/2.0),X);
-  ModelSupport::buildPlane(SMap,teaIndex+4,Origin+X*(wallThick/2.0),X);  
-  ModelSupport::buildPlane(SMap,teaIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,teaIndex+6,Origin+Z*(height/2.0),Z);  
+  ModelSupport::buildPlane(SMap,mugIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,mugIndex+6,Origin+Z*(height/2.0),Z);  
 
-  ModelSupport::buildPlane(SMap,teaIndex+13,Origin-X*(handleOffset/2.0),X);
-  ModelSupport::buildPlane(SMap,teaIndex+14,Origin+X*(handleOffset/2.0),X);  
-  ModelSupport::buildPlane(SMap,teaIndex+15,Origin-Z*(handleRadius/2.0),Z);
-  ModelSupport::buildPlane(SMap,teaIndex+16,Origin+Z*(handleRadius/2.0),Z);  
+  ModelSupport::buildCylinder(SMap,mugIndex+7,Origin,Z,radius);
 
   return; 
 }
@@ -212,18 +205,11 @@ Mug::createObjects(Simulation& System)
   std::string Out;
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,teaIndex," 1 -2 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,mugIndex," 5 -6 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  CellMap::setCell("Inner",cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,teaIndex,
-				 " 1 -2 3 -4 5 -6 (-13:14:-15:16) ");
-  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  CellMap::setCell("Outer",cellIndex-1);
-  
-  Out=ModelSupport::getComposite(SMap,teaIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
+
   return; 
 }
 
@@ -231,30 +217,11 @@ void
 Mug::createLinks()
   /*!
     Creates a full attachment set
-    First two are in the -/+Y direction and have a divider
-    Last two are in the -/+X direction and have a divider
-    The mid two are -/+Z direction
   */
 {  
   ELog::RegMethod RegA("Mug","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(radius/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(teaIndex+1));
-
-  FixedComp::setConnect(1,Origin+Y*(radius/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(teaIndex+2));
-  
-  FixedComp::setConnect(2,Origin-X*(radius/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(teaIndex+3));
-  
-  FixedComp::setConnect(3,Origin+X*(wallThick/2.0),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(teaIndex+4));
-  
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(teaIndex+5));
-  
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(teaIndex+6));
+  //  throw ColErr::AbsObjMethod("Not implemented yet");
 
   return;
 }
