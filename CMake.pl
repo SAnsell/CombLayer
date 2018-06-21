@@ -6,7 +6,7 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
+my @masterprog=("fullBuild","ess","muBeam","pipe","teaset","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","essBeamline","bilbau",
 		"filter","singleItem","maxiv","testMain"); 
 
@@ -36,7 +36,7 @@ my @libnames=@sublibdir;
 my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc 
                        cuBlockInc d4cModelInc delftInc epbBuildInc 
                        essBuildInc gammaBuildInc imatInc lensModelInc 
-                       moderatorInc muonInc pipeBuildInc photonInc
+                       moderatorInc muonInc pipeBuildInc teasetBuildInc photonInc
                        singleItemBuildInc sinbadBuildInc snsBuildInc t1BuildInc 
                        t1EngineerInc t1UpgradeInc t3ModelInc zoomInc );
 
@@ -292,6 +292,19 @@ $gM->addDepUnit("photonMod3", ["photon","visit","src","simMC",
 			       "attachComp","visit","poly"]);
 
 $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
+			 "construct","physics","input","process",
+			 "transport","scatMat","endf","crystal",
+			 "source","monte","funcBase","log","monte",
+			 "tally","flukaProcess","flukaPhysics","flukaTally",
+			 "geometry","mersenne","src","world",
+			 "attachComp","beamline","support","commonVar",
+			 "work","xml","poly","support","weights",
+		         "physics","simMC",
+                         "transport","scatMat","endf","crystal",
+			 "insertUnit","md5","global",
+			 "attachComp","visit","poly","construct"]);
+
+$gM->addDepUnit("teaset", ["teasetBuild","visit","src","simMC",
 			 "construct","physics","input","process",
 			 "transport","scatMat","endf","crystal",
 			 "source","monte","funcBase","log","monte",

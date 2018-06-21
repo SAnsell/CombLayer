@@ -48,6 +48,7 @@ namespace setVariable
   void MaxIVVariables(FuncDataBase&,const std::set<std::string>&);
   void MuonVariables(FuncDataBase&);
   void PipeVariables(FuncDataBase&);
+  void TeaSetVariables(FuncDataBase&);
   void PhotonVariables(FuncDataBase&);
   void SinbadVariables(FuncDataBase&);
   void SingleItemVariables(FuncDataBase&);
