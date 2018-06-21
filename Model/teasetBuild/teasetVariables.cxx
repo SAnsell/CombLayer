@@ -66,8 +66,8 @@ TeaSetVariables(FuncDataBase& Control)
   Control.addVariable("MugRadius",3.0);
   Control.addVariable("MugHeight",10.0);
   Control.addVariable("MugWallThick",0.5);
-  Control.addVariable("MugHandleRadius",10.0);
-  Control.addVariable("MugHandleOffset",10.0);
+  Control.addVariable("MugHandleRadius",3.0);
+  Control.addVariable("MugHandleOffset",0.0);
   Control.addVariable("MugWallMat","Stainless304");
 
   Control.addVariable("pointSourceXStep",1.0);

@@ -185,13 +185,24 @@ Mug::createSurfaces()
 {
   ELog::RegMethod RegA("Mug","createSurfaces");
 
+  // dividers
+  ModelSupport::buildPlane(SMap,mugIndex+3,Origin,X);
+
+  // inner surfaces (contact tee)
   ModelSupport::buildPlane(SMap,mugIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,mugIndex+6,Origin+Z*(height/2.0),Z);  
 
   ModelSupport::buildCylinder(SMap,mugIndex+7,Origin,Z,radius);
 
+  // wall
   ModelSupport::buildPlane(SMap,mugIndex+15,Origin-Z*(height/2.0+wallThick),Z);
   ModelSupport::buildCylinder(SMap,mugIndex+17,Origin,Z,radius+wallThick);
+
+  // handle
+  ModelSupport::buildPlane(SMap,mugIndex+101,Origin-Y*(wallThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,mugIndex+102,Origin+Y*(wallThick/2.0),Y);
+
+  ModelSupport::buildCylinder(SMap,mugIndex+107,Origin+X*radius,Y,handleRadius);
 
   return; 
 }
@@ -215,7 +226,12 @@ Mug::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,mugIndex," 15 -6 -17 (-5:6:7) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,mugIndex," 15 -6 -17 ");
+  // Handle
+  Out=ModelSupport::getComposite(SMap,mugIndex," 3 17 101 -102 -107 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,mugIndex,
+				 " (15 -6 -17) : (3 17 101 -102 -107) ");
   addOuterSurf(Out);
 
   return; 
