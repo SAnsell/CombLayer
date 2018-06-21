@@ -63,9 +63,9 @@ TeaSetVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("teaSetVariables[F]","TeaSetVariables");
   
-  Control.addVariable("MugRadius",350.0);
-  Control.addVariable("MugHeight",100.0);
-  Control.addVariable("MugWallThick",100.0);
+  Control.addVariable("MugRadius",3.0);
+  Control.addVariable("MugHeight",10.0);
+  Control.addVariable("MugWallThick",0.5);
   Control.addVariable("MugHandleRadius",10.0);
   Control.addVariable("MugHandleOffset",10.0);
   Control.addVariable("MugWallMat","Stainless304");
