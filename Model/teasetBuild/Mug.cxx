@@ -170,8 +170,8 @@ Mug::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("Mug","createUnitVector");
+
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  yStep+=radius/2.0;
   FixedOffset::applyOffset();
 
   return;
