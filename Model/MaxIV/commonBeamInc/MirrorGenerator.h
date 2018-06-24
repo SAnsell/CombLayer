@@ -48,6 +48,7 @@ class MirrorGenerator
 
   double baseThick;        ///< Base thickness
   double baseExtra;        ///< Extra width/lenght of base
+  double baseGap;          ///< Gap
 
   std::string mirrMat;         ///< xtalx material
   std::string baseMat;         ///< base material
@@ -69,7 +70,8 @@ class MirrorGenerator
   
   void generateMirror(FuncDataBase&,const std::string&,
 		      const double,const double,
-		      const double,const double) const;
+		      const double,const double,
+		      const double) const;
 
 };
 

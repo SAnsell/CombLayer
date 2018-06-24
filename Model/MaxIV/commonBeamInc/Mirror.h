@@ -32,7 +32,7 @@ namespace xraySystem
   \author S. Ansell
   \version 1.0
   \date January 2018
-  \brief Paired Mono-crystal constant exit gap
+  \brief Focasable mirror in mount
 */
 
 class Mirror :
@@ -43,9 +43,6 @@ class Mirror :
 {
  private:
 
-  const int mirrIndex;     ///< Index of surface offset
-  int cellIndex;           ///< Cell index
-
   double theta;            ///< Theta angle
   double phi;              ///< phi angle
 
@@ -54,8 +51,11 @@ class Mirror :
   double thick;            ///< Thickness in normal direction to reflection
   double length;           ///< length along beam
 
-  double baseThick;        ///< Base thickness
-  double baseExtra;        ///< Extra width/lenght of base
+  
+  double baseTop;          ///< Base distance above mirror
+  double baseDepth;        ///< Base distance below mirror 
+  double baseExtra;        ///< Extra width of base 
+  double baseGap;          ///< Base under gap below mirror
 
   int mirrMat;             ///< XStal material
   int baseMat;             ///< Base material

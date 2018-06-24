@@ -80,9 +80,7 @@ namespace xraySystem
 Mirror::Mirror(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,8),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  mirrIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(mirrIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -116,8 +114,10 @@ Mirror::populate(const FuncDataBase& Control)
   thick=Control.EvalVar<double>(keyName+"Thick");
   length=Control.EvalVar<double>(keyName+"Length");
   
-  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  baseTop=Control.EvalVar<double>(keyName+"BaseTop");
+  baseDepth=Control.EvalVar<double>(keyName+"BaseDepth");
   baseExtra=Control.EvalVar<double>(keyName+"BaseExtra");
+  baseGap=Control.EvalVar<double>(keyName+"BaseGap");
 
   mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
@@ -160,14 +160,46 @@ Mirror::createSurfaces()
   QXA.rotate(PY);
   QXA.rotate(PZ);
   
-  ModelSupport::buildPlane(SMap,mirrIndex+101,Origin-PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,mirrIndex+102,Origin+PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,mirrIndex+103,Origin-PX*(width/2.0),PX);
-  ModelSupport::buildPlane(SMap,mirrIndex+104,Origin+PX*(width/2.0),PX);
-  ModelSupport::buildPlane(SMap,mirrIndex+105,Origin-PZ*thick,PZ);
-  ModelSupport::buildPlane(SMap,mirrIndex+106,Origin,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(length/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(length/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(width/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(width/2.0),PX);
 
-   
+  if (std::abs(radius)>Geometry::zeroTol)
+    {
+      // calc edge cut
+      const double tAngle = length/(2.0*radius);  // cos(-a) == cos(a)
+      const double lift = radius*(1.0-cos(tAngle));
+      if (radius<0)
+	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,-PZ);
+      else
+	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,PZ);
+      ModelSupport::buildCylinder(SMap,buildIndex+107,Origin-PZ*radius,PX,std::abs(radius));
+      ModelSupport::buildCylinder(SMap,buildIndex+117,Origin-PZ*radius,PX,std::abs(radius)+thick);
+    }
+  else
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*thick,PZ);
+      ModelSupport::buildPlane(SMap,buildIndex+106,Origin,PZ);
+    }
+  
+
+  // support
+  ModelSupport::buildPlane(SMap,buildIndex+203,
+			   Origin-PX*(baseExtra+width/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+204,
+			   Origin+PX*(baseExtra+width/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin+PZ*baseTop,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin-PZ*baseDepth,PZ);
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+216,Origin-PZ*(thick+baseGap),PZ);
+
+  ELog::EM<<"PZ == "<<PZ<<ELog::endDiag;
+  ELog::EM<<"P216 == "<<Origin-PZ*(thick+baseGap)<<ELog::endDiag;
+  ELog::EM<<"P206 == "<<Origin-PZ*baseDepth<<ELog::endDiag;
+  ELog::EM<<"P105 == "<<Origin-PZ*thick<<ELog::endDiag;
+  ELog::EM<<"P106 == "<<Origin<<ELog::endDiag;
   return; 
 }
 
@@ -181,9 +213,33 @@ Mirror::createObjects(Simulation& System)
   ELog::RegMethod RegA("Mirror","createObjects");
 
   std::string Out;
-  // xstal 
-  Out=ModelSupport::getComposite(SMap,mirrIndex," 101 -102 103 -104 105 -106 ");
+  // xstal
+  if (std::abs(radius)<Geometry::zeroTol)
+    Out=ModelSupport::getComposite(SMap,buildIndex,
+				   " 101 -102 103 -104 105 -106 ");
+  else
+    Out=ModelSupport::getComposite
+      (SMap,buildIndex," 103 -104 107 -117 105 ");    
+  
   makeCell("Mirror",System,cellIndex++,mirrMat,0.0,Out);
+
+  // Make sides
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
+  makeCell("LeftSide",System,cellIndex++,baseMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 104 -204 -205 206 ");
+  makeCell("RightSide",System,cellIndex++,baseMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 101 -102 103 -104 -216 206 ");
+  makeCell("Base",System,cellIndex++,baseMat,0.0,Out);
+
+  // vacuum units:
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 103 -104 -105 216" ); 
+  makeCell("BaseVac",System,cellIndex++,baseMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 203 -204 105 -206" ); 
+
   addOuterSurf(Out);
   
   return; 
@@ -202,8 +258,8 @@ Mirror::createLinks()
 
 void
 Mirror::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC,
-			const long int sideIndex)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
