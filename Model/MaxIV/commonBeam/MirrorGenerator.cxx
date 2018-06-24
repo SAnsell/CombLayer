@@ -60,12 +60,45 @@ namespace setVariable
 
 MirrorGenerator::MirrorGenerator() :
   radius(0.0),length(80.0),thick(1.0),width(5.0),
-  baseThick(2.0),baseExtra(1.0),
+  baseThick(4.0),baseExtra(1.0),baseGap(1.0),
   mirrMat("Silicon300K"),baseMat("Copper")
   /*!
     Constructor and defaults
   */
 {}
+
+MirrorGenerator::MirrorGenerator(const MirrorGenerator& A) : 
+  radius(A.radius),length(A.length),thick(A.thick),
+  width(A.width),baseThick(A.baseThick),baseExtra(A.baseExtra),
+  baseGap(A.baseGap),mirrMat(A.mirrMat),baseMat(A.baseMat)
+  /*!
+    Copy constructor
+    \param A :: MirrorGenerator to copy
+  */
+{}
+
+MirrorGenerator&
+MirrorGenerator::operator=(const MirrorGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: MirrorGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      radius=A.radius;
+      length=A.length;
+      thick=A.thick;
+      width=A.width;
+      baseThick=A.baseThick;
+      baseExtra=A.baseExtra;
+      baseGap=A.baseGap;
+      mirrMat=A.mirrMat;
+      baseMat=A.baseMat;
+    }
+  return *this;
+}
 
 MirrorGenerator::~MirrorGenerator() 
  /*!
@@ -125,7 +158,8 @@ MirrorGenerator::generateMirror(FuncDataBase& Control,
 				const double yStep,
 				const double zStep,
 				const double theta,
-				const double phi) const
+				const double phi,
+				const double radius) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -134,6 +168,7 @@ MirrorGenerator::generateMirror(FuncDataBase& Control,
     \param zStep :: Vertical lift from beamCentre
     \param theta :: theta angle
     \param phi :: phi angle
+    \param radius ;: bending radius / focus distance
   */
 {
   ELog::RegMethod RegA("MirrorGenerator","generatorMount");
@@ -147,8 +182,12 @@ MirrorGenerator::generateMirror(FuncDataBase& Control,
   Control.addVariable(keyName+"Thick",thick);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Radius",radius);
 
   Control.addVariable(keyName+"BaseThick",baseThick);
+  Control.addVariable(keyName+"BaseTop",baseThick-thick);
+  Control.addVariable(keyName+"BaseDepth",baseThick);
+  Control.addVariable(keyName+"BaseGap",baseGap);
   Control.addVariable(keyName+"BaseExtra",baseExtra);
 
   
