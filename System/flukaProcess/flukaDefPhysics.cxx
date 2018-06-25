@@ -182,10 +182,10 @@ setXrayPhysics(flukaPhysics& PC,
       PC.setFlag("muphoton",MN);
       
       // Compton PhotoElectic GammaPairProductuion      
-      PC.setTHR("photthr",MN,"1e-3","1.0","1.0");
+      PC.setTHR("photthr",MN,"1e-3","1e-3","1.0");
 	
       // Interaction threshold : Brem-e+/e- moller scatter photonuclear"
-      PC.setTHR("elpothr",MN,"0.0","3000.0","0.0");
+      PC.setTHR("elpothr",MN,"0.0","1e-3","0.0");
 
       // Turn off multiple scattering
       PC.setTHR("mulsopt",MN,"0","0","3");
@@ -193,7 +193,7 @@ setXrayPhysics(flukaPhysics& PC,
       // Production Cut for e/e+ photon 
       PC.setEMF("prodcut",MN,"1","1e-3");
       // Rayleigh photonuc-iteratcion
-      PC.setEMF("pho2thr",MN,"2000","1");
+      PC.setEMF("pho2thr",MN,"1e-3","1");
 
       // Pairbrem
       PC.setEMF("pairbrem",MN,"0.0","0.1");

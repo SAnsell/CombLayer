@@ -173,7 +173,7 @@ setAuxParticle(SimFLUKA& Sim,const std::string& tName,
     \return tally number [0 on fail]
   */
 {
-  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setDoseType");
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setAuxParticle");
 
   const std::set<flukaTally*> ATallySet=
     getActiveTally(Sim,tName);
