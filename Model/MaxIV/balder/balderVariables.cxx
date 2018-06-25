@@ -356,11 +356,10 @@ opticsVariables(FuncDataBase& Control)
   VBoxGen.generateBox(Control,"BalderMirrorBox",0.0,54.0,15.3,31.3,167.4);
 
   // y/z/theta/phi/radius
-  //  MirrGen.generateMirror(Control,"BalderMirror",0.0, 0.0, -1.0, 0.0,0.0);
-  MirrGen.generateMirror(Control,"BalderMirror",0.0, 0.0, 0.0, 0.0,0.0);
+  MirrGen.generateMirror(Control,"BalderMirror",0.0, 0.0, -0.5, 0.0,0.0);
 
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,"BalderMirrorB",0.0, 0.0, 1.0, 0.0,00.0);
+  MirrGen.generateMirror(Control,"BalderMirrorB",0.0, 0.0, 0.5, 0.0,00.0);
 
   GateGen.generateValve(Control,"BalderGateB",0.0,0);
 

@@ -54,7 +54,7 @@ class Mirror :
   
   double baseTop;          ///< Base distance above mirror
   double baseDepth;        ///< Base distance below mirror 
-  double baseExtra;        ///< Extra width of base 
+  double baseOutWidth;     ///< Extra width of base 
   double baseGap;          ///< Base under gap below mirror
 
   int mirrMat;             ///< XStal material

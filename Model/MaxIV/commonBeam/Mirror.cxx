@@ -116,7 +116,7 @@ Mirror::populate(const FuncDataBase& Control)
   
   baseTop=Control.EvalVar<double>(keyName+"BaseTop");
   baseDepth=Control.EvalVar<double>(keyName+"BaseDepth");
-  baseExtra=Control.EvalVar<double>(keyName+"BaseExtra");
+  baseOutWidth=Control.EvalVar<double>(keyName+"BaseOutWidth");
   baseGap=Control.EvalVar<double>(keyName+"BaseGap");
 
   mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
@@ -186,20 +186,15 @@ Mirror::createSurfaces()
 
   // support
   ModelSupport::buildPlane(SMap,buildIndex+203,
-			   Origin-PX*(baseExtra+width/2.0),PX);
+			   Origin-PX*(baseOutWidth+width/2.0),PX);
   ModelSupport::buildPlane(SMap,buildIndex+204,
-			   Origin+PX*(baseExtra+width/2.0),PX);
+			   Origin+PX*(baseOutWidth+width/2.0),PX);
   ModelSupport::buildPlane(SMap,buildIndex+205,Origin+PZ*baseTop,PZ);
   ModelSupport::buildPlane(SMap,buildIndex+206,Origin-PZ*baseDepth,PZ);
 
 
   ModelSupport::buildPlane(SMap,buildIndex+216,Origin-PZ*(thick+baseGap),PZ);
 
-  ELog::EM<<"PZ == "<<PZ<<ELog::endDiag;
-  ELog::EM<<"P216 == "<<Origin-PZ*(thick+baseGap)<<ELog::endDiag;
-  ELog::EM<<"P206 == "<<Origin-PZ*baseDepth<<ELog::endDiag;
-  ELog::EM<<"P105 == "<<Origin-PZ*thick<<ELog::endDiag;
-  ELog::EM<<"P106 == "<<Origin<<ELog::endDiag;
   return; 
 }
 
@@ -235,11 +230,14 @@ Mirror::createObjects(Simulation& System)
   // vacuum units:
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 103 -104 -105 216" ); 
-  makeCell("BaseVac",System,cellIndex++,baseMat,0.0,Out);
+  makeCell("BaseVac",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 203 -204 105 -206" ); 
+    (SMap,buildIndex," 101 -102 103 -104 -205 106 " ); 
+  makeCell("TopVac",System,cellIndex++,0,0.0,Out);
 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 203 -204 -205 206" ); 
   addOuterSurf(Out);
   
   return; 

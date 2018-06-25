@@ -46,9 +46,11 @@ class MirrorGenerator
   double thick;            ///< Thickness in normal direction to reflection
   double width;            ///< width accross beam
 
-  double baseThick;        ///< Base thickness
-  double baseExtra;        ///< Extra width/lenght of base
+  double baseTop;        ///< Base thickness
+  double baseDepth;        ///< Base thickness
   double baseGap;          ///< Gap
+  double baseOutWidth;        ///< Extra width/lenght of base
+
 
   std::string mirrMat;         ///< xtalx material
   std::string baseMat;         ///< base material
@@ -67,6 +69,8 @@ class MirrorGenerator
   void setPlate(const double,const double,const double);
 
   void setMaterial(const std::string&,const std::string&);
+  void setSupport(const double,const double,
+		  const double,const double);
   
   void generateMirror(FuncDataBase&,const std::string&,
 		      const double,const double,

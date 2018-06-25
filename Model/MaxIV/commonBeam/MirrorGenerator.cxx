@@ -60,7 +60,7 @@ namespace setVariable
 
 MirrorGenerator::MirrorGenerator() :
   radius(0.0),length(80.0),thick(1.0),width(5.0),
-  baseThick(4.0),baseExtra(1.0),baseGap(1.0),
+  baseTop(0.1),baseDepth(2.0),baseGap(0.5),baseOutWidth(1.0),
   mirrMat("Silicon300K"),baseMat("Copper")
   /*!
     Constructor and defaults
@@ -69,8 +69,9 @@ MirrorGenerator::MirrorGenerator() :
 
 MirrorGenerator::MirrorGenerator(const MirrorGenerator& A) : 
   radius(A.radius),length(A.length),thick(A.thick),
-  width(A.width),baseThick(A.baseThick),baseExtra(A.baseExtra),
-  baseGap(A.baseGap),mirrMat(A.mirrMat),baseMat(A.baseMat)
+  width(A.width),baseTop(A.baseTop),baseDepth(A.baseDepth),
+  baseGap(A.baseGap),baseOutWidth(A.baseOutWidth),
+  mirrMat(A.mirrMat),baseMat(A.baseMat)
   /*!
     Copy constructor
     \param A :: MirrorGenerator to copy
@@ -91,9 +92,10 @@ MirrorGenerator::operator=(const MirrorGenerator& A)
       length=A.length;
       thick=A.thick;
       width=A.width;
-      baseThick=A.baseThick;
-      baseExtra=A.baseExtra;
+      baseTop=A.baseTop;
+      baseDepth=A.baseDepth;
       baseGap=A.baseGap;
+      baseOutWidth=A.baseOutWidth;
       mirrMat=A.mirrMat;
       baseMat=A.baseMat;
     }
@@ -125,12 +127,31 @@ MirrorGenerator::setPlate(const double L,const double T,
 
 
 void
+MirrorGenerator::setSupport(const double top,const double depth,
+			    const double gap,const double extra)
+  /*!
+    Set support sizes
+    \param top :: Extra on top
+    \param depth :: Full depth [> gap]
+  */
+{
+  ELog::RegMethod RegA("MirrorGenerator","setSupport");
+
+  if (gap>=depth)
+    throw ColErr::OrderError<double>(gap,depth,"Depth must be > gap");
+  baseTop=top;
+  baseDepth=depth;
+  baseGap=gap;
+  baseOutWidth=extra;
+  return;
+}
+
+void
 MirrorGenerator::setRadius(const double R)
 
   /*!
     Set the surface radius
     \param R :: surface radius
-
    */
 {
   radius=R;
@@ -184,11 +205,10 @@ MirrorGenerator::generateMirror(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Radius",radius);
 
-  Control.addVariable(keyName+"BaseThick",baseThick);
-  Control.addVariable(keyName+"BaseTop",baseThick-thick);
-  Control.addVariable(keyName+"BaseDepth",baseThick);
+  Control.addVariable(keyName+"BaseTop",baseTop);
+  Control.addVariable(keyName+"BaseDepth",baseDepth);
   Control.addVariable(keyName+"BaseGap",baseGap);
-  Control.addVariable(keyName+"BaseExtra",baseExtra);
+  Control.addVariable(keyName+"BaseOutWidth",baseOutWidth);
 
   
   Control.addVariable(keyName+"MirrorMat",mirrMat);
