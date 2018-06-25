@@ -633,6 +633,9 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);
+  SimPtr->createObjSurfMap();
+  //  SimPtr->createObjSurfMap();
+  
   if (createVTK(IParam,SimPtr,OName))
     return;
 

@@ -241,9 +241,11 @@ LineTrack::calculateError(const Simulation& ASim)
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
+	  ELog::EM<<"AA Dist == "<<aDist<<ELog::endDiag;
+		  
 	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
-	  
+	  ELog::EM<<"AA NEUT == "<<nOut<<ELog::endDiag;
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 
 	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
