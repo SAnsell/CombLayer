@@ -44,9 +44,6 @@ class OpticsHutch :
 {
  private:
   
-  const int hutIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double depth;                 ///< void height 
   double height;                ///< void deptth
   double length;                ///< void out side width
@@ -57,10 +54,15 @@ class OpticsHutch :
 
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
+  double pbFrontThick;          ///< Thickness of lead in front plate
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
   double floorThick;            ///< Floor thickness
+
+  double inletXStep;            ///< Inlet XStep
+  double inletZStep;            ///< Inlet ZStep  
+  double inletRadius;           ///< Inlet radius
 
   double holeXStep;            ///< Hole XStep
   double holeZStep;            ///< Hole ZStep  

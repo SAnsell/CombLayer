@@ -590,6 +590,7 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsInnerThick",0.3);
   Control.addVariable("BalderOpticsPbWallThick",2.0);
   Control.addVariable("BalderOpticsPbRoofThick",2.0);
+  Control.addVariable("BalderOpticsPbFrontThick",2.0);
   Control.addVariable("BalderOpticsPbBackThick",10.0);
   Control.addVariable("BalderOpticsOuterThick",0.3);
   Control.addVariable("BalderOpticsFloorThick",50.0);
@@ -601,6 +602,10 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsHoleXStep",0.0);
   Control.addVariable("BalderOpticsHoleZStep",5.0);
   Control.addVariable("BalderOpticsHoleRadius",3.5);
+
+  Control.addVariable("BalderOpticsInletXStep",0.0);
+  Control.addVariable("BalderOpticsInletZStep",0.0);
+  Control.addVariable("BalderOpticsInletRadius",5.0);
 
   Control.addVariable("BalderOpticsExtraYStep",0.0);
   Control.addVariable("BalderOpticsExtraLength",10.0);

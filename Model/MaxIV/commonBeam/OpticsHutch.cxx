@@ -79,10 +79,8 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,12),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutIndex+1)
+  attachSystem::FixedOffset(Key,14),
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -92,11 +90,11 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
 OpticsHutch::OpticsHutch(const OpticsHutch& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  hutIndex(A.hutIndex),cellIndex(A.cellIndex),depth(A.depth),
-  height(A.height),length(A.length),ringWidth(A.ringWidth),
-  ringWallLen(A.ringWallLen),ringWallAngle(A.ringWallAngle),
-  outWidth(A.outWidth),innerThick(A.innerThick),
-  pbWallThick(A.pbWallThick),pbBackThick(A.pbBackThick),
+  depth(A.depth),height(A.height),length(A.length),
+  ringWidth(A.ringWidth),ringWallLen(A.ringWallLen),
+  ringWallAngle(A.ringWallAngle),outWidth(A.outWidth),
+  innerThick(A.innerThick),pbWallThick(A.pbWallThick),
+  pbFrontThick(A.pbFrontThick),pbBackThick(A.pbBackThick),
   pbRoofThick(A.pbRoofThick),outerThick(A.outerThick),
   floorThick(A.floorThick),holeXStep(A.holeXStep),
   holeZStep(A.holeZStep),holeRadius(A.holeRadius),
@@ -120,7 +118,6 @@ OpticsHutch::operator=(const OpticsHutch& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       depth=A.depth;
       height=A.height;
       length=A.length;
@@ -130,6 +127,7 @@ OpticsHutch::operator=(const OpticsHutch& A)
       outWidth=A.outWidth;
       innerThick=A.innerThick;
       pbWallThick=A.pbWallThick;
+      pbFrontThick=A.pbFrontThick;
       pbBackThick=A.pbBackThick;
       pbRoofThick=A.pbRoofThick;
       outerThick=A.outerThick;
@@ -172,6 +170,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
+  pbFrontThick=Control.EvalVar<double>(keyName+"PbFrontThick");
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
@@ -182,6 +181,10 @@ OpticsHutch::populate(const FuncDataBase& Control)
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
   holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",0.0);
 
+  inletXStep=Control.EvalDefVar<double>(keyName+"InletXStep",0.0);
+  inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
+  inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
+  
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
@@ -202,6 +205,9 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+
+  // shift forward for back wall
+  Origin+=Y*(outerThick+innerThick+pbFrontThick);
   return;
 }
  
@@ -214,45 +220,51 @@ OpticsHutch::createSurfaces()
   ELog::RegMethod RegA("OpticsHutch","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,hutIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*outWidth,X);
-  ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*ringWidth,X);
-  ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*height,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
 
 
-  ModelSupport::buildPlane(SMap,hutIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
 
   // Steel inner layer
-  ModelSupport::buildPlane(SMap,hutIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   Origin-Y*innerThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(length+innerThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(outWidth+innerThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(ringWidth+innerThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			       Origin+Z*(height+innerThick),Z);  
 
   // Lead
-  ModelSupport::buildPlane(SMap,hutIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
+			   Origin-Y*(innerThick+pbFrontThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(length+innerThick+pbBackThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(outWidth+innerThick+pbWallThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(ringWidth+innerThick+pbWallThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			       Origin+Z*(height+innerThick+pbRoofThick),Z);
 
   const double steelThick(innerThick+outerThick);
   // OuterWall
-  ModelSupport::buildPlane(SMap,hutIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+31,
+			   Origin-Y*(steelThick+pbFrontThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 			   Origin+Y*(length+steelThick+pbBackThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(ringWidth+steelThick+pbWallThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 			       Origin+Z*(height+steelThick+pbRoofThick),Z);  
 
   
@@ -260,21 +272,25 @@ OpticsHutch::createSurfaces()
     {
       Geometry::Vec3D RPoint(Origin+X*ringWidth+Y*ringWallLen);
       ModelSupport::buildPlaneRotAxis
-	(SMap,hutIndex+104,RPoint,X,-Z,ringWallAngle);
+	(SMap,buildIndex+104,RPoint,X,-Z,ringWallAngle);
       RPoint += X*innerThick;
       ModelSupport::buildPlaneRotAxis
-	(SMap,hutIndex+114,RPoint,X,-Z,ringWallAngle);
+	(SMap,buildIndex+114,RPoint,X,-Z,ringWallAngle);
       RPoint += X*pbWallThick;
       ModelSupport::buildPlaneRotAxis
-	(SMap,hutIndex+124,RPoint,X,-Z,ringWallAngle);
+	(SMap,buildIndex+124,RPoint,X,-Z,ringWallAngle);
       RPoint += X*outerThick;
       ModelSupport::buildPlaneRotAxis
-	(SMap,hutIndex+134,RPoint,X,-Z,ringWallAngle);
+	(SMap,buildIndex+134,RPoint,X,-Z,ringWallAngle);
     }
+  if (inletRadius>Geometry::zeroTol)
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+107,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
 
   if (holeRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
-      (SMap,hutIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
+      (SMap,buildIndex+117,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
+
   
   return;
 }
@@ -290,11 +306,11 @@ OpticsHutch::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getSetComposite(SMap,hutIndex,"1 -2 3 (-4:-104) 5 -6 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
   // walls:
-  int HI(hutIndex);
+  int HI(buildIndex);
 
   std::list<int> matList({skinMat,pbMat,skinMat});
 
@@ -302,38 +318,51 @@ OpticsHutch::createObjects(Simulation& System)
     {
       const int mat=matList.front();
       matList.pop_front();
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -2 -3M 13M 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2 -3M 13M 5 -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
 
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 					"1 -2  4M  104M  (-14M:-114M) 5 -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
       
+      //front wall
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,HI,"-1M 11M 33 -34 5 -6 107 ");
+      makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out);
+
       //back wall
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"2M -12M 33 (-34:-134) 5 -6 107 ");
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,HI,"2M -12M 33 (-34:-134) 5 -6 117 ");
       makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out);
       
       // roof
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -32 33 (-34:-134) 6M -16M ");
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,HI,"1 -32 33 (-34:-134) 6M -16M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;
     }
 
+  if (inletRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
+      makeCell("Inlet",System,cellIndex++,0,0.0,Out);
+    }
+
   if (holeRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI," 2 -2M -107 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2 -2M -117 ");
       makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
     }
   
   // floor
-  Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
-				    "1 -2M 3M (-4M:-104M) 15 -5 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
+				    "1M -2M 3M (-4M:-104M) 15 -5 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
   
   // Exclude:
   Out=ModelSupport::getComposite
-    (SMap,hutIndex,HI," 1 -2M 3M (-4M:-104M) 15 -6M ");
+    (SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");
   addOuterSurf(Out);      
 
   return;
@@ -348,26 +377,41 @@ OpticsHutch::createLinks()
 {
   ELog::RegMethod RegA("OpticsHutch","createLinks");
 
-  const double extraT(innerThick+outerThick+pbBackThick);
-  setConnect(0,Origin-Y,-Y);
-  setConnect(1,Origin+Y*(length+extraT),Y);
+  const double extraFront(innerThick+outerThick+pbFrontThick);
+  const double extraBack(innerThick+outerThick+pbBackThick);
+
+  setConnect(0,Origin-Y*(extraFront),-Y);
+  setConnect(1,Origin+Y*(length+extraBack),Y);
   
-  setLinkSurf(0,-SMap.realSurf(hutIndex+1));
-  setLinkSurf(1,SMap.realSurf(hutIndex+32));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+31));
+  setLinkSurf(1,SMap.realSurf(buildIndex+32));
 
   // inner surf
   setConnect(2,Origin+Y*length,-Y);
-  setLinkSurf(2,-SMap.realSurf(hutIndex+2));
+  setLinkSurf(2,-SMap.realSurf(buildIndex+2));
   nameSideIndex(2,"innerBack");
 
   setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*length,-Y);
-  setLinkSurf(7,-SMap.realSurf(hutIndex+2));  
+  setLinkSurf(7,-SMap.realSurf(buildIndex+2));  
   nameSideIndex(7,"exitHole");
 
   setConnect(8,Origin+X*holeXStep+Z*(holeRadius+holeZStep)+Y*length,-Z);
-  setLinkSurf(8,SMap.realSurf(hutIndex+107));  
+  setLinkSurf(8,SMap.realSurf(buildIndex+117));  
   nameSideIndex(8,"exitHoleRadius");
 
+  setConnect(9,Origin+X*inletXStep+Z*inletZStep+Y*length,-Y);
+  setLinkSurf(9,SMap.realSurf(buildIndex+1));  
+  nameSideIndex(9,"inlet");
+
+  setConnect(10,Origin+X*inletXStep+Z*(inletRadius+inletZStep),-Z);
+  setLinkSurf(10,SMap.realSurf(buildIndex+107));  
+  nameSideIndex(10,"inletRadius");
+
+  setConnect(11,Origin,Y);
+  setConnect(12,Origin+Y*length,-Y);
+  
+  setLinkSurf(11,SMap.realSurf(buildIndex+1));
+  setLinkSurf(12,-SMap.realSurf(buildIndex+2));
   
   return;
 }

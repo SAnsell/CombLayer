@@ -187,8 +187,8 @@ setXrayPhysics(flukaPhysics& PC,
       // Interaction threshold : Brem-e+/e- moller scatter photonuclear"
       PC.setTHR("elpothr",MN,"0.0","1e-3","0.0");
 
-      // Turn off multiple scattering
-      PC.setTHR("mulsopt",MN,"0","0","3");
+      // Turn off multiple scattering [not a good idea]
+      //      PC.setTHR("mulsopt",MN,"0","0","3");
 
       // Production Cut for e/e+ photon 
       PC.setEMF("prodcut",MN,"1","1e-3");
