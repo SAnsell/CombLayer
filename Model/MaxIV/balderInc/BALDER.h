@@ -90,6 +90,9 @@ class BALDER : public attachSystem::CopiedComp
   /// Pipe shield on inner of optics hutch
   std::shared_ptr<xraySystem::PipeShield> pShield;
 
+  /// Neutron shield on inner of optics hutch
+  std::shared_ptr<xraySystem::PipeShield> nShield;
+
   /// Connection between hutches
   std::shared_ptr<xraySystem::ConnectZone> connectZone;
 

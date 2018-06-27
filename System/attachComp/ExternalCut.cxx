@@ -215,7 +215,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 void
 ExternalCut::setCutSurf(const std::string& extName,
 			const std::string& ERule)
-/*!
+  /*!
     Set a a surface
     \param extName :: external-cut name
     \param ESurf :: surface rule
@@ -260,7 +260,7 @@ ExternalCut::setCutSurf(const std::string& extName,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("ExternalCut","setFront");
+  ELog::RegMethod RegA("ExternalCut","setCutSurf");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
   cutUnit& A=getUnit(extName);
@@ -275,14 +275,14 @@ ExternalCut::setCutSurf(const std::string& extName,
 
 void
 ExternalCut::setCutDivider(const std::string& extName,
-			const std::string& EDRule)
+			   const std::string& EDRule)
   /*!
     Set the divider
     \param extName :: external-cut name
     \param EDRule :: Divider rule
   */
 {
-  ELog::RegMethod RegA("ExternalCut","setDivider");
+  ELog::RegMethod RegA("ExternalCut","setCutDivider");
   
   cutUnit& A=getUnit(extName);
   if (!A.divider.procString(EDRule))
@@ -294,14 +294,14 @@ ExternalCut::setCutDivider(const std::string& extName,
   
 void
 ExternalCut::setCutDivider(const std::string& extName,
-			const HeadRule& HR)
+			   const HeadRule& HR)
   /*!
     Set the divider
     \param extName :: external-cut name
     \param HR :: Divider surface
    */
 {
-  ELog::RegMethod RegA("ExternalCut","setDivider(HR)");
+  ELog::RegMethod RegA("ExternalCut","setCutDivider(HR)");
   
   cutUnit& A=getUnit(extName);
   A.divider=HR;
@@ -331,7 +331,7 @@ ExternalCut::getComplementStr(const std::string& extName) const
     \return frontRule.cmp with divider
   */
 {
-  ELog::RegMethod RegA("ExternalCut","getcomplementStr");
+  ELog::RegMethod RegA("ExternalCut","getComplementStr");
 
   const cutUnit* CU=findUnit(extName);
   return (CU) ?
@@ -343,6 +343,7 @@ std::string
 ExternalCut::getBridgeStr(const std::string& extName) const
   /*!
     Accessor to bridge rule
+    \param extName :: CutUnit name						
     \return Divider rule
   */
 {
@@ -528,6 +529,7 @@ ExternalCut::interPoint(const std::string& extName,
 			     const Geometry::Vec3D& CAxis) const
   /*!
     Calculate the intersection point on the points
+    \param extName :: cutUnit name
     \param Centre :: Centre point of line
     \param CAxis :: Axis of line
     \return intersection point
@@ -560,7 +562,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","getExpandedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf");
 
   const cutUnit* CU=findUnit(extName);
   if (!CU)

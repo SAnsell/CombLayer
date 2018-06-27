@@ -501,16 +501,21 @@ opticsVariables(FuncDataBase& Control)
   GateGen.generateValve(Control,"BalderGateE",0.0,0);
 
   // pipe shield
-  Control.addVariable("BalderNShield0YStep",1.0);
-  Control.addVariable("BalderNShield0Length",3.0);
-  Control.addVariable("BalderNShield0Width",40.0);
-  Control.addVariable("BalderNShield0Height",40.0);
-  Control.addVariable("BalderNShield0WallThick",0.1);
-  Control.addVariable("BalderNShield0ClearGap",0.3);
-  Control.addVariable("BalderNShield0WallMat","Stainless304");
-  Control.addVariable("BalderNShield0Mat","Poly");
+  for(size_t i=0;i<4;i++)
+    {
+      const std::string NStr="BalderNShield"+std::to_string(i);
 
-  
+      Control.addVariable(NStr+"Length",3.0);
+      Control.addVariable(NStr+"Width",40.0);
+      Control.addVariable(NStr+"Height",40.0);
+      Control.addVariable(NStr+"WallThick",0.1);
+      Control.addVariable(NStr+"ClearGap",0.3);
+      Control.addVariable(NStr+"WallMat","Stainless304");
+      Control.addVariable(NStr+"Mat","Poly");
+    }
+  Control.addVariable("BalderNShield0YStep",1.0);
+  Control.addVariable("BalderNShield1YStep",3.0);
+  Control.addVariable("BalderNShield2YStep",1.0);
   return;
 }
 
@@ -647,7 +652,17 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderPShieldClearGap",1.0);
   Control.addVariable("BalderPShieldWallMat","Stainless304");
   Control.addVariable("BalderPShieldMat","Lead");
-    
+
+  
+  Control.addVariable("BalderNShieldYStep",10.2);
+  Control.addVariable("BalderNShieldLength",7.0);
+  Control.addVariable("BalderNShieldWidth",80.0);
+  Control.addVariable("BalderNShieldHeight",80.0);
+  Control.addVariable("BalderNShieldWallThick",0.5);
+  Control.addVariable("BalderNShieldClearGap",0.2);
+  Control.addVariable("BalderNShieldWallMat","Stainless304");
+  Control.addVariable("BalderNShieldMat","Poly");
+
   balderVar::connectingVariables(Control);
 
 

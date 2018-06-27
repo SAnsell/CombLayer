@@ -109,6 +109,7 @@ BALDER::BALDER(const std::string& KN) :
   opticsBeam(new OpticsBeamline(newName+"")),
   joinPipeB(new constructSystem::LeadPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
+  nShield(new xraySystem::PipeShield(newName+"NShield")),
   connectZone(new ConnectZone(newName+"Connect")),
   joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
   exptHut(new ExperimentalHutch(newName+"Expt"))
@@ -198,7 +199,12 @@ BALDER::build(Simulation& System,
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   pShield->setCutSurf("front",*opticsHut,"innerBack");
   pShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
-  
+
+  // pipe shield goes around joinPipeB:
+  nShield->addInsertCell(joinPipeB->getCell("OuterSpace"));
+  nShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  nShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
+
   System.removeCell(opticsHut->getCell("Void"));
 
   exptHut->addInsertCell(voidCell);

@@ -471,10 +471,15 @@ OpticsBeamline::buildObjects(Simulation& System)
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
   neutShield[0]->createAll(System,*mirrorBox,-1);
 
-  //  neutShield[1]->addInsertCell(driftB->getCell("OuterSpace"));
-  // neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
-  //neutShield[1]->createAll(System,*driftB,-1);
-  
+  neutShield[1]->addInsertCell(driftB->getCell("OuterSpace"));
+  neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
+  neutShield[1]->createAll(System,*driftB,-1);
+
+  neutShield[2]->addInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
+  neutShield[2]->addInsertCell(mirrorBoxB->getCell("OuterSpace",2));
+  neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
+  neutShield[2]->createAll(System,*mirrorBoxB,-2);
+
 
   // build extra register space between beginning of pipe and end of gate
   attachSystem::ContainedSpace::insertPair
