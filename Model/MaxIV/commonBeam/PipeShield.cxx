@@ -268,7 +268,7 @@ PipeShield::createAll(Simulation& System,
     \param sideIndex :: position of linkpoint
   */
 {
-  ELog::RegMethod RegA("PipeShield","createAllNoPopulate");
+  ELog::RegMethod RegA("PipeShield","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
@@ -281,4 +281,4 @@ PipeShield::createAll(Simulation& System,
 }
 
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE xraySystem

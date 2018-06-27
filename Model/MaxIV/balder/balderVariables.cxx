@@ -500,6 +500,17 @@ opticsVariables(FuncDataBase& Control)
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,"BalderGateE",0.0,0);
 
+  // pipe shield
+  Control.addVariable("BalderNShield0YStep",1.0);
+  Control.addVariable("BalderNShield0Length",3.0);
+  Control.addVariable("BalderNShield0Width",40.0);
+  Control.addVariable("BalderNShield0Height",40.0);
+  Control.addVariable("BalderNShield0WallThick",0.1);
+  Control.addVariable("BalderNShield0ClearGap",0.3);
+  Control.addVariable("BalderNShield0WallMat","Stainless304");
+  Control.addVariable("BalderNShield0Mat","Poly");
+
+  
   return;
 }
 
@@ -636,8 +647,7 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderPShieldClearGap",1.0);
   Control.addVariable("BalderPShieldWallMat","Stainless304");
   Control.addVariable("BalderPShieldMat","Lead");
-  
-  
+    
   balderVar::connectingVariables(Control);
 
 

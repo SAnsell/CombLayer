@@ -122,8 +122,8 @@ ExternalCut::isActive(const std::string& extName) const
 const cutUnit*
 ExternalCut::findUnit(const std::string& extName) const
   /*!
-    Determine if we have unit
-    \param extName :: Cut naem
+    Determine if we have unit by name
+    \param extName :: Cut name
     \return Ptr / 0
    */
 {
@@ -134,8 +134,8 @@ ExternalCut::findUnit(const std::string& extName) const
 cutUnit&
 ExternalCut::getUnit(const std::string& extName)
   /*!
-    Creates or finds a cutUnit
-    \param extName :: Cut naem
+    Creates or finds a cutUnit [throw on error]
+    \param extName :: Cut name
     \return cutUnit
   */
 {
@@ -155,10 +155,10 @@ ExternalCut::getUnit(const std::string& extName)
   
 void
 ExternalCut::setCutSurf(const std::string& extName,
-		     const ExternalCut& ESurf,
-		     const std::string& otherName)
+			const ExternalCut& ESurf,
+			const std::string& otherName)
   /*!
-    Set a a surface
+    Set a a surface on an existing/new cutUnit
     \param extName :: external-cut name
     \param ESurf :: object to copy
     \param outerName :: external-cut name
@@ -178,8 +178,8 @@ ExternalCut::setCutSurf(const std::string& extName,
 
 void
 ExternalCut::setCutSurf(const std::string& extName,
-		     const int ESurf)
-  /*!
+			const int ESurf)
+/*!
     Set a a surface
     \param extName :: external-cut name
     \param ESurf :: surface number [signed]
@@ -196,7 +196,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 
 void
 ExternalCut::setCutSurf(const std::string& extName,
-		     const HeadRule& ESurfHR)
+			const HeadRule& ESurfHR)
   /*!
     Set a a surface
     \param extName :: external-cut name
@@ -214,7 +214,7 @@ ExternalCut::setCutSurf(const std::string& extName,
 
 void
 ExternalCut::setCutSurf(const std::string& extName,
-		     const std::string& ERule)
+			const std::string& ERule)
 /*!
     Set a a surface
     \param extName :: external-cut name
@@ -554,7 +554,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
     Support function to calculate the shifted surface based
     on surface type and form
     \parma SMap :: local surface register
-    \param HR :: HeadRule to extract plane surf
+    \param extName :: cut unit name
     \param index :: offset index
     \param expandCentre :: Centre for expansion
     \param dExtra :: displacement extra [cm]

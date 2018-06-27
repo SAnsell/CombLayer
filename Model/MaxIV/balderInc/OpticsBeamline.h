@@ -181,6 +181,9 @@ class OpticsBeamline :
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValve> gateE;
 
+  /// Last gate valve:
+  std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

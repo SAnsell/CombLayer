@@ -641,7 +641,7 @@ VacuumPipe::createLinks()
 {
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
-  //stufff for intersection
+  //stuff for intersection
 
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
@@ -673,7 +673,9 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
       FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
       FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
-      
+
+      FixedComp::nameSideIndex(7,"pipeOuterBase");
+      FixedComp::nameSideIndex(8,"pipeOuterTop");
     }
   else // rectangular pipe
     {
@@ -690,7 +692,7 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(8,Origin+Z*(height/2.0+feThick),Z);
       FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+15));
       FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+16));
-      }
+    }
   
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
@@ -712,6 +714,10 @@ VacuumPipe::createLinks()
       FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
       FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
     }
+
+  FixedComp::nameSideIndex(0,"front");
+  FixedComp::nameSideIndex(1,"back");
+  FixedComp::nameSideIndex(6,"midPoint");
 
   return;
 }

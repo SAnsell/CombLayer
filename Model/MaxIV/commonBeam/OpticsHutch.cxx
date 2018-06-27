@@ -255,6 +255,7 @@ OpticsHutch::createSurfaces()
 			       Origin+Z*(height+innerThick+pbRoofThick),Z);
 
   const double steelThick(innerThick+outerThick);
+  
   // OuterWall
   ModelSupport::buildPlane(SMap,buildIndex+31,
 			   Origin-Y*(steelThick+pbFrontThick),Y);
@@ -327,7 +328,7 @@ OpticsHutch::createObjects(Simulation& System)
       
       //front wall
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"-1M 11M 33 -34 5 -6 107 ");
+	(SMap,buildIndex,HI,"-1M 11M 33 -34 5 -6M 107 ");
       makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out);
 
       //back wall
@@ -337,7 +338,7 @@ OpticsHutch::createObjects(Simulation& System)
       
       // roof
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"1 -32 33 (-34:-134) 6M -16M ");
+	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;

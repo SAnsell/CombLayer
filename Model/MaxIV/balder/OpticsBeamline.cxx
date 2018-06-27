@@ -72,6 +72,7 @@
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "ExternalCut.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -81,6 +82,7 @@
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PortTube.h"
+#include "PipeShield.h"
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
@@ -144,7 +146,14 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
   shutterPipe(new constructSystem::CrossPipe(newName+"ShutterPipe")),
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
-  gateE(new constructSystem::GateValve(newName+"GateE"))
+  gateE(new constructSystem::GateValve(newName+"GateE")),
+  neutShield({
+      std::make_shared<xraySystem::PipeShield>(newName+"NShield0"),
+      std::make_shared<xraySystem::PipeShield>(newName+"NShield1"),
+      std::make_shared<xraySystem::PipeShield>(newName+"NShield2"),
+      std::make_shared<xraySystem::PipeShield>(newName+"NShield3")
+	})
+  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -154,10 +163,11 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // can these be in the initializer??
   for(const auto& FM : filters)
     OR.addObject(FM);
   for(const auto& FM : viewMount)
+    OR.addObject(FM);
+  for(const auto& FM : neutShield)
     OR.addObject(FM);
   
   OR.addObject(pipeInit);
@@ -202,8 +212,10 @@ void
 OpticsBeamline::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
-   */
+    \param Control :: Database of variables
+  */
 {
+  ELog::RegMethod RegA("OpticsBeamline","populate");
   FixedOffset::populate(Control);
   return;
 }
@@ -296,6 +308,10 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirrorBox->registerSpaceCut(1,2);
   mirrorBox->setFront(*gateA,2);
   mirrorBox->createAll(System,*gateA,2);
+
+  mirrorBox->splitObject(System,-11,mirrorBox->getCell("OuterSpace"));
+  mirrorBox->splitObject(System,12,mirrorBox->getCell("OuterSpace"));
+
 
   mirror->addInsertCell(mirrorBox->getCell("Void"));
   mirror->createAll(System,*mirrorBox,0);
@@ -450,8 +466,22 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateE->registerSpaceCut(1,2);
   gateE->createAll(System,*pipeG,2);
 
+  neutShield[0]->addInsertCell(mirrorBox->getCell("FFlangeVoid"));
+  neutShield[0]->addInsertCell(mirrorBox->getCell("OuterSpace",1));
+  neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
+  neutShield[0]->createAll(System,*mirrorBox,-1);
+
+  //  neutShield[1]->addInsertCell(driftB->getCell("OuterSpace"));
+  // neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
+  //neutShield[1]->createAll(System,*driftB,-1);
+  
+
+  // build extra register space between beginning of pipe and end of gate
   attachSystem::ContainedSpace::insertPair
     (System,ContainedComp::getInsertCells(),*pipeInit,1,*gateE,2);
+
+  
+
   
   lastComp=gateE;  
 

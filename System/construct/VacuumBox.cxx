@@ -81,7 +81,7 @@ namespace constructSystem
 
 VacuumBox::VacuumBox(const std::string& Key,
 		       const bool flag) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,10),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
@@ -345,10 +345,10 @@ VacuumBox::createObjects(Simulation& System)
 
   // PortVoids
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
+  CellMap::makeCell("FPortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+  CellMap::makeCell("BPortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
 
   // Main metal
   Out=ModelSupport::getComposite
@@ -371,10 +371,10 @@ VacuumBox::createObjects(Simulation& System)
 
   // Flange Voids
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -11 117 -127 ");
-  CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
+  CellMap::makeCell("FFlangeVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
-  CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
+  CellMap::makeCell("BFlangeVoid",System,cellIndex++,0,0.0,Out);
   
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
@@ -404,6 +404,7 @@ VacuumBox::createLinks()
   
   FrontBackCut::createFrontLinks(*this,ACentre,Y); 
   FrontBackCut::createBackLinks(*this,BCentre,Y);  
+
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
@@ -413,7 +414,22 @@ VacuumBox::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+
+
+  FixedComp::setConnect(7,ACentre+Z*(portATubeRadius+portAWallThick),Z);
+  FixedComp::setConnect(8,ACentre+Z*(portBTubeRadius+portBWallThick),Z);
+
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
   
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+  FixedComp::nameSideIndex(7,"frontPortWall");
+  FixedComp::nameSideIndex(8,"backPortWall");
+
+
   return;
 }
 
