@@ -346,30 +346,30 @@ FrontEndBuilding::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin+X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin-X*(widthRight),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin+X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin-X*(widthRight+wallThick),X);
 
   // shield wall 1
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldWall1Length),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin+X*(shieldWall1Offset),X);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(shieldWall1Offset),X);
   ModelSupport::buildPlane(SMap,surfIndex+104,
-  			   Origin+X*(shieldWall1Offset+shieldWall1Thick),X);
+  			   Origin-X*(shieldWall1Offset+shieldWall1Thick),X);
 
   // shield wall 2
   ModelSupport::buildPlane(SMap,surfIndex+201,Origin+Y*(shieldWall2Offset),Y);
   ModelSupport::buildPlane(SMap,surfIndex+202,Origin+Y*(shieldWall2Offset+shieldWall2Thick),Y);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+204,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+104),
-				  shieldWall2Length);
+				  -shieldWall2Length);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+213,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+204),
-				  -shieldWall2Thick);
+				  shieldWall2Thick);
 
   // Drop Hatch
   ModelSupport::buildPlane(SMap,surfIndex+301,
@@ -379,7 +379,7 @@ FrontEndBuilding::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+303,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+13),
-				  -dropHatchWidth);
+				  dropHatchWidth);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+311,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+301),
@@ -391,15 +391,15 @@ FrontEndBuilding::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+313,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+303),
-				  -dropHatchWallThick);
+				  dropHatchWallThick);
 
   // shield wall 3
   ModelSupport::buildShiftedPlane(SMap,surfIndex+402,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+2),
 				  -shieldWall3Length);
-  ModelSupport::buildPlane(SMap,surfIndex+403,Origin+X*(shieldWall3Offset),X);
+  ModelSupport::buildPlane(SMap,surfIndex+403,Origin-X*(shieldWall3Offset),X);
   ModelSupport::buildPlane(SMap,surfIndex+404,
-			   Origin+X*(shieldWall3Offset+shieldWall3Thick),X);
+			   Origin-X*(shieldWall3Offset+shieldWall3Thick),X);
 
   return;
 }
@@ -427,70 +427,70 @@ FrontEndBuilding::createObjects(Simulation& System,
   const std::string airTB(FC.getLinkString(floorIndexTop) +
 			  FC.getLinkString(roofIndexLow));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -103 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -3 103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 103 -104 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -103 104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
   setCell("ShieldingWall1",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 103 -104 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 -103 104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 201 -202 104 -204 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 201 -202 -104 204 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -102 213 -204 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -102 -213 204 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 213 -204 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 -213 204 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 201 -202 204 -4 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 201 -202 -204 4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -201 104 -4 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -201 -104 4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -2 204 -4 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -2 -204 4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -402 104 -213 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 202 -402 -104 213 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 404 -213 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 -404 213 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 403 -404 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 -403 404 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+airTB));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 -403 104 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 402 -2 403 -104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+airTB));
 
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 ")+airTB;
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -3 4 ")+airTB;
 
   HeadRule HR;
   HR.procString(Out);
   HR.makeComplement();
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -13 14 ") +
     FC.getLinkString(-floorIndexLow) + FC.getLinkString(-roofIndexTop);
   addOuterSurf(Out);
 
   // gap in the wall for the dropHatch
-  Out += ModelSupport::getComposite(SMap,surfIndex," (-301:302:3:") +
+  Out += ModelSupport::getComposite(SMap,surfIndex," (-301:302:-3:") +
     FC.getLinkString(-floorIndexTop)+":"+FC.getLinkString(-roofIndexLow)+")";
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 301 -302 303 -3 ")+airTB;
+  Out=ModelSupport::getComposite(SMap,surfIndex," 301 -302 -303 3 ")+airTB;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
   HR.procString(Out);
   HR.makeComplement();
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 311 -312 313 -13 ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex," 311 -312 -313 13 ") +
   FC.getLinkString(-floorIndexLow) + FC.getLinkString(-roofIndexTop);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
 
@@ -557,14 +557,14 @@ FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setConnect(1,Origin+Y*(length+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
 
-  FixedComp::setConnect(2,Origin-
+  FixedComp::setConnect(2,Origin+
 			X*(widthLeft+wallThick+dropHatchWidth+dropHatchWallThick)+
-			Y*((length+wallThick)/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+313));
-
-  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick)+
 			Y*((length+wallThick)/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
+  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+313));
+
+  FixedComp::setConnect(3,Origin-X*(widthRight+wallThick)+
+			Y*((length+wallThick)/2.0),-X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+14));
 
   FixedComp::setConnect(4,Origin+Z*FC.getLinkPt(floorIndexLow).Z()+
 			Y*((length+wallThick)/2.0),-Z);
@@ -575,18 +575,18 @@ FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkSurf(5,FC.getLinkSurf(roofIndexTop));
 
   // ShieldingWall1
-  FixedComp::setConnect(6,Origin+X*(shieldWall1Offset+shieldWall1Thick/2.0),-Y);
+  FixedComp::setConnect(6,Origin-X*(shieldWall1Offset+shieldWall1Thick/2.0),-Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(7,Origin+X*(shieldWall1Offset+shieldWall1Thick/2.0)+
+  FixedComp::setConnect(7,Origin-X*(shieldWall1Offset+shieldWall1Thick/2.0)+
    			Y*(shieldWall1Length),Y);
   FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+102));
 
-  FixedComp::setConnect(8,Origin+X*(shieldWall1Offset)+
+  FixedComp::setConnect(8,Origin-X*(shieldWall1Offset)+
   			Y*(shieldWall1Length/2.0),-X);
   FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+103));
 
-  FixedComp::setConnect(9,Origin+X*(shieldWall1Offset+shieldWall1Thick)+
+  FixedComp::setConnect(9,Origin-X*(shieldWall1Offset+shieldWall1Thick)+
   			Y*(shieldWall1Length/2.0),X);
   FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+104));
 
@@ -599,7 +599,6 @@ FrontEndBuilding::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkSurf(11,FC.getLinkSurf(roofIndexLow));
 
   // size_t N = NConnect();
-  // //  N = 8;
   // for (size_t i=0; i<=N; i++)
   //   {
   //     ELog::EM << keyName << ": " << i << "\t" << getLinkPt(i) << "\t" << getLinkString(i) << ELog::endDiag;

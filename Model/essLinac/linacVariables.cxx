@@ -356,7 +356,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("FEBGapBDist",      "FEBGapADist");
   Control.addVariable("FEBGapABDist", 635.03);
 
-  Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthRight");
+  Control.addParse<double>("FEBShieldWall1Offset", "LinacWidthLeft");
   Control.addVariable("FEBShieldWall1Thick", 100.0);
   Control.addVariable("FEBShieldWall1Length", 1678.0);
 
@@ -364,7 +364,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("FEBShieldWall2Thick", "FEBShieldWall1Thick");
   Control.addVariable("FEBShieldWall2Length", 800.0);
 
-  Control.addVariable("FEBShieldWall3Offset", 685.0);
+  Control.addVariable("FEBShieldWall3Offset", 715.0);
   Control.addVariable("FEBShieldWall3Thick",  100.0);
   Control.addVariable("FEBShieldWall3Length", 600.0);
 
