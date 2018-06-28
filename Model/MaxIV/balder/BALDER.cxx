@@ -167,7 +167,7 @@ BALDER::build(Simulation& System,
 
   opticsHut->addInsertCell(voidCell);
   opticsHut->createAll(System,*frontCave,2);
-
+  
   joinPipe->addInsertCell(frontCave->getCell("Void"));
   joinPipe->addInsertCell(frontCave->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));

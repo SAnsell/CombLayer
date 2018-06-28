@@ -610,6 +610,7 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsPbBackThick",10.0);
   Control.addVariable("BalderOpticsOuterThick",0.3);
   Control.addVariable("BalderOpticsFloorThick",50.0);
+  Control.addVariable("BalderOpticsInnerOutVoid",10.0);
 
   Control.addVariable("BalderOpticsSkinMat","Stainless304");
   Control.addVariable("BalderOpticsPbMat","Lead");

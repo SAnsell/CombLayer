@@ -176,6 +176,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
 
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+  innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
@@ -225,7 +226,11 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+
+  if (innerOutVoid>Geometry::zeroTol)
+    ModelSupport::buildPlane
+      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
 
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
@@ -307,8 +312,18 @@ OpticsHutch::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  if (innerOutVoid>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
+      makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 (-4:-104) 5 -6 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out);
+    }
+  else
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out);
+    }
 
   // walls:
   int HI(buildIndex);
