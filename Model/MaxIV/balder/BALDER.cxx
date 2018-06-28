@@ -110,6 +110,7 @@ BALDER::BALDER(const std::string& KN) :
   joinPipeB(new constructSystem::LeadPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
   nShield(new xraySystem::PipeShield(newName+"NShield")),
+  outerShield(new xraySystem::PipeShield(newName+"OuterShield")),
   connectZone(new ConnectZone(newName+"Connect")),
   joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
   exptHut(new ExperimentalHutch(newName+"Expt"))
@@ -129,6 +130,8 @@ BALDER::BALDER(const std::string& KN) :
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
   OR.addObject(pShield);
+  OR.addObject(nShield);
+  OR.addObject(outerShield);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut);
 }
@@ -207,6 +210,7 @@ BALDER::build(Simulation& System,
 
   System.removeCell(opticsHut->getCell("Void"));
 
+
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*frontCave,2);
 
@@ -221,7 +225,15 @@ BALDER::build(Simulation& System,
   joinPipeB->registerSpaceIsolation(0,2);
   joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
   joinPipeB->insertObjects(System);
-  
+
+      // pipe shield goes around joinPipeB:
+
+  outerShield->addInsertCell(joinPipeB->getCell("OuterSpace",1));
+  outerShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  outerShield->setCutSurf("front",*opticsHut,"back");
+  outerShield->createAll(System,*opticsHut,
+			 opticsHut->getSideIndex("-exitHole"));
+
   joinPipeC->addInsertCell(connectZone->getCell("OuterVoid"));
   joinPipeC->addInsertCell(exptHut->getCell("Void"));
   joinPipeC->addInsertCell(exptHut->getCell("EnteranceHole"));

@@ -65,7 +65,7 @@ namespace attachSystem
 FixedComp::FixedComp(const std::string& KN,const size_t NL) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
-  cellIndex(buildIndex+1),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
  /*!
@@ -79,7 +79,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& O) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
-  cellIndex(buildIndex+1),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),Origin(O),primeAxis(0),LU(NL)
   /*!
@@ -97,7 +97,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& zV) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
-  cellIndex(buildIndex+1),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
   Origin(O),primeAxis(0),LU(NL)
   /*!

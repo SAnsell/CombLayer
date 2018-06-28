@@ -177,7 +177,7 @@ ConnectZone::createOuterVoid(Simulation& System)
 
   if (outerRadius>Geometry::zeroTol)
     {
-       std::string Out;
+      std::string Out;
       // Trick - make cell and THEN add front/back cell
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");

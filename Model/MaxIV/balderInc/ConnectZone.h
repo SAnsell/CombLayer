@@ -67,9 +67,7 @@ class ConnectZone :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut,
-  public attachSystem::CellMap
-      
-
+  public attachSystem::CellMap      
 {
  private:
 

@@ -531,7 +531,7 @@ connectingVariables(FuncDataBase& Control)
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
 
-  Control.addVariable(baseName+"OuterRadius",30.0);
+  Control.addVariable(baseName+"OuterRadius",60.0);
   
   setVariable::BellowGenerator BellowGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
@@ -545,7 +545,7 @@ connectingVariables(FuncDataBase& Control)
 
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",0,172.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",0,152.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF40>();
@@ -642,7 +642,7 @@ BALDERvariables(FuncDataBase& Control)
 
   LeadPipeGen.setCF<setVariable::CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,34.0);
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,54.0);
 
 
   Control.addVariable("BalderPShieldLength",10.0);
@@ -662,6 +662,15 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderNShieldClearGap",0.2);
   Control.addVariable("BalderNShieldWallMat","Stainless304");
   Control.addVariable("BalderNShieldMat","Poly");
+
+  Control.addVariable("BalderOuterShieldYStep",10.2);
+  Control.addVariable("BalderOuterShieldLength",20.0);
+  Control.addVariable("BalderOuterShieldWidth",80.0);
+  Control.addVariable("BalderOuterShieldHeight",80.0);
+  Control.addVariable("BalderOuterShieldWallThick",0.5);
+  Control.addVariable("BalderOuterShieldClearGap",0.2);
+  Control.addVariable("BalderOuterShieldWallMat","Stainless304");
+  Control.addVariable("BalderOuterShieldMat","Poly");
 
   balderVar::connectingVariables(Control);
 
