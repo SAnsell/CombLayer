@@ -66,7 +66,7 @@ getActiveTally(SimFLUKA& Sim,const std::string& tName)
   /*!
     Get a set of points to matching tallys
     \param Simulation :: Si
-    \param tName :: tally name [or wild card componenet]
+    \param tName :: tally name [or wild card component]
     \return Points to tallys
    */
 {

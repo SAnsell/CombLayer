@@ -190,6 +190,7 @@ flukaTally::setDoseType(const std::string& P,
 			const std::string& D)
   /*!
     Set the auxParticle [can be a range?]
+    \param P :: Particle type
     \param D :: set dose type
   */
 {
