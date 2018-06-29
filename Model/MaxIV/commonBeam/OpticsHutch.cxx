@@ -486,6 +486,8 @@ OpticsHutch::createChicane(Simulation& System)
       // set surfaces:
       PItem->setCutSurf("innerWall",*this,"innerLeftWall");
       PItem->setCutSurf("outerWall",*this,"leftWall");
+
+      PItem->registerSpaceCut(8,9);
       PItem->createAll(System,*this,getSideIndex("leftWall"));
       PChicane.push_back(PItem);
     }

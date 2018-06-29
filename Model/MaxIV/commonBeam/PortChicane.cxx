@@ -73,6 +73,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "SurInter.h"
 #include "PortChicane.h"
 
 
@@ -81,7 +82,7 @@ namespace xraySystem
 
 PortChicane::PortChicane(const std::string& Key) :
   attachSystem::ContainedSpace(),
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -134,7 +135,9 @@ PortChicane::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-
+  
+  
+  
   return;
 }
 
@@ -193,16 +196,6 @@ PortChicane::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=getRuleStr("innerWall");
   const std::string outerStr=getRuleStr("outerWall");
-
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+11)<<ELog::endDiag;
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+21)<<ELog::endDiag;
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+31)<<ELog::endDiag;
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+41)<<ELog::endDiag;
-
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+12)<<ELog::endDiag;
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+22)<<ELog::endDiag;
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+32)<<ELog::endDiag;
-  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+42)<<ELog::endDiag;
 	
   // inner clearance gap
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -6 ");
@@ -250,10 +243,48 @@ PortChicane::createLinks()
 {
   ELog::RegMethod RegA("PortChicane","createLinks");
 
-  // FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  // FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  // FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
+  // get front/back origin
+  Geometry::Vec3D frontPt=
+    SurInter::getLinePoint(Origin,Y,SMap.realSurfPtr(buildIndex+41),Origin);  
+  Geometry::Vec3D backPt=
+    SurInter::getLinePoint(Origin,Y,SMap.realSurfPtr(buildIndex+42),Origin);
+  ELog::EM<<"Front == "<<frontPt<<ELog::endDiag;
+  ELog::EM<<"Back == "<<backPt<<ELog::endDiag;
+  
+  FixedComp::setConnect(0,frontPt,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
+
+  FixedComp::setConnect(0,backPt,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+43));
+
+  // outer cross
+  FixedComp::setConnect(2,frontPt-X*(wallThick+width/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+
+  FixedComp::setConnect(3,frontPt+X*(wallThick+width/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+
+  FixedComp::setConnect(4,frontPt-Z*(baseThick+height/2.0),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+
+  FixedComp::setConnect(5,frontPt+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+  // inner corners
+  FixedComp::setConnect(7,backPt-X*(wallThick+width/2.0),-X);
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+13));
+
+  FixedComp::setConnect(8,backPt+X*(wallThick+width/2.0),X);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+14));
+  
+  FixedComp::setConnect(9,backPt-Z*(baseThick+height/2.0),-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+15));
+
+  FixedComp::setConnect(10,backPt+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+6));
+  
+  nameSideIndex(8,"innerLeft");
+  nameSideIndex(9,"innerRight");
   
   return;
 }

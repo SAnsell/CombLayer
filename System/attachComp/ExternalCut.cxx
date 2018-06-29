@@ -390,6 +390,7 @@ ExternalCut::createLinks(const std::string& extName,
 			 const Geometry::Vec3D& YAxis) const
   /*!
     Generate the front/back links if active
+    \param extName :: Cut Unit item
     \param FC :: Fixed component [most likely this]
     \param linkIndex :: link point to build
     \param Org :: Origin
