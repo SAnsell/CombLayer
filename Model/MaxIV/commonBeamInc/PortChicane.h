@@ -44,11 +44,19 @@ class PortChicane : public attachSystem::ContainedSpace,
 
   double height;                 ///< height of system 
   double width;                  ///< widht of syste
-  double baseThick;              ///< thickness of base
   double clearGap;               ///< clearance gap
-  double wallThick;              ///< wall thickness
-  
-  int wallMat;                   ///< wall material
+
+  double innerSkin;              ///< skin thickness
+  double innerPlate;             ///< plate thickness
+
+  double outerSkin;              ///< skin thickness
+  double outerPlate;             ///< plate thickness
+
+  double baseThick;              ///< thickness of base
+  double wallThick;              ///< thickness of base
+
+  int plateMat;                   ///< plate material
+  int wallMat;                    ///< wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

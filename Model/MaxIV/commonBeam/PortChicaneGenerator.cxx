@@ -59,9 +59,9 @@ namespace setVariable
 {
 
 PortChicaneGenerator::PortChicaneGenerator() :
-  width(60.0),height(45.0),
-  clearGap(8.0),wallThick(0.8),
-  mat("Stainless304")
+  width(60.0),height(45.0),clearGap(8.0),
+  skinThick(0.3),plateThick(1.2),wallThick(0.8),
+  plateMat("Lead"),wallMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -91,6 +91,23 @@ PortChicaneGenerator::setSize(const double G,
 }
 
 void
+PortChicaneGenerator::setPlate(const double PT,
+			       const double ST,
+			       const std::string& PM)
+  /*!
+    Set plate size
+    \param PT :: Plate thick
+    \param ST :: Skin thick
+    \param PM :: Material for plate
+   */
+{
+  plateThick=PT;
+  skinThick=ST;
+  plateMat=PM;
+  return;
+}
+
+void
 PortChicaneGenerator::setWall(const double WT,const std::string& WMat)
 /*!
     Set wall paramaters
@@ -99,7 +116,7 @@ PortChicaneGenerator::setWall(const double WT,const std::string& WMat)
    */
 {
   wallThick=WT;
-  mat=WMat;
+  wallMat=WMat;
   return;
 }
 				  
@@ -124,11 +141,19 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"ClearGap",clearGap);
+  
+  Control.addVariable(keyName+"InnerSkin",skinThick);
+  Control.addVariable(keyName+"InnerPlate",plateThick);
+
+  Control.addVariable(keyName+"OuterSkin",skinThick);
+  Control.addVariable(keyName+"OuterPlate",plateThick);
+  
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"BaseThick",wallThick);
-  Control.addVariable(keyName+"ClearGap",clearGap);
 
-  Control.addVariable(keyName+"WallMat",mat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"PlateMat",plateMat);
 
        
   return;

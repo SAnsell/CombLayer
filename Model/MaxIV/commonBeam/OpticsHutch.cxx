@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program\.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,8 +70,12 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
+#include "PortChicane.h"
 
 #include "OpticsHutch.h"
 
@@ -79,7 +83,7 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,14),
+  attachSystem::FixedOffset(Key,16),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -190,6 +194,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
+  
   return;
 }
 
@@ -395,6 +400,7 @@ OpticsHutch::createLinks()
 
   const double extraFront(innerThick+outerThick+pbFrontThick);
   const double extraBack(innerThick+outerThick+pbBackThick);
+  const double extraWall(innerThick+outerThick+pbWallThick);
 
   setConnect(0,Origin-Y*(extraFront),-Y);
   setConnect(1,Origin+Y*(length+extraBack),Y);
@@ -406,6 +412,15 @@ OpticsHutch::createLinks()
   setConnect(2,Origin+Y*length,-Y);
   setLinkSurf(2,-SMap.realSurf(buildIndex+2));
   nameSideIndex(2,"innerBack");
+
+  // outer surf
+  setConnect(3,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
+  setLinkSurf(3,-SMap.realSurf(buildIndex+33));
+  nameSideIndex(3,"leftWall");
+  // outer surf
+  setConnect(4,Origin-X*(extraWall+ringWidth)+Y*(length/2.0),X);
+  setLinkSurf(4,SMap.realSurf(buildIndex+34));
+  nameSideIndex(4,"rightWall");
 
   setConnect(7,Origin+X*holeXStep+Z*holeZStep+Y*length,-Y);
   setLinkSurf(7,-SMap.realSurf(buildIndex+2));  
@@ -428,7 +443,52 @@ OpticsHutch::createLinks()
   
   setLinkSurf(11,SMap.realSurf(buildIndex+1));
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
+
+  // inner surf
+  setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
+  setLinkSurf(13,SMap.realSurf(buildIndex+3));
+  nameSideIndex(13,"innerLeftWall");
+
+  setConnect(14,Origin-X*ringWidth+Y*(length/2.0),-X);
+  setLinkSurf(14,-SMap.realSurf(buildIndex+4));
+  nameSideIndex(14,"innerRightWall");
+
+  return;
+}
+
+void
+OpticsHutch::createChicane(Simulation& System)
+  /*!
+    Generic function to create chicanes
+    \param System :: Simulation 
+  */
+{
+  ELog::RegMethod Rega("OpticsHutch","createChicane");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const FuncDataBase& Control=System.getDataBase();
   
+  const size_t NChicane=
+    Control.EvalDefVar<size_t>(keyName+"NChicane",0);
+
+  for(size_t i=0;i<NChicane;i++)
+    {
+      const std::string NStr(std::to_string(i));
+      std::shared_ptr<PortChicane> PItem=
+	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
+      OR.addObject(PItem);
+      PItem->addInsertCell(getCell("WallVoid"));
+      PItem->addInsertCell(getCell("InnerWall",0));
+      PItem->addInsertCell(getCell("LeadWall",0));
+      PItem->addInsertCell(getCell("OuterWall",0));
+      PItem->addInsertCell(ContainedComp::getInsertCells());
+      // set surfaces:
+      PItem->setCutSurf("innerWall",*this,"innerLeftWall");
+      PItem->setCutSurf("outerWall",*this,"leftWall");
+      PItem->createAll(System,*this,getSideIndex("leftWall"));
+      PChicane.push_back(PItem);
+    }
   return;
 }
 
@@ -452,6 +512,7 @@ OpticsHutch::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
+  createChicane(System);
   insertObjects(System);   
   
   return;

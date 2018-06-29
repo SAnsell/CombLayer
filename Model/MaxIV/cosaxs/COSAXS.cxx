@@ -70,9 +70,11 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
+#include "ExternalCut.h"
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -158,11 +160,12 @@ COSAXS::build(Simulation& System,
 
   joinPipe->addInsertCell(frontCave->getCell("Void"));
   joinPipe->addInsertCell(frontCave->getCell("FrontWallHole"));
+  joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
   
   joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipe->setFront(*frontBeam,2);
-  joinPipe->setSpaceLinkCopy(0,*opticsHut,1);
+  joinPipe->setSpaceLinkCopy(0,*opticsHut,-12);
   joinPipe->registerSpaceCut(0,2);
   joinPipe->createAll(System,*frontBeam,2);
 

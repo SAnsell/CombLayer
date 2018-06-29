@@ -26,7 +26,7 @@ class Simulation;
 
 namespace xraySystem
 {
-  
+  class PortChicane;
 /*!
   \class OpticsHutch
   \version 1.0
@@ -73,12 +73,16 @@ class OpticsHutch :
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls 
   int floorMat;               ///< Floor layer
+
+  /// Chicanes 
+  std::vector<std::shared_ptr<PortChicane>> PChicane;  
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  void createChicane(Simulation&);
 
  public:
 

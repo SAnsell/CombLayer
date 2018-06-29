@@ -65,6 +65,7 @@
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "JawFlangeGenerator.h"
+#include "PortChicaneGenerator.h"
 
 namespace setVariable
 {
@@ -73,38 +74,43 @@ namespace cosaxsVar
 {
   
 void
-frontCaveVariables(FuncDataBase& Control,const double YStep)
+frontCaveVariables(FuncDataBase& Control,
+		   const std::string& preName,
+		   const double YStep)
   /*!
     Variable for the main ring front shielding
     \param Control :: Database
+    \param preName :: Name to describe system
     \param YStep :: offset
   */
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","frontCaveVariables");
 
-  Control.addVariable("CosaxsFrontEndWallYStep",YStep);
-  Control.addVariable("CosaxsFrontEndFrontWallThick",160.0);
   
-  Control.addVariable("CosaxsFrontEndLength",2100.0);
-  Control.addVariable("CosaxsFrontEndRingGap",75.0);
-  Control.addVariable("CosaxsFrontEndRingRadius",4000.0);
-  Control.addVariable("CosaxsFrontEndRingThick",80.0);
-
-  Control.addVariable("CosaxsFrontEndOuterGap",75.0);
-  Control.addVariable("CosaxsFrontEndOuterThick",80.0);
-
-  Control.addVariable("CosaxsFrontEndFloorDepth",75.0);
-  Control.addVariable("CosaxsFrontEndFloorThick",80.0);
-
-  Control.addVariable("CosaxsFrontEndRoofHeight",75.0);
-  Control.addVariable("CosaxsFrontEndRoofThick",80.0);
-
-  Control.addVariable("CosaxsFrontEndFrontHoleRadius",7.0);
+  Control.addVariable(preName+"FrontEndWallYStep",YStep);
+  Control.addVariable(preName+"FrontEndFrontWallThick",160.0);
   
-  Control.addVariable("CosaxsFrontEndFrontWallMat","Concrete");
-  Control.addVariable("CosaxsFrontEndWallMat","Concrete");
-  Control.addVariable("CosaxsFrontEndFloorMat","Concrete");
-  Control.addVariable("CosaxsFrontEndRoofMat","Concrete");
+  Control.addVariable(preName+"FrontEndLength",2100.0);
+  Control.addVariable(preName+"FrontEndRingGap",75.0);
+  Control.addVariable(preName+"FrontEndRingRadius",4000.0);
+  Control.addVariable(preName+"FrontEndRingThick",80.0);
+
+  Control.addVariable(preName+"FrontEndOuterGap",75.0);
+  Control.addVariable(preName+"FrontEndOuterThick",80.0);
+
+  Control.addVariable(preName+"FrontEndFloorDepth",75.0);
+  Control.addVariable(preName+"FrontEndFloorThick",80.0);
+
+  Control.addVariable(preName+"FrontEndRoofHeight",75.0);
+  Control.addVariable(preName+"FrontEndRoofThick",80.0);
+
+  Control.addVariable(preName+"FrontEndFrontHoleRadius",7.0);
+
+  
+  Control.addVariable(preName+"FrontEndFrontWallMat","Concrete");
+  Control.addVariable(preName+"FrontEndWallMat","Concrete");
+  Control.addVariable(preName+"FrontEndFloorMat","Concrete");
+  Control.addVariable(preName+"FrontEndRoofMat","Concrete");
   return;
 }
   
@@ -119,16 +125,18 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","frontEndVariables");
 
+  setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
-  
-  PipeGen.setWindow(-2.0,0.0);   // no window
 
+    PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setMat("Stainless304");
+  
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF120>();
+  VBoxGen.setCF<CF40>();
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",
@@ -149,77 +157,116 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"WigglerVoidMat",0);
   Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
 
-  PipeGen.setCF<CF120>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,700.0);
-  
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setWallThick(1.0);
-  PTubeGen.setCF<CF120>();
-  PTubeGen.setPortLength(5.0,5.0); // La/Lb
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",
-		       0.0,30.0,200.0);
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
   Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-
-  PipeGen.setCF<CF120>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,400.0);
-
   // collimator block
+
+  CollGen.setFrontGap(2.62,1.86);  //1033.8
+  CollGen.setBackGap(1.54,1.42);
+  CollGen.setMinSize(29.0,1.2,1.24);
   CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
-  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
+
+  
+  PipeGen.setCF<CF100>();
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
 
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutDiskLength",1.0);
-  Control.addVariable(frontKey+"ECutDiskRadius",6.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
-  
-  
-  
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",
-		       0.0,30.0,200.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
+
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
   Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
 
+  CollGen.setFrontGap(2.13,2.146);
+  CollGen.setBackGap(0.756,0.432);
+  CollGen.setMinSize(32.0,0.680,0.358);
+  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.2);
+
+  // linked pipe tube
+  SimpleTubeGen.setCF<CF40>();
+  SimpleTubeGen.setAFlangeCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
+  Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
+
+  CollGen.setMain(1.20,"Copper","Void");
+  CollGen.setFrontGap(0.84,0.582);
+  CollGen.setBackGap(0.750,0.357);
+  CollGen.setMinSize(12.0,0.730,0.16);
+  CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
+
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF120>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,325.0);
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.setBFlangeCF<setVariable::CF63>(); 
+  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,463.0);
 
   return;
 }
 
 
+
 void
-opticsCaveVariables(FuncDataBase& Control)
+opticsHutVariables(FuncDataBase& Control,
+		   const std::string& preName)
   /*!
     Variable for the main optics hutch walls
     \param Control :: Database
+    \param preName :: Beamline name
   */
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","opticsCaveVariables");
 
-  const std::string preName("CosaxsOpticsHut");
+  const std::string hutName(preName+"OpticsHut");
 
-  Control.addVariable(preName+"Depth",132.0);
-  Control.addVariable(preName+"Height",250.0);
-  Control.addVariable(preName+"Length",1034.6);
-  Control.addVariable(preName+"OutWidth",260.0);
-  Control.addVariable(preName+"RingWidth",61.3);
-  Control.addVariable(preName+"RingWallLen",109.0);
-  Control.addVariable(preName+"RingWallAngle",18.50);
-  Control.addVariable(preName+"InnerThick",0.3);
-  Control.addVariable(preName+"PbWallThick",2.0);
-  Control.addVariable(preName+"PbRoofThick",2.0);
-  Control.addVariable(preName+"PbBackThick",10.0);
-  Control.addVariable(preName+"OuterThick",0.3);
-  Control.addVariable(preName+"FloorThick",50.0);
+  Control.addVariable(hutName+"Depth",132.0);
+  Control.addVariable(hutName+"Height",250.0);
+  Control.addVariable(hutName+"Length",1034.6);
+  Control.addVariable(hutName+"OutWidth",260.0);
+  Control.addVariable(hutName+"RingWidth",61.3);
+  Control.addVariable(hutName+"RingWallLen",109.0);
+  Control.addVariable(hutName+"RingWallAngle",18.50);
+  Control.addVariable(hutName+"InnerThick",0.3);
+  Control.addVariable(hutName+"PbWallThick",2.0);
+  Control.addVariable(hutName+"PbRoofThick",2.0);
+  Control.addVariable(hutName+"PbBackThick",10.0);
+  Control.addVariable(hutName+"PbFrontThick",2.0);
+  Control.addVariable(hutName+"OuterThick",0.3);
+  Control.addVariable(hutName+"FloorThick",50.0);
+  Control.addVariable(hutName+"InnerOutVoid",10.0);  // side wall for chicane
 
-  Control.addVariable(preName+"SkinMat","Stainless304");
-  Control.addVariable(preName+"PbMat","Lead");
-  Control.addVariable(preName+"FloorMat","Concrete");
+  Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"FloorMat","Concrete");
 
-  Control.addVariable(preName+"HoleXStep",0.0);
-  Control.addVariable(preName+"HoleZStep",5.0);
-  Control.addVariable(preName+"HoleRadius",7.0);
+  Control.addVariable(hutName+"HoleXStep",0.0);
+  Control.addVariable(hutName+"HoleZStep",1.0);
+  Control.addVariable(hutName+"HoleRadius",7.0);
+
+  Control.addVariable(hutName+"InletXStep",0.0);
+  Control.addVariable(hutName+"InletZStep",0.0);
+  Control.addVariable(hutName+"InletRadius",5.0);
+
+  Control.addVariable(preName+"OpticsNChicane",1);
+  PortChicaneGenerator PGen;
+  PGen.generatePortChicane(Control,preName+"OpticsChicane0",0,0);
 
   return;
 }
@@ -399,15 +446,17 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
 
   
 void
-opticsVariables(FuncDataBase& Control)
+opticsVariables(FuncDataBase& Control,
+		const std::string& beamName)
   /*
     Vacuum optics components in the optics hutch
     \param Control :: Function data base
+    \param beamName :: Name of beamline
   */
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","opticsVariables");
 
-  const std::string preName("CosaxsOpticsLine");
+  const std::string preName(beamName+"OpticsLine");
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
@@ -601,7 +650,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   
-  cosaxsVar::frontCaveVariables(Control,500.0);  // Set to middle
+  cosaxsVar::frontCaveVariables(Control,"Cosaxs",500.0);  // Set to middle
   cosaxsVar::frontEndVariables(Control,"CosaxsFrontBeam");  
 
   PipeGen.setMat("Stainless304");
@@ -609,8 +658,8 @@ COSAXSvariables(FuncDataBase& Control)
   PipeGen.setAFlangeCF<setVariable::CF120>(); 
   PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,195.0);
 
-  cosaxsVar::opticsCaveVariables(Control);
-  cosaxsVar::opticsVariables(Control);
+  cosaxsVar::opticsHutVariables(Control,"Cosaxs");
+  cosaxsVar::opticsVariables(Control,"Cosaxs");
 
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,1195.0);

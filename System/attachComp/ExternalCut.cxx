@@ -489,15 +489,15 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   for(const int& SN : FS)
     {
       const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
-
+      // plane case does not use distance
       const Geometry::Plane* PPtr=
 	dynamic_cast<const Geometry::Plane*>(SPtr);
       if (PPtr)
 	{
-	  const double DD=PPtr->distance(expandCentre);
-	  const int sideFlag=PPtr->side(expandCentre);
+	  int sideFlag=PPtr->side(expandCentre);
+	  if (sideFlag==0) sideFlag=1;
 	  ModelSupport::buildShiftedPlane
-	    (SMap,index,PPtr,sideFlag*(DD+dExtra));
+	    (SMap,index,PPtr,sideFlag*dExtra);
 	  return;
 	}
       

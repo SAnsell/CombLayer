@@ -42,9 +42,14 @@ class PortChicaneGenerator
   double width;            ///< Full width
   double height;           ///< Full height
   double clearGap;         ///< Clearance gap each side [+midwall]
+
+  double skinThick;        ///< Skin thickness
+  double plateThick;       ///< Plate thickness
   
   double wallThick;        ///< Wall thicness
-  std::string mat;         ///< main material
+
+  std::string plateMat;         ///< main material
+  std::string wallMat;          ///< wall material
 
  public:
 
@@ -54,6 +59,7 @@ class PortChicaneGenerator
   ~PortChicaneGenerator();
 
   void setSize(const double,const double,const double);
+  void setPlate(const double,const double,const std::string&);
   void setWall(const double,const std::string&);
 
 

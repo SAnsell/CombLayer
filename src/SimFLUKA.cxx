@@ -428,12 +428,12 @@ SimFLUKA::writeWeights(std::ostream& OX) const
     type.
     \param OX :: Output stream
   */
-
 {
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"* [weight]"<<std::endl;
+  OX<<"* WEIGHT CARDS "<<std::endl;
+  
   WM.write(OX);
   return;
 }
@@ -631,6 +631,7 @@ SimFLUKA::write(const std::string& Fname) const
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
+  writeWeights(OX);
   writeMaterial(OX);
   writeTally(OX);
   writeSource(OX);

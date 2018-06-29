@@ -101,12 +101,21 @@ PortChicane::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("PortChicane","populate");
 
   FixedOffset::populate(Control);
+  
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
-  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
   clearGap=Control.EvalVar<double>(keyName+"ClearGap");
+
+  innerSkin=Control.EvalVar<double>(keyName+"InnerSkin");
+  innerPlate=Control.EvalVar<double>(keyName+"InnerPlate");
+
+  outerSkin=Control.EvalVar<double>(keyName+"OuterSkin");
+  outerPlate=Control.EvalVar<double>(keyName+"OuterPlate");
+    
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
+  plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   
   return;
@@ -137,16 +146,24 @@ PortChicane::createSurfaces()
 {
   ELog::RegMethod RegA("PortChicane","createSurface");
 
-  
   ExternalCut::makeExpandedSurf
     (SMap,"innerWall",buildIndex+11,Origin,clearGap);
   ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+21,Origin,clearGap+wallThick);
+    (SMap,"innerWall",buildIndex+21,Origin,clearGap+innerSkin);
+  ExternalCut::makeExpandedSurf
+    (SMap,"innerWall",buildIndex+31,Origin,clearGap+innerSkin+innerPlate);
+  ExternalCut::makeExpandedSurf
+    (SMap,"innerWall",buildIndex+41,Origin,clearGap+2*innerSkin+innerPlate);
 
   ExternalCut::makeExpandedSurf
     (SMap,"outerWall",buildIndex+12,Origin,clearGap);
   ExternalCut::makeExpandedSurf
-    (SMap,"outerWall",buildIndex+22,Origin,clearGap+wallThick);
+    (SMap,"outerWall",buildIndex+22,Origin,clearGap+outerSkin);
+  ExternalCut::makeExpandedSurf
+    (SMap,"outerWall",buildIndex+32,Origin,clearGap+outerSkin+outerPlate);
+  ExternalCut::makeExpandedSurf
+    (SMap,"outerWall",buildIndex+42,Origin,clearGap+2*outerSkin+outerPlate);
+
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -176,39 +193,51 @@ PortChicane::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=getRuleStr("innerWall");
   const std::string outerStr=getRuleStr("outerWall");
-    
+
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+11)<<ELog::endDiag;
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+21)<<ELog::endDiag;
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+31)<<ELog::endDiag;
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+41)<<ELog::endDiag;
+
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+12)<<ELog::endDiag;
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+22)<<ELog::endDiag;
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+32)<<ELog::endDiag;
+  ELog::EM<<"Surf "<<*SMap.realSurfPtr(buildIndex+42)<<ELog::endDiag;
+	
   // inner clearance gap
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 13 -14 15 -6 ");
-  makeCell("InnerPlate",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 13 -14 15 -6 ");
+  makeCell("InnerSkinA",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 13 -3 5 -6 ");
-  makeCell("InnerLeftSide",System,cellIndex++,wallMat,0.0,Out+innerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 13 -14 15 -6 ");
+  makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -14 4 5 -6 ");
-  makeCell("InnerRightSide",System,cellIndex++,wallMat,0.0,Out+innerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 13 -14 15 -6 ");
+  makeCell("InnerSkinB",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 13 -14 -5 15 ");
-  makeCell("InnerBase",System,cellIndex++,wallMat,0.0,Out+innerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 13 -14 15 -6 ");
+  makeCell("OuterSkinA",System,cellIndex++,wallMat,0.0,Out);
 
-  // Outside part:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 -12 13 -14 15 -6 ");
-  makeCell("OuterPlate",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 13 -14 15 -6 ");
+  makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 13 -3 5 -6 ");
-  makeCell("OuterLeftSide",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 13 -14 15 -6 ");
+  makeCell("OuterSkinB",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -14 4 5 -6 ");
-  makeCell("OuterRightSide",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -6 ");
+  makeCell("LeftSide",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 13 -14 -5 15 ");
-  makeCell("OuterBase",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -14 4 5 -6 ");
+  makeCell("RightSide",System,cellIndex++,wallMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 -5 15 ");
+  makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
 
   // needs to be group
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -22 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 13 -14 15 -6 ");
   addOuterSurf(Out);
   return;
 }
