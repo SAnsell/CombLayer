@@ -183,7 +183,7 @@ CollGenerator::generateColl(FuncDataBase& Control,
     \param len :: length
   */
 {
-  ELog::RegMethod RegA("CollGenerator","generatorMount");
+  ELog::RegMethod RegA("CollGenerator","generateColl");
   
   Control.addVariable(keyName+"YStep",yStep);
 

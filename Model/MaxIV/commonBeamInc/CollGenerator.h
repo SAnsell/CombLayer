@@ -31,7 +31,7 @@ namespace setVariable
   \class CollGenerator
   \version 1.0
   \author S. Ansell
-  \date May 2016
+  \date May 2018
   \brief CollGenerator for variables
 */
 
@@ -40,18 +40,16 @@ class CollGenerator
  private:
 
   
-  double radius;           ///< Radius
+  double radius;           ///< Outer Radius
 
   double minLength;        ///< length along beam
-  double AWidth;           ///< width accross beam
-  double minWidth;         ///< width accross beam
-  double BWidth;           ///< width accross beam
+  double AWidth;           ///< width accross beam [start]
+  double minWidth;         ///< width accross beam [mid]
+  double BWidth;           ///< width accross beam [end]
 
-  double AHeight;          ///< height accross beam
-  double minHeight;        ///< height accross beam
-  double BHeight;          ///< height accross beam
-
-
+  double AHeight;          ///< height accross beam [start]
+  double minHeight;        ///< height accross beam [mid]
+  double BHeight;          ///< height accross beam [end]
 
   std::string mat;         ///< main material
   std::string voidMat;     ///< void material
