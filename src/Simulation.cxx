@@ -271,7 +271,6 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   if (mpt!=OList.end())
     {
       ELog::EM<<"Cell Exists Object ::"<<cellNumber<<std::endl;
-      ELog::EM<<"Call from: "<<RegA.getBasePtr()->getItem(-1)<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
   OList.insert(OTYPE::value_type(cellNumber,A.clone()));
@@ -285,6 +284,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       throw ColErr::InContainerError<int>(cellNumber,"cellNumber");
     }
 
+
   if (!QHptr->hasComplement() ||
       removeComplement(*QHptr))
     {
@@ -296,6 +296,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Cell==:"<<*QHptr<<ELog::endCrit;
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
+
   OR.addActiveCell(cellNumber);
   return 1;
 }
@@ -361,7 +362,7 @@ Simulation::addCell(const int Index,const int matNum,
   TX.setMaterial(matNum);
   TX.setTemp(matTemp);  
   TX.procHeadRule(RuleItem);
-  
+
   return addCell(Index,TX);
 }
 
@@ -1551,10 +1552,12 @@ Simulation::splitObject(const int CA,const int SN)
    */
 {
   ELog::RegMethod RegA("Simulation","splitObject");
+
+
   MonteCarlo::Object* CPtr = findQhull(CA);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CA,"Cell not found");
-
+  CPtr->populate();
   // get next cell
   const int CB=getNextCell(CA);
   
@@ -1564,7 +1567,7 @@ Simulation::splitObject(const int CA,const int SN)
 
   CHead.addIntersection(-SN);
   DHead.addIntersection(SN);
-  
+
   addCell(CB,CPtr->getMat(),CPtr->getTemp(),DHead);
   CPtr->procHeadRule(CHead);
 

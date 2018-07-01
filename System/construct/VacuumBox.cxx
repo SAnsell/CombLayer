@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -452,7 +453,7 @@ VacuumBox::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
   
   return;
 }

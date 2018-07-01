@@ -69,7 +69,9 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -81,7 +83,7 @@ namespace xraySystem
 {
 
 PortChicane::PortChicane(const std::string& Key) :
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedGroup("Main","Inner"),
   attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -106,6 +108,7 @@ PortChicane::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   clearGap=Control.EvalVar<double>(keyName+"ClearGap");
+  overHang=Control.EvalVar<double>(keyName+"OverHang");
 
   innerSkin=Control.EvalVar<double>(keyName+"InnerSkin");
   innerPlate=Control.EvalVar<double>(keyName+"InnerPlate");
@@ -135,8 +138,6 @@ PortChicane::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  
-  
   
   return;
 }
@@ -181,6 +182,13 @@ PortChicane::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(baseThick+height/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,buildIndex+23,
+			   Origin-X*(wallThick+overHang+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,
+			   Origin+X*(wallThick+overHang+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,
+			   Origin-Z*(baseThick+overHang+height/2.0),Z);
+
   return;
 }
 
@@ -201,24 +209,23 @@ PortChicane::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
   makeCell("InnerSkinA",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 23 -24 25 -6 ");
   makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
   makeCell("InnerSkinB",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
   makeCell("OuterSkinA",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
   makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
   makeCell("OuterSkinB",System,cellIndex++,plateMat,0.0,Out);
-
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -6 ");
   makeCell("LeftSide",System,cellIndex++,wallMat,0.0,Out);
@@ -229,9 +236,29 @@ PortChicane::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 -5 15 ");
   makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 -13 5 -6 ");
+  makeCell("InnerLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 5 -6 ");
+  makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+innerStr);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -5 ");
+  makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 5 -6 ");
+  makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+outerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 5 -6 ");
+  makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+outerStr);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -5 ");
+  makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
+
   // needs to be group
-  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 13 -14 15 -6 ");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 23 -24 25 -6 ");
+  addOuterSurf("Main",Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -6 ");
+  addOuterSurf("Inner",Out);
   return;
 }
 
@@ -248,37 +275,35 @@ PortChicane::createLinks()
     SurInter::getLinePoint(Origin,Y,SMap.realSurfPtr(buildIndex+41),Origin);  
   Geometry::Vec3D backPt=
     SurInter::getLinePoint(Origin,Y,SMap.realSurfPtr(buildIndex+42),Origin);
-  ELog::EM<<"Front == "<<frontPt<<ELog::endDiag;
-  ELog::EM<<"Back == "<<backPt<<ELog::endDiag;
   
   FixedComp::setConnect(0,frontPt,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
 
   FixedComp::setConnect(0,backPt,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+43));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+42));
 
   // outer cross
-  FixedComp::setConnect(2,frontPt-X*(wallThick+width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect(2,frontPt-X*(wallThick+overHang+width/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
 
-  FixedComp::setConnect(3,frontPt+X*(wallThick+width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect(3,frontPt+X*(wallThick+overHang+width/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
 
-  FixedComp::setConnect(4,frontPt-Z*(baseThick+height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect(4,frontPt-Z*(baseThick+overHang+height/2.0),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
 
   FixedComp::setConnect(5,frontPt+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // inner corners
-  FixedComp::setConnect(7,backPt-X*(wallThick+width/2.0),-X);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect(7,backPt-X*(wallThick+overHang+width/2.0),-X);
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+23));
 
-  FixedComp::setConnect(8,backPt+X*(wallThick+width/2.0),X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect(8,backPt+X*(wallThick+overHang+width/2.0),X);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+24));
   
-  FixedComp::setConnect(9,backPt-Z*(baseThick+height/2.0),-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect(9,backPt-Z*(baseThick+overHang+height/2.0),-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+25));
 
   FixedComp::setConnect(10,backPt+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+6));

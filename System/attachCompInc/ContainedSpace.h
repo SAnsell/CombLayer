@@ -40,89 +40,19 @@ namespace attachSystem
          within the Contained space
 */
 
-class ContainedSpace  : public ContainedComp
+class ContainedSpace  :
+  public SpaceCut,
+  public ContainedComp
 {
- private:
-
-  std::string FCName;                  ///< Fixed comp name [if available]
-  bool active;                         ///< Space active
-  bool noPrimaryInsert;                ///< Dont plcace BBox into primary
-
-  size_t nDirection;                   ///< Number of directions to cut
-  double instepFrac;                   ///< Step between FC points
-  int primaryCell;                     ///< Master cell [for BBox]
-  int buildCell;                       ///< Space for new cell
-
-  HeadRule primaryBBox;                ///< Boundary of primary 
-  HeadRule BBox;                       ///< Bounding box
-  HeadRule outerCut;                   ///< Outer Cut surfaces
-  
-  std::vector<LinkUnit> LCutters;      ///< Cutting dividers
-
-  std::pair<long int,long int> ABLink; ///< Link surfaces if set
-
-  void initialize();
-  static int testPlaneDivider(const std::map<int,const Geometry::Surface*>&,
-			      const int,
-			      const Geometry::Vec3D&,
-			      const Geometry::Vec3D&);
-
-
-  static std::map<int,const Geometry::Surface*>
-    createSurfMap(const HeadRule&);
-
-  
  public:
 
   ContainedSpace();
   ContainedSpace(const ContainedSpace&);
   ContainedSpace& operator=(const ContainedSpace&);
   virtual ~ContainedSpace();
-
-  static HeadRule
-    calcBoundary(const Simulation&,const int,
-		 const size_t,const LinkUnit&,
-		 const LinkUnit&);
-  static HeadRule
-    calcBoundary(const HeadRule&,
-		 const size_t,const LinkUnit&,
-		 const LinkUnit&);
-
-  void clear();
   
-  void setSpaceConnect(const size_t,const Geometry::Vec3D&,
-		  const Geometry::Vec3D&);
-  void setSpaceLinkSurf(const size_t,const int);
-  void setSpaceLinkSurf(const size_t,const HeadRule&);
-  void setSpaceLinkCopy(const size_t,const FixedComp&,const long int);
-
-  /// set primary cell
-  void setPrimaryCell(const int C) { primaryCell=C; }
-  void setPrimaryCell(const Simulation&,const int);
-  void setPrimaryCell(const HeadRule&);
-  
-  /// set build cell number [created]
-  void setBuildCell(const int C) { buildCell=C; }
-  /// access build cell
-  int getBuildCell() const { return buildCell; }
-
-  /// Get bounding box
-  const HeadRule& getBBox() const { return BBox; }
-
-  /// Do not cut of primary
-  void setNoPrimInsert() { noPrimaryInsert=1; }
-  
-  void registerSpaceCut(const long int,const long int);
-  void registerSpaceIsolation(const long int,const long int);
-
-  void buildWrapCell(Simulation&,const int,const int);
-  void calcBoundaryBox(const Simulation&);
-  void insertObjects(Simulation&);
-
-  static void insertPair(Simulation&,const std::vector<int>&,const FixedComp&,
-		  const long int,const FixedComp&,const long int);
-
-  
+  virtual void insertObjects(Simulation&);
+  virtual void insertObjects(Simulation&,attachSystem::FixedComp&);
 };
 
 }

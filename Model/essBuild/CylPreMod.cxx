@@ -69,6 +69,8 @@
 #include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"

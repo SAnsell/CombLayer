@@ -48,7 +48,7 @@ class ContainedGroup
  private:
 
   /// Map storage
-  typedef std::map<std::string,ContainedComp> CTYPE;
+  typedef std::map<std::string,ContainedSpace> CTYPE;
   /// Named Container
   CTYPE CMap;
 
@@ -106,10 +106,15 @@ class ContainedGroup
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 
   bool hasKey(const std::string&) const;
-  ContainedComp& addCC(const std::string&);
-  ContainedComp& getCC(const std::string&);
-  const ContainedComp& getCC(const std::string&) const;
+  ContainedSpace& addCC(const std::string&);
+  ContainedSpace& getCC(const std::string&);
+  const ContainedSpace& getCC(const std::string&) const;
 
+  void setPrimaryCell(const std::string&,const int);
+  void registerSpaceCut(const std::string&,
+			const long int,const long int);
+  void registerSpaceIsolation(const std::string&,
+			      const long int,const long int);
 };
 
 }

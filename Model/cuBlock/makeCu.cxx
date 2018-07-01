@@ -63,7 +63,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "World.h"
 #include "CuCollet.h"
 

@@ -41,13 +41,9 @@ class FrontEndCave :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
-  
 {
  private:
   
-  const int wigIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double frontWallThick;          ///< front wall depth
 
   double length;                  ///< Main length

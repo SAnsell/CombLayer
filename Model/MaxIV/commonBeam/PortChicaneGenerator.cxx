@@ -60,12 +60,47 @@ namespace setVariable
 
 PortChicaneGenerator::PortChicaneGenerator() :
   width(60.0),height(45.0),clearGap(8.0),
-  skinThick(0.3),plateThick(1.2),wallThick(0.8),
-  plateMat("Lead"),wallMat("Stainless304")
+  overHang(4.0),skinThick(0.3),plateThick(1.2),
+  wallThick(0.8),plateMat("Lead"),
+  wallMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
+
+
+PortChicaneGenerator::PortChicaneGenerator(const PortChicaneGenerator& A) : 
+  width(A.width),height(A.height),clearGap(A.clearGap),
+  skinThick(A.skinThick),plateThick(A.plateThick),
+  wallThick(A.wallThick),plateMat(A.plateMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: PortChicaneGenerator to copy
+  */
+{}
+
+PortChicaneGenerator&
+PortChicaneGenerator::operator=(const PortChicaneGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: PortChicaneGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      width=A.width;
+      height=A.height;
+      clearGap=A.clearGap;
+      skinThick=A.skinThick;
+      plateThick=A.plateThick;
+      wallThick=A.wallThick;
+      plateMat=A.plateMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+  
   
 PortChicaneGenerator::~PortChicaneGenerator() 
  /*!
@@ -142,6 +177,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"ClearGap",clearGap);
+  Control.addVariable(keyName+"OverHang",overHang);
   
   Control.addVariable(keyName+"InnerSkin",skinThick);
   Control.addVariable(keyName+"InnerPlate",plateThick);

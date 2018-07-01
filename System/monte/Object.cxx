@@ -804,7 +804,6 @@ Object::createSurfaceList()
   ELog::RegMethod RegA("Object","createSurfaceList");
   
   populate();  // checked in populate
-
   std::ostringstream debugCX;
 
   SurList.clear();

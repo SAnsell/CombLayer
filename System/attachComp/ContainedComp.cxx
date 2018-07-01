@@ -601,7 +601,7 @@ ContainedComp::addInsertCell(const int CN)
     \param CN :: Cell number
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addInsertCell");
+  ELog::RegMethod RegA("ContainedComp","addInsertCell(in)");
   if (CN==0)
     throw ColErr::EmptyValue<int>("CN index");
   if (std::find(insertCells.begin(),insertCells.end(),CN)

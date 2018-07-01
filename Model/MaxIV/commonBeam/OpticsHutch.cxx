@@ -70,7 +70,9 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -464,32 +466,39 @@ OpticsHutch::createChicane(Simulation& System)
   */
 {
   ELog::RegMethod Rega("OpticsHutch","createChicane");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const FuncDataBase& Control=System.getDataBase();
-  
+
   const size_t NChicane=
     Control.EvalDefVar<size_t>(keyName+"NChicane",0);
-
+  ELog::EM<<"NC == "<<NChicane<<ELog::endDiag;
   for(size_t i=0;i<NChicane;i++)
     {
       const std::string NStr(std::to_string(i));
       std::shared_ptr<PortChicane> PItem=
 	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
+
       OR.addObject(PItem);
-      PItem->addInsertCell(getCell("WallVoid"));
-      PItem->addInsertCell(getCell("InnerWall",0));
-      PItem->addInsertCell(getCell("LeadWall",0));
-      PItem->addInsertCell(getCell("OuterWall",0));
-      PItem->addInsertCell(ContainedComp::getInsertCells());
+      PItem->addInsertCell("Main",getCell("WallVoid"));
+      PItem->addInsertCell("Inner",getCell("InnerWall",0));
+      PItem->addInsertCell("Inner",getCell("LeadWall",0));
+      PItem->addInsertCell("Inner",getCell("OuterWall",0));
+      PItem->addInsertCell("Main",ContainedComp::getInsertCells());
       // set surfaces:
+
       PItem->setCutSurf("innerWall",*this,"innerLeftWall");
       PItem->setCutSurf("outerWall",*this,"leftWall");
 
-      PItem->registerSpaceCut(8,9);
+      PItem->setPrimaryCell("Main",getCell("WallVoid"));
+      PItem->registerSpaceCut("Main",8,9);
+			      
       PItem->createAll(System,*this,getSideIndex("leftWall"));
       PChicane.push_back(PItem);
+      //      PItem->splitObject(System,23,getCell("WallVoid"));
+      //      PItem->splitObject(System,24,getCell("SplitVoid"));      
     }
   return;
 }

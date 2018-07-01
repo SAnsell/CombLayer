@@ -66,6 +66,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 
 #include "CSGroup.h"
@@ -277,7 +278,7 @@ CSGroup::insertAllObjects(Simulation& System)
     \param System :: simulation system
   */
 {
-  ELog::RegMethod RegA("CSGroup","insertObjects");
+  ELog::RegMethod RegA("CSGroup","insertAllObjects");
 
   System.populateCells();
 

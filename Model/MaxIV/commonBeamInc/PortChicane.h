@@ -34,7 +34,7 @@ namespace xraySystem
     \brief Extra beam stop for opticshutch
   */
   
-class PortChicane : public attachSystem::ContainedSpace,
+class PortChicane : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,

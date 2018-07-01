@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -167,7 +168,7 @@ BALDER::build(Simulation& System,
 
   opticsHut->addInsertCell(voidCell);
   opticsHut->createAll(System,*frontCave,2);
-  
+
   joinPipe->addInsertCell(frontCave->getCell("Void"));
   joinPipe->addInsertCell(frontCave->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
@@ -183,7 +184,7 @@ BALDER::build(Simulation& System,
   joinPipe->setPrimaryCell(caveVoid);
   joinPipe->registerSpaceCut(1,0);
   joinPipe->insertObjects(System);
- 
+
   System.removeCell(frontCave->getCell("Void"));
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));

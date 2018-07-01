@@ -64,6 +64,8 @@
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"

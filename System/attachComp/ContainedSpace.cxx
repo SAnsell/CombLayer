@@ -75,6 +75,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 
 
@@ -82,20 +83,14 @@ namespace attachSystem
 {
 
 ContainedSpace::ContainedSpace()  :
-  ContainedComp(),active(0),noPrimaryInsert(0),
-  nDirection(8),instepFrac(0.05),
-  primaryCell(0),buildCell(0),LCutters(2)
+  SpaceCut(),ContainedComp()
   /*!
     Constructor 
   */
 {}
 
 ContainedSpace::ContainedSpace(const ContainedSpace& A) : 
-  ContainedComp(A),FCName(A.FCName),active(A.active),
-  noPrimaryInsert(A.noPrimaryInsert),
-  nDirection(A.nDirection),instepFrac(A.instepFrac),
-  primaryCell(A.primaryCell),
-  buildCell(0),BBox(A.BBox),LCutters(A.LCutters)
+  SpaceCut(A),ContainedComp(A)
   /*!
     Copy constructor
     \param A :: ContainedSpace to copy
@@ -112,15 +107,8 @@ ContainedSpace::operator=(const ContainedSpace& A)
 {
   if (this!=&A)
     {
+      SpaceCut::operator=(A);
       ContainedComp::operator=(A);
-      FCName=A.FCName;
-      active=A.active;
-      noPrimaryInsert=A.noPrimaryInsert;
-      nDirection=A.nDirection;
-      instepFrac=A.instepFrac;
-      primaryCell=A.primaryCell;
-      BBox=A.BBox;
-      LCutters=A.LCutters;
     }
   return *this;
 }
@@ -132,479 +120,39 @@ ContainedSpace::~ContainedSpace()
 {}
   
 void
-ContainedSpace::setSpaceConnect(const size_t Index,
-			   const Geometry::Vec3D& C,
-			   const Geometry::Vec3D& A)
- /*!
-   Set the axis of the linked component
-   \param Index :: Link number
-   \param C :: Centre coordinate
-   \param A :: Axis direciton
- */
-{
-  ELog::RegMethod RegA("ContainedSpace","setConnect");
-  if (Index>=LCutters.size())
-    throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU.size/index");
-
-  LCutters[Index].setConnectPt(C);
-  LCutters[Index].setAxis(A);
-  active=1;
-  return;
-}
-
-void
-ContainedSpace::setSpaceLinkSurf(const size_t Index,
-				 const HeadRule& HR) 
+ContainedSpace::insertObjects(Simulation& System,
+			      attachSystem::FixedComp& FC)
   /*!
-    Set a surface to output
-    \param Index :: Link number
-    \param HR :: HeadRule to add
+    Assumption that we can put this object into a space
+    Makes the object bigger 
+    Then constructs the outer boundary as if that object is 
+    the outer boundary!
+    \param System :: simulation system
+    \param FC :: Fixed Comp for cell information
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","setSpaceLinkSurf(HR)");
-  if (Index>=LCutters.size())
-    throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU size/Index");
+  ELog::RegMethod RegA("ContainedSpace","insertObjects(FC)");
 
-  LCutters[Index].setLinkSurf(HR);
-  active=1;
-  return;
-}
+  if (!primaryCell && !insertCells.empty())
+    primaryCell=insertCells.front();
 
-void
-ContainedSpace::setSpaceLinkSurf(const size_t Index,
-				 const int SN) 
-  /*!
-    Set a surface to output
-    \param Index :: Link number
-    \param SN :: surf to add
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","setSpaceLinkSurf(int)");
-  if (Index>=LCutters.size())
-    throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU size/Index");
+  SpaceCut::insertObjects(System,FC);
 
-  LCutters[Index].setLinkSurf(SN);
-  active=1;
-  return;
-}
-
-void
-ContainedSpace::setSpaceLinkCopy(const size_t Index,
-				 const FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Copy the opposite (as if joined) link surface 
-    Note that the surfaces are complemented
-    \param Index :: Link number
-    \param FC :: Other Fixed component to copy object from
-    \param sideIndex :: link unit of other object
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","setSpaceLinkCopy");
-  
-  if (Index>=LCutters.size())
-    throw ColErr::IndexError<size_t>(Index,LCutters.size(),
-				     "LCutters size/index");
-  
-  LCutters[Index]=FC.getSignedLU(sideIndex);
-  active=1;
-  return;
-}
-
-void
-ContainedSpace::setPrimaryCell(const HeadRule& objHR)
-  /*!
-    Set the primary cell AND holds CURRENT bounding box 
-    \param objHR :: HeadRule to dset
-    \param cellN :: Cell number
-   */
-{
-  ELog::RegMethod RegA("ContainedSpace","setPrimaryCell");
-
-  primaryBBox=objHR;
-  return;
-}
-
-void
-ContainedSpace::setPrimaryCell(const Simulation& System,
-			       const int cellN)
-  /*!
-    Set the primary cell AND holds CURRENT bounding box 
-    \param System :: Simulation to use for cells
-    \param cellN :: Cell number
-   */
-{
-  ELog::RegMethod RegA("ContainedSpace","setPrimaryCell");
-
-  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellN,"cellN on found");
-
-  primaryBBox=outerObj->getHeadRule();
-  return;
-}
-  
-HeadRule
-ContainedSpace::calcBoundary(const Simulation& System,
-			     const int cellN,
-			     const size_t NDivide,
-			     const LinkUnit& ALink,
-			     const LinkUnit& BLink)
-/*!
-    Construct a bounding box in a cell based on the 
-    link surfaces
-    \param System :: Simulation to use
-    \param cellN :: Cell number
-    \param NDivide :: division in link point
-    \param ALink :: first link point
-    \param BLink :: second link point
-    \return HeadRule of bounding box [- link surf]
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","calcBoundary(System)");
-
-  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellN,"cellN on found");
-
-  const HeadRule objHR=outerObj->getHeadRule();
-
-  return calcBoundary(objHR,NDivide,ALink,BLink);
-}
-
-std::map<int,const Geometry::Surface*>
-ContainedSpace::createSurfMap(const HeadRule& objHR)
-  /*!
-    Create a map of surface number / surface 
-    for the HeadRule object [assuming it is populated]
-    \param objHR :: Object head rule
-    \return map (int,surface)
-  */
-{
-  ELog::RegMethod Rega("ContainedSpace","createSurfMap");
-
-  std::map<int,const Geometry::Surface*> OutMap;
-  
-  std::vector<const Geometry::Surface*> SVec=
-    objHR.getSurfaces();
-
-  for(const Geometry::Surface* SPtr : SVec)
+  if (buildCell)
+    ContainedComp::addInsertCell(buildCell);
+  if (FCName=="BalderOpticsHutChicane0")
+    ELog::EM<<"FC= "<<FCName<<" "<<buildCell<<ELog::endDiag;
+  if (SpaceCut::insertValid())
     {
-      if (SPtr)
-	OutMap.emplace(SPtr->getName(),SPtr);
+      StrFunc::removeItem(insertCells,SpaceCut::getPrimaryCell());
+      ContainedComp::insertObjects(System);
     }
-  return OutMap;
-}
-
-int
-ContainedSpace::testPlaneDivider
-(const std::map<int,const Geometry::Surface*>& activeSurf,
- const int SN,const Geometry::Vec3D& impactPt,
- const Geometry::Vec3D& axis)
-  /*!
-    Test if a surface has a divider
-    \param activeSurf :: Map of surface numbers : Surface Ptr
-    \param SN :: Surface that may need a divide plane
-    \param impactPt :: Point that the surface was intersect with line
-    \param Axis :: Axis direction of line
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","testPlaneDivider");
-
-  typedef std::map<int,const Geometry::Surface*> MTYPE;
-  if (SN>=0) return 0;
-  
-  MTYPE::const_iterator mc;
-  mc=activeSurf.find(-SN);
-  if (mc==activeSurf.end()) return 0;
-  const Geometry::Surface* SPtr=mc->second;
-
-  if (!dynamic_cast<const Geometry::Cylinder*>(SPtr) &&
-      !dynamic_cast<const Geometry::Sphere*>(SPtr) )
-    return 0;
-  
-  for(const MTYPE::value_type& TUnit : activeSurf)
-    {
-      const Geometry::Plane* TPtr=
-	dynamic_cast<const Geometry::Plane*>(TUnit.second);
-      if (TPtr)
-	{
-	  const double DProd=TPtr->getNormal().dotProd(axis);
-	  if (1.0-(std::abs(DProd))<0.5)
-	    {
-	      Geometry::Vec3D Impact =
-		SurInter::getLinePoint(impactPt,axis,TPtr);
-	      if (SPtr->side(Impact)<0)
-		return (DProd<0.0) ? -TUnit.first : TUnit.first;
-	    }
-	}
-    }
-  return 0;
-}
-				 
-
-  
-HeadRule
-ContainedSpace::calcBoundary(const HeadRule& objHR,
-			     const size_t NDivide,
-			     const LinkUnit& ALink,
-			     const LinkUnit& BLink)
-  /*!
-    Construct a bounding box in a cell based on the 
-    link surfaces
-    \param objHR :: HeadRule of boundary
-    \param NDivide :: division in link point
-    \param ALink :: first link point
-    \param BLink :: second link point
-    \return HeadRule of bounding box [- link surf]
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","calcBoundary(headRule)");
-
-  std::set<int> linkSN;
-
-  for(const LinkUnit& LU : {ALink,BLink})
-    {
-      if (LU.isComplete())
-	{
-	  const int SN=LU.getLinkSurf();
-	  linkSN.insert(SN);
-	}
-    }
-  if (linkSN.empty())
-    throw ColErr::EmptyContainer("LinkPoints empty");
-  
-  std::set<int> surfN;
-  // mid points moved in by 10% of distance
-  const Geometry::Vec3D& APoint=(ALink.isComplete()) ?
-    ALink.getConnectPt() : BLink.getConnectPt();
-  const Geometry::Vec3D& BPoint=(BLink.isComplete()) ?
-    BLink.getConnectPt() : ALink.getConnectPt();
-  const Geometry::Vec3D& YA=(ALink.isComplete()) ?
-    ALink.getAxis() : BLink.getAxis();
-  const Geometry::Vec3D& YB=(BLink.isComplete()) ?
-    BLink.getAxis() : ALink.getAxis();
-
-  const Geometry::Vec3D CPoint((APoint+BPoint)/2.0);
-  const Geometry::Vec3D YY= (YA.dotProd(YB)>0.0) ?
-    (YA+YB).unit() : (YB-YA).unit();
-  const Geometry::Vec3D XX=YY.crossNormal();
-      const Geometry::Vec3D ZZ=YY*XX;
-
-  if (!objHR.isValid(CPoint))
-    {
-      ELog::EM<<"Object == "<<objHR<<ELog::endDiag;
-      ELog::EM<<"Point == "<<CPoint<<ELog::endDiag;
-      throw ColErr::InContainerError<Geometry::Vec3D>
-	(CPoint,"CPoint out of object");
-    }
-
-  std::map<int,const Geometry::Surface*> objSurfMap=
-    createSurfMap(objHR);
-  
-  const std::vector<Geometry::Vec3D> CP=
-    {
-      CPoint,
-      APoint*0.95+CPoint*0.05,
-      BPoint*0.95+CPoint*0.05
-    };
-  for(const Geometry::Vec3D& Org : CP)
-    {
-      const double angleStep=2.0*M_PI/static_cast<double>(NDivide);
-      double angle(0.0);
-      for(size_t i=0;i<NDivide;i++)
-	{
-	  const Geometry::Vec3D Axis=XX*cos(angle)+ZZ*sin(angle);
-	  double D;
-	  const int SN=objHR.trackSurf(Org,Axis,D,linkSN);
-	  if (SN && surfN.find(-SN)==surfN.end())
-	    {
-	      surfN.insert(-SN);
-	      // test if cylinder/sphere and extra plane exist
-	      const int divideSN=
-		testPlaneDivider(objSurfMap,SN,Org+Axis*(D*1.1),Axis);
-	      if (divideSN)
-		surfN.insert(-divideSN);
-	    }
-	  angle+=angleStep;
-	}
-    }
-  // forward going trajectory
-  if (!ALink.isComplete() || !BLink.isComplete())
-    {
-      double D;
-      const int SN=objHR.trackSurf(CPoint,-YA,D);
-      if (SN)
-	surfN.insert(-SN);
-    } 	
-
-  
-  // NOW eliminate all surfaces NOT in surfN
-  const std::set<int> fullSurfN=objHR.getSurfSet();
-  HeadRule outBox=objHR;
-  for(const int SN : fullSurfN)
-    {
-      if (surfN.find(SN) == surfN.end())
-	outBox.removeItems(SN);
-    }
-  
-  // Check for no negative repeats:
-  for(const int SN : surfN)
-    {
-      if (SN==0 || (SN<0 && surfN.find(-SN)!=surfN.end()))
-	throw ColErr::InContainerError<int>(SN,"Surf repeated");
-    }
-  return outBox;
-}
-  
-void
-ContainedSpace::calcBoundaryBox(const Simulation& System)
-  /*!
-    Boundary calculator
-    \param System :: Simulation for objects [if needed]
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","calcBoundaryBox");
-  if (!primaryBBox.hasRule())
-    BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
-  else 
-    BBox=calcBoundary(primaryBBox,nDirection,LCutters[0],LCutters[1]);
-  return;
-}
-
-void
-ContainedSpace::registerSpaceCut(const long int linkA,
-				 const long int linkB)
-  /*!
-    Register the surface space
-    \param linkA :: Signed link point
-    \param linkB :: Signed link point
-  */
-{
-  ABLink.first=linkA;
-  ABLink.second=linkB;
-  active=1;
-  return;
-}
-
-void
-ContainedSpace::registerSpaceIsolation
-  (const long int linkA,const long int linkB)
-  /*!
-    Register the surface space and dont place primary
-    \param linkA :: Signed link point
-    \param linkB :: Signed link point
-  */
-{
-  active=1;
-  noPrimaryInsert=1;
-  registerSpaceCut(linkA,linkB);
-  return;
-}
-
-void
-ContainedSpace::buildWrapCell(Simulation& System,
-			      const int pCell,
-			      const int cCell)
-  /*!
-    Build the cells within the bounding space that
-    contains the complex outerSurf
-    \param System :: Simulation
-    \param pCell :: Primary cell
-    \param cCell :: Contained cell
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","buildWrapCell");
-
-  int matN=0;
-  double matTemp=0.0;
-  if (pCell)
-    {
-      const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
-      if (!outerObj)
-	throw ColErr::InContainerError<int>
-	  (pCell,"Primary cell does not exist");
-      matN=outerObj->getMat();
-      matTemp=outerObj->getTemp();
-    }
-
-  // First make inner vacuum
-  // removeing front/back surfaces
-
-  outerCut.reset();  
-  HeadRule innerVacuum(outerSurf);
-  for(const LinkUnit& LU : LCutters)
-    {
-      if (LU.isComplete())
-	{
-	  const int SN=LU.getLinkSurf();
-	  innerVacuum.removeItems(-SN);
-	  outerCut.addIntersection(-SN);
-	}
-    }
-
-  // Make new outer void
-  HeadRule newOuterVoid(BBox);
-  for(const LinkUnit& LU : LCutters)
-    {
-      if (LU.isComplete())
-	newOuterVoid.addIntersection(-LU.getLinkSurf());
-    }
-
-  newOuterVoid.addIntersection(innerVacuum.complement());
-  System.addCell(cCell,matN,matTemp,newOuterVoid.display());
-
-  CellMap* CMapPtr=dynamic_cast<CellMap*>(this);
-  if (CMapPtr)
-    CMapPtr->addCell("OuterSpace",cCell);
-
-  
-  return;
-}
-
-void
-ContainedSpace::clear()
-  /*!
-    Reset link units
-   */
-{
-  ABLink.first=0;
-  ABLink.second=0;
-  LCutters[0]=LinkUnit();
-  LCutters[1]=LinkUnit();
-  buildCell=0;
-  primaryCell=0;
-  return;
-}
-
-void
-ContainedSpace::initialize()
-  /*!
-    Initializer to be run after object is built
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","initialize");
-
-  FixedComp* FC=dynamic_cast<FixedComp*>(this);
-  if (!FC) return;
-
-  FCName=FC->getKeyName();
-  if (active)
-    {
-      if (ABLink.first)
-	ContainedSpace::setSpaceLinkCopy(0,*FC,ABLink.first);
-      if (ABLink.second)
-	ContainedSpace::setSpaceLinkCopy(1,*FC,ABLink.second);
-      
-      if (!primaryCell && !insertCells.empty())
-	primaryCell=insertCells.front();
-      if (!buildCell)
-	buildCell=FC->nextCell();
-    }
+  else if (SpaceCut::hasPrimaryInsert())
+    ContainedComp::insertObjects(System);
 
   return;
 }
-  
+
 void
 ContainedSpace::insertObjects(Simulation& System)
   /*!
@@ -616,70 +164,31 @@ ContainedSpace::insertObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ContainedSpace","insertObjects");
-      
-  System.populateCells();
-  initialize();
-    
-  if ((primaryCell || primaryBBox.hasRule()) && buildCell)
-    {
-      calcBoundaryBox(System);
-      buildWrapCell(System,primaryCell,buildCell);	    
-    }
+
+
+  if (!primaryCell && !insertCells.empty())
+    primaryCell=insertCells.front();
+
+  attachSystem::FixedComp* FC=
+    dynamic_cast<attachSystem::FixedComp*>(this);
+
+  if (FC)
+    SpaceCut::insertObjects(System,*FC);
+  else
+    SpaceCut::insertObjects(System);
   
-  if (!noPrimaryInsert && primaryCell && buildCell)
+  if (buildCell)
+    ContainedComp::addInsertCell(buildCell);
+  
+  if (SpaceCut::insertValid())
     {
-      StrFunc::removeItem(insertCells,primaryCell);
+      StrFunc::removeItem(insertCells,SpaceCut::getPrimaryCell());
       ContainedComp::insertObjects(System);
-      MonteCarlo::Qhull* outerObj=System.findQhull(primaryCell);
-      if (outerObj)
-	outerObj->addSurfString(outerCut.complement().display());
-      else
-	throw ColErr::InContainerError<int>(primaryCell,
-					    "Cell not in Simulation");
     }
-  else if (!noPrimaryInsert)
+  else if (SpaceCut::hasPrimaryInsert())
     ContainedComp::insertObjects(System);
-  
+
   return;
 }
-
-
-			    
-  
-void
-ContainedSpace::insertPair(Simulation& System,
-			   const std::vector<int>& insertCells,
-			   const attachSystem::FixedComp& FCA,
-			   const long int linkA,
-			   const attachSystem::FixedComp& FCB,
-			   const long int linkB)
-  /*!
-    Build the cells within the bounding space that
-    contains the complex outerSurf
-    \param System :: Simulation 
-    \param insertCells :: insert cells
-    \param FCA :: FixedComp A
-    \param linkA :: Link point [outward]
-    \param FCB :: FixedComp B
-    \param linkB :: Link point [outward]
-  */
-{
-  ELog::RegMethod RegA("ContainedSpace","insertPair");
-
-  HeadRule BBox;
-  BBox.addUnion(FCA.getFullRule(linkA));
-  BBox.addUnion(FCB.getFullRule(linkB));
-
-  for(const int pCell : insertCells)
-    {
-      MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
-      if (!outerObj)
-	throw ColErr::InContainerError<int>
-	  (pCell,"Primary cell does not exist");
-      outerObj->addSurfString(BBox.display());
-    }      
-  return;
-}
-
-  
+			  
 }  // NAMESPACE attachSystem

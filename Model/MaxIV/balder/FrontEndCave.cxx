@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderFrontEndCave.cxx
+ * File:   balder/FrontEndCave.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -80,14 +80,61 @@ namespace xraySystem
 
 FrontEndCave::FrontEndCave(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  wigIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(wigIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
+
+FrontEndCave::FrontEndCave(const FrontEndCave& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  frontWallThick(A.frontWallThick),length(A.length),
+  ringGap(A.ringGap),ringRadius(A.ringRadius),ringThick(A.ringThick),
+  outerGap(A.outerGap),outerThick(A.outerThick),
+  floorDepth(A.floorDepth),roofHeight(A.roofHeight),
+  floorThick(A.floorThick),roofThick(A.roofThick),
+  frontHoleRadius(A.frontHoleRadius),frontWallMat(A.frontWallMat),
+  wallMat(A.wallMat),roofMat(A.roofMat),floorMat(A.floorMat)
+  /*!
+    Copy constructor
+    \param A :: FrontEndCave to copy
+  */
+{}
+
+FrontEndCave&
+FrontEndCave::operator=(const FrontEndCave& A)
+  /*!
+    Assignment operator
+    \param A :: FrontEndCave to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      frontWallThick=A.frontWallThick;
+      length=A.length;
+      ringGap=A.ringGap;
+      ringRadius=A.ringRadius;
+      ringThick=A.ringThick;
+      outerGap=A.outerGap;
+      outerThick=A.outerThick;
+      floorDepth=A.floorDepth;
+      roofHeight=A.roofHeight;
+      floorThick=A.floorThick;
+      roofThick=A.roofThick;
+      frontHoleRadius=A.frontHoleRadius;
+      frontWallMat=A.frontWallMat;
+      wallMat=A.wallMat;
+      roofMat=A.roofMat;
+      floorMat=A.floorMat;
+    }
+  return *this;
+}
 
 FrontEndCave::~FrontEndCave() 
   /*!
@@ -156,28 +203,28 @@ FrontEndCave::createSurfaces()
   ELog::RegMethod RegA("FrontEndCave","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,wigIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,wigIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,wigIndex+3,Origin-X*outerGap,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerGap,X);
   // mid line divider
-  ModelSupport::buildPlane(SMap,wigIndex+4,Origin+X*(ringRadius+ringGap),X); 
-  ModelSupport::buildCylinder(SMap,wigIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringRadius+ringGap),X); 
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin+X*(ringRadius+ringGap),Z,ringRadius); 
-  ModelSupport::buildPlane(SMap,wigIndex+5,Origin-Z*floorDepth,Z);
-  ModelSupport::buildPlane(SMap,wigIndex+6,Origin+Z*roofHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);  
 
   // Walls
-  ModelSupport::buildPlane(SMap,wigIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(frontWallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,wigIndex+13,Origin-X*(outerGap+outerThick),X);
-  ModelSupport::buildCylinder(SMap,wigIndex+17,
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerGap+outerThick),X);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 		       Origin+X*(ringRadius+ringGap+ringThick),Z,ringRadius); 
-  ModelSupport::buildPlane(SMap,wigIndex+15,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-
 			   Z*(floorDepth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,wigIndex+16,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+
 			   Z*(roofHeight+roofThick),Z);  
 
-  ModelSupport::buildCylinder(SMap,wigIndex+107,Origin,Y,frontHoleRadius); 
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontHoleRadius); 
 
   return;
 }
@@ -193,28 +240,28 @@ FrontEndCave::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 3  7 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3  7 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,wigIndex," 2 -12 3 -4 7  5 -6 107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 7  5 -6 107 ");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,wigIndex," 2 -12 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -107 ");
   makeCell("FrontWallHole",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,wigIndex," 1 -12 -7 -4 17 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 -7 -4 17 5 -6 ");
   makeCell("RingWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,wigIndex," 1 -12 -3 13 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 -3 13 5 -6 ");
   makeCell("OutWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,wigIndex," 1 -12 13 -4 17 15 -5 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 17 15 -5 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,wigIndex," 1 -12 13 -4 17 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 17 6 -16 ");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,wigIndex,"1 -12 13 -4 17  15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -12 13 -4 17  15 -16 ");
   addOuterSurf(Out);      
 
   return;
@@ -232,8 +279,8 @@ FrontEndCave::createLinks()
   setConnect(0,Origin-Y*(length/2.0),-Y);
   setConnect(1,Origin+Y*(frontWallThick+length/2.0),Y);
   
-  setLinkSurf(0,-SMap.realSurf(wigIndex+1));
-  setLinkSurf(1,SMap.realSurf(wigIndex+12));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
   return;
 }
