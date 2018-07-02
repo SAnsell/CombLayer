@@ -259,9 +259,10 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletRadius",5.0);
 
 
-  Control.addVariable(hutName+"NChicane",1);
+  Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",400.0,-50.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
 
 
   

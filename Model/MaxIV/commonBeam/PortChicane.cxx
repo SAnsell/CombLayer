@@ -222,7 +222,7 @@ PortChicane::createObjects(Simulation& System)
   makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
-  makeCell("InnerSkinB",System,cellIndex++,plateMat,0.0,Out);
+  makeCell("InnerSkinB",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
   makeCell("OuterSkinA",System,cellIndex++,wallMat,0.0,Out);
@@ -231,41 +231,41 @@ PortChicane::createObjects(Simulation& System)
   makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
-  makeCell("OuterSkinB",System,cellIndex++,plateMat,0.0,Out);
+  makeCell("OuterSkinB",System,cellIndex++,wallMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -106 ");
   makeCell("LeftSide",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -14 4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -14 4 5 -106 ");
   makeCell("RightSide",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 -5 15 ");
   makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 -13 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 -13 15 -6 ");
   makeCell("InnerLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 15 -6 ");
   makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+innerStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
   makeCell("InnerBaseOver",System,cellIndex++,wallMat,0.0,Out+innerStr);
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 15 -6 ");
   makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+outerStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 15 -6 ");
   makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+outerStr);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -15 ");
   makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 3 -4 106 -6");
-  makeCell("InnerTopGap",System,cellIndex++,wallMat,0.0,Out+innerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 13 -14 106 -6");
+  makeCell("InnerTopGap",System,cellIndex++,0,0.0,Out+innerStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 3 -4 106 -6");
-  makeCell("OuterTopGap",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 13 -14 106 -6");
+  makeCell("OuterTopGap",System,cellIndex++,0,0.0,Out+outerStr);
 
   // needs to be group
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 23 -24 25 -6 ");
