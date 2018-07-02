@@ -259,7 +259,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletRadius",5.0);
 
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",0);
   PortChicaneGenerator PGen;
   PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
@@ -425,6 +425,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"FilterBoxNPorts",4);
 
   PItemGen.setCF<setVariable::CF50>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
   FlangeGen.setCF<setVariable::CF50>();
   FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten");  // 22 rotation
 
@@ -518,6 +519,7 @@ opticsVariables(FuncDataBase& Control,
 
   // first Two ports are CF100 
   PItemGen.setCF<setVariable::CF100>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
   // centre of mid point
   CPos=Geometry::Vec3D(0,-15.0,0);
   const std::string nameShield=preName+"ShieldPipePort";
@@ -526,6 +528,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,nameShield+"1",CPos,-ZVec);
 
   PItemGen.setCF<setVariable::CF40>(10.0);
+  PItemGen.setPlate(0.0,"Void");
   
   PItemGen.generatePort(Control,nameShield+"2",
 			Geometry::Vec3D(0,10,0),Geometry::Vec3D(-1,0,0));
@@ -570,9 +573,11 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZAxis(0,0,1);
 
   PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,nameView+"0",YAxis*14.0,XAxis);
   PItemGen.generatePort(Control,nameView+"1",YAxis*10.0,-XAxis);
   PItemGen.setCF<setVariable::CF63>(10.0);
+  PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,nameView+"2",-YAxis*2.0,ZAxis);
   PItemGen.generatePort(Control,nameView+"3",-YAxis*2.0,
 			Geometry::Vec3D(1,-1,0));
@@ -642,7 +647,7 @@ connectingVariables(FuncDataBase& Control)
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   PItemGen.setCF<setVariable::CF40>(3.0);
-
+  PItemGen.setPlate(0.0,"Void");  
   
   BellowGen.setCF<CF40>();  
   BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);

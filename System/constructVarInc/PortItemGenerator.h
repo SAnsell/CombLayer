@@ -45,7 +45,7 @@ class PortItemGenerator
   
   double flangeLen;          ///< Flange length
   double flangeRadius;       ///< Flange radius
-  double plateThick;
+  double plateThick;         ///< Plate thickness
   std::string plateMat;
   
   bool outerVoid;            ///< Construct outer void

@@ -62,8 +62,6 @@ class portItem :
   double flangeLength;       ///< flange thick(length)
   double plateThick;         ///< Plate on flange [if thick>0]
 
-
-  
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
   int plateMat;              ///< plate Material
