@@ -94,6 +94,8 @@ PortChicane::PortChicane(const std::string& Key) :
 {
   nameSideIndex(7,"innerLeft");
   nameSideIndex(8,"innerRight");
+  nameSideIndex(2,"outerLeft");
+  nameSideIndex(3,"outerRight");
 }
 
   

@@ -568,19 +568,15 @@ ContainedGroup::registerSpaceCut(const std::string& Key,
 }
 
 void
-ContainedGroup::registerSpaceIsolation(const std::string& Key,
-				       const long int linkA,
-				       const long int linkB)
+ContainedGroup::clearSpace(const std::string& Key)
   /*!
-    Register the surface space
+    Clear a SpaceCut
     \param Key :: Group name
-    \param linkA :: Signed link point
-    \param linkB :: Signed link point
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","registerSpaceCut");
+  ELog::RegMethod RegA("ContainedGroup","clearSpace");
   
-  getCC(Key).registerSpaceIsolation(linkA,linkB);
+  getCC(Key).clear();
   return;
 }
 

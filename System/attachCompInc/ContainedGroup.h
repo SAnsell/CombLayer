@@ -110,6 +110,7 @@ class ContainedGroup
   ContainedSpace& getCC(const std::string&);
   const ContainedSpace& getCC(const std::string&) const;
 
+  void clearSpace(const std::string&);
   void setPrimaryCell(const std::string&,const int);
   void registerSpaceCut(const std::string&,
 			const long int,const long int);

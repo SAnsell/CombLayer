@@ -501,7 +501,6 @@ OpticsHutch::createChicane(Simulation& System)
       PItem->addInsertCell("Inner",getCell("InnerWall",0));
       PItem->addInsertCell("Inner",getCell("LeadWall",0));
       PItem->addInsertCell("Inner",getCell("OuterWall",0));
-      PItem->addInsertCell("Main",ContainedComp::getInsertCells());
       // set surfaces:
 
       PItem->setCutSurf("innerWall",*this,"innerLeftWall");
@@ -512,8 +511,18 @@ OpticsHutch::createChicane(Simulation& System)
       PItem->registerSpaceCut("Main",
 			      PItem->getSideIndex("innerLeft"),
 			      PItem->getSideIndex("innerRight"));
-			      
+
+      
       PItem->createAll(System,*this,getSideIndex("leftWall"));
+
+      PItem->clearSpace("Main");
+      PItem->addInsertCell("Main",getCell("OuterVoid",0));
+
+      PItem->setPrimaryCell("Main",getCell("OuterVoid"));
+      PItem->registerSpaceCut("Main",
+			      PItem->getSideIndex("outerLeft"),
+			      PItem->getSideIndex("outerRight"));
+      PItem->insertObjects(System);
       PChicane.push_back(PItem);
       //      PItem->splitObject(System,23,getCell("WallVoid"));
       //      PItem->splitObject(System,24,getCell("SplitVoid"));      
