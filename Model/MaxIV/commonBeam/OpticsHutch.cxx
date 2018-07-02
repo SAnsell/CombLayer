@@ -183,6 +183,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
+  outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
@@ -280,7 +281,11 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			       Origin+Z*(height+steelThick+pbRoofThick),Z);  
 
-  
+  if (outerOutVoid>Geometry::zeroTol)
+    ModelSupport::buildPlane
+      (SMap,buildIndex+1033,
+       Origin-X*(outWidth+steelThick+pbWallThick+innerOutVoid),X);  
+
   if (std::abs(ringWallAngle)>Geometry::zeroTol)
     {
       Geometry::Vec3D RPoint(Origin+X*ringWidth+Y*ringWallLen);
@@ -296,6 +301,7 @@ OpticsHutch::createSurfaces()
       ModelSupport::buildPlaneRotAxis
 	(SMap,buildIndex+134,RPoint,X,-Z,ringWallAngle);
     }
+  
   if (inletRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
       (SMap,buildIndex+107,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
@@ -332,6 +338,7 @@ OpticsHutch::createObjects(Simulation& System)
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
 
+
   // walls:
   int HI(buildIndex);
 
@@ -365,6 +372,7 @@ OpticsHutch::createObjects(Simulation& System)
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;
     }
+  // Outer void for chicanes etc
 
   if (inletRadius>Geometry::zeroTol)
     {
@@ -384,8 +392,15 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
   
   // Exclude:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");
+  if (outerOutVoid>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,HI,"1M -2M 1033 -3M 15 -6M ");
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 1033 (-4M:-104M) 15 -6M ");
+    }
+  else
+    Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");
+  
   addOuterSurf(Out);      
 
   return;

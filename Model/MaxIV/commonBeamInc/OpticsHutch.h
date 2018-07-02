@@ -60,7 +60,8 @@ class OpticsHutch :
   double outerThick;            ///< Outer wall/roof skin
   double floorThick;            ///< Floor thickness
 
-  double innerOutVoid;          ///< Extension for inner left void space 
+  double innerOutVoid;          ///< Extension for inner left void space
+  double outerOutVoid;          ///< Extension for outer left void space 
   
   double inletXStep;            ///< Inlet XStep
   double inletZStep;            ///< Inlet ZStep  
