@@ -59,7 +59,7 @@ namespace setVariable
 {
 
 PortChicaneGenerator::PortChicaneGenerator() :
-  width(60.0),height(45.0),clearGap(8.0),
+  width(60.0),height(45.0),clearGap(8.0),downStep(12.0),
   overHang(4.0),skinThick(0.3),plateThick(1.2),
   wallThick(0.8),plateMat("Lead"),
   wallMat("Stainless304")
@@ -177,6 +177,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"ClearGap",clearGap);
+  Control.addVariable(keyName+"DownStep",downStep);
   Control.addVariable(keyName+"OverHang",overHang);
   
   Control.addVariable(keyName+"InnerSkin",skinThick);

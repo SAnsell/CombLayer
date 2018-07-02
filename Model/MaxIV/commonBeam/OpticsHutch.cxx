@@ -474,7 +474,7 @@ OpticsHutch::createChicane(Simulation& System)
 
   const size_t NChicane=
     Control.EvalDefVar<size_t>(keyName+"NChicane",0);
-  ELog::EM<<"NC == "<<NChicane<<ELog::endDiag;
+
   for(size_t i=0;i<NChicane;i++)
     {
       const std::string NStr(std::to_string(i));
@@ -493,7 +493,10 @@ OpticsHutch::createChicane(Simulation& System)
       PItem->setCutSurf("outerWall",*this,"leftWall");
 
       PItem->setPrimaryCell("Main",getCell("WallVoid"));
-      PItem->registerSpaceCut("Main",8,9);
+  
+      PItem->registerSpaceCut("Main",
+			      PItem->getSideIndex("innerLeft"),
+			      PItem->getSideIndex("innerRight"));
 			      
       PItem->createAll(System,*this,getSideIndex("leftWall"));
       PChicane.push_back(PItem);

@@ -44,7 +44,8 @@ class PortChicane : public attachSystem::ContainedGroup,
 
   double height;                 ///< height of system 
   double width;                  ///< widht of syste
-  double clearGap;               ///< clearance gap
+  double clearGap;               ///< clearance between plates
+  double downStep;               ///< distance wall falls into gap
   double overHang;               ///< extra round plates
 
   double innerSkin;              ///< skin thickness

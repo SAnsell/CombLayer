@@ -240,9 +240,7 @@ ConnectZone::buildObjects(Simulation& System,
   ionPumpB->setFront(*pipeC,2);
   ionPumpB->createAll(System,*pipeC,2);
 
-  
   pipeD->addInsertCell(ContainedComp::getInsertCells());
-  pipeD->setNoPrimInsert();
   pipeD->registerSpaceCut(1,2);
   pipeD->setFront(*ionPumpB,2);
   pipeD->createAll(System,*ionPumpB,2);

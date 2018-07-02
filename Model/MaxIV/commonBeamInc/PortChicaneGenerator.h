@@ -42,6 +42,7 @@ class PortChicaneGenerator
   double width;            ///< Full width
   double height;           ///< Full height
   double clearGap;         ///< Clearance gap for pipes [+midwall]
+  double downStep;         ///< Clearance gap for vertical
   double overHang;         ///< over hang cover of walls
 
   double skinThick;        ///< Skin thickness

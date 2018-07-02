@@ -261,7 +261,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"NChicane",1);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",0,0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",400.0,-50.0);
 
 
   

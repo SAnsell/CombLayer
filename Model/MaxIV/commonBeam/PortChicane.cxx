@@ -91,7 +91,10 @@ PortChicane::PortChicane(const std::string& Key) :
     Default constructor
     \param Key :: Key name for variables
   */
-{}
+{
+  nameSideIndex(7,"innerLeft");
+  nameSideIndex(8,"innerRight");
+}
 
   
 void
@@ -108,6 +111,7 @@ PortChicane::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   clearGap=Control.EvalVar<double>(keyName+"ClearGap");
+  downStep=Control.EvalVar<double>(keyName+"DownStep");
   overHang=Control.EvalVar<double>(keyName+"OverHang");
 
   innerSkin=Control.EvalVar<double>(keyName+"InnerSkin");
@@ -173,6 +177,8 @@ PortChicane::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,
+			   Origin+Z*(-downStep+height/2.0),Z);
 
 
   ModelSupport::buildPlane(SMap,buildIndex+13,
@@ -206,7 +212,7 @@ PortChicane::createObjects(Simulation& System)
   const std::string outerStr=getRuleStr("outerWall");
 	
   // inner clearance gap
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -106 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
@@ -241,9 +247,10 @@ PortChicane::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 5 -6 ");
   makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+innerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
+  makeCell("InnerBaseOver",System,cellIndex++,wallMat,0.0,Out+innerStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -5 ");
-  makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 5 -6 ");
   makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+outerStr);
@@ -251,13 +258,19 @@ PortChicane::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 5 -6 ");
   makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+outerStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -5 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -15 ");
   makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 3 -4 106 -6");
+  makeCell("InnerTopGap",System,cellIndex++,wallMat,0.0,Out+innerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 3 -4 106 -6");
+  makeCell("OuterTopGap",System,cellIndex++,wallMat,0.0,Out+outerStr);
 
   // needs to be group
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 23 -24 25 -6 ");
   addOuterSurf("Main",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -106 ");
   addOuterSurf("Inner",Out);
   return;
 }
@@ -308,8 +321,6 @@ PortChicane::createLinks()
   FixedComp::setConnect(10,backPt+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+6));
   
-  nameSideIndex(8,"innerLeft");
-  nameSideIndex(9,"innerRight");
   
   return;
 }

@@ -663,9 +663,6 @@ SpaceCut::initialize(FixedComp& FC)
 {
   ELog::RegMethod RegA("SpaceCut","initialize(FC)");
 
-  FCName=FC.getKeyName();
-  if (FCName=="BalderOpticsHutChicane0")
-    ELog::EM<<"IFC == "<<FCName<<" "<<active<<ELog::endDiag;
   if (active)
     {
       if (ABLink.first)
@@ -774,8 +771,6 @@ SpaceCut::insertObjects(Simulation& System,
       calcBoundaryBox(System);
       buildWrapCell(System,primaryCell,buildCell);	    
     }
-  if (FCName=="BalderOpticsHutChicane0")
-    ELog::EM<<"FCS == "<<FCName<<" "<<buildCell<<ELog::endDiag;
 
   if (!noPrimaryInsert && primaryCell && buildCell)
     {

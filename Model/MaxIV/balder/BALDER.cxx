@@ -194,7 +194,7 @@ BALDER::build(Simulation& System,
   joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->setSpaceLinkCopy(1,*opticsHut,
-			 opticsHut->getSideIndex("-innerBack"));
+			      opticsHut->getSideIndex("-innerBack"));
   joinPipeB->registerSpaceCut(1,0);
   joinPipeB->createAll(System,*opticsBeam,2);
 
@@ -211,7 +211,6 @@ BALDER::build(Simulation& System,
 
   System.removeCell(opticsHut->getCell("Void"));
 
-
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*frontCave,2);
 
@@ -223,7 +222,8 @@ BALDER::build(Simulation& System,
   // horrid way to create a SECOND register space [MAKE INTERNAL]
   joinPipeB->clear();  // reinitialize
   joinPipeB->setSpaceLinkCopy(0,*opticsHut,-2);
-  joinPipeB->registerSpaceIsolation(0,2);
+  //  joinPipeB->registerSpaceIsolation(0,2);
+  joinPipeB->registerSpaceCut(0,2);
   joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
   joinPipeB->insertObjects(System);
 
