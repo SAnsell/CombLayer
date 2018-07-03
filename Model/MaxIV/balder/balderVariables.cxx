@@ -87,18 +87,18 @@ frontCaveVariables(FuncDataBase& Control,
   Control.addVariable(preName+"FrontEndFrontWallThick",160.0);
   
   Control.addVariable(preName+"FrontEndLength",2100.0);
-  Control.addVariable(preName+"FrontEndRingGap",75.0);
+  Control.addVariable(preName+"FrontEndRingGap",250.0);
   Control.addVariable(preName+"FrontEndRingRadius",4000.0);
-  Control.addVariable(preName+"FrontEndRingThick",80.0);
+  Control.addVariable(preName+"FrontEndRingThick",100.0);
 
-  Control.addVariable(preName+"FrontEndOuterGap",75.0);
-  Control.addVariable(preName+"FrontEndOuterThick",80.0);
+  Control.addVariable(preName+"FrontEndOuterGap",100.0);
+  Control.addVariable(preName+"FrontEndOuterThick",100.0);
 
-  Control.addVariable(preName+"FrontEndFloorDepth",75.0);
-  Control.addVariable(preName+"FrontEndFloorThick",80.0);
+  Control.addVariable(preName+"FrontEndFloorDepth",130.0);
+  Control.addVariable(preName+"FrontEndFloorThick",100.0);
 
-  Control.addVariable(preName+"FrontEndRoofHeight",75.0);
-  Control.addVariable(preName+"FrontEndRoofThick",80.0);
+  Control.addVariable(preName+"FrontEndRoofHeight",180.0);
+  Control.addVariable(preName+"FrontEndRoofThick",100.0);
 
   Control.addVariable(preName+"FrontEndFrontHoleRadius",7.0);
 
@@ -237,17 +237,23 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingWidth",60.0);
   Control.addVariable(hutName+"RingWallLen",105.0);
   Control.addVariable(hutName+"RingWallAngle",18.50);
+  Control.addVariable(hutName+"RingConcThick",100.0);
+  
   Control.addVariable(hutName+"InnerThick",0.3);
+  
   Control.addVariable(hutName+"PbWallThick",2.0);
   Control.addVariable(hutName+"PbRoofThick",2.0);
   Control.addVariable(hutName+"PbFrontThick",2.0);
   Control.addVariable(hutName+"PbBackThick",10.0);
+
   Control.addVariable(hutName+"OuterThick",0.3);
+
   Control.addVariable(hutName+"FloorThick",50.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
   Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"FloorMat","Concrete");
 
@@ -266,7 +272,6 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
 
 
-  
   return;
 }
 

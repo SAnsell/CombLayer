@@ -157,7 +157,7 @@ flukaTally::getKeyName() const
 {
   return keyName;
 }
-  
+
 void
 flukaTally::setAuxParticles(const std::string& P)
   /*!
@@ -166,6 +166,18 @@ flukaTally::setAuxParticles(const std::string& P)
   */
 {
   auxParticle=P;
+  return;
+}
+
+void
+flukaTally::setBinary()
+  /*!
+    Set the tally to binary
+  */
+{
+  ELog::RegMethod RegA("flukaTally","setBinary");
+
+  outputUnit=-std::abs(outputUnit);
   return;
 }
 

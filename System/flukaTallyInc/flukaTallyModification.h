@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTallyModification.h
+ * File:   flukaTallyInc/flukaTallyModification.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -32,6 +32,8 @@ namespace flukaSystem
     getActiveTally(SimFLUKA&,const std::string&);
 
   
+  int setBinaryOutput(SimFLUKA&,const std::string&);
+
   int setDoseType(SimFLUKA&,const std::string&,
 		  const std::string&,const std::string&);
 

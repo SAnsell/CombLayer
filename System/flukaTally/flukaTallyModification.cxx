@@ -93,7 +93,7 @@ getActiveTally(SimFLUKA& Sim,const std::string& tName)
 }
 
 int
-setBinaryOutput(SimFLUKA& Sim,const int tNumber) 
+setBinaryOutput(SimFLUKA& Sim,const std::string& tName) 
   /*!
     Set the binary file
     \param Sim :: System to access tally tables
@@ -103,7 +103,17 @@ setBinaryOutput(SimFLUKA& Sim,const int tNumber)
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setBinaryOutput");
 
-  return 0;
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
+
+  if (ATallySet.empty())
+    throw ColErr::InContainerError<std::string>
+      (tName,"Unknown tally");
+  
+  for(flukaTally* mc: ATallySet)
+    mc->setBinary();
+
+  return 1;
 }
   
 int
@@ -134,12 +144,15 @@ setParticleType(SimFLUKA& Sim,const int tNumber,
   return fnum;
 }
 
+  
 int
 setDoseType(SimFLUKA& Sim,const std::string& tName,
 	    const std::string& particle,
 	    const std::string& doseType) 
-/*!
-    Get the last tally point based on the tallynumber
+ /*!
+    If the tally is a does-eq type tally then adjust
+    the type of dose scoring. Can also set dose scoring
+    for a single particle.
     \param Sim :: System to access tally tables
     \param tName :: Tally number [0 for all]
     \param particle :: auxillary particle 

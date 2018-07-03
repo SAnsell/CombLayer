@@ -88,17 +88,24 @@ tallyModification(SimFLUKA& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
-	    "  -- particle {tallyNameNumber} [newtype] \n"
-	    "  -- auxParticle {tallyNameNumber} [newtype] \n"
-	    "  -- doseType {tallyNameNumber} [newtype] \n"
-	    "  -- energy {tallyNameNumber} Emin Emax NPts LinearFlag  \n"
-	    "  -- angle {tallyNameNumber} Amin Amax NPts LogFlag  \n"
+	    "  -- binary :: tallyNameNumber \n"
+	    "  -- particle ::tallyNameNumber particle \n"
+	    "  -- auxParticle tallyNameNumber particle \n"
+	    "  -- doseType : tallyNameNumber {particle} [newtype] \n"
+	    "  -- energy : tallyNameNumber Emin Emax NPts LinearFlag  \n"
+	    "  -- angle : tallyNameNumber Amin Amax NPts LogFlag  \n"
 		  <<ELog::endBasic
 		  <<ELog::endErr;
           return;
 	}
       
-      if(key=="doseType")
+      if(key=="binary")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for doseType");
+	  flukaSystem::setBinaryOutput(System,tName);
+        }
+      else if(key=="doseType")
         {
 	  const std::string tName=IParam.getValueError<std::string>
 	    ("TMod",i,1,"No tally name for doseType");

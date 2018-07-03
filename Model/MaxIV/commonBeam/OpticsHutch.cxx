@@ -130,6 +130,7 @@ OpticsHutch::operator=(const OpticsHutch& A)
       ringWidth=A.ringWidth;
       ringWallLen=A.ringWallLen;
       ringWallAngle=A.ringWallAngle;
+      ringConcThick=A.ringWallAngle;
       outWidth=A.outWidth;
       innerThick=A.innerThick;
       pbWallThick=A.pbWallThick;
@@ -142,6 +143,7 @@ OpticsHutch::operator=(const OpticsHutch& A)
       holeZStep=A.holeZStep;
       holeRadius=A.holeRadius;
       skinMat=A.skinMat;
+      ringMat=A.ringMat;
       pbMat=A.pbMat;
       floorMat=A.floorMat;
     }
@@ -173,6 +175,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
   ringWallLen=Control.EvalVar<double>(keyName+"RingWallLen");
   ringWallAngle=Control.EvalVar<double>(keyName+"RingWallAngle");
+  ringConcThick=Control.EvalVar<double>(keyName+"RingConcThick");
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
@@ -195,6 +198,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
+  ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
   
@@ -300,6 +304,9 @@ OpticsHutch::createSurfaces()
       RPoint += X*outerThick;
       ModelSupport::buildPlaneRotAxis
 	(SMap,buildIndex+134,RPoint,X,-Z,ringWallAngle);
+      RPoint += X*ringConcThick;
+      ModelSupport::buildPlaneRotAxis
+	(SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
     }
   
   if (inletRadius>Geometry::zeroTol)
@@ -372,6 +379,17 @@ OpticsHutch::createObjects(Simulation& System)
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;
     }
+  
+  // floor
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
+				    "1M -2M 3M (-4M:-104M) 15 -5 ");
+  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+
+    // ring wall
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,HI,"1M -2M -2004 4M 104M 15 -6M ");
+  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out);
+
   // Outer void for chicanes etc
 
   if (inletRadius>Geometry::zeroTol)
@@ -385,18 +403,13 @@ OpticsHutch::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2 -2M -117 ");
       makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
     }
-  
-  // floor
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-				    "1M -2M 3M (-4M:-104M) 15 -5 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-  
+    
   // Exclude:
   if (outerOutVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,HI,"1M -2M 1033 -3M 15 -6M ");
       makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 1033 (-4M:-104M) 15 -6M ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 1033 -2004  15 -6M ");
     }
   else
     Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");

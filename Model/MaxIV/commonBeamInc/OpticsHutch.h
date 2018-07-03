@@ -45,13 +45,15 @@ class OpticsHutch :
  private:
   
   double depth;                 ///< void height 
-  double height;                ///< void deptth
+  double height;                ///< void depth
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
   double ringWallLen;           ///< void flat length [before angle]
   double ringWallAngle;         ///< angle on ring side wall
-  double outWidth;              ///< out side width
 
+  double ringConcThick;         ///< Thickness of concreate on ring side
+  
+  double outWidth;              ///< out side width
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
   double pbFrontThick;          ///< Thickness of lead in front plate
@@ -72,6 +74,7 @@ class OpticsHutch :
   double holeRadius;           ///< Hole radius
   
   int skinMat;                ///< Fe layer material for walls
+  int ringMat;                ///< Conc layer material for ring walls
   int pbMat;                  ///< pb layer material for walls 
   int floorMat;               ///< Floor layer
 
