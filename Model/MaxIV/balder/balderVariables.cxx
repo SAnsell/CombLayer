@@ -100,6 +100,11 @@ frontCaveVariables(FuncDataBase& Control,
   Control.addVariable(preName+"FrontEndRoofHeight",180.0);
   Control.addVariable(preName+"FrontEndRoofThick",100.0);
 
+  Control.addVariable(preName+"FrontEndSegmentXOffset",100.0);
+  Control.addVariable(preName+"FrontEndSegmentAngle",109.0);
+  Control.addVariable(preName+"FrontEndSegmentLength",1000.0);
+  Control.addVariable(preName+"FrontEndSegmentThick",100.0);
+
   Control.addVariable(preName+"FrontEndFrontHoleRadius",7.0);
 
   
@@ -467,10 +472,10 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.generateBox(Control,preName+"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,preName+"Mirror",0.0, 0.0, -0.5, 0.0,0.0);
+  MirrGen.generateMirror(Control,preName+"Mirror",0.0, 0.0, -0.5, 00.0,0.0);
 
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,preName+"MirrorB",0.0, 0.0, 0.5, 0.0,00.0);
+  MirrGen.generateMirror(Control,preName+"MirrorB",0.0, 0.0, 0.5, 90.0,0.0);
 
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 

@@ -159,6 +159,12 @@ Mirror::createSurfaces()
 
   QXA.rotate(PY);
   QXA.rotate(PZ);
+
+  const Geometry::Quaternion QYA
+    (Geometry::Quaternion::calcQRotDeg(phi,PY));
+
+  QYA.rotate(PX);
+  QYA.rotate(PZ);
   
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(length/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(length/2.0),PY);

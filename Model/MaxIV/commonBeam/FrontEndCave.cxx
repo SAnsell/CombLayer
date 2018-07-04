@@ -167,6 +167,11 @@ FrontEndCave::populate(const FuncDataBase& Control)
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
 
+  segmentXOffset=Control.EvalVar<double>(keyName+"SegmentXOffset");
+  segmentAngle=Control.EvalVar<double>(keyName+"SegmentAngle");
+  segmentLength=Control.EvalVar<double>(keyName+"SegmentLength");
+  segmentThick=Control.EvalVar<double>(keyName+"SegmentThick");
+
   frontHoleRadius=Control.EvalVar<double>(keyName+"FrontHoleRadius");
 
 

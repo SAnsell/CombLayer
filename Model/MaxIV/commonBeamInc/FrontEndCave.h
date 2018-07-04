@@ -57,13 +57,17 @@ class FrontEndCave :
   double floorThick;              ///< floor thickness
   double roofThick;               ///< roof thickness
 
+  double segmentXOffset;            ///< Step from centre line
+  double segmentAngle;            ///< Angle off front wall
+  double segmentLength;           ///< Length
+  double segmentThick;            ///< Thickness
+
   double frontHoleRadius;         ///< end hole
   
   int frontWallMat;          ///< front wall material
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
-  
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
