@@ -185,7 +185,7 @@ FrontEndCave::populate(const FuncDataBase& Control)
 
 void
 FrontEndCave::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to

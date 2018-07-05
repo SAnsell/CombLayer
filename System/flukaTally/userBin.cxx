@@ -215,7 +215,7 @@ userBin::write(std::ostream& OX) const
   
   cx<<"USRBIN "<<meshType<<" "<<particle<<" "
     <<outputUnit<<" "<<maxCoord;  
-  cx<<" mesh"<<std::to_string(outputUnit);
+  cx<<" mesh"<<std::to_string(std::abs(outputUnit));
   
   StrFunc::writeFLUKA(cx.str(),OX);
 

@@ -475,7 +475,7 @@ opticsVariables(FuncDataBase& Control,
   MirrGen.generateMirror(Control,preName+"Mirror",0.0, 0.0, -0.5, 00.0,0.0);
 
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,preName+"MirrorB",0.0, 0.0, 0.5, 90.0,0.0);
+  MirrGen.generateMirror(Control,preName+"MirrorB",0.0, 0.0, 0.5, 0.0,0.0);
 
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
