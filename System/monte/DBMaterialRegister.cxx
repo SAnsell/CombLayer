@@ -1186,10 +1186,12 @@ DBMaterial::initMaterial()
 
   // Material #141: Hydrogen gas+carbon+O for vacuum pipes (Brem production)
   // Total atom density 2.4305e-5 Mol/Angstrom -  300K R 100kPa
+  // 80% H2  / 10% C / 10% O2
+  // Mass density  2.4305e-5 Mol/Angstrom -  300K R 100kPa
   MObj.setMaterial(141,"VacuumResidual",
-		   "1001.70c 4.13190e-5 "
-		   "6000.70c 4.86105e-5 "
-		   "8016.70c 2.43053e-5 ","",MLib);
+		   "1001.70c 3.888e-5 "
+		   "6000.70c 2.43e-6 "
+		   "8016.70c 4.86e-6 ","",MLib);
   setMaterial(MObj);
 
   return;

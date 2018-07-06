@@ -174,7 +174,6 @@ FrontEndCave::populate(const FuncDataBase& Control)
 
   frontHoleRadius=Control.EvalVar<double>(keyName+"FrontHoleRadius");
 
-
   frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
@@ -230,6 +229,15 @@ FrontEndCave::createSurfaces()
 			   Z*(roofHeight+roofThick),Z);  
 
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontHoleRadius); 
+
+
+  Geometry::Vec3D RPoint(Origin+X*segmentXOffset+
+			 Y*(frontWallThick+length/2.0));
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+104,RPoint,X,-Z,segmentAngle);
+  RPoint += X*segmentThick;
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+114,RPoint,X,-Z,segmentAngle);
 
   return;
 }

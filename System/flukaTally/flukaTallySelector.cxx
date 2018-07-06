@@ -88,12 +88,12 @@ tallyModification(SimFLUKA& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
-	    "  -- binary :: tallyNameNumber \n"
-	    "  -- particle ::tallyNameNumber particle \n"
-	    "  -- auxParticle tallyNameNumber particle \n"
-	    "  -- doseType : tallyNameNumber {particle} [newtype] \n"
-	    "  -- energy : tallyNameNumber Emin Emax NPts LinearFlag  \n"
-	    "  -- angle : tallyNameNumber Amin Amax NPts LogFlag  \n"
+	    "  -- binary :: tallyName/Number \n"
+	    "  -- particle ::tallyName/Number particle \n"
+	    "  -- auxParticle tallyName/Number particle \n"
+	    "  -- doseType : tallyName/Number {particle} [newtype] \n"
+	    "  -- energy : tallyName/Number Emin Emax NPts LinearFlag  \n"
+	    "  -- angle : tallyName/Number Amin Amax NPts LogFlag  \n"
 		  <<ELog::endBasic
 		  <<ELog::endErr;
           return;
