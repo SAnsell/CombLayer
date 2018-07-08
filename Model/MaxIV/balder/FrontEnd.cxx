@@ -198,13 +198,17 @@ FrontEnd::buildObjects(Simulation& System)
   dipolePipe->setFront(*wigglerBox,2);
   dipolePipe->createAll(System,*wigglerBox,2);
 
+  eCutDisk->setNoInsert();
+  eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
+  eCutDisk->createAll(System,*dipolePipe,-2);
+
   bellowA->addInsertCell(ContainedComp::getInsertCells());
   bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
 
   collTubeA->addInsertCell(ContainedComp::getInsertCells());
   collTubeA->registerSpaceCut(1,2);
-  collTubeA->createAll(System,*bellowA,2);
+  collTubeA->createAll(System,*bellowA,2);  
 
   collA->addInsertCell(collTubeA->getCell("Void"));
   collA->createAll(System,*collTubeA,0);
@@ -235,15 +239,11 @@ FrontEnd::buildObjects(Simulation& System)
 
   collC->addInsertCell(collTubeC->getCell("Void"));
   collC->createAll(System,*collTubeC,0);
-  
-  eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(collTubeC->getCell("Void"));
-  eCutDisk->createAll(System,*collC,2);
-   
+     
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
   flightPipe->registerSpaceCut(1,2);
   flightPipe->createAll(System,*collTubeC,2);
-  
+
   lastComp=flightPipe;
   return;
 }
