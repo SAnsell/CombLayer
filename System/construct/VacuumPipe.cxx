@@ -94,7 +94,11 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(0,"front");
+  FixedComp::nameSideIndex(1,"back");
+  FixedComp::nameSideIndex(6,"midPoint");
+}
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
@@ -716,9 +720,6 @@ VacuumPipe::createLinks()
       FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
     }
 
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(6,"midPoint");
 
   return;
 }

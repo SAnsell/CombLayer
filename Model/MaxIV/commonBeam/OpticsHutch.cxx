@@ -86,7 +86,9 @@ namespace xraySystem
 
 OpticsHutch::OpticsHutch(const std::string& Key) : 
   attachSystem::FixedOffset(Key,16),
-  attachSystem::ContainedComp(),attachSystem::CellMap()
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,7 +97,7 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
 
 OpticsHutch::OpticsHutch(const OpticsHutch& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   depth(A.depth),height(A.height),length(A.length),
   ringWidth(A.ringWidth),ringWallLen(A.ringWallLen),
   ringWallAngle(A.ringWallAngle),outWidth(A.outWidth),
@@ -123,6 +125,7 @@ OpticsHutch::operator=(const OpticsHutch& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       depth=A.depth;
       height=A.height;
@@ -305,8 +308,12 @@ OpticsHutch::createSurfaces()
       ModelSupport::buildPlaneRotAxis
 	(SMap,buildIndex+134,RPoint,X,-Z,ringWallAngle);
       RPoint += X*ringConcThick;
-      ModelSupport::buildPlaneRotAxis
-	(SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
+      if (!ExternalCut::isActive("ringWall"))
+	{
+	  ModelSupport::buildPlaneRotAxis
+	    (SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
+	  ExternalCut::setCutSurf("ringWall",-SMap.realSurf(buildIndex+2004));
+	}
     }
   
   if (inletRadius>Geometry::zeroTol)
@@ -386,9 +393,10 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
 
     // ring wall
-  Out=ModelSupport::getSetComposite
-    (SMap,buildIndex,HI,"1M -2M -2004 4M 104M 15 -6M ");
-  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out);
+  const std::string ringWall=ExternalCut::getRuleStr("ringWall");
+
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1M -2M 4M 104M 15 -6M ");
+  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out+ringWall);
 
   // Outer void for chicanes etc
 
@@ -409,7 +417,8 @@ OpticsHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,HI,"1M -2M 1033 -3M 15 -6M ");
       makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 1033 -2004  15 -6M ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 1033 15 -6M ");
+      Out+=ringWall;
     }
   else
     Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");

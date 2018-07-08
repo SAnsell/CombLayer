@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -70,6 +71,9 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -79,62 +83,21 @@ namespace xraySystem
 {
 
 FrontEndCave::FrontEndCave(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap()
+  attachSystem::FixedOffset(Key,10),
+  attachSystem::ContainedSpace(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
-
-FrontEndCave::FrontEndCave(const FrontEndCave& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),
-  frontWallThick(A.frontWallThick),length(A.length),
-  ringGap(A.ringGap),ringRadius(A.ringRadius),ringThick(A.ringThick),
-  outerGap(A.outerGap),outerThick(A.outerThick),
-  floorDepth(A.floorDepth),roofHeight(A.roofHeight),
-  floorThick(A.floorThick),roofThick(A.roofThick),
-  frontHoleRadius(A.frontHoleRadius),frontWallMat(A.frontWallMat),
-  wallMat(A.wallMat),roofMat(A.roofMat),floorMat(A.floorMat)
-  /*!
-    Copy constructor
-    \param A :: FrontEndCave to copy
-  */
-{}
-
-FrontEndCave&
-FrontEndCave::operator=(const FrontEndCave& A)
-  /*!
-    Assignment operator
-    \param A :: FrontEndCave to copy
-    \return *this
-  */
 {
-  if (this!=&A)
-    {
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      frontWallThick=A.frontWallThick;
-      length=A.length;
-      ringGap=A.ringGap;
-      ringRadius=A.ringRadius;
-      ringThick=A.ringThick;
-      outerGap=A.outerGap;
-      outerThick=A.outerThick;
-      floorDepth=A.floorDepth;
-      roofHeight=A.roofHeight;
-      floorThick=A.floorThick;
-      roofThick=A.roofThick;
-      frontHoleRadius=A.frontHoleRadius;
-      frontWallMat=A.frontWallMat;
-      wallMat=A.wallMat;
-      roofMat=A.roofMat;
-      floorMat=A.floorMat;
-    }
-  return *this;
+  nameSideIndex(2,"outerWall");
+  nameSideIndex(3,"ringWall");
+  nameSideIndex(7,"ringAngleWall");
+  nameSideIndex(9,"connectPt");
 }
+
 
 FrontEndCave::~FrontEndCave() 
   /*!
@@ -158,19 +121,19 @@ FrontEndCave::populate(const FuncDataBase& Control)
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
   ringGap=Control.EvalVar<double>(keyName+"RingGap");
-  ringRadius=Control.EvalVar<double>(keyName+"RingRadius");
-  ringThick=Control.EvalVar<double>(keyName+"RingThick");
   outerGap=Control.EvalVar<double>(keyName+"OuterGap");
-  outerThick=Control.EvalVar<double>(keyName+"OuterThick");
+
+  outerWallThick=Control.EvalVar<double>(keyName+"OuterWallThick");
+  ringWallThick=Control.EvalVar<double>(keyName+"RingWallThick");
+    
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
 
-  segmentXOffset=Control.EvalVar<double>(keyName+"SegmentXOffset");
-  segmentAngle=Control.EvalVar<double>(keyName+"SegmentAngle");
   segmentLength=Control.EvalVar<double>(keyName+"SegmentLength");
-  segmentThick=Control.EvalVar<double>(keyName+"SegmentThick");
+  segmentAngle=Control.EvalVar<double>(keyName+"SegmentAngle");
+
 
   frontHoleRadius=Control.EvalVar<double>(keyName+"FrontHoleRadius");
 
@@ -207,38 +170,55 @@ FrontEndCave::createSurfaces()
   ELog::RegMethod RegA("FrontEndCave","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  if (!ExternalCut::isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerGap,X);
-  // mid line divider
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringRadius+ringGap),X); 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,
-			      Origin+X*(ringRadius+ringGap),Z,ringRadius); 
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringGap,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);  
-
-  // Walls
-  ModelSupport::buildPlane(SMap,buildIndex+12,
-			   Origin+Y*(frontWallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerGap+outerThick),X);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,
-		       Origin+X*(ringRadius+ringGap+ringThick),Z,ringRadius); 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-
-			   Z*(floorDepth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+
-			   Z*(roofHeight+roofThick),Z);  
-
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontHoleRadius); 
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
 
 
-  Geometry::Vec3D RPoint(Origin+X*segmentXOffset+
-			 Y*(frontWallThick+length/2.0));
+  ModelSupport::buildPlane
+    (SMap,buildIndex+12,Origin+Y*(frontWallThick+length),Y);
+  ModelSupport::buildPlane
+     (SMap,buildIndex+13,Origin-X*(outerWallThick+outerGap),X);
+  ModelSupport::buildPlane
+     (SMap,buildIndex+14,Origin+X*(ringWallThick+ringGap),X);
+  ModelSupport::buildPlane
+     (SMap,buildIndex+15,Origin-Z*(floorThick+floorDepth),Z);
+  ModelSupport::buildPlane
+     (SMap,buildIndex+16,Origin+Z*(roofThick+roofHeight),Z);
+
+
+  // Angle divider
+
+  const double L1=length+frontWallThick-segmentLength;
+  Geometry::Vec3D newBeamPt=Origin+
+    Y*(length+frontWallThick)+
+    X*(-outerGap/cos(M_PI*segmentAngle/180)+L1*sin(M_PI*segmentAngle/180.0));
+  Geometry::Vec3D RPoint(Origin+X*ringGap+Y*segmentLength);
+
+  
+  ModelSupport::buildPlane(SMap,buildIndex+102,RPoint,Y);
+  // inner surface
+
+  ModelSupport::buildPlaneRotAxis
+    (SMap,buildIndex+103,newBeamPt,X,-Z,segmentAngle);
+
   ModelSupport::buildPlaneRotAxis
     (SMap,buildIndex+104,RPoint,X,-Z,segmentAngle);
-  RPoint += X*segmentThick;
+
+  RPoint += X*ringWallThick;
   ModelSupport::buildPlaneRotAxis
     (SMap,buildIndex+114,RPoint,X,-Z,segmentAngle);
 
+  // exit hole
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontHoleRadius);
+  
   return;
 }
 
@@ -251,31 +231,47 @@ FrontEndCave::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FrontEndCave","createObjects");
 
+  const std::string fStr=getRuleStr("front");
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3  7 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 (-4:-104) 5 -6 ");
+  makeCell("Void",System,cellIndex++,0,0.0,Out+fStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 3 -4 7  5 -6 107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -103 5 -6 107 ");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 103 -104 5 -6 ");
+  makeCell("FrontWallVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 104 -114 5 -6 ");
+  makeCell("FrontWallRing",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -107 ");
   makeCell("FrontWallHole",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 -7 -4 17 5 -6 ");
-  makeCell("RingWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -3 13 5 -6 ");
+  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out+fStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 -3 13 5 -6 ");
-  makeCell("OutWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -102 4 -14 5 -6 ");
+  makeCell("RingAWall",System,cellIndex++,wallMat,0.0,Out+fStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 17 15 -5 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -2 104 -114 5 -6 ");
+  makeCell("RingBWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 13 -4 17 6 -16 ");
-  makeCell("Roof",System,cellIndex++,roofMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -102 13 -14 -5 15 ");
+  makeCell("FloorA",System,cellIndex++,floorMat,0.0,Out+fStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -12 13 -4 17  15 -16 ");
-  addOuterSurf(Out);      
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -12 13 -114 -5 15 ");
+  makeCell("FloorB",System,cellIndex++,floorMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -102 13 -14 6 -16 ");
+  makeCell("RoofA",System,cellIndex++,floorMat,0.0,Out+fStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -12 13 -114 6 -16 ");
+  makeCell("RoofB",System,cellIndex++,floorMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 13 (-14:-114) 15 -16 ");
+  addOuterSurf(Out+fStr);      
 
   return;
 }
@@ -289,11 +285,52 @@ FrontEndCave::createLinks()
 {
   ELog::RegMethod RegA("FrontEndCave","createLinks");
   
-  setConnect(0,Origin-Y*(length/2.0),-Y);
-  setConnect(1,Origin+Y*(frontWallThick+length/2.0),Y);
-  
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+
+  setConnect(1,Origin+Y*(frontWallThick+length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+12));
+
+  setConnect(2,Origin+X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
+  setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+
+  setConnect(3,Origin+X*(ringGap+ringWallThick)+Y*(segmentLength/2.0),X);
+  setLinkSurf(3,SMap.realSurf(buildIndex+14));
+
+  
+  setConnect(5,Origin-Z*(floorThick+floorDepth)+Y*(length/2.0),-Z);
+  setLinkSurf(5,-SMap.realSurf(buildIndex+15));
+
+  setConnect(5,Origin+Z*(roofThick+roofHeight)+Y*(length/2.0),Z);
+  setLinkSurf(5,SMap.realSurf(buildIndex+16));
+
+  const Geometry::Quaternion Qz=
+    Geometry::Quaternion::calcQRotDeg(-segmentAngle,Z);
+  Geometry::Vec3D XAxis(X);
+  Geometry::Vec3D YAxis(Y);
+  Qz.rotate(XAxis);
+  Qz.rotate(YAxis);
+
+  Geometry::Vec3D RPoint(Origin+X*ringGap+Y*segmentLength);
+
+  const double midDist=0.5*(length-segmentLength)*
+    cos(M_PI*segmentAngle/180.0);
+  
+  setConnect(7,Origin+X*(ringGap+ringWallThick)+
+	     Y*(segmentLength)+
+	     YAxis*midDist,
+	     XAxis);
+  setLinkSurf(7,SMap.realSurf(buildIndex+114));
+
+  // Connect point is the place that the main ring conects to
+  // calculated
+
+  const double L1=length+frontWallThick-segmentLength;
+  const Geometry::Vec3D newBeamPt=Origin+
+    Y*(length+frontWallThick)+
+    X*(L1*sin(M_PI*segmentAngle/180.0));
+
+  setConnect(9,newBeamPt,YAxis);
+  setLinkSurf(9,SMap.realSurf(buildIndex+12));
 
   return;
 }

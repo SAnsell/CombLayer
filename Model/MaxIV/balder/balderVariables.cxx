@@ -73,45 +73,44 @@ namespace balderVar
 void
 frontCaveVariables(FuncDataBase& Control,
 		   const std::string& preName,
-		   const double YStep)
+		   const std::string& caveName)
   /*!
     Variable for the main ring front shielding
     \param Control :: Database
     \param preName :: Name to describe system
-    \param YStep :: offset
+    \param caveName :: Name to describe cave
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
 
-  Control.addVariable(preName+"FrontEndWallYStep",YStep);
-  Control.addVariable(preName+"FrontEndFrontWallThick",160.0);
+  const std::string Name(preName+caveName);
   
-  Control.addVariable(preName+"FrontEndLength",2100.0);
-  Control.addVariable(preName+"FrontEndRingGap",250.0);
-  Control.addVariable(preName+"FrontEndRingRadius",4000.0);
-  Control.addVariable(preName+"FrontEndRingThick",100.0);
+  Control.addVariable(Name+"Length",2100.0);
+  Control.addVariable(Name+"OuterGap",100.0);
+  Control.addVariable(Name+"RingGap",250.0);
 
-  Control.addVariable(preName+"FrontEndOuterGap",100.0);
-  Control.addVariable(preName+"FrontEndOuterThick",100.0);
+  // If this is changed then need to change joinPipe as well
+  Control.addVariable(Name+"FrontWallThick",160.0);
+  Control.addVariable(Name+"OuterWallThick",100.0);
+  Control.addVariable(Name+"RingWallThick",100.0);
 
-  Control.addVariable(preName+"FrontEndFloorDepth",130.0);
-  Control.addVariable(preName+"FrontEndFloorThick",100.0);
+  Control.addVariable(Name+"FloorDepth",130.0);
+  Control.addVariable(Name+"FloorThick",100.0);
 
-  Control.addVariable(preName+"FrontEndRoofHeight",180.0);
-  Control.addVariable(preName+"FrontEndRoofThick",100.0);
+  Control.addVariable(Name+"RoofHeight",180.0);
+  Control.addVariable(Name+"RoofThick",100.0);
 
-  Control.addVariable(preName+"FrontEndSegmentXOffset",100.0);
-  Control.addVariable(preName+"FrontEndSegmentAngle",109.0);
-  Control.addVariable(preName+"FrontEndSegmentLength",1000.0);
-  Control.addVariable(preName+"FrontEndSegmentThick",100.0);
+  Control.addVariable(Name+"SegmentAngle",18.0);
+  Control.addVariable(Name+"SegmentLength",1365.0);
+  Control.addVariable(Name+"SegmentThick",100.0);
 
-  Control.addVariable(preName+"FrontEndFrontHoleRadius",7.0);
+  Control.addVariable(Name+"FrontHoleRadius",7.0);
 
   
-  Control.addVariable(preName+"FrontEndFrontWallMat","Concrete");
-  Control.addVariable(preName+"FrontEndWallMat","Concrete");
-  Control.addVariable(preName+"FrontEndFloorMat","Concrete");
-  Control.addVariable(preName+"FrontEndRoofMat","Concrete");
+  Control.addVariable(Name+"FrontWallMat","Concrete");
+  Control.addVariable(Name+"WallMat","Concrete");
+  Control.addVariable(Name+"FloorMat","Concrete");
+  Control.addVariable(Name+"RoofMat","Concrete");
   return;
 }
   
@@ -229,6 +228,7 @@ opticsHutVariables(FuncDataBase& Control,
     Optics hut variables
     \param Control :: DataBase to add
     \param preName :: Beamline name
+    \param caveName :: Cave name
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
@@ -716,7 +716,8 @@ BALDERvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
 
-  balderVar::frontCaveVariables(Control,"Balder",500.0);  // Set to middle
+  balderVar::frontCaveVariables(Control,"Balder","RingCaveA");
+  balderVar::frontCaveVariables(Control,"Balder","RingCaveB");
   balderVar::frontEndVariables(Control,"BalderFrontBeam");  
 
   PipeGen.setMat("Stainless304");

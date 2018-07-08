@@ -39,28 +39,29 @@ namespace xraySystem
 
 class FrontEndCave :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
+    
 {
  private:
-  
-  double frontWallThick;          ///< front wall depth
 
-  double length;                  ///< Main length
+  double length;                  ///< Main length [exclude cut]
+  double outerGap;                ///< Gap to outer wall
   double ringGap;                 ///< Gap to ring wall
-  double ringRadius;              ///< roof thickness
-  double ringThick;               ///< Gap to ring wall
-  double outerGap;                ///< Gap to ring wall
-  double outerThick;              ///< Gap to ring wall
+
+  double frontWallThick;          ///< Outer wall thick
+  double outerWallThick;          ///< Outer wall thick
+  double ringWallThick;           ///< Ring wall thick
+  
   double floorDepth;              ///< floor distance from centre
   double roofHeight;              ///< roof distance from centre
   double floorThick;              ///< floor thickness
   double roofThick;               ///< roof thickness
 
-  double segmentXOffset;            ///< Step from centre line
+
+  double segmentLength;            ///< Angle off front wall
   double segmentAngle;            ///< Angle off front wall
-  double segmentLength;           ///< Length
-  double segmentThick;            ///< Thickness
 
   double frontHoleRadius;         ///< end hole
   

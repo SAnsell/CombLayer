@@ -71,19 +71,20 @@ class ExternalCut
   cutUnit& getUnit(const std::string&);
   const cutUnit* findUnit(const std::string&) const;
   
-  void setCutSurf(const std::string&,const ExternalCut&,const std::string&);
+  void copyCutSurf(const std::string&,const ExternalCut&,const std::string&);
+  
   void setCutSurf(const std::string&,const int);
   void setCutSurf(const std::string&,const std::string&);
   void setCutSurf(const std::string&,const HeadRule&);
   void setCutSurf(const std::string&,const attachSystem::FixedComp&,
-	       const long int);
+		  const long int);
   void setCutSurf(const std::string&,const attachSystem::FixedComp&,
 		  const std::string&);
   
   void setCutDivider(const std::string&,const std::string&);
   void setCutDivider(const std::string&,const HeadRule&);
 
-  void createLinks(const std::string&,attachSystem::FixedComp&,
+  void createLink(const std::string&,attachSystem::FixedComp&,
 		   const size_t,const Geometry::Vec3D&,
 		   const Geometry::Vec3D&) const;
 

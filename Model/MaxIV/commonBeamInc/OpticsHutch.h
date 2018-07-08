@@ -40,6 +40,7 @@ namespace xraySystem
 class OpticsHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
