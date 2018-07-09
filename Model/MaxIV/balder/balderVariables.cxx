@@ -306,8 +306,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"PShieldClearGap",1.0);
   Control.addVariable(preName+"PShieldWallMat","Stainless304");
   Control.addVariable(preName+"PShieldMat","Lead");
-
-  
+   
   Control.addVariable(preName+"NShieldYStep",10.2);
   Control.addVariable(preName+"NShieldLength",7.0);
   Control.addVariable(preName+"NShieldWidth",80.0);
@@ -723,8 +722,8 @@ BALDERvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
 
-  balderVar::frontCaveVariables(Control,"BalderRingCaveA",0);
-  balderVar::frontCaveVariables(Control,"BalderRingCaveB",1);
+  balderVar::frontCaveVariables(Control,"BalderRingCaveA",1);
+  balderVar::frontCaveVariables(Control,"BalderRingCaveB",0);
   balderVar::frontEndVariables(Control,"BalderFrontBeam");  
 
   PipeGen.setMat("Stainless304");
