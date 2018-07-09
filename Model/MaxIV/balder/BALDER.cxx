@@ -147,8 +147,8 @@ BALDER::~BALDER()
 
 void 
 BALDER::build(Simulation& System,
-		  const attachSystem::FixedComp& FCOrigin,
-		  const long int sideIndex)
+	      const attachSystem::FixedComp& FCOrigin,
+	      const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -187,7 +187,7 @@ BALDER::build(Simulation& System,
   ringCaveB->insertComponent
     (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
 
-  return;
+
   joinPipe->addInsertCell(ringCaveA->getCell("Void"));
   joinPipe->addInsertCell(ringCaveA->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
@@ -206,7 +206,8 @@ BALDER::build(Simulation& System,
   joinPipe->insertObjects(System);
 
   System.removeCell(ringCaveA->getCell("Void"));
-  
+  if (stopPoint=="hutch")
+    return;  
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
 

@@ -61,6 +61,7 @@ createXrayInputs(inputParam& IParam)
 
   createInputs(IParam);
   IParam.regMulti("beamlines","beamlines",1000);
+  IParam.regMulti("stopPoints","stopPoints",1000);
 
   
   IParam.setValue("sdefType",std::string("Wiggler"));  

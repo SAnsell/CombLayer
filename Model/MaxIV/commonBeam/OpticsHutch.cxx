@@ -512,7 +512,7 @@ OpticsHutch::createLinks()
   addLinkSurf(15,SMap.realSurf(buildIndex+134));
   addLinkComp(15,-SMap.realSurf(buildIndex+15));
   addLinkComp(15,SMap.realSurf(buildIndex+32));
-  ELog::EM<<"HR = "<<getLinkString(16)<<ELog::endDiag;
+
   setConnect(16,Origin+Z*(height+steelThick+pbRoofThick),Y);  
   setLinkSurf(16,SMap.realSurf(buildIndex+34));
   addLinkSurf(16,SMap.realSurf(buildIndex+134));

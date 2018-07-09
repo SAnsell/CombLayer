@@ -120,6 +120,12 @@ makeMaxIV::makeBeamLine(Simulation& System,
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  const size_t NStop=IParam.setCnt("stopPoint");
+  std::map<std::string,std::vector<std::string>> stopUnits=
+    IParam.getMapItems("stopPoints");
+
+  
   
   const size_t NSet=IParam.setCnt("beamlines");
   for(size_t j=0;j<NSet;j++)
@@ -136,13 +142,14 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	    IParam.getValue<long int>("beamlines",j,index+2);
 	  index+=3;
 
-	  // ORIGIN current not done as no ring:
+
           const attachSystem::FixedComp* FCOrigin=
 	    OR.getObjectThrow<attachSystem::FixedComp>
 	    (FCName,"FixedComp not found for origin");
 
 	  if (BL=="BALDER")
 	    {
+
 	      BALDER BL("Balder");
 	      BL.build(System,*FCOrigin,linkIndex);
 	    }
