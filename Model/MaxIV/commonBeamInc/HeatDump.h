@@ -60,7 +60,8 @@ class HeatDump :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  std::vector<Geometry::Vec3D> calcEdgePoints() const;
+  
  public:
 
   HeatDump(const std::string&);

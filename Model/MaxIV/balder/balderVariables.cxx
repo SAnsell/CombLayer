@@ -91,7 +91,7 @@ frontCaveVariables(FuncDataBase& Control,
   RingDoorGenerator RGen;
   
   Control.addVariable(preName+"Length",2100.0);
-  Control.addVariable(preName+"OuterGap",100.0);
+  Control.addVariable(preName+"OuterGap",140.0);
   Control.addVariable(preName+"RingGap",250.0);
 
   // If this is changed then need to change joinPipe as well
@@ -144,15 +144,14 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF40>();
   PTubeGen.setPortLength(2.5,2.5);
-  PTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,4.0,20.0);
+  PTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,8.0,20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",1);
 
-
   // 20cm above port tube
-  PItemGen.setCF<setVariable::CF50>(20.0);
+  PItemGen.setCF<setVariable::CF100>(20.0);
   PItemGen.setPlate(0.0,"Void");  
-  FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setBlade(5.0,5.0,1.0,0.0,"Tungsten",0);     // W / H / T
+  FlangeGen.setCF<setVariable::CF100>();
+  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
 
   const Geometry::Vec3D ZVec(0,0,1);
   const std::string heatName=frontKey+"HeatBoxPort0";
@@ -162,10 +161,10 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 
 
   const std::string hDump(frontKey+"HeatDump");
-  Control.addVariable(hDump+"Height",8.0);
+  Control.addVariable(hDump+"Height",10.0);
   Control.addVariable(hDump+"Width",3.0);
-  Control.addVariable(hDump+"Thick",10.0);
-  Control.addVariable(hDump+"CutHeight",3.0);
+  Control.addVariable(hDump+"Thick",8.0);
+  Control.addVariable(hDump+"CutHeight",10.0);
   Control.addVariable(hDump+"Mat","Tungsten");
   return;
 }

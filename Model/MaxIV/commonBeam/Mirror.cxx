@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/Mirror.cxx
+ * File:   commonBeam/Mirror.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -87,6 +87,50 @@ Mirror::Mirror(const std::string& Key) :
     \param Index :: Index number
   */
 {}
+
+Mirror::Mirror(const Mirror& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  theta(A.theta),phi(A.phi),radius(A.radius),width(A.width),
+  thick(A.thick),length(A.length),baseTop(A.baseTop),
+  baseDepth(A.baseDepth),baseOutWidth(A.baseOutWidth),
+  baseGap(A.baseGap),mirrMat(A.mirrMat),baseMat(A.baseMat)
+  /*!
+    Copy constructor
+    \param A :: Mirror to copy
+  */
+{}
+
+Mirror&
+Mirror::operator=(const Mirror& A)
+  /*!
+    Assignment operator
+    \param A :: Mirror to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      theta=A.theta;
+      phi=A.phi;
+      radius=A.radius;
+      width=A.width;
+      thick=A.thick;
+      length=A.length;
+      baseTop=A.baseTop;
+      baseDepth=A.baseDepth;
+      baseOutWidth=A.baseOutWidth;
+      baseGap=A.baseGap;
+      mirrMat=A.mirrMat;
+      baseMat=A.baseMat;
+    }
+  return *this;
+}
+
 
 
 Mirror::~Mirror()
@@ -180,8 +224,10 @@ Mirror::createSurfaces()
 	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,-PZ);
       else
 	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,PZ);
-      ModelSupport::buildCylinder(SMap,buildIndex+107,Origin-PZ*radius,PX,std::abs(radius));
-      ModelSupport::buildCylinder(SMap,buildIndex+117,Origin-PZ*radius,PX,std::abs(radius)+thick);
+      ModelSupport::buildCylinder(SMap,buildIndex+107,
+				  Origin-PZ*radius,PX,std::abs(radius));
+      ModelSupport::buildCylinder(SMap,buildIndex+117,
+				  Origin-PZ*radius,PX,std::abs(radius)+thick);
     }
   else
     {

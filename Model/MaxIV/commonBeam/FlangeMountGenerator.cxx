@@ -68,6 +68,46 @@ FlangeMountGenerator::FlangeMountGenerator() :
   */
 {}
 
+FlangeMountGenerator::FlangeMountGenerator(const FlangeMountGenerator& A) : 
+  plateRadius(A.plateRadius),plateThick(A.plateThick),
+  threadRadius(A.threadRadius),threadLength(A.threadLength),
+  bladeLift(A.bladeLift),bladeXYAngle(A.bladeXYAngle),
+  bladeThick(A.bladeThick),bladeWidth(A.bladeWidth),
+  bladeHeight(A.bladeHeight),bladeFlag(A.bladeFlag),
+  threadMat(A.threadMat),bladeMat(A.bladeMat),plateMat(A.plateMat)
+  /*!
+    Copy constructor
+    \param A :: FlangeMountGenerator to copy
+  */
+{}
+
+FlangeMountGenerator&
+FlangeMountGenerator::operator=(const FlangeMountGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: FlangeMountGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      plateRadius=A.plateRadius;
+      plateThick=A.plateThick;
+      threadRadius=A.threadRadius;
+      threadLength=A.threadLength;
+      bladeLift=A.bladeLift;
+      bladeXYAngle=A.bladeXYAngle;
+      bladeThick=A.bladeThick;
+      bladeWidth=A.bladeWidth;
+      bladeHeight=A.bladeHeight;
+      bladeFlag=A.bladeFlag;
+      threadMat=A.threadMat;
+      bladeMat=A.bladeMat;
+      plateMat=A.plateMat;
+    }
+  return *this;
+}
+
 FlangeMountGenerator::~FlangeMountGenerator() 
  /*!
    Destructor

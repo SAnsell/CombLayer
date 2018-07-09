@@ -169,7 +169,7 @@ makeMaxIV::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeMaxIV","build");
 
-  const FuncDataBase& Control=System.getDataBase();
+  //  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
 

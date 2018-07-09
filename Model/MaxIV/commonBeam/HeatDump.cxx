@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/HeatDump.cxx
+ * File:   commonBeam/HeatDump.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -141,15 +141,25 @@ HeatDump::createSurfaces()
   */
 {
   ELog::RegMethod RegA("HeatDump","createSurfaces");
-
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  if (!isActive("mountSurf"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+      setCutSurf("mountSurf",-SMap.realSurf(buildIndex+6));
+    }
 
-  ELog::EM<<"Z == "<<Z<<" :: "<<Y<<ELog::endDiag;
+  // cut surf
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   Origin+Y*(thick/2.0)-Z*(height/2.0),
+			   Origin-Y*(thick/2.0)-Z*(height/2.0-cutHeight),
+			   Origin+Y*(thick/2.0)-Z*(height/2.0)+X,
+			   Z);  
   return; 
 }
 
@@ -162,11 +172,32 @@ HeatDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("HeatDump","createObjects");
 
+  const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
+
   std::string Out;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 11 " );
+  makeCell("Dump",System,cellIndex++,mat,0.0,Out+mountSurf);
   
+  addOuterSurf(Out+mountSurf);
   return; 
 }
 
+std::vector<Geometry::Vec3D>
+HeatDump::calcEdgePoints() const
+  /*!
+    Get points to test for ContainedComp
+    \return Points
+   */
+{
+  ELog::RegMethod RegA("HeatDump","calcEdgePoints");
+  
+  std::vector<Geometry::Vec3D> Out;
+  Out.push_back(Origin);
+  Out.push_back(Origin-Z*(height/2.0));
+  Out.push_back(Origin+Z*(height/2.0));
+  return Out;
+}
+  
 void
 HeatDump::createLinks()
   /*!
@@ -196,7 +227,7 @@ HeatDump::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
+  insertObjects(System,calcEdgePoints());       
 
   return;
 }

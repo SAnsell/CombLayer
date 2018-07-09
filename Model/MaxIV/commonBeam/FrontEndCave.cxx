@@ -103,9 +103,9 @@ FrontEndCave::FrontEndCave(const std::string& Key) :
   nameSideIndex(5,"roof");
 
   nameSideIndex(6,"connectPt");
-  nameSideIndex(10,"innerRing");
   nameSideIndex(7,"ringAngleWall");
   nameSideIndex(8,"innerRingAngleWall");
+  nameSideIndex(10,"innerRing");
 }
 
 
@@ -222,7 +222,6 @@ FrontEndCave::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+102,RPoint,Y);
   // inner surface
-
   ModelSupport::buildPlaneRotAxis
     (SMap,buildIndex+103,newBeamPt,X,-Z,segmentAngle);
 
@@ -358,6 +357,13 @@ FrontEndCave::createLinks()
 
   // Connect point is the place that the main ring conects to
   // calculated
+  
+  setConnect(10,Origin-Z*(floorThick+floorDepth),-Y);
+  setLinkSurf(10,SMap.realSurf(buildIndex+34));
+  addLinkComp(10,-SMap.realSurf(buildIndex+15));
+  setConnect(11,Origin+Z*(roofThick+roofHeight),-Y);
+  setLinkSurf(11,SMap.realSurf(buildIndex+34));
+  addLinkComp(11,SMap.realSurf(buildIndex+16));
 
   return;
 }

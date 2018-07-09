@@ -277,7 +277,9 @@ FrontEnd::buildObjects(Simulation& System)
   heatDumpFlange->setBladeCentre(PI,0);
   heatDumpFlange->createAll(System,PI,2);
 
+  heatDump->addInsertCell(PI.getCell("Void"));
   heatDump->addInsertCell(heatBox->getCell("Void"));
+
   heatDump->createAll(System,*heatDumpFlange,
 		      heatDumpFlange->getSideIndex("bladeCentre"));
 

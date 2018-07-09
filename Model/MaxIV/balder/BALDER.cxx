@@ -178,7 +178,16 @@ BALDER::build(Simulation& System,
   opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
   opticsHut->createAll(System,*ringCaveA,2);
 
+  // UgLY HACK to get the two objects to merge
+  const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
+  ringCaveB->insertComponent
+    (System,"OuterWall",*opticsHut,opticsHut->getSideIndex("frontCut"));
+  ringCaveB->insertComponent
+    (System,"FloorA",*opticsHut,opticsHut->getSideIndex("floorCut"));
+  ringCaveB->insertComponent
+    (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
 
+  return;
   joinPipe->addInsertCell(ringCaveA->getCell("Void"));
   joinPipe->addInsertCell(ringCaveA->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));

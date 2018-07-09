@@ -85,19 +85,26 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,16),
+  attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
+  
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(15,"floorCut");
+  nameSideIndex(16,"roofCut");
+  nameSideIndex(17,"frontCut");
+}
 
 OpticsHutch::OpticsHutch(const OpticsHutch& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   depth(A.depth),height(A.height),length(A.length),
   ringWidth(A.ringWidth),ringWallLen(A.ringWallLen),
   ringWallAngle(A.ringWallAngle),outWidth(A.outWidth),
@@ -127,6 +134,7 @@ OpticsHutch::operator=(const OpticsHutch& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       depth=A.depth;
       height=A.height;
       length=A.length;
@@ -285,6 +293,7 @@ OpticsHutch::createSurfaces()
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(ringWidth+steelThick+pbWallThick),X);
+  setSurf("ringFlat",SMap.realSurf(buildIndex+34));
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			       Origin+Z*(height+steelThick+pbRoofThick),Z);  
 
@@ -395,9 +404,8 @@ OpticsHutch::createObjects(Simulation& System)
     // ring wall
   const std::string ringWall=ExternalCut::getRuleStr("ringWall");
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1M -2M 4M 104M 15 -6M ");
-  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out+ringWall);
-
+  //  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1M -2M 4M 104M 15 -6M ");
+  //  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out+ringWall);
   // Outer void for chicanes etc
 
   if (inletRadius>Geometry::zeroTol)
@@ -415,13 +423,16 @@ OpticsHutch::createObjects(Simulation& System)
   // Exclude:
   if (outerOutVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,HI,"1M -2M 1033 -3M 15 -6M ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,HI,"1M -2M 1033 -3M 15 -6M ");
       makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 1033 15 -6M ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,HI," 1M -2M 1033 15 -6M ");
       Out+=ringWall;
     }
   else
-    Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");
+    Out=ModelSupport::getComposite
+      (SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");
   
   addOuterSurf(Out);      
 
@@ -491,6 +502,27 @@ OpticsHutch::createLinks()
   setConnect(14,Origin-X*ringWidth+Y*(length/2.0),-X);
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
   nameSideIndex(14,"innerRightWall");
+
+
+  const double steelThick(innerThick+outerThick);
+  HeadRule mainCut;
+  //  Out=ModelSupport::getComposite(SMap,buildIndex," 4:104 15 ");
+  setConnect(15,Origin-Z*(depth+floorThick),Z);
+  setLinkSurf(15,SMap.realSurf(buildIndex+34));
+  addLinkSurf(15,SMap.realSurf(buildIndex+134));
+  addLinkComp(15,-SMap.realSurf(buildIndex+15));
+  addLinkComp(15,SMap.realSurf(buildIndex+32));
+  ELog::EM<<"HR = "<<getLinkString(16)<<ELog::endDiag;
+  setConnect(16,Origin+Z*(height+steelThick+pbRoofThick),Y);  
+  setLinkSurf(16,SMap.realSurf(buildIndex+34));
+  addLinkSurf(16,SMap.realSurf(buildIndex+134));
+  addLinkComp(16,SMap.realSurf(buildIndex+36));
+  addLinkComp(16,SMap.realSurf(buildIndex+32));
+  
+  setConnect(17,Origin,-Y);  
+  setLinkSurf(17,SMap.realSurf(buildIndex+34));
+  addLinkSurf(17,SMap.realSurf(buildIndex+134));
+  addLinkComp(17,SMap.realSurf(buildIndex+32));
 
   return;
 }

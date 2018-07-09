@@ -190,7 +190,7 @@ CellMap::insertComponent(Simulation& System,
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param exclude :: Excluded key
+    \param exclude :: Excluded surface(s)
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(string)");
