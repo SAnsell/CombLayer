@@ -64,6 +64,7 @@
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
+#include "RingDoorGenerator.h"
 
 namespace setVariable
 {
@@ -74,18 +75,20 @@ namespace balderVar
 void
 frontCaveVariables(FuncDataBase& Control,
 		   const std::string& preName,
-		   const bool mazeFlag)
+		   const bool mazeFlag,
+		   const bool doorFlag)
   /*!
     Variable for the main ring front shielding
     \param Control :: Database
     \param preName :: Name to describe system
-    \param mazeFlag :: max is present
+    \param mazeFlag :: maze is present
+    \param mazeFlag :: door is present
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
 
   MazeGenerator MGen;
-  
+  RingDoorGenerator RGen;
   
   Control.addVariable(preName+"Length",2100.0);
   Control.addVariable(preName+"OuterGap",100.0);
@@ -118,6 +121,8 @@ frontCaveVariables(FuncDataBase& Control,
 
   if (mazeFlag)
     MGen.generateMaze(Control,preName+"Maze",0.0);
+  if (doorFlag)
+    RGen.generateDoor(Control,preName+"RingDoor",800.0);
   return;
 }
   
@@ -137,6 +142,9 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
   
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
@@ -222,8 +230,35 @@ frontEndVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.setBFlangeCF<setVariable::CF63>(); 
   PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,463.0);
+
+  // length inner radius
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(5.0,5.0);
+  PipeGen.setBFlangeCF<setVariable::CF63>();
+  // ystep/radius/length
+  PTubeGen.generateTube(Control,frontKey+"ShutterBox",0.0,18.0,80.0);
+  Control.addVariable(frontKey+"FilterBoxNPorts",2);
+
+  PItemGen.setCF<setVariable::CF50>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
+  FlangeGen.setCF<setVariable::CF50>();
+  // thick / H / W 
+  FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Tungsten");  
+
+  // centre of mid point
+  Geometry::Vec3D CPos(0,-20.0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
+      const std::string fname=frontKey+"Shutter"+std::to_string(i);      
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      FlangeGen.generateMount(Control,fname,0);  // in beam
+      CPos+=Geometry::Vec3D(0,40.0,0);
+    }
 
   return;
 }
@@ -722,8 +757,8 @@ BALDERvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
 
-  balderVar::frontCaveVariables(Control,"BalderRingCaveA",1);
-  balderVar::frontCaveVariables(Control,"BalderRingCaveB",0);
+  balderVar::frontCaveVariables(Control,"BalderRingCaveA",1,1);
+  balderVar::frontCaveVariables(Control,"BalderRingCaveB",0,0);
   balderVar::frontEndVariables(Control,"BalderFrontBeam");  
 
   PipeGen.setMat("Stainless304");

@@ -2080,15 +2080,14 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
 
-
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   const Geometry::Vec3D Unit=VUnit.unit();
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurfList.begin();vc!=SurfList.end();vc++)
-    (*vc)->acceptVisitor(LI);
+
+  for(const Geometry::Surface* SPtr : SurfList)
+      SPtr->acceptVisitor(LI);
 
   // IPTS contains non-exit points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());

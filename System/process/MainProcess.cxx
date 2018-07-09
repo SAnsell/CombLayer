@@ -545,6 +545,46 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 }
 
 void
+buildFullSimPHITS(SimPHITS* SimPHITSPtr,
+		 const mainSystem::inputParam& IParam,
+		 const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimFLUKAPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimPHITS");
+
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+
+  //  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
+  SimPHITSPtr->prepareWrite();
+  
+  // tallySystem::tallySelection(*SimPHITSPtr,IParam);
+  SimProcess::importanceSim(*SimPHITSPtr,IParam);
+
+  SimProcess::inputProcessForSim(*SimPHITSPtr,IParam); // energy cut etc
+  //  tallyModification(*SimPHITSPtr,IParam);
+
+  SDef::sourceSelection(*SimPHITSPtr,IParam);
+  SimPHITSPtr->masterSourceRotation();
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSimPHITS(*SimPHITSPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+
+void
 buildFullSimMCNP(SimMCNP* SimMCPtr,
 		 const mainSystem::inputParam& IParam,
 		 const std::string& OName)
@@ -658,6 +698,13 @@ buildFullSimulation(Simulation* SimPtr,
   if (SimPOVPtr)
     {      
       buildFullSimPOVRay(SimPOVPtr,IParam,OName);
+      return;
+    }
+
+  SimPHITS* SimPHITSPtr=dynamic_cast<SimPHITS*>(SimPtr);
+  if (SimPHITSPtr)
+    {      
+      buildFullSimPHITS(SimPHITSPtr,IParam,OName);
       return;
     }
 

@@ -69,7 +69,9 @@ namespace mainSystem
   void InputModifications(Simulation*,inputParam&,
 			  std::vector<std::string>&);
 
+  void buildFullSimFLUKA(SimPHITS*,const inputParam&,const std::string&);
   void buildFullSimMCNP(SimMCNP*,const inputParam&,const std::string&);
+  void buildFullSimPHITS(SimPHITS*,const inputParam&,const std::string&);
   void buildFullSimPOVRay(SimPOVRay*,const inputParam&,const std::string&);
   void buildFullSimulation(Simulation*,const inputParam&,const std::string&);
   void exitDelete(Simulation*);

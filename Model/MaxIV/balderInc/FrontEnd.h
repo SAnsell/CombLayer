@@ -104,6 +104,10 @@ class FrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// Pipe from collimator B to join pipe
   std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
+  /// Main shutters
+  std::shared_ptr<constructSystem::PortTube> shutterBox;
+  /// Shutters
+  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

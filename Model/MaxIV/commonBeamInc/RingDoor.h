@@ -45,6 +45,9 @@ class RingDoor :
   double innerHeight;                 ///< height of inner gap
   double innerWidth;                  ///< width of inner gap
   double innerThick;                  ///< thickness of first door
+
+  double innerTopGap;                 ///< top gap inner
+  double outerTopGap;                 ///< top gap outer
   double gapSpace;                    ///< gap
  
   double outerHeight;                 ///< height of outer gap

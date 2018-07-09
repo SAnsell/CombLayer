@@ -59,13 +59,48 @@ namespace setVariable
 
 RingDoorGenerator::RingDoorGenerator() :
   innerHeight(180.0),innerWidth(180.0),innerThick(50.0),
-  outerHeight(240.0),outerWidth(240.0),gapSpace(1.0),
+  outerHeight(240.0),outerWidth(240.0),
+  gapSpace(1.0),innerTopGap(2.5),outerTopGap(5.0),
   doorMat("Concrete")
   /*!
     Constructor and defaults
   */
 {}
 
+RingDoorGenerator::RingDoorGenerator(const RingDoorGenerator& A) : 
+  innerHeight(A.innerHeight),innerWidth(A.innerWidth),
+  innerThick(A.innerThick),outerHeight(A.outerHeight),
+  outerWidth(A.outerWidth),gapSpace(A.gapSpace),
+  innerTopGap(A.innerTopGap),outerTopGap(A.outerTopGap),
+  doorMat(A.doorMat)
+  /*!
+    Copy constructor
+    \param A :: RingDoorGenerator to copy
+  */
+{}
+
+RingDoorGenerator&
+RingDoorGenerator::operator=(const RingDoorGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: RingDoorGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      innerHeight=A.innerHeight;
+      innerWidth=A.innerWidth;
+      innerThick=A.innerThick;
+      outerHeight=A.outerHeight;
+      outerWidth=A.outerWidth;
+      gapSpace=A.gapSpace;
+      innerTopGap=A.innerTopGap;
+      outerTopGap=A.outerTopGap;
+      doorMat=A.doorMat;
+    }
+  return *this;
+}
 
 RingDoorGenerator::~RingDoorGenerator() 
  /*!
@@ -109,9 +144,9 @@ RingDoorGenerator::setOuter(const double W,
 
 				  
 void
-RingDoorGenerator::generateRingDoor(FuncDataBase& Control,
-				    const std::string& keyName,
-				    const double xStep) const
+RingDoorGenerator::generateDoor(FuncDataBase& Control,
+				const std::string& keyName,
+				const double xStep) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -120,7 +155,9 @@ RingDoorGenerator::generateRingDoor(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("RingDoorGenerator","generateRingDoor");
-  
+
+  ELog::EM<<"Key -- :"<<keyName<<ELog::endDiag;
+  Control.addVariable(keyName+"Active",1);
   Control.addVariable(keyName+"XStep",xStep);
 
   Control.addVariable(keyName+"InnerHeight",innerHeight);
@@ -129,7 +166,10 @@ RingDoorGenerator::generateRingDoor(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterHeight",outerHeight);
   Control.addVariable(keyName+"OuterWidth",outerWidth);
 
+  Control.addVariable(keyName+"InnerTopGap",innerTopGap);
+  Control.addVariable(keyName+"OuterTopGap",outerTopGap);
   Control.addVariable(keyName+"GapSpace",gapSpace);
+    
   Control.addVariable(keyName+"InnerThick",innerThick);
 
   Control.addVariable(keyName+"DoorMat",doorMat);

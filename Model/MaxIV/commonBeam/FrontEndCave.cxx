@@ -79,6 +79,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "Maze.h"
+#include "RingDoor.h"
 
 #include "FrontEndCave.h"
 
@@ -90,7 +91,7 @@ FrontEndCave::FrontEndCave(const std::string& Key) :
   attachSystem::ContainedSpace(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  mazeActive(0)
+  mazeActive(0),doorActive(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -153,6 +154,7 @@ FrontEndCave::populate(const FuncDataBase& Control)
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
   mazeActive=Control.EvalDefVar<int>(keyName+"MazeActive",0);
+  doorActive=Control.EvalDefVar<int>(keyName+"RingDoorActive",0);
 
   return;
 }
@@ -363,7 +365,7 @@ FrontEndCave::createLinks()
 void
 FrontEndCave::createMaze(Simulation& System)
   /*!
-    Build a Maze if required
+    Build if a Maze required
     \param System :: Simulation to use
   */
 {
@@ -382,6 +384,31 @@ FrontEndCave::createMaze(Simulation& System)
       mazePtr->addInsertCell("Inner",getCell("RingWallB"));
       mazePtr->addInsertCell("Main",getCell("InnerVoid"));
       mazePtr->createAll(System,*this,8);
+    }
+  return;
+}
+
+void
+FrontEndCave::createDoor(Simulation& System)
+  /*!
+    Build if a ring-door is required
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("FrontEndCave","createMaze");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  if (doorActive)
+    {
+      doorPtr=std::make_shared<xraySystem::RingDoor>(keyName+"RingDoor");
+      OR.addObject(doorPtr);
+      doorPtr->setCutSurf("innerWall",-SMap.realSurf(buildIndex+3));
+      doorPtr->setCutSurf("outerWall",SMap.realSurf(buildIndex+13));
+
+      doorPtr->addInsertCell(getCell("OuterWall"));
+      doorPtr->createAll(System,*this,3);
     }
   return;
 }
@@ -409,6 +436,7 @@ FrontEndCave::createAll(Simulation& System,
   insertObjects(System);   
 
   createMaze(System);
+  createDoor(System);
   return;
 }
   

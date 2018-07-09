@@ -404,9 +404,8 @@ ExternalCut::createLink(const std::string& extName,
     {
       FC.setLinkSurf(linkIndex,CU->main.complement());
       FC.setBridgeSurf(linkIndex,CU->divider);
-      FC.setConnect
-	(linkIndex,
-	 SurInter::getLinePoint(Org,YAxis,CU->main,CU->divider),-YAxis);
+      FC.setConnect(linkIndex,
+	 SurInter::getLinePoint(Org-YAxis*10.0,YAxis,CU->main,CU->divider),-YAxis);
     }
   return;
 }

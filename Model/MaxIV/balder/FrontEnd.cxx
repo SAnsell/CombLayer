@@ -85,6 +85,7 @@
 #include "PortTube.h"
 #include "Wiggler.h"
 #include "SqrCollimator.h"
+#include "FlangeMount.h"
 
 #include "FrontEnd.h"
 
@@ -112,7 +113,13 @@ FrontEnd::FrontEnd(const std::string& Key) :
   collTubeC(new constructSystem::PipeTube(newName+"CollimatorTubeC")),
   collC(new xraySystem::SqrCollimator(newName+"CollC")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
-  flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe"))
+  flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe")),
+  shutterBox(new constructSystem::PortTube(newName+"ShutterBox")),
+  shutters({
+      std::make_shared<xraySystem::FlangeMount>(newName+"Shutter0"),
+      std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
+	})
+  
   /*!
     Constructor
     \param Key :: Name of construction key

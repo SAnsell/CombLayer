@@ -89,7 +89,6 @@ RingDoor::RingDoor(const std::string& Key) :
     \param Key :: Key name for variables
   */
 {}
-
   
 void
 RingDoor::populate(const FuncDataBase& Control)
@@ -105,6 +104,8 @@ RingDoor::populate(const FuncDataBase& Control)
   innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
 
+  innerTopGap=Control.EvalVar<double>(keyName+"TopInnerGap");
+  outerTopGap=Control.EvalVar<double>(keyName+"TopOuterGap");
   gapSpace=Control.EvalVar<double>(keyName+"GapSpace");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
@@ -161,7 +162,7 @@ RingDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(gapSpace+innerHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(gapSpace+innerHeight/2.0),Z);
+			   Origin+Z*(innerTopGap+innerHeight/2.0),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(outerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(outerWidth/2.0),X);
@@ -175,11 +176,13 @@ RingDoor::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+35,
 			   Origin-Z*(gapSpace+outerHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,
-			   Origin+Z*(gapSpace+outerHeight/2.0),Z);
+			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
 
 
   ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+200,Origin,innerThick);
+    (SMap,"innerWall",buildIndex+200,Origin,-innerThick);
+  ExternalCut::makeExpandedSurf
+    (SMap,"innerWall",buildIndex+201,Origin,-(innerThick+gapSpace));
 
   return;
 }
@@ -196,27 +199,34 @@ RingDoor::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=ExternalCut::getRuleStr("innerWall");
   const std::string outerStr=ExternalCut::getRuleStr("outerWall");
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-200 3 -4 5 -6 ");
+  ELog::EM<<"innerStr "<<innerStr<<" == "<<outerStr<<ELog::endDiag;
+  ELog::EM<<"innerStr "<<*SMap.realSurfPtr(1010003)<<ELog::endDiag;
+  ELog::EM<<"innerStr "<<*SMap.realSurfPtr(1010013)<<ELog::endDiag;
+  ELog::EM<<"innerStr "<<*SMap.realSurfPtr(buildIndex+200)<<ELog::endDiag;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"200 3 -4 5 -6 ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-200 (-3:4:-5:6) 13 -14 15 -16 ");
+    (SMap,buildIndex,"200 (-3:4:-5:6) 13 -14 15 -16 ");
   makeCell("InnerGap",System,cellIndex++,0,0.0,Out+innerStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-200 (-13:14:-15:16) 33 -34 35 -36 ");
+    (SMap,buildIndex,"200 (-13:14:-15:16) 33 -34 35 -36 ");
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,Out+innerStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 23 -24 25 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-200 201 3 -4 5 -6 ");
+  makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,Out+outerStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-200 201 23 -24 25 -26 (-3:4:-5:6) ");
+  makeCell("MidGap",System,cellIndex++,0,0.0,Out+outerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-201 23 -24 25 -26 ");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,Out+outerStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"200 (-23:24:-25:26) 33 -34 35 -36 ");
+    (SMap,buildIndex,"-200 (-23:24:-25:26) 33 -34 35 -36 ");
   makeCell("OuterGap",System,cellIndex++,0,0.0,Out+outerStr);
-
-  
-
   
   // needs to be group
   Out=ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36 ");
@@ -232,7 +242,7 @@ RingDoor::createLinks()
 {
   ELog::RegMethod RegA("RingDoor","createLinks");
 
-  ExternalCut::createLink("innerWall",*this,0,Origin,Y);
+  ExternalCut::createLink("innerWall",*this,0,Origin,-Y);
   ExternalCut::createLink("outerWall",*this,1,Origin,Y);
   
   return;

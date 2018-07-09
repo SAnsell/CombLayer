@@ -27,6 +27,8 @@ class Simulation;
 namespace xraySystem
 {
   class Maze;
+  class RingDoor;
+  
 /*!
   \class FrontEndCave
   \version 1.0
@@ -74,7 +76,9 @@ class FrontEndCave :
   int floorMat;              ///< Floor material
 
   bool mazeActive;           ///< Flag if maze active
-  std::shared_ptr<xraySystem::Maze> mazePtr;  ///< Point if maze present
+  std::shared_ptr<xraySystem::Maze> mazePtr;  ///< inner maze
+  bool doorActive;           ///< Flag if door active
+  std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -83,6 +87,7 @@ class FrontEndCave :
   void createLinks();
 
   void createMaze(Simulation&);
+  void createDoor(Simulation&);
   
  public:
 

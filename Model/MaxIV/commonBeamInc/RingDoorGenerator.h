@@ -47,6 +47,9 @@ class RingDoorGenerator
   double outerWidth;            ///< width of outer door
 
   double gapSpace;            ///< clearance gaps
+  double innerTopGap;         ///< clearance gap top linal
+  double outerTopGap;         ///< clearance gaps
+
 
   std::string doorMat;         ///< base material
     
@@ -66,8 +69,8 @@ class RingDoorGenerator
   /// Set the material
   void setDoorMat(const std::string& M) { doorMat=M; }
 
-  void generateRingDoor(FuncDataBase&,const std::string&,
-		      const double) const;
+  void generateDoor(FuncDataBase&,const std::string&,
+		    const double) const;
 
 };
 

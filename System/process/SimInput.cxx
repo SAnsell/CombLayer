@@ -119,7 +119,7 @@ processExitChecks(Simulation& System,
 	}
 
     }
-  
+
   const size_t NLine = IParam.setCnt("validLine");
   for(size_t i=0;i<NLine;i++)
     {
