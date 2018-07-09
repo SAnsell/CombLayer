@@ -114,7 +114,7 @@ Maze::populate(const FuncDataBase& Control)
 
   catchOutLength=Control.EvalVar<double>(keyName+"CatchOutLength");
   catchThick=Control.EvalVar<double>(keyName+"CatchThick");
-  catchXWidth=Control.EvalVar<double>(keyName+"CatchXWidth");
+  catchXGap=Control.EvalVar<double>(keyName+"CatchXGap");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   
@@ -142,13 +142,13 @@ void
 Maze::createSurfaces()
   /*!
     Create All the surfaces
-   */
+  */
 {
   ELog::RegMethod RegA("Maze","createSurface");
 
   // InnerWall and OuterWall MUST be set
-  if (ExternalCut::isActive("innerWall") ||
-      ExternalCut::isActive("outerWall"))
+  if (!ExternalCut::isActive("innerWall") ||
+      !ExternalCut::isActive("outerWall"))
     throw ColErr::InContainerError<std::string>
       ("InnerWall/OuterWall","Maze:"+keyName);
 
@@ -159,6 +159,25 @@ Maze::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   
+  // main wall
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*mainOutLength,Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+22,
+			   Origin+Y*(mainOutLength+mainThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,
+			   Origin-X*(mainThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,
+			   Origin+X*(mainXWidth-width/2.0),X);
+
+  // side wall
+  ModelSupport::buildPlane(SMap,buildIndex+32,Origin+Y*catchOutLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+42,
+			   Origin+Y*(catchThick+catchOutLength),Y);
+
+  const double wallXPos(catchXGap-width/2.0);
+
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin+X*wallXPos,X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+X*(wallXPos+catchThick),X);
 
   return;
 }
@@ -173,16 +192,45 @@ Maze::createObjects(Simulation& System)
   ELog::RegMethod RegA("Maze","createObjects");
 
   std::string Out;
-  const std::string innerStr=getRuleStr("innerWall");
-  const std::string outerStr=getRuleStr("outerWall");
-  const std::string outerComp=getComplementStr("outerWall");
-
+  const std::string innerStr=ExternalCut::getRuleStr("innerWall");
+  const std::string outerStr=ExternalCut::getRuleStr("outerWall");
+  const std::string outerComp=ExternalCut::getComplementStr("outerWall");
+  
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out+innerStr+outerStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 3 -24 5 -6 ");
+  makeCell("MainVoid",System,cellIndex++,0,0.0,Out+outerComp);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -22 23 -3 -24 5 -6 ");
+  makeCell("MainLeftWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 3 -24 5 -6 ");
+  makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -42 33 -34 5 -6 ");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 32 -42 -33 23 5 -6 ");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 3 -24 5 -6 ");
+  //  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out+outerComp);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -22 24 -33 5 -6 ");
+  makeCell("SideVoid",System,cellIndex++,0,0.0,Out+outerComp);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -32 23 -33 5 -6 ");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
+
   
   // needs to be group
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf("Inner",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -42 23 -34 5 -6 ");
+  addOuterSurf("Main",Out);
   //  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -106 ");
   //  addOuterSurf("Inner",Out);
   return;

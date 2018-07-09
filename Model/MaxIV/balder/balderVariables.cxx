@@ -63,6 +63,7 @@
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
+#include "MazeGenerator.h"
 
 namespace setVariable
 {
@@ -71,72 +72,52 @@ namespace balderVar
 {
   
 void
-mazeVariables(FuncDataBase& Control,
-	      const std::string& preName,
-	      const std::string& caveName)
-  /*!
-    Variable for the main ring front shielding
-    \param Control :: Database
-    \param preName :: Name to describe system
-    \param caveName :: Name to describe cave
-  */
-{
-  ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
-
-  const std::string Name(preName+caveName+"Maze");
-  
-  Control.addVariable(Name+"Active",1);
-
-  
-  Control.addVariable(Name+"WallMat","Concrete");
-
-  return;
-}
-
-void
 frontCaveVariables(FuncDataBase& Control,
 		   const std::string& preName,
-		   const std::string& caveName)
+		   const bool mazeFlag)
   /*!
     Variable for the main ring front shielding
     \param Control :: Database
     \param preName :: Name to describe system
-    \param caveName :: Name to describe cave
+    \param mazeFlag :: max is present
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
 
-  const std::string Name(preName+caveName);
+  MazeGenerator MGen;
   
-  Control.addVariable(Name+"Length",2100.0);
-  Control.addVariable(Name+"OuterGap",100.0);
-  Control.addVariable(Name+"RingGap",250.0);
+  
+  Control.addVariable(preName+"Length",2100.0);
+  Control.addVariable(preName+"OuterGap",100.0);
+  Control.addVariable(preName+"RingGap",250.0);
 
   // If this is changed then need to change joinPipe as well
-  Control.addVariable(Name+"FrontWallThick",160.0);
-  Control.addVariable(Name+"OuterWallThick",100.0);
-  Control.addVariable(Name+"RingWallThick",100.0);
-  Control.addVariable(Name+"InnerRingWidth",200.0);
+  Control.addVariable(preName+"FrontWallThick",160.0);
+  Control.addVariable(preName+"OuterWallThick",100.0);
+  Control.addVariable(preName+"RingWallThick",100.0);
+  Control.addVariable(preName+"InnerRingWidth",400.0);
 
-  Control.addVariable(Name+"FloorDepth",130.0);
-  Control.addVariable(Name+"FloorThick",100.0);
+  Control.addVariable(preName+"FloorDepth",130.0);
+  Control.addVariable(preName+"FloorThick",100.0);
 
-  Control.addVariable(Name+"RoofHeight",180.0);
-  Control.addVariable(Name+"RoofThick",100.0);
+  Control.addVariable(preName+"RoofHeight",180.0);
+  Control.addVariable(preName+"RoofThick",100.0);
 
-  Control.addVariable(Name+"SegmentAngle",18.0);
-  Control.addVariable(Name+"SegmentLength",1365.0);
-  Control.addVariable(Name+"SegmentThick",100.0);
+  Control.addVariable(preName+"SegmentAngle",18.0);
+  Control.addVariable(preName+"SegmentLength",1365.0);
+  Control.addVariable(preName+"SegmentThick",100.0);
 
-  Control.addVariable(Name+"FrontHoleRadius",7.0);
+  Control.addVariable(preName+"FrontHoleRadius",7.0);
 
   
-  Control.addVariable(Name+"FrontWallMat","Concrete");
-  Control.addVariable(Name+"WallMat","Concrete");
-  Control.addVariable(Name+"FloorMat","Concrete");
-  Control.addVariable(Name+"RoofMat","Concrete");
+  Control.addVariable(preName+"FrontWallMat","Concrete");
+  Control.addVariable(preName+"WallMat","Concrete");
+  Control.addVariable(preName+"FloorMat","Concrete");
+  Control.addVariable(preName+"RoofMat","Concrete");
 
 
+  if (mazeFlag)
+    MGen.generateMaze(Control,preName+"Maze",0.0);
   return;
 }
   
@@ -742,8 +723,8 @@ BALDERvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
 
-  balderVar::frontCaveVariables(Control,"Balder","RingCaveA");
-  balderVar::frontCaveVariables(Control,"Balder","RingCaveB");
+  balderVar::frontCaveVariables(Control,"BalderRingCaveA",0);
+  balderVar::frontCaveVariables(Control,"BalderRingCaveB",1);
   balderVar::frontEndVariables(Control,"BalderFrontBeam");  
 
   PipeGen.setMat("Stainless304");

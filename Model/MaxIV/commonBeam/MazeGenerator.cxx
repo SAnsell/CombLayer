@@ -59,8 +59,8 @@ namespace setVariable
 
 MazeGenerator::MazeGenerator() :
   height(180.0),width(100.0),
-  mainOut(200.0),mainThick(100.0),mainXWidth(300.0),
-  catchOut(500.0),catchThick(30.0),catchXWidth(500.0),
+  mainOut(118.0),mainThick(100.0),mainXWidth(162.0),
+  catchOut(298.0),catchThick(30.0),catchXGap(262.0),
   wallMat("Concrete")
   /*!
     Constructor and defaults
@@ -101,15 +101,12 @@ MazeGenerator::generateMaze(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: Step along beam centre
-    \param zStep :: Vertical lift from beamCentre
-    \param theta :: theta angle
-    \param phi :: phi angle
-    \param radius ;: bending radius / focus distance
+    \param xStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("MazeGenerator","generatorMount");
+  ELog::RegMethod RegA("MazeGenerator","generateMaze");
   
+  Control.addVariable(keyName+"Active",1);
   Control.addVariable(keyName+"XStep",xStep);
 
   Control.addVariable(keyName+"Height",height);
@@ -120,11 +117,11 @@ MazeGenerator::generateMaze(FuncDataBase& Control,
   Control.addVariable(keyName+"MainThick",mainThick);
   
   Control.addVariable(keyName+"CatchOutLength",catchOut);
-  Control.addVariable(keyName+"CatchXWidth",catchXWidth);
+  Control.addVariable(keyName+"CatchXGap",catchXGap);
   Control.addVariable(keyName+"CatchThick",catchThick);
 
 
-  Control.addVariable(keyName+"wallMat",wallMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
        
   return;
 

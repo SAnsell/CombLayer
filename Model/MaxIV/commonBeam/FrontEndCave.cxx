@@ -272,10 +272,10 @@ FrontEndCave::createObjects(Simulation& System)
   makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out+fStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -102 4 -14 5 -6 ");
-  makeCell("RingAWall",System,cellIndex++,wallMat,0.0,Out+fStr);
+  makeCell("RingWallA",System,cellIndex++,wallMat,0.0,Out+fStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," (102:14) -2 104 -114 5 -6 ");
-  makeCell("RingBWall",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("RingWallB",System,cellIndex++,wallMat,0.0,Out);
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -364,18 +364,20 @@ void
 FrontEndCave::createMaze(Simulation& System)
   /*!
     Build a Maze if required
-   */
+    \param System :: Simulation to use
+  */
 {
   ELog::RegMethod RegA("FrontEndCave","createMaze");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   if (mazeActive)
     {
       mazePtr=std::make_shared<xraySystem::Maze>(keyName+"Maze");
       OR.addObject(mazePtr);
-      mazePtr->setCutSurf("innerSurf",SMap.realSurf(buildIndex+104));
-      mazePtr->setCutSurf("outerSurf",-SMap.realSurf(buildIndex+114));
+      mazePtr->setCutSurf("innerWall",SMap.realSurf(buildIndex+104));
+      mazePtr->setCutSurf("outerWall",-SMap.realSurf(buildIndex+114));
 
       mazePtr->addInsertCell("Inner",getCell("RingWallB"));
       mazePtr->addInsertCell("Main",getCell("InnerVoid"));

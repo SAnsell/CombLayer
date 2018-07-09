@@ -52,7 +52,9 @@ class Maze :
 
   double catchOutLength;     ///< Y step to X-wall
   double catchThick;         ///< Thickness [both]
+  double catchXGap;          ///< X step to start of side wall
   double catchXWidth;        ///< Length from middle to end A
+  
 
   int wallMat;                   ///< wall material
 

@@ -48,7 +48,7 @@ class MazeGenerator
 
   double catchOut;           ///< length toward ring centre
   double catchThick;         ///< Thickness of wall
-  double catchXWidth;        ///< Cross width [full]
+  double catchXGap;          ///< Gap from centre point
 
   std::string wallMat;         ///< base material
     
