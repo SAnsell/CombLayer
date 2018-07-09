@@ -26,7 +26,7 @@ class Simulation;
 
 namespace xraySystem
 {
-  
+  class Maze;
 /*!
   \class FrontEndCave
   \version 1.0
@@ -53,6 +53,9 @@ class FrontEndCave :
   double frontWallThick;          ///< Outer wall thick
   double outerWallThick;          ///< Outer wall thick
   double ringWallThick;           ///< Ring wall thick
+
+  double innerRingWidth;           ///< Extra void for fluka 
+    
   
   double floorDepth;              ///< floor distance from centre
   double roofHeight;              ///< roof distance from centre
@@ -69,6 +72,9 @@ class FrontEndCave :
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
+
+  bool mazeActive;           ///< Flag if maze active
+  std::shared_ptr<xraySystem::Maze> mazePtr;  ///< Point if maze present
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -76,6 +82,8 @@ class FrontEndCave :
   void createObjects(Simulation&);
   void createLinks();
 
+  void createMaze(Simulation&);
+  
  public:
 
   FrontEndCave(const std::string&);

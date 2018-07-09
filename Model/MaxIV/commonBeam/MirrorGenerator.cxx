@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/MirrorGenerator.cxx
+ * File:   commonBeam/MirrorGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

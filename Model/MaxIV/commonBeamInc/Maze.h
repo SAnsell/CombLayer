@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/PortChicane.h
+ * File:   commonBeamInc/Maze.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,22 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_PortChicane_h
-#define xraySystem_PortChicane_h
+#ifndef xraySystem_Maze_h
+#define xraySystem_Maze_h
 
 class Simulation;
 
 namespace xraySystem
 {
   /*!
-    \class PortChicane
+    \class Maze
     \version 1.0
     \author S. Ansell
     \date June 2018
-    \brief Chicanes in the optics/expt hutches
+    \brief Extra beam stop for opticshutch
   */
   
-class PortChicane : public attachSystem::ContainedGroup,
+class Maze :
+  public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -42,23 +43,18 @@ class PortChicane : public attachSystem::ContainedGroup,
 {
  private:
 
-  double height;                 ///< height of system 
-  double width;                  ///< widht of syste
-  double clearGap;               ///< clearance between plates
-  double downStep;               ///< distance wall falls into gap
-  double overHang;               ///< extra round plates
+  double height;                 ///< height of inner gap
+  double width;                  ///< width of inner gap
 
-  double innerSkin;              ///< skin thickness
-  double innerPlate;             ///< plate thickness
+  double mainOutLength;      ///< Y step to X-wall
+  double mainThick;          ///< Thickness [both]
+  double mainXWidth;         ///< Length from middle to end 
 
-  double outerSkin;              ///< skin thickness
-  double outerPlate;             ///< plate thickness
+  double catchOutLength;     ///< Y step to X-wall
+  double catchThick;         ///< Thickness [both]
+  double catchXWidth;        ///< Length from middle to end A
 
-  double baseThick;              ///< thickness of base
-  double wallThick;              ///< thickness of base
-
-  int plateMat;                   ///< plate material
-  int wallMat;                    ///< wall material
+  int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -70,10 +66,10 @@ class PortChicane : public attachSystem::ContainedGroup,
   
  public:
   
-  PortChicane(const std::string&);
-  PortChicane(const PortChicane&);
-  PortChicane& operator=(const PortChicane&);
-  virtual ~PortChicane() {}  ///< Destructor
+  Maze(const std::string&);
+  Maze(const Maze&);
+  Maze& operator=(const Maze&);
+  virtual ~Maze() {}  ///< Destructor
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,

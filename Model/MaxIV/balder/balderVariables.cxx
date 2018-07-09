@@ -71,6 +71,29 @@ namespace balderVar
 {
   
 void
+mazeVariables(FuncDataBase& Control,
+	      const std::string& preName,
+	      const std::string& caveName)
+  /*!
+    Variable for the main ring front shielding
+    \param Control :: Database
+    \param preName :: Name to describe system
+    \param caveName :: Name to describe cave
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
+
+  const std::string Name(preName+caveName+"Maze");
+  
+  Control.addVariable(Name+"Active",1);
+
+  
+  Control.addVariable(Name+"WallMat","Concrete");
+
+  return;
+}
+
+void
 frontCaveVariables(FuncDataBase& Control,
 		   const std::string& preName,
 		   const std::string& caveName)
@@ -93,6 +116,7 @@ frontCaveVariables(FuncDataBase& Control,
   Control.addVariable(Name+"FrontWallThick",160.0);
   Control.addVariable(Name+"OuterWallThick",100.0);
   Control.addVariable(Name+"RingWallThick",100.0);
+  Control.addVariable(Name+"InnerRingWidth",200.0);
 
   Control.addVariable(Name+"FloorDepth",130.0);
   Control.addVariable(Name+"FloorThick",100.0);
@@ -111,6 +135,8 @@ frontCaveVariables(FuncDataBase& Control,
   Control.addVariable(Name+"WallMat","Concrete");
   Control.addVariable(Name+"FloorMat","Concrete");
   Control.addVariable(Name+"RoofMat","Concrete");
+
+
   return;
 }
   
