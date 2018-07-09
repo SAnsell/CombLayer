@@ -104,8 +104,8 @@ RingDoor::populate(const FuncDataBase& Control)
   innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
 
-  innerTopGap=Control.EvalVar<double>(keyName+"TopInnerGap");
-  outerTopGap=Control.EvalVar<double>(keyName+"TopOuterGap");
+  innerTopGap=Control.EvalVar<double>(keyName+"InnerTopGap");
+  outerTopGap=Control.EvalVar<double>(keyName+"OuterTopGap");
   gapSpace=Control.EvalVar<double>(keyName+"GapSpace");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
