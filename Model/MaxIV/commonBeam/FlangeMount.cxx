@@ -85,16 +85,18 @@ namespace xraySystem
 {
 
 FlangeMount::FlangeMount(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,7),
   attachSystem::ContainedGroup("Flange","Body"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  inBeam(1),bladeCentreActive(0)
+  inBeam(1),bladeActive(1),bladeCentreActive(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(6,"bladeCentre");
+}
 
 FlangeMount::FlangeMount(const FlangeMount& A) : 
   attachSystem::FixedOffset(A),
@@ -106,7 +108,8 @@ FlangeMount::FlangeMount(const FlangeMount& A) :
   bladeLift(A.bladeLift),bladeThick(A.bladeThick),
   bladeWidth(A.bladeWidth),bladeHeight(A.bladeHeight),
   threadMat(A.threadMat),bladeMat(A.bladeMat),plateMat(A.plateMat),
-  bladeCentreActive(A.bladeCentreActive),bladeCentre(A.bladeCentre)
+  bladeActive(A.bladeCentreActive),
+  bladeCentreActive(A.bladeActive),bladeCentre(A.bladeCentre)
   /*!
     Copy constructor
     \param A :: FlangeMount to copy
@@ -142,6 +145,7 @@ FlangeMount::operator=(const FlangeMount& A)
       bladeMat=A.bladeMat;
       plateMat=A.plateMat;
       bladeCentreActive=A.bladeCentreActive;
+      bladeActive=A.bladeActive;
       bladeCentre=A.bladeCentre;
     }
   return *this;
@@ -186,6 +190,8 @@ FlangeMount::populate(const FuncDataBase& Control)
 
   bladeCentreActive=Control.EvalDefVar<int>
     (keyName+"BladeCentreActive",bladeCentreActive);
+
+  bladeActive=Control.EvalDefVar<int>(keyName+"BladeActive",1);
 
   return;
 }
@@ -297,9 +303,13 @@ FlangeMount::createObjects(Simulation& System)
   addOuterSurf("Body",Out+frontComp);
 
   // blade
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
-  addOuterUnionSurf("Body",Out+frontComp);
+  if (bladeActive)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+      makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
+      addOuterUnionSurf("Body",Out+frontComp);
+    }
       
   return;
 }
@@ -312,11 +322,20 @@ FlangeMount::createLinks()
   */
 {
   ELog::RegMethod RegA("FlangeMount","createLinks");
+  
+  Geometry::Vec3D PY(Z);
+  const Geometry::Vec3D PZ(-Y);
+  const Geometry::Quaternion QR
+      (Geometry::Quaternion::calcQRotDeg(bladeXYAngle,Y));
+  QR.rotate(PY);
 
-  //stufff for intersection
-
-
-  //  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  const double lift((inBeam) ? 0.0 : bladeLift);
+  
+  const Geometry::Vec3D BCent(Origin+PZ*(threadLength-lift));
+  
+  // Mid point of blade centre 
+  FixedComp::setConnect(6,BCent,-PY);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+105));
 
   return;
 }

@@ -156,7 +156,6 @@ RingDoorGenerator::generateDoor(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("RingDoorGenerator","generateRingDoor");
 
-  ELog::EM<<"Key -- :"<<keyName<<ELog::endDiag;
   Control.addVariable(keyName+"Active",1);
   Control.addVariable(keyName+"XStep",xStep);
 

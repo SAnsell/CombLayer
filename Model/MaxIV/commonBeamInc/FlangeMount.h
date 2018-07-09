@@ -43,7 +43,8 @@ class FlangeMount :
   public attachSystem::FrontBackCut
 {
  private:
-  
+
+
   double plateThick;            ///< Top plate thickness
   double plateRadius;           ///< plate radius
 
@@ -61,6 +62,7 @@ class FlangeMount :
   int bladeMat;                 ///< blade material
   int plateMat;                 ///< plate material
 
+  bool bladeActive;             ///< Blade made/not made
   int bladeCentreActive;        ///< Flag to use bladeCentre
   /// Norminal point to get centre from [over-writes threadLength]
   Geometry::Vec3D bladeCentre;

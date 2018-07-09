@@ -129,7 +129,6 @@ userBinConstruct::convertTallyType(const std::string& TType)
   throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
 }
 
-  
 void
 userBinConstruct::processMesh(SimFLUKA& System,
 			      const mainSystem::inputParam& IParam,

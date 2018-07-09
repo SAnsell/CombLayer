@@ -125,7 +125,51 @@ frontCaveVariables(FuncDataBase& Control,
     RGen.generateDoor(Control,preName+"RingDoor",800.0);
   return;
 }
-  
+
+void
+heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
+  /*!
+    Build the heat dump variables
+    \param Control :: Database
+    \param frontKey :: prename
+   */
+{
+  ELog::RegMethod RegA("balderVariables","heatDumpVariables");
+
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(2.5,2.5);
+  PTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,4.0,20.0);
+  Control.addVariable(frontKey+"HeatBoxNPorts",1);
+
+
+  // 20cm above port tube
+  PItemGen.setCF<setVariable::CF50>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
+  FlangeGen.setCF<setVariable::CF50>();
+  FlangeGen.setBlade(5.0,5.0,1.0,0.0,"Tungsten",0);     // W / H / T
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  const std::string heatName=frontKey+"HeatBoxPort0";
+  const std::string hName=frontKey+"HeatDumpFlange";
+  PItemGen.generatePort(Control,heatName,Geometry::Vec3D(0,0,0),ZVec);
+  FlangeGen.generateMount(Control,hName,0);  // (no in beam)
+
+
+  const std::string hDump(frontKey+"HeatDump");
+  Control.addVariable(hDump+"Height",8.0);
+  Control.addVariable(hDump+"Width",3.0);
+  Control.addVariable(hDump+"Thick",10.0);
+  Control.addVariable(hDump+"CutHeight",3.0);
+  Control.addVariable(hDump+"Mat","Tungsten");
+  return;
+}
+
 void
 frontEndVariables(FuncDataBase& Control,
 		  const std::string& frontKey)
@@ -228,40 +272,52 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setMinSize(12.0,0.730,0.16);
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
-  PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,463.0);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,10.0);
 
-  // length inner radius
+  // Create HEAT DUMP
+  heatDumpVariables(Control,frontKey);
 
-  PTubeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,333.0);
+
+
   PTubeGen.setCF<CF40>();
   PTubeGen.setPortLength(5.0,5.0);
   PipeGen.setBFlangeCF<setVariable::CF63>();
   // ystep/radius/length
-  PTubeGen.generateTube(Control,frontKey+"ShutterBox",0.0,18.0,80.0);
-  Control.addVariable(frontKey+"FilterBoxNPorts",2);
+  const double sBoxLen(50.0);
+  PTubeGen.generateTube(Control,frontKey+"ShutterBox",0.0,18.0,sBoxLen);
+  Control.addVariable(frontKey+"ShutterBoxNPorts",2);
 
+
+  // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(20.0);
   PItemGen.setPlate(0.0,"Void");  
   FlangeGen.setCF<setVariable::CF50>();
-  // thick / H / W 
-  FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Tungsten");  
+  // W / H / T
+  FlangeGen.setBlade(5.0,5.0,20.0,0.0,"Tungsten",1);  
 
   // centre of mid point
-  Geometry::Vec3D CPos(0,-20.0,0);
   const Geometry::Vec3D ZVec(0,0,1);
+  Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
   for(size_t i=0;i<2;i++)
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
       const std::string fname=frontKey+"Shutter"+std::to_string(i);      
       PItemGen.generatePort(Control,name,CPos,ZVec);
       FlangeGen.generateMount(Control,fname,0);  // in beam
-      CPos+=Geometry::Vec3D(0,40.0,0);
+      CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
     }
+
+
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
 
   return;
 }
+
+
 
 void
 opticsHutVariables(FuncDataBase& Control,
@@ -479,7 +535,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF50>(20.0);
   PItemGen.setPlate(0.0,"Void");  
   FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten");  // 22 rotation
+  FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten",1);  // 22 rotation
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);

@@ -52,6 +52,8 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class FlangeMount;
+  class HeatDump;
   class SqrCollimator;
   class Wiggler;
 
@@ -102,12 +104,22 @@ class FrontEnd :
   std::shared_ptr<xraySystem::SqrCollimator> collC;
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
-  /// Pipe from collimator B to join pipe
+  /// Pipe from collimator B to heat dump
+  std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
+  /// head dump port
+  std::shared_ptr<constructSystem::PortTube> heatBox;
+  /// heat dump stick
+  std::shared_ptr<xraySystem::FlangeMount> heatDumpFlange;  
+  /// heat dump 
+  std::shared_ptr<xraySystem::HeatDump> heatDump;  
+  /// Pipe from heat dump to shutters
   std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
   /// Main shutters
   std::shared_ptr<constructSystem::PortTube> shutterBox;
   /// Shutters
   std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
+  /// Pipe from shutters - join pipe
+  std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

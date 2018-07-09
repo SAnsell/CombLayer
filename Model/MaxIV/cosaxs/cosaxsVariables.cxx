@@ -529,7 +529,7 @@ opticsVariables(FuncDataBase& Control,
 
   FlangeGen.setCF<setVariable::CF63>();
   FlangeGen.setPlate(0.0,0.0,"Void");
-  FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite");  // 22 rotation
+  FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite",1);
   FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
 
   GateGen.setLength(2.5);

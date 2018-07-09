@@ -276,9 +276,13 @@ OpticsBeamline::buildObjects(Simulation& System)
   filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
 
-  filterBox->splitVoidPorts(System,"SplitVoid",1001,filterBox->getCell("Void"),
+  // split on both inner void 
+  filterBox->splitVoidPorts(System,"SplitVoid",1001,
+			    filterBox->getCell("Void"),
 			    Geometry::Vec3D(0,1,0));
-  filterBox->splitVoidPorts(System,"SplitOuter",2001,filterBox->getBuildCell(),
+  // split on outer  boid
+  filterBox->splitVoidPorts(System,"SplitOuter",2001,
+			    filterBox->getBuildCell(),
 			    Geometry::Vec3D(0,1,0));
   filterBox->splitObject(System,-11,filterBox->getCell("SplitOuter",0));
   filterBox->splitObject(System,12,filterBox->getCell("SplitOuter",3));

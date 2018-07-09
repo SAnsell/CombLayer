@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Mirror.h
+ * File:   commonBeamInc/HeatDump.h
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Mirror_h
-#define xraySystem_Mirror_h
+#ifndef xraySystem_HeatDump_h
+#define xraySystem_HeatDump_h
 
 class Simulation;
 
@@ -28,37 +28,28 @@ namespace xraySystem
 {
 
 /*!
-  \class Mirror
+  \class HeatDump
   \author S. Ansell
   \version 1.0
   \date January 2018
   \brief Focasable mirror in mount
 */
 
-class Mirror :
+class HeatDump :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
 
-  double theta;            ///< Theta angle
-  double phi;              ///< phi angle
-
-  double radius;           ///< Radius of surface cylinder
+  double height;           ///< width accross beam
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection
-  double length;           ///< length along beam
 
-  
-  double baseTop;          ///< Base distance above mirror
-  double baseDepth;        ///< Base distance below mirror 
-  double baseOutWidth;     ///< Extra width of base 
-  double baseGap;          ///< Base under gap below mirror
+  double cutHeight;        ///< cut from base
 
-  int mirrMat;             ///< XStal material
-  int baseMat;             ///< Base material
+  int mat;                 ///< Base material
 
   // Functions:
 
@@ -72,10 +63,10 @@ class Mirror :
 
  public:
 
-  Mirror(const std::string&);
-  Mirror(const Mirror&);
-  Mirror& operator=(const Mirror&);
-  virtual ~Mirror();
+  HeatDump(const std::string&);
+  HeatDump(const HeatDump&);
+  HeatDump& operator=(const HeatDump&);
+  virtual ~HeatDump();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

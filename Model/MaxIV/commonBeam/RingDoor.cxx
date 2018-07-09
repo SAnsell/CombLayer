@@ -199,10 +199,6 @@ RingDoor::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=ExternalCut::getRuleStr("innerWall");
   const std::string outerStr=ExternalCut::getRuleStr("outerWall");
-  ELog::EM<<"innerStr "<<innerStr<<" == "<<outerStr<<ELog::endDiag;
-  ELog::EM<<"innerStr "<<*SMap.realSurfPtr(1010003)<<ELog::endDiag;
-  ELog::EM<<"innerStr "<<*SMap.realSurfPtr(1010013)<<ELog::endDiag;
-  ELog::EM<<"innerStr "<<*SMap.realSurfPtr(buildIndex+200)<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,buildIndex,"200 3 -4 5 -6 ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr);
 

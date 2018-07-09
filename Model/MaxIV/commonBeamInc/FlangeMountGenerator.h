@@ -49,8 +49,9 @@ class FlangeMountGenerator
   double bladeLift;             ///< Height of blade up
   double bladeXYAngle;          ///< Angle of blade up
   double bladeThick;            ///< moving blade thickness
-  double bladeWidth;            ///< moving blade radius
-  double bladeHeight;           ///< moving blade radius
+  double bladeWidth;            ///< moving blade width
+  double bladeHeight;           ///< moving blade height
+  int bladeFlag;                ///< render blade or leave space
   
 
   std::string threadMat;        ///< Thead material
@@ -72,7 +73,7 @@ class FlangeMountGenerator
   // W/H/T/Ang/Mat
   void setBlade(const double,const double,
 		const double,const double,
-		const std::string&);
+		const std::string&,const int);
   void setThread(const double,const double,
 		 const std::string&);
 

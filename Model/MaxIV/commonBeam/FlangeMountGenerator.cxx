@@ -122,7 +122,8 @@ FlangeMountGenerator::setThread(const double R,const double L,
 void
 FlangeMountGenerator::setBlade(const double W,const double H,
 			       const double T,const double Ang,
-			       const std::string& Mat)
+			       const std::string& Mat,
+			       const int BF)
   /*!
     Set the blade
     \param H :: heigh of bea
@@ -130,6 +131,7 @@ FlangeMountGenerator::setBlade(const double W,const double H,
     \param T :: Thickness of blade
     \param Ang :: Angle of blade
     \param Mat :: Material of blade
+    \param BF :: is blade fully rendered
    */
 {
   bladeWidth=W;
@@ -137,6 +139,7 @@ FlangeMountGenerator::setBlade(const double W,const double H,
   bladeThick=T;
   bladeXYAngle=Ang;
   bladeMat=Mat;
+  bladeFlag=BF;
   return;
 }
 
@@ -179,6 +182,7 @@ FlangeMountGenerator::generateMount(FuncDataBase& Control,
 
   Control.addVariable(keyName+"InBeam",inBeam);
 
+  Control.addVariable(keyName+"BladeActive",bladeFlag);
   Control.addVariable(keyName+"BladeLift",bladeLift);
   Control.addVariable(keyName+"BladeXYAngle",bladeXYAngle);
   Control.addVariable(keyName+"BladeHeight",bladeHeight);

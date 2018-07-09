@@ -69,6 +69,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "World.h"
@@ -86,6 +87,7 @@
 #include "Wiggler.h"
 #include "SqrCollimator.h"
 #include "FlangeMount.h"
+#include "HeatDump.h"
 
 #include "FrontEnd.h"
 
@@ -113,13 +115,18 @@ FrontEnd::FrontEnd(const std::string& Key) :
   collTubeC(new constructSystem::PipeTube(newName+"CollimatorTubeC")),
   collC(new xraySystem::SqrCollimator(newName+"CollC")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
+  collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
+  heatBox(new constructSystem::PortTube(newName+"HeatBox")),
+  heatDumpFlange(new xraySystem::FlangeMount(newName+"HeatDumpFlange")),
+  heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe")),
   shutterBox(new constructSystem::PortTube(newName+"ShutterBox")),
   shutters({
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter0"),
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
-	})
-  
+	}),
+  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
+   
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -143,7 +150,15 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(collTubeC);
   OR.addObject(collC);
   OR.addObject(eCutDisk);
+  OR.addObject(collExitPipe);
+  OR.addObject(heatBox);
+  OR.addObject(heatDumpFlange);
+  OR.addObject(heatDump);    
   OR.addObject(flightPipe);
+  OR.addObject(shutterBox);
+  OR.addObject(shutters[0]);
+  OR.addObject(shutters[1]);
+  OR.addObject(exitPipe);
 }
   
 FrontEnd::~FrontEnd()
@@ -246,12 +261,55 @@ FrontEnd::buildObjects(Simulation& System)
 
   collC->addInsertCell(collTubeC->getCell("Void"));
   collC->createAll(System,*collTubeC,0);
-     
+
+  collExitPipe->addInsertCell(ContainedComp::getInsertCells());
+  collExitPipe->registerSpaceCut(1,2);
+  collExitPipe->createAll(System,*collTubeC,2);
+
+  heatBox->addInsertCell(ContainedComp::getInsertCells());
+  heatBox->registerSpaceCut(1,2);
+  heatBox->createAll(System,*collExitPipe,2);
+
+  const constructSystem::portItem& PI=heatBox->getPort(0);
+  heatDumpFlange->addInsertCell("Flange",heatBox->getCell("OuterSpace"));
+  heatDumpFlange->addInsertCell("Body",PI.getCell("Void"));
+  heatDumpFlange->addInsertCell("Body",heatBox->getCell("Void"));
+  heatDumpFlange->setBladeCentre(PI,0);
+  heatDumpFlange->createAll(System,PI,2);
+
+  heatDump->addInsertCell(heatBox->getCell("Void"));
+  heatDump->createAll(System,*heatDumpFlange,
+		      heatDumpFlange->getSideIndex("bladeCentre"));
+
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
   flightPipe->registerSpaceCut(1,2);
-  flightPipe->createAll(System,*collTubeC,2);
+  flightPipe->createAll(System,*heatBox,2);
 
-  lastComp=flightPipe;
+  shutterBox->addInsertCell(ContainedComp::getInsertCells());
+  shutterBox->registerSpaceCut(1,2);
+  shutterBox->createAll(System,*flightPipe,2);
+  shutterBox->splitVoidPorts(System,"SplitVoid",1001,
+			     shutterBox->getCell("Void"),
+			     Geometry::Vec3D(0,1,0));
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+			    shutterBox->getBuildCell(),
+			    Geometry::Vec3D(0,1,0));
+
+  for(size_t i=0;i<shutters.size();i++)
+    {
+      const constructSystem::portItem& PI=shutterBox->getPort(i);
+      shutters[i]->addInsertCell("Flange",shutterBox->getCell("SplitOuter",i));
+      shutters[i]->addInsertCell("Body",PI.getCell("Void"));
+      shutters[i]->addInsertCell("Body",shutterBox->getCell("SplitVoid",i));
+      shutters[i]->setBladeCentre(PI,0);
+      shutters[i]->createAll(System,PI,2);
+    }
+
+  exitPipe->addInsertCell(ContainedComp::getInsertCells());
+  exitPipe->registerSpaceCut(1,2);
+  exitPipe->createAll(System,*shutterBox,2);
+  
+  lastComp=exitPipe;
   return;
 }
 

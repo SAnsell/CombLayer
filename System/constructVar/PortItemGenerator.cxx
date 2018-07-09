@@ -156,9 +156,9 @@ PortItemGenerator::setFlange(const double R,const double L)
 void
 PortItemGenerator::setPlate(const double T,const std::string& PM)
   /*!
-    Set all the flange values
-    \param R :: radius of flange
-    \param L :: length
+    Set the support flange (top) plate thickness and material
+    \param T :: Plate thickness 
+    \param PM :: material for plate
    */
 {
   plateThick=T;
