@@ -61,7 +61,9 @@ namespace setVariable
 PortItemGenerator::PortItemGenerator() :
   length(12.0),radius(5.0),wallThick(0.5),
   flangeLen(1.0),flangeRadius(1.0),
-  plateThick(0.0),plateMat("Aluminium"),
+  plateThick(0.0),
+  wallMat("Stainless304"),
+  plateMat("Aluminium"),
   outerVoid(1)
   /*!
     Constructor and defaults
@@ -194,6 +196,8 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   Control.addVariable(keyName+"Axis",A.unit());
 
   Control.addVariable(keyName+"OuterVoid",static_cast<int>(outerVoid));
+  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"PlateMat",plateMat);
   
   return;
 

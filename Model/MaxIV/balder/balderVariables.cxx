@@ -427,7 +427,8 @@ monoVariables(FuncDataBase& Control,const double YStep)
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","monoVariables");
-
+  setVariable::PortItemGenerator PItemGen;
+    
   const std::string preName("BalderOpticsLine");
   
   Control.addVariable(preName+"MonoVacYStep",YStep);
@@ -471,6 +472,13 @@ monoVariables(FuncDataBase& Control,const double YStep)
   Control.addVariable(preName+"MonoXtalMat","Silicon80K");
   Control.addVariable(preName+"MonoXtalBaseMat","Copper");
 
+  // 20cm above port tube
+  const Geometry::Vec3D XVecMinus(-1,0,0);
+  PItemGen.setCF<setVariable::CF50>(10.0);
+  PItemGen.setPlate(1.0,"Glass");
+
+  PItemGen.generatePort(Control,preName+"MonoVacPort0",
+			Geometry::Vec3D(0,0,0),XVecMinus);
   return;
 }
 
@@ -708,6 +716,12 @@ opticsVariables(FuncDataBase& Control,
   CrossGen.generateCF<setVariable::CF63>
     (Control,preName+"ShutterPipe",0.0,8.0,13.5,13.5);
 
+  FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
+  FlangeGen.setNoPlate();
+  FlangeGen.generateMount(Control,preName+"MonoShutter",0); 
+
+
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
@@ -819,7 +833,7 @@ BALDERvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,195.0);
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,178.0);
 
   balderVar::opticsHutVariables(Control,"Balder");
   balderVar::opticsVariables(Control,"Balder");

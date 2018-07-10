@@ -67,7 +67,8 @@ class FlangeMountGenerator
   ~FlangeMountGenerator();
 
   template<typename CF> void setCF();
-  
+
+  void setNoPlate();
   // R/T/mat
   void setPlate(const double,const double,const std::string&);
   // W/H/T/Ang/Mat

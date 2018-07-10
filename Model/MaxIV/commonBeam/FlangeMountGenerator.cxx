@@ -127,10 +127,22 @@ FlangeMountGenerator::setCF()
 }
 
 void
+FlangeMountGenerator::setNoPlate()
+  /*!
+    Set the plate the null
+   */
+{
+  plateRadius=0.0;
+  plateThick=0.0;
+  plateMat="Void";
+  return;
+}
+
+void
 FlangeMountGenerator::setPlate(const double R,const double T,
 			       const std::string& Mat)
   /*!
-    Set the blade
+    Set the support plate
     \param R :: Radius of flange plate
     \param T :: Thickness of flange plate
     \param Mat :: Material for flange
@@ -147,7 +159,7 @@ void
 FlangeMountGenerator::setThread(const double R,const double L,
 				const std::string& Mat)
   /*!
-    Set the threda
+    Set the thread 
     \param R :: Thread radius
     \param L :: Thread length [to sample mid point]
     \param Mat :: Material of blade

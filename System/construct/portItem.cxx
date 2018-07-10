@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -68,6 +67,7 @@
 #include "FuncDataBase.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "AttachSupport.h"
 #include "LinkUnit.h"
@@ -82,9 +82,24 @@
 namespace constructSystem
 {
 
+portItem::portItem(const std::string& baseKey,
+		   const std::string& Key) :
+  attachSystem::FixedComp(Key,5),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  portBase(baseKey),
+  statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
+  flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
+  voidMat(0),wallMat(0),plateMat(0)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: KeyName
+  */
+{}
+
 portItem::portItem(const std::string& Key) :
   attachSystem::FixedComp(Key,5),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  portBase(keyName),
   statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
   voidMat(0),wallMat(0),plateMat(0)
@@ -97,6 +112,7 @@ portItem::portItem(const std::string& Key) :
 portItem::portItem(const portItem& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
+  portBase(keyName),
   statusFlag(A.statusFlag),outerFlag(A.outerFlag),
   externalLength(A.externalLength),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
@@ -123,7 +139,7 @@ portItem::operator=(const portItem& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      
+
       statusFlag=A.statusFlag;
       outerFlag=A.outerFlag;
       externalLength=A.externalLength;
@@ -203,6 +219,41 @@ portItem::setMaterial(const int V,const int W,
   voidMat=V;
   wallMat=W;
   plateMat=(PM<0) ? wallMat : PM;
+  return;
+}
+
+void
+portItem::populate(const FuncDataBase& Control)
+  /*!
+    Populate variables
+   */
+{
+  ELog::RegMethod RegA("portItem","populate");
+
+  centreOffset=
+    Control.EvalVar<Geometry::Vec3D>(keyName+"Centre");
+  axisOffset=
+    Control.EvalPair<Geometry::Vec3D>(keyName,portBase,"Axis");
+      
+  externalLength=Control.EvalPair<double>(keyName,portBase,"Length");
+  radius=Control.EvalPair<double>(keyName,portBase,"Radius");
+  wall=Control.EvalPair<double>(keyName,portBase,"Wall");
+  
+  flangeRadius=Control.EvalPair<double>(keyName,portBase,"FlangeRadius");
+  flangeLength=Control.EvalPair<double>(keyName,portBase,"FlangeLength");
+  plateThick=Control.EvalDefPair<double>(keyName,portBase,"PlateThick",0.0);
+
+  voidMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"VoidMat",portBase+"VoidMat",0);
+    
+  wallMat=ModelSupport::EvalMat<int>
+    (Control,keyName+"WallMat",portBase+"WallMat");
+  plateMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"PlateMat",portBase+"PlateMat",wallMat);
+
+  
+  outerFlag=
+    static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",0));
   return;
 }
 
@@ -539,5 +590,27 @@ portItem::constructTrack(Simulation& System)
   createLinks(LT,AIndex,BIndex);
   return;
 }
+
+void
+portItem::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
+  /*!
+    Build the system assuming outer cells have been added
+    \param System :: Simulation to use
+    \param FC :: Fixed comp
+    \param sideIndex :: Link point
+   */
+{
+  ELog::RegMethod RegA("portItem","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  setCentLine(FC,centreOffset,axisOffset);
+  constructTrack(System);
+  return;
+}
   
+
+
 }  // NAMESPACE constructSystem

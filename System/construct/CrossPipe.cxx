@@ -91,7 +91,10 @@ CrossPipe::CrossPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(4,"baseFlange");
+  nameSideIndex(5,"topFlange");
+}
 
 CrossPipe::CrossPipe(const CrossPipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),

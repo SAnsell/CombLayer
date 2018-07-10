@@ -427,7 +427,7 @@ MonoVessel::createAll(Simulation& System,
 void
 MonoVessel::constructPorts(Simulation& System)
   /*!
-    Separate call teo construct port because it may 
+    Separate call to construct port because it may 
     need to be called late
     \param System :: Simulation to use
   */
@@ -435,17 +435,11 @@ MonoVessel::constructPorts(Simulation& System)
   ELog::RegMethod RegA("MonoVessel","constructPorts");
 
   
-  constructSystem::portItem windowPort("windowPort");
-
-  windowPort.createUnitVector(*this,0);
-  windowPort.createUnitVector(*this,0);
-  windowPort.setMain(5.0,4.0,0.5);
-  windowPort.setFlange(7.0,0.5);
-  windowPort.setMaterial(voidMat,wallMat);
-  windowPort.setCentLine(*this,Geometry::Vec3D(0,0,0),
-			 Geometry::Vec3D(-1,0,0));
-  windowPort.constructTrack(System);
-  return;
+  //  constructSystem::portItem windowPort(keyName+"Port0");
+  const std::string portName=keyName+"Port"+std::to_string(i);
+  constructSystem::portItem windowPort(keyName+"Port",portName);
+  windowPort.createAll(System,*this,0);
+  return;  
 }
   
 }  // NAMESPACE xraySystem

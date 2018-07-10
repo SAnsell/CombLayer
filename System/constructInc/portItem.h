@@ -52,8 +52,12 @@ class portItem :
 {
  private:
 
-  bool statusFlag;           ///< Flag to check object correct
-  bool outerFlag;            ///< Make outer void
+  const std::string portBase;  ///< Base key name
+  bool statusFlag;             ///< Flag to check object correct
+  bool outerFlag;              ///< Make outer void
+
+  Geometry::Vec3D centreOffset;
+  Geometry::Vec3D axisOffset;
   
   double externalLength;     ///< Length of item 
   double radius;             ///< radius of pipe
@@ -69,7 +73,8 @@ class portItem :
   std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
-  
+
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
 		   const size_t,const size_t);
@@ -83,6 +88,7 @@ class portItem :
  public:
 
   portItem(const std::string&);
+  portItem(const std::string&,const std::string&);
   portItem(const portItem&);
   portItem& operator=(const portItem&);
   ~portItem();
@@ -102,7 +108,9 @@ class portItem :
   void constructTrack(Simulation&);
   
   void intersectPair(Simulation&,const portItem&) const;
-  
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
 				       
 };
   

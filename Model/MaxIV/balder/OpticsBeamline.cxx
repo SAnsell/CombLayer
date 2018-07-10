@@ -146,6 +146,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
   shutterPipe(new constructSystem::CrossPipe(newName+"ShutterPipe")),
+  monoShutter(new xraySystem::FlangeMount(newName+"MonoShutter")),
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
   neutShield({
@@ -460,6 +461,13 @@ OpticsBeamline::buildObjects(Simulation& System)
   shutterPipe->setFront(*pipeF,2);
   shutterPipe->registerSpaceCut(1,2);
   shutterPipe->createAll(System,*pipeF,2);
+
+  monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
+  monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
+  monoShutter->setBladeCentre(*shutterPipe,0);
+
+  monoShutter->createAll
+    (System,*shutterPipe,shutterPipe->getSideIndex("topFlange"));
 
   pipeG->addInsertCell(ContainedComp::getInsertCells());
   pipeG->setFront(*shutterPipe,2);
