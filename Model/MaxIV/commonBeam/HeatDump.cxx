@@ -112,6 +112,7 @@ HeatDump::populate(const FuncDataBase& Control)
   thick=Control.EvalVar<double>(keyName+"Thick");
 
   cutHeight=Control.EvalVar<double>(keyName+"CutHeight");
+  cutDepth=Control.EvalVar<double>(keyName+"CutDepth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -156,9 +157,9 @@ HeatDump::createSurfaces()
   // cut surf
 
   ModelSupport::buildPlane(SMap,buildIndex+11,
-			   Origin+Y*(thick/2.0)-Z*(height/2.0),
+			   Origin+Y*cutDepth-Z*(height/2.0),
 			   Origin-Y*(thick/2.0)-Z*(height/2.0-cutHeight),
-			   Origin+Y*(thick/2.0)-Z*(height/2.0)+X,
+			   Origin+Y*cutDepth-Z*(height/2.0)+X,
 			   Z);  
   return; 
 }
@@ -175,7 +176,7 @@ HeatDump::createObjects(Simulation& System)
   const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 11 " );
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 11 " );
   makeCell("Dump",System,cellIndex++,mat,0.0,Out+mountSurf);
   
   addOuterSurf(Out+mountSurf);

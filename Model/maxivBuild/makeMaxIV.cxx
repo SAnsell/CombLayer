@@ -123,7 +123,7 @@ makeMaxIV::makeBeamLine(Simulation& System,
 
   const size_t NStop=IParam.setCnt("stopPoint");
   std::map<std::string,std::vector<std::string>> stopUnits=
-    IParam.getMapItems("stopPoints");
+    IParam.getMapItems("stopPoint");
 
   
   

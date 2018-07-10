@@ -48,6 +48,7 @@ class HeatDump :
   double thick;            ///< Thickness in normal direction to reflection
 
   double cutHeight;        ///< cut from base
+  double cutDepth;        ///< cut distance in Y
 
   int mat;                 ///< Base material
 
