@@ -114,7 +114,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("PTRAC","ptrac");
 
   IParam.regItem("r","renum");
-  IParam.regMulti("R","report",1000,0);
+  IParam.regMulti("report","report",1000,0);
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
 
   IParam.regFlag("sdefVoid","sdefVoid");

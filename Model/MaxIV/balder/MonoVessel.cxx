@@ -436,8 +436,7 @@ MonoVessel::constructPorts(Simulation& System)
 
   
   //  constructSystem::portItem windowPort(keyName+"Port0");
-  const std::string portName=keyName+"Port"+std::to_string(i);
-  constructSystem::portItem windowPort(keyName+"Port",portName);
+  constructSystem::portItem windowPort(keyName+"Port",keyName+"Port0");
   windowPort.createAll(System,*this,0);
   return;  
 }

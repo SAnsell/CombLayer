@@ -229,6 +229,7 @@ FrontEnd::buildObjects(Simulation& System)
   bellowA->createAll(System,*dipolePipe,2);
 
   collTubeA->addInsertCell(ContainedComp::getInsertCells());
+  collTubeA->setFront(*bellowA,2);  // needed to allow bend if miss aligned
   collTubeA->registerSpaceCut(1,2);
   collTubeA->createAll(System,*bellowA,2);  
 

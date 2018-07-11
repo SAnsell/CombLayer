@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/ReportSelector.cxx
+ * File:   process/ReportSelector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,8 @@
 
 
 void
-reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
+reportSelection(Simulation& System,
+		  const mainSystem::inputParam& IParam)
   /*!
     A system for reporting values 
     \param System :: Simulation to add tallies
@@ -82,6 +83,7 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
   const FuncDataBase& Control=System.getDataBase();
 
   const size_t nP=IParam.setCnt("report");
+
   //  boost::format FMTvec("%1$=%12.6g%2$=12.6g%3$=12.6g");
   for(size_t index=0;index<nP;index++)
     {

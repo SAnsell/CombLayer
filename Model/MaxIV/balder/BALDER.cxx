@@ -173,7 +173,9 @@ BALDER::build(Simulation& System,
   const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
-    
+
+  if (stopPoint=="frontEnd") return;
+
   opticsHut->addInsertCell(voidCell);
   opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
   opticsHut->createAll(System,*ringCaveA,2);
@@ -206,8 +208,7 @@ BALDER::build(Simulation& System,
   joinPipe->insertObjects(System);
 
   System.removeCell(ringCaveA->getCell("Void"));
-  if (stopPoint=="hutch")
-    return;  
+
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
 

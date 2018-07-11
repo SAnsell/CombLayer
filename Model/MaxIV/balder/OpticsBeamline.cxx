@@ -534,7 +534,9 @@ OpticsBeamline::createAll(Simulation& System,
   ELog::RegMethod RControl("OpticsBeamline","build");
 
   populate(System.getDataBase());
+  
   createUnitVector(FC,sideIndex);
+  pipeInit->setFront(FC,sideIndex);
   buildObjects(System);
   createLinks();
   return;

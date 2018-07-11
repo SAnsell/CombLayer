@@ -118,15 +118,26 @@ makeMaxIV::makeBeamLine(Simulation& System,
 {
   ELog::RegMethod RegA("makeMaxIV","makeBeamLine");
 
+  static const std::set<std::string> beamNAMES
+    ({"BALDER","COSAXS"});
+  
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const size_t NStop=IParam.setCnt("stopPoint");
-  std::map<std::string,std::vector<std::string>> stopUnits=
-    IParam.getMapItems("stopPoint");
+  typedef std::map<std::string,std::vector<std::string>> mTYPE;
+  mTYPE stopUnits=IParam.getMapItems("stopPoint");
 
-  
-  
+  // create a map of beamname : stoppoint [or All : stoppoint]
+  std::string stopPoint;
+  std::map<std::string,std::string> beamStop;
+  for(const mTYPE::value_type& SP : stopUnits)
+    {
+      if (beamNAMES.find(SP.first)==beamNAMES.end())
+	stopPoint=SP.first;
+      else if (!SP.second.empty())
+	beamStop.emplace(SP.first,SP.second.front());
+    }
+    
   const size_t NSet=IParam.setCnt("beamlines");
   for(size_t j=0;j<NSet;j++)
     {
@@ -147,10 +158,17 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	    OR.getObjectThrow<attachSystem::FixedComp>
 	    (FCName,"FixedComp not found for origin");
 
+	  std::map<std::string,std::string>::const_iterator mc;
+	  mc=beamStop.find(BL);
+	  const std::string activeStop=
+	    (mc!=beamStop.end()) ? mc->second : stopPoint;
 	  if (BL=="BALDER")
 	    {
-
+		
 	      BALDER BL("Balder");
+	      if (!activeStop.empty())
+		ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		BL.setStopPoint(activeStop);
 	      BL.build(System,*FCOrigin,linkIndex);
 	    }
 	  else if (BL=="COSAXS")
