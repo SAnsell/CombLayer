@@ -290,14 +290,18 @@ FrontEnd::buildObjects(Simulation& System)
 
   shutterBox->addInsertCell(ContainedComp::getInsertCells());
   shutterBox->registerSpaceCut(1,2);
+  shutterBox->delayPorts();
   shutterBox->createAll(System,*flightPipe,2);
-  shutterBox->splitVoidPorts(System,"SplitVoid",1001,
-			     shutterBox->getCell("Void"),
-			     Geometry::Vec3D(0,1,0));
-  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-			    shutterBox->getBuildCell(),
-			    Geometry::Vec3D(0,1,0));
 
+  shutterBox->splitVoidPorts(System,"SplitVoid",1001,
+  			     shutterBox->getCell("Void"),
+			     {0,1});
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+			     shutterBox->getBuildCell(),
+			     {0,1});
+
+  shutterBox->createPorts(System);
+  
   for(size_t i=0;i<shutters.size();i++)
     {
       const constructSystem::portItem& PI=shutterBox->getPort(i);

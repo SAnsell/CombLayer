@@ -67,6 +67,7 @@ class PortTube :
   int voidMat;                ///< void material
   int wallMat;                ///< Fe material layer
 
+  bool delayPortBuild;        ///< Delay port construction
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
@@ -77,7 +78,6 @@ class PortTube :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createPorts(Simulation&);
   
  public:
 
@@ -86,6 +86,8 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
+  /// Set a port delay
+  void delayPorts() { delayPortBuild=1; }
   void splitVoidPorts(Simulation&,const std::string&,const int,
 		      const int,const std::vector<size_t>&);
   void splitVoidPorts(Simulation&,const std::string&,const int,
@@ -93,6 +95,8 @@ class PortTube :
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
+  void createPorts(Simulation&);
+    
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

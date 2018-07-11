@@ -85,7 +85,8 @@ namespace constructSystem
 PortTube::PortTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  delayPortBuild(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -235,6 +236,7 @@ PortTube::populate(const FuncDataBase& Control)
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
 
       if (OFlag) windowPort.setWrapVolume();
+
       windowPort.setMain(L,R,W);
       windowPort.setFlange(FR,FT);
       windowPort.setCoverPlate(PT,PMat);
@@ -265,8 +267,6 @@ PortTube::createUnitVector(const attachSystem::FixedComp& FC,
     Y*(portALen+wallThick+length/2.0)-
     X*portAXStep-
     Z*portAZStep;
-
-
 
   return;
 }
@@ -425,14 +425,18 @@ PortTube::createPorts(Simulation& System)
 
   for(size_t i=0;i<Ports.size();i++)
     {
-      if (getBuildCell())
+      if (!delayPortBuild && getBuildCell())
 	Ports[i].addOuterCell(getBuildCell());
       else
-	for(const int CN : insertCells)
-	  Ports[i].addOuterCell(CN);
-
+	{
+	  for(const int CN : insertCells)
+	    Ports[i].addOuterCell(CN);
+	}
+      
+      
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
+
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System);
     }
@@ -469,15 +473,16 @@ PortTube::addInsertPortCells(const int CN)
 }
 
 void
-PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
+PortTube::splitVoidPorts(Simulation& System,
+			 const std::string& splitName,
 			 const int offsetCN,const int CN,
-	   const std::vector<size_t>& portVec)
+			 const std::vector<size_t>& portVec)
   /*!
     Split the void cell and store divition planes
     Only use those port that a close to orthogonal with Y axis
     \param System :: Simulation to use
-    \param splitName :: Name for cell output
-    \param offsetCN :: output offset number
+    \param splitName :: Name for cell output  [new]
+    \param offsetCN :: output offset number  [new]
     \param CN :: Cell number to split
     \param portPair :: Standard pair
    */
@@ -489,8 +494,6 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
 
   for(size_t i=1;i<portVec.size();i+=2)
     {
-      //      const size_t AIndex=portVec[i].first;
-      //      const size_t BIndex=portVec[i].second;
       const size_t AIndex=portVec[i-1];
       const size_t BIndex=portVec[i];
       
@@ -512,13 +515,16 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
   if (!splitName.empty())
   for(const int CN : cells)
     CellMap::addCell(splitName,CN);
-  
+
+
   return;
 }
 
 void
-PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
-			 const int offsetCN,const int CN,
+PortTube::splitVoidPorts(Simulation& System,
+			 const std::string& splitName,
+			 const int offsetCN,
+			 const int CN,
 			 const Geometry::Vec3D& inobjAxis)
   /*!
     Split the void cell and store divition planes
@@ -527,6 +533,7 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
     \param splitName :: Name for cell output
     \param offsetCN :: output offset number
     \param CN :: Cell number to split
+    \param inobjAxis :: axis to split pot on
    */
 {
   ELog::RegMethod RegA("PortTube","splitVoidPorts");
@@ -541,9 +548,10 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
   size_t preFlag(0);
   for(size_t i=0;i<PCentre.size();i++)
     {
-      if (Ports[i].getY().dotProd(Axis)<Geometry::zeroTol)
+      // within basis set
+      if (Ports[i].getY().dotProd(inobjAxis)<Geometry::zeroTol)
 	{
-	  if (preFlag)
+	  if (preFlag)   // test to have two ports
 	    {
 	      const Geometry::Vec3D CPt=
 		(PCentre[preFlag-1]+PCentre[i])/2.0;
@@ -551,12 +559,11 @@ PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
 	      SplitAxis.push_back(Axis);
 	    }
 	  preFlag=i+1;
-	  
 	}
     }
+  
   const std::vector<int> cells=
-    FixedComp::splitObject(System,offsetCN,CN,
-			   SplitOrg,SplitAxis);
+    FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
   for(const int CN : cells)
@@ -593,8 +600,8 @@ PortTube::intersectPorts(Simulation& System,
   
 void
 PortTube::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int FIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -609,11 +616,14 @@ PortTube::createAll(Simulation& System,
   createSurfaces();    
   createObjects(System);
 
-
   createLinks();
   insertObjects(System);
-  createPorts(System);
 
+  if (!delayPortBuild)
+    createPorts(System);
+  else
+    ELog::EM<<"DElay"<<ELog::endDiag;
+  
   return;
 }
   

@@ -287,9 +287,11 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
    */
 {
   portItem::createUnitVector(FC,0);
-  
+
+
   Origin+=X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
   const Geometry::Vec3D DVec=X*Axis.X()+Y*Axis.Y()+Z*Axis.Z();
+
   FixedComp::reOrientate(1,DVec.unit());
   return;
 }
@@ -482,8 +484,9 @@ portItem::constructOuterFlange(Simulation& System,
 	  OPtr->addSurfString(getExclude());
 	  activeCell.insert(OName);
 	}
-      else 
+      else
 	OPtr->addSurfString(tubeExclude);
+
     }
   // do essential outerCells
   for(const int ON : outerCell)
@@ -578,7 +581,6 @@ portItem::constructTrack(Simulation& System)
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();
-
  
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
