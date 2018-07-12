@@ -105,7 +105,8 @@ PortTube::PortTube(const PortTube& A) :
   portBThick(A.portBThick),flangeARadius(A.flangeARadius),
   flangeALength(A.flangeALength),flangeBRadius(A.flangeBRadius),
   flangeBLength(A.flangeBLength),voidMat(A.voidMat),
-  wallMat(A.wallMat),PCentre(A.PCentre),PAxis(A.PAxis),
+  wallMat(A.wallMat),delayPortBuild(A.delayPortBuild),
+  PCentre(A.PCentre),PAxis(A.PAxis),
   Ports(A.Ports)
   /*!
     Copy constructor
@@ -147,6 +148,7 @@ PortTube::operator=(const PortTube& A)
       flangeBLength=A.flangeBLength;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
+      delayPortBuild=A.delayPortBuild;
       PCentre=A.PCentre;
       PAxis=A.PAxis;
       Ports=A.Ports;
@@ -621,8 +623,6 @@ PortTube::createAll(Simulation& System,
 
   if (!delayPortBuild)
     createPorts(System);
-  else
-    ELog::EM<<"DElay"<<ELog::endDiag;
   
   return;
 }

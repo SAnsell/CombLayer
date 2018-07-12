@@ -67,7 +67,7 @@ class PortTube :
   int voidMat;                ///< void material
   int wallMat;                ///< Fe material layer
 
-  bool delayPortBuild;        ///< Delay port construction
+  bool delayPortBuild;                   ///< Delay port to manual construct
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
