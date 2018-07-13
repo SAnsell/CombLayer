@@ -152,9 +152,9 @@ pointConstruct::processPoint(SimMCNP& System,
     }
   else if (PType=="window")
     {
-      const std::string place=
+      const std::string fcName=
 	IParam.getValueError<std::string>("tally",Index,2,"position not given");
-      const std::string snd=
+      const std::string linkPoint=
 	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not given");
 
       const double D=
@@ -167,34 +167,31 @@ pointConstruct::processPoint(SimMCNP& System,
 	IParam.getDefValue<double>(0.0,"tally",Index,6);
 	    
 
-      const long int linkNumber=attachSystem::getLinkIndex(snd);
-      processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
+      processPointWindow(System,fcName,linkPoint,D,timeStep,windowOffset);
     }
 
   else if (PType=="object")
     {
       const std::string place=
 	IParam.getValueError<std::string>("tally",Index,2,"position not given");
-      const std::string snd=
+      const std::string linkName=
 	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not given");
       const double D=
 	IParam.getValueError<double>("tally",Index,4,"Distance not given");
-      const long int linkNumber=attachSystem::getLinkIndex(snd);
-      processPointFree(System,place,linkNumber,D);
+      processPointFree(System,place,linkName,D);
     }
   else if (PType=="objOffset")
     {
       const std::string place=
 	IParam.getValueError<std::string>("tally",Index,2,"position not given");
-      const std::string snd=
+      const std::string linkName=
 	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not give");
 
       size_t itemIndex(4);
       const Geometry::Vec3D DVec=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Offset");
-      const long int linkNumber=attachSystem::getLinkIndex(snd);
       
-      processPointFree(System,place,linkNumber,DVec);
+      processPointFree(System,place,linkName,DVec);
     }
   else
     {
@@ -208,7 +205,7 @@ pointConstruct::processPoint(SimMCNP& System,
 void
 pointConstruct::processPointWindow(SimMCNP& System,
 				   const std::string& FObject,
-				   long int linkPt,
+				   const std::string& linkIndex,
 				   const double beamDist,
 				   const double timeStep,
 				   const double windowOffset)
@@ -216,7 +213,7 @@ pointConstruct::processPointWindow(SimMCNP& System,
     Process a point tally in a registered object
     \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
-    \param linkPt :: Link point [-ve for beam object]
+    \param linkIndex :: Link point 
     \param beamDist :: Out distance Distance
     \param timeStep ::  Forward step [view type modification]
     \param windowOffset :: Distance to move window towards tally point
@@ -233,11 +230,12 @@ pointConstruct::processPointWindow(SimMCNP& System,
   Geometry::Vec3D orgPoint;
   Geometry::Vec3D BAxis;
   int masterPlane(0);
+  const attachSystem::FixedComp* TPtr=
+    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+
+  const long int linkPt=TPtr->getSideIndex(linkIndex);
   if (linkPt!=0)
     {
-      const attachSystem::FixedComp* TPtr=
-	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
-
       masterPlane=TPtr->getExitWindow(linkPt,Planes);
       orgPoint= TPtr->getLinkPt(linkPt); 
       BAxis= TPtr->getLinkAxis(linkPt);
@@ -274,13 +272,13 @@ pointConstruct::processPointWindow(SimMCNP& System,
 void
 pointConstruct::processPointFree(SimMCNP& System,
 				 const std::string& FObject,
-				 const long int linkPt,
+				 const std::string& linkName,
 				 const double OD)
   /*!
     Process a point tally in a registered object
     \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
-    \param linkPt :: Link point [-ve for beam object]
+    \param linkNAme :: Link point 
     \param OD :: Out distance Distance
   */
 {
@@ -291,7 +289,8 @@ pointConstruct::processPointFree(SimMCNP& System,
 
   const attachSystem::FixedComp* TPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
-    
+  const long int linkPt=TPtr->getSideIndex(linkName);
+  
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint=TPtr->getLinkPt(linkPt);
   TPoint+=TPtr->getLinkAxis(linkPt)*OD;
@@ -305,13 +304,13 @@ pointConstruct::processPointFree(SimMCNP& System,
 void
 pointConstruct::processPointFree(SimMCNP& System,
 				 const std::string& FObject,
-				 const long int linkPt,
+				 const std::string& linkName,
 				 const Geometry::Vec3D& DVec)
 /*!
   Process a point tally in a registered object
   \param System :: SimMCNP to add tallies
   \param FObject :: Fixed/Twin name
-  \param linkPt :: Link point [-ve for beam object]
+  \param linkName :: Link point 
   \param DVec :: Out distance Distance
 */
 {
@@ -323,7 +322,7 @@ pointConstruct::processPointFree(SimMCNP& System,
   const attachSystem::FixedComp* TPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   
-  
+  const long int linkPt=TPtr->getSideIndex(linkName);
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint=TPtr->getLinkPt(linkPt);
   

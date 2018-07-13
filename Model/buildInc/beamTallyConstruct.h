@@ -69,7 +69,7 @@ class beamTallyConstruct
 			       const double,const double);
   static void addViewLineTally(SimMCNP&,const int,const double,
 			       const double,const double,const double);
-  static void addViewInnerTally(SimMCNP&,const int,const long int,
+  static void addViewInnerTally(SimMCNP&,const int,const std::string&,
 				const double,const double,
 				const double,const double);
   static void addShutterTally(SimMCNP&,const int,const double,

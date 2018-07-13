@@ -120,7 +120,7 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
 
   if (!FCPtr) return 0;
   // throws -- because if we have FC and no link number is that bad?
-  const long int FCI=attachSystem::getLinkIndex(FCindex);
+  const long int FCI=FCPtr->getSideIndex(FCindex);
 
   const int surfN=FCPtr->getLinkSurf(FCI);
   if (!surfN) return 0;

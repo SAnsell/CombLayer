@@ -28,7 +28,6 @@ namespace attachSystem
 
 class FixedComp;
 
-long int getLinkIndex(const std::string&);
 int getAttachPoint(const std::string&,const std::string&,
 		    Geometry::Vec3D&,Geometry::Vec3D&);
 int getAttachPointWithXYZ(const std::string&,const std::string&,

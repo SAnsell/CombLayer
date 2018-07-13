@@ -172,7 +172,7 @@ sourceSelection(Simulation& System,
 
 
   const long int linkIndex=(DSnd.empty()) ?  0 :
-    attachSystem::getLinkIndex(DSnd) % 1000;
+    FC.getSideIndex(DSnd);
 
   // NOTE: No return to allow active SSW systems  
   const std::string sdefType=IParam.getValue<std::string>("sdefType");

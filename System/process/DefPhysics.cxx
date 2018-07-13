@@ -163,7 +163,7 @@ procAngle(const mainSystem::inputParam& IParam,
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
       const int ZFlag=IParam.getDefValue<int>(1,"angle",index,3);
-      const long int axisIndex=attachSystem::getLinkIndex(CItem);
+      const long int axisIndex=GIPtr->getSideIndex(CItem);
 
       const Geometry::Vec3D AxisVec=
         GIPtr->getLinkAxis(axisIndex);
@@ -188,7 +188,7 @@ procAngle(const mainSystem::inputParam& IParam,
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
 
-      const long int sideIndex=attachSystem::getLinkIndex(CItem);
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
           
       Geometry::Vec3D LP=GIPtr->getLinkPt(sideIndex);
       LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
@@ -205,8 +205,8 @@ procAngle(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
-      
-      const long int sideIndex=attachSystem::getLinkIndex(CItem);
+
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
@@ -277,10 +277,10 @@ procOffset(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("0","offset",index,2);
-      const long int linkIndex=attachSystem::getLinkIndex(CItem);
-      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(linkIndex)
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
+      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(sideIndex)
               <<ELog::endDiag;
-      MR.addDisplace(-GIPtr->getLinkPt(linkIndex));
+      MR.addDisplace(-GIPtr->getLinkPt(sideIndex));
     }
   else if (AItem=="free" || AItem=="FREE")
     {

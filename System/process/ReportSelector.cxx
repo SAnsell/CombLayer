@@ -116,17 +116,18 @@ reportSelection(Simulation& System,
           boost::format FMTdouble("%12.6f");
           const std::string FObject=IParam.outputItem<std::string>
             ("report",index,1,"objectName not given");
-          const std::string linkSide=
+          const attachSystem::FixedComp* FCPtr=
+            OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+
+	  const std::string linkSide=
             IParam.outputItem<std::string>
             ("report",index,2,"front/back/side not given");
-          const long int linkNumber=attachSystem::getLinkIndex(linkSide);
-          const attachSystem::FixedComp* TPtr=
-            OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+          const long int linkNumber=FCPtr->getSideIndex(linkSide);
           
-          const Geometry::Vec3D TPoint=TPtr->getLinkPt(linkNumber);
-          const Geometry::Vec3D TAxis=TPtr->getLinkAxis(linkNumber);
+          const Geometry::Vec3D TPoint=FCPtr->getLinkPt(linkNumber);
+          const Geometry::Vec3D TAxis=FCPtr->getLinkAxis(linkNumber);
           
-          ELog::EM<<TPtr->getKeyName()<<"["<<linkNumber<<"] ";
+          ELog::EM<<FCPtr->getKeyName()<<"["<<linkNumber<<"] ";
           const size_t len=ELog::EM.Estream().str().size();
           if (len<20)
             ELog::EM<<std::string(20-len,' ');

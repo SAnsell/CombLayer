@@ -1219,8 +1219,14 @@ FixedComp::getSideIndex(const std::string& sideName) const
   */
 {
   ELog::RegMethod RegA("FixedComp","getSideIndex");
+
   if (!sideName.empty())
     {
+      // retru numbers:
+      long int linkPt(0);
+      if (StrFunc::convert(sideName,linkPt))
+	return linkPt;
+
       const long int negScale
 	((sideName[0]=='-' || sideName[0]=='#') ? -1 : 1);
 	 
@@ -1315,6 +1321,18 @@ FixedComp::getLinkPt(const long int sideIndex) const
   if (!sideIndex) return Origin;
   const LinkUnit& LItem=getSignedRefLU(sideIndex);
   return LItem.getConnectPt();
+}
+
+int
+FixedComp::getLinkSurf(const std::string& sideName) const
+  /*!
+    Accessor to the link surface string
+    \param sideIndex :: Link number
+    \return Surface Key number
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkSurf(string)");
+  return getLinkSurf(getSideIndex(sideName));
 }
 
 int

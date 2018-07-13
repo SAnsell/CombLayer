@@ -748,7 +748,7 @@ makeESS::buildBunkerChicane(Simulation& System,
 	  const attachSystem::FixedComp* FCPtr=
 	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
 
-	  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+	  const long int linkIndex=FCPtr->getSideIndex(linkName);
           CF->createAll(System,*FCPtr,linkIndex);
 	}
       else

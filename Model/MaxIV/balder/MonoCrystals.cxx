@@ -88,7 +88,10 @@ MonoCrystals::MonoCrystals(const std::string& Key) :
     \param Key :: Name of construction key
     \param Index :: Index number
   */
-{}
+{
+  nameSideIndex(0,"beamIn");
+  nameSideIndex(1,"beamOut");
+}
 
 
 MonoCrystals::~MonoCrystals()
@@ -181,7 +184,7 @@ MonoCrystals::createSurfaces()
   ModelSupport::buildPlane(SMap,xtalIndex+204,BOrg+PX*(widthB/2.0),PX);
   ModelSupport::buildPlane(SMap,xtalIndex+205,BOrg,PZ);
   ModelSupport::buildPlane(SMap,xtalIndex+206,BOrg+PZ*thickB,PZ);
-  
+
   
   return; 
 }
@@ -214,7 +217,19 @@ MonoCrystals::createLinks()
   */
 {
   ELog::RegMethod RegA("MonoCrystals","createLinks");
-  
+
+
+  const Geometry::Vec3D BOrg=
+    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
+
+  // top surface going back down beamline to ring
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
+
+  // top surface going to experimental area
+  FixedComp::setConnect(0,BOrg,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+205));
+
   return;
 }
 

@@ -95,7 +95,7 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
 
   const attachSystem::FixedComp* FC=
     OR.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
-  const long int sideIndex=attachSystem::getLinkIndex(linkPos);
+  const long int sideIndex=FC->getSideIndex(linkPos);
 
   attachSystem::FixedComp A("tmpComp",0);
   A.createUnitVector(*FC,sideIndex);

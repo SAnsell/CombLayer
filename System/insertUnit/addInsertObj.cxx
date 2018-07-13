@@ -182,7 +182,7 @@ addInsertCylinderCell(Simulation& System,
 
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
-  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  const long int linkIndex=mainFCPtr->getSideIndex(linkName);
   
   System.populateCells();
   System.validateObjSurfMap();
@@ -268,7 +268,7 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
  
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
-  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  const long int linkIndex=mainFCPtr->getSideIndex(linkName);
  
   System.populateCells();
   System.validateObjSurfMap();
@@ -364,7 +364,7 @@ addInsertGridCell(Simulation& System,
 
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
-  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  const long int linkIndex=mainFCPtr->getSideIndex(linkName);
   
   System.populateCells();
   System.validateObjSurfMap();
@@ -510,7 +510,7 @@ addInsertSphereCell(Simulation& System,
 
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
-  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  const long int linkIndex=mainFCPtr->getSideIndex(linkName);
   
   System.populateCells();
   System.validateObjSurfMap();

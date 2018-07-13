@@ -108,8 +108,7 @@ flukaSourceSelection(Simulation& System,
     (DObj.empty()) ?  World::masterOrigin() :
     *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
 
-  const long int linkIndex=(DSnd.empty()) ?  0 :
-    attachSystem::getLinkIndex(DSnd) % 1000;
+  const long int linkIndex=(DSnd.empty()) ? 0 :  FC.getSideIndex(DSnd);
 
   // NOTE: No return to allow active SSW systems
   const size_t NSDef(IParam.setCnt("sdefType"));
