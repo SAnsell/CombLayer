@@ -566,8 +566,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 
   const cutUnit* CU=findUnit(extName);
   if (!CU)
-    throw ColErr::InContainerError<std::string>
-      (extName,"Unit not named");
+    throw ColErr::InContainerError<std::string>(extName,"Unit not named");
   
   makeExpandedSurf(SMap,CU->main,index,expandCentre,dExtra);
 

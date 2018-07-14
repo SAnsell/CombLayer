@@ -83,7 +83,7 @@ namespace constructSystem
 {
 
 PortTube::PortTube(const std::string& Key) :
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   delayPortBuild(0)
@@ -91,7 +91,11 @@ PortTube::PortTube(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(2,"mainPipe");
+  FixedComp::nameSideIndex(6,"portAPipe");
+  FixedComp::nameSideIndex(8,"portBPipe");
+}
 
 PortTube::PortTube(const PortTube& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
@@ -411,6 +415,30 @@ PortTube::createLinks()
   
   FrontBackCut::createFrontLinks(*this,inOrg,Y); 
   FrontBackCut::createBackLinks(*this,outOrg,Y);  
+
+  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
+  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
+  FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
+  FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+
+
+  
+  const Geometry::Vec3D AVec(Origin+X*portAXStep+Z*portAZStep);
+  const Geometry::Vec3D BVec(Origin+X*portBXStep+Z*portBZStep);
+  FixedComp::setConnect(6,AVec-Z*(portARadius+portAThick),-Z);
+  FixedComp::setConnect(7,AVec+Z*(portARadius+portAThick),Z);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+117));
+
+  FixedComp::setConnect(8,BVec-Z*(portBRadius+portBThick),-Z);
+  FixedComp::setConnect(9,BVec+Z*(portBRadius+portBThick),Z);
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+217));
+
   
   return;
 }

@@ -85,7 +85,7 @@ namespace constructSystem
 
 SplitFlangePipe::SplitFlangePipe(const std::string& Key,
 				 const bool IF) : 
-  attachSystem::FixedOffset(Key,9),
+  attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   innerLayer(IF),frontJoin(0),backJoin(0)
@@ -93,7 +93,13 @@ SplitFlangePipe::SplitFlangePipe(const std::string& Key,
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(0,"front");
+  FixedComp::nameSideIndex(1,"back");
+  FixedComp::nameSideIndex(2,"innerPipe");
+  FixedComp::nameSideIndex(7,"outerPipe");
+  FixedComp::nameSideIndex(9,"pipeWall");  
+}
 
 SplitFlangePipe::SplitFlangePipe(const SplitFlangePipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
@@ -385,8 +391,7 @@ SplitFlangePipe::createLinks()
 {
   ELog::RegMethod RegA("SplitFlangePipe","createLinks");
 
-  //stufff for intersection
-
+  // stuff for intersection
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
   FixedComp::setConnect(2,Origin-X*radius,-X);
@@ -403,10 +408,12 @@ SplitFlangePipe::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+27));
 
-  FixedComp::nameSideIndex(7,"outerPipe");
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(2,"innerPipe");
+  // pipe wall
+  FixedComp::setConnect(9,Origin-Z*(radius+feThick),-Z);
+  FixedComp::setConnect(10,Origin+Z*(radius+feThick),Z);
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+17));
+  
 
   return;
 }

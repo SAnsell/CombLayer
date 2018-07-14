@@ -231,6 +231,8 @@ BeamSource::createAll(const ITYPE& inputMap,
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
+  ELog::EM<<"lin == "<<FC.getKeyName()<<" "<<linkIndex<<ELog::endDiag;
+    
   populate(inputMap);
   createUnitVector(FC,linkIndex);
 

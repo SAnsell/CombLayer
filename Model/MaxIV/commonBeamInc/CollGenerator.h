@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/MirrorGenerator1.h
+ * File:   commonBeamInc/CollGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

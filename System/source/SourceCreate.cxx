@@ -434,7 +434,6 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
   BeamSource GX(keyName);
 
   GX.createAll(inputMap,FC,sideIndex);
-
   SDB.registerSource(GX.getKeyName(),GX);  
   return GX.getKeyName();      
 }
@@ -462,7 +461,9 @@ createFlukaSource(const mainSystem::MITYPE& inputMap,
   FlukaSource GX(keyName);
 
   GX.createAll(inputMap,FC,sideIndex);
-  SDB.registerSource(GX.getKeyName(),GX);  
+  SDB.registerSource(GX.getKeyName(),GX);
+  ELog::EM<<"Axis = "<<FC.getLinkAxis(sideIndex)<<ELog::endDiag;
+
   return GX.getKeyName();      
 }
 
@@ -487,7 +488,7 @@ createRectSource(const mainSystem::MITYPE& inputMap,
 
   GX.createAll(inputMap,FC,sideIndex);
 
-  SDB.registerSource(GX.getKeyName(),GX);  
+  SDB.registerSource(GX.getKeyName(),GX);
   return GX.getKeyName();      
 }
 

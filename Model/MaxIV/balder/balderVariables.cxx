@@ -65,6 +65,7 @@
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
 #include "RingDoorGenerator.h"
+#include "LeadBoxGenerator.h"
 
 namespace setVariable
 {
@@ -701,9 +702,8 @@ opticsVariables(FuncDataBase& Control,
 
   // centre of mid point
   const std::string fname=preName+"ViewMount"+std::to_string(0);      
-  const int upFlag(1);
   FlangeGen.setCF<setVariable::CF40>();
-  FlangeGen.generateMount(Control,fname,upFlag);  // in beam
+  FlangeGen.generateMount(Control,fname,0);    // out of  beam
 
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
@@ -758,6 +758,9 @@ connectingVariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","connectingVariables");
+
+
+  
   const std::string baseName="BalderConnect";
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
@@ -768,12 +771,16 @@ connectingVariables(FuncDataBase& Control)
   setVariable::LeadPipeGenerator LeadPipeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::LeadBoxGenerator LBGen;
+  
   PItemGen.setCF<setVariable::CF40>(3.0);
   PItemGen.setPlate(0.0,"Void");  
   
   BellowGen.setCF<CF40>();  
   BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
 
+  LBGen.generateBox(Control,baseName+"LeadA",0.0,8.0);
+    
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",0,152.0);
@@ -786,15 +793,20 @@ connectingVariables(FuncDataBase& Control)
   Control.addVariable(baseName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
 
+
+  LBGen.generateBox(Control,baseName+"PumpBoxA",0.0,8.0);
+
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",0,188.0);
   
   BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
-
+  LBGen.generateBox(Control,baseName+"LeadB",0.0,8.5);
+  
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",0,188.0);
 
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,
 			CF40::innerRadius,4.0);
+  LBGen.generateBox(Control,baseName+"PumpBoxB",0.0,8.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
@@ -802,7 +814,8 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",0,172.0);
 
   BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
-
+  LBGen.generateBox(Control,baseName+"LeadC",0.0,8.5);
+  
   return;
 }
 
@@ -854,9 +867,9 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderExptLength",858.4);
   Control.addVariable("BalderExptOutWidth",198.50);
   Control.addVariable("BalderExptRingWidth",248.6);
-  Control.addVariable("BalderExptInnerThick",0.5);
-  Control.addVariable("BalderExptPbThick",5.0);
-  Control.addVariable("BalderExptOuterThick",0.5);
+  Control.addVariable("BalderExptInnerThick",0.3);
+  Control.addVariable("BalderExptPbThick",0.5);
+  Control.addVariable("BalderExptOuterThick",0.3);
   Control.addVariable("BalderExptFloorThick",50.0);
 
   Control.addVariable("BalderExptSkinMat","Stainless304");

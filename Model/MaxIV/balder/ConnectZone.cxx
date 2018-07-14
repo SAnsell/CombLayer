@@ -64,15 +64,18 @@
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -82,6 +85,7 @@
 #include "portItem.h"
 #include "PortTube.h"
 #include "CrossPipe.h"
+#include "LeadBox.h"
 
 #include "ConnectZone.h"
 
@@ -96,17 +100,21 @@ ConnectZone::ConnectZone(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
-
   
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
+  boxA(new xraySystem::LeadBox(newName+"LeadA")),
   pipeA(new constructSystem::LeadPipe(newName+"PipeA")),
   ionPumpA(new constructSystem::PortTube(newName+"IonPumpA")),
+  pumpBoxA(new xraySystem::LeadBox(newName+"PumpBoxA")),
   pipeB(new constructSystem::LeadPipe(newName+"PipeB")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  boxB(new xraySystem::LeadBox(newName+"LeadB")),
   pipeC(new constructSystem::LeadPipe(newName+"PipeC")),
   ionPumpB(new constructSystem::PortTube(newName+"IonPumpB")),
+  pumpBoxB(new xraySystem::LeadBox(newName+"PumpBoxB")),
   pipeD(new constructSystem::LeadPipe(newName+"PipeD")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  boxC(new xraySystem::LeadBox(newName+"LeadC")),
   outerRadius(0.0)
   /*!
     Constructor
@@ -119,14 +127,19 @@ ConnectZone::ConnectZone(const std::string& Key) :
 
   
   OR.addObject(bellowA);
+  OR.addObject(boxA);
   OR.addObject(pipeA);
   OR.addObject(ionPumpA);
+  OR.addObject(pumpBoxA);
   OR.addObject(pipeB);
   OR.addObject(bellowB);
+  OR.addObject(boxB);
   OR.addObject(pipeC);
   OR.addObject(ionPumpB);
+  OR.addObject(pumpBoxB);
   OR.addObject(pipeD);
   OR.addObject(bellowC);
+  OR.addObject(boxC);
 }
   
 ConnectZone::~ConnectZone()
@@ -210,6 +223,13 @@ ConnectZone::buildObjects(Simulation& System,
   bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,FC,sideIndex);
 
+  boxA->addInsertCell("Main",bellowA->getCell("OuterSpace"));
+  boxA->addInsertCell("Walls",bellowA->getCell("FrontSpaceVoid"));
+  boxA->addInsertCell("Walls",bellowA->getCell("BackSpaceVoid"));
+  boxA->addBoundarySurf("Main",bellowA->getLinkSurf("outerPipe"));
+  boxA->setCutSurf("portCut",*bellowA,"pipeWall");
+  boxA->createAll(System,*bellowA,0);
+  
   pipeA->addInsertCell(ContainedComp::getInsertCells());
   pipeA->setFront(*bellowA,2);
   pipeA->registerSpaceCut(1,2);
@@ -217,8 +237,16 @@ ConnectZone::buildObjects(Simulation& System,
 
   ionPumpA->addInsertCell(ContainedComp::getInsertCells());
   ionPumpA->registerSpaceCut(1,2);
+  ionPumpA->delayPorts();
   ionPumpA->setFront(*pipeA,2);
   ionPumpA->createAll(System,*pipeA,2);
+
+  pumpBoxA->addInsertCell("Main",ionPumpA->getCell("OuterSpace"));
+  pumpBoxA->addBoundarySurf("Main",ionPumpA->getLinkSurf("mainPipe"));
+  pumpBoxA->setCutSurf("portCutA",*ionPumpA,"portAPipe");
+  pumpBoxA->setCutSurf("portCutB",*ionPumpA,"portBPipe");
+  pumpBoxA->createAll(System,*ionPumpA,0);
+  ionPumpA->createPorts(System);
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
   pipeB->registerSpaceCut(1,2);
@@ -230,6 +258,13 @@ ConnectZone::buildObjects(Simulation& System,
   bellowB->setFront(*pipeB,2);
   bellowB->createAll(System,*pipeB,2);
 
+  boxB->addInsertCell("Main",bellowB->getCell("OuterSpace"));
+  boxB->addInsertCell("Walls",bellowB->getCell("FrontSpaceVoid"));
+  boxB->addInsertCell("Walls",bellowB->getCell("BackSpaceVoid"));
+  boxB->addBoundarySurf("Main",bellowB->getLinkSurf("outerPipe"));
+  boxB->setCutSurf("portCut",*bellowB,"pipeWall");
+  boxB->createAll(System,*bellowB,0);
+  
   pipeC->addInsertCell(ContainedComp::getInsertCells());
   pipeC->registerSpaceCut(1,2);
   pipeC->setFront(*bellowB,2);
@@ -237,9 +272,18 @@ ConnectZone::buildObjects(Simulation& System,
 
   ionPumpB->addInsertCell(ContainedComp::getInsertCells());
   ionPumpB->registerSpaceCut(1,2);
+  ionPumpB->delayPorts();
   ionPumpB->setFront(*pipeC,2);
   ionPumpB->createAll(System,*pipeC,2);
 
+  
+  pumpBoxB->addInsertCell("Main",ionPumpB->getCell("OuterSpace"));
+  pumpBoxB->addBoundarySurf("Main",ionPumpB->getLinkSurf("mainPipe"));
+  pumpBoxB->setCutSurf("portCutA",*ionPumpB,"portAPipe");
+  pumpBoxB->setCutSurf("portCutB",*ionPumpB,"portBPipe");
+  pumpBoxB->createAll(System,*ionPumpB,0);
+  ionPumpB->createPorts(System);
+    
   pipeD->addInsertCell(ContainedComp::getInsertCells());
   pipeD->registerSpaceCut(1,2);
   pipeD->setFront(*ionPumpB,2);
@@ -249,7 +293,15 @@ ConnectZone::buildObjects(Simulation& System,
   bellowC->registerSpaceCut(1,2);
   bellowC->setFront(*pipeD,2);
   bellowC->createAll(System,*pipeD,2);
+
   
+  boxC->addInsertCell("Main",bellowC->getCell("OuterSpace"));
+  boxC->addInsertCell("Walls",bellowC->getCell("FrontSpaceVoid"));
+  boxC->addInsertCell("Walls",bellowC->getCell("BackSpaceVoid"));
+  boxC->addBoundarySurf("Main",bellowC->getLinkSurf("outerPipe"));
+  boxC->setCutSurf("portCut",*bellowC,"pipeWall");
+  boxC->createAll(System,*bellowC,0);
+
   return;
 }
 

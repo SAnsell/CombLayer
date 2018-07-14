@@ -218,7 +218,6 @@ MonoCrystals::createLinks()
 {
   ELog::RegMethod RegA("MonoCrystals","createLinks");
 
-
   const Geometry::Vec3D BOrg=
     Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
 
@@ -227,8 +226,8 @@ MonoCrystals::createLinks()
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
 
   // top surface going to experimental area
-  FixedComp::setConnect(0,BOrg,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect(1,BOrg,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+205));
 
   return;
 }

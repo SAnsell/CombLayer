@@ -202,6 +202,10 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(slitsB);
   OR.addObject(viewPipe);
   OR.addObject(pipeF);
+  OR.addObject(shutterPipe);
+  OR.addObject(monoShutter);
+  OR.addObject(pipeG);
+  OR.addObject(gateE);
 }
   
 OpticsBeamline::~OpticsBeamline()

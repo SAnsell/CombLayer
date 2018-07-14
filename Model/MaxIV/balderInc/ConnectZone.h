@@ -48,11 +48,13 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
+  class FlangeMount;
+  class LeadBox;
+  class Mirror;
   class MonoVessel;
   class MonoCrystals;
-  class FlangeMount;
-  class Mirror;
+  class OpticsHutch;
+
     
   /*!
     \class ConnectZone
@@ -73,14 +75,23 @@ class ConnectZone :
 
   /// First bellow
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  std::shared_ptr<constructSystem::LeadPipe> pipeA;
-  std::shared_ptr<constructSystem::PortTube> ionPumpA;
-  std::shared_ptr<constructSystem::LeadPipe> pipeB;
-  std::shared_ptr<constructSystem::Bellows> bellowB;
+
+  std::shared_ptr<xraySystem::LeadBox> boxA;            ///< Lead box protecting bellow
+  std::shared_ptr<constructSystem::LeadPipe> pipeA;    ///< Pipe from first bellow
+  std::shared_ptr<constructSystem::PortTube> ionPumpA; ///< Ion pump port
+  std::shared_ptr<xraySystem::LeadBox> pumpBoxA;       ///< Ion pump lead box
+
+  std::shared_ptr<constructSystem::LeadPipe> pipeB;     ///< Pipe from ion pump
+  std::shared_ptr<constructSystem::Bellows> bellowB;    ///< Second bellow
+  std::shared_ptr<xraySystem::LeadBox> boxB;            ///<  box protecting bellow
+
   std::shared_ptr<constructSystem::LeadPipe> pipeC;
   std::shared_ptr<constructSystem::PortTube> ionPumpB;
-  std::shared_ptr<constructSystem::LeadPipe> pipeD;
-  std::shared_ptr<constructSystem::Bellows> bellowC;
+  std::shared_ptr<xraySystem::LeadBox> pumpBoxB;      ///< Ion pump lead box
+  
+  std::shared_ptr<constructSystem::LeadPipe> pipeD;  ///< join pipe
+  std::shared_ptr<constructSystem::Bellows> bellowC; ///< third bellow
+  std::shared_ptr<xraySystem::LeadBox> boxC;         ///< box protecting bellow
 
   double outerRadius;          ///< radius of contained void
   
