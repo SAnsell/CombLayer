@@ -109,7 +109,8 @@ class ConnectZone :
   ConnectZone(const ConnectZone&);
   ConnectZone& operator=(const ConnectZone&);
   ~ConnectZone();
-  
+
+  void insertFirstRegion(Simulation&,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

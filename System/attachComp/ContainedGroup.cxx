@@ -124,6 +124,25 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
   CMap.insert(CTYPE::value_type(D,ContainedSpace()));
 }
 
+ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
+			       const std::string& C,const std::string& D,
+			       const std::string& E)
+  /*!
+    Constructor 
+    \param A :: Key one
+    \param B :: Key two
+    \param C :: Key three
+    \param C :: Key four
+    \param E :: Key five
+  */
+{
+  CMap.insert(CTYPE::value_type(A,ContainedSpace()));  
+  CMap.insert(CTYPE::value_type(B,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(C,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(D,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(E,ContainedSpace()));
+}
+
 ContainedGroup::ContainedGroup(const ContainedGroup& A) : 
   CMap(A.CMap)
   /*!

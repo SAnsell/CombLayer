@@ -205,6 +205,17 @@ ConnectZone::createOuterVoid(Simulation& System)
 }
 
 void
+ConnectZone::insertFirstRegion(Simulation& System,const int cellN)
+{
+  ELog::RegMethod RegA("ConnectZone","cinsertFirstRegion");
+ 
+  boxA->insertInCell("FrontWall",System,cellN);
+  boxA->insertInCell("MainWall",System,cellN);
+
+  return;
+}
+  
+void
 ConnectZone::buildObjects(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -218,24 +229,30 @@ ConnectZone::buildObjects(Simulation& System,
 {
   ELog::RegMethod RegA("ConnectZone","buildObjects");
 
+  const attachSystem::CellMap* CMPtr=
+    dynamic_cast<const attachSystem::CellMap*>(&FC);
+  
   bellowA->addInsertCell(ContainedComp::getInsertCells());
   bellowA->setFront(FC,sideIndex);
   bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,FC,sideIndex);
-
-  boxA->addInsertCell("Main",bellowA->getCell("OuterSpace"));
-  boxA->addInsertCell("Walls",bellowA->getCell("FrontSpaceVoid"));
-  boxA->addInsertCell("Walls",bellowA->getCell("BackSpaceVoid"));
-  boxA->addBoundarySurf("Main",bellowA->getLinkSurf("outerPipe"));
-  boxA->setCutSurf("portCut",*bellowA,"pipeWall");
-  boxA->createAll(System,*bellowA,0);
   
   pipeA->addInsertCell(ContainedComp::getInsertCells());
   pipeA->setFront(*bellowA,2);
   pipeA->registerSpaceCut(1,2);
   pipeA->createAll(System,*bellowA,2);
 
-  ionPumpA->addInsertCell(ContainedComp::getInsertCells());
+  boxA->setNoVoid();
+  boxA->addInsertCell("MainWall",bellowA->getCell("OuterSpace"));
+  boxA->addInsertCell("BackWall",pipeA->getCell("FrontSpaceVoid"));
+  boxA->addInsertCell("BackWall",pipeA->getCell("OuterSpace"));
+  boxA->addInsertCell("MainWall",pipeA->getCell("OuterSpace"));
+  if (CMPtr)
+    boxA->addInsertCell("FrontWall",CMPtr->getCell("BackSpaceVoid"));
+  boxA->setCutSurf("portCut",*bellowA,"pipeWall");
+  boxA->createAll(System,*bellowA,0);
+
+    ionPumpA->addInsertCell(ContainedComp::getInsertCells());
   ionPumpA->registerSpaceCut(1,2);
   ionPumpA->delayPorts();
   ionPumpA->setFront(*pipeA,2);
@@ -246,6 +263,8 @@ ConnectZone::buildObjects(Simulation& System,
   pumpBoxA->setCutSurf("portCutA",*ionPumpA,"portAPipe");
   pumpBoxA->setCutSurf("portCutB",*ionPumpA,"portBPipe");
   pumpBoxA->createAll(System,*ionPumpA,0);
+
+
   ionPumpA->createPorts(System);
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());

@@ -759,8 +759,6 @@ connectingVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("balderVariables[F]","connectingVariables");
 
-
-  
   const std::string baseName="BalderConnect";
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
@@ -779,7 +777,7 @@ connectingVariables(FuncDataBase& Control)
   BellowGen.setCF<CF40>();  
   BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
 
-  LBGen.generateBox(Control,baseName+"LeadA",0.0,8.0);
+  LBGen.generateBox(Control,baseName+"LeadA",0.0,12.0);
     
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);

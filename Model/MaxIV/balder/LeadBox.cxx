@@ -83,9 +83,11 @@ namespace xraySystem
 
 LeadBox::LeadBox(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedGroup("Main","Walls"),
+  attachSystem::ContainedGroup("Main","Walls","MainWall",
+			       "FrontWall","BackWall"),
   attachSystem::CellMap(),
-  attachSystem::ExternalCut()
+  attachSystem::ExternalCut(),
+  voidActive(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -168,18 +170,23 @@ LeadBox::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wallThick+height),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wallThick+depth),Z);
 
-  if(isActive("portCut"))
-    ExternalCut::makeExpandedSurf(SMap,"portCut",buildIndex+17,Origin,portGap);
-  else if( isActive("portCutA")  && isActive("portCutB"))
+  if (portGap>Geometry::zeroTol)
     {
-      ExternalCut::makeExpandedSurf
-	(SMap,"portCutA",buildIndex+117,Origin,portGap);
-      ExternalCut::makeExpandedSurf
-	(SMap,"portCutB",buildIndex+217,Origin,portGap);
-    }
-  else
-    {
-      ELog::EM<<"Niether portCut or portCutA/portCutB set"<<ELog::endDiag;
+      if(isActive("portCut"))
+	ExternalCut::makeExpandedSurf
+	  (SMap,"portCut",buildIndex+17,Origin,portGap);
+      
+      else if( isActive("portCutA")  && isActive("portCutB"))
+	{
+	  ExternalCut::makeExpandedSurf
+	    (SMap,"portCutA",buildIndex+117,Origin,portGap);
+	  ExternalCut::makeExpandedSurf
+	    (SMap,"portCutB",buildIndex+217,Origin,portGap);
+	}
+      else
+	{
+	  ELog::EM<<"Niether portCut or portCutA/portCutB set"<<ELog::endDiag;
+	}
     }
   return;
 }
@@ -198,10 +205,13 @@ LeadBox::createObjects(Simulation& System)
   const std::string portSurfB=getRuleStr("portCut")+getRuleStr("portCutB");;
 
   std::string Out;
-  // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out+excludeObj);
-
+  // Main Void
+  if (voidActive)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+      CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out+excludeObj);
+    }
+  
   // port Void
 
   // only 17 or 117 used
@@ -229,6 +239,16 @@ LeadBox::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," (2 -12 ) : (11 -1 ) ");
   addOuterSurf("Walls",Out);      
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 13 -14 15 -16 ");
+  addOuterSurf("FrontWall",Out);      
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+  addOuterSurf("MainWall",Out);      
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 ");
+  addOuterSurf("BackWall",Out);      
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf("Main",Out);      

@@ -714,10 +714,13 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
 
   MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  ELog::EM<<"Cell == "<<cellN<<" "<<getExclude()<<ELog::endDiag;
   if (outerObj)
     outerObj->addSurfString(getExclude());
   else
     throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+  ELog::EM<<"Cell == "<<cellN<<":: "<<*outerObj<<ELog::endDiag;
+    
   return;
 }
 

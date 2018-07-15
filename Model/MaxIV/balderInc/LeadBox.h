@@ -45,7 +45,7 @@ class LeadBox :
 {
  private:
 
-
+  bool voidActive;          ///< Central void built
   
   double height;            ///< void height [top only]
   double depth;             ///< void depth [low only]
@@ -71,6 +71,7 @@ class LeadBox :
   LeadBox& operator=(const LeadBox&);
   virtual ~LeadBox();
 
+  void setNoVoid() { voidActive=0; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

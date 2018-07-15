@@ -249,6 +249,11 @@ BALDER::build(Simulation& System,
   joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
   joinPipeB->insertObjects(System);
 
+  connectZone->insertFirstRegion
+    (System,joinPipeB->getCell("OuterSpace",1));
+  
+
+  
   // pipe shield goes around joinPipeB:
 
   outerShield->addInsertCell(joinPipeB->getCell("OuterSpace",1));
