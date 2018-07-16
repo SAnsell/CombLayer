@@ -719,7 +719,6 @@ ContainedComp::insertInCell(Simulation& System,
     outerObj->addSurfString(getExclude());
   else
     throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
-  ELog::EM<<"Cell == "<<cellN<<":: "<<*outerObj<<ELog::endDiag;
     
   return;
 }
@@ -764,3 +763,4 @@ ContainedComp::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE attachSystem
+ 

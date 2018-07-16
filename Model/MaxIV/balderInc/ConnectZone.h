@@ -85,7 +85,7 @@ class ConnectZone :
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< Second bellow
   std::shared_ptr<xraySystem::LeadBox> boxB;            ///<  box protecting bellow
 
-  std::shared_ptr<constructSystem::LeadPipe> pipeC;
+  std::shared_ptr<constructSystem::LeadPipe> pipeC;     
   std::shared_ptr<constructSystem::PortTube> ionPumpB;
   std::shared_ptr<xraySystem::LeadBox> pumpBoxB;      ///< Ion pump lead box
   
@@ -93,14 +93,19 @@ class ConnectZone :
   std::shared_ptr<constructSystem::Bellows> bellowC; ///< third bellow
   std::shared_ptr<xraySystem::LeadBox> boxC;         ///< box protecting bellow
 
+  /// REGISTERED Shared_ptr : constructed not owned:
+  std::shared_ptr<constructSystem::LeadPipe> JPipe;
+  
   double outerRadius;          ///< radius of contained void
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createSurfaces();
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
 		    const long int);
-  void createOuterVoid(Simulation&);
+  int createOuterVoidUnit(Simulation&,const attachSystem::FixedComp&,
+			   const long int);
   void createLinks();
   
  public:
@@ -110,6 +115,10 @@ class ConnectZone :
   ConnectZone& operator=(const ConnectZone&);
   ~ConnectZone();
 
+
+  void registerJoinPipe(const std::shared_ptr<constructSystem::LeadPipe>& JP)
+    { JPipe=JP; }
+  
   void insertFirstRegion(Simulation&,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

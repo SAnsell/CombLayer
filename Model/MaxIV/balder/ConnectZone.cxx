@@ -181,27 +181,52 @@ ConnectZone::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-ConnectZone::createOuterVoid(Simulation& System)
+ConnectZone::createSurfaces()
+  /*!
+    Create surfaces
+  */
+{
+  ELog::RegMethod RegA("ConnectZone","createSurfaces");
+  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+  return;
+}
+
+  
+int
+ConnectZone::createOuterVoidUnit(Simulation& System,
+				 const attachSystem::FixedComp& FC,
+				 const long int sideIndex)
   /*!
     Construct outer void object
     \param System :: Simulation
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
   */
 {
   ELog::RegMethod RegA("ConnectZone","createOuterVoid");
 
-  if (outerRadius>Geometry::zeroTol)
-    {
-      std::string Out;
-      // Trick - make cell and THEN add front/back cell
-      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-      Out+=frontRule()+backRule();
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-      addOuterSurf(Out);
-      insertObjects(System);
-      addInsertCell(getCell("OuterVoid"));
-    }
-  return;
+  static HeadRule divider;
+  // construct an cell based on previous cell:
+  std::string Out;
+  
+  if (!divider.hasRule())
+    divider=FrontBackCut::getFrontRule();
+
+  const HeadRule& backHR=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    FrontBackCut::getBackRule();
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out+=divider.display()+backHR.display();
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+
+  divider=backHR;
+  divider.makeComplement();
+  
+  return cellIndex-1;
 }
 
 void
@@ -231,96 +256,144 @@ ConnectZone::buildObjects(Simulation& System,
 
   const attachSystem::CellMap* CMPtr=
     dynamic_cast<const attachSystem::CellMap*>(&FC);
-  
-  bellowA->addInsertCell(ContainedComp::getInsertCells());
-  bellowA->setFront(FC,sideIndex);
-  bellowA->registerSpaceCut(1,2);
-  bellowA->createAll(System,FC,sideIndex);
-  
-  pipeA->addInsertCell(ContainedComp::getInsertCells());
-  pipeA->setFront(*bellowA,2);
-  pipeA->registerSpaceCut(1,2);
-  pipeA->createAll(System,*bellowA,2);
+  const attachSystem::ContainedComp* CPtr=
+    dynamic_cast<const attachSystem::ContainedComp*>(&FC);
 
-  boxA->setNoVoid();
-  boxA->addInsertCell("MainWall",bellowA->getCell("OuterSpace"));
-  boxA->addInsertCell("BackWall",pipeA->getCell("FrontSpaceVoid"));
-  boxA->addInsertCell("BackWall",pipeA->getCell("OuterSpace"));
-  boxA->addInsertCell("MainWall",pipeA->getCell("OuterSpace"));
+  std::string Out;
+  
+  // creat First unit:
+
+  // build jump pipe [fit bellows in between]
+  pipeA->createAll(System,FC,sideIndex);
+  
+  // Now build lead box
   if (CMPtr)
     boxA->addInsertCell("FrontWall",CMPtr->getCell("BackSpaceVoid"));
-  boxA->setCutSurf("portCut",*bellowA,"pipeWall");
-  boxA->createAll(System,*bellowA,0);
+  boxA->addInsertCell("BackWall",pipeA->getCell("FrontSpaceVoid"));
+  boxA->setCutSurf("portCutA",FC,"pipeWall");
+  boxA->setCutSurf("portCutB",*pipeA,"pipeWall");
+  boxA->createAll(System,FC,sideIndex);
 
-    ionPumpA->addInsertCell(ContainedComp::getInsertCells());
-  ionPumpA->registerSpaceCut(1,2);
+  
+  int pipeCell=createOuterVoidUnit(System,*boxA,-1);
+  CellMap::setCell("firstVoid",getCell("OuterVoid"));
+
+  int boxCell=createOuterVoidUnit(System,*boxA,2);
+  boxA->insertInCell("Main",System,boxCell);
+
+  CPtr->insertInCell(System,boxA->getCell("Void"));
+  pipeA->insertInCell(System,boxA->getCell("Void"));
+
+  // Bellow goes immediately in next unit
+  bellowA->addInsertCell(boxA->getCell("Void"));
+  bellowA->setFront(FC,sideIndex);  
+  bellowA->setBack(*pipeA,1);
+  bellowA->createAll(System,FC,sideIndex);
+
+
+  // SKIP :: pipe B is placed and the ion pump bridges
+
+  pipeB->createAll(System,*pipeA,2);
+
+  pumpBoxA->addInsertCell("FrontWall",pipeA->getCell("BackSpaceVoid"));
+  pumpBoxA->addInsertCell("BackWall",pipeB->getCell("FrontSpaceVoid"));
+
+  pumpBoxA->setCutSurf("portCutA",*pipeA,"pipeWall");
+  pumpBoxA->setCutSurf("portCutB",*pipeB,"pipeWall");
+  pumpBoxA->createAll(System,*pipeA,2);  
+
+  pipeCell=createOuterVoidUnit(System,*pumpBoxA,-1);
+  pipeA->insertInCell(System,pipeCell);
+
+  boxCell=createOuterVoidUnit(System,*pumpBoxA,2);
+  pumpBoxA->insertInCell("Main",System,boxCell);
+  pipeA->insertInCell(System,pumpBoxA->getCell("Void"));
+  pipeB->insertInCell(System,pumpBoxA->getCell("Void"));
+
   ionPumpA->delayPorts();
+  ionPumpA->setInsertCell(pumpBoxA->getCell("Void"));
   ionPumpA->setFront(*pipeA,2);
+  ionPumpA->setBack(*pipeB,1);
   ionPumpA->createAll(System,*pipeA,2);
+  // ionPumpA->createPorts(System);
 
-  pumpBoxA->addInsertCell("Main",ionPumpA->getCell("OuterSpace"));
-  pumpBoxA->addBoundarySurf("Main",ionPumpA->getLinkSurf("mainPipe"));
-  pumpBoxA->setCutSurf("portCutA",*ionPumpA,"portAPipe");
-  pumpBoxA->setCutSurf("portCutB",*ionPumpA,"portBPipe");
-  pumpBoxA->createAll(System,*ionPumpA,0);
+  // SKIP PIPE
+  pipeC->createAll(System,*pipeB,2);
 
+  // Now build lead box
+  boxB->addInsertCell("FrontWall",pipeB->getCell("BackSpaceVoid"));
+  boxB->addInsertCell("BackWall",pipeC->getCell("FrontSpaceVoid"));
+  boxB->setCutSurf("portCutA",*pipeB,"pipeWall");
+  boxB->setCutSurf("portCutB",*pipeC,"pipeWall");
+  boxB->createAll(System,*pipeB,2);
 
-  ionPumpA->createPorts(System);
+  pipeCell=createOuterVoidUnit(System,*boxB,-1);
+  pipeB->insertInCell(System,pipeCell);
+  
+  boxCell=createOuterVoidUnit(System,*boxB,2);
+  boxB->insertInCell("Main",System,boxCell);
 
-  pipeB->addInsertCell(ContainedComp::getInsertCells());
-  pipeB->registerSpaceCut(1,2);
-  pipeB->setFront(*ionPumpA,2);
-  pipeB->createAll(System,*ionPumpA,2);
-
-  bellowB->addInsertCell(ContainedComp::getInsertCells());
-  bellowB->registerSpaceCut(1,2);
-  bellowB->setFront(*pipeB,2);
+  pipeB->insertInCell(System,boxB->getCell("Void"));
+  pipeC->insertInCell(System,boxB->getCell("Void"));
+  
+    // Bellow goes immediately in next unit
+  bellowB->addInsertCell(boxB->getCell("Void"));
+  bellowB->setFront(*pipeB,2);  
+  bellowB->setBack(*pipeC,1);
   bellowB->createAll(System,*pipeB,2);
 
-  boxB->addInsertCell("Main",bellowB->getCell("OuterSpace"));
-  boxB->addInsertCell("Walls",bellowB->getCell("FrontSpaceVoid"));
-  boxB->addInsertCell("Walls",bellowB->getCell("BackSpaceVoid"));
-  boxB->addBoundarySurf("Main",bellowB->getLinkSurf("outerPipe"));
-  boxB->setCutSurf("portCut",*bellowB,"pipeWall");
-  boxB->createAll(System,*bellowB,0);
-  
-  pipeC->addInsertCell(ContainedComp::getInsertCells());
-  pipeC->registerSpaceCut(1,2);
-  pipeC->setFront(*bellowB,2);
-  pipeC->createAll(System,*bellowB,2);
 
-  ionPumpB->addInsertCell(ContainedComp::getInsertCells());
-  ionPumpB->registerSpaceCut(1,2);
+  // SKIP :: pipeD is placed and the ion pump bridges
+  pipeD->createAll(System,*pipeC,2);
+
+  pumpBoxB->addInsertCell("FrontWall",pipeC->getCell("BackSpaceVoid"));
+  pumpBoxB->addInsertCell("BackWall",pipeD->getCell("FrontSpaceVoid"));
+  pumpBoxB->setCutSurf("portCutA",*pipeC,"pipeWall");
+  pumpBoxB->setCutSurf("portCutB",*pipeD,"pipeWall");
+  pumpBoxB->createAll(System,*pipeC,2);  
+
+  pipeCell=createOuterVoidUnit(System,*pumpBoxB,-1);
+  pipeC->insertInCell(System,pipeCell);
+
+  boxCell=createOuterVoidUnit(System,*pumpBoxB,2);
+  pumpBoxB->insertInCell("Main",System,boxCell);
+  pipeC->insertInCell(System,pumpBoxB->getCell("Void"));
+  pipeD->insertInCell(System,pumpBoxB->getCell("Void"));
+
   ionPumpB->delayPorts();
+  ionPumpB->setInsertCell(pumpBoxB->getCell("Void"));
   ionPumpB->setFront(*pipeC,2);
+  ionPumpB->setBack(*pipeD,1);
   ionPumpB->createAll(System,*pipeC,2);
+  // ionPumpB->createPorts(System);
 
+  // SKIP :: Join PipeC skips bellows
+  JPipe->createAll(System,*pipeD,2);
+
+  // Now build lead box
+  boxC->addInsertCell("FrontWall",pipeD->getCell("BackSpaceVoid"));
+  boxC->addInsertCell("BackWall",JPipe->getCell("FrontSpaceVoid"));
+  boxC->setCutSurf("portCutA",*pipeD,"pipeWall");
+  boxC->setCutSurf("portCutB",*JPipe,"pipeWall");
+  boxC->createAll(System,*pipeD,2);
+
+  pipeCell=createOuterVoidUnit(System,*boxC,-1);
+  pipeD->insertInCell(System,pipeCell);
   
-  pumpBoxB->addInsertCell("Main",ionPumpB->getCell("OuterSpace"));
-  pumpBoxB->addBoundarySurf("Main",ionPumpB->getLinkSurf("mainPipe"));
-  pumpBoxB->setCutSurf("portCutA",*ionPumpB,"portAPipe");
-  pumpBoxB->setCutSurf("portCutB",*ionPumpB,"portBPipe");
-  pumpBoxB->createAll(System,*ionPumpB,0);
-  ionPumpB->createPorts(System);
-    
-  pipeD->addInsertCell(ContainedComp::getInsertCells());
-  pipeD->registerSpaceCut(1,2);
-  pipeD->setFront(*ionPumpB,2);
-  pipeD->createAll(System,*ionPumpB,2);
+  boxCell=createOuterVoidUnit(System,*boxC,2);
+  boxC->insertInCell("Main",System,boxCell);
 
-  bellowC->addInsertCell(ContainedComp::getInsertCells());
-  bellowC->registerSpaceCut(1,2);
-  bellowC->setFront(*pipeD,2);
+  pipeD->insertInCell(System,boxC->getCell("Void"));
+  JPipe->insertInCell(System,boxC->getCell("Void"));
+  
+    // Bellow goes immediately in next unit
+  bellowC->addInsertCell(boxC->getCell("Void"));
+  bellowC->setFront(*pipeD,2);  
+  bellowC->setBack(*JPipe,1);
   bellowC->createAll(System,*pipeD,2);
 
-  
-  boxC->addInsertCell("Main",bellowC->getCell("OuterSpace"));
-  boxC->addInsertCell("Walls",bellowC->getCell("FrontSpaceVoid"));
-  boxC->addInsertCell("Walls",bellowC->getCell("BackSpaceVoid"));
-  boxC->addBoundarySurf("Main",bellowC->getLinkSurf("outerPipe"));
-  boxC->setCutSurf("portCut",*bellowC,"pipeWall");
-  boxC->createAll(System,*bellowC,0);
-
+  boxCell=createOuterVoidUnit(System,*this,0);
+  JPipe->insertInCell(System,boxCell);
   return;
 }
 
@@ -352,9 +425,17 @@ ConnectZone::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  createOuterVoid(System);
+  createSurfaces();
+  //  createOuterVoid(System,FC.sideIndex);
+
   buildObjects(System,FC,sideIndex);
+
+  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out+=frontRule()+backRule();
+  addOuterSurf(Out);
+    
   createLinks();
+  insertObjects(System);
   return;
 }
 

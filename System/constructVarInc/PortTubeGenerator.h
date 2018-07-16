@@ -92,6 +92,7 @@ class PortTubeGenerator
   void setMat(const std::string& M) { wallMat=M; }
 
   
+  double getTotalLength(const double) const;
   void generateTube(FuncDataBase&,const std::string&,
 		   const double,const double,const double) const;
 

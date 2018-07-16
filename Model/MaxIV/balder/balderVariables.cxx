@@ -777,11 +777,11 @@ connectingVariables(FuncDataBase& Control)
   BellowGen.setCF<CF40>();  
   BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
 
-  LBGen.generateBox(Control,baseName+"LeadA",0.0,12.0);
+  LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
     
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setCladdingThick(0.5);
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",0,152.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF40>();
@@ -792,27 +792,30 @@ connectingVariables(FuncDataBase& Control)
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
 
 
-  LBGen.generateBox(Control,baseName+"PumpBoxA",0.0,8.0);
+  // temp offset
+  LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
 
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",0,188.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
+			       PTubeGen.getTotalLength(4.0),188.0);
   
   BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
-  LBGen.generateBox(Control,baseName+"LeadB",0.0,8.5);
+  LBGen.generateBox(Control,baseName+"LeadB",5.0,12.0);
   
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",0,188.0);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
 
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,
-			CF40::innerRadius,4.0);
-  LBGen.generateBox(Control,baseName+"PumpBoxB",0.0,8.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,CF40::innerRadius,4.0);
+  LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
+  
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",
+			       PTubeGen.getTotalLength(4.0),172.0);
 
-  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",0,172.0);
 
   BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
-  LBGen.generateBox(Control,baseName+"LeadC",0.0,8.5);
+  LBGen.generateBox(Control,baseName+"LeadC",5.0,12.0);
   
   return;
 }
@@ -856,8 +859,8 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::shieldVariables(Control);
   balderVar::connectingVariables(Control);
 
-
-  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",0,80.0);
+  // note bellow skip
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",10.0,80.0);
 
   Control.addVariable("BalderExptYStep",1850.0);
   Control.addVariable("BalderExptDepth",120.0);

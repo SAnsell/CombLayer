@@ -266,7 +266,11 @@ LeadBox::createLinks()
 {
   ELog::RegMethod RegA("LeadBox","createLinks");
 
-
+  FixedComp::setConnect(0,Origin-Y*(wallThick+length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(wallThick+length/2.0),Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  
 
   return;
 }

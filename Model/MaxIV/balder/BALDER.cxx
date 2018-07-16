@@ -201,7 +201,6 @@ BALDER::build(Simulation& System,
   joinPipe->registerSpaceCut(0,2);
   joinPipe->createAll(System,*frontBeam,2);
 
-
   joinPipe->clear();
   joinPipe->setPrimaryCell(caveVoid);
   joinPipe->registerSpaceCut(1,0);
@@ -236,43 +235,26 @@ BALDER::build(Simulation& System,
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*ringCaveA,2);
 
+  connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(voidCell);
   connectZone->setFront(*opticsHut,2);
   connectZone->setBack(*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
 
   // horrid way to create a SECOND register space [MAKE INTERNAL]
-  joinPipeB->clear();  // reinitialize
-  joinPipeB->setSpaceLinkCopy(0,*opticsHut,-2);
-  //  joinPipeB->registerSpaceIsolation(0,2);
-  joinPipeB->registerSpaceCut(0,2);
-  joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
-  joinPipeB->insertObjects(System);
+  joinPipeB->insertInCell(System,connectZone->getCell("firstVoid"));
 
-  connectZone->insertFirstRegion
-    (System,joinPipeB->getCell("OuterSpace",1));
-  
-
-  
   // pipe shield goes around joinPipeB:
 
-  outerShield->addInsertCell(joinPipeB->getCell("OuterSpace",1));
+  outerShield->addInsertCell(connectZone->getCell("firstVoid"));
   outerShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   outerShield->setCutSurf("front",*opticsHut,"back");
   outerShield->createAll(System,*opticsHut,
 			 opticsHut->getSideIndex("-exitHole"));
 
-  joinPipeC->addInsertCell(connectZone->getCell("OuterVoid"));
-  joinPipeC->addInsertCell(exptHut->getCell("Void"));
-  joinPipeC->addInsertCell(exptHut->getCell("EnteranceHole"));
-  joinPipeC->setFront(*connectZone,2);
-  joinPipeC->registerSpaceCut(1,0);
-  joinPipeC->setSpaceLinkCopy(1,*exptHut,-1);
-  joinPipeC->setPrimaryCell(connectZone->getCell("OuterVoid"));
-  joinPipeC->createAll(System,*connectZone,2);
-
-  System.removeCell(connectZone->getCell("OuterVoid"));
-
+  joinPipeC->insertInCell(System,exptHut->getCell("Void"));
+  joinPipeC->insertInCell(System,exptHut->getCell("EnteranceHole"));
+  
   return;
 }
 

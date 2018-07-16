@@ -313,7 +313,22 @@ PortTubeGenerator::setCF()
   setBPortCF<CF>();
   return;
 }
+
+double
+PortTubeGenerator::getTotalLength(const double primLength) const
+  /*!
+    Assessor function to help with placement 
+    \param primLength :: Primay length used
+    \return total outer length of a porttube
+  */
+{
+  double L(primLength);
+  L+=std::abs(portATubeLength);
+  L+=std::abs(portBTubeLength);
+  return L+flangeALen+flangeBLen;
+}
   
+
 void
 PortTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
