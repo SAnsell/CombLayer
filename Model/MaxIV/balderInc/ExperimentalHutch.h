@@ -62,6 +62,7 @@ class ExperimentalHutch :
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
   
+  int voidMat;                ///< Void material [air]
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls 
   int floorMat;               ///< Floor layer

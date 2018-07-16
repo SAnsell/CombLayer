@@ -124,6 +124,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",0.0);
 
 
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
@@ -203,7 +204,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getSetComposite(SMap,hutIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   setCell("Void",cellIndex-1);
 
   // walls:

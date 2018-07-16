@@ -873,6 +873,7 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderExptOuterThick",0.3);
   Control.addVariable("BalderExptFloorThick",50.0);
 
+  Control.addVariable("BalderExptVoidMat","Void");
   Control.addVariable("BalderExptSkinMat","Stainless304");
   Control.addVariable("BalderExptPbMat","Lead");
   Control.addVariable("BalderExptFloorMat","Concrete");
