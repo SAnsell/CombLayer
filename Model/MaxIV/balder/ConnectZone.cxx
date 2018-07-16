@@ -273,19 +273,24 @@ ConnectZone::buildObjects(Simulation& System,
   boxA->setCutSurf("portCutA",FC,"pipeWall");
   boxA->setCutSurf("portCutB",*pipeA,"pipeWall");
   boxA->createAll(System,FC,sideIndex);
-
+  boxA->splitObjectAbsolute
+    (System,1001,
+     boxA->getCell("Void"),
+     {{FC.getLinkPt(sideIndex),pipeA->getLinkPt(1)}},
+     {{FC.getLinkAxis(sideIndex),pipeA->getLinkAxis(-1)}});
   
+
   int pipeCell=createOuterVoidUnit(System,*boxA,-1);
   CellMap::setCell("firstVoid",getCell("OuterVoid"));
 
   int boxCell=createOuterVoidUnit(System,*boxA,2);
   boxA->insertInCell("Main",System,boxCell);
 
-  CPtr->insertInCell(System,boxA->getCell("Void"));
-  pipeA->insertInCell(System,boxA->getCell("Void"));
+  CPtr->insertInCell(System,boxA->getCell("Void",0));
+  pipeA->insertInCell(System,boxA->getCell("Void",2));
 
   // Bellow goes immediately in next unit
-  bellowA->addInsertCell(boxA->getCell("Void"));
+  bellowA->addInsertCell(boxA->getCell("Void",1));
   bellowA->setFront(FC,sideIndex);  
   bellowA->setBack(*pipeA,1);
   bellowA->createAll(System,FC,sideIndex);
@@ -300,18 +305,23 @@ ConnectZone::buildObjects(Simulation& System,
 
   pumpBoxA->setCutSurf("portCutA",*pipeA,"pipeWall");
   pumpBoxA->setCutSurf("portCutB",*pipeB,"pipeWall");
-  pumpBoxA->createAll(System,*pipeA,2);  
+  pumpBoxA->createAll(System,*pipeA,2);    
+  pumpBoxA->splitObjectAbsolute
+    (System,1001,
+     pumpBoxA->getCell("Void"),
+     {{pipeA->getLinkPt(2),pipeB->getLinkPt(1)}},
+     {{pipeA->getLinkAxis(2),pipeB->getLinkAxis(-1)}});
 
   pipeCell=createOuterVoidUnit(System,*pumpBoxA,-1);
   pipeA->insertInCell(System,pipeCell);
 
   boxCell=createOuterVoidUnit(System,*pumpBoxA,2);
   pumpBoxA->insertInCell("Main",System,boxCell);
-  pipeA->insertInCell(System,pumpBoxA->getCell("Void"));
-  pipeB->insertInCell(System,pumpBoxA->getCell("Void"));
+  pipeA->insertInCell(System,pumpBoxA->getCell("Void",0));
+  pipeB->insertInCell(System,pumpBoxA->getCell("Void",2));
 
   ionPumpA->delayPorts();
-  ionPumpA->setInsertCell(pumpBoxA->getCell("Void"));
+  ionPumpA->setInsertCell(pumpBoxA->getCell("Void",1));
   ionPumpA->setFront(*pipeA,2);
   ionPumpA->setBack(*pipeB,1);
   ionPumpA->createAll(System,*pipeA,2);
@@ -326,22 +336,27 @@ ConnectZone::buildObjects(Simulation& System,
   boxB->setCutSurf("portCutA",*pipeB,"pipeWall");
   boxB->setCutSurf("portCutB",*pipeC,"pipeWall");
   boxB->createAll(System,*pipeB,2);
-
+  boxB->splitObjectAbsolute(System,1001,
+		    boxB->getCell("Void"),
+		    {{pipeB->getLinkPt(2),pipeC->getLinkPt(1)}},
+		    {{pipeB->getLinkAxis(2),pipeC->getLinkAxis(-1)}});
+  
   pipeCell=createOuterVoidUnit(System,*boxB,-1);
   pipeB->insertInCell(System,pipeCell);
   
   boxCell=createOuterVoidUnit(System,*boxB,2);
   boxB->insertInCell("Main",System,boxCell);
 
-  pipeB->insertInCell(System,boxB->getCell("Void"));
-  pipeC->insertInCell(System,boxB->getCell("Void"));
   
     // Bellow goes immediately in next unit
-  bellowB->addInsertCell(boxB->getCell("Void"));
+  bellowB->addInsertCell(boxB->getCell("Void",1));
   bellowB->setFront(*pipeB,2);  
   bellowB->setBack(*pipeC,1);
   bellowB->createAll(System,*pipeB,2);
 
+
+  pipeB->insertInCell(System,boxB->getCell("Void",0));
+  pipeC->insertInCell(System,boxB->getCell("Void",2));
 
   // SKIP :: pipeD is placed and the ion pump bridges
   pipeD->createAll(System,*pipeC,2);
@@ -351,17 +366,22 @@ ConnectZone::buildObjects(Simulation& System,
   pumpBoxB->setCutSurf("portCutA",*pipeC,"pipeWall");
   pumpBoxB->setCutSurf("portCutB",*pipeD,"pipeWall");
   pumpBoxB->createAll(System,*pipeC,2);  
+  pumpBoxB->splitObjectAbsolute
+    (System,1001,
+     pumpBoxB->getCell("Void"),
+     {{pipeC->getLinkPt(2),pipeD->getLinkPt(1)}},
+     {{pipeC->getLinkAxis(2),pipeD->getLinkAxis(-1)}});
 
   pipeCell=createOuterVoidUnit(System,*pumpBoxB,-1);
   pipeC->insertInCell(System,pipeCell);
 
   boxCell=createOuterVoidUnit(System,*pumpBoxB,2);
   pumpBoxB->insertInCell("Main",System,boxCell);
-  pipeC->insertInCell(System,pumpBoxB->getCell("Void"));
-  pipeD->insertInCell(System,pumpBoxB->getCell("Void"));
+  pipeC->insertInCell(System,pumpBoxB->getCell("Void",0));
+  pipeD->insertInCell(System,pumpBoxB->getCell("Void",2));
 
   ionPumpB->delayPorts();
-  ionPumpB->setInsertCell(pumpBoxB->getCell("Void"));
+  ionPumpB->setInsertCell(pumpBoxB->getCell("Void",1));
   ionPumpB->setFront(*pipeC,2);
   ionPumpB->setBack(*pipeD,1);
   ionPumpB->createAll(System,*pipeC,2);
@@ -376,6 +396,10 @@ ConnectZone::buildObjects(Simulation& System,
   boxC->setCutSurf("portCutA",*pipeD,"pipeWall");
   boxC->setCutSurf("portCutB",*JPipe,"pipeWall");
   boxC->createAll(System,*pipeD,2);
+  boxC->splitObjectAbsolute(System,1001,
+		    boxC->getCell("Void"),
+		    {{pipeD->getLinkPt(2),JPipe->getLinkPt(1)}},
+		    {{pipeD->getLinkAxis(2),JPipe->getLinkAxis(-1)}});
 
   pipeCell=createOuterVoidUnit(System,*boxC,-1);
   pipeD->insertInCell(System,pipeCell);
@@ -383,11 +407,11 @@ ConnectZone::buildObjects(Simulation& System,
   boxCell=createOuterVoidUnit(System,*boxC,2);
   boxC->insertInCell("Main",System,boxCell);
 
-  pipeD->insertInCell(System,boxC->getCell("Void"));
-  JPipe->insertInCell(System,boxC->getCell("Void"));
+  pipeD->insertInCell(System,boxC->getCell("Void",0));
+  JPipe->insertInCell(System,boxC->getCell("Void",2));
   
     // Bellow goes immediately in next unit
-  bellowC->addInsertCell(boxC->getCell("Void"));
+  bellowC->addInsertCell(boxC->getCell("Void",1));
   bellowC->setFront(*pipeD,2);  
   bellowC->setBack(*JPipe,1);
   bellowC->createAll(System,*pipeD,2);
