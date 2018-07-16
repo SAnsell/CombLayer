@@ -96,6 +96,7 @@
 #include "OpticsBeamline.h"
 #include "ConnectZone.h"
 #include "PipeShield.h"
+#include "ExptBeamline.h"
 #include "BALDER.h"
 
 namespace xraySystem
@@ -115,7 +116,8 @@ BALDER::BALDER(const std::string& KN) :
   outerShield(new xraySystem::PipeShield(newName+"OuterShield")),
   connectZone(new ConnectZone(newName+"Connect")),
   joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
-  exptHut(new ExperimentalHutch(newName+"Expt"))
+  exptHut(new ExperimentalHutch(newName+"Expt")),
+  exptBeam(new ExptBeamline(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -137,6 +139,7 @@ BALDER::BALDER(const std::string& KN) :
   OR.addObject(outerShield);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut);
+  OR.addObject(exptBeam);
 }
 
 BALDER::~BALDER()
@@ -254,7 +257,10 @@ BALDER::build(Simulation& System,
 
   joinPipeC->insertInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell(System,exptHut->getCell("EnteranceHole"));
-  
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->createAll(System,*joinPipeC,2);
+
   return;
 }
 

@@ -862,6 +862,7 @@ BALDERvariables(FuncDataBase& Control)
   // note bellow skip
   LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",10.0,80.0);
 
+  
   Control.addVariable("BalderExptYStep",1850.0);
   Control.addVariable("BalderExptDepth",120.0);
   Control.addVariable("BalderExptHeight",200.0);
@@ -882,7 +883,12 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderExptHoleZStep",5.0);
   Control.addVariable("BalderExptHoleRadius",7.0);
 
-  
+  const std::string exptName="BalderExptLine";
+  Control.addVariable(exptName+"BeamStopYStep",800.0);
+  Control.addVariable(exptName+"BeamStopRadius",4.0);
+  Control.addVariable(exptName+"BeamStopLength",2.0);
+  Control.addVariable(exptName+"BeamStopDefMat","Copper");
+
   return;
 }
 

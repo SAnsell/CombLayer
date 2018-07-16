@@ -50,6 +50,7 @@ namespace xraySystem
 {
   class OpticsHutch;
   class ExperimentalHutch;
+  class ExptBeamline;
   class OpticsBeamline;
   class FrontEndCave;
   class ConnectZone;
@@ -108,7 +109,10 @@ class BALDER : public attachSystem::CopiedComp
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
-  
+
+  /// Beamline for experimental hutch
+  std::shared_ptr<ExptBeamline> exptBeam;
+
   
  public:
   
