@@ -322,7 +322,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub110YStep", 3761.5); // ESS-0025905 and MARS
 
   // Ducts in the stubs
-  Control.addVariable("Stub100NDucts", 1);
+  Control.addVariable("Stub100NDucts", 2);
 
   // Stub100Duct variables according to ESS-0318785.1
   Control.addVariable("Stub100Duct1WallThick", 0.0);
@@ -333,8 +333,22 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub100Duct1MainMat", "Poly%Copper%50.1868");
   ELog::EM << "StubDuct material???" <<ELog::endBasic;
   Control.addVariable("Stub100Duct1WallMat", "SkanskaConcrete");
-  Control.addParse<double>("Stub100Duct1ZStep", "-Stub100Height/2.0+Stub100Duct1Height/2.0");
-  Control.addParse<double>("Stub100Duct1YStep", "-Stub100Width/2.0+Stub100Duct1Width/2.0");
+  Control.addParse<double>("Stub100Duct1ZStep", "(Stub100Duct1Height-Stub100Height)/2.0");
+  Control.addParse<double>("Stub100Duct1YStep", "(Stub100Duct1Width-Stub100Width)/2.0");
+
+  Control.addVariable("Stub100Duct2WallThick", 0.0);
+  Control.addVariable("Stub100Duct2Width",   70.0);
+  Control.addVariable("Stub100Duct2Height",  37.0);
+  Control.addParse<double>("Stub100Duct2Length1",
+			   "Stub100Length1-Stub100Height+Stub100Duct2Height");
+  Control.addParse<double>("Stub100Duct2Length2", "400+Stub100Duct2Height");
+  Control.addVariable("Stub100Duct2MainMat", "Poly%Copper%50.1868");
+  ELog::EM << "StubDuct material???" <<ELog::endBasic;
+  Control.addVariable("Stub100Duct2WallMat", "SkanskaConcrete");
+  Control.addParse<double>("Stub100Duct2ZStep",
+			   "(Stub100Height-Stub100Duct2Height)/2.0");
+  Control.addParse<double>("Stub100Duct2YStep",
+			   "(Stub100Duct2Width-Stub100Width)/2.0");
 
   // FEB dimensions are measured from the STEP file received from
   // Carl-Johan 31.05.2018
