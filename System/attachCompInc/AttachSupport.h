@@ -102,15 +102,15 @@ bool findPlaneIntersect(const Geometry::Plane&,
 			std::vector<int>&,
 			std::vector<int>&);
 
-HeadRule unionLink(const FixedComp&,
+HeadRule unionLink(const attachSystem::FixedComp&,
 		   const std::vector<long int>&);
-HeadRule intersectionLink(const FixedComp&,
+HeadRule intersectionLink(const attachSystem::FixedComp&,
 			  const std::vector<long int>&);
-
+ 
 
 void
-lineIntersect(Simulation&,const FixedComp&,
-	std::map<int,MonteCarlo::Object*>&);
+lineIntersect(Simulation&,const attachSystem::FixedComp&,
+	      std::map<int,MonteCarlo::Object*>&);
 void
 lineIntersect(Simulation&,const Geometry::Vec3D&,const Geometry::Vec3D&,
 	      std::map<int,MonteCarlo::Object*>&);

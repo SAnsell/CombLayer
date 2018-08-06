@@ -47,6 +47,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "particleConv.h"
+#include "flukaGenParticle.h"
 #include "Transform.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -217,6 +218,46 @@ weightManager::isMasked(const int cellN) const
   return false;
 }
   
+void
+weightManager::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out the weight system for fluka
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("weightManager","writeFLUKA");
+
+  const flukaGenParticle& PConv=flukaGenParticle::Instance();
+
+  if (!WMap.empty())
+    {
+      for(const CtrlTYPE::value_type& wf : WMap)
+        {
+          const std::vector<double>& Evec=wf.second->getEnergy();
+	  const double AEnergy=Evec.front();
+	  const double BEnergy=Evec.back();
+	  
+          OX<<"  part = "
+	    <<PConv.nameToPHITS(wf.second->getParticle())
+	    <<std::endl;
+
+          OX<<"  eng = "<<Evec.size()<<std::endl;
+          for( const double& E : Evec )
+            OX<<"  "<<E;
+          OX<<std::endl;
+
+          OX<<"reg  ";
+          for(size_t i=1;i<=Evec.size();i++)
+            OX<<"    ww"<<i;
+          OX<<std::endl;
+
+          wf.second->writePHITS(OX);
+        }
+    }
+  
+  return;
+}
+
 void
 weightManager::writePHITS(std::ostream& OX) const
   /*!

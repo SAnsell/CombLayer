@@ -421,7 +421,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface based
     on surface type and form
-    \parma SMap :: local surface register
+    \param SMap :: local surface register
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction of surface axis (relative to HR.Plane)
@@ -476,7 +476,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface based
     on surface type and form
-    \parma SMap :: local surface register
+    \param SMap :: local surface register
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param expandCentre :: Centre for expansion
@@ -555,7 +555,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface based
     on surface type and form
-    \parma SMap :: local surface register
+    \param SMap :: local surface register
     \param extName :: cut unit name
     \param index :: offset index
     \param expandCentre :: Centre for expansion

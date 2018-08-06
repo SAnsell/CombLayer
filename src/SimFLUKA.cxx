@@ -429,12 +429,14 @@ SimFLUKA::writeWeights(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("SimFLUKA","writeWeights");
+  
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
   OX<<"* WEIGHT CARDS "<<std::endl;
   
-  WM.write(OX);
+  WM.writeFLUKA(OX);
   return;
 }
 

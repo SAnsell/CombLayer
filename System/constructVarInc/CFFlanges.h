@@ -102,6 +102,14 @@ struct CF100
   static constexpr size_t nBolts=16;
 };
 
+/*!
+  \struct CF120
+  \version 1.0
+  \author S. Ansell
+  \date January 2018
+  \brief CFFlanges for CF120
+*/
+
 struct CF120
 {
   static constexpr double innerRadius=6.1;
@@ -113,6 +121,14 @@ struct CF120
   static constexpr size_t nBolts=18;
   
 };
+
+/*!
+  \struct CF150
+  \version 1.0
+  \author S. Ansell
+  \date January 2018
+  \brief CFFlanges for CF150
+*/
 
 struct CF150
 {
