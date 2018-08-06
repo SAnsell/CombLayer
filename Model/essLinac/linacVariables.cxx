@@ -321,6 +321,21 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("Stub100", "Stub110");
   Control.addVariable("Stub110YStep", 3761.5); // ESS-0025905 and MARS
 
+  // Ducts in the stubs
+  Control.addVariable("Stub100NDucts", 1);
+
+  // Stub100Duct variables according to ESS-0318785.1
+  Control.addVariable("Stub100Duct1WallThick", 0.0);
+  Control.addVariable("Stub100Duct1Width",   70.0);
+  Control.addVariable("Stub100Duct1Height",  30.0);
+  Control.addParse<double>("Stub100Duct1Length1", "Stub100Length1");
+  Control.addParse<double>("Stub100Duct1Length2", "400+Stub100Duct1Height");
+  Control.addVariable("Stub100Duct1MainMat", "Poly%Copper%50.1868");
+  ELog::EM << "StubDuct material???" <<ELog::endBasic;
+  Control.addVariable("Stub100Duct1WallMat", "SkanskaConcrete");
+  Control.addParse<double>("Stub100Duct1ZStep", "-Stub100Height/2.0+Stub100Duct1Height/2.0");
+  Control.addParse<double>("Stub100Duct1YStep", "-Stub100Width/2.0+Stub100Duct1Width/2.0");
+
   // FEB dimensions are measured from the STEP file received from
   // Carl-Johan 31.05.2018
   Control.addVariable("FEBLength",     2000.0);

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/Stub.cxx
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,6 +66,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
+#include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -98,14 +99,15 @@ Stub::Stub(const std::string& Key,const size_t Index)  :
   */
 {}
 
-Stub::Stub(const Stub& A) : 
+Stub::Stub(const Stub& A) :
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  nDucts(A.nDucts)
   /*!
     Copy constructor
     \param A :: Stub to copy
@@ -132,6 +134,7 @@ Stub::operator=(const Stub& A)
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      nDucts=A.nDucts;
     }
   return *this;
 }
@@ -145,8 +148,8 @@ Stub::clone() const
 {
     return new Stub(*this);
 }
-  
-Stub::~Stub() 
+
+Stub::~Stub()
   /*!
     Destructor
   */
@@ -177,10 +180,11 @@ Stub::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  nDucts=Control.EvalDefVar<size_t>(keyName+"NDucts",0);
 
   return;
 }
-  
+
 void
 Stub::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -197,7 +201,7 @@ Stub::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 Stub::createSurfaces()
   /*!
@@ -225,7 +229,7 @@ Stub::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,surfIndex+104,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+4),
 				  height);
-    
+
   ModelSupport::buildShiftedPlane(SMap,surfIndex+105,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
 				  length[1]-height);
@@ -247,7 +251,7 @@ Stub::createSurfaces()
 				  wallThick);
   return;
 }
-  
+
 void
 Stub::createObjects(Simulation& System)
   /*!
@@ -265,12 +269,15 @@ Stub::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 5 -6 ")+backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 4 15 -16 (-1:2:-4:-5) ")+backRule();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  if (wallThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex,
+				     " 11 -12 4 15 -16 (-1:2:-4:-5) ")+backRule();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 6 -16 ")+backRule();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 6 -16 ")+backRule();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 14 15 -16 ")+backRule();
@@ -282,12 +289,15 @@ Stub::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -104 4 6 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -4 14 15 -105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  if (wallThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -4 14 15 -105 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 -114 4 16 -105 (-1:2:104:-4:-16:105) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex,
+				     " 11 -12 -114 4 16 -105 (-1:2:104:-4:-16:105) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -114 14 6 -116 ");
   addOuterSurf("Leg2",Out);
@@ -298,13 +308,16 @@ Stub::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 105 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+frontRule()));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 11 -12 -114 105 -116 (-1:2:104:-105:106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
+  if (wallThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex,
+				     " 11 -12 -114 105 -116 (-1:2:104:-105:106) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -14 115 -105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
-
+      Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -14 115 -105 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
+    }
+  
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 -4 115 -116 ")+frontRule();
   addOuterSurf("Leg3",Out);
@@ -313,7 +326,7 @@ Stub::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 Stub::createLinks()
   /*!
@@ -377,10 +390,10 @@ Stub::createLinks()
 
   return;
 }
-  
-  
 
-  
+
+
+
 void
 Stub::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -399,7 +412,21 @@ Stub::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);              
+  insertObjects(System);
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  for (size_t i=0; i<nDucts; i++)
+    {
+      std::shared_ptr<Stub> duct(new Stub(keyName+"Duct", i+1));
+      OR.addObject(duct);
+      duct->setFront(*this);
+      duct->setBack(*this);
+      duct->createAll(System,*this,0);
+      ELog::EM << "addToInsertForced" << ELog::endCrit;
+      attachSystem::addToInsertForced(System,*this,duct->getCC("Full"));
+    }
 
   return;
 }

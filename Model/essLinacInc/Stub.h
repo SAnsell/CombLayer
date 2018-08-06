@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/Stub.h
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_Stub_h
@@ -51,16 +51,17 @@ class Stub : public attachSystem::ContainedGroup,
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+  size_t nDucts; ///< Number of ducts
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   Stub(const std::string&,const size_t);
@@ -68,7 +69,7 @@ class Stub : public attachSystem::ContainedGroup,
   Stub& operator=(const Stub&);
   virtual Stub* clone() const;
   virtual ~Stub();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -76,5 +77,5 @@ class Stub : public attachSystem::ContainedGroup,
 }
 
 #endif
- 
+
 
