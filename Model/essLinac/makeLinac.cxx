@@ -78,7 +78,6 @@
 #include "Linac.h"
 #include "KlystronGallery.h"
 #include "Stub.h"
-#include "StubWall.h"
 #include "Berm.h"
 #include "makeLinac.h"
 
@@ -152,11 +151,6 @@ makeLinac::build(Simulation& System,
       attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
       attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,stub->getCC("Leg1"));
       attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
-
-      std::shared_ptr<StubWall> wall(new StubWall("","StubWall", 100+i*10));
-      OR.addObject(wall);
-      wall->createAll(System,*stub, 1, *KG, 8);
-      attachSystem::addToInsertSurfCtrl(System,*KG,*wall);
     }
   return;
 }

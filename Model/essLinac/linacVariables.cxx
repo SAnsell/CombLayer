@@ -321,22 +321,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.copyVarSet("Stub100", "Stub110");
   Control.addVariable("Stub110YStep", 3761.5); // ESS-0025905 and MARS
 
-  // Stub walls in the Klystron Gallery
-  Control.addVariable("StubWall100Length",  260.0);
-  Control.addVariable("StubWall100Width",   50.0);
-  Control.addVariable("StubWall100Height",  300.0);
-  Control.addVariable("StubWall100Mat",   "SkanskaConcrete"); // check
-  Control.addVariable("StubWall100YStep",   350.0);
-
-  Control.copyVarSet("StubWall100", "StubWall110");
-  Control.addVariable("StubWall110YStep",   235.0);
-  Control.addVariable("StubWall110GapActive", 1);
-  Control.addVariable("StubWall110GapMat", "Air");
-  Control.addVariable("StubWall110GapOffset", 53.25);
-  Control.addVariable("StubWall110GapWidth", 23.8);
-  Control.addVariable("StubWall110GapHeight", 67.64);
-  Control.addVariable("StubWall110GapDist", 72.8);
-
   // FEB dimensions are measured from the STEP file received from
   // Carl-Johan 31.05.2018
   Control.addVariable("FEBLength",     2000.0);
