@@ -424,8 +424,7 @@ Stub::createAll(Simulation& System,
       duct->setFront(*this);
       duct->setBack(*this);
       duct->createAll(System,*this,0);
-      ELog::EM << "addToInsertForced" << ELog::endCrit;
-      attachSystem::addToInsertForced(System,*this,duct->getCC("Full"));
+      attachSystem::addToInsertSurfCtrl(System,*this,duct->getCC("Full"));
     }
 
   return;
