@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/COSAXS.h
+ * File:   cosaxsInc/COSAXS.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -72,7 +72,9 @@ class COSAXS : public attachSystem::CopiedComp
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
   /// Front end cave volume
-  std::shared_ptr<FrontEndCave> frontCave;
+  std::shared_ptr<FrontEndCave> ringCaveA;
+  // Joining front cave
+  std::shared_ptr<FrontEndCave> ringCaveB;
 
   /// the components in the front end
   std::shared_ptr<FrontEnd> frontBeam;

@@ -65,6 +65,8 @@
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "JawFlangeGenerator.h"
+#include "MazeGenerator.h"
+#include "RingDoorGenerator.h"
 #include "PortChicaneGenerator.h"
 
 namespace setVariable
@@ -72,45 +74,102 @@ namespace setVariable
 
 namespace cosaxsVar
 {
-  
+
 void
 frontCaveVariables(FuncDataBase& Control,
 		   const std::string& preName,
-		   const double YStep)
+		   const bool mazeFlag,
+		   const bool doorFlag)
   /*!
     Variable for the main ring front shielding
     \param Control :: Database
     \param preName :: Name to describe system
-    \param YStep :: offset
+    \param mazeFlag :: maze is present
+    \param mazeFlag :: door is present
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","frontCaveVariables");
+  ELog::RegMethod RegA("cosaxVariables[F]","frontCaveVariables");
+
+  MazeGenerator MGen;
+  RingDoorGenerator RGen;
+  
+  Control.addVariable(preName+"Length",2100.0);
+  Control.addVariable(preName+"OuterGap",140.0);
+  Control.addVariable(preName+"RingGap",250.0);
+
+  // If this is changed then need to change joinPipe as well
+  Control.addVariable(preName+"FrontWallThick",160.0);
+  Control.addVariable(preName+"OuterWallThick",100.0);
+  Control.addVariable(preName+"RingWallThick",100.0);
+  Control.addVariable(preName+"InnerRingWidth",400.0);
+
+  Control.addVariable(preName+"FloorDepth",130.0);
+  Control.addVariable(preName+"FloorThick",100.0);
+
+  Control.addVariable(preName+"RoofHeight",180.0);
+  Control.addVariable(preName+"RoofThick",100.0);
+
+  Control.addVariable(preName+"SegmentAngle",18.0);
+  Control.addVariable(preName+"SegmentLength",1365.0);
+  Control.addVariable(preName+"SegmentThick",100.0);
+
+  Control.addVariable(preName+"FrontHoleRadius",7.0);
 
   
-  Control.addVariable(preName+"FrontEndWallYStep",YStep);
-  Control.addVariable(preName+"FrontEndFrontWallThick",160.0);
+  Control.addVariable(preName+"FrontWallMat","Concrete");
+  Control.addVariable(preName+"WallMat","Concrete");
+  Control.addVariable(preName+"FloorMat","Concrete");
+  Control.addVariable(preName+"RoofMat","Concrete");
+
+
+  if (mazeFlag)
+    MGen.generateMaze(Control,preName+"Maze",0.0);
+  if (doorFlag)
+    RGen.generateDoor(Control,preName+"RingDoor",800.0);
+  return;
+}
   
-  Control.addVariable(preName+"FrontEndLength",2100.0);
-  Control.addVariable(preName+"FrontEndRingGap",250.0);
-  Control.addVariable(preName+"FrontEndRingRadius",4000.0);
-  Control.addVariable(preName+"FrontEndRingThick",100.0);
+void
+heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
+  /*!
+    Build the heat dump variables
+    \param Control :: Database
+    \param frontKey :: prename
+   */
+{
+  ELog::RegMethod RegA("cosaxsVariables","heatDumpVariables");
 
-  Control.addVariable(preName+"FrontEndOuterGap",100.0);
-  Control.addVariable(preName+"FrontEndOuterThick",100.0);
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
 
-  Control.addVariable(preName+"FrontEndFloorDepth",130.0);
-  Control.addVariable(preName+"FrontEndFloorThick",100.0);
 
-  Control.addVariable(preName+"FrontEndRoofHeight",180.0);
-  Control.addVariable(preName+"FrontEndRoofThick",100.0);
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(2.5,2.5);
+  PTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,8.0,20.0);
+  Control.addVariable(frontKey+"HeatBoxNPorts",1);
 
-  Control.addVariable(preName+"FrontEndFrontHoleRadius",7.0);
+  // 20cm above port tube
+  PItemGen.setCF<setVariable::CF100>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
+  FlangeGen.setCF<setVariable::CF100>();
+  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
 
-  
-  Control.addVariable(preName+"FrontEndFrontWallMat","Concrete");
-  Control.addVariable(preName+"FrontEndWallMat","Concrete");
-  Control.addVariable(preName+"FrontEndFloorMat","Concrete");
-  Control.addVariable(preName+"FrontEndRoofMat","Concrete");
+  const Geometry::Vec3D ZVec(0,0,1);
+  const std::string heatName=frontKey+"HeatBoxPort0";
+  const std::string hName=frontKey+"HeatDumpFlange";
+  PItemGen.generatePort(Control,heatName,Geometry::Vec3D(0,0,0),ZVec);
+  FlangeGen.generateMount(Control,hName,0);  // (no in beam)
+
+
+  const std::string hDump(frontKey+"HeatDump");
+  Control.addVariable(hDump+"Height",10.0);
+  Control.addVariable(hDump+"Width",3.0);
+  Control.addVariable(hDump+"Thick",8.0);
+  Control.addVariable(hDump+"CutHeight",10.0);
+  Control.addVariable(hDump+"CutDepth",0.0);
+  Control.addVariable(hDump+"Mat","Tungsten");
   return;
 }
   
@@ -125,13 +184,18 @@ frontEndVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","frontEndVariables");
 
+  
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
 
-    PipeGen.setWindow(-2.0,0.0);   // no window
+  
+  PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
   
   VBoxGen.setMat("Stainless304");
@@ -213,10 +277,47 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setMinSize(12.0,0.730,0.16);
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
-  PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.setBFlangeCF<setVariable::CF63>(); 
-  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,463.0);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,10.0);
+
+  // Create HEAT DUMP
+  heatDumpVariables(Control,frontKey);
+
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,333.0);
+
+
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(5.0,5.0);
+  PipeGen.setBFlangeCF<setVariable::CF63>();
+  // ystep/radius/length
+  const double sBoxLen(50.0);
+  PTubeGen.generateTube(Control,frontKey+"ShutterBox",0.0,18.0,sBoxLen);
+  Control.addVariable(frontKey+"ShutterBoxNPorts",2);
+
+
+  // 20cm above port tube
+  PItemGen.setCF<setVariable::CF50>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
+  FlangeGen.setCF<setVariable::CF50>();
+  // W / H / T
+  FlangeGen.setBlade(5.0,5.0,20.0,0.0,"Tungsten",1);  
+
+  // centre of mid point
+  const Geometry::Vec3D ZVec(0,0,1);
+  Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
+      const std::string fname=frontKey+"Shutter"+std::to_string(i);      
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      FlangeGen.generateMount(Control,fname,0);  // in beam
+      CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
+    }
+
+
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
 
   return;
 }
@@ -657,7 +758,8 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   
-  cosaxsVar::frontCaveVariables(Control,"Cosaxs",500.0);  // Set to middle
+  cosaxsVar::frontCaveVariables(Control,"CosaxsRingCaveA",1,1);
+  cosaxsVar::frontCaveVariables(Control,"CosaxsRingCaveB",0,0);  
   cosaxsVar::frontEndVariables(Control,"CosaxsFrontBeam");  
 
   PipeGen.setMat("Stainless304");

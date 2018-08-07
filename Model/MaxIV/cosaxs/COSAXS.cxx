@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/COSAXS.cxx
+ * File: cosaxs/COSAXS.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -103,7 +103,8 @@ namespace xraySystem
 
 COSAXS::COSAXS(const std::string& KN) :
   attachSystem::CopiedComp("Balder",KN),
-  frontCave(new FrontEndCave(newName+"FrontEnd")),
+  ringCaveA(new FrontEndCave(newName+"RingCaveA")),
+  ringCaveB(new FrontEndCave(newName+"RingCaveB")),
   frontBeam(new FrontEnd(newName+"FrontBeam")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
@@ -117,7 +118,8 @@ COSAXS::COSAXS(const std::string& KN) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
-  OR.addObject(frontCave);
+  OR.addObject(ringCaveA);
+  OR.addObject(ringCaveB);
   OR.addObject(frontBeam);
   OR.addObject(joinPipe);
   
@@ -148,19 +150,33 @@ COSAXS::build(Simulation& System,
   ELog::RegMethod RControl("COSAXS","build");
 
   int voidCell(74123);
- 
-  frontCave->addInsertCell(voidCell);
-  frontCave->createAll(System,FCOrigin,sideIndex);
-  const HeadRule caveVoid=frontCave->getCellHR(System,"Void");
-  
-  frontBeam->addInsertCell(frontCave->getCell("Void"));
-  frontBeam->createAll(System,*frontCave,-1);
+  ringCaveA->addInsertCell(voidCell);
+  ringCaveA->createAll(System,FCOrigin,sideIndex);
+
+  ringCaveB->addInsertCell(voidCell);
+  ringCaveB->setCutSurf("front",*ringCaveA,"connectPt");
+  ringCaveB->createAll(System,*ringCaveA,
+		       ringCaveA->getSideIndex("connectPt"));
+
+  const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
+  frontBeam->addInsertCell(ringCaveA->getCell("Void"));
+  frontBeam->createAll(System,*ringCaveA,-1);
 
   opticsHut->addInsertCell(voidCell);
-  opticsHut->createAll(System,*frontCave,2);
+  opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
+  opticsHut->createAll(System,*ringCaveA,2);
 
-  joinPipe->addInsertCell(frontCave->getCell("Void"));
-  joinPipe->addInsertCell(frontCave->getCell("FrontWallHole"));
+    // UgLY HACK to get the two objects to merge
+  const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
+  ringCaveB->insertComponent
+    (System,"OuterWall",*opticsHut,opticsHut->getSideIndex("frontCut"));
+  ringCaveB->insertComponent
+    (System,"FloorA",*opticsHut,opticsHut->getSideIndex("floorCut"));
+  ringCaveB->insertComponent
+    (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
+
+  joinPipe->addInsertCell(ringCaveA->getCell("Void"));
+  joinPipe->addInsertCell(ringCaveA->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
   
@@ -175,7 +191,7 @@ COSAXS::build(Simulation& System,
   joinPipe->registerSpaceCut(1,0);
   joinPipe->insertObjects(System);
 
-  System.removeCell(frontCave->getCell("Void"));
+  System.removeCell(ringCaveA->getCell("Void"));
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
