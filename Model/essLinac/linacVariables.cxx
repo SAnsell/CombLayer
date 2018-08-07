@@ -330,8 +330,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub100Duct1Height",  30.0);
   Control.addParse<double>("Stub100Duct1Length1", "Stub100Length1");
   Control.addParse<double>("Stub100Duct1Length2", "400+Stub100Duct1Height");
-  Control.addVariable("Stub100Duct1MainMat", "Poly%Copper%50.1868");
-  ELog::EM << "StubDuct material???" <<ELog::endBasic;
+  Control.addVariable("Stub100Duct1MainMat", "StbTCABL");
   Control.addVariable("Stub100Duct1WallMat", "SkanskaConcrete");
   Control.addParse<double>("Stub100Duct1ZStep", "(Stub100Duct1Height-Stub100Height)/2.0");
   Control.addParse<double>("Stub100Duct1YStep", "(Stub100Duct1Width-Stub100Width)/2.0");
@@ -342,8 +341,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("Stub100Duct2Length1",
 			   "Stub100Length1-Stub100Height+Stub100Duct2Height");
   Control.addParse<double>("Stub100Duct2Length2", "400+Stub100Duct2Height");
-  Control.addVariable("Stub100Duct2MainMat", "Poly%Copper%50.1868");
-  ELog::EM << "StubDuct material???" <<ELog::endBasic;
+  Control.addVariable("Stub100Duct2MainMat", "StbTCABL");
   Control.addVariable("Stub100Duct2WallMat", "SkanskaConcrete");
   Control.addParse<double>("Stub100Duct2ZStep",
 			   "(Stub100Height-Stub100Duct2Height)/2.0");
