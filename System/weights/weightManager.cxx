@@ -59,6 +59,7 @@
 #include "Mesh3D.h"
 #include "WWGWeight.h"
 #include "WWG.h"
+#include "cellValueSet.h"
 #include "weightManager.h"
 
 
@@ -229,30 +230,31 @@ weightManager::writeFLUKA(std::ostream& OX) const
 
   const flukaGenParticle& PConv=flukaGenParticle::Instance();
 
+  bool firstCell(1);
   if (!WMap.empty())
     {
+
+      
       for(const CtrlTYPE::value_type& wf : WMap)
         {
           const std::vector<double>& Evec=wf.second->getEnergy();
 	  const double AEnergy=Evec.front();
 	  const double BEnergy=Evec.back();
-	  
-          OX<<"  part = "
-	    <<PConv.nameToPHITS(wf.second->getParticle())
-	    <<std::endl;
 
-          OX<<"  eng = "<<Evec.size()<<std::endl;
-          for( const double& E : Evec )
-            OX<<"  "<<E;
-          OX<<std::endl;
-
-          OX<<"reg  ";
-          for(size_t i=1;i<=Evec.size();i++)
-            OX<<"    ww"<<i;
-          OX<<std::endl;
-
-          wf.second->writePHITS(OX);
+	  // get list of particles and write WW=THRES:
+	  if (firstCell)
+	    {
+	      const WCells* cellWeight=
+		dynamic_cast<const WCells*>(wf.second);
+	      if (cellWeight)
+		{
+		  cellWeight->writeFLUKA(OX);
+		  firstCell=0;
+		}
+	    }
         }
+      // write values for wwFactor from one WMap [first]
+
     }
   
   return;

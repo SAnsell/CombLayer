@@ -297,7 +297,7 @@ SimFLUKA::writeTransform(std::ostream& OX) const
   */
 
 {
-  OX<<"[transform]"<<std::endl;
+  OX<<"* [transform]"<<std::endl;
 
   TransTYPE::const_iterator vt;
   for(vt=TList.begin();vt!=TList.end();vt++)
@@ -334,6 +334,8 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("SimFLUKA","writeSurfaces");
+  
   OX<<"* SURFACE CARDS "<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =

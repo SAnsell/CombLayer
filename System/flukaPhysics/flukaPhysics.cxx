@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physics/flukaPhysics.cxx
+ * File:   flukaPhysics/flukaPhysics.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -118,12 +118,12 @@ flukaPhysics::flukaPhysics() :
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
-      { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
+      { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
       { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },	
-      { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
-      { "photthr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
-      { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },
-      { "elpothr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
+      { "prodcut", unitTYPE(1,"%2 %3 1.0 M0 M1 1.0") },
+      { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
+      { "pho2thr", unitTYPE(1,"%2 %3 -  M0 M1 1.0") },
+      { "elpothr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
       { "pairbrem", unitTYPE(1,"3.0 %2 %3 M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
@@ -179,14 +179,11 @@ flukaPhysics::operator=(const flukaPhysics& A)
   return *this;
 }
 
-
-
 flukaPhysics::~flukaPhysics()
   /*!
     Destructor
   */
 {}
-
   
 void
 flukaPhysics::clearAll()
@@ -276,7 +273,7 @@ flukaPhysics::setFlag(const std::string& keyName,
   /*!
     Set the importance list
     \param keyName :: typename 
-    \param cellID :: Cell number
+    \param nameID :: Name of particle/object
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setFlag(string)");
@@ -297,7 +294,7 @@ flukaPhysics::setIMP(const std::string& keyName,
 		     const std::string& value)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param nameID :: Name of particle/object
     \param value :: Value to use
   */
@@ -321,7 +318,7 @@ flukaPhysics::setEMF(const std::string& keyName,
 		     const std::string& photonCut)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellNumber :: Cell number
     \param electronCut :: Electron cut values
     \param photonCut :: Electron cut values
@@ -348,7 +345,7 @@ flukaPhysics::setTHR(const std::string& keyName,
 		     const std::string& V3)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellName :: Cell number
     \param V1 :: Electron cut values
     \param V2 :: photon cut values
@@ -372,7 +369,7 @@ flukaPhysics::setFlag(const std::string& keyName,
 		      const int cellID)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellID :: Cell number
   */
 {
@@ -393,7 +390,7 @@ flukaPhysics::setIMP(const std::string& keyName,
 		     const std::string& value)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellID :: Cell number
     \param value :: Value to use
   */
@@ -416,7 +413,7 @@ flukaPhysics::setEMF(const std::string& keyName,
 		     const std::string& photonCut)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellNumber :: Cell number
     \param electronCut :: Electron cut values
     \param photonCut :: Electron cut values
@@ -442,7 +439,7 @@ flukaPhysics::setTHR(const std::string& keyName,
 		     const std::string& V3)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellNumber :: Cell number
     \param V1 :: Electron cut values
     \param V2 :: photon cut values

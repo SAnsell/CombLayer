@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/cellValueSet.h
+ * File:   flukaProcessInc/cellValueSet.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
