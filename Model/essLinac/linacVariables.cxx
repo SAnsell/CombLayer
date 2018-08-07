@@ -325,7 +325,7 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Stub100Duct variables according to ESS-0318785.1
   // See email from Carl-Johan 3 Aug 2018
-  Control.addVariable("Stub100NDucts", 2);
+  Control.addVariable("Stub100NDucts", 2); // 4
   Control.addVariable("Stub100Duct1WallThick", 0.0);
   Control.addVariable("Stub100Duct1Width",   70.0);
   Control.addVariable("Stub100Duct1Height",  30.0);
@@ -336,18 +336,28 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("Stub100Duct1ZStep", "(Stub100Duct1Height-Stub100Height)/2.0");
   Control.addParse<double>("Stub100Duct1YStep", "(Stub100Duct1Width-Stub100Width)/2.0");
 
-  Control.addVariable("Stub100Duct2WallThick", 0.0);
-  Control.addVariable("Stub100Duct2Width",   70.0);
+  Control.copyVarSet("Stub100Duct1", "Stub100Duct2");
   Control.addVariable("Stub100Duct2Height",  37.0);
   Control.addParse<double>("Stub100Duct2Length1",
 			   "Stub100Length1-Stub100Height+Stub100Duct2Height");
   Control.addParse<double>("Stub100Duct2Length2", "400+Stub100Duct2Height");
-  Control.addVariable("Stub100Duct2MainMat", "StbTCABL");
-  Control.addVariable("Stub100Duct2WallMat", "Void");
   Control.addParse<double>("Stub100Duct2ZStep",
 			   "(Stub100Height-Stub100Duct2Height)/2.0");
   Control.addParse<double>("Stub100Duct2YStep",
 			   "(Stub100Duct2Width-Stub100Width)/2.0");
+
+  Control.addVariable("Stub100Duct3WallThick", 0.48);
+  Control.addVariable("Stub100Duct3Width",   14.61);
+  Control.addVariable("Stub100Duct3Height",  58.42);
+  Control.addParse<double>("Stub100Duct3Length1", "Stub100Length1-Stub100Duct1Height-20");
+  Control.addParse<double>("Stub100Duct3Length2", "400+Stub100Duct3Height");
+  Control.addVariable("Stub100Duct3MainMat", "Air");
+  Control.addVariable("Stub100Duct3WallMat", "Aluminium");
+  Control.addParse<double>("Stub100Duct3YStep", "(Stub100Duct3Width-Stub100Width)/2.0+10");
+
+  Control.copyVarSet("Stub100Duct3", "Stub100Duct4");
+  Control.addParse<double>("Stub100Duct4YStep", "Stub100Duct3YStep+Stub100Duct3Width+10");
+
 
   // Stub110Duct variables according to ESS-0318786 rev 1.0
   // See email from Carl-Johan 3 Aug 2018
