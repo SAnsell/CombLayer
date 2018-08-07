@@ -322,16 +322,17 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("Stub110YStep", 3761.5); // ESS-0025905 and MARS
 
   // Ducts in the stubs
-  Control.addVariable("Stub100NDucts", 2);
 
   // Stub100Duct variables according to ESS-0318785.1
+  // See email from Carl-Johan 3 Aug 2018
+  Control.addVariable("Stub100NDucts", 2);
   Control.addVariable("Stub100Duct1WallThick", 0.0);
   Control.addVariable("Stub100Duct1Width",   70.0);
   Control.addVariable("Stub100Duct1Height",  30.0);
   Control.addParse<double>("Stub100Duct1Length1", "Stub100Length1");
   Control.addParse<double>("Stub100Duct1Length2", "400+Stub100Duct1Height");
   Control.addVariable("Stub100Duct1MainMat", "StbTCABL");
-  Control.addVariable("Stub100Duct1WallMat", "SkanskaConcrete");
+  Control.addVariable("Stub100Duct1WallMat", "Void");
   Control.addParse<double>("Stub100Duct1ZStep", "(Stub100Duct1Height-Stub100Height)/2.0");
   Control.addParse<double>("Stub100Duct1YStep", "(Stub100Duct1Width-Stub100Width)/2.0");
 
@@ -342,11 +343,36 @@ EssLinacVariables(FuncDataBase& Control)
 			   "Stub100Length1-Stub100Height+Stub100Duct2Height");
   Control.addParse<double>("Stub100Duct2Length2", "400+Stub100Duct2Height");
   Control.addVariable("Stub100Duct2MainMat", "StbTCABL");
-  Control.addVariable("Stub100Duct2WallMat", "SkanskaConcrete");
+  Control.addVariable("Stub100Duct2WallMat", "Void");
   Control.addParse<double>("Stub100Duct2ZStep",
 			   "(Stub100Height-Stub100Duct2Height)/2.0");
   Control.addParse<double>("Stub100Duct2YStep",
 			   "(Stub100Duct2Width-Stub100Width)/2.0");
+
+  // Stub110Duct variables according to ESS-0318786 rev 1.0
+  // See email from Carl-Johan 3 Aug 2018
+  Control.addVariable("Stub110NDucts", 2);
+  Control.addVariable("Stub110Duct1WallThick", 0.0);
+  Control.addVariable("Stub110Duct1Width",   60.0);
+  Control.addVariable("Stub110Duct1Height",  35.0);
+  Control.addParse<double>("Stub110Duct1Length1", "Stub110Length1");
+  Control.addParse<double>("Stub110Duct1Length2", "400+Stub110Duct1Height");
+  Control.addVariable("Stub110Duct1MainMat", "StbTCABL");
+  Control.addVariable("Stub110Duct1WallMat", "Void");
+  Control.addParse<double>("Stub110Duct1ZStep", "(Stub110Duct1Height-Stub110Height)/2.0");
+  Control.addParse<double>("Stub110Duct1YStep", "(Stub110Duct1Width-Stub110Width)/2.0");
+
+  Control.addVariable("Stub110Duct2WallThick", 0.0);
+  Control.addVariable("Stub110Duct2Width",   60.0);
+  Control.addVariable("Stub110Duct2Height",  35.0);
+  Control.addParse<double>("Stub110Duct2Length1", "Stub110Length1");
+  Control.addParse<double>("Stub110Duct2Length2", "400+Stub110Duct2Height");
+  Control.addVariable("Stub110Duct2MainMat", "StbTCABL");
+  Control.addVariable("Stub110Duct2WallMat", "Void");
+  Control.addParse<double>("Stub110Duct2ZStep",
+			   "(Stub110Duct2Height-Stub110Height)/2.0");
+  Control.addParse<double>("Stub110Duct2YStep",
+			   "-(Stub110Duct2Width-Stub110Width)/2.0");
 
   // FEB dimensions are measured from the STEP file received from
   // Carl-Johan 31.05.2018
