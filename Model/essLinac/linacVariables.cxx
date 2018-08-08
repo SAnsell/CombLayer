@@ -325,7 +325,7 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Stub100Duct variables according to ESS-0318785.1
   // See email from Carl-Johan 3 Aug 2018
-  Control.addVariable("Stub100NDucts", 2); // 4
+  Control.addVariable("Stub100NDucts", 2); // 8
   Control.addVariable("Stub100Duct1WallThick", 0.0);
   Control.addVariable("Stub100Duct1Width",   70.0);
   Control.addVariable("Stub100Duct1Height",  30.0);
@@ -346,6 +346,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("Stub100Duct2YStep",
 			   "(Stub100Duct2Width-Stub100Width)/2.0");
 
+  // Duct 3-8 length are approximate
   Control.addVariable("Stub100Duct3WallThick", 0.48);
   Control.addVariable("Stub100Duct3Width",   14.61);
   Control.addVariable("Stub100Duct3Height",  58.42);
@@ -357,6 +358,24 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.copyVarSet("Stub100Duct3", "Stub100Duct4");
   Control.addParse<double>("Stub100Duct4YStep", "Stub100Duct3YStep+Stub100Duct3Width+10");
+
+  Control.copyVarSet("Stub100Duct4", "Stub100Duct5");
+  Control.addParse<double>("Stub100Duct5YStep", "Stub100Duct4YStep+Stub100Duct4Width+75");
+
+  Control.copyVarSet("Stub100Duct5", "Stub100Duct6");
+  Control.addParse<double>("Stub100Duct6YStep", "Stub100Duct6YStep+Stub100Duct5Width+10");
+
+  Control.copyVarSet("Stub100Duct6", "Stub100Duct7");
+  Control.addVariable("Stub100Duct7Height",   14.61);
+  Control.addVariable("Stub100Duct7Width",  58.42);
+  Control.addParse<double>("Stub100Duct7Length1", "Stub100Duct6Length1+Stub100Duct7Height+10");
+  Control.addParse<double>("Stub100Duct7Length2", "Stub100Duct6Length2-45");
+  Control.addParse<double>("Stub100Duct7YStep", "-(Stub100Duct7Width-Stub100Width)/2.0-Stub100Duct7WallThick-10");
+  Control.addVariable("Stub100Duct7ZStep", -50);
+
+  Control.copyVarSet("Stub100Duct7", "Stub100Duct8");
+  Control.addParse<double>("Stub100Duct8Length1", "Stub100Duct6Length1-Stub100Duct6Height-10");
+  Control.addVariable("Stub100Duct8ZStep", 50);
 
 
   // Stub110Duct variables according to ESS-0318786 rev 1.0
