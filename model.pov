@@ -6,8 +6,8 @@ global_settings {
 assumed_gamma 1.0
 }
 
-#declare cameraNumber = 2; // 0: DTL global view;  1: beam dump view;  2: PMQ view
-#declare lightSource  = 3; // 0: only the beam dump bulb; 1: simple array of point lights; 2: array of area_light
+#declare cameraNumber = 3; // 0: DTL global view;  1: beam dump view;  2: PMQ view
+#declare lightSource  = 0; // 0: as defined in the camera definition; 1: simple array of point lights; 2: array of area_light
 
 #switch ( cameraNumber )
 #case(0) // DTL global view
@@ -26,6 +26,18 @@ assumed_gamma 1.0
  #declare cameraAngle = 20;
   light_source {
     < 21, -4000, 0 >  White
+  }
+#break
+#case(3) // Stub1 view
+ #declare cameraLocation = <-1400, 1300, 600>;
+ #declare cameraLookAt   = <-800,  1885, 300>;
+ #declare cameraAngle = 70;
+  light_source {
+    < -525, 1200, 700 >  White
+  }
+  light_source {
+    < -865, 1835, 400 >  White
+    shadowless
   }
 #break
 #else
@@ -80,4 +92,4 @@ camera {
 #     < 260,    140, 190 >  White
 #}
 
-#include "b1.x"
+#include "b.x"
