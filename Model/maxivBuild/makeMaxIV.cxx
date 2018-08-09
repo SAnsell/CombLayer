@@ -77,6 +77,7 @@
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 
+#include "R1Ring.h"
 #include "BALDER.h"
 #include "COSAXS.h"
 
@@ -85,7 +86,8 @@
 namespace xraySystem
 {
 
-makeMaxIV::makeMaxIV() 
+makeMaxIV::makeMaxIV() :
+   r1Ring(new R1Ring("R1Ring"))
  /*!
     Constructor
  */
@@ -93,9 +95,12 @@ makeMaxIV::makeMaxIV()
   // Require registration of THIS world
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
   std::shared_ptr<attachSystem::FixedComp> worldPtr=
     std::make_shared<attachSystem::FixedComp>(World::masterOrigin());
   OR.addObject(worldPtr);
+  // stuff for R1.5
+  OR.addObject(r1Ring);
 }
 
 
@@ -106,6 +111,21 @@ makeMaxIV::~makeMaxIV()
 {}
 
 void
+makeMaxIV::buildR1Ring(Simulation& System,
+		       const mainSystem::inputParam& IParam)
+  /*!
+    Build the R1-ring based on segment needed
+    \param System :: Simulation 
+    \param IParam :: Input paramters
+  */
+{
+  ELog::RegMethod RegA("makeMaxIV","makeR1Ring");
+
+
+  return;
+}  
+  
+bool
 makeMaxIV::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
   /*!
@@ -114,20 +134,22 @@ makeMaxIV::makeBeamLine(Simulation& System,
      and the beamline typename is required
     \param System :: Simulation 
     \param IParam :: Input paramters
+    \retrun true if object(s) built
   */
 {
   ELog::RegMethod RegA("makeMaxIV","makeBeamLine");
 
   static const std::set<std::string> beamNAMES
     ({"BALDER","COSAXS"});
-  
+
+  bool outFlag(0);  
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   typedef std::map<std::string,std::vector<std::string>> mTYPE;
   mTYPE stopUnits=IParam.getMapItems("stopPoint");
 
-  // create a map of beamname : stoppoint [or All : stoppoint]
+  // create a map of beamname : stopPoint [or All : stoppoint]
   std::string stopPoint;
   std::map<std::string,std::string> beamStop;
   for(const mTYPE::value_type& SP : stopUnits)
@@ -164,22 +186,25 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	    (mc!=beamStop.end()) ? mc->second : stopPoint;
 	  if (BL=="BALDER")
 	    {
-		
 	      BALDER BL("Balder");
 	      if (!activeStop.empty())
-		ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		BL.setStopPoint(activeStop);
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
 	      BL.build(System,*FCOrigin,linkIndex);
+	      outFlag=1;
 	    }
 	  else if (BL=="COSAXS")
 	    {
 	      COSAXS BL("Cosaxs");
 	      BL.build(System,*FCOrigin,linkIndex);
+	      outFlag=1;
 	    }
 	}
     }
 
-  return;
+  return outFlag;
 }
 
 void 
@@ -197,10 +222,15 @@ makeMaxIV::build(Simulation& System,
   //  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
+  
+  if (makeBeamLine(System,IParam))  // 3GeV Ring
+    ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
+  else
+    {
+      buildR1Ring(System,IParam);
+      ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
+    }
 
-  makeBeamLine(System,IParam);
-
-  ELog::EM<<"=Finished beamlines="<<ELog::endDiag;
   return;
 }
 

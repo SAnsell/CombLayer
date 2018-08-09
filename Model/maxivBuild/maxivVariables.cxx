@@ -86,6 +86,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
                        FuncDataBase& Control)
   /*!
     Construct the variables for the beamlines if required
+    for MaxIV
     \param BL :: Set for the beamlines
     \param Control :: Database for variables
    */
@@ -93,17 +94,29 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   ELog::RegMethod RegA("maxivVariables[F]",
                        "maxivInstrumentVariables");
 
+  const std::set<std::string> R1Beam({
+      {"MAXPEEM"}});
+
+  
   typedef void (*VariableFunction)(FuncDataBase&);
   typedef std::multimap<std::string,VariableFunction> VMap;
   
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
-     {"COSAXS",    &COSAXSvariables}
+     {"COSAXS",    &COSAXSvariables},
+     {"MAXPEEM",   &MAXPEEMvariables}
    });
 
-  
+
+  bool r1Flag(0);
   for(const std::string& beam : BL)
     {
+      if (!r1Flag && (R1Beam.find(beam)!=R1Beam.end()))
+	{
+	  R1RingVariables(Control);
+	  r1Flag=1;
+	}
+	  
       // std::pair<VMap::const_iterator,VMap::const_iterator>
       VMap::const_iterator mc;
       decltype(VarInit.equal_range("")) rangePair
@@ -112,7 +125,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	{
 	  mc->second(Control);
 	}
-    }  
+    }
+  if (r1Flag)
   return;
 }  
   

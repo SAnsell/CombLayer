@@ -24,7 +24,8 @@
 
 
 namespace xraySystem
-{      
+{
+  class R1Ring;
   /*!
     \class makeMaxIV
     \version 1.0
@@ -36,8 +37,14 @@ namespace xraySystem
 class makeMaxIV
 {
  private:
-   
-  void makeBeamLine(Simulation&,const mainSystem::inputParam&);
+
+  /// Main R1 Ring
+  std::shared_ptr<R1Ring> r1Ring;
+  
+  void buildR1Ring(Simulation&,const mainSystem::inputParam&);
+
+  bool makeBeamLine(Simulation&,const mainSystem::inputParam&);
+  
  public:
   
   makeMaxIV();

@@ -31,11 +31,14 @@ namespace mainSystem
 namespace setVariable
 {
 
-
   void maxivInstrumentVariables
     (const std::set<std::string>&,FuncDataBase&);
     
-  // MAXIV Beamlines
+  // MAXIV Beamlines 1.5GeV Ring
+  void R1RingVariables(FuncDataBase&);
+  void MAXPEEMvariables(FuncDataBase&);
+
+  // MAXIV Beamlines 3.0GeV Ring
   void BALDERvariables(FuncDataBase&);
   void COSAXSvariables(FuncDataBase&);
 
