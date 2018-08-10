@@ -126,7 +126,6 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	  mc->second(Control);
 	}
     }
-  if (r1Flag)
   return;
 }  
   
