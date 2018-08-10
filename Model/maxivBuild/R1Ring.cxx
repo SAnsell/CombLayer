@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R1Cave.cxx
+ * File:   maxivBuild/R1Ring.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -128,6 +128,18 @@ R1Ring::populate(const FuncDataBase& Control)
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
+  NPoints=Control.EvalVar<size_t>(keyName+"NPoints");
+  for(size_t i=0;i<NPoints;i++)
+    {
+      const std::string NStr=std::to_string(i);
+      const Geometry::Vec3D PtA=
+	Control.EvalVar<Geometry::Vec3D>(keyName+"VPoint"+NStr);
+      const Geometry::Vec3D PtB=
+	Control.EvalVar<Geometry::Vec3D>(keyName+"OPoint"+NStr);
+      voidTrack.push_back(PtA);
+      outerTrack.push_back(PtB);
+    }
+      
   return;
 }
 
@@ -157,7 +169,7 @@ R1Ring::createSurfaces()
 
   // quick way to rotate outgoing vector to
   // dividing vector
-  const Geometry::Quaternion Qz=Geometry::Quaternion::calcQRotDeg(120.0,Z);
+  const Geometry::Quaternion Qz=Geometry::Quaternion::calcQRotDeg(-120.0,Z);
   double theta(0.0);
   int surfN(buildIndex);
   
@@ -178,6 +190,34 @@ R1Ring::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
+
+  surfN=buildIndex+1000;
+  for(size_t i=0;i<NPoints;i++)
+    {
+      const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
+      const Geometry::Vec3D BP
+	(X*voidTrack[(i+1)% NPoints].X()+Y*voidTrack[(i+1) % NPoints].Y());
+      const Geometry::Vec3D NDir=(Origin-BP);
+      
+      ModelSupport::buildPlane(SMap,surfN+3,
+			       Origin+AP,Origin+BP,
+			       Origin+BP+Z,NDir);
+      surfN+=10;
+    }
+
+  surfN=buildIndex+2000;
+  for(size_t i=0;i<NPoints;i++)
+    {
+      const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
+      const Geometry::Vec3D BP
+	(X*voidTrack[(i+1)% NPoints].X()+Y*voidTrack[(i+1) % NPoints].Y());
+      const Geometry::Vec3D NDir=(Origin-BP);
+      
+      ModelSupport::buildPlane(SMap,surfN+3,
+			       Origin+AP,Origin+BP,
+			       Origin+BP+Z,NDir);
+      surfN+=10;
+    }
   
   return;
 }
@@ -203,7 +243,9 @@ R1Ring::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,surfN,prevN,buildIndex,
 				     " 7M -7 3 -103 15N -16N" );
-      makeCell("Wall",System,cellIndex++,0,0.0,Out);
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+      prevN=surfN;
+      surfN+=10;
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex,

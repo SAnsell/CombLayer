@@ -52,6 +52,13 @@ class R1Ring :
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
 
+  /// number of points in track
+  size_t NPoints;
+  /// points that create the inner wall
+  std::vector<Geometry::Vec3D> voidTrack;
+  /// points that create the outer wall
+  std::vector<Geometry::Vec3D> outerTrack;
+  
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material

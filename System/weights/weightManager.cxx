@@ -233,8 +233,6 @@ weightManager::writeFLUKA(std::ostream& OX) const
   bool firstCell(1);
   if (!WMap.empty())
     {
-
-      
       for(const CtrlTYPE::value_type& wf : WMap)
         {
           const std::vector<double>& Evec=wf.second->getEnergy();
