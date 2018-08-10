@@ -282,7 +282,7 @@ createESSLinacSource(const mainSystem::MITYPE& inputMap,
 
   const double E=mainSystem::getDefInput<double>(inputMap,"energy",0,74.0);
   const double x0=mainSystem::getDefInput<double>(inputMap,"pos",0,0.0);
-  const double y0=mainSystem::getDefInput<double>(inputMap,"pos",1,3550.0);
+  const double y0=mainSystem::getDefInput<double>(inputMap,"pos",1,4238.0);
   const double z0=mainSystem::getDefInput<double>(inputMap,"pos",2,0.0);
 
   PointSource PSource("essLinac");
