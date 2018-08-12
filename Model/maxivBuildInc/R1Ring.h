@@ -44,16 +44,19 @@ class R1Ring :
 {
  private:
 
-  double hexRadius;          ///< Inner hex radius
-  double hexWallThick;          ///< Inner hex wall thickness
+  double fullOuterRadius;          ///< full outer radius
+  double hexRadius;               ///< Inner hex radius
+  double hexWallThick;            ///< Inner hex wall thickness
 
   double height;                  ///< Main height
   double depth;                   ///< Main depth
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
 
-  /// number of points in track
-  size_t NPoints;
+
+  size_t NPoints;                 ///< number of points in track
+  size_t concaveNPoints;          ///< number of concave points in track
+  std::vector<size_t> concavePts;    ///< number of points in track
   /// points that create the inner wall
   std::vector<Geometry::Vec3D> voidTrack;
   /// points that create the outer wall

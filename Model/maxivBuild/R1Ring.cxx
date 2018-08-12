@@ -85,7 +85,8 @@ namespace xraySystem
 R1Ring::R1Ring(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  NPoints(0),concaveNPoints(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -115,6 +116,8 @@ R1Ring::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
+  fullOuterRadius=Control.EvalVar<double>(keyName+"FullOuterRadius");
+  
   hexRadius=Control.EvalVar<double>(keyName+"HexRadius");
   hexWallThick=Control.EvalVar<double>(keyName+"HexWallThick");
 
@@ -139,7 +142,17 @@ R1Ring::populate(const FuncDataBase& Control)
       voidTrack.push_back(PtA);
       outerTrack.push_back(PtB);
     }
-      
+  for(size_t i=1;i<NPoints+1;i++)
+    {
+      const Geometry::Vec3D& C(voidTrack[i % NPoints]);
+      const Geometry::Vec3D A((voidTrack[i-1]-C).unit());
+      const Geometry::Vec3D B((voidTrack[(i+1) % NPoints]-C).unit());
+      Geometry::Vec3D XA=A*B;
+      if (XA.dotProd(Z)<0.0)
+	concavePts.push_back(i);
+    }
+  concaveNPoints=concavePts.size();
+    
   return;
 }
 
@@ -167,6 +180,8 @@ R1Ring::createSurfaces()
 {
   ELog::RegMethod RegA("R1Ring","createSurfaces");
 
+  ModelSupport::buildCylinder(SMap,buildIndex+9007,Origin,Z,fullOuterRadius);
+  
   // quick way to rotate outgoing vector to
   // dividing vector
   const Geometry::Quaternion Qz=Geometry::Quaternion::calcQRotDeg(-120.0,Z);
@@ -197,6 +212,23 @@ R1Ring::createSurfaces()
       const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
       const Geometry::Vec3D BP
 	(X*voidTrack[(i+1)% NPoints].X()+Y*voidTrack[(i+1) % NPoints].Y());
+      // note that voidTrack is about (0,0,0)
+      const Geometry::Vec3D NDir=(-BP);  
+      
+      ModelSupport::buildPlane(SMap,surfN+3,
+			       Origin+AP,
+			       Origin+BP,
+			       Origin+BP+Z,NDir);
+      surfN+=10;
+    }
+
+
+  surfN=buildIndex+2000;
+  for(size_t i=0;i<NPoints;i++)
+    {
+      const Geometry::Vec3D AP(X*outerTrack[i].X()+Y*outerTrack[i].Y());
+      const Geometry::Vec3D BP
+	(X*outerTrack[(i+1)% NPoints].X()+Y*outerTrack[(i+1) % NPoints].Y());
       const Geometry::Vec3D NDir=(Origin-BP);
       
       ModelSupport::buildPlane(SMap,surfN+3,
@@ -205,19 +237,22 @@ R1Ring::createSurfaces()
       surfN+=10;
     }
 
-  surfN=buildIndex+2000;
-  for(size_t i=0;i<NPoints;i++)
+  // Inner cut points
+  surfN=buildIndex+5000;
+  for(size_t i=1;i<concaveNPoints+1;i++)
     {
-      const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
-      const Geometry::Vec3D BP
-	(X*voidTrack[(i+1)% NPoints].X()+Y*voidTrack[(i+1) % NPoints].Y());
-      const Geometry::Vec3D NDir=(Origin-BP);
+      const size_t aI=concavePts[i-1];
+      const size_t bI=concavePts[i % concaveNPoints];
+      const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
+      const Geometry::Vec3D BP(X*voidTrack[bI].X()+Y*voidTrack[bI].Y());
+      const Geometry::Vec3D NDir=(-BP);
       
-      ModelSupport::buildPlane(SMap,surfN+3,
+      ModelSupport::buildPlane(SMap,surfN+9,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
       surfN+=10;
     }
+
   
   return;
 }
@@ -230,6 +265,8 @@ R1Ring::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("R1Ring","createObjects");
+
+  //  const std::set<size_t> innerPts({1,4,6,8,11,13,15,17,19,21});
 
   std::string Out;
 
@@ -248,10 +285,176 @@ R1Ring::createObjects(Simulation& System)
       surfN+=10;
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -103 -113 -123 -133 -143 -153 15 -16" );
-  addOuterSurf(Out);      
 
+  // Create inner voids
+  std::string Unit;
+  surfN=5000;
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+      Unit+=std::to_string(surfN+9)+" ";
+      surfN+=10;
+    }
+  Out=ModelSupport::getComposite(SMap,buildIndex,Unit+"15 -16");
+  Out+=ModelSupport::getComposite
+    (SMap,buildIndex,"(103:113:123:133:143:153)");
+  makeCell("Void",System,cellIndex++,0,0.0,Out);  
+
+   // loop to make individual units:
+  const std::string TBase=
+    ModelSupport::getComposite(SMap,buildIndex," 15 -16 ");
+  size_t index=0;
+  surfN=1000;
+  int convexN=5000;
+  Out="";
+  std::string WOut;
+  for(size_t i=1;i<NPoints+2;i++)
+    {
+      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
+      if (i==concavePts[index])
+	{
+	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
+	  if (index)
+	    {
+	      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+TBase);
+	      convexN+=10;
+	    }
+
+	  index++;
+	  Out="";
+	}
+      surfN= (i==NPoints) ? 1000 : surfN+10;
+    }
+  
+  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
+  makeCell("VoidTri",System,cellIndex++,0,0.0,Out+TBase);
+
+  // WALLS:
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -2003 (-1013:-1023) 1033 2013 2023 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1033 -1043 1053 2023 (2033:2043) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1053 -1063 1073 2043 (2053:2063) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -1073 -1083 2063 2073 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -2073 (-1083:-1093) 2083 2093 1103  15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1103 -1113 1123 2093 (2103:2113) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1123 -1133 1143 2113 (2123:2133) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1143 -1153 1163 2133 (2143:2153) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1163 -1173 1183 2153 (2163:2173) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1183 -1193 1203 2173 (2183:2193) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1203 -1213 1003 2193 (2203:2213) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," 2213 -1013 2003 -1003 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+
+  // NOW DO external sub-triangles:
+  // segment 1:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 2013 -2023 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 2:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2033 2023 -2043 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 3:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2053 2043 -2063 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 4:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2073 2063 -2083 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+  
+  // segment 5 [LONG]:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 2083 -2093 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 6:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2103 -2113 2093 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 7:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2123 -2133 2113 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+    // segment 8:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2143 -2153 2133 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 9:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2163 -2173 2153 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 10:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2183 -2193 2173 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+  // segment 11:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2203 -2213 2193 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+  
+  // segment 12:
+  Out=ModelSupport::getComposite  
+    (SMap,buildIndex," -9007 -2003 -2013 2213 15 -16");
+  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");
+  addOuterSurf(Out);  
+  return;
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1093 -1103 1113 2083 (2093:2103) 15 -16");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+
+  
+  return;
+
+  // WALLS:
+
+  
+  
   return;
 }
 
