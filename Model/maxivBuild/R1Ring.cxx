@@ -461,13 +461,26 @@ R1Ring::createObjects(Simulation& System)
 void
 R1Ring::createLinks()
   /*!
-    Determines the link point on the outgoing plane.
-    It must follow the beamline, but exit at the plane
+    Determines the link points for the beam direction first:
+    This is special : each beamport has two coordinates (and axis)
+    First is the mid triangle point [ start of straight section]
+    The second is the mid point on the wall it points to
   */
 {
   ELog::RegMethod RegA("R1Ring","createLinks");
-  
 
+  FixedComp::setNConnect(2*concaveNPoints+2);
+  
+  const double beamInStep(100.0);
+  // Main beam start points DONT have a surface [yet]
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+      const Geometry::Vec3D& Pt(voidTrack[concavePts[i]]);
+      const Geometry::Vec3D Axis=(Origin-Pt).unit();
+      const Geometry::Vec3D Beam=Axis*Z;
+      ELog::EM<<"Beam == "<<Pt<<" :: "<<Beam<<ELog::endDiag;
+      FixedComp::setConnect(i+2,Pt-Axis*beamInStep,Beam);
+    }
   return;
 }
 

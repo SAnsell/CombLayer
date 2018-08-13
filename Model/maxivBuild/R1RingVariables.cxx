@@ -84,7 +84,6 @@ R1RingVariables(FuncDataBase& Control)
 
   // construct points and inner
   Control.addVariable(preName+"NPoints",22);
-
   Control.addVariable(preName+"VPoint0",Geometry::Vec3D(-3.243,1867.968,0.0));
   Control.addVariable(preName+"VPoint1",Geometry::Vec3D(152.421,1605.285,0.0));
   Control.addVariable(preName+"VPoint2",Geometry::Vec3D(444.291,1605.285,0.0));
@@ -97,16 +96,17 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"VPoint9",Geometry::Vec3D(1183.695,-1196.667,0.0));
   Control.addVariable(preName+"VPoint10",Geometry::Vec3D(-22.701,-1910.127,0.0));
   Control.addVariable(preName+"VPoint11",Geometry::Vec3D(-149.178,-1634.472,0.0));
-  Control.addVariable(preName+"VPoint12",Geometry::Vec3D(-985.872,-1624.743,0.0));
-  Control.addVariable(preName+"VPoint13",Geometry::Vec3D(-956.685,-1352.331,0.0));
+  Control.addVariable(preName+"VPoint12",Geometry::Vec3D(-985.872,-1634.472,0.0));
+  Control.addVariable(preName+"VPoint13",Geometry::Vec3D(-956.685,-1287.471,0.0));
   Control.addVariable(preName+"VPoint14",Geometry::Vec3D(-1637.715,-953.442,0.0));
-  Control.addVariable(preName+"VPoint15",Geometry::Vec3D(-1482.051,-356.73,0.0));
+  Control.addVariable(preName+"VPoint15",Geometry::Vec3D(-1371.789,-570.768,0.0));
   Control.addVariable(preName+"VPoint16",Geometry::Vec3D(-1890.669,-9.729,0.0));
   Control.addVariable(preName+"VPoint17",Geometry::Vec3D(-1647.444,340.515,0.0));
   Control.addVariable(preName+"VPoint18",Geometry::Vec3D(-1657.173,943.713,0.0));
-  Control.addVariable(preName+"VPoint19",Geometry::Vec3D(-1306.929,943.713,0.0));
+  Control.addVariable(preName+"VPoint19",Geometry::Vec3D(-1306.929,953.442,0.0));
   Control.addVariable(preName+"VPoint20",Geometry::Vec3D(-937.227,1615.014,0.0));
   Control.addVariable(preName+"VPoint21",Geometry::Vec3D(-664.815,1491.78,0.0));
+
   Control.addVariable(preName+"OPoint0",Geometry::Vec3D(-3.40515,1961.3664,0.0));
   Control.addVariable(preName+"OPoint1",Geometry::Vec3D(160.04205,1685.54925,0.0));
   Control.addVariable(preName+"OPoint2",Geometry::Vec3D(466.50555,1685.54925,0.0));
@@ -119,19 +119,17 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OPoint9",Geometry::Vec3D(1242.87975,-1256.50035,0.0));
   Control.addVariable(preName+"OPoint10",Geometry::Vec3D(-23.83605,-2005.63335,0.0));
   Control.addVariable(preName+"OPoint11",Geometry::Vec3D(-156.6369,-1716.1956,0.0));
-  Control.addVariable(preName+"OPoint12",Geometry::Vec3D(-1035.1656,-1705.98015,0.0));
-  Control.addVariable(preName+"OPoint13",Geometry::Vec3D(-1004.51925,-1419.94755,0.0));
+  Control.addVariable(preName+"OPoint12",Geometry::Vec3D(-1035.1656,-1716.1956,0.0));
+  Control.addVariable(preName+"OPoint13",Geometry::Vec3D(-1004.51925,-1351.84455,0.0));
   Control.addVariable(preName+"OPoint14",Geometry::Vec3D(-1719.60075,-1001.1141,0.0));
-  Control.addVariable(preName+"OPoint15",Geometry::Vec3D(-1556.15355,-374.5665,0.0));
+  Control.addVariable(preName+"OPoint15",Geometry::Vec3D(-1440.37845,-599.3064,0.0));
   Control.addVariable(preName+"OPoint16",Geometry::Vec3D(-1985.20245,-10.21545,0.0));
   Control.addVariable(preName+"OPoint17",Geometry::Vec3D(-1729.8162,357.54075,0.0));
   Control.addVariable(preName+"OPoint18",Geometry::Vec3D(-1740.03165,990.89865,0.0));
-  Control.addVariable(preName+"OPoint19",Geometry::Vec3D(-1372.27545,990.89865,0.0));
+  Control.addVariable(preName+"OPoint19",Geometry::Vec3D(-1372.27545,1001.1141,0.0));
   Control.addVariable(preName+"OPoint20",Geometry::Vec3D(-984.08835,1695.7647,0.0));
   Control.addVariable(preName+"OPoint21",Geometry::Vec3D(-698.05575,1566.369,0.0));
 
-
-  
 
   return;
 }

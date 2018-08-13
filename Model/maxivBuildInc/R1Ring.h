@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/R1Ring.h
+ * File:   maxivBuildInc/R1Ring.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
