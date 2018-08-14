@@ -84,6 +84,7 @@ R1RingVariables(FuncDataBase& Control)
 
   // construct points and inner
   Control.addVariable(preName+"NPoints",22);
+
   Control.addVariable(preName+"VPoint0",Geometry::Vec3D(-3.243,1867.968,0.0));
   Control.addVariable(preName+"VPoint1",Geometry::Vec3D(152.421,1605.285,0.0));
   Control.addVariable(preName+"VPoint2",Geometry::Vec3D(444.291,1605.285,0.0));
@@ -97,7 +98,7 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"VPoint10",Geometry::Vec3D(-22.701,-1910.127,0.0));
   Control.addVariable(preName+"VPoint11",Geometry::Vec3D(-149.178,-1634.472,0.0));
   Control.addVariable(preName+"VPoint12",Geometry::Vec3D(-985.872,-1634.472,0.0));
-  Control.addVariable(preName+"VPoint13",Geometry::Vec3D(-956.685,-1287.471,0.0));
+  Control.addVariable(preName+"VPoint13",Geometry::Vec3D(-985.872,-1287.471,0.0));
   Control.addVariable(preName+"VPoint14",Geometry::Vec3D(-1637.715,-953.442,0.0));
   Control.addVariable(preName+"VPoint15",Geometry::Vec3D(-1371.789,-570.768,0.0));
   Control.addVariable(preName+"VPoint16",Geometry::Vec3D(-1890.669,-9.729,0.0));
@@ -120,7 +121,7 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OPoint10",Geometry::Vec3D(-23.83605,-2005.63335,0.0));
   Control.addVariable(preName+"OPoint11",Geometry::Vec3D(-156.6369,-1716.1956,0.0));
   Control.addVariable(preName+"OPoint12",Geometry::Vec3D(-1035.1656,-1716.1956,0.0));
-  Control.addVariable(preName+"OPoint13",Geometry::Vec3D(-1004.51925,-1351.84455,0.0));
+  Control.addVariable(preName+"OPoint13",Geometry::Vec3D(-1035.1656,-1351.84455,0.0));
   Control.addVariable(preName+"OPoint14",Geometry::Vec3D(-1719.60075,-1001.1141,0.0));
   Control.addVariable(preName+"OPoint15",Geometry::Vec3D(-1440.37845,-599.3064,0.0));
   Control.addVariable(preName+"OPoint16",Geometry::Vec3D(-1985.20245,-10.21545,0.0));

@@ -237,6 +237,22 @@ R1Ring::createSurfaces()
       surfN+=10;
     }
 
+  // Exit wall dividers
+  surfN=buildIndex+3000;
+  for(size_t i=0;i<concaveNPoints;i++)
+    {
+      const size_t aI=concavePts[i];
+      const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
+      const Geometry::Vec3D BP(X*outerTrack[aI].X()+Y*outerTrack[aI].Y());
+      ELog::EM<<"Point["<<i<<"] = "<<Origin+AP<<ELog::endDiag;
+      // going round ring clockwize 
+      const Geometry::Vec3D NDir=((BP-AP)*Z).unit();      
+      ModelSupport::buildPlane(SMap,surfN+1,
+			       Origin+AP,Origin+BP,
+			       Origin+BP+Z,NDir);
+      surfN+=10;
+    } 
+
   // Inner cut points
   surfN=buildIndex+5000;
   for(size_t i=1;i<concaveNPoints+1;i++)
@@ -329,117 +345,79 @@ R1Ring::createObjects(Simulation& System)
   makeCell("VoidTri",System,cellIndex++,0,0.0,Out+TBase);
 
   // WALLS:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2003 (-1013:-1023) 1033 2013 2023 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1033 -1043 1053 2023 (2033:2043) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1053 -1063 1073 2043 (2053:2063) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -1073 -1083 2063 2073 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2073 (-1083:-1093) 2083 2093 1103  15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1103 -1113 1123 2093 (2103:2113) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1123 -1133 1143 2113 (2123:2133) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1143 -1153 1163 2133 (2143:2153) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1163 -1173 1183 2153 (2163:2173) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1183 -1193 1203 2173 (2183:2193) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1203 -1213 1003 2193 (2203:2213) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," 2213 -1013 2003 -1003 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
 
-  // NOW DO external sub-triangles:
-  // segment 1:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 2013 -2023 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+  // Out=ModelSupport::getComposite   //s=1050
+  //   (SMap,buildIndex," 3021 -1063 1073 2063 15 -16");
+  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  // segment 2:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2033 2023 -2043 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+  // Out=ModelSupport::getComposite
+  //   (SMap,buildIndex," -2073 (-1083:-1093) 2083 2093 1103  15 -16");
+  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  // segment 3:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2053 2043 -2063 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
 
-  // segment 4:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2073 2063 -2083 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
+  int divN=buildIndex+3000;
+  surfN=buildIndex-10;
+  for(size_t index=0;index<10;index++)
+    {
+      if (index==0 || index==3)
+	{
+	  const int prevN=(!index) ? buildIndex+210 : buildIndex+60;
+	  const int fwdN=(!index) ? buildIndex : buildIndex+70;
+	  // LONG SEGMENT 1:
+	  Out=ModelSupport::getComposite    // s=1000 
+	    (SMap,buildIndex,prevN,fwdN," 2003M -1003N -1013N 2003N  15 -16");
+	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+	  Out=ModelSupport::getComposite
+	    (SMap,buildIndex,fwdN," -2003M (-1013M:-1023M) 1033M 2013M 2023M 15 -16");
+	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+	  surfN+=30;
+	  divN+=10;
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite  
+	    (SMap,buildIndex,surfN,divN," -1013M 2003M 2013M -1N 15 -16");
+	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+	  if (index!=9)
+	    Out=ModelSupport::getComposite   
+		(SMap,buildIndex,surfN,divN,"1N -1023M 1033M 2023M 15 -16");
+	  else
+	    Out=ModelSupport::getComposite   
+	      (SMap,buildIndex,surfN,divN,"1N -1023M 1003 2023M 15 -16");
+	  
+	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+	  surfN+=20;
+	  divN+=10;
+	}
+    }
+
+  // NOW DO external void-triangles:
+  prevN=buildIndex+2200;
+  surfN=buildIndex+2000;
   
-  // segment 5 [LONG]:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 2083 -2093 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-  // segment 6:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2103 -2113 2093 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-  // segment 7:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2123 -2133 2113 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-    // segment 8:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2143 -2153 2133 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-  // segment 9:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2163 -2173 2153 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-  // segment 10:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2183 -2193 2173 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-  // segment 11:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2203 -2213 2193 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-  
-  // segment 12:
-  Out=ModelSupport::getComposite  
-    (SMap,buildIndex," -9007 -2003 -2013 2213 15 -16");
-  makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);
-
-
+  for(size_t i=0;i<12;i++)
+    {      
+      if (i==1 || i==5)
+	{
+	  // long segment :  
+	  Out=ModelSupport::getComposite  
+	    (SMap,buildIndex,surfN,prevN," -9007 -3M 13N 15 -16");
+	  surfN+=10;
+	}
+      else
+	{
+	  // short segment :  
+	  Out=ModelSupport::getComposite  
+	    (SMap,buildIndex,surfN,prevN," -9007 -3M -13M 13N 15 -16");
+	  surfN+=20;
+	}
+      prevN=surfN-20;
+      makeCell("OuterSegment"+std::to_string(i),
+	       System,cellIndex++,0,0.0,Out);	  
+    }
+	  
   Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");
   addOuterSurf(Out);  
   return;
@@ -473,12 +451,12 @@ R1Ring::createLinks()
   
   const double beamInStep(100.0);
   // Main beam start points DONT have a surface [yet]
+  
   for(size_t i=0;i<concaveNPoints;i++)
     {
       const Geometry::Vec3D& Pt(voidTrack[concavePts[i]]);
       const Geometry::Vec3D Axis=(Origin-Pt).unit();
       const Geometry::Vec3D Beam=Axis*Z;
-      ELog::EM<<"Beam == "<<Pt<<" :: "<<Beam<<ELog::endDiag;
       FixedComp::setConnect(i+2,Pt-Axis*beamInStep,Beam);
     }
   return;
