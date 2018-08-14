@@ -132,15 +132,8 @@ MAXPEEM::build(Simulation& System,
   ELog::RegMethod RControl("MAXPEEM","build");
 
   int voidCell(74123);
-  /*
-  ringCaveA->addInsertCell(voidCell);
-  ringCaveA->createAll(System,FCOrigin,sideIndex);
 
-  ringCaveB->addInsertCell(voidCell);
-  ringCaveB->setCutSurf("front",*ringCaveA,"connectPt");
-  ringCaveB->createAll(System,*ringCaveA,
-		       ringCaveA->getSideIndex("connectPt"));
-  */
+  
   return;
 }
 

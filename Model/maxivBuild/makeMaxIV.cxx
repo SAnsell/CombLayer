@@ -80,6 +80,7 @@
 #include "R1Ring.h"
 #include "BALDER.h"
 #include "COSAXS.h"
+#include "MAXPEEM.h"
 
 #include "makeMaxIV.h"
 
@@ -120,10 +121,31 @@ makeMaxIV::buildR1Ring(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","makeR1Ring");
+
   const int voidCell(74123);
   
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
+
+  const size_t NSet=IParam.setCnt("beamlines");
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("beamlines",j);
+      size_t index=0;
+      while(index<NItems)  // min of one name
+	{
+	  const std::string BL=
+	    IParam.getValue<std::string>("beamlines",j,index);
+
+	  if (BL=="MAXPEEM")
+	    {
+	      MAXPEEM BL("MaxPeem");
+	      BL.build(System,*r1Ring,
+		       r1Ring->getSideIndex("OpticCentre8"));
+	    }
+	  index++;
+	}
+    }
   return;
 }  
   
@@ -176,7 +198,6 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	  const long int linkIndex=
 	    IParam.getValue<long int>("beamlines",j,index+2);
 	  index+=3;
-
 
           const attachSystem::FixedComp* FCOrigin=
 	    OR.getObjectThrow<attachSystem::FixedComp>
@@ -237,5 +258,5 @@ makeMaxIV::build(Simulation& System,
 }
 
 
-}   // NAMESPACE essSystem
+}   // NAMESPACE xraySystem
 

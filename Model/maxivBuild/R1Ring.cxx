@@ -220,7 +220,7 @@ R1Ring::createSurfaces()
       // trick to get exit walls [inner /outer]
       if (concavePts[cIndex]==i+1)
 	{
-	  setSurf("BeamInner",SMap.realSurf(surfN+3));
+	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+3));
 	  ELog::EM<<"Wall["<<cIndex<<"] = "<<SMap.realSurf(surfN+3)<<ELog::endDiag;
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
@@ -434,17 +434,23 @@ R1Ring::createLinks()
   
   for(size_t i=1;i<concaveNPoints+1;i++)
     {
+      const size_t index(i-1);
       const Geometry::Vec3D& APt(voidTrack[concavePts[i-1]]);
       const Geometry::Vec3D& BPt(voidTrack[concavePts[i % concaveNPoints]]);
       const Geometry::Vec3D Pt=(APt+BPt)/2.0;
       
       const Geometry::Vec3D Axis=(Origin-Pt).unit();
       const Geometry::Vec3D Beam=Axis*Z;
-      ELog::EM<<"Point["<<i<<"] == "<<Pt<<ELog::endDiag;
-      const HeadRule BInner=
-	SurfMap::getSurfRule("BeamInner",(i % concaveNPoints));
-	      
-      FixedComp::setConnect(i+2,Pt-Axis*beamInStep,Beam);
+      
+      const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("BeamInner",(i % concaveNPoints)));
+      if (!BInner)
+	throw ColErr::InContainerError<std::string>
+	  ("BeamInner"+std::to_string(index),"Surf map no found");
+					    
+      FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
+      FixedComp::setLinkSurf(index+2,-BInner->getName());
+      FixedComp::setConnect(index+2,Pt-Axis*beamInStep,BInner->getNormal());
     }
   return;
 }

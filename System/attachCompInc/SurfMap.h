@@ -81,6 +81,9 @@ class SurfMap : public BaseMap
 
   int getSignedSurf(const std::string&,const long int) const;
 
+  Geometry::Surface*
+    getSurfPtr(const std::string&,const size_t =0) const;
+  
   HeadRule getSurfRules(const std::string&) const;
   HeadRule getSurfRule(const std::string&,const size_t =0) const;
   HeadRule combine(const std::set<std::string>&) const;

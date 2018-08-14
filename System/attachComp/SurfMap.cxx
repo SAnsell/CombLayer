@@ -48,6 +48,7 @@
 #include "Vec3D.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "surfIndex.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 
@@ -120,6 +121,27 @@ SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
 
   Out.addIntersection(sn);  
   return Out;
+}
+
+Geometry::Surface*
+SurfMap::getSurfPtr(const std::string& Key,
+		    const size_t Index) const
+  /*!
+    Get the rule based on a surface
+    \param Key :: Keyname
+    \param Index :: Index number
+    \return surface pointer
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfPtr");
+  // care hear this should not be singleton
+  const ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+
+  
+  if (Key.empty()) return 0;
+  const int sn=getItem(Key,Index);
+  return SurI.getSurf(sn);
 }
 
 HeadRule
