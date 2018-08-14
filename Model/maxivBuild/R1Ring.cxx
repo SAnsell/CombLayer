@@ -86,18 +86,14 @@ R1Ring::R1Ring(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   NPoints(0),concaveNPoints(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {
-  nameSideIndex(2,"outerWall");
-  nameSideIndex(3,"ringWall");
-  nameSideIndex(4,"floor");
-  nameSideIndex(5,"roof");
 }
-
 
 R1Ring::~R1Ring() 
   /*!
@@ -207,6 +203,7 @@ R1Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
 
   surfN=buildIndex+1000;
+  size_t cIndex(0);
   for(size_t i=0;i<NPoints;i++)
     {
       const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
@@ -219,6 +216,15 @@ R1Ring::createSurfaces()
 			       Origin+AP,
 			       Origin+BP,
 			       Origin+BP+Z,NDir);
+
+      // trick to get exit walls [inner /outer]
+      if (concavePts[cIndex]==i+1)
+	{
+	  setSurf("BeamInner",SMap.realSurf(surfN+3));
+	  ELog::EM<<"Wall["<<cIndex<<"] = "<<SMap.realSurf(surfN+3)<<ELog::endDiag;
+	  cIndex = (cIndex+1) % concaveNPoints;
+	}
+      
       surfN+=10;
     }
 
@@ -244,7 +250,6 @@ R1Ring::createSurfaces()
       const size_t aI=concavePts[i];
       const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
       const Geometry::Vec3D BP(X*outerTrack[aI].X()+Y*outerTrack[aI].Y());
-      ELog::EM<<"Point["<<i<<"] = "<<Origin+AP<<ELog::endDiag;
       // going round ring clockwize 
       const Geometry::Vec3D NDir=((BP-AP)*Z).unit();      
       ModelSupport::buildPlane(SMap,surfN+1,
@@ -282,10 +287,8 @@ R1Ring::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R1Ring","createObjects");
 
-  //  const std::set<size_t> innerPts({1,4,6,8,11,13,15,17,19,21});
-
   std::string Out;
-
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -3 -13 -23 -33 -43 -53 15 -16" );
   makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
@@ -345,16 +348,6 @@ R1Ring::createObjects(Simulation& System)
   makeCell("VoidTri",System,cellIndex++,0,0.0,Out+TBase);
 
   // WALLS:
-
-
-  // Out=ModelSupport::getComposite   //s=1050
-  //   (SMap,buildIndex," 3021 -1063 1073 2063 15 -16");
-  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  // Out=ModelSupport::getComposite
-  //   (SMap,buildIndex," -2073 (-1083:-1093) 2083 2093 1103  15 -16");
-  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
 
   int divN=buildIndex+3000;
   surfN=buildIndex-10;
@@ -419,20 +412,7 @@ R1Ring::createObjects(Simulation& System)
     }
 	  
   Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");
-  addOuterSurf(Out);  
-  return;
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1093 -1103 1113 2083 (2093:2103) 15 -16");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-
-  
-  return;
-
-  // WALLS:
-
-  
-  
+  addOuterSurf(Out);    
   return;
 }
 
@@ -452,11 +432,18 @@ R1Ring::createLinks()
   const double beamInStep(100.0);
   // Main beam start points DONT have a surface [yet]
   
-  for(size_t i=0;i<concaveNPoints;i++)
+  for(size_t i=1;i<concaveNPoints+1;i++)
     {
-      const Geometry::Vec3D& Pt(voidTrack[concavePts[i]]);
+      const Geometry::Vec3D& APt(voidTrack[concavePts[i-1]]);
+      const Geometry::Vec3D& BPt(voidTrack[concavePts[i % concaveNPoints]]);
+      const Geometry::Vec3D Pt=(APt+BPt)/2.0;
+      
       const Geometry::Vec3D Axis=(Origin-Pt).unit();
       const Geometry::Vec3D Beam=Axis*Z;
+      ELog::EM<<"Point["<<i<<"] == "<<Pt<<ELog::endDiag;
+      const HeadRule BInner=
+	SurfMap::getSurfRule("BeamInner",(i % concaveNPoints));
+	      
       FixedComp::setConnect(i+2,Pt-Axis*beamInStep,Beam);
     }
   return;

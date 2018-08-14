@@ -40,11 +40,12 @@ namespace xraySystem
 class R1Ring :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
-  double fullOuterRadius;          ///< full outer radius
+  double fullOuterRadius;         ///< full outer radius
   double hexRadius;               ///< Inner hex radius
   double hexWallThick;            ///< Inner hex wall thickness
 
