@@ -64,6 +64,7 @@ class SquareFMask :
   double flangeBOutRadius;       ///< Joining Flange outer radius 
   double flangeBLength;          ///< Joining Flange length
 
+  int flangeMat;                ///< material of flange
   int mat;                      ///< material
   int voidMat;                  ///< inner material
   

@@ -62,6 +62,7 @@
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "LeadBoxGenerator.h"
 
@@ -87,7 +88,7 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
-  setVariable::CollGenerator CollGen;
+  setVariable::SqrFMaskGenerator CollGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
@@ -134,8 +135,9 @@ frontEndVariables(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,18.0);
   Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-  // collimator block
 
+  // collimator block
+  CollGen.setCF<CF63>();
   CollGen.setFrontGap(3.99,1.97);  //1033.8
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);

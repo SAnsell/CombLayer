@@ -37,7 +37,7 @@ namespace setVariable
 
 class CollGenerator
 {
- private:
+ protected:
 
   
   double radius;           ///< Outer Radius
@@ -60,7 +60,7 @@ class CollGenerator
   CollGenerator();
   CollGenerator(const CollGenerator&);
   CollGenerator& operator=(const CollGenerator&);
-  ~CollGenerator();
+  virtual ~CollGenerator();
 
   void setMain(const double,const std::string&,const std::string&);
   void setMinSize(const double,const double,const double);

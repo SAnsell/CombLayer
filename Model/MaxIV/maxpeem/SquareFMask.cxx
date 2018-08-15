@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/SquareFMask.cxx
+ * File:   maxpeem/SquareFMask.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -112,6 +112,14 @@ SquareFMask::populate(const FuncDataBase& Control)
   innerMinHeight=Control.EvalVar<double>(keyName+"innerMinHeight");
   innerBHeight=Control.EvalVar<double>(keyName+"innerBHeight");
 
+  flangeAInRadius=Control.EvalVar<double>(keyName+"FlangeFrontInRadius");
+  flangeAOutRadius=Control.EvalVar<double>(keyName+"FlangeFrontOutRadius");
+  flangeALength=Control.EvalVar<double>(keyName+"FlangeFrontLength");
+
+  flangeBInRadius=Control.EvalVar<double>(keyName+"FlangeBackInRadius");
+  flangeBOutRadius=Control.EvalVar<double>(keyName+"FlangeBackOutRadius");
+  flangeBLength=Control.EvalVar<double>(keyName+"FlangeBackLength");
+  
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   
@@ -150,10 +158,24 @@ SquareFMask::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,APt,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,BPt,Y);
-  // inner structure
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+
+ 
+  ModelSupport::buildPlane(SMap,buildIndex+11,APt+Y*flangeALength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,BPt-Y*flangeALength,Y);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeAInRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeAOutRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,flangeBInRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,Y,flangeBOutRadius);
+
+  // Inner Structure
   ModelSupport::buildPlane(SMap,buildIndex+101,MPt,Y);
   
-
   const double AH2(innerAHeight/2.0);
   const double MH2(innerMinHeight/2.0);
   const double BH2(innerBHeight/2.0);
@@ -210,21 +232,62 @@ SquareFMask::createObjects(Simulation& System)
 
   // inner voids
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 103 -104 105 -106");
-
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 203 -204 205 -206");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  // metal
+
+  // metal [ inner section]
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -101 -7 (-103:104:-105:106) ");
-  
+    (SMap,buildIndex," 11 -101 3 -4 5 -6 (-103:104:-105:106) ");
   CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,Out);
+  
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -2 -7 (-203:204:-205:206) ");
+    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
   CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
 
+  // Front flange:
+
+  Out=ModelSupport::getComposite 
+    (SMap,buildIndex,"1 -11 7 -17 ");
+  CellMap::makeCell("FrontFlange",System,cellIndex++,flangeMat,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite 
+    (SMap,buildIndex,"1 -11  -7 (-103:104:-105:106) ");
+  CellMap::makeCell("FrontFlangeMid",System,cellIndex++,mat,0.0,Out);
+
+  Out=ModelSupport::getComposite 
+    (SMap,buildIndex,"-2 12 8 -18 ");
+  CellMap::makeCell("BackFlange",System,cellIndex++,flangeMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite 
+    (SMap,buildIndex,"-2 12 -8 (-203:204:-205:206) ");
+  CellMap::makeCell("BackFlangeMid",System,cellIndex++,mat,0.0,Out);
+
+  if (flangeAOutRadius>=flangeBOutRadius)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"11 -12 -17 (-3:4:-5:6) ");
+      CellMap::makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+      if (flangeAOutRadius>flangeBOutRadius+Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 -17 18");
+	  CellMap::makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+	}
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17");
+    }
+  else
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"11 -12 -18 (-3:4:-5:6) ");
+      CellMap::makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+      if (flangeBOutRadius>flangeAOutRadius+Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -18 17");
+	  CellMap::makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+	}
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -18");
+    }
   addOuterSurf(Out);
   return;
 }
@@ -243,20 +306,22 @@ SquareFMask::createLinks()
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   const Geometry::Vec3D Axis[]={-X,X,-Z,Z};
+
   
+  const int surfN((flangeAOutRadius>flangeBOutRadius) ? 17 : 18);
+  const double R(std::max(flangeAOutRadius,flangeBOutRadius));
   for(size_t i=0;i<4;i++)
     {
-      //      FixedComp::setConnect(i+2,Origin+Axis[i]*radius,Axis[i]);
-      //    FixedComp::setLinkSurf(i+2,SMap.realSurf(buildIndex+7));
+      FixedComp::setConnect(i+2,Origin+Axis[i]*R,Axis[i]);
+      FixedComp::setLinkSurf(i+2,SMap.realSurf(buildIndex+surfN));
     }
   return;
 }
-
-  
+   
 void
 SquareFMask::createAll(Simulation& System,
-                     const attachSystem::FixedComp& FC,
-                     const long int sideIndex)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation 
@@ -270,7 +335,7 @@ SquareFMask::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks();
+  createLinks(); 
   insertObjects(System);
   return;
 }
