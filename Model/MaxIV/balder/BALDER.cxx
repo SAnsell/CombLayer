@@ -162,7 +162,7 @@ BALDER::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("BALDER","build");
 
-  int voidCell(74123);
+  const int voidCell(74123);
  
   ringCaveA->addInsertCell(voidCell);
   ringCaveA->createAll(System,FCOrigin,sideIndex);

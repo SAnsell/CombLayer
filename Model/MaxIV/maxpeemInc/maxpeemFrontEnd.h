@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/FrontEnd.h
+ * File:   maxpeemInc/maxpeemFrontEnd.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_FrontEnd_h
-#define xraySystem_FrontEnd_h
+#ifndef xraySystem_maxpeemFrontEnd_h
+#define xraySystem_maxpeemFrontEnd_h
 
 namespace insertSystem
 {
@@ -59,14 +59,14 @@ namespace xraySystem
 
     
   /*!
-    \class FrontEnd
+    \class maxpeemFrontEnd
     \version 1.0
     \author S. Ansell
     \date March 2018
     \brief General constructor front end optics
   */
 
-class FrontEnd :
+class maxpeemFrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
@@ -75,50 +75,21 @@ class FrontEnd :
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
+
   /// Wiggler in vacuum box
   std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
   /// Wiggler in vacuum box
   std::shared_ptr<Wiggler> wiggler;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
+  /// electron cut cell
+  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// box for collimator
   std::shared_ptr<constructSystem::PipeTube> collTubeA;
   /// collimator A
   std::shared_ptr<xraySystem::SqrCollimator> collA;
-  /// bellow after collimator
-  std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// Mask1:2 connection pipe
-  std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
-  /// bellow after collimator
-  std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeB;
-  /// collimator B
-  std::shared_ptr<xraySystem::SqrCollimator> collB;
-  /// box for collimator C (joined to B)
-  std::shared_ptr<constructSystem::PipeTube> collTubeC;
-  /// collimator C
-  std::shared_ptr<xraySystem::SqrCollimator> collC;
-  /// electron cut cell
-  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
-  /// Pipe from collimator B to heat dump
-  std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
-  /// head dump port
-  std::shared_ptr<constructSystem::PortTube> heatBox;
-  /// heat dump stick
-  std::shared_ptr<xraySystem::FlangeMount> heatDumpFlange;  
-  /// heat dump 
-  std::shared_ptr<xraySystem::HeatDump> heatDump;  
-  /// Pipe from heat dump to shutters
-  std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
-  /// Main shutters
-  std::shared_ptr<constructSystem::PortTube> shutterBox;
-  /// Shutters
-  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
-  /// Pipe from shutters - join pipe
-  std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -128,11 +99,11 @@ class FrontEnd :
   
  public:
   
-  FrontEnd(const std::string&);
-  FrontEnd(const FrontEnd&);
-  FrontEnd& operator=(const FrontEnd&);
-  ~FrontEnd();
-  
+  maxpeemFrontEnd(const std::string&);
+  maxpeemFrontEnd(const maxpeemFrontEnd&);
+  maxpeemFrontEnd& operator=(const maxpeemFrontEnd&);
+  ~maxpeemFrontEnd();
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -82,6 +82,8 @@
 #include "portItem.h"
 #include "PortTube.h"
 
+#include "R1Ring.h"
+#include "maxpeemFrontEnd.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "CrossPipe.h"
@@ -92,13 +94,15 @@
 #include "JawValve.h"
 #include "FlangeMount.h"
 
+
 #include "MAXPEEM.h"
 
 namespace xraySystem
 {
 
 MAXPEEM::MAXPEEM(const std::string& KN) :
-  attachSystem::CopiedComp("Maxpeem",KN)
+  attachSystem::CopiedComp("Maxpeem",KN),
+  frontBeam(new maxpeemFrontEnd(newName+"FrontBeam"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -106,9 +110,8 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
-  //  OR.addObject(ringCaveA);
-  //  OR.addObject(ringCaveB);
+
+  OR.addObject(frontBeam);
 }
 
 MAXPEEM::~MAXPEEM()
@@ -131,8 +134,11 @@ MAXPEEM::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("MAXPEEM","build");
 
-  int voidCell(74123);
+  const int voidCell(74123);
 
+  frontBeam->addInsertCell(r1Ring->getCell("Void"));
+  frontBeam->createAll(System,FCOrigin,sideIndex);
+  
   
   return;
 }

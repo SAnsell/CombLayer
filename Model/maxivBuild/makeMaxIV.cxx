@@ -140,6 +140,7 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  if (BL=="MAXPEEM")
 	    {
 	      MAXPEEM BL("MaxPeem");
+	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre8"));
 	    }

@@ -532,7 +532,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,16.0);
 
-  // ACTUALL ROUND PIPE + 4 filter tubles and 1 base tube [large]
+  // ACTUAL ROUND PIPE + 4 filter tubles and 1 base tube [large]
   
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();

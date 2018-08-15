@@ -1,7 +1,7 @@
-/********************************************************************* 
+ /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/SqrCollimator.h
+ * File:   constructInc/SquareFMask.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,22 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_SqrCollimator_h
-#define xraySystem_SqrCollimator_h
+#ifndef xraySystem_SquareFMask_h
+#define xraySystem_SquareFMask_h
 
 class Simulation;
 
 namespace xraySystem
 {
   /*!
-    \class SqrCollimator
+    \class SquareFMask
     \version 1.0
     \author S. Ansell
     \date June 2015
     \brief Variable detemine hole type
   */
   
-class SqrCollimator :
+class SquareFMask :
   public attachSystem::ContainedSpace,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
@@ -42,7 +42,8 @@ class SqrCollimator :
 {
  private:
 
-  double radius;                ///< Main radius    
+  double width;                 ///< Main radius
+  double height;                ///< Main height
   double length;                ///< thickness of collimator
   
   double innerAWidth;           ///< front width
@@ -54,7 +55,15 @@ class SqrCollimator :
 
   double innerBWidth;           ///< back width
   double innerBHeight;          ///< back height 
-  
+
+  double flangeAInRadius;        ///< Joining Flange inner radius
+  double flangeAOutRadius;       ///< Joining Flange outer radius 
+  double flangeALength;          ///< Joining Flange length
+
+  double flangeBInRadius;        ///< Joining Flange inner radius
+  double flangeBOutRadius;       ///< Joining Flange outer radius 
+  double flangeBLength;          ///< Joining Flange length
+
   int mat;                      ///< material
   int voidMat;                  ///< inner material
   
@@ -66,10 +75,10 @@ class SqrCollimator :
   
  public:
   
-  SqrCollimator(const std::string&);
-  SqrCollimator(const SqrCollimator&);
-  SqrCollimator& operator=(const SqrCollimator&);
-  virtual ~SqrCollimator() {}  ///< Destructor
+  SquareFMask(const std::string&);
+  SquareFMask(const SquareFMask&);
+  SquareFMask& operator=(const SquareFMask&);
+  virtual ~SquareFMask() {}  ///< Destructor
 
   void populate(const FuncDataBase&);
 

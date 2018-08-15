@@ -48,13 +48,14 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class R1Ring;
+  class maxpeemFrontEnd;
   class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class OpticsBeamline;
-  class FrontEndCave;
   class ConnectZone;
-  class FrontEnd;
+
   class PipeShield;
   
   /*!
@@ -65,13 +66,18 @@ namespace xraySystem
     \brief General constructor for the xray system
   */
 
-class MAXPEEM : public attachSystem::CopiedComp
+class MAXPEEM :
+  public attachSystem::CopiedComp
 {
  private:
 
+  /// ring component  [taken from main setup]
+  std::shared_ptr<R1Ring> r1Ring;
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
-  
+
+  std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
+
  public:
   
   MAXPEEM(const std::string&);
@@ -79,6 +85,10 @@ class MAXPEEM : public attachSystem::CopiedComp
   MAXPEEM& operator=(const MAXPEEM&);
   ~MAXPEEM();
 
+  /// set ring
+  void setRing(std::shared_ptr<R1Ring> R) { r1Ring=R; }
+
+  /// Accessor to stop point
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);

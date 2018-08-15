@@ -71,7 +71,82 @@ namespace setVariable
 namespace maxpeemVar
 {
 
+  
+void
+frontEndVariables(FuncDataBase& Control,
+		  const std::string& frontKey)
+/*!
+    Set the variables for the mono
+    \param Control :: DataBase to use
+    \param frontKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","frontEndVariables");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::VacBoxGenerator VBoxGen;
+  setVariable::CollGenerator CollGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setMat("Stainless304");
+  
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF40>();
+  VBoxGen.setPortLength(5.0,5.0); // La/Lb
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,frontKey+"WigglerBox",
+		      115.0,30.0,15.0,15.0,210.0);
+
+  // Wiggler
+  Control.addVariable(frontKey+"WigglerLength",200.0);
+  Control.addVariable(frontKey+"WigglerBlockWidth",8.0);
+  Control.addVariable(frontKey+"WigglerBlockHeight",8.0);
+  Control.addVariable(frontKey+"WigglerBlockDepth",8.0);
+  Control.addVariable(frontKey+"WigglerBlockHGap",0.2);
+  Control.addVariable(frontKey+"WigglerBlockVGap",0.96);
+
+  Control.addVariable(frontKey+"WigglerBlockVCorner",1.0);
+  Control.addVariable(frontKey+"WigglerBlockHCorner",2.0);
+
+  
+  Control.addVariable(frontKey+"WigglerVoidMat",0);
+  Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
+
+  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
+  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,444.50);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowA",0,10.0);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,18.0);
+  Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
+  // collimator block
+
+  CollGen.setFrontGap(3.99,1.97);  //1033.8
+  CollGen.setBackGap(0.71,0.71);
+  CollGen.setMinSize(10.2,0.71,0.71);
+  CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
+
+
+  return;
+}
+
 }  // NAMESPACE maxpeemVar
+
   
 void
 MAXPEEMvariables(FuncDataBase& Control)
@@ -85,6 +160,7 @@ MAXPEEMvariables(FuncDataBase& Control)
 
   Control.addVariable("sdefType","Wiggler");
 
+  maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  
 
   return;
 }

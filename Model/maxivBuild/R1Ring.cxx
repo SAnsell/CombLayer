@@ -443,14 +443,14 @@ R1Ring::createLinks()
       const Geometry::Vec3D Beam=Axis*Z;
       
       const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
-	(SurfMap::getSurfPtr("BeamInner",(i % concaveNPoints)));
+	(SurfMap::getSurfPtr("BeamInner",((i+1) % concaveNPoints)));
       if (!BInner)
 	throw ColErr::InContainerError<std::string>
 	  ("BeamInner"+std::to_string(index),"Surf map no found");
-					    
+
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
-      FixedComp::setConnect(index+2,Pt-Axis*beamInStep,BInner->getNormal());
+      FixedComp::setConnect(index+2,Pt+Axis*beamInStep,-BInner->getNormal());
     }
   return;
 }
