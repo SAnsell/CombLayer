@@ -313,8 +313,6 @@ VacuumPipe::applyActiveFrontBack()
   Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
   if (!RotAxis.nullVector())
     {
-      ELog::EM<<"R == "<<keyName<<" "<<curFP<<ELog::endDiag;
-      ELog::EM<<"R == "<<keyName<<" "<<curBP<<ELog::endDiag;
       const Geometry::Quaternion QR=
 	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
       Y=YAxis;

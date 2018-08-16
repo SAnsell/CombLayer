@@ -85,7 +85,7 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "Wiggler.h"
-#include "SqrCollimator.h"
+#include "SquareFMask.h"
 #include "FlangeMount.h"
 #include "HeatDump.h"
 
@@ -106,8 +106,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collTubeA(new constructSystem::PipeTube(newName+"CollimatorTubeA")),
-  collA(new xraySystem::SqrCollimator(newName+"CollA"))
+  collA(new xraySystem::SquareFMask(newName+"CollA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -122,7 +121,6 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
   OR.addObject(bellowA);
-  OR.addObject(collTubeA);
   OR.addObject(collA);
 }
   
@@ -158,7 +156,7 @@ maxpeemFrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
-
+  
   return;
 }
 
@@ -192,13 +190,9 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
 
-  collTubeA->addInsertCell(ContainedComp::getInsertCells());
-  collTubeA->setFront(*bellowA,2);  // needed to allow bend if miss aligned
-  //  collTubeA->registerSpaceCut(1,2);
-  collTubeA->createAll(System,*bellowA,2);  
 
-  collA->addInsertCell(collTubeA->getCell("Void"));
-  collA->createAll(System,*collTubeA,0);
+  collA->addInsertCell(ContainedComp::getInsertCells());
+  collA->createAll(System,*bellowA,2);
 
   
   lastComp=wigglerBox;

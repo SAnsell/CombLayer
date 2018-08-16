@@ -122,6 +122,7 @@ SquareFMask::populate(const FuncDataBase& Control)
   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   
   return;
 }
@@ -139,7 +140,7 @@ SquareFMask::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-
+  Origin+=Y*(length/2.0); 
   return;
 }
 
@@ -165,7 +166,7 @@ SquareFMask::createSurfaces()
 
  
   ModelSupport::buildPlane(SMap,buildIndex+11,APt+Y*flangeALength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,BPt-Y*flangeALength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,BPt-Y*flangeBLength,Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeAInRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeAOutRadius);

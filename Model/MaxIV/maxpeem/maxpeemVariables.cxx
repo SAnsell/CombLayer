@@ -131,13 +131,9 @@ frontEndVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",0,10.0);
 
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,18.0);
-  Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-
   // collimator block
   CollGen.setCF<CF63>();
+  CollGen.setBFlangeCF<CF40>();
   CollGen.setFrontGap(3.99,1.97);  //1033.8
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);

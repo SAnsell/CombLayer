@@ -54,7 +54,7 @@ namespace xraySystem
 {
   class FlangeMount;
   class HeatDump;
-  class SqrCollimator;
+  class SquareFMask;
   class Wiggler;
 
     
@@ -86,10 +86,8 @@ class maxpeemFrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// box for collimator
-  std::shared_ptr<constructSystem::PipeTube> collTubeA;
   /// collimator A
-  std::shared_ptr<xraySystem::SqrCollimator> collA;
+  std::shared_ptr<xraySystem::SquareFMask> collA;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

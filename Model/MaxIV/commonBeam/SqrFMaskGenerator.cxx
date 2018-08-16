@@ -111,7 +111,7 @@ SqrFMaskGenerator::setBFlangeCF()
   */
 {
   bFInRadius=CF::innerRadius;
-  bFOutRadius=CF::flangeLength;
+  bFOutRadius=CF::flangeRadius;
   bFLength=CF::flangeLength;
   return;
 }
@@ -133,9 +133,17 @@ SqrFMaskGenerator::generateColl(FuncDataBase& Control,
 
   CollGenerator::generateColl(Control,keyName,yStep,len);
 
+  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"FlangeFrontInRadius",aFInRadius);
+  Control.addVariable(keyName+"FlangeFrontOutRadius",aFOutRadius);
+  Control.addVariable(keyName+"FlangeFrontLength",aFLength);
   
+  Control.addVariable(keyName+"FlangeBackInRadius",bFInRadius);
+  Control.addVariable(keyName+"FlangeBackOutRadius",bFOutRadius);
+  Control.addVariable(keyName+"FlangeBackLength",bFLength);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
-       
+  
   return;
 
 }
