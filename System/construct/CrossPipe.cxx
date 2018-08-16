@@ -180,6 +180,7 @@ CrossPipe::populate(const FuncDataBase& Control)
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  plateMat=ModelSupport::EvalDefMat<int>(Control,keyName+"PlateMat",feMat);
 
   return;
 }

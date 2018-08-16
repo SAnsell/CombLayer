@@ -58,8 +58,8 @@ class SplitFlangePipe :
   double length;                ///< void length [total]
   double feThick;               ///< pipe wall thickness
 
-  double bellowThick;           ///< Thickness of bellow effect
-  double bellowStep;            ///< Thickness of bellow effect
+  double bellowThick;           ///< Thickness of bellow (effective)
+  double bellowStep;            ///< Step from flange of bellow material
 
   double flangeARadius;          ///< Joining Flange radius [-ve for rect]
   double flangeALength;          ///< Joining Flange length

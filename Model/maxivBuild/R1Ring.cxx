@@ -345,7 +345,7 @@ R1Ring::createObjects(Simulation& System)
     }
   
   Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("VoidTri",System,cellIndex++,0,0.0,Out+TBase);
+  makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+TBase);
 
   // WALLS:
 

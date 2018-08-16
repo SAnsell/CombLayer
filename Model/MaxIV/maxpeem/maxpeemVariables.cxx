@@ -72,6 +72,51 @@ namespace setVariable
 namespace maxpeemVar
 {
 
+void
+heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
+  /*!
+    Build the heat dump variables
+    \param Control :: Database
+    \param frontKey :: prename
+   */
+{
+  ELog::RegMethod RegA("balderVariables","heatDumpVariables");
+
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF150>();
+  PTubeGen.setPortLength(2.5,2.5);
+  
+  PTubeGen.generateCFTube<CF150>(Control,frontKey+"HeatBox",40.0,20.0);
+  Control.addVariable(frontKey+"HeatBoxZAngle",90);
+  Control.addVariable(frontKey+"HeatBoxNPorts",2);
+
+  // beam ports
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+
+  FlangeGen.setCF<setVariable::CF40>();
+  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  const std::string heatName=frontKey+"HeatBoxPort";
+  const std::string hName=frontKey+"HeatDumpFlange";
+  PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
+
+
+  const std::string hDump(frontKey+"HeatDump");
+  Control.addVariable(hDump+"Height",10.0);
+  Control.addVariable(hDump+"Width",3.0);
+  Control.addVariable(hDump+"Thick",8.0);
+  Control.addVariable(hDump+"CutHeight",10.0);
+  Control.addVariable(hDump+"CutDepth",0.0);
+  Control.addVariable(hDump+"Mat","Tungsten");
+  return;
+}
   
 void
 frontEndVariables(FuncDataBase& Control,
@@ -86,6 +131,7 @@ frontEndVariables(FuncDataBase& Control,
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::SqrFMaskGenerator CollGen;
@@ -140,6 +186,28 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
 
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowB",0,10.0);
+
+  // flange if possible
+  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
+  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
+  CrossGen.setMat("Stainless304");
+
+  // height/depth
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+    (Control,frontKey+"IonPA",0.0,26.6,26.6);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowC",0,10.0);
+
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
+
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
+
+  heatDumpVariables(Control,frontKey);
   return;
 }
 

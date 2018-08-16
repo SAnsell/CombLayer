@@ -268,11 +268,20 @@ PortTube::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  
-  Origin+=
-    Y*(portALen+wallThick+length/2.0)-
-    X*portAXStep-
-    Z*portAZStep;
+
+  if (!portConnnectFlag)
+    {
+      Origin+=
+	Y*(portALen+wallThick+length/2.0)-
+	X*portAXStep-Z*portAZStep;
+    }
+  else if (portConnnectFlag==1)
+    {
+      FixedComp::applyAngleRotate(0.0,180.0);
+      Origin+=
+	Y*(portBLen+wallThick+length/2.0)-
+	X*portBXStep-Z*portBZStep;
+    }
 
   return;
 }

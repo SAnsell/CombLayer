@@ -93,6 +93,9 @@ class PortTubeGenerator
 
   
   double getTotalLength(const double) const;
+  template<typename CF>
+    void generateCFTube(FuncDataBase&,const std::string&,
+			const double,const double) const;
   void generateTube(FuncDataBase&,const std::string&,
 		   const double,const double,const double) const;
 

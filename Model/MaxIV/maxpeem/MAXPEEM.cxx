@@ -137,6 +137,8 @@ MAXPEEM::build(Simulation& System,
   const int voidCell(74123);
 
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
+  frontBeam->addInsertCell
+    (r1Ring->getCell("VoidTriangle",static_cast<size_t>(sideIndex-2)));
   frontBeam->createAll(System,FCOrigin,sideIndex);
   
   

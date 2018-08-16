@@ -86,8 +86,18 @@ class maxpeemFrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// collimator A
+  /// FixedMask 1
   std::shared_ptr<xraySystem::SquareFMask> collA;
+  /// bellow after FixedMask
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPA;
+  /// bellow after Ion Pump
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+  /// Pipe to heat dump
+  std::shared_ptr<constructSystem::VacuumPipe> heatPipe;
+  /// Heat dump container
+  std::shared_ptr<constructSystem::PortTube> heatBox;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -84,6 +84,7 @@
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "CrossPipe.h"
 #include "Wiggler.h"
 #include "SquareFMask.h"
 #include "FlangeMount.h"
@@ -106,7 +107,12 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collA(new xraySystem::SquareFMask(newName+"CollA"))
+  collA(new xraySystem::SquareFMask(newName+"CollA")),
+  bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  heatPipe(new constructSystem::VacuumPipe(newName+"HeatPipe")),
+  heatBox(new constructSystem::PortTube(newName+"HeatBox"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -122,6 +128,11 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(eCutDisk);
   OR.addObject(bellowA);
   OR.addObject(collA);
+  OR.addObject(bellowB);
+  OR.addObject(ionPA);
+  OR.addObject(bellowC);
+  OR.addObject(heatPipe);
+  OR.addObject(heatBox);
 }
   
 maxpeemFrontEnd::~maxpeemFrontEnd()
@@ -171,13 +182,14 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildObjects");
 
-  wigglerBox->addInsertCell(ContainedComp::getInsertCells());
+  wigglerBox->addInsertCell(ContainedComp::getInsertCells()[0]);
   //  wigglerBox->registerSpaceCut(0,2);
   wigglerBox->createAll(System,*this,0);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);
-  dipolePipe->addInsertCell(ContainedComp::getInsertCells());
+
+  dipolePipe->addInsertCell(ContainedComp::getInsertCells()[0]);
   //  dipolePipe->registerSpaceCut(1,2);
   dipolePipe->setFront(*wigglerBox,2);
   dipolePipe->createAll(System,*wigglerBox,2);
@@ -186,15 +198,29 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
 
-  bellowA->addInsertCell(ContainedComp::getInsertCells());
+  bellowA->addInsertCell(ContainedComp::getInsertCells()[0]);
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
 
 
-  collA->addInsertCell(ContainedComp::getInsertCells());
+  collA->addInsertCell(ContainedComp::getInsertCells()[0]);
   collA->createAll(System,*bellowA,2);
 
-  
+  bellowB->addInsertCell(ContainedComp::getInsertCells()[0]);
+  bellowB->createAll(System,*collA,2);
+
+  ionPA->addInsertCell(ContainedComp::getInsertCells()[0]);
+  ionPA->createAll(System,*bellowB,2);
+
+  bellowC->addInsertCell(ContainedComp::getInsertCells()[0]);
+  bellowC->createAll(System,*ionPA,2);
+
+  heatPipe->addInsertCell(ContainedComp::getInsertCells());
+  heatPipe->createAll(System,*bellowC,2);
+
+  heatBox->addInsertCell(ContainedComp::getInsertCells()[1]);
+  heatBox->createAll(System,*heatPipe,2);
+
   lastComp=wigglerBox;
   return;
 }

@@ -43,6 +43,8 @@ class PortTube :
 {
  private:
 
+  size_t portConnectIndex;    ///< Port to connect to
+  
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube
   double length;              ///< Main length

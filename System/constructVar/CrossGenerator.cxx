@@ -137,13 +137,26 @@ CrossGenerator::setPlates(const double WT,const double TT,const double BT)
 void
 CrossGenerator::setPorts(const double LenF,const double LenB)
   /*!
-    Set both the ports extension on horrizontal
+    Set the length of the port tube from the central axis
     \param LenF :: length of port tube
-    \param LenB :: Thickness of port tube
+    \param LenB :: length of port back tube
    */
 {
   frontLen= -LenF;
   backLen=  -LenB;
+  return;
+}
+
+void
+CrossGenerator::setTotalPorts(const double LenF,const double LenB)
+  /*!
+    Set the length of the port tube from the central axis
+    \param LenF :: length of port front tube
+    \param LenB :: length of port back tube
+   */
+{
+  frontLen= LenF;
+  backLen=  LenB;
   return;
 }
 
