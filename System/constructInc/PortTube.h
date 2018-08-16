@@ -43,7 +43,6 @@ class PortTube :
 {
  private:
 
-  size_t portConnectIndex;    ///< Port to connect to
   
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube
@@ -70,10 +69,15 @@ class PortTube :
   int wallMat;                ///< Fe material layer
 
   bool delayPortBuild;                   ///< Delay port to manual construct
+  size_t portConnectIndex;    ///< Port to connect to
+  Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
+
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   std::vector<portItem> Ports;           ///< Vector of ports FixedComp
+
+  void applyPortRotation();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -98,7 +102,9 @@ class PortTube :
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
   void createPorts(Simulation&);
-    
+
+  void setPortRotation(const size_t,const Geometry::Vec3D&);
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

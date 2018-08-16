@@ -288,7 +288,6 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
 {
   portItem::createUnitVector(FC,0);
 
-
   Origin+=X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
   const Geometry::Vec3D DVec=X*Axis.X()+Y*Axis.Y()+Z*Axis.Z();
 

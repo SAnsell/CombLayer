@@ -48,6 +48,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -86,7 +87,8 @@ PortTube::PortTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
-  delayPortBuild(0)
+  delayPortBuild(0),portConnectIndex(1),
+  rotAxis(0,1,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -110,6 +112,7 @@ PortTube::PortTube(const PortTube& A) :
   flangeALength(A.flangeALength),flangeBRadius(A.flangeBRadius),
   flangeBLength(A.flangeBLength),voidMat(A.voidMat),
   wallMat(A.wallMat),delayPortBuild(A.delayPortBuild),
+  portConnectIndex(A.portConnectIndex),rotAxis(A.rotAxis),
   PCentre(A.PCentre),PAxis(A.PAxis),
   Ports(A.Ports)
   /*!
@@ -132,7 +135,6 @@ PortTube::operator=(const PortTube& A)
       attachSystem::ContainedSpace::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       wallThick=A.wallThick;
       length=A.length;
@@ -153,14 +155,14 @@ PortTube::operator=(const PortTube& A)
       voidMat=A.voidMat;
       wallMat=A.wallMat;
       delayPortBuild=A.delayPortBuild;
+      portConnectIndex=A.portConnectIndex;
+      rotAxis=A.rotAxis;
       PCentre=A.PCentre;
       PAxis=A.PAxis;
       Ports=A.Ports;
     }
   return *this;
 }
-
-
   
 PortTube::~PortTube() 
   /*!
@@ -268,24 +270,73 @@ PortTube::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+  applyPortRotation();
+  return;
+}
 
-  if (!portConnnectFlag)
+void
+PortTube::setPortRotation(const size_t index,
+			  const Geometry::Vec3D& RAxis)
+  /*!
+    Set Port rotation 
+    \param index 
+        -0 : No rotation / no shift
+        - 1,2 : main ports 
+        - 3-N+2 : Extra Ports
+    \param RAxis :: Rotation axis expresses in local X,Y,Z
+  */
+{
+  portConnectIndex=index;
+  if (portConnectIndex>1)
+    rotAxis=RAxis.unit();
+  return;
+}
+
+void
+PortTube::applyPortRotation()
+  /*!
+    Apply a rotation to all the PCentre and the 
+    PAxis of the ports
+  */
+{
+  ELog::RegMethod RegA("PortTube","applyPortRotation");
+
+  if (!portConnectIndex) return;
+  if (portConnectIndex>Ports.size()+2)
+    throw ColErr::IndexError<size_t>
+      (portConnectIndex,Ports.size()+3,"portConnectIndex exceeds Port");
+  
+  // Here we locally reorientate to the primary port:
+  if (portConnectIndex==1)
     {
       Origin+=
 	Y*(portALen+wallThick+length/2.0)-
 	X*portAXStep-Z*portAZStep;
+      return; 
     }
-  else if (portConnnectFlag==1)
-    {
-      FixedComp::applyAngleRotate(0.0,180.0);
-      Origin+=
-	Y*(portBLen+wallThick+length/2.0)-
-	X*portBXStep-Z*portBZStep;
-    }
+  const size_t pIndex=portConnectIndex-3;
+  Geometry::Vec3D YPrime;
+  if (portConnectIndex==2)
+    YPrime=Geometry::Vec3D(0,-1,0);
+  else
+    YPrime=PAxis[pIndex].unit();
 
+  const Geometry::Quaternion QV=
+    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
+
+  QV.rotate(X);
+  QV.rotate(Y);
+  QV.rotate(Z);
+
+  for(Geometry::Vec3D& PC : PCentre)
+    QV.rotate(PC);
+  for(Geometry::Vec3D& PC : PAxis)
+    QV.rotate(PC);
+
+  //  const double cylDist=cylinderDistance()
+  //  Origin+=Y*(Ports.get/2.0)-
   return;
 }
-
 
 void
 PortTube::createSurfaces()

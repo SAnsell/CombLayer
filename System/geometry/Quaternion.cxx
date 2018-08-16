@@ -3,7 +3,7 @@
  
  * File:   geometry/Quaternion.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +111,8 @@ Quaternion::calcQRot(const double Angle,const double a,
 }
 
 Quaternion
-Quaternion::calcQRotDeg(const double Angle,const double a,const double b,const double c)
+Quaternion::calcQRotDeg(const double Angle,const double a,
+			const double b,const double c)
   /*!
     Calculate Quaternion value for a given angle 
     \param Angle :: angle to calculate Q0 from [deg]
