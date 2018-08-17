@@ -217,8 +217,9 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
 
   heatPipe->addInsertCell(ContainedComp::getInsertCells());
   heatPipe->createAll(System,*bellowC,2);
-
+  
   heatBox->addInsertCell(ContainedComp::getInsertCells()[1]);
+  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,*heatPipe,2);
 
   lastComp=wigglerBox;

@@ -93,6 +93,8 @@ class portItem :
   portItem& operator=(const portItem&);
   ~portItem();
 
+  double getExternalLength() const { return externalLength; }
+  
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);

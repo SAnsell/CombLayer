@@ -49,6 +49,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "Line.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -60,6 +61,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -271,6 +273,7 @@ PortTube::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   applyPortRotation();
+
   return;
 }
 
@@ -315,27 +318,80 @@ PortTube::applyPortRotation()
       return; 
     }
   const size_t pIndex=portConnectIndex-3;
-  Geometry::Vec3D YPrime;
+  Geometry::Vec3D YPrime(0,1,0);
   if (portConnectIndex==2)
     YPrime=Geometry::Vec3D(0,-1,0);
   else
     YPrime=PAxis[pIndex].unit();
 
+
+  ELog::EM<<"PIndex = "<<portConnectIndex<<ELog::endDiag;
   const Geometry::Quaternion QV=
     Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
 
-  QV.rotate(X);
-  QV.rotate(Y);
-  QV.rotate(Z);
-
-  for(Geometry::Vec3D& PC : PCentre)
-    QV.rotate(PC);
-  for(Geometry::Vec3D& PC : PAxis)
-    QV.rotate(PC);
-
-  //  const double cylDist=cylinderDistance()
-  //  Origin+=Y*(Ports.get/2.0)-
+  // Now move QV into the main basis set origin:
+  const Geometry::Vec3D& QVvec=QV.getVec();
+  const Geometry::Vec3D QAxis=X*QVvec.X()+
+    Y*QVvec.Y()+Z*QVvec.Z();
+ 
+  const Geometry::Quaternion QVmain(QV[0],QAxis);  
+  QVmain.rotate(X);
+  QVmain.rotate(Y);
+  QVmain.rotate(Z);
+  ELog::EM<<"YZ == "<<Y<<" "<<Z<<ELog::endDiag;
+  ELog::EM<<"Oriign == "<<Origin<<ELog::endDiag;
+  const Geometry::Vec3D offset=calcCylinderDistance();
+  Origin+=offset;
+  ELog::EM<<"Offset == "<<offset.abs()<<ELog::endDiag;
+  ELog::EM<<"Oriign == "<<Origin<<ELog::endDiag;
   return;
+}
+
+Geometry::Vec3D
+PortTube::calcCylinderDistance() const
+  /*!
+    Calculate the shift vector
+   */
+{
+  ELog::RegMethod RegA("PortTube","calcCylinderDistance");
+  if (!portConnectIndex) return Geometry::Vec3D(0,0,0);
+  if (portConnectIndex==1)
+    return Y*(portALen+wallThick+length/2.0)-
+      X*portAXStep-Z*portAZStep;
+
+  if (portConnectIndex==2)
+    return -Y*(portBLen+wallThick+length/2.0)+
+      X*portBXStep+Z*portBZStep;
+
+  
+  const size_t pIndex=portConnectIndex-3;
+  const Geometry::Vec3D PC=
+    X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
+  const Geometry::Vec3D PA=
+    X*PAxis[pIndex].X()+Y*PAxis[pIndex].Y()+Z*PAxis[pIndex].Z();
+
+  const Geometry::Line CylLine(Geometry::Vec3D(0,0,0),Y);
+  const Geometry::Line PortLine(PC,PA);
+
+  Geometry::Vec3D CPoint;
+  std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
+  // calc external impact point:
+  
+
+  //  CPoint+=PA*Ports[pIndex].getExternalLength();
+
+  const double R=radius+wallThick;
+  const double ELen=Ports[pIndex].getExternalLength();
+  const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
+  
+  const Geometry::Vec3D RPoint=
+    SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
+  
+  ELog::EM<<"Off== "<<CPoint<<" "<<RPoint.abs()<<" "
+	  <<ELog::endDiag;
+  ELog::EM<<"OffR== "<<RPoint-PA*ELen<<" "<<(RPoint-PA*ELen).abs()<<" "
+	  <<ELog::endDiag;
+  return RPoint-PA*ELen;
 }
 
 void
@@ -368,6 +424,9 @@ PortTube::createSurfaces()
   // metal
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+
+  ELog::EM<<"Main YT == "<<Y<<ELog::endDiag;
+
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   // port

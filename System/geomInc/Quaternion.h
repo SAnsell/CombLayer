@@ -85,7 +85,9 @@ class Quaternion
   Quaternion operator*(const Vec3D&) const;
   Quaternion& operator*=(const Quaternion&);
   Quaternion operator*(const Quaternion&) const;
-  
+
+  /// Access Q0 value
+  double getQ0() const { return q0; }
   /// Access the vector
   const Vec3D& getVec() const { return Qvec; }
   Vec3D getAxis() const;

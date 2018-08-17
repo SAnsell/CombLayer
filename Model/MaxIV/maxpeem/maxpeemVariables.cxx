@@ -90,9 +90,9 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PTubeGen.setCF<CF150>();
   PTubeGen.setPortLength(2.5,2.5);
   
-  PTubeGen.generateCFTube<CF150>(Control,frontKey+"HeatBox",40.0,20.0);
-  Control.addVariable(frontKey+"HeatBoxZAngle",90);
-  Control.addVariable(frontKey+"HeatBoxNPorts",2);
+  PTubeGen.generateCFTube<CF150>(Control,frontKey+"HeatBox",0.0,20.0);
+  //  Control.addVariable(frontKey+"HeatBoxZAngle",90);
+  Control.addVariable(frontKey+"HeatBoxNPorts",1);
 
   // beam ports
   PItemGen.setCF<setVariable::CF40>(5.0);

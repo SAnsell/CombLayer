@@ -78,6 +78,7 @@ class PortTube :
   std::vector<portItem> Ports;           ///< Vector of ports FixedComp
 
   void applyPortRotation();
+  Geometry::Vec3D calcCylinderDistance() const;
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

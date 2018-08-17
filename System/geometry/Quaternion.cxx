@@ -153,7 +153,7 @@ Quaternion::calcQVRot(const Geometry::Vec3D& A,
     return Quaternion(1.0,Geometry::Vec3D(0,0,0));
   else
     return Quaternion(0.0,ZRotDef.unit());
-    
+  
   Axis*=sin(Angle/2.0);
   return Quaternion(cos(Angle/2.0),Axis);
 }
