@@ -91,7 +91,6 @@ PipeTube::PipeTube(const std::string& Key) :
   */
 {}
 
-
   
 PipeTube::~PipeTube() 
   /*!

@@ -36,13 +36,9 @@ namespace constructSystem
 */
 
 class PortTube :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
-  public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+  public PipeTube
 {
  private:
-
   
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube

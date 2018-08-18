@@ -221,7 +221,6 @@ R1Ring::createSurfaces()
       if (concavePts[cIndex]==i+1)
 	{
 	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+3));
-	  ELog::EM<<"Wall["<<cIndex<<"] = "<<SMap.realSurf(surfN+3)<<ELog::endDiag;
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
       

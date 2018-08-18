@@ -91,15 +91,11 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PTubeGen.setPortLength(2.5,2.5);
   
   PTubeGen.generateCFTube<CF150>(Control,frontKey+"HeatBox",0.0,20.0);
-  //  Control.addVariable(frontKey+"HeatBoxZAngle",90);
-  Control.addVariable(frontKey+"HeatBoxNPorts",1);
+  Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports
   PItemGen.setCF<setVariable::CF40>(5.0);
   PItemGen.setPlate(0.0,"Void");  
-
-  FlangeGen.setCF<setVariable::CF40>();
-  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
 
   const Geometry::Vec3D ZVec(0,0,1);
   const std::string heatName=frontKey+"HeatBoxPort";
@@ -107,7 +103,10 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
 
-
+  FlangeGen.setCF<setVariable::CF150>();
+  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
+  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",0);  // in beam
+  
   const std::string hDump(frontKey+"HeatDump");
   Control.addVariable(hDump+"Height",10.0);
   Control.addVariable(hDump+"Width",3.0);
@@ -115,6 +114,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   Control.addVariable(hDump+"CutHeight",10.0);
   Control.addVariable(hDump+"CutDepth",0.0);
   Control.addVariable(hDump+"Mat","Tungsten");
+
   return;
 }
   
@@ -193,7 +193,6 @@ frontEndVariables(FuncDataBase& Control,
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.setMat("Stainless304");
-
   // height/depth
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPA",0.0,26.6,26.6);
@@ -204,10 +203,25 @@ frontEndVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
 
-  PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
-
   heatDumpVariables(Control,frontKey);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowD",0,10.0);
+
+  const std::string gateName=frontKey+"GateTubeA";
+  PTubeGen.setPortLength(2.0,2.0);
+  PTubeGen.generateCFTube<CF63>(Control,gateName,0.0,20.0);
+
+  Control.addVariable(gateName+"NPorts",2);
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+    (Control,frontKey+"IonPB",0.0,26.6,26.6);
+
   return;
 }
 

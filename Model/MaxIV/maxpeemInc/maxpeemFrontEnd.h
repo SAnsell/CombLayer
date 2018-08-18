@@ -98,7 +98,15 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> heatPipe;
   /// Heat dump container
   std::shared_ptr<constructSystem::PortTube> heatBox;
-
+  /// Flange for heat shield
+  std::shared_ptr<xraySystem::FlangeMount> heatTopFlange;
+  /// bellow after HeatShield
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Gate box
+  std::shared_ptr<constructSystem::PortTube> gateTubeA;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPB;
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

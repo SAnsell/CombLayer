@@ -325,7 +325,6 @@ PortTube::applyPortRotation()
     YPrime=PAxis[pIndex].unit();
 
 
-  ELog::EM<<"PIndex = "<<portConnectIndex<<ELog::endDiag;
   const Geometry::Quaternion QV=
     Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
 
@@ -338,12 +337,8 @@ PortTube::applyPortRotation()
   QVmain.rotate(X);
   QVmain.rotate(Y);
   QVmain.rotate(Z);
-  ELog::EM<<"YZ == "<<Y<<" "<<Z<<ELog::endDiag;
-  ELog::EM<<"Oriign == "<<Origin<<ELog::endDiag;
   const Geometry::Vec3D offset=calcCylinderDistance();
   Origin+=offset;
-  ELog::EM<<"Offset == "<<offset.abs()<<ELog::endDiag;
-  ELog::EM<<"Oriign == "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -387,10 +382,7 @@ PortTube::calcCylinderDistance() const
   const Geometry::Vec3D RPoint=
     SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
   
-  ELog::EM<<"Off== "<<CPoint<<" "<<RPoint.abs()<<" "
-	  <<ELog::endDiag;
-  ELog::EM<<"OffR== "<<RPoint-PA*ELen<<" "<<(RPoint-PA*ELen).abs()<<" "
-	  <<ELog::endDiag;
+
   return RPoint-PA*ELen;
 }
 
@@ -424,8 +416,6 @@ PortTube::createSurfaces()
   // metal
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
-
-  ELog::EM<<"Main YT == "<<Y<<ELog::endDiag;
 
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 

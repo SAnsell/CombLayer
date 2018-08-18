@@ -41,7 +41,7 @@ class PipeTube :
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
- private:
+ protected:
 
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube

@@ -112,7 +112,11 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   heatPipe(new constructSystem::VacuumPipe(newName+"HeatPipe")),
-  heatBox(new constructSystem::PortTube(newName+"HeatBox"))
+  heatBox(new constructSystem::PortTube(newName+"HeatBox")),
+  heatTopFlange(new xraySystem::FlangeMount(newName+"HeatTopFlange")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  gateTubeA(new constructSystem::PortTube(newName+"GateTubeA")),
+  ionPB(new constructSystem::CrossPipe(newName+"IonPB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -133,6 +137,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(heatPipe);
   OR.addObject(heatBox);
+  OR.addObject(heatTopFlange);
 }
   
 maxpeemFrontEnd::~maxpeemFrontEnd()
@@ -221,6 +226,22 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   heatBox->addInsertCell(ContainedComp::getInsertCells()[1]);
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,*heatPipe,2);
+
+  heatTopFlange->addInsertCell("Flange",ContainedComp::getInsertCells()[1]);
+  heatTopFlange->setBladeCentre(*heatBox,0);
+  heatTopFlange->createAll(System,*heatBox,2);
+
+  const constructSystem::portItem& PI=heatBox->getPort(1);  
+  bellowD->addInsertCell(ContainedComp::getInsertCells()[1]);
+  bellowD->createAll(System,PI,PI.getSideIndex("OuterPlate"));
+
+  gateTubeA->addInsertCell(ContainedComp::getInsertCells()[1]);
+  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  gateTubeA->createAll(System,*bellowD,2);  
+
+  const constructSystem::portItem& GPI=gateTubeA->getPort(1);  
+  ionPB->addInsertCell(ContainedComp::getInsertCells()[1]);
+  ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
 
   lastComp=wigglerBox;
   return;

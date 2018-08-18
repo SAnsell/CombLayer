@@ -255,6 +255,8 @@ template void FlangeMountGenerator::setCF<CF40>();
 template void FlangeMountGenerator::setCF<CF50>();
 template void FlangeMountGenerator::setCF<CF63>();
 template void FlangeMountGenerator::setCF<CF100>();
+template void FlangeMountGenerator::setCF<CF120>();
+template void FlangeMountGenerator::setCF<CF150>();
 
 ///\endcond  TEMPLATE
   
