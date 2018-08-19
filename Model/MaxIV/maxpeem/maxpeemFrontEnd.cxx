@@ -115,7 +115,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   heatBox(new constructSystem::PortTube(newName+"HeatBox")),
   heatTopFlange(new xraySystem::FlangeMount(newName+"HeatTopFlange")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  gateTubeA(new constructSystem::PortTube(newName+"GateTubeA")),
+  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB"))
   /*!
     Constructor

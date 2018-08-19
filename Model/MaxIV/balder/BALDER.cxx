@@ -80,6 +80,7 @@
 #include "LeadPipe.h"
 #include "VacuumBox.h"
 #include "portItem.h"
+#include "PipeTube.h"
 #include "PortTube.h"
 
 #include "OpticsHutch.h"

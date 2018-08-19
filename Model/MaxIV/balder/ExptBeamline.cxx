@@ -82,6 +82,7 @@
 #include "Bellows.h"
 #include "VacuumBox.h"
 #include "portItem.h"
+#include "PipeTube.h"
 #include "PortTube.h"
 #include "PipeShield.h"
 

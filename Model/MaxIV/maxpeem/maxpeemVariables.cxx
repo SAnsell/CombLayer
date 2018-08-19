@@ -209,8 +209,10 @@ frontEndVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowD",0,10.0);
 
   const std::string gateName=frontKey+"GateTubeA";
-  PTubeGen.setPortLength(2.0,2.0);
-  PTubeGen.generateCFTube<CF63>(Control,gateName,0.0,20.0);
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
+
+  //  PipeGen.generateCFTube<CF63>(Control,gateName,0.0,20.0);
 
   Control.addVariable(gateName+"NPorts",2);
   const Geometry::Vec3D ZVec(0,0,1);

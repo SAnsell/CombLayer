@@ -39,48 +39,25 @@ class PortTube :
   public PipeTube
 {
  private:
-  
-  double radius;              ///< radius of main tube
-  double wallThick;           ///< wall thickness of main tube
-  double length;              ///< Main length
-  
-  double portAXStep;       ///< Out Port
-  double portAZStep;       ///< Out Port
-  double portARadius;      ///< Out Port
-  double portALen;         ///< Out Port
-  double portAThick;       ///< Out Port
+    
+  double portAXStep;       ///< In Port
+  double portAZStep;       ///< In Port
+  double portARadius;      ///< In Port
+  double portALen;         ///< In Port
+  double portAThick;       ///< In Port
 
   double portBXStep;       ///< Out Port
   double portBZStep;       ///< Out Port
   double portBRadius;      ///< Out Port
   double portBLen;         ///< Out Port
   double portBThick;       ///< Out Port
-
-  double flangeARadius;        ///< Joining Flange radius
-  double flangeALength;        ///< Joining Flange length
-  double flangeBRadius;        ///< Joining Flange radius
-  double flangeBLength;        ///< Joining Flange length
-
-  int voidMat;                ///< void material
-  int wallMat;                ///< Fe material layer
-
-  bool delayPortBuild;                   ///< Delay port to manual construct
-  size_t portConnectIndex;    ///< Port to connect to
-  Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
-
-  std::set<int> portCells;               ///< Extra cells for the port
-  std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
-  std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
-  std::vector<portItem> Ports;           ///< Vector of ports FixedComp
-
-  void applyPortRotation();
-  Geometry::Vec3D calcCylinderDistance() const;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
+  virtual void applyPortRotation();
   
  public:
 
@@ -88,19 +65,6 @@ class PortTube :
   PortTube(const PortTube&);
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
-
-  /// Set a port delay
-  void delayPorts() { delayPortBuild=1; }
-  void splitVoidPorts(Simulation&,const std::string&,const int,
-		      const int,const std::vector<size_t>&);
-  void splitVoidPorts(Simulation&,const std::string&,const int,
-		      const int,const Geometry::Vec3D&);
-  void addInsertPortCells(const int);
-  void intersectPorts(Simulation&,const size_t,const size_t) const;
-  const portItem& getPort(const size_t) const;
-  void createPorts(Simulation&);
-
-  void setPortRotation(const size_t,const Geometry::Vec3D&);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

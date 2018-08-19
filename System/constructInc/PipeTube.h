@@ -55,17 +55,23 @@ class PipeTube :
   int voidMat;                ///< void material
   int wallMat;                ///< Fe material layer
 
+  bool delayPortBuild;        ///< Delay port to manual construct
+  size_t portConnectIndex;    ///< Port to connect to
+  Geometry::Vec3D rotAxis;    ///< Rotation axis for port rotate
+
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   std::vector<portItem> Ports;           ///< Vector of ports FixedComp
-  
+
+  virtual void applyPortRotation();
+  Geometry::Vec3D calcCylinderDistance(const size_t) const;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createPorts(Simulation&);
   
  public:
 
@@ -74,10 +80,22 @@ class PipeTube :
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
 
-  void splitVoidPorts(Simulation&,const std::string&,const int,const int);
+    /// Set a port delay
+  void delayPorts() { delayPortBuild=1; }
+  void splitVoidPorts(Simulation&,const std::string&,
+		      const int,const int);
+  void splitVoidPorts(Simulation&,const std::string&,const int,
+		      const int,const Geometry::Vec3D&);
+  void splitVoidPorts(Simulation&,const std::string&,const int,
+		      const int,const std::vector<size_t>&);
+
+  void setPortRotation(const size_t,const Geometry::Vec3D&);
+
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
+
+  void createPorts(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
