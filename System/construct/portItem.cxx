@@ -470,9 +470,6 @@ portItem::constructOuterFlange(Simulation& System,
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
   const std::vector<double>& Track=LT.getTrack();
   double T(0.0);   // extention base out point
-  //  if (flangeLength>externalLength)
-  //    Out+=ModelSupport::getComposite();
-
 
   for(size_t i=startIndex;i<OVec.size() &&
 	T<(externalLength-Geometry::zeroTol);i++)

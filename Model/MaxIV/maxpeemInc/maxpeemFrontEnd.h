@@ -117,9 +117,29 @@ class maxpeemFrontEnd :
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPC;
 
+  /// bellows for second movable aperature
+  std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// Variable Apperature pipe B
+  std::shared_ptr<constructSystem::VacuumPipe> aperturePipeB;
+  /// bellows for exit of moveable aperatures
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// Exit of movables
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+
+  /// Exit of movables
+  std::shared_ptr<constructSystem::GateValve> gateA;
+  /// bellows for florescence system
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// florescence screen tube
+  std::shared_ptr<constructSystem::PipeTube> florTubeA;
+  /// bellows for florescence system
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// Gate box B
+  std::shared_ptr<constructSystem::PipeTube> gateTubeB;
 
   void buildHeatTable(Simulation&);
-  void buildAppTableOne(Simulation&);
+  void buildApertureTable(Simulation&);
+  void buildShutterTable(Simulation&);  
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

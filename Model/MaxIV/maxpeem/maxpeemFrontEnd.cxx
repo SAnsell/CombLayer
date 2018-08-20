@@ -80,6 +80,7 @@
 #include "insertCylinder.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "GateValve.h"
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
@@ -121,7 +122,16 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
-  ionPC(new constructSystem::CrossPipe(newName+"IonPC"))
+  ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  gateA(new constructSystem::GateValve(newName+"GateA")),
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
+  gateTubeB(new constructSystem::PipeTube(newName+"GateTubeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -150,6 +160,14 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(aperturePipe);
   OR.addObject(bellowF);
   OR.addObject(ionPC);
+  OR.addObject(bellowG);
+  OR.addObject(aperturePipeB);
+  OR.addObject(bellowH);
+  OR.addObject(pipeC);
+  OR.addObject(gateA);
+  OR.addObject(bellowI);
+  OR.addObject(florTubeA);
+  OR.addObject(bellowJ);
 }
   
 maxpeemFrontEnd::~maxpeemFrontEnd()
@@ -196,7 +214,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System)
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildAppTableOne");
+  ELog::RegMethod RegA("maxpeemFrontEnd","buildHeatTable");
 
   heatBox->addInsertCell(ContainedComp::getInsertCells()[1]);
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
@@ -214,45 +232,95 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System)
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*bellowD,2);  
 
-  return;
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
   ionPB->addInsertCell(ContainedComp::getInsertCells()[1]);
   ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
 
-  //  pipeB->addInsertCell(ContainedComp::getInsertCells()[1]);
-  //  pipeB->createAll(System,*ionPB,2);
+  pipeB->addInsertCell(ContainedComp::getInsertCells()[1]);
+  pipeB->createAll(System,*ionPB,2);
   
   return;
   
 }
 
 void
-maxpeemFrontEnd::buildAppTableOne(Simulation& System)
+maxpeemFrontEnd::buildApertureTable(Simulation& System)
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildAppTableOne");
+  ELog::RegMethod RegA("maxpeemFrontEnd","buildApertureTable");
 
   aperturePipe->addInsertCell(ContainedComp::getInsertCells()[1]);
   aperturePipe->createAll(System,*pipeB,2);
 
   // bellows AFTER movable aperture pipe
   bellowE->addInsertCell(ContainedComp::getInsertCells()[1]);
-  bellowF->setFront(*pipeB,2);
+  bellowE->setFront(*pipeB,2);
   bellowE->setBack(*aperturePipe,1);
   bellowE->createAll(System,*pipeB,2);
 
   ionPC->addInsertCell(ContainedComp::getInsertCells()[1]);
   ionPC->createAll(System,*pipeB,2);
-  
+
   // bellows AFTER aperature ionpump and ion pump
   bellowF->addInsertCell(ContainedComp::getInsertCells()[1]);
   bellowF->setFront(*aperturePipe,2);
-  bellowF->setFront(*ionPC,1);
+  bellowF->setBack(*ionPC,1);
   bellowF->createAll(System,*pipeB,2);
 
+  aperturePipeB->addInsertCell(ContainedComp::getInsertCells()[1]);
+  aperturePipeB->createAll(System,*ionPC,2);
+
+  // bellows AFTER movable aperture pipe
+  bellowG->addInsertCell(ContainedComp::getInsertCells()[1]);
+  bellowG->setFront(*ionPC,2);
+  bellowG->setBack(*aperturePipeB,1);
+  bellowG->createAll(System,*ionPC,2);
+
+  pipeC->addInsertCell(ContainedComp::getInsertCells()[1]);
+  pipeC->createAll(System,*ionPC,2);
+
+  // bellows AFTER movable aperture pipe
+  bellowH->addInsertCell(ContainedComp::getInsertCells()[1]);
+  bellowH->setFront(*aperturePipeB,2);
+  bellowH->setBack(*pipeC,1);
+  bellowH->createAll(System,*ionPC,2);
+  
+  return;
+}
+
+void
+maxpeemFrontEnd::buildShutterTable(Simulation& System)
+  /*!
+    Build the moveable aperature table
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("maxpeemFrontEnd","buildShutterTable");
+
+  gateA->addInsertCell(ContainedComp::getInsertCells()[1]);
+  gateA->createAll(System,*pipeC,2);
+
+  // bellows 
+  bellowI->addInsertCell(ContainedComp::getInsertCells()[1]);
+  bellowI->createAll(System,*gateA,2);
+
+  florTubeA->addInsertCell(ContainedComp::getInsertCells()[1]);
+  florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  florTubeA->createAll(System,*bellowI,2);
+
+  // bellows 
+  const constructSystem::portItem& GPI=florTubeA->getPort(1);
+  bellowJ->addInsertCell(ContainedComp::getInsertCells()[1]);
+  bellowJ->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
+
+  gateTubeB->addInsertCell(ContainedComp::getInsertCells()[1]);
+  gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  gateTubeB->createAll(System,*bellowJ,2);  
+
+  
   return;
 }
 
@@ -304,11 +372,11 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   heatPipe->createAll(System,*bellowC,2);
 
   buildHeatTable(System);
-
-
-  //  buildAppTableOne(System);
+  buildApertureTable(System);
+  buildShutterTable(System);
+    
+  lastComp=pipeC;
   
-  lastComp=wigglerBox;
   return;
 }
 

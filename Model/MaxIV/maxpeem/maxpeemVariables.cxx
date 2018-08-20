@@ -73,6 +73,7 @@ namespace maxpeemVar
 {
   void moveApertureTable(FuncDataBase&,const std::string&);
   void heatDumpVariables(FuncDataBase&,const std::string&);
+  void shutterTable(FuncDataBase&,const std::string&);
   
 void
 moveApertureTable(FuncDataBase& Control,
@@ -85,10 +86,13 @@ moveApertureTable(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
 
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeB",0,15.0);
@@ -108,7 +112,24 @@ moveApertureTable(FuncDataBase& Control,
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
-    (Control,frontKey+"IonPC",42.0,15.74,78.70);   // height/depth
+    (Control,frontKey+"IonPC",52.0,15.74,78.70);   // height/depth
+
+  // [FREE FLOATING]
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowG",0,14.0);
+
+  // Aperature pipe is movable:
+  PipeGen.setCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",14.0,24.0);
+
+  // [FREE FLOATING]
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowH",0,14.0);
+
+  // [End fix for BellowH]
+  PipeGen.setCF<CF40>();
+  PipeGen.setAFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"PipeC",52.0,10.0);
 
   return;
 }
@@ -123,7 +144,7 @@ heatDumpTable(FuncDataBase& Control,
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("maxpeemVariables[F]","heatDumpTable");
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
@@ -150,21 +171,19 @@ heatDumpTable(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
 
-  //  PipeGen.generateCFTube<CF63>(Control,gateName,0.0,20.0);
-
   // beam ports
   Control.addVariable(gateName+"NPorts",2);
   const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(0.4);
+  PItemGen.setCF<setVariable::CF40>(0.45);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
+  CrossGen.setMat("Stainless304");
+  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
+  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPB",0.0,26.6,26.6);
-
-
-  
   
   return;
 }
@@ -215,12 +234,68 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 
   return;
 }
+
+void
+shutterTable(FuncDataBase& Control,
+	     const std::string& frontKey)
+  /*!
+    Set the variables for the shutter table (number 3)
+    \param Control :: DataBase to use
+    \param frontKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","shutterTable");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
   
+  // joined and open
+  GateGen.setLength(3.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
+  
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowI",0,10.0);
+  
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+
+  // beam ports
+  const std::string florName(frontKey+"FlorTubeA");
+  Control.addVariable(florName+"NPorts",4);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(1.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
+  PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",0,10.0);
+
+  // will be rotated vertical
+  const std::string gateName=frontKey+"GateTubeB";
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
+  // beam ports
+  Control.addVariable(gateName+"NPorts",2);
+  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  return;
+}
+
 void
 frontEndVariables(FuncDataBase& Control,
 		  const std::string& frontKey)
 /*!
-    Set the variables for the mono
+    Set the variables for the frontend
     \param Control :: DataBase to use
     \param frontKey :: name before part names
   */
@@ -296,6 +371,8 @@ frontEndVariables(FuncDataBase& Control,
 
   heatDumpTable(Control,frontKey);
   moveApertureTable(Control,frontKey);
+  shutterTable(Control,frontKey);
+
   return;
 }
 
