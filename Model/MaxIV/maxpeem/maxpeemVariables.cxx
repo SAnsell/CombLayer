@@ -71,7 +71,105 @@ namespace setVariable
 
 namespace maxpeemVar
 {
+  void moveApertureTable(FuncDataBase&,const std::string&);
+  void heatDumpVariables(FuncDataBase&,const std::string&);
+  
+void
+moveApertureTable(FuncDataBase& Control,
+		  const std::string& frontKey)
+  /*!
+    Builds the variables for the moveable apperature table
+    containing two movable aperatures, pumping and bellows
+    \param Control :: Database
+    \param frontKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
 
+  PipeGen.setCF<CF40>();
+  PipeGen.setBFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"PipeB",0,15.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowE",0,14.0);
+
+  // Aperature pipe is movable:
+  PipeGen.setCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"AperturePipe",14.0,24.0);
+  
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowF",0,14.0);
+
+  // Stepped 420mm from pipeB so bellows/aperaturePipe can move freely
+  CrossGen.setMat("Stainless304");
+  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
+  CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
+    (Control,frontKey+"IonPC",42.0,15.74,78.70);   // height/depth
+
+  return;
+}
+
+void
+heatDumpTable(FuncDataBase& Control,
+	      const std::string& frontKey)
+  /*!
+    Builds the variables for the heat dump table
+    containing the heatdump and a gate valve [non-standard]
+    \param Control :: Database
+    \param frontKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+    
+
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setMat("Stainless304");
+  
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowC",0,10.0);
+  
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
+
+  heatDumpVariables(Control,frontKey);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowD",0,10.0);
+
+  // will be rotated vertical
+  const std::string gateName=frontKey+"GateTubeA";
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
+
+  //  PipeGen.generateCFTube<CF63>(Control,gateName,0.0,20.0);
+
+  // beam ports
+  Control.addVariable(gateName+"NPorts",2);
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(0.4);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+    (Control,frontKey+"IonPB",0.0,26.6,26.6);
+
+
+  
+  
+  return;
+}
+
+  
 void
 heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   /*!
@@ -80,7 +178,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
     \param frontKey :: prename
    */
 {
-  ELog::RegMethod RegA("balderVariables","heatDumpVariables");
+  ELog::RegMethod RegA("maxpeemVariables","heatDumpVariables");
 
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -127,12 +225,11 @@ frontEndVariables(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("balderVariables[F]","frontEndVariables");
+  ELog::RegMethod RegA("maxpeemVariables[F]","frontEndVariables");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::SqrFMaskGenerator CollGen;
   setVariable::PortTubeGenerator PTubeGen;
@@ -197,33 +294,8 @@ frontEndVariables(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPA",0.0,26.6,26.6);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowC",0,10.0);
-
-  PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"HeatPipe",0,115.0);
-
-  heatDumpVariables(Control,frontKey);
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowD",0,10.0);
-
-  const std::string gateName=frontKey+"GateTubeA";
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
-
-  //  PipeGen.generateCFTube<CF63>(Control,gateName,0.0,20.0);
-
-  Control.addVariable(gateName+"NPorts",2);
-  const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(5.0);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,frontKey+"IonPB",0.0,26.6,26.6);
-
+  heatDumpTable(Control,frontKey);
+  moveApertureTable(Control,frontKey);
   return;
 }
 

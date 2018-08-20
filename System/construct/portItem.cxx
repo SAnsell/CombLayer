@@ -226,6 +226,7 @@ void
 portItem::populate(const FuncDataBase& Control)
   /*!
     Populate variables
+    \param Control :: Variable DataBase
    */
 {
   ELog::RegMethod RegA("portItem","populate");
@@ -357,7 +358,6 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
     }
 
   const Geometry::Vec3D exitPoint=LT.getPoint(BIndex+1);
-  
   FixedComp::nameSideIndex(1,"OuterPlate");
   if (plateThick>Geometry::zeroTol)
     {
@@ -433,6 +433,7 @@ portItem::constructOuterFlange(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
 
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -27 17 -2 ");
   makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
 
@@ -465,40 +466,43 @@ portItem::constructOuterFlange(Simulation& System,
   const std::string tubeExclude=
     ModelSupport::getComposite(SMap,buildIndex," ( 17 : -1 )");
 
-  std::set<int> activeCell;
+  //  std::set<int> activeCell;
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
   const std::vector<double>& Track=LT.getTrack();
   double T(0.0);   // extention base out point
-  for(size_t i=startIndex;i<OVec.size() && T<externalLength;i++)
+  //  if (flangeLength>externalLength)
+  //    Out+=ModelSupport::getComposite();
+
+
+  for(size_t i=startIndex;i<OVec.size() &&
+	T<(externalLength-Geometry::zeroTol);i++)
     {
       MonteCarlo::Object* OPtr=OVec[i];
       const int OName=OPtr->getName();
-
-      if (i>lastIndex)   
+      if (i>lastIndex)
 	T+=Track[i];
 
-      if (T>=externalLength-flangeLength ||
-	  outerCell.find(OName)!=outerCell.end())
+      if (outerCell.find(OName)==outerCell.end())
 	{
-	  OPtr->addSurfString(getExclude());
-	  activeCell.insert(OName);
+	  if (i>lastIndex)
+	    OPtr->addSurfString(getExclude());
+	  else 
+	    OPtr->addSurfString(tubeExclude);
 	}
-      else
-	OPtr->addSurfString(tubeExclude);
-
+    }
+  if (externalLength<flangeLength+Geometry::zeroTol)
+    {
+      const Geometry::Surface* cylPtr=LT.getSurfVec()[lastIndex];
+      insertComponent(System,"Flange",std::to_string(cylPtr->getName()));
     }
   // do essential outerCells
   for(const int ON : outerCell)
     {
-      if (activeCell.find(ON)==activeCell.end())
-	{
-	  MonteCarlo::Object* OPtr=System.findQhull(ON);
-	  if (!OPtr)
-	    throw ColErr::InContainerError<int>(ON,"Cell not found");
-	  OPtr->addSurfString(getExclude());
-	}
+      MonteCarlo::Object* OPtr=System.findQhull(ON);
+      if (!OPtr)
+	throw ColErr::InContainerError<int>(ON,"Cell not found");
+      OPtr->addSurfString(getExclude());
     }
-  
   return;
 }
 
@@ -546,7 +550,7 @@ portItem::intersectPair(Simulation& System,
   /*!
     Intersect two port
     \param Simulation :: Simulation to use
-    \param Simulation :: Simulation to use
+    \param Outer :: setcond port to intersect
   */
 {
   ELog::RegMethod RegA("portItem","intersectPair");
@@ -575,8 +579,7 @@ portItem::constructTrack(Simulation& System)
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
       return;
     }
-
-	
+  
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();

@@ -291,6 +291,9 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   (FuncDataBase&,const std::string&,const double,const double,const double);
   template void CrossGenerator::generateDoubleCF<CF40,CF100>
   (FuncDataBase&,const std::string&,const double,const double,const double);
+  
+  template void CrossGenerator::generateDoubleCF<CF63,CF100>
+  (FuncDataBase&,const std::string&,const double,const double,const double);
 
   
 ///\endcond TEMPLATE

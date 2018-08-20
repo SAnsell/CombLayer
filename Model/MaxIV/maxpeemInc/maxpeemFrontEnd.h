@@ -106,7 +106,21 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
-  
+  /// Pipe to third optic table
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// bellows for third table
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// Variable Apperature pipe
+  std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
+  /// bellows for third table
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPC;
+
+
+  void buildHeatTable(Simulation&);
+  void buildAppTableOne(Simulation&);
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
