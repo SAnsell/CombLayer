@@ -295,7 +295,7 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",0,6.8);
-  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",4.0);
+  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
@@ -306,11 +306,12 @@ shutterTable(FuncDataBase& Control,
   
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setPlate(0.0,"Void");
+  // lift is actually 60mm [check]
   FlangeGen.setCF<setVariable::CF50>();
-  // W / H / T / ang
   FlangeGen.setThread(1.0,30.0,"Nickel");
-  FlangeGen.setBlade(5.0,5.0,20.0,0.0,"Tungsten",1);  
+  // W / H / T / ang 
+  FlangeGen.setBlade(6.0,6.0,20.0,0.0,"Tungsten",1);  
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
@@ -324,6 +325,10 @@ shutterTable(FuncDataBase& Control,
       CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
     }
 
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,21.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
   
   return;
 }
@@ -382,7 +387,7 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,354.50);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,444.50);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
@@ -395,7 +400,6 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);
   CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
-
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",0,10.0);

@@ -140,12 +140,14 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// Gate box B
   std::shared_ptr<constructSystem::PipeTube> gateTubeB;
-  /// Gate box B
+  /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters
   std::shared_ptr<constructSystem::PipeTube> shutterBox;
   /// Shutters
   std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
+  /// Back port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
 
   double outerRadius;
   

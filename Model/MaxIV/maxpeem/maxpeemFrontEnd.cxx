@@ -142,7 +142,8 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   shutters({
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter0"),
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
-	})
+	}),
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB"))
   
   /*!
     Constructor
@@ -185,6 +186,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(shutterBox);
   OR.addObject(shutters[0]);
   OR.addObject(shutters[1]);
+  OR.addObject(offPipeB);
 
 }
   
@@ -528,6 +530,11 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
       shutters[i]->setBladeCentre(PI,0);
       shutters[i]->createAll(System,PI,2);
     }
+
+  offPipeB->createAll(System,*shutterBox,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*offPipeB,2);
+  offPipeB->insertInCell(System,outerCell);
+
   return;
 }
 
