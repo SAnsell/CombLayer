@@ -511,28 +511,23 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
   shutterBox->insertInCell(System,outerCell);
 
-  /*
   shutterBox->splitVoidPorts(System,"SplitVoid",1001,
   			     shutterBox->getCell("Void"),
 			     {0,1});
-  //  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-  //                            shutterBox->getBuildCell(),
-  //			         {0,1});
-
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+  			     outerCell,{0,1});
+  shutterBox->addInsertCell(outerCell);
   shutterBox->createPorts(System);
-  
+
   for(size_t i=0;i<shutters.size();i++)
     {
       const constructSystem::portItem& PI=shutterBox->getPort(i);
-      shutters[i]->addInsertCell("Flange",ContainedComp::getInsertCells()[1]);
-
-      // shutters[i]->addInsertCell("Flange",shutterBox->getCell("SplitOuter",i));
+      shutters[i]->addInsertCell("Flange",shutterBox->getCell("SplitOuter",i));
       shutters[i]->addInsertCell("Body",PI.getCell("Void"));
       shutters[i]->addInsertCell("Body",shutterBox->getCell("SplitVoid",i));
       shutters[i]->setBladeCentre(PI,0);
       shutters[i]->createAll(System,PI,2);
     }
-  */
   return;
 }
 

@@ -505,13 +505,12 @@ PipeTube::splitVoidPorts(Simulation& System,
       const Geometry::Vec3D CPt=
 	(PCentre[AIndex]+PCentre[BIndex])/2.0;
       SplitOrg.push_back(CPt);
-      SplitAxis.push_back(Y);
+      SplitAxis.push_back(Geometry::Vec3D(0,1,0));
     }
- 
 
   const std::vector<int> cells=
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
-      
+  
   if (!splitName.empty())
   for(const int CN : cells)
     CellMap::addCell(splitName,CN);
@@ -625,8 +624,11 @@ PipeTube::insertInCell(Simulation& System,const int cellN)
   */
 {
   ContainedComp::insertInCell(System,cellN);
-  for(const portItem& PC : Ports)
-    PC.insertInCell(System,cellN);
+  if (!delayPortBuild)
+    {
+      for(const portItem& PC : Ports)
+	PC.insertInCell(System,cellN);
+    }
   return;
 }
   
@@ -651,8 +653,9 @@ PipeTube::createAll(Simulation& System,
   
   createLinks();
   
-  insertObjects(System);   
-  createPorts(System);
+  insertObjects(System);
+  if (!delayPortBuild)
+    createPorts(System);
 
   return;
 }

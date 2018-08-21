@@ -190,7 +190,6 @@ FlangeMount::populate(const FuncDataBase& Control)
 
   bladeCentreActive=Control.EvalDefVar<int>
     (keyName+"BladeCentreActive",bladeCentreActive);
-
   bladeActive=Control.EvalDefVar<int>(keyName+"BladeActive",1);
 
   return;
@@ -347,7 +346,7 @@ FlangeMount::setBladeCentre(const Geometry::Vec3D& Pt)
     \param Pt :: Centre point 
   */
 {
-  bladeCentreActive=1;
+  bladeCentreActive=0;
   bladeCentre=Pt;
   return;
 }
@@ -361,7 +360,7 @@ FlangeMount::setBladeCentre(const attachSystem::FixedComp& FC,
     \param BIndex :: Link point index
   */
 {
-  bladeCentreActive=1;
+  bladeCentreActive=0;
   bladeCentre=FC.getLinkPt(BIndex);
   return;
 }

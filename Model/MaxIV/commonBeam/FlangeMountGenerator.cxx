@@ -61,8 +61,10 @@ namespace setVariable
 FlangeMountGenerator::FlangeMountGenerator() :
   plateRadius(7.0),plateThick(1.0),threadRadius(0.5),
   threadLength(20.0),bladeLift(10.0),bladeThick(1.0),
-  bladeWidth(3.0),bladeHeight(4.0),threadMat("Nickel"),
-  bladeMat("Tungsten"),plateMat("Stainless304")
+  bladeWidth(3.0),bladeHeight(4.0),bladeFlag(1),
+  bladeCentreFlag(1),
+  threadMat("Nickel"),bladeMat("Tungsten"),
+  plateMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -74,6 +76,7 @@ FlangeMountGenerator::FlangeMountGenerator(const FlangeMountGenerator& A) :
   bladeLift(A.bladeLift),bladeXYAngle(A.bladeXYAngle),
   bladeThick(A.bladeThick),bladeWidth(A.bladeWidth),
   bladeHeight(A.bladeHeight),bladeFlag(A.bladeFlag),
+  bladeCentreFlag(A.bladeCentreFlag),
   threadMat(A.threadMat),bladeMat(A.bladeMat),plateMat(A.plateMat)
   /*!
     Copy constructor
@@ -101,6 +104,7 @@ FlangeMountGenerator::operator=(const FlangeMountGenerator& A)
       bladeWidth=A.bladeWidth;
       bladeHeight=A.bladeHeight;
       bladeFlag=A.bladeFlag;
+      bladeCentreFlag=A.bladeCentreFlag;
       threadMat=A.threadMat;
       bladeMat=A.bladeMat;
       plateMat=A.plateMat;
@@ -168,6 +172,7 @@ FlangeMountGenerator::setThread(const double R,const double L,
   threadRadius=R;
   threadLength=L;
   threadMat=Mat;
+  bladeCentreFlag=0;
   return;
 }
 

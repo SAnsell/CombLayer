@@ -52,6 +52,7 @@ class FlangeMountGenerator
   double bladeWidth;            ///< moving blade width
   double bladeHeight;           ///< moving blade height
   int bladeFlag;                ///< render blade or leave space
+  int bladeCentreFlag;          ///< thread centre / calc centre 
   
 
   std::string threadMat;        ///< Thead material
