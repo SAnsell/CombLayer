@@ -212,14 +212,17 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   template void PipeTubeGenerator::setCF<CF63>();
   template void PipeTubeGenerator::setCF<CF100>();
   template void PipeTubeGenerator::setCF<CF120>();
+  template void PipeTubeGenerator::setCF<CF150>();
   template void PipeTubeGenerator::setAFlangeCF<CF40>();
   template void PipeTubeGenerator::setAFlangeCF<CF63>();
   template void PipeTubeGenerator::setAFlangeCF<CF100>();
   template void PipeTubeGenerator::setAFlangeCF<CF120>();
+  template void PipeTubeGenerator::setAFlangeCF<CF150>();
   template void PipeTubeGenerator::setBFlangeCF<CF40>();
   template void PipeTubeGenerator::setBFlangeCF<CF63>();
   template void PipeTubeGenerator::setBFlangeCF<CF100>();
   template void PipeTubeGenerator::setBFlangeCF<CF120>();
+  template void PipeTubeGenerator::setBFlangeCF<CF150>();
   
 ///\endcond TEMPLATE
 

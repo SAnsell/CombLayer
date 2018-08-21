@@ -80,6 +80,8 @@ class R1Ring :
   R1Ring& operator=(const R1Ring&);
   virtual ~R1Ring();
 
+  /// accessor to size of concave points
+  size_t nConcave() const { return concaveNPoints; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

@@ -250,6 +250,7 @@ shutterTable(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeGenerator PipeGen;
   
   // joined and open
   GateGen.setLength(3.5);
@@ -288,6 +289,59 @@ shutterTable(FuncDataBase& Control,
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
+
+  
+  PipeGen.setMat("Stainless304");
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",0,6.8);
+  Control.addVariable(frontKey+"OffPipeAFlangeBackZStep",4.0);
+
+
+  const std::string shutterName=frontKey+"ShutterBox";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,shutterName,0.0,51.0);
+  // beam ports
+  Control.addVariable(shutterName+"NPorts",0);
+  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,shutterName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,shutterName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  
+  return;
+  
+  /*
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(5.0,5.0);
+  // ystep/radius/length
+  const double sBoxLen(50.0);
+  PTubeGen.generateTube(Control,frontKey+"ShutterBox",0.0,18.0,sBoxLen);
+  Control.addVariable(frontKey+"ShutterBoxNPorts",2);
+
+
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
+
+  // 20cm above port tube
+  PItemGen.setCF<setVariable::CF50>(20.0);
+  PItemGen.setPlate(0.0,"Void");  
+  FlangeGen.setCF<setVariable::CF50>();
+  // W / H / T
+  FlangeGen.setBlade(5.0,5.0,20.0,0.0,"Tungsten",1);  
+
+  // centre of mid point
+  const Geometry::Vec3D ZVec(0,0,1);
+  Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
+      const std::string fname=frontKey+"Shutter"+std::to_string(i);      
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      FlangeGen.generateMount(Control,fname,0);  // in beam
+      CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
+    }
+  */
   return;
 }
 
@@ -310,6 +364,8 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
+
+  Control.addVariable(frontKey+"OuterRadius",50.0);
   
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");

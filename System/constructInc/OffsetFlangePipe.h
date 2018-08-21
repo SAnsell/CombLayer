@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/SplitFlangePipe.h
+ * File:   constructInc/OffsetFlangePipe.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,23 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_SplitFlangePipe_h
-#define constructSystem_SplitFlangePipe_h
+#ifndef constructSystem_OffsetFlangePipe_h
+#define constructSystem_OffsetFlangePipe_h
 
 class Simulation;
 
 namespace constructSystem
 {
-
+  
 /*!
-  \class SplitFlangePipe
+  \class OffsetFlangePipe
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief SplitFlangePipe unit [simplified round pipe]
+  \brief OffsetFlangePipe unit  
 */
 
-class SplitFlangePipe :
+class OffsetFlangePipe :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
@@ -43,34 +43,33 @@ class SplitFlangePipe :
   public attachSystem::FrontBackCut
 {
  private:
-
-  const bool innerLayer;        ///< inner Fe layer [flag] -- make template
   
-  bool frontJoin;               ///< Flag for front join
+  bool frontJoin;               ///< Flag for front join to calc midpoint
   Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;        ///< Front axis for join
+  Geometry::Vec3D FAxis;        ///< Front axis
 
-  bool backJoin;                ///< Flag for back join 
+  bool backJoin;                ///< Flag for back join to calc midpoint
   Geometry::Vec3D BPt;          ///< Back point for join
   Geometry::Vec3D BAxis;        ///< Back axis for join
 
-  double radius;                ///< void radius [inner] 
+  double radius;                ///< void radius [inner]
   double length;                ///< void length [total]
-  double feThick;               ///< pipe wall thickness
+  
+  double feThick;               ///< pipe thickness
 
-  double bellowThick;           ///< Thickness of bellow (effective)
-  double bellowStep;            ///< Step from flange of bellow material
-
+  double flangeAXStep;           ///< Joining Flange XStep
+  double flangeAZStep;           ///< Joining Flange ZStep
   double flangeARadius;          ///< Joining Flange radius [-ve for rect]
   double flangeALength;          ///< Joining Flange length
 
+  double flangeBXStep;           ///< Joining Flange XStep
+  double flangeBZStep;           ///< Joining Flange ZStep
   double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
   double flangeBLength;          ///< Joining Flange length
-  
+    
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
-  int bellowMat;                ///< Pipe material (fractional density)
-    
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -78,13 +77,14 @@ class SplitFlangePipe :
   void createLinks();
 
   void applyActiveFrontBack();
+
   
  public:
 
-  SplitFlangePipe(const std::string&,const bool);
-  SplitFlangePipe(const SplitFlangePipe&);
-  SplitFlangePipe& operator=(const SplitFlangePipe&);
-  virtual ~SplitFlangePipe();
+  OffsetFlangePipe(const std::string&);
+  OffsetFlangePipe(const OffsetFlangePipe&);
+  OffsetFlangePipe& operator=(const OffsetFlangePipe&);
+  virtual ~OffsetFlangePipe();
 
   void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
   void setBack(const attachSystem::FixedComp&,const long int,const bool =0);

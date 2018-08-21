@@ -32,6 +32,7 @@ namespace constructSystem
   class Bellows;
   class CrossPipe;
   class GateValve;
+  class OffsetFlangePipe;
   class portItem;
   class PipeTube;
   class PortTube;
@@ -69,10 +70,13 @@ namespace xraySystem
 class maxpeemFrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap  
 {
  private:
 
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -97,7 +101,7 @@ class maxpeemFrontEnd :
   /// Pipe to heat dump
   std::shared_ptr<constructSystem::VacuumPipe> heatPipe;
   /// Heat dump container
-  std::shared_ptr<constructSystem::PortTube> heatBox;
+  std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Flange for heat shield
   std::shared_ptr<xraySystem::FlangeMount> heatTopFlange;
   /// bellow after HeatShield
@@ -136,14 +140,32 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// Gate box B
   std::shared_ptr<constructSystem::PipeTube> gateTubeB;
+  /// Gate box B
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
+  /// Main shutters
+  std::shared_ptr<constructSystem::PipeTube> shutterBox;
+  /// Shutters
+  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
 
-  void buildHeatTable(Simulation&);
-  void buildApertureTable(Simulation&);
-  void buildShutterTable(Simulation&);  
+  double outerRadius;
+  
+  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
+			  const attachSystem::FixedComp&,
+			  const long int);
+  
+  MonteCarlo::Object& constructMasterCell(Simulation&);
+  void refrontMasterCell(MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,
+			 const long int) const;
+  
+  void buildHeatTable(Simulation&,MonteCarlo::Object&);
+  void buildApertureTable(Simulation&,MonteCarlo::Object&);
+  void buildShutterTable(Simulation&,MonteCarlo::Object&);  
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   

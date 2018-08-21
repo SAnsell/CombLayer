@@ -137,9 +137,12 @@ MAXPEEM::build(Simulation& System,
 
   const int voidCell(74123);
 
+  const size_t PIndex=static_cast<size_t>(sideIndex-2);
+  const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
-  frontBeam->addInsertCell
-    (r1Ring->getCell("VoidTriangle",static_cast<size_t>(sideIndex-2)));
+  frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
+
+  frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
   
   

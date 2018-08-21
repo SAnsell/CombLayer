@@ -617,6 +617,18 @@ PipeTube::splitVoidPorts(Simulation& System,
   return;
 }
 
+void
+PipeTube::insertInCell(Simulation& System,const int cellN)
+  /*!
+    Overload of containdComp so that the ports can also 
+    be inserted if needed
+  */
+{
+  ContainedComp::insertInCell(System,cellN);
+  for(const portItem& PC : Ports)
+    PC.insertInCell(System,cellN);
+  return;
+}
   
   
 void

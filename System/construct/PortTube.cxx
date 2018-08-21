@@ -304,8 +304,6 @@ PortTube::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
 
-
-  
   const Geometry::Vec3D AVec(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BVec(Origin+X*portBXStep+Z*portBZStep);
   FixedComp::setConnect(6,AVec-Z*(portARadius+portAThick),-Z);

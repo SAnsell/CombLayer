@@ -96,6 +96,9 @@ class PipeTube :
   const portItem& getPort(const size_t) const;
 
   void createPorts(Simulation&);
+
+  virtual void insertInCell(Simulation&,const int);
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

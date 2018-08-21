@@ -177,7 +177,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
     \return vector of cells [first is original]
   */
 {
-  ELog::RegMethod RegA("FixedComp","splitObject(vec)");
+  ELog::RegMethod RegA("FixedComp","splitObjectAbsolute(vec)");
 
   int SN(SNoffset);
   int CN(cellN);

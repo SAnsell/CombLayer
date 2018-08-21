@@ -110,8 +110,8 @@ class ContainedComp
   void setInsertCell(const int);
   void setInsertCell(const std::vector<int>&);
 
-  void insertInCell(Simulation&,const int) const;
-  void insertInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertInCell(Simulation&,const int) const;
+  virtual void insertInCell(Simulation&,const std::vector<int>&) const;
 
   virtual void insertObjects(Simulation&);
   virtual void insertObjects(Simulation&,

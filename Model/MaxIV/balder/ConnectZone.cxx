@@ -188,8 +188,10 @@ ConnectZone::createSurfaces()
   */
 {
   ELog::RegMethod RegA("ConnectZone","createSurfaces");
+
+  if (outerRadius>Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
   
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
   return;
 }
 
@@ -232,8 +234,14 @@ ConnectZone::createOuterVoidUnit(Simulation& System,
 
 void
 ConnectZone::insertFirstRegion(Simulation& System,const int cellN)
+  /*!
+    Inserts the first component in the main wall / front wall
+    \param System :: Simuation 
+    \param cellN :: Cell number to place into region
+
+   */
 {
-  ELog::RegMethod RegA("ConnectZone","cinsertFirstRegion");
+  ELog::RegMethod RegA("ConnectZone","insertFirstRegion");
  
   boxA->insertInCell("FrontWall",System,cellN);
   boxA->insertInCell("MainWall",System,cellN);
@@ -262,7 +270,7 @@ ConnectZone::buildObjects(Simulation& System,
 
   std::string Out;
   
-  // creat First unit:
+  // create first unit:
 
   // build jump pipe [fit bellows in between]
   pipeA->createAll(System,FC,sideIndex);
