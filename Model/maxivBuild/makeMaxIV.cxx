@@ -137,13 +137,12 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
 
-	  if (BL=="MAXPEEM")
+	  if (BL=="MAXPEEM")  // sector 11
 	    {
-	      
 	      MAXPEEM BL("MaxPeem");
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
-		       r1Ring->getSideIndex("OpticCentre8"));
+		       r1Ring->getSideIndex("OpticCentre7"));
 	    }
 	  index++;
 	}

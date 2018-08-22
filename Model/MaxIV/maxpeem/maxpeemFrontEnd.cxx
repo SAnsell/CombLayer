@@ -93,6 +93,7 @@
 #include "SquareFMask.h"
 #include "FlangeMount.h"
 #include "HeatDump.h"
+#include "BremBlock.h"
 
 #include "maxpeemFrontEnd.h"
 
@@ -143,7 +144,8 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter0"),
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
 	}),
-  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB"))
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
+  bremBlock(new xraySystem::BremBlock(newName+"BremBlock"))  
   
   /*!
     Constructor
@@ -187,6 +189,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(shutters[0]);
   OR.addObject(shutters[1]);
   OR.addObject(offPipeB);
+  OR.addObject(bremBlock);
 
 }
   
@@ -259,7 +262,7 @@ maxpeemFrontEnd::createOuterVoidUnit(Simulation& System,
     \return cell nubmer
   */
 {
-  ELog::RegMethod RegA("ConnectZone","createOuterVoid");
+  ELog::RegMethod RegA("maxpeemFrontEnd","createOuterVoid");
 
   static HeadRule divider;
   // construct an cell based on previous cell:
@@ -282,7 +285,6 @@ maxpeemFrontEnd::createOuterVoidUnit(Simulation& System,
   divider.makeComplement();
 
   refrontMasterCell(masterCell,FC,sideIndex);
-  
   return cellIndex-1;
 }
 
@@ -375,6 +377,8 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,*ionPB,2);
   ionPB->insertInCell(System,outerCell);
 
+  insertFlanges(System,*gateTubeA);
+  
   pipeB->createAll(System,*ionPB,2);
   outerCell=createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
@@ -486,11 +490,13 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,
 				FPI,FPI.getSideIndex("OuterPlate"));
   florTubeA->insertInCell(System,outerCell);
-
+  
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*bellowJ,2);
   bellowJ->insertInCell(System,outerCell);
+
+  insertFlanges(System,*florTubeA);
 
   // FAKE insertcell:
   gateTubeB->addInsertCell(masterCell.getName());
@@ -501,11 +507,11 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
 				GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeB->insertInCell(System,outerCell);
 
-
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
+  insertFlanges(System,*gateTubeB);
 
   shutterBox->delayPorts();
   shutterBox->createAll(System,*offPipeA,
@@ -513,11 +519,12 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
   shutterBox->insertInCell(System,outerCell);
 
-  shutterBox->splitVoidPorts(System,"SplitVoid",1001,
-  			     shutterBox->getCell("Void"),
-			     {0,1});
-  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-  			     outerCell,{0,1});
+  cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
+				       shutterBox->getCell("Void"),
+				       {0,1});
+  cellIndex=
+    shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+			       outerCell,{0,1});
   shutterBox->addInsertCell(outerCell);
   shutterBox->createPorts(System);
 
@@ -535,9 +542,34 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
 
+  bremBlock->addInsertCell(offPipeB->getCell("Void"));
+  bremBlock->setFront(*offPipeB,-1);
+  bremBlock->setBack(*offPipeB,-2);
+  bremBlock->createAll(System,*offPipeB,0);
+    
+  
   return;
 }
 
+void
+maxpeemFrontEnd::insertFlanges(Simulation& System,
+			       const constructSystem::PipeTube& PT)
+  /*!
+    Boilerplate function to insert the flanges from pipetubes
+    that extend past the linkzone in to ther neighbouring regions.
+    \param System :: Simulation to use
+    \param PT :: PipeTube
+   */
+{
+  ELog::RegMethod RegA("maxpeemFrontEnd","insertFlanges");
+  
+  const size_t voidN=this->getNItems("OuterVoid")-3;
+  this->insertComponent(System,"OuterVoid",voidN,PT,"FrontFlange",0);
+  this->insertComponent(System,"OuterVoid",voidN,PT,"BackFlange",0);
+  this->insertComponent(System,"OuterVoid",voidN+2,PT,"FrontFlange",0);
+  this->insertComponent(System,"OuterVoid",voidN+2,PT,"BackFlange",0);
+  return;
+}
   
 void
 maxpeemFrontEnd::buildObjects(Simulation& System)

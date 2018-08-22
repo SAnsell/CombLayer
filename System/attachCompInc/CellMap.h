@@ -75,6 +75,10 @@ class CellMap  : public BaseMap
     { return BaseMap::getItem(K,Index); }
 
   /// return all cells found
+  size_t getNCells(const std::string& K) const
+    { return BaseMap::getNItems(K); }
+
+  /// return all cells found
   std::vector<int> getCells(const std::string& K) const
     { return BaseMap::getItems(K); }
 
@@ -103,6 +107,8 @@ class CellMap  : public BaseMap
   void insertComponent(Simulation&,const std::string&,const size_t,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,
+		       const HeadRule&) const;
+  void insertComponent(Simulation&,const std::string&,const size_t,
 		       const HeadRule&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const std::string&) const;

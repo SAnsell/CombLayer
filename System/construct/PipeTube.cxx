@@ -472,7 +472,7 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
 }
 
 
-void
+int
 PipeTube::splitVoidPorts(Simulation& System,
 			 const std::string& splitName,
 			 const int offsetCN,const int CN,
@@ -512,14 +512,14 @@ PipeTube::splitVoidPorts(Simulation& System,
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
   
   if (!splitName.empty())
-  for(const int CN : cells)
-    CellMap::addCell(splitName,CN);
+    for(const int CN : cells)
+      CellMap::addCell(splitName,CN);
 
 
-  return;
+  return (cells.empty()) ? CN : cells.back()+1;
 }
 
-void
+int
 PipeTube::splitVoidPorts(Simulation& System,
 			 const std::string& splitName,
 			 const int offsetCN,
@@ -568,10 +568,10 @@ PipeTube::splitVoidPorts(Simulation& System,
   for(const int CN : cells)
     CellMap::addCell(splitName,CN);
   
-  return;
+  return (cells.empty()) ? CN : cells.back()+1;
 }
 
-void
+int
 PipeTube::splitVoidPorts(Simulation& System,
 			 const std::string& splitName,
 			 const int offsetCN,
@@ -610,10 +610,10 @@ PipeTube::splitVoidPorts(Simulation& System,
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
-  for(const int CN : cells)
-    CellMap::addCell(splitName,CN);
+    for(const int CN : cells)
+      CellMap::addCell(splitName,CN);
   
-  return;
+  return (cells.empty()) ? CN : cells.back()+1;
 }
 
 void

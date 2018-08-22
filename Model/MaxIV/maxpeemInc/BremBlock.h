@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/BremColl.h
+ * File:   constructInc/BremBlock.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_BremColl_h
-#define xraySystem_BremColl_h
+#ifndef xraySystem_BremBlock_h
+#define xraySystem_BremBlock_h
 
 class Simulation;
 
@@ -28,31 +28,23 @@ namespace xraySystem
 {
   
 /*!
-  \class BremColl
+  \class BremBlock
   \version 1.0
   \author S. Ansell
   \date May 2018
   \brief Bremsstralung Collimator unit  
 */
 
-class BremColl :
+class BremBlock :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
  private:
 
-  double height;              ///< Height of W block
-  double width;               ///< Width of W block
+  double radius;              ///< Main radius
   double length;              ///< Main length  
-  double wallThick;           ///< wall thickness of main tube
-
-  double innerRadius;          ///< Inner radius of hole
-  double flangeARadius;        ///< Joining Flange radius
-  double flangeALength;        ///< Joining Flange length
-  double flangeBRadius;        ///< Joining Flange radius
-  double flangeBLength;        ///< Joining Flange length
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
@@ -62,9 +54,8 @@ class BremColl :
   double holeBHeight;          ///< Back height of hole
   
   int voidMat;                ///< void material
-  int innerMat;               ///< void material
-  int wallMat;                ///< Fe material layer
-  
+  int mainMat;                ///< main material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -73,10 +64,10 @@ class BremColl :
   
  public:
 
-  BremColl(const std::string&);
-  BremColl(const BremColl&);
-  BremColl& operator=(const BremColl&);
-  virtual ~BremColl();
+  BremBlock(const std::string&);
+  BremBlock(const BremBlock&);
+  BremBlock& operator=(const BremBlock&);
+  virtual ~BremBlock();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

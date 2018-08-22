@@ -82,12 +82,12 @@ class PipeTube :
 
     /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
-  void splitVoidPorts(Simulation&,const std::string&,
-		      const int,const int);
-  void splitVoidPorts(Simulation&,const std::string&,const int,
-		      const int,const Geometry::Vec3D&);
-  void splitVoidPorts(Simulation&,const std::string&,const int,
-		      const int,const std::vector<size_t>&);
+  int splitVoidPorts(Simulation&,const std::string&,
+		     const int,const int);
+  int splitVoidPorts(Simulation&,const std::string&,const int,
+		     const int,const Geometry::Vec3D&);
+  int splitVoidPorts(Simulation&,const std::string&,const int,
+		     const int,const std::vector<size_t>&);
 
   void setPortRotation(const size_t,const Geometry::Vec3D&);
 

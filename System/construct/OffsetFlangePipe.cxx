@@ -264,7 +264,6 @@ OffsetFlangePipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 7");
   makeCell("MainPipe",System,cellIndex++,feMat,0.0,Out);
 
-
   // outer boundary [flange front/back]
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
   addOuterSurf(Out+frontStr);

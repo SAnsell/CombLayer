@@ -319,6 +319,27 @@ BaseMap::getNames() const
   return Out;
 }
   
+size_t
+BaseMap::getNItems(const std::string& Key) const
+  /*!
+    Returns the number of of cells: 
+    Note a bit of care is needed over the case on a single value
+    \param Key :: keyname to search
+    \return size of items
+   */
+{
+  ELog::RegMethod RegA("BaseMap","getItems(Key)");
+
+  if (Key=="All" || Key=="all")
+    return getItems().size();
+  
+  std::vector<int> Out;  
+  LCTYPE::const_iterator mc=Items.find(Key);
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key");
+  return mc->second.size();
+}
+
 std::vector<int>
 BaseMap::getItems(const std::string& Key) const
   /*!

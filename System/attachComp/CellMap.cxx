@@ -105,7 +105,7 @@ CellMap::insertComponent(Simulation& System,
   /*!
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
-    \param cutKey :: Items in the Cell map to slicde
+    \param cutKey :: Items in the Cell map to slice
     \param CM :: Items that will cut this
     \param holdKey :: Items in the Cell map to be inserted
    */
@@ -185,6 +185,25 @@ CellMap::insertComponent(Simulation& System,
 void
 CellMap::insertComponent(Simulation& System,
 			 const std::string& Key,
+			 const size_t index,
+			 const HeadRule& HR) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: cell index
+    \param HR :: Contained Componenet
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(index,HR)");
+  if (HR.hasRule())
+    insertComponent(System,Key,index,HR.display());
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
 			 const std::string& exclude) const
   /*!
     Insert a component into a cell
@@ -233,6 +252,36 @@ CellMap::insertComponent(Simulation& System,
     throw ColErr::InContainerError<int>(cellNum,
 					"Cell["+Key+"] not present");
   outerObj->addSurfString(exclude);
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
+			 const size_t index,
+			 const CellMap& CM,
+			 const std::string& cmKey,
+			 const size_t cmIndex) const
+  /*!
+    Insert an exclude component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: Index on this cell [to be inserted]
+    \param CM :: Cell map to extract obbject for insertion
+    \param CMKey :: Key of cell map to insert
+    \param cmIndex :: index of CellMap CM
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(key,index,CMap,cmIndex)");
+
+  const int otherCellNum=CM.getCell(cmKey,cmIndex);
+  const MonteCarlo::Qhull* otherObj=System.findQhull(otherCellNum);
+  if (!otherObj)
+    throw ColErr::InContainerError<int>(otherCellNum,
+					"Cell["+cmKey+"] not present");
+  HeadRule HR=otherObj->getHeadRule();
+  HR.makeComplement();
+  insertComponent(System,Key,index,HR);
   return;
 }
 

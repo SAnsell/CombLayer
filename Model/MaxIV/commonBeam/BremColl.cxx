@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   cosax/BremColl.cxx
+ * File:   commonBeam/BremColl.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -89,6 +89,60 @@ BremColl::BremColl(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+BremColl::BremColl(const BremColl& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  height(A.height),width(A.width),length(A.length),
+  wallThick(A.wallThick),innerRadius(A.innerRadius),
+  flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
+  flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
+  holeXStep(A.holeXStep),holeZStep(A.holeZStep),
+  holeAWidth(A.holeAWidth),holeAHeight(A.holeAHeight),
+  holeBWidth(A.holeBWidth),holeBHeight(A.holeBHeight),
+  voidMat(A.voidMat),innerMat(A.innerMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: BremColl to copy
+  */
+{}
+
+BremColl&
+BremColl::operator=(const BremColl& A)
+  /*!
+    Assignment operator
+    \param A :: BremColl to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      height=A.height;
+      width=A.width;
+      length=A.length;
+      wallThick=A.wallThick;
+      innerRadius=A.innerRadius;
+      flangeARadius=A.flangeARadius;
+      flangeALength=A.flangeALength;
+      flangeBRadius=A.flangeBRadius;
+      flangeBLength=A.flangeBLength;
+      holeXStep=A.holeXStep;
+      holeZStep=A.holeZStep;
+      holeAWidth=A.holeAWidth;
+      holeAHeight=A.holeAHeight;
+      holeBWidth=A.holeBWidth;
+      holeBHeight=A.holeBHeight;
+      voidMat=A.voidMat;
+      innerMat=A.innerMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+  
   
 BremColl::~BremColl() 
   /*!

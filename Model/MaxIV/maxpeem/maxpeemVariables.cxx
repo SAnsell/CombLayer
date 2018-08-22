@@ -112,7 +112,7 @@ moveApertureTable(FuncDataBase& Control,
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
-    (Control,frontKey+"IonPC",52.0,15.74,78.70);   // height/depth
+    (Control,frontKey+"IonPC",52.0,15.74,28.70);   // height/depth
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
@@ -329,6 +329,18 @@ shutterTable(FuncDataBase& Control,
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",0,21.0);
   Control.addVariable(frontKey+"OffPipeBFlangeFrontZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
+
+  Control.addVariable(frontKey+"BremBlockRadius",3.0);
+  Control.addVariable(frontKey+"BremBlockLength",20.0);
+  Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
+  Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
+  Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,frontKey+"Trans",0,21.0);
+  
   
   return;
 }

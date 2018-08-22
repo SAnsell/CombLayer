@@ -53,6 +53,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class BremBlock;
   class FlangeMount;
   class HeatDump;
   class SquareFMask;
@@ -148,6 +149,8 @@ class maxpeemFrontEnd :
   std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
+  /// Brem-block
+  std::shared_ptr<xraySystem::BremBlock> bremBlock;
 
   double outerRadius;
   
@@ -159,7 +162,8 @@ class maxpeemFrontEnd :
   void refrontMasterCell(MonteCarlo::Object&,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
-  
+
+  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   void buildHeatTable(Simulation&,MonteCarlo::Object&);
   void buildApertureTable(Simulation&,MonteCarlo::Object&);
   void buildShutterTable(Simulation&,MonteCarlo::Object&);  
