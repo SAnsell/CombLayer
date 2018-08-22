@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attach/FrontBackCut.cxx
+ * File:   attachComp/FrontBackCut.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -446,9 +446,9 @@ FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface fo the front
     \param SMap :: Surface register
-    \param index :: offset index
+    \param surfIndex :: offset index [new]
     \param dFlag :: direction flag
-    \param YAxis :: Axid for shift of sphere/cylinder
+    \param YAxis :: Axis for shift of sphere/cylinder
     \param length :: length to shift by
   */
 {
@@ -467,7 +467,7 @@ FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface fo the back
     \param SMap :: Surface register
-    \param surfIndex :: offset index
+    \param surfIndex :: offset index [new]
     \param dFlag :: direction flag
     \param YAxis :: Axid for shift of sphere/cylinder
     \param length :: length to shift by

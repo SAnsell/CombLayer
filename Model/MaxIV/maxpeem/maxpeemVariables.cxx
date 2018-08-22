@@ -346,6 +346,30 @@ shutterTable(FuncDataBase& Control,
 }
 
 void
+wallVariables(FuncDataBase& Control,
+	      const std::string& wallKey)
+/*!
+    Set the variables for the frontend
+    \param Control :: DataBase to use
+    \param frontKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","wallVariables");
+
+  Control.addVariable(wallKey+"FrontHeight",40.0);
+  Control.addVariable(wallKey+"FrontWidth",60.0);
+  Control.addVariable(wallKey+"FrontLength",20.0);
+  
+  Control.addVariable(wallKey+"BackWidth",20.0);
+  Control.addVariable(wallKey+"BackHeight",20.0);
+  
+  Control.addVariable(wallKey+"VoidRadius",8.0);
+  Control.addVariable(wallKey+"WallMat","Lead");
+  Control.addVariable(wallKey+"VoidMat","Void");
+  return;
+}
+  
+void
 frontEndVariables(FuncDataBase& Control,
 		  const std::string& frontKey)
 /*!
@@ -448,7 +472,8 @@ MAXPEEMvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
 
   maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  
-
+  maxpeemVar::wallVariables(Control,"MaxPeemWallLead");
+  
   return;
 }
 

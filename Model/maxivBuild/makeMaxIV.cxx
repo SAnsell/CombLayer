@@ -142,8 +142,8 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	      MAXPEEM BL("MaxPeem");
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
-		       r1Ring->getSideIndex("OpticCentre6"));
-	      const long int I=r1Ring->getSideIndex("OpticCentre6");
+		       r1Ring->getSideIndex("OpticCentre7"));
+	      const long int I=r1Ring->getSideIndex("OpticCentre7");
 	    }
 	  index++;
 	}

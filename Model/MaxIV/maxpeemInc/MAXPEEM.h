@@ -55,9 +55,9 @@ namespace xraySystem
   class ExptBeamline;
   class OpticsBeamline;
   class ConnectZone;
-
   class PipeShield;
-  
+  class WallLead;
+ 
   /*!
     \class MAXPEEM
     \version 1.0
@@ -77,6 +77,7 @@ class MAXPEEM :
   std::string stopPoint;        ///< End point
 
   std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
+  std::shared_ptr<WallLead> wallLead;           ///< lead in beam wall
 
  public:
   

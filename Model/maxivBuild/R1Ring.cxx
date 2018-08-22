@@ -203,7 +203,6 @@ R1Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
 
   surfN=buildIndex+1000;
-  size_t cIndex(0);
   for(size_t i=0;i<NPoints;i++)
     {
       const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
@@ -217,17 +216,10 @@ R1Ring::createSurfaces()
 			       Origin+BP,
 			       Origin+BP+Z,NDir);
 
-      // trick to get exit walls [inner /outer]
-      if (concavePts[cIndex]==i+1)
-	{
-	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+3));
-	  cIndex = (cIndex+1) % concaveNPoints;
-	}
-      
       surfN+=10;
     }
 
-
+  size_t cIndex(0);
   surfN=buildIndex+2000;
   for(size_t i=0;i<NPoints;i++)
     {
@@ -239,6 +231,13 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+3,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
+      // trick to get exit walls [inner /outer]
+      if (concavePts[cIndex]==i+1)
+	{
+	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN-1000+3));
+	  SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+3));
+	  cIndex = (cIndex+1) % concaveNPoints;
+	}
       surfN+=10;
     }
 

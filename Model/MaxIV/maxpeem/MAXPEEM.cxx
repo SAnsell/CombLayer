@@ -94,7 +94,7 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
-
+#include "WallLead.h"
 
 #include "MAXPEEM.h"
 
@@ -103,7 +103,8 @@ namespace xraySystem
 
 MAXPEEM::MAXPEEM(const std::string& KN) :
   attachSystem::CopiedComp("Maxpeem",KN),
-  frontBeam(new maxpeemFrontEnd(newName+"FrontBeam"))
+  frontBeam(new maxpeemFrontEnd(newName+"FrontBeam")),
+  wallLead(new WallLead(newName+"WallLead"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -144,7 +145,13 @@ MAXPEEM::build(Simulation& System,
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
+  ELog::EM<<"HEAFD "<<r1Ring->getCell("FrontWall",SIndex)<<ELog::endDiag;
+  wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
+  wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
+  wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
+  ELog::EM<<"HEAFD "<<r1Ring->getCell("FrontWall",SIndex)<<ELog::endDiag;
+  wallLead->createAll(System,FCOrigin,sideIndex);
   
   return;
 }
