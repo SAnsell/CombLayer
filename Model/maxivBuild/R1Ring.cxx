@@ -428,28 +428,27 @@ R1Ring::createLinks()
 
   FixedComp::setNConnect(2*concaveNPoints+2);
   
-  const double beamInStep(100.0);
+  const double beamStepOut(1510.55);  // from origin
   // Main beam start points DONT have a surface [yet]
   
   for(size_t i=1;i<concaveNPoints+1;i++)
     {
       const size_t index(i-1);
-      const Geometry::Vec3D& APt(voidTrack[concavePts[i-1]]);
-      const Geometry::Vec3D& BPt(voidTrack[concavePts[i % concaveNPoints]]);
-      const Geometry::Vec3D Pt=(APt+BPt)/2.0;
-      
-      const Geometry::Vec3D Axis=(Origin-Pt).unit();
-      const Geometry::Vec3D Beam=Axis*Z;
-      
+
       const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamInner",((i+1) % concaveNPoints)));
       if (!BInner)
 	throw ColErr::InContainerError<std::string>
 	  ("BeamInner"+std::to_string(index),"Surf map no found");
 
+      const Geometry::Vec3D Beam= -BInner->getNormal();
+      const Geometry::Vec3D Axis= -Beam*Z;
+      const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
+      
       FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
       FixedComp::setLinkSurf(index+2,-BInner->getName());
-      FixedComp::setConnect(index+2,Pt+Axis*beamInStep,-BInner->getNormal());
+      FixedComp::setConnect(index+2,PtX,Beam);
+      
     }
   return;
 }

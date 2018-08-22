@@ -151,6 +151,8 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Brem-block
   std::shared_ptr<xraySystem::BremBlock> bremBlock;
+  /// Front port connection for shutterbox
+  std::shared_ptr<constructSystem::Bellows> bellowK;
 
   double outerRadius;
   

@@ -145,8 +145,8 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
       std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
 	}),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  bremBlock(new xraySystem::BremBlock(newName+"BremBlock"))  
-  
+  bremBlock(new xraySystem::BremBlock(newName+"BremBlock")),  
+  bellowK(new constructSystem::Bellows(newName+"BellowK")) 
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -190,6 +190,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(shutters[1]);
   OR.addObject(offPipeB);
   OR.addObject(bremBlock);
+  OR.addObject(bellowK);
 
 }
   
@@ -242,7 +243,7 @@ maxpeemFrontEnd::createSurfaces()
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
   return;
@@ -547,6 +548,10 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   bremBlock->setBack(*offPipeB,-2);
   bremBlock->createAll(System,*offPipeB,0);
     
+  // bellows 
+  bellowK->createAll(System,*offPipeB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowK,2);
+  bellowK->insertInCell(System,outerCell);
   
   return;
 }

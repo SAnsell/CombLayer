@@ -337,9 +337,9 @@ shutterTable(FuncDataBase& Control,
   Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
   Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
 
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setAFlangeCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,frontKey+"Trans",0,21.0);
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowK",0,11.05);
   
   
   return;
@@ -376,10 +376,10 @@ frontEndVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      115.0,30.0,15.0,15.0,210.0);
+		      0.0,30.0,15.0,15.0,273.30);
 
   // Wiggler
-  Control.addVariable(frontKey+"WigglerLength",200.0);
+  Control.addVariable(frontKey+"WigglerLength",251.508);
   Control.addVariable(frontKey+"WigglerBlockWidth",8.0);
   Control.addVariable(frontKey+"WigglerBlockHeight",8.0);
   Control.addVariable(frontKey+"WigglerBlockDepth",8.0);
@@ -398,8 +398,9 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskRadius",0.11);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
+  // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,444.50);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,296.1);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
