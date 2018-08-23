@@ -846,7 +846,7 @@ BALDERvariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
   PipeGen.generatePipe(Control,"BalderJoinPipe",0,178.0);
 
-  balderVar::opticsHutVariables(Control,"Balder");
+  balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");
 
   LeadPipeGen.setCF<setVariable::CF40>();
