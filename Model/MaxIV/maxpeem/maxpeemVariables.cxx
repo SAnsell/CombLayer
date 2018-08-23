@@ -74,6 +74,7 @@ namespace maxpeemVar
   void moveApertureTable(FuncDataBase&,const std::string&);
   void heatDumpVariables(FuncDataBase&,const std::string&);
   void shutterTable(FuncDataBase&,const std::string&);
+  void transferVariables(FuncDataBase&,const std::string&);
   void opticsHutVariables(FuncDataBase&,const std::string&);
 
 
@@ -103,10 +104,10 @@ opticsHutVariables(FuncDataBase& Control,
 
   // THIS IS WRONG but the diagram is a mess.
   Control.addVariable(hutName+"InnerSkin",0.3);
-  Control.addVariable(hutName+"PbWallThick",7.4);
-  Control.addVariable(hutName+"PbRoofThick",7.4);
-  Control.addVariable(hutName+"PbFrontThick",7.4);
-  Control.addVariable(hutName+"PbBackThick",7.4);
+  Control.addVariable(hutName+"PbWallThick",0.4);
+  Control.addVariable(hutName+"PbRoofThick",0.4);
+  Control.addVariable(hutName+"PbFrontThick",0.4);
+  Control.addVariable(hutName+"PbBackThick",0.4);
   Control.addVariable(hutName+"OuterSkin",0.3);
 
   Control.addVariable(hutName+"InnerMat","Stainless304");
@@ -403,10 +404,30 @@ shutterTable(FuncDataBase& Control,
 }
 
 void
+transferVariables(FuncDataBase& Control,
+		  const std::string& transKey)
+/*!
+    Set the variables for the transfer regions
+    \param Control :: DataBase to use
+    \param transKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","transferVariables");
+  setVariable::PipeGenerator PipeGen;
+
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
+  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,145.0);
+
+  return;
+}
+
+void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
 /*!
-    Set the variables for the frontend
+    Set the variables for the frontend wall
     \param Control :: DataBase to use
     \param frontKey :: name before part names
   */
@@ -530,7 +551,9 @@ MAXPEEMvariables(FuncDataBase& Control)
 
   maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  
   maxpeemVar::wallVariables(Control,"MaxPeemWallLead");
+  maxpeemVar::transferVariables(Control,"MaxPeem");
   maxpeemVar::opticsHutVariables(Control,"MaxPeemOpticsHut");
+  //  maxpeemVar::opticsBeamVariables(Control,"MaxPeemOpticsHut");
 
   return;
 }

@@ -51,6 +51,7 @@ namespace xraySystem
   class R1Ring;
   class maxpeemFrontEnd;
   class maxpeemOpticsHutch;
+  class maxpeemOpticsBeamline;
   class ExperimentalHutch;
   class ExptBeamline;
   class OpticsBeamline;
@@ -79,6 +80,10 @@ class MAXPEEM :
   std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
   std::shared_ptr<maxpeemOpticsHutch> opticsHut;   ///< main optics hut
+  /// Pipe joining frontend to optics hut
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
+  /// Main optics hutch components
+  std::shared_ptr<maxpeemOpticsBeamline> opticsBeam;
 
  public:
   

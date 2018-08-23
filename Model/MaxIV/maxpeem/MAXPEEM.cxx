@@ -86,6 +86,7 @@
 #include "R1Ring.h"
 #include "maxpeemFrontEnd.h"
 #include "maxpeemOpticsHutch.h"
+#include "maxpeemOpticsBeamline.h"
 #include "ExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
@@ -96,6 +97,7 @@
 #include "FlangeMount.h"
 #include "WallLead.h"
 
+
 #include "MAXPEEM.h"
 
 namespace xraySystem
@@ -105,7 +107,9 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
   attachSystem::CopiedComp("Maxpeem",KN),
   frontBeam(new maxpeemFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
-  opticsHut(new maxpeemOpticsHutch(newName+"OpticsHut"))
+  opticsHut(new maxpeemOpticsHutch(newName+"OpticsHut")),
+  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
+  opticsBeam(new maxpeemOpticsBeamline(newName+"OpticsBeam"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -115,6 +119,9 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(frontBeam);
+  OR.addObject(wallLead);
+  OR.addObject(opticsHut);
+  OR.addObject(joinPipe);
 }
 
 MAXPEEM::~MAXPEEM()
@@ -158,6 +165,12 @@ MAXPEEM::build(Simulation& System,
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
+
+  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell(wallLead->getCell("Void"));
+  joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
+  joinPipe->addInsertCell(opticsHut->getCell("Void"));
+  joinPipe->createAll(System,*frontBeam,2);
   
   return;
 }

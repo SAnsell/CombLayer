@@ -308,7 +308,7 @@ maxpeemOpticsHutch::createObjects(Simulation& System)
   if (inletRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -7 ");
-      makeCell("InputHole",System,cellIndex++,0,0.0,Out+ringWall);
+      makeCell("InletHole",System,cellIndex++,0,0.0,Out+ringWall);
     }
   if (holeRadius>Geometry::zeroTol)
     {

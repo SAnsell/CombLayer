@@ -587,8 +587,6 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   ELog::RegMethod RegA("maxpeemFrontEnd","buildObjects");
 
   int outerCell;
-  //  wigglerBox->addInsertCell(ContainedComp::getInsertCells()[0]);
-  //  wigglerBox->registerSpaceCut(0,2);
   MonteCarlo::Object& masterCell=constructMasterCell(System);
   
   wigglerBox->createAll(System,*this,0);
@@ -632,12 +630,11 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
 
-  lastComp=heatPipe;
-
   buildHeatTable(System,masterCell);  
   buildApertureTable(System,masterCell);
   buildShutterTable(System,masterCell);
-  lastComp=pipeC;
+
+  lastComp=bellowK;
   
   return;
 }
