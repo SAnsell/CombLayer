@@ -85,7 +85,7 @@
 
 #include "R1Ring.h"
 #include "maxpeemFrontEnd.h"
-#include "OpticsHutch.h"
+#include "maxpeemOpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
@@ -104,7 +104,8 @@ namespace xraySystem
 MAXPEEM::MAXPEEM(const std::string& KN) :
   attachSystem::CopiedComp("Maxpeem",KN),
   frontBeam(new maxpeemFrontEnd(newName+"FrontBeam")),
-  wallLead(new WallLead(newName+"WallLead"))
+  wallLead(new WallLead(newName+"WallLead")),
+  opticsHut(new maxpeemOpticsHutch(newName+"OpticsHut"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -124,8 +125,8 @@ MAXPEEM::~MAXPEEM()
 
 void 
 MAXPEEM::build(Simulation& System,
-	      const attachSystem::FixedComp& FCOrigin,
-	      const long int sideIndex)
+	       const attachSystem::FixedComp& FCOrigin,
+	       const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -140,18 +141,23 @@ MAXPEEM::build(Simulation& System,
 
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
+  const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
+
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  ELog::EM<<"HEAFD "<<r1Ring->getCell("FrontWall",SIndex)<<ELog::endDiag;
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
-  ELog::EM<<"HEAFD "<<r1Ring->getCell("FrontWall",SIndex)<<ELog::endDiag;
   wallLead->createAll(System,FCOrigin,sideIndex);
+
+  opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
+  opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
+  opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
+  opticsHut->createAll(System,*wallLead,2);
   
   return;
 }

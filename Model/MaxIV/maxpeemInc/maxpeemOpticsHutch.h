@@ -61,6 +61,9 @@ class maxpeemOpticsHutch :
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerSkin;            ///< Outer wall/roof skin
+
+  double innerOutVoid;          ///< Extension for inner left void space
+  double outerOutVoid;          ///< Extension for outer left void space 
   
   double inletXStep;            ///< Inlet XStep
   double inletZStep;            ///< Inlet ZStep  
@@ -69,7 +72,7 @@ class maxpeemOpticsHutch :
   double holeXStep;            ///< Hole XStep
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
-  
+
   int innerMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls 
   int outerMat;                ///< Conc layer material for ring walls

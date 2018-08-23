@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/OpticsHutch.cxx
+ * File:   commonBeam/OpticsHutch.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

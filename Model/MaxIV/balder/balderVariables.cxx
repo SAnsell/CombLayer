@@ -322,17 +322,14 @@ frontEndVariables(FuncDataBase& Control,
 
 void
 opticsHutVariables(FuncDataBase& Control,
-		   const std::string& preName)
+		   const std::string& hutName)
   /*!
     Optics hut variables
     \param Control :: DataBase to add
-    \param preName :: Beamline name
-    \param caveName :: Cave name
+    \param hutName :: Optics hut name
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
-
-  const std::string hutName(preName+"OpticsHut");
 
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);

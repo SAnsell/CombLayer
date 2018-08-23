@@ -200,6 +200,7 @@ R1Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+15));
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
 
   surfN=buildIndex+1000;
@@ -405,8 +406,7 @@ R1Ring::createObjects(Simulation& System)
 	  surfN+=20;
 	}
       prevN=surfN-20;
-      makeCell("OuterSegment"+std::to_string(i),
-	       System,cellIndex++,0,0.0,Out);	  
+      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out);	  
     }
 	  
   Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");

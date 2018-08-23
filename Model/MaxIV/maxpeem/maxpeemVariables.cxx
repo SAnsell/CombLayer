@@ -74,6 +74,63 @@ namespace maxpeemVar
   void moveApertureTable(FuncDataBase&,const std::string&);
   void heatDumpVariables(FuncDataBase&,const std::string&);
   void shutterTable(FuncDataBase&,const std::string&);
+  void opticsHutVariables(FuncDataBase&,const std::string&);
+
+
+void
+opticsHutVariables(FuncDataBase& Control,
+		   const std::string& hutName)
+  /*!
+    Optics hut variables
+    \param Control :: DataBase to add
+    \param preName :: Beamline name
+    \param caveName :: Cave name
+  */
+{
+  ELog::RegMethod RegA("balderVariables","opticsHutVariables");
+
+
+  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"Length",950.0);
+  // total inner width [short] - 295.0cm 
+  Control.addVariable(hutName+"OutWidth",207.81);
+  Control.addVariable(hutName+"RingShortWidth",87.19);
+  // total inner width [short] - 400.0cm 
+  Control.addVariable(hutName+"RingLongWidth",192.19);
+  Control.addVariable(hutName+"ShortLen",240.0);
+  // length to first full width point
+  Control.addVariable(hutName+"FullLen",348.0);
+
+  // THIS IS WRONG but the diagram is a mess.
+  Control.addVariable(hutName+"InnerSkin",0.3);
+  Control.addVariable(hutName+"PbWallThick",7.4);
+  Control.addVariable(hutName+"PbRoofThick",7.4);
+  Control.addVariable(hutName+"PbFrontThick",7.4);
+  Control.addVariable(hutName+"PbBackThick",7.4);
+  Control.addVariable(hutName+"OuterSkin",0.3);
+
+  Control.addVariable(hutName+"InnerMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"OuterMat","Stainless304");
+  
+  Control.addVariable(hutName+"HoleXStep",0.0);
+  Control.addVariable(hutName+"HoleZStep",5.0);
+  Control.addVariable(hutName+"HoleRadius",3.5);
+
+  Control.addVariable(hutName+"InletXStep",0.0);
+  Control.addVariable(hutName+"InletZStep",0.0);
+  Control.addVariable(hutName+"InletRadius",5.0);
+
+
+  Control.addVariable(hutName+"NChicane",2);
+  PortChicaneGenerator PGen;
+  PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+
+
+  return;
+}
+  
   
 void
 moveApertureTable(FuncDataBase& Control,
@@ -363,7 +420,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"BackWidth",20.0);
   Control.addVariable(wallKey+"BackHeight",20.0);
   
-  Control.addVariable(wallKey+"VoidRadius",8.0);
+  Control.addVariable(wallKey+"VoidRadius",3.0);
   Control.addVariable(wallKey+"WallMat","Lead");
   Control.addVariable(wallKey+"VoidMat","Void");
   return;
@@ -473,7 +530,8 @@ MAXPEEMvariables(FuncDataBase& Control)
 
   maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  
   maxpeemVar::wallVariables(Control,"MaxPeemWallLead");
-  
+  maxpeemVar::opticsHutVariables(Control,"MaxPeemOpticsHut");
+
   return;
 }
 

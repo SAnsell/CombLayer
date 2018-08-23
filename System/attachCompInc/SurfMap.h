@@ -65,16 +65,19 @@ class SurfMap : public BaseMap
 
   void addSurf(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
+
   void addSurfs(const std::string& K,const std::vector<int>& CN)
     { BaseMap::addItems(K,CN); }
   
   int getSurf(const std::string& K) const
     { return BaseMap::getItem(K); }
+
   int getSurf(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
   std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
+
   std::vector<int> getSurfs() const
     { return BaseMap::getItems(); }
   //@}

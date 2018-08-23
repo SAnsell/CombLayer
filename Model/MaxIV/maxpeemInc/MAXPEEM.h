@@ -50,7 +50,7 @@ namespace xraySystem
 {
   class R1Ring;
   class maxpeemFrontEnd;
-  class OpticsHutch;
+  class maxpeemOpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class OpticsBeamline;
@@ -77,7 +77,8 @@ class MAXPEEM :
   std::string stopPoint;        ///< End point
 
   std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
-  std::shared_ptr<WallLead> wallLead;           ///< lead in beam wall
+  std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
+  std::shared_ptr<maxpeemOpticsHutch> opticsHut;   ///< main optics hut
 
  public:
   

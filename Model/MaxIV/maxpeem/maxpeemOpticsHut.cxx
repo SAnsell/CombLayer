@@ -95,12 +95,7 @@ maxpeemOpticsHutch::maxpeemOpticsHutch(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  nameSideIndex(15,"floorCut");
-  nameSideIndex(16,"roofCut");
-  nameSideIndex(17,"frontCut");
-}
-
+{}
 
 maxpeemOpticsHutch::~maxpeemOpticsHutch() 
   /*!
@@ -119,8 +114,6 @@ maxpeemOpticsHutch::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  // depth set by external + sides.
-  // Void + Fe special:
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
@@ -136,6 +129,9 @@ maxpeemOpticsHutch::populate(const FuncDataBase& Control)
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerSkin=Control.EvalVar<double>(keyName+"OuterSkin");
+
+  innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
+  outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
@@ -154,7 +150,7 @@ maxpeemOpticsHutch::populate(const FuncDataBase& Control)
 
 void
 maxpeemOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+				     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -179,6 +175,8 @@ maxpeemOpticsHutch::createSurfaces()
 {
   ELog::RegMethod RegA("maxpeemOpticsHutch","createSurfaces");
 
+  ModelSupport::buildPlane(SMap,buildIndex+31,Origin+Y*shortLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+Y*fullLen,Y);
   // Inner void [large volme
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
@@ -186,60 +184,74 @@ maxpeemOpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringLongWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin+X*ringShortWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*ringShortWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*ringShortWidth+Y*shortLen,
 			   Origin+X*ringLongWidth+Y*fullLen,
 			   Origin+X*ringLongWidth+Y*fullLen+Z,
 			   X);
 
+  if (innerOutVoid>Geometry::zeroTol)
+    ModelSupport::buildPlane
+      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
+
   const Geometry::Plane* SPtr=
-    SMap.realPtr<const Geometry::Plane>(buildIndex+13);
+    SMap.realPtr<const Geometry::Plane>(buildIndex+14);
   
-    // Inner void [large volme
+  // Inner void [large volme
   double TF(innerSkin);
   double TW(innerSkin);
   double TB(innerSkin);
   double TR(innerSkin);
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*TF,Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(length+TB),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+103,Origin-X*(outWidth+TW),X);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(outWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(ringLongWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height+TR),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+123,Origin+X*(ringShortWidth+TW),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+113,SPtr,TW);
+  ModelSupport::buildPlane(SMap,buildIndex+124,Origin+X*(ringShortWidth+TW),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+114,SPtr,TW);
 
+  // outer lead
   TF+=pbFrontThick;
   TW+=pbWallThick;
   TR+=pbRoofThick;
   TB+=pbBackThick;
 
+
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*TF,Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(length+TB),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+103,Origin-X*(outWidth+TW),X);
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(outWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(ringLongWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(height+TR),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+223,Origin+X*(ringShortWidth+TW),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+213,SPtr,TW);
+  ModelSupport::buildPlane(SMap,buildIndex+224,Origin+X*(ringShortWidth+TW),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+214,SPtr,TW);
 
+  // final outer
   TF+=outerSkin;
   TW+=outerSkin;
   TR+=outerSkin;
   TB+=outerSkin;
 
-  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*TF,Y);
+  // Note use front surf
+  // ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*TF,Y);
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(length+TB),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+103,Origin-X*(outWidth+TW),X);
+  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*(outWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*(ringLongWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(height+TR),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+323,Origin+X*(ringShortWidth+TW),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+313,SPtr,TW);
+  ModelSupport::buildPlane(SMap,buildIndex+324,Origin+X*(ringShortWidth+TW),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+314,SPtr,TW);
 
+  if (outerOutVoid>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,buildIndex+1033,Origin-X*(outWidth+TW+innerOutVoid),X);  
 
-  
+  if (inletRadius>Geometry::zeroTol)
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+7,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
+
+  if (holeRadius>Geometry::zeroTol)
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+17,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
+
   return;
 }
 
@@ -252,8 +264,60 @@ maxpeemOpticsHutch::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("maxpeemOpticsHutch","createObjects");
 
+  const std::string floorStr=getRuleStr("Floor");
+  const std::string ringWall=getRuleStr("RingWall");
   std::string Out;
+  
+  if (innerOutVoid>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
+      makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out);
+    }
+  else
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
+    }
+  std::list<int> matList({innerMat,pbMat,outerMat});
+  int HI(buildIndex);
+  for(const std::string& layer : {"Inner","Lead","Outer"})
+    {
+      const int mat=matList.front();
+      matList.pop_front();
+      Out=ModelSupport::getComposite(SMap,HI,"1 -2 -104 (-114:-124) (4:(14 24)) -6 ");
+      makeCell("Ring"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+      
+      Out=ModelSupport::getComposite(SMap,HI,"1 -2 -3 103 -6 ");
+      makeCell("Outer"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+      
+      Out=ModelSupport::getComposite(SMap,HI,"1 -2 103 -104 (-114:-124) 6 -106 ");
+      makeCell("Roof"+layer,System,cellIndex++,mat,0.0,Out);
+      
+      Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"2 -102 103 -104 -106 17M");
+      makeCell("Back"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
 
+      Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"101 -1 103 -124 -106 7M ");
+      if (layer=="Outer") Out+=ringWall;
+      makeCell("Front"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+
+      HI+=100;
+    }
+  // Front/back hole
+  if (inletRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -7 ");
+      makeCell("InputHole",System,cellIndex++,0,0.0,Out+ringWall);
+    }
+  if (holeRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," 2 -302 -17");
+      makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
+    }
+  
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -302 303 -304 (-314:-324) -306 ");
+  addOuterSurf(Out);  
 
   return;
 }
@@ -279,7 +343,7 @@ maxpeemOpticsHutch::createChicane(Simulation& System)
   */
 {
   ELog::RegMethod Rega("maxpeemOpticsHutch","createChicane");
-
+  return;
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
