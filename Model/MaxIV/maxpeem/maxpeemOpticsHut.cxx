@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/maxpeemOpticsHutch.cxx
+ * File:   maxpeem/maxpeemOpticsHut.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -79,38 +79,37 @@
 #include "ExternalCut.h"
 #include "PortChicane.h"
 
-#include "maxpeemOpticsHutch.h"
+#include "maxpeemOpticsHut.h"
 
 namespace xraySystem
 {
 
-maxpeemOpticsHutch::maxpeemOpticsHutch(const std::string& Key) : 
+maxpeemOpticsHut::maxpeemOpticsHut(const std::string& Key) : 
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
-  
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-maxpeemOpticsHutch::~maxpeemOpticsHutch() 
+maxpeemOpticsHut::~maxpeemOpticsHut() 
   /*!
     Destructor
   */
 {}
 
 void
-maxpeemOpticsHutch::populate(const FuncDataBase& Control)
+maxpeemOpticsHut::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHutch","populate");
+  ELog::RegMethod RegA("maxpeemOpticsHut","populate");
   
   FixedOffset::populate(Control);
 
@@ -140,6 +139,8 @@ maxpeemOpticsHutch::populate(const FuncDataBase& Control)
   inletXStep=Control.EvalDefVar<double>(keyName+"InletXStep",0.0);
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
+
+  beamTubeRadius=Control.EvalDefVar<double>(keyName+"BeamTubeRadius",0.0);
   
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
@@ -149,7 +150,7 @@ maxpeemOpticsHutch::populate(const FuncDataBase& Control)
 }
 
 void
-maxpeemOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
+maxpeemOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
 				     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -157,7 +158,7 @@ maxpeemOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHutch","createUnitVector");
+  ELog::RegMethod RegA("maxpeemOpticsHut","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -168,12 +169,12 @@ maxpeemOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-maxpeemOpticsHutch::createSurfaces()
+maxpeemOpticsHut::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHutch","createSurfaces");
+  ELog::RegMethod RegA("maxpeemOpticsHut","createSurfaces");
 
   ModelSupport::buildPlane(SMap,buildIndex+31,Origin+Y*shortLen,Y);
   ModelSupport::buildPlane(SMap,buildIndex+41,Origin+Y*fullLen,Y);
@@ -252,17 +253,23 @@ maxpeemOpticsHutch::createSurfaces()
     ModelSupport::buildCylinder
       (SMap,buildIndex+17,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
 
+  if (beamTubeRadius>Geometry::zeroTol)
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,beamTubeRadius);
+      setSurf("BeamTube",-SMap.realSurf(buildIndex+2007));
+    }
+  
   return;
 }
 
 void
-maxpeemOpticsHutch::createObjects(Simulation& System)
+maxpeemOpticsHut::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHutch","createObjects");
+  ELog::RegMethod RegA("maxpeemOpticsHut","createObjects");
 
   const std::string floorStr=getRuleStr("Floor");
   const std::string ringWall=getRuleStr("RingWall");
@@ -272,14 +279,21 @@ maxpeemOpticsHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 2007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 2007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
+
+  if (beamTubeRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -2007");
+      makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
+    }
+    
   std::list<int> matList({innerMat,pbMat,outerMat});
   int HI(buildIndex);
   for(const std::string& layer : {"Inner","Lead","Outer"})
@@ -323,26 +337,43 @@ maxpeemOpticsHutch::createObjects(Simulation& System)
 }
 
 void
-maxpeemOpticsHutch::createLinks()
+maxpeemOpticsHut::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHutch","createLinks");
+  ELog::RegMethod RegA("maxpeemOpticsHut","createLinks");
 
+  const double extraBack(innerSkin+outerSkin+pbBackThick);
+  const double extraWall(innerSkin+outerSkin+pbWallThick);
+
+  ExternalCut::createLink("RingWall",*this,0,Origin,Y);
+
+  setConnect(1,Origin+Y*(length+extraBack),Y);
+  setLinkSurf(1,SMap.realSurf(buildIndex+302));
+
+  // inner surf front
+  setConnect(7,Origin,Y);
+  setLinkSurf(7,SMap.realSurf(buildIndex+1));
+  nameSideIndex(7,"innerFront");
+
+  // inner surf back
+  setConnect(8,Origin+Y*length,-Y);
+  setLinkSurf(8,-SMap.realSurf(buildIndex+2));
+  nameSideIndex(8,"innerBack");
 
   return;
 }
 
 void
-maxpeemOpticsHutch::createChicane(Simulation& System)
+maxpeemOpticsHut::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
     \param System :: Simulation 
   */
 {
-  ELog::RegMethod Rega("maxpeemOpticsHutch","createChicane");
+  ELog::RegMethod Rega("maxpeemOpticsHut","createChicane");
   return;
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -393,7 +424,7 @@ maxpeemOpticsHutch::createChicane(Simulation& System)
 }
 
 void
-maxpeemOpticsHutch::createAll(Simulation& System,
+maxpeemOpticsHut::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -403,7 +434,7 @@ maxpeemOpticsHutch::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHutch","createAll(FC)");
+  ELog::RegMethod RegA("maxpeemOpticsHut","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

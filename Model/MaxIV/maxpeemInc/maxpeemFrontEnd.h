@@ -155,11 +155,11 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
   double outerRadius;
-  
+   
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
 			  const attachSystem::FixedComp&,
 			  const long int);
-  
+ 
   MonteCarlo::Object& constructMasterCell(Simulation&);
   void refrontMasterCell(MonteCarlo::Object&,
 			 const attachSystem::FixedComp&,

@@ -76,6 +76,74 @@ namespace maxpeemVar
   void shutterTable(FuncDataBase&,const std::string&);
   void transferVariables(FuncDataBase&,const std::string&);
   void opticsHutVariables(FuncDataBase&,const std::string&);
+  void opticsBeamVariables(FuncDataBase&,const std::string&);
+
+void
+opticsBeamVariables(FuncDataBase& Control,
+		    const std::string& opticKey)
+  /*!
+    Builds the variables for the moveable apperature table
+    containing two movable aperatures, pumping and bellows
+    \param Control :: Database
+    \param frontKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","opticsBeamVariables");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setMat("Stainless304");
+  
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,opticKey+"BellowA",0,16.0);
+
+    // flange if possible
+  CrossGen.setPlates(0.5,2.0,2.0);       // wall/Top/base
+  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
+  CrossGen.setMat("Stainless304");
+  // height/depth
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+    (Control,opticKey+"IonPA",0.0,24.4,36.6);
+
+  // will be rotated vertical
+  const std::string gateName=opticKey+"GateTubeA";
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.generateTube(Control,gateName,0.0,20.0);
+  Control.addVariable(gateName+"NPorts",2);   // beam ports
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  BellowGen.generateBellow(Control,opticKey+"BellowB",0,16.0);
+
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,opticKey+"PipeA",0,50.0);
+
+  // will be rotated vertical
+  const std::string florName=opticKey+"FlorTubeA";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
+  Control.addVariable(florName+"NPorts",2);   // beam ports
+  PItemGen.setCF<setVariable::CF40>(1.9);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  BellowGen.generateBellow(Control,opticKey+"BellowC",0,16.0);
+  
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,opticKey+"PipeB",0,174.0);
+
+  
+  return;
+}
 
 
 void
@@ -89,6 +157,8 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
+
+  Control.addVariable(hutName+"BeamTubeRadius",50.0);
 
 
   Control.addVariable(hutName+"Height",200.0);
@@ -553,7 +623,7 @@ MAXPEEMvariables(FuncDataBase& Control)
   maxpeemVar::wallVariables(Control,"MaxPeemWallLead");
   maxpeemVar::transferVariables(Control,"MaxPeem");
   maxpeemVar::opticsHutVariables(Control,"MaxPeemOpticsHut");
-  //  maxpeemVar::opticsBeamVariables(Control,"MaxPeemOpticsHut");
+  maxpeemVar::opticsBeamVariables(Control,"MaxPeemOpticsBeam");
 
   return;
 }

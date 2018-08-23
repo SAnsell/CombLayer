@@ -329,7 +329,6 @@ maxpeemFrontEnd::constructMasterCell(Simulation& System)
   insertObjects(System);
 
   return *System.findQhull(cellIndex-1);
-
 }
    
 void

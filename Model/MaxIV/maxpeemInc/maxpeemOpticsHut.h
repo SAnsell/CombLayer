@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_maxpeemOpticsHutch_h
-#define xraySystem_maxpeemOpticsHutch_h
+#ifndef xraySystem_maxpeemOpticsHut_h
+#define xraySystem_maxpeemOpticsHut_h
 
 class Simulation;
 
@@ -28,16 +28,16 @@ namespace xraySystem
 {
   class PortChicane;
 /*!
-  \class maxpeemOpticsHutch
+  \class maxpeemOpticsHut
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief maxpeemOpticsHutch unit  
+  \brief maxpeemOpticsHut unit  
 
   Built around the central beam axis
 */
 
-class maxpeemOpticsHutch :
+class maxpeemOpticsHut :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -73,9 +73,12 @@ class maxpeemOpticsHutch :
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
 
+  double beamTubeRadius;       ///< Hole for objects to easily be inserted
+  
   int innerMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls 
   int outerMat;                ///< Conc layer material for ring walls
+
 
   /// Chicanes 
   std::vector<std::shared_ptr<PortChicane>> PChicane;  
@@ -89,10 +92,10 @@ class maxpeemOpticsHutch :
 
  public:
 
-  maxpeemOpticsHutch(const std::string&);
-  maxpeemOpticsHutch(const maxpeemOpticsHutch&);
-  maxpeemOpticsHutch& operator=(const maxpeemOpticsHutch&);
-  virtual ~maxpeemOpticsHutch();
+  maxpeemOpticsHut(const std::string&);
+  maxpeemOpticsHut(const maxpeemOpticsHut&);
+  maxpeemOpticsHut& operator=(const maxpeemOpticsHut&);
+  virtual ~maxpeemOpticsHut();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

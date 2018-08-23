@@ -85,7 +85,7 @@
 
 #include "R1Ring.h"
 #include "maxpeemFrontEnd.h"
-#include "maxpeemOpticsHutch.h"
+#include "maxpeemOpticsHut.h"
 #include "maxpeemOpticsBeamline.h"
 #include "ExperimentalHutch.h"
 #include "CrossPipe.h"
@@ -107,7 +107,7 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
   attachSystem::CopiedComp("Maxpeem",KN),
   frontBeam(new maxpeemFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
-  opticsHut(new maxpeemOpticsHutch(newName+"OpticsHut")),
+  opticsHut(new maxpeemOpticsHut(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsBeam(new maxpeemOpticsBeamline(newName+"OpticsBeam"))
   /*!
@@ -169,8 +169,18 @@ MAXPEEM::build(Simulation& System,
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
-  joinPipe->addInsertCell(opticsHut->getCell("Void"));
+  joinPipe->addInsertCell(opticsHut->getCell("BeamVoid"));
   joinPipe->createAll(System,*frontBeam,2);
+
+  
+  opticsBeam->setCell("MasterVoid",opticsHut->getCell("BeamVoid"));
+  opticsBeam->setCutSurf
+    ("front",*opticsHut,opticsHut->getSideIndex("innerFront"));
+  opticsBeam->setCutSurf
+    ("back",*opticsHut,opticsHut->getSideIndex("innerBack"));
+  opticsBeam->setCutSurf("beam",opticsHut->getSurf("BeamTube"));
+    
+  opticsBeam->createAll(System,*joinPipe,2);
   
   return;
 }
