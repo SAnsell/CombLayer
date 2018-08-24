@@ -73,7 +73,8 @@ PortItemGenerator::PortItemGenerator() :
 PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) : 
   length(A.length),radius(A.radius),wallThick(A.wallThick),
   flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
-  outerVoid(A.outerVoid)
+  plateThick(A.plateThick),wallMat(A.wallMat),
+  plateMat(A.plateMat),outerVoid(A.outerVoid)
   /*!
     Copy constructor
     \param A :: PortItemGenerator to copy
@@ -95,6 +96,9 @@ PortItemGenerator::operator=(const PortItemGenerator& A)
       wallThick=A.wallThick;
       flangeLen=A.flangeLen;
       flangeRadius=A.flangeRadius;
+      plateThick=A.plateThick;
+      wallMat=A.wallMat;
+      plateMat=A.plateMat;
       outerVoid=A.outerVoid;
     }
   return *this;

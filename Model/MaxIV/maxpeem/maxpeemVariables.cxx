@@ -78,6 +78,82 @@ namespace maxpeemVar
   void opticsHutVariables(FuncDataBase&,const std::string&);
   void opticsBeamVariables(FuncDataBase&,const std::string&);
 
+
+void
+slitePackageVariables(FuncDataBase& Control,
+		      const std::string& slitKey)
+  /*!
+    Builds the variables for the Slit package
+    \param Control :: Database
+    \param slitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","m1MirrorVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,slitKey+"PipeC",0,33.6);
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,slitKey+"PipeD",0,9.9);
+
+  const std::string sName=slitKey+"SlitTube";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,sName,0.0,50.2);  
+  Control.addVariable(sName+"NPorts",0);   // beam ports (lots!!)
+  
+
+
+  return;
+}
+ 
+void
+m1MirrorVariables(FuncDataBase& Control,
+		  const std::string& mirrorKey)
+  /*!
+    Builds the variables for the M1 Mirror
+    \param Control :: Database
+    \param mirrorKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","m1MirrorVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::GateValveGenerator GateGen;
+  
+  PipeGen.setMat("Stainless304");
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",0,6.8);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
+
+  const std::string mName=mirrorKey+"M1Tube";
+  const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  Control.addVariable(mName+"XStep",centreOffset);   
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,6.8);
+
+  // joined and open
+  GateGen.setLength(7.5);
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,mirrorKey+"GateA",0.0,0);
+
+  return;
+}
+
+  
 void
 opticsBeamVariables(FuncDataBase& Control,
 		    const std::string& opticKey)
@@ -85,7 +161,7 @@ opticsBeamVariables(FuncDataBase& Control,
     Builds the variables for the moveable apperature table
     containing two movable aperatures, pumping and bellows
     \param Control :: Database
-    \param frontKey :: prename
+    \param opticKey :: prename
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","opticsBeamVariables");
@@ -141,7 +217,28 @@ opticsBeamVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,opticKey+"PipeB",0,174.0);
 
+  // will be rotated vertical
+  const std::string collName=opticKey+"PumpTubeA";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
+  Control.addVariable(collName+"NPorts",3);   // beam ports
   
+  PItemGen.setCF<setVariable::CF40>(5.95);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  const Geometry::Vec3D angVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
+  const double DLen=17.2-7.55/cos(M_PI*35.0/180.0);
+  PItemGen.setCF<setVariable::CF40>(DLen);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,collName+"Port2",
+			Geometry::Vec3D(0,0,0),-angVec);
+  
+  m1MirrorVariables(Control,opticKey);
   return;
 }
 

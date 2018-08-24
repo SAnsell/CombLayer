@@ -81,6 +81,7 @@
 #include "insertPlate.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
+#include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "portItem.h"
 #include "PipeTube.h"
@@ -113,7 +114,15 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  pipeB(new constructSystem::VacuumPipe(newName+"PipeB"))
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
+  offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
+  M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
+  gateA(new constructSystem::GateValve(newName+"GateA")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  slitTube(new constructSystem::PipeTube(newName+"SlitTube"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -130,6 +139,14 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(florTubeA);
   OR.addObject(bellowC);
   OR.addObject(pipeB);
+  OR.addObject(pumpTubeA);
+  OR.addObject(offPipeA);
+  OR.addObject(M1Tube);
+  OR.addObject(offPipeB);
+  OR.addObject(gateA);
+  OR.addObject(pipeC);
+  OR.addObject(pipeD);
+  OR.addObject(slitTube);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -365,7 +382,34 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
-  lastComp=pipeB;
+  // FAKE insertcell: reqruired
+  pumpTubeA->addInsertCell(masterCell.getName());
+  pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpTubeA->createAll(System,*pipeB,2);
+
+  const constructSystem::portItem& CPI=pumpTubeA->getPort(1);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,
+  				CPI,CPI.getSideIndex("OuterPlate"));
+  pumpTubeA->insertInCell(System,outerCell);
+  pumpTubeA->intersectPorts(System,1,2);
+
+  offPipeA->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeA,2);
+  offPipeA->insertInCell(System,outerCell);
+
+  M1Tube->createAll(System,*offPipeA,offPipeA->getSideIndex("FlangeBCentre"));
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*M1Tube,2);
+  M1Tube->insertInCell(System,outerCell);
+
+  offPipeB->createAll(System,*M1Tube,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeB,2);
+  offPipeB->insertInCell(System,outerCell);
+
+  gateA->createAll(System,*offPipeB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*gateA,2);
+  gateA->insertInCell(System,outerCell);
+  
+  lastComp=offPipeA;
 
   return;
 }

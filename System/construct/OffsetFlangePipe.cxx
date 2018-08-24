@@ -122,7 +122,6 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   feThick=Control.EvalVar<double>(keyName+"FeThick");
 
-
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeFrontRadius",
 					 keyName+"FlangeRadius");
   flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBackRadius",
@@ -137,10 +136,21 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
 					   keyName+"FlangeXStep",0.0);
   flangeAZStep=Control.EvalDefPair<double>(keyName+"FlangeFrontZStep",
 					   keyName+"FlangeZStep",0.0);
+  flangeAXYAngle=Control.EvalDefVar<double>
+    (keyName+"FlangeFrontXYAngle",0.0);
+
+  flangeAZAngle=Control.EvalDefVar<double>
+    (keyName+"FlangeFrontZAngle",0.0);
+    
   flangeBXStep=Control.EvalDefPair<double>(keyName+"FlangeBackXStep",
 					   keyName+"FlangeXStep",0.0);
   flangeBZStep=Control.EvalDefPair<double>(keyName+"FlangeBackZStep",
 					   keyName+"FlangeZStep",0.0);
+  flangeBXYAngle=Control.EvalDefVar<double>
+    (keyName+"FlangeBackXYAngle",0.0);
+
+  flangeBZAngle=Control.EvalDefVar<double>
+    (keyName+"FlangeBackZAngle",0.0);
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
@@ -162,6 +172,8 @@ OffsetFlangePipe::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   applyActiveFrontBack();
+  flangeAYAxis=Y;
+  flangeBYAxis=Y;
   return;
 }
 
@@ -173,7 +185,7 @@ OffsetFlangePipe::applyActiveFrontBack()
     orthogonality.
    */
 {
-  ELog::RegMethod RegA("SplitFlangePipe","applyActiveFrontBack");
+  ELog::RegMethod RegA("OffsetFlangePipe","applyActiveFrontBack");
 
   const Geometry::Vec3D curFP=(frontJoin) ? FPt : Origin;
   const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
@@ -207,30 +219,47 @@ OffsetFlangePipe::createSurfaces()
   ELog::RegMethod RegA("OffsetFlangePipe","createSurfaces");
   
   // Inner void
+  flangeAYAxis=Y;
+  flangeBYAxis=Y;
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);    
+      const Geometry::Quaternion Qz=
+	Geometry::Quaternion::calcQRotDeg(flangeAZAngle,X);
+      const Geometry::Quaternion Qxy=
+	Geometry::Quaternion::calcQRotDeg(flangeAXYAngle,Z);
+      Qz.rotate(flangeAYAxis);
+      Qxy.rotate(flangeAYAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1,
+			       Origin-Y*(length/2.0),flangeAYAxis); 
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  getShiftedFront(SMap,buildIndex+11,1,Y,flangeALength);
+  getShiftedFront(SMap,buildIndex+11,1,flangeAYAxis,flangeALength);
 
   
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+
+      const Geometry::Quaternion Qz=
+	Geometry::Quaternion::calcQRotDeg(flangeBZAngle,X);
+      const Geometry::Quaternion Qxy=
+	Geometry::Quaternion::calcQRotDeg(flangeBXYAngle,Z);
+      Qz.rotate(flangeBYAxis);
+      Qxy.rotate(flangeBYAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+2,
+			       Origin+Y*(length/2.0),flangeBYAxis);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,flangeBLength);
+  getShiftedBack(SMap,buildIndex+12,-1,flangeBYAxis,flangeBLength);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
 
   // FLANGE SURFACES FRONT/BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+107,
-			      Origin+X*flangeAXStep+Z*flangeAZStep,Y,
+			      Origin+X*flangeAXStep+Z*flangeAZStep,flangeAYAxis,
 			      flangeARadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,
-			      Origin+X*flangeBXStep+Z*flangeBZStep,Y,
+			      Origin+X*flangeBXStep+Z*flangeBZStep,flangeBYAxis,
 			      flangeBRadius);
   return;
 }
@@ -306,9 +335,9 @@ OffsetFlangePipe::createLinks()
   FixedComp::setLinkSignedCopy(9,*this,1);
   FixedComp::setLinkSignedCopy(10,*this,2);
   FixedComp::setConnect
-    (9,FixedComp::getLinkPt(1)+X*flangeAXStep+Z*flangeAZStep,Y);
+    (9,FixedComp::getLinkPt(1)+X*flangeAXStep+Z*flangeAZStep,flangeAYAxis);
   FixedComp::setConnect
-    (10,FixedComp::getLinkPt(2)+X*flangeBXStep+Z*flangeBZStep,Y);
+    (10,FixedComp::getLinkPt(2)+X*flangeBXStep+Z*flangeBZStep,flangeBYAxis);
 
   return;
 }

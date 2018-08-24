@@ -59,16 +59,23 @@ class OffsetFlangePipe :
 
   double flangeAXStep;           ///< Joining Flange XStep
   double flangeAZStep;           ///< Joining Flange ZStep
+  double flangeAXYAngle;         ///< Joining Flange angle xy
+  double flangeAZAngle;          ///< Joining Flange angle z
   double flangeARadius;          ///< Joining Flange radius [-ve for rect]
   double flangeALength;          ///< Joining Flange length
 
   double flangeBXStep;           ///< Joining Flange XStep
   double flangeBZStep;           ///< Joining Flange ZStep
+  double flangeBXYAngle;         ///< Joining Flange angle xy
+  double flangeBZAngle;          ///< Joining Flange angle z
   double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
   double flangeBLength;          ///< Joining Flange length
     
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
+
+  Geometry::Vec3D flangeAYAxis;        ///< front axis for flange
+  Geometry::Vec3D flangeBYAxis;        ///< Back axis for flange
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

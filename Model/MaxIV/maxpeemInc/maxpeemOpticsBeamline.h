@@ -95,7 +95,23 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe to some stuff
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-
+  /// collimator-port ???
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
+  /// Front port of mirror box
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
+  /// M1 - Mirror box
+  std::shared_ptr<constructSystem::PipeTube> M1Tube;
+  /// back port of mirror box
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
+  /// Gate valve
+  std::shared_ptr<constructSystem::GateValve> gateA;
+  /// Large Pipe to slit section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// Small Pipe to slit section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  /// Small Pipe to slit section
+  std::shared_ptr<constructSystem::PipeTube> slitTube;
+  
   double outerRadius;
   
   MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
