@@ -807,19 +807,21 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   // Skanska concrete
   // Composition received from Skanska
   // Source: MATER.INP from MARS. Material "ESSConc"
+  // MARS weight fractions converted into atom fractions
+  // through MCNP table 40
   MObj.setMaterial(imat++,"SkanskaConcrete",
-		   " 01001.70c -3.35720233139058521e-03 "
-		   " 08016.70c -3.82342797668609513e-01 "
-		   " 12024.70c -0.0019 "
-		   " 13027.70c -0.0192 "
-		   " 14028.70c -0.1251 "
-		   " 16032.70c -0.0081 "
-		   " 19039.70c -0.0158 "
-		   " 20040.70c -0.3927 "
-		   " 22048.70c -0.0038 "
-		   " 25055.70c -0.0021 "
-		   " 26056.70c -0.0444 "
-		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+		   " 01001.70c 7.58541306346E-02 "
+		   " 08016.70c 5.44324455789E-01 "
+		   " 12024.70c 1.80384818089E-03 "
+		   " 13027.70c 1.62039679915E-02 "
+		   " 14028.70c 1.01822596375E-01 "
+		   " 16032.70c 5.76900758414E-03 "
+		   " 19039.70c 9.23386841221E-03 "
+		   " 20040.70c 2.23766012519E-01 "
+		   " 22048.70c 1.80468100073E-03 "
+		   " 25055.70c 8.70428199441E-04 "
+		   " 26056.70c 1.80753482248E-02 "
+		   " 28058.70c 4.71655088127E-04 ", "lwtr.10t", MLib);
   MObj.setDensity(-2.35);
   MDB.resetMaterial(MObj);
 
