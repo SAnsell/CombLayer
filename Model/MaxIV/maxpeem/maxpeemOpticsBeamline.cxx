@@ -408,7 +408,25 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   gateA->createAll(System,*offPipeB,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*gateA,2);
   gateA->insertInCell(System,outerCell);
-  
+
+  pipeC->createAll(System,*gateA,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeC,2);
+  pipeC->insertInCell(System,outerCell);
+
+  pipeD->createAll(System,*pipeC,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeD,2);
+  pipeD->insertInCell(System,outerCell);
+
+  // FAKE insertcell: reqruired
+  slitTube->addInsertCell(masterCell.getName());
+  slitTube->createAll(System,*pipeD,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*slitTube,2);
+  slitTube->insertInCell(System,outerCell);
+
+  slitTube->splitVoidPorts(System,"SplitVoid",1001,
+			   slitTube->getCell("Void"),
+			   Geometry::Vec3D(0,1,0));
+
   lastComp=offPipeA;
 
   return;

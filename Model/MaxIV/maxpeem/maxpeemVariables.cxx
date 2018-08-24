@@ -77,22 +77,24 @@ namespace maxpeemVar
   void transferVariables(FuncDataBase&,const std::string&);
   void opticsHutVariables(FuncDataBase&,const std::string&);
   void opticsBeamVariables(FuncDataBase&,const std::string&);
+  void slitPackageVariables(FuncDataBase&,const std::string&);
 
 
 void
-slitePackageVariables(FuncDataBase& Control,
-		      const std::string& slitKey)
+slitPackageVariables(FuncDataBase& Control,
+		     const std::string& slitKey)
   /*!
     Builds the variables for the Slit package
     \param Control :: Database
     \param slitKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","m1MirrorVariables");
+  ELog::RegMethod RegA("maxpeemVariables[F]","slitPackageVariables");
 
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-
+  setVariable::PortItemGenerator PItemGen;
+  
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF63>();
@@ -103,11 +105,27 @@ slitePackageVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,slitKey+"PipeD",0,9.9);
 
   const std::string sName=slitKey+"SlitTube";
+  const double tLen(50.2);
   SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,sName,0.0,50.2);  
-  Control.addVariable(sName+"NPorts",0);   // beam ports (lots!!)
-  
+  SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
 
+  Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(6.1);
+  PItemGen.setPlate(0.0,"Void");
+
+  // -1/5 missed
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D PStep(0,tLen/10.0,0);
+  Geometry::Vec3D CPt(0.0,-tLen/2.0,0.0);
+  CPt+=PStep*3.0;
+  PItemGen.generatePort(Control,sName+"Port0",CPt,-XVec);
+  CPt+=PStep*2.0;
+  PItemGen.generatePort(Control,sName+"Port1",CPt,XVec);
+  CPt+=PStep*2.0;
+  PItemGen.generatePort(Control,sName+"Port2",CPt,-ZVec);
+  CPt+=PStep*2.0;
+  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
 
   return;
 }
@@ -239,6 +257,7 @@ opticsBeamVariables(FuncDataBase& Control,
 			Geometry::Vec3D(0,0,0),-angVec);
   
   m1MirrorVariables(Control,opticKey);
+  slitPackageVariables(Control,opticKey);
   return;
 }
 
