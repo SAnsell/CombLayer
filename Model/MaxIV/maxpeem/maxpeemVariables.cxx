@@ -65,6 +65,7 @@
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "LeadBoxGenerator.h"
+#include "GrateMonoBoxGenerator.h"
 
 namespace setVariable
 {
@@ -77,8 +78,44 @@ namespace maxpeemVar
   void transferVariables(FuncDataBase&,const std::string&);
   void opticsHutVariables(FuncDataBase&,const std::string&);
   void opticsBeamVariables(FuncDataBase&,const std::string&);
+  void monoVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
+
+  
+
+void
+monoVariables(FuncDataBase& Control,
+	      const std::string& monoKey)
+  /*!
+    Builds the variables for the mono packge
+    \param Control :: Database
+    \param slitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","monoVariables");
+
+  setVariable::GrateMonoBoxGenerator MBoxGen;
+  setVariable::PortItemGenerator PItemGen;
+  
+  MBoxGen.setMat("Stainless304");
+  MBoxGen.setWallThick(1.0);
+  MBoxGen.setCF<CF63>();
+  MBoxGen.setAPortCF<CF40>();
+  MBoxGen.setPortLength(2.5,2.5); // La/Lb
+  MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
+
+  // ystep/width/height/depth/length
+  // height+depth == 452mm  -- 110/ 342
+  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,77.2,11.0,34.20,117.1);
+
+  ELog::EM<<"Mon == "<<monoKey<<ELog::endDiag;
+  Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(6.1);
+  PItemGen.setPlate(0.0,"Void");
+
+  return;
+}
 
 void
 slitPackageVariables(FuncDataBase& Control,
@@ -94,6 +131,8 @@ slitPackageVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::BellowGenerator BellowGen;
   
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -126,6 +165,22 @@ slitPackageVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,sName+"Port2",CPt,-ZVec);
   CPt+=PStep*2.0;
   PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,slitKey+"PipeE",0,5.4);
+
+  // joined and open
+  GateGen.setLength(7.5);
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,slitKey+"GateB",0.0,0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,slitKey+"BellowD",0,7.5);
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,slitKey+"PipeF",0,14);
+
 
   return;
 }
@@ -258,6 +313,7 @@ opticsBeamVariables(FuncDataBase& Control,
   
   m1MirrorVariables(Control,opticKey);
   slitPackageVariables(Control,opticKey);
+  monoVariables(Control,opticKey);
   return;
 }
 
@@ -274,7 +330,7 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
 
-  Control.addVariable(hutName+"BeamTubeRadius",50.0);
+  Control.addVariable(hutName+"BeamTubeRadius",80.0);
 
 
   Control.addVariable(hutName+"Height",200.0);

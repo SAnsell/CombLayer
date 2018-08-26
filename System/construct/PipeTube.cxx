@@ -548,15 +548,16 @@ PipeTube::splitVoidPorts(Simulation& System,
   for(size_t i=0;i<PCentre.size();i++)
     {
       // within basis set
-      if (Ports[i].getY().dotProd(inobjAxis)<Geometry::zeroTol)
+      if (Ports[i].getY().dotProd(Axis)<Geometry::zeroTol)
 	{
 	  if (preFlag)   // test to have two ports
 	    {
 	      const Geometry::Vec3D CPt=
 		(PCentre[preFlag-1]+PCentre[i])/2.0;
 	      SplitOrg.push_back(CPt);
-	      SplitAxis.push_back(Axis);
+	      SplitAxis.push_back(inobjAxis.unit());
 	    }
+		      
 	  preFlag=i+1;
 	}
     }

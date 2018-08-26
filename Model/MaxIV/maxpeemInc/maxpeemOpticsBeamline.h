@@ -53,7 +53,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
-  class MonoVessel;
+  class GrateMonoBox;
   class MonoCrystals;
   class FlangeMount;
   class Mirror;
@@ -111,9 +111,17 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::PipeTube> slitTube;
-  
-  double outerRadius;
-  
+  /// Small Pipe to gate-valve
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// Gate valve
+  std::shared_ptr<constructSystem::GateValve> gateB;
+  /// Bellow to to super section
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Pipe exiting slit section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
+  /// Mono Box
+  std::shared_ptr<xraySystem::GrateMonoBox> monoB;
+
   MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
 			  HeadRule&,
@@ -125,6 +133,11 @@ class maxpeemOpticsBeamline :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
+  void buildMono(Simulation&,HeadRule&,MonteCarlo::Object&,
+		 const attachSystem::FixedComp&,const long int);
+  void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object&,
+		       const attachSystem::FixedComp&,const long int);
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

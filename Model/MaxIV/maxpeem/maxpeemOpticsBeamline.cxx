@@ -94,6 +94,7 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "GrateMonoBox.h"
 #include "maxpeemOpticsBeamline.h"
 
 namespace xraySystem
@@ -122,7 +123,12 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   gateA(new constructSystem::GateValve(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  slitTube(new constructSystem::PipeTube(newName+"SlitTube"))
+  slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
+  pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  gateB(new constructSystem::GateValve(newName+"GateB")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  monoB(new xraySystem::GrateMonoBox(newName+"MonoBox"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -147,6 +153,10 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(pipeD);
   OR.addObject(slitTube);
+  OR.addObject(pipeE);
+  OR.addObject(gateB);
+  OR.addObject(bellowD);
+  OR.addObject(pipeF);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -164,7 +174,6 @@ maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","populate");
   FixedOffset::populate(Control);
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
   return;
 }
 
@@ -196,8 +205,6 @@ maxpeemOpticsBeamline::createSurfaces()
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","createSurfaces");
 
-  if (outerRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
@@ -316,15 +323,95 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
   this->insertComponent(System,"OuterVoid",voidN+2,PT,"BackFlange",0);
   return;
 }
+
+
+void
+maxpeemOpticsBeamline::buildMono(Simulation& System,
+				 HeadRule& divider,
+				 MonteCarlo::Object& masterCell,
+				 const attachSystem::FixedComp& initFC, 
+				 const long int sideIndex)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param divider :: Divider object
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildMono");
+
+  int outerCell;
   
+  monoB->createAll(System,initFC,sideIndex);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*monoB,2);
+  monoB->insertInCell(System,outerCell);
+
+  return;
+}
+
+
+void
+maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
+					HeadRule& divider,
+					MonteCarlo::Object& masterCell,
+					const attachSystem::FixedComp& initFC, 
+					const long int sideIndex)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param divider :: Divider object
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildSlitPackage");
+
+  int outerCell;
   
+  pipeD->createAll(System,initFC,sideIndex);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeD,2);
+  pipeD->insertInCell(System,outerCell);
+
+  // FAKE insertcell: reqruired
+  slitTube->addInsertCell(masterCell.getName());
+  slitTube->createAll(System,*pipeD,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*slitTube,2);
+  slitTube->insertInCell(System,outerCell);
+
+  slitTube->splitVoidPorts(System,"SplitVoid",1001,
+			   slitTube->getCell("Void"),
+			   Geometry::Vec3D(0,1,0));
+
+  pipeE->createAll(System,*slitTube,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeE,2);
+  pipeE->insertInCell(System,outerCell);
+
+  gateB->createAll(System,*pipeE,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*gateB,2);
+  gateB->insertInCell(System,outerCell);
+
+  bellowD->createAll(System,*gateB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowD,2);
+  bellowD->insertInCell(System,outerCell);
+
+  pipeF->createAll(System,*bellowD,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeF,2);
+  pipeF->insertInCell(System,outerCell);
+  
+
+  return;
+}
+
+
 void
 maxpeemOpticsBeamline::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \param MCell :: Master cell to use
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildObjects");
@@ -413,20 +500,9 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeC,2);
   pipeC->insertInCell(System,outerCell);
 
-  pipeD->createAll(System,*pipeC,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeD,2);
-  pipeD->insertInCell(System,outerCell);
-
-  // FAKE insertcell: reqruired
-  slitTube->addInsertCell(masterCell.getName());
-  slitTube->createAll(System,*pipeD,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*slitTube,2);
-  slitTube->insertInCell(System,outerCell);
-
-  slitTube->splitVoidPorts(System,"SplitVoid",1001,
-			   slitTube->getCell("Void"),
-			   Geometry::Vec3D(0,1,0));
-
+  buildSlitPackage(System,divider,masterCell,*pipeC,2);
+  buildMono(System,divider,masterCell,*pipeF,2);
+  
   lastComp=offPipeA;
 
   return;

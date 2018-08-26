@@ -128,7 +128,7 @@ template<typename CF>
 void
 VacBoxGenerator::setAPortCF()
   /*!
-    Setter for Port A
+    Setter for port A
   */
 {
   portATubeRadius=CF::innerRadius;
@@ -144,8 +144,8 @@ template<typename CF>
 void
 VacBoxGenerator::setBPortCF()
   /*!
-    Setter for prot B
-   */
+    Setter for port B
+  */
 {
   portBTubeRadius=CF::innerRadius;
   portBWallThick=CF::wallThick;
@@ -173,7 +173,7 @@ VacBoxGenerator::setPortLength(const double LA,const double LB)
   /*!
     Set both the ports lengths
     \param LA :: Length of port A
-    \param LB :: Length of port A
+    \param LB :: Length of port B
 
    */
 {
@@ -186,9 +186,9 @@ void
 VacBoxGenerator::setPort(const double R,const double L,
 			 const double T)
   /*!
-    Set both the ports
+    Set both the ports identically
     \param R :: radius of port tube
-    \param R :: lenght of port tube
+    \param R :: length of port tube
     \param T :: Thickness of port tube
    */
 {
@@ -205,9 +205,9 @@ void
 VacBoxGenerator::setAPort(const double R,const double L,
 			  const double T)
   /*!
-    Set both the ports
+    Set port A
     \param R :: radius of port tube
-    \param R :: lenght of port tube
+    \param L :: length of port tube
     \param T :: Thickness of port tube
    */
 {
@@ -221,9 +221,9 @@ void
 VacBoxGenerator::setBPort(const double R,const double L,
 			  const double T)
   /*!
-    Set both the ports
+    Set port B
     \param R :: radius of port tube
-    \param R :: lenght of port tube
+    \param L :: length of port tube
     \param T :: Thickness of port tube
    */
 {
@@ -320,6 +320,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"FeMat",wallMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
        
   return;
 
