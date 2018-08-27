@@ -134,7 +134,10 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
-  pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB"))
+  pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
+  offPipeC(new constructSystem::OffsetFlangePipe(newName+"OffPipeC")),
+  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),  
+  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -170,6 +173,9 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(viewTube);
   OR.addObject(slitsB);
   OR.addObject(pumpTubeB);
+  OR.addObject(offPipeC);
+  OR.addObject(M3Tube);
+  OR.addObject(offPipeD);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -358,8 +364,6 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   int outerCell;
 
   
-  //  System.createObjSurfMap();
-  
   // FAKE insertcell: required
   viewTube->addInsertCell(masterCell.getName());
   viewTube->createAll(System,initFC,sideIndex);
@@ -373,15 +377,27 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   // FAKE insertcell: reqruired
   
   pumpTubeB->addInsertCell(masterCell.getName());
-  //  pumpTubeB->delayPorts();
   pumpTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeB->createAll(System,*slitsB,2);
 
-  // const constructSystem::portItem& CPI=pumpTubeB->getPort(1);
-  // outerCell=createOuterVoidUnit(System,masterCell,divider,
-  // 				CPI,CPI.getSideIndex("OuterPlate"));
-  // pumpTubeB->insertInCell(System,outerCell);
-  //  pumpTubeB->intersectPorts(System,1,2);
+  const constructSystem::portItem& CPI=pumpTubeB->getPort(1);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,
+				CPI,CPI.getSideIndex("OuterPlate"));
+  pumpTubeB->insertInCell(System,outerCell);
+  pumpTubeB->intersectPorts(System,1,2);
+  
+  offPipeC->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeC,2);
+  offPipeC->insertInCell(System,outerCell);
+  
+  M3Tube->createAll(System,*offPipeC,offPipeC->getSideIndex("FlangeBCentre"));
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
+  M3Tube->insertInCell(System,outerCell);
+
+  offPipeD->createAll(System,*M3Tube,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeD,2);
+  offPipeD->insertInCell(System,outerCell);
+
   
   return;
 }

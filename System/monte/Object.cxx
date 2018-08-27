@@ -410,6 +410,7 @@ Object::procString(const std::string& cellStr)
    */
 {
   populated=0;
+  objSurfValid=0;
   return HRule.procString(cellStr);
 }
 

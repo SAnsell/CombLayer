@@ -560,16 +560,12 @@ PipeTube::splitVoidPorts(Simulation& System,
 	  preFlag=i+1;
 	}
     }
-
-  ELog::EM<<"START CN == "<<keyName<<" "<<CN<<ELog::endDiag;  
   const std::vector<int> cells=
     FixedComp::splitObject(System,offsetCN,CN,SplitOrg,SplitAxis);
 
   if (!splitName.empty())
     for(const int CN : cells)
       CellMap::addCell(splitName,CN);
-
-  ELog::EM<<"CN == "<<CN<<ELog::endDiag;
     
   return (cells.empty()) ? CN : cells.back()+1;
 }

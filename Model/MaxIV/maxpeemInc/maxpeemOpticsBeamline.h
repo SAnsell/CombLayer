@@ -134,6 +134,12 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::JawValve> slitsB;
   /// Second pumping port
   std::shared_ptr<constructSystem::PipeTube> pumpTubeB;
+  /// Front port of mirror box
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeC;
+  /// M3 - Mirror box
+  std::shared_ptr<constructSystem::PipeTube> M3Tube;
+  /// back port of mirror box
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
 
   MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,

@@ -893,11 +893,9 @@ Simulation::validateObjSurfMap()
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
       MonteCarlo::Object* objPtr(mc->second);
-      if (!objPtr->isObjSurfValid())
+      if (!objPtr->isObjSurfValid() || !objPtr->isPopulated())
 	{
 	  objPtr->createSurfaceList();
-	  // First add surface that are opposite 
-	
 	  OSMPtr->addSurfaces(objPtr);
 	  objPtr->setObjSurfValid();
 	}
@@ -1594,24 +1592,8 @@ Simulation::splitObject(const int CA,const int SN)
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
     DPtr->procString(AX.writeMCNPX());
-
-
-  // DEBUG:
-  const ModelSupport::ObjSurfMap::STYPE MP=
-    OSMPtr->getObjects(1581007);
-  ELog::EM<<"Size == "<<MP.size()<<ELog::endDiag;
-
-  CPtr->createSurfaceList();
-  DPtr->createSurfaceList();
   
-  validateObjSurfMap();
-  const ModelSupport::ObjSurfMap::STYPE MPA=
-    OSMPtr->getObjects(1581007);
-
-  ELog::EM<<"POST Size == "<<MPA.size()<<ELog::endDiag;
-
   return CB;
-
 }
 
 void

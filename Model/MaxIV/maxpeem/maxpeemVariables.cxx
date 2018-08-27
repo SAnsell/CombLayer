@@ -130,24 +130,38 @@ m3MirrorVariables(FuncDataBase& Control,
   const std::string pumpName=mirrorKey+"PumpTubeB";
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
-  Control.addVariable(pumpName+"NPorts",1);   // beam ports
+  Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
   const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF63>(15.95);
+  PItemGen.setCF<setVariable::CF63>(5.4);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(14.95);
+  PItemGen.setCF<setVariable::CF63>(5.4);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
-  const Geometry::Vec3D pAngVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
-  const double PLen=17.2-7.55/sin(M_PI*35.0/180.0);
+  const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
+  const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
   PItemGen.setCF<setVariable::CF40>(PLen);
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeC",0,18.1);
+
+  const std::string mName=mirrorKey+"M3Tube";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,0.0,32.0);  // centre 13.5cm
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeD",0,20.6);
 
   return;
 }
