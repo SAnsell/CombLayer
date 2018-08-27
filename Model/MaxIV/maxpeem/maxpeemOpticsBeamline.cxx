@@ -128,7 +128,13 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   gateB(new constructSystem::GateValve(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  monoB(new xraySystem::GrateMonoBox(newName+"MonoBox"))
+  monoB(new xraySystem::GrateMonoBox(newName+"MonoBox")),
+  pipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  gateC(new constructSystem::GateValve(newName+"GateC")),
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  slitsB(new constructSystem::JawValve(newName+"SlitsB")),
+  pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -158,6 +164,12 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(bellowD);
   OR.addObject(pipeF);
   OR.addObject(monoB);
+  OR.addObject(pipeG);
+  OR.addObject(gateC);
+  OR.addObject(bellowE);
+  OR.addObject(viewTube);
+  OR.addObject(slitsB);
+  OR.addObject(pumpTubeB);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -327,6 +339,51 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
 
 
 void
+maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
+				     HeadRule& divider,
+				     MonteCarlo::Object& masterCell,
+				     const attachSystem::FixedComp& initFC, 
+				     const long int sideIndex)
+  /*!
+    Sub build of the m3-mirror package
+    \param System :: Simulation to use
+    \param divider :: Divider object
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM3Mirror");
+  return;
+  int outerCell;
+
+  // FAKE insertcell: required
+  viewTube->addInsertCell(masterCell.getName());
+  viewTube->createAll(System,initFC,sideIndex);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*viewTube,2);
+  viewTube->insertInCell(System,outerCell);
+
+  slitsB->createAll(System,*viewTube,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*slitsB,2);
+  slitsB->insertInCell(System,outerCell);
+
+  // FAKE insertcell: reqruired
+  
+  pumpTubeB->addInsertCell(masterCell.getName());
+  //  pumpTubeB->delayPorts();
+  pumpTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpTubeB->createAll(System,*slitsB,2);
+
+  // const constructSystem::portItem& CPI=pumpTubeB->getPort(1);
+  // outerCell=createOuterVoidUnit(System,masterCell,divider,
+  // 				CPI,CPI.getSideIndex("OuterPlate"));
+  // pumpTubeB->insertInCell(System,outerCell);
+  //  pumpTubeB->intersectPorts(System,1,2);
+  
+  return;
+}
+
+void
 maxpeemOpticsBeamline::buildMono(Simulation& System,
 				 HeadRule& divider,
 				 MonteCarlo::Object& masterCell,
@@ -348,6 +405,18 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
   monoB->createAll(System,initFC,sideIndex);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*monoB,2);
   monoB->insertInCell(System,outerCell);
+
+  pipeG->createAll(System,*monoB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeG,2);
+  pipeG->insertInCell(System,outerCell);
+
+  gateC->createAll(System,*pipeG,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*gateC,2);
+  gateC->insertInCell(System,outerCell);
+
+  bellowE->createAll(System,*gateC,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowE,2);
+  bellowE->insertInCell(System,outerCell);
 
   return;
 }
@@ -390,6 +459,8 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeE,2);
   pipeE->insertInCell(System,outerCell);
 
+  insertFlanges(System,*slitTube);
+  
   gateB->createAll(System,*pipeE,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*gateB,2);
   gateB->insertInCell(System,outerCell);
@@ -405,7 +476,7 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 
   return;
 }
-
+ 
 
 void
 maxpeemOpticsBeamline::buildObjects(Simulation& System)
@@ -448,6 +519,8 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
 
+  insertFlanges(System,*gateTubeA);
+
   pipeA->createAll(System,*bellowB,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
@@ -466,6 +539,8 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
 
+  insertFlanges(System,*florTubeA);
+  
   pipeB->createAll(System,*bellowC,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
@@ -500,9 +575,10 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   pipeC->createAll(System,*gateA,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeC,2);
   pipeC->insertInCell(System,outerCell);
-
+  
   buildSlitPackage(System,divider,masterCell,*pipeC,2);
   buildMono(System,divider,masterCell,*pipeF,2);
+  buildM3Mirror(System,divider,masterCell,*bellowE,2);
   
   lastComp=offPipeA;
 

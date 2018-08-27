@@ -79,10 +79,78 @@ namespace maxpeemVar
   void opticsHutVariables(FuncDataBase&,const std::string&);
   void opticsBeamVariables(FuncDataBase&,const std::string&);
   void monoVariables(FuncDataBase&,const std::string&);
+  void m3MirrorVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
 
   
+void
+m3MirrorVariables(FuncDataBase& Control,
+		  const std::string& mirrorKey)
+  /*!
+    Builds the variables for the M1 Mirror
+    \param Control :: Database
+    \param mirrorKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","m3MirrorVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::JawValveGenerator JawGen;
+  
+  // will be rotated vertical
+  const std::string viewName=mirrorKey+"ViewTube";
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setBFlangeCF<CF100>();
+  SimpleTubeGen.generateTube(Control,viewName,0.0,15.0);
+  Control.addVariable(viewName+"NPorts",1);   // beam ports
+
+  const double wallThick=setVariable::CF63::innerRadius+
+    setVariable::CF63::wallThick;
+  PItemGen.setCF<setVariable::CF40>(5.95);
+  PItemGen.setPlate(0.0,"Void");  
+  const Geometry::Vec3D angVec(0,cos(M_PI*37.0/180.0),-sin(M_PI*37.0/180.0));
+  const double DLen=14.0-wallThick/sin(M_PI*37.0/180.0);
+
+  PItemGen.setCF<setVariable::CF40>(DLen);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,viewName+"Port0",
+			Geometry::Vec3D(0,7.5,0),-angVec);
+  
+  // Simple slits
+  JawGen.setCF<setVariable::CF100>();
+  JawGen.setLength(4.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,mirrorKey+"SlitsB",0.0,0.8,0.8);
+
+  // will be rotated vertical
+  const std::string pumpName=mirrorKey+"PumpTubeB";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
+  Control.addVariable(pumpName+"NPorts",1);   // beam ports
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF63>(15.95);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF63>(14.95);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  const Geometry::Vec3D pAngVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
+  const double PLen=17.2-7.55/sin(M_PI*35.0/180.0);
+  PItemGen.setCF<setVariable::CF40>(PLen);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,pumpName+"Port2",
+			Geometry::Vec3D(0,0,0),-pAngVec);
+
+
+  return;
+}
 
 void
 monoVariables(FuncDataBase& Control,
@@ -95,8 +163,11 @@ monoVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","monoVariables");
 
+  setVariable::BellowGenerator BellowGen;
   setVariable::GrateMonoBoxGenerator MBoxGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeGenerator PipeGen;
   
   MBoxGen.setMat("Stainless304");
   MBoxGen.setWallThick(1.0);
@@ -109,11 +180,23 @@ monoVariables(FuncDataBase& Control,
   // 
   MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
 
-  ELog::EM<<"Mon == "<<monoKey<<ELog::endDiag;
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(7.5);
   PItemGen.setPlate(0.0,"Void");
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,monoKey+"PipeG",0,7.0);
+
+  // joined and open
+  GateGen.setLength(7.5);
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,monoKey+"GateC",0.0,0);
+  
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,monoKey+"BellowE",0,7.5);
+  
   return;
 }
 
@@ -314,6 +397,7 @@ opticsBeamVariables(FuncDataBase& Control,
   m1MirrorVariables(Control,opticKey);
   slitPackageVariables(Control,opticKey);
   monoVariables(Control,opticKey);
+  m3MirrorVariables(Control,opticKey);
   return;
 }
 

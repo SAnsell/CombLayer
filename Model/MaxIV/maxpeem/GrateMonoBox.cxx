@@ -385,7 +385,6 @@ GrateMonoBox::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 111 117 -127 ");
   CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,Out);
 
-  ELog::EM<<"BPornt == "<<BPortStr<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
   CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
 

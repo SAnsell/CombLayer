@@ -58,6 +58,7 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class PipeShield;
+  class JawValve;
     
   /*!
     \class maxpeemOpticsBeamline
@@ -95,7 +96,7 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe to some stuff
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  /// collimator-port ???
+  /// collimator-port ?
   std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
   /// Front port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
@@ -121,6 +122,18 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeF;
   /// Mono Box
   std::shared_ptr<xraySystem::GrateMonoBox> monoB;
+  /// Pipe exiting slit section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeG;
+  /// Gate valve
+  std::shared_ptr<constructSystem::GateValve> gateC;
+  /// Bellow to to super section
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// Small Pipe to slits on before M3
+  std::shared_ptr<constructSystem::PipeTube> viewTube;
+  /// Slits [second pair]
+  std::shared_ptr<constructSystem::JawValve> slitsB;
+  /// Second pumping port
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeB;
 
   MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
@@ -133,6 +146,8 @@ class maxpeemOpticsBeamline :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
+  void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object&,
+		     const attachSystem::FixedComp&,const long int);
   void buildMono(Simulation&,HeadRule&,MonteCarlo::Object&,
 		 const attachSystem::FixedComp&,const long int);
   void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object&,

@@ -898,6 +898,7 @@ Simulation::validateObjSurfMap()
 	  if (objPtr->getSurfSet().empty())
 	    objPtr->createSurfaceList();
 	  // First add surface that are opposite 
+	
 	  OSMPtr->addSurfaces(objPtr);
 	  objPtr->setObjSurfValid();
 	}
@@ -1589,16 +1590,27 @@ Simulation::splitObject(const int CA,const int SN)
   
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
-    {
-      CPtr->procString(AX.writeMCNPX());
-    }
+    CPtr->procString(AX.writeMCNPX());
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
-    {
-      DPtr->procString(AX.writeMCNPX());
-    }
+    DPtr->procString(AX.writeMCNPX());
+
+
+  // DEBUG:
+  const ModelSupport::ObjSurfMap::STYPE MP=
+    OSMPtr->getObjects(1581007);
+  ELog::EM<<"Size == "<<MP.size()<<ELog::endDiag;
+
+  CPtr->createSurfaceList();
+  DPtr->createSurfaceList();
   
+  validateObjSurfMap();
+  const ModelSupport::ObjSurfMap::STYPE MPA=
+    OSMPtr->getObjects(1581007);
+
+  ELog::EM<<"POST Size == "<<MPA.size()<<ELog::endDiag;
+
   return CB;
 
 }
