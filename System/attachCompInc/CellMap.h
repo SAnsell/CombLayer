@@ -70,6 +70,7 @@ class CellMap  : public BaseMap
   /// Rename function
   int getCell(const std::string& K) const
     { return BaseMap::getItem(K); }
+  
   /// Rename function
   int getCell(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
@@ -98,6 +99,14 @@ class CellMap  : public BaseMap
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
 
+  // Insert the cellMap object into the cell
+  void insertCellMapInCell(Simulation&,const std::string&,
+			   const int) const;
+  // Insert the cellMap object into the cell
+  void insertCellMapInCell(Simulation&,const std::string&,
+			   const size_t,const int) const;
+
+  // These all insert the object into the cell map:
   void insertComponent(Simulation&,const std::string&,
 		       const CellMap&,const std::string&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,

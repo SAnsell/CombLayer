@@ -1222,7 +1222,6 @@ FixedComp::getSideIndex(const std::string& sideName) const
 
   if (!sideName.empty())
     {
-      ELog::EM<<"Side == "<<sideName<<ELog::endDiag;
       // return numbers:
       long int linkPt(0);
       if (StrFunc::convert(sideName,linkPt))

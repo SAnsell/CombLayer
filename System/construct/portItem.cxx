@@ -252,9 +252,8 @@ portItem::populate(const FuncDataBase& Control)
   plateMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"PlateMat",portBase+"PlateMat",wallMat);
 
-  
   outerFlag=
-    static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",0));
+    static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",outerFlag));
   return;
 }
 

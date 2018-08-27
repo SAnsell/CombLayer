@@ -240,13 +240,14 @@ slitPackageVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D PStep(0,tLen/10.0,0);
   Geometry::Vec3D CPt(0.0,-tLen/2.0,0.0);
-  CPt+=PStep*3.0;
+  CPt+=PStep*1.5;
   PItemGen.generatePort(Control,sName+"Port0",CPt,-XVec);
   CPt+=PStep*2.0;
   PItemGen.generatePort(Control,sName+"Port1",CPt,XVec);
   CPt+=PStep*2.0;
   PItemGen.generatePort(Control,sName+"Port2",CPt,-ZVec);
   CPt+=PStep*2.0;
+  PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
 
   PipeGen.setCF<setVariable::CF63>();

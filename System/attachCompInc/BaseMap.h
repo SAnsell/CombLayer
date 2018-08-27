@@ -74,8 +74,6 @@ class BaseMap
   int getItem(const std::string&,const size_t) const;
   const std::string& getName(const int) const;
 
-
-      
   std::vector<std::string> getNames() const;
   size_t getNItems(const std::string&) const;
   std::vector<int> getItems(const std::string&) const;

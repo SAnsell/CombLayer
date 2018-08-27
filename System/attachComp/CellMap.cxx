@@ -98,6 +98,64 @@ CellMap::operator=(const CellMap& A)
 }
   
 void
+CellMap::insertCellMapInCell(Simulation& System,
+			     const std::string& cellKey,
+			     const int cellN) const
+  /*!
+    Insert a cellMap object into a cell
+    \param System :: Simulation to obtain cell from
+    \param cellKey :: Items in the Cell map to slice
+    \param cellN :: System cell number to change
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
+
+  MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN in System");
+
+  for(const int cn : getCells(cellKey))
+    {
+      const MonteCarlo::Object* OPtr=System.findQhull(cn);
+      if (OPtr)
+	{
+	  const HeadRule compObj=OPtr->getHeadRule().complement();
+	  CPtr->addSurfString(compObj.display());
+	}
+    }  
+  return;
+}
+
+void
+CellMap::insertCellMapInCell(Simulation& System,
+			     const std::string& cellKey,
+			     const size_t cellIndex,
+			     const int cellN) const
+  /*!
+    Insert a cellMap object into a cell
+    \param System :: Simulation to obtain cell from
+    \param cutKey :: Items in the Cell map to slice
+    \param cellIndex :: item number from the cell map
+    \param cellN :: System cell number to change
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
+
+  const int cn = getCell(cellKey);
+  const MonteCarlo::Object* OPtr=System.findQhull(cn);
+  if (!OPtr)
+    throw ColErr::InContainerError<int>(cn,"CellMap(int) in System");
+  const HeadRule compObj=OPtr->getHeadRule().complement();
+  
+  MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN in System");
+
+  CPtr->addSurfString(compObj.display());
+  return;
+}
+  
+void
 CellMap::insertComponent(Simulation& System,
 			 const std::string& cutKey,
 			 const CellMap& CM,

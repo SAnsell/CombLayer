@@ -895,8 +895,7 @@ Simulation::validateObjSurfMap()
       MonteCarlo::Object* objPtr(mc->second);
       if (!objPtr->isObjSurfValid())
 	{
-	  if (objPtr->getSurfSet().empty())
-	    objPtr->createSurfaceList();
+	  objPtr->createSurfaceList();
 	  // First add surface that are opposite 
 	
 	  OSMPtr->addSurfaces(objPtr);

@@ -130,8 +130,8 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   monoB(new xraySystem::GrateMonoBox(newName+"MonoBox")),
   pipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
-  bellowE(new constructSystem::Bellows(newName+"BellowE")),
   gateC(new constructSystem::GateValve(newName+"GateC")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB"))
@@ -354,9 +354,12 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM3Mirror");
-  return;
+
   int outerCell;
 
+  
+  //  System.createObjSurfMap();
+  
   // FAKE insertcell: required
   viewTube->addInsertCell(masterCell.getName());
   viewTube->createAll(System,initFC,sideIndex);
@@ -459,7 +462,10 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeE,2);
   pipeE->insertInCell(System,outerCell);
 
-  insertFlanges(System,*slitTube);
+  const constructSystem::portItem& SPI=slitTube->getPort(3);
+  // this needs teh plate as well if constructed
+  SPI.insertCellMapInCell(System,"Flange",0,outerCell);
+  
   
   gateB->createAll(System,*pipeE,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*gateB,2);
