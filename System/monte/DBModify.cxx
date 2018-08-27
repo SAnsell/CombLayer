@@ -897,13 +897,14 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 
   // Reference: material StbTCABL in MARS
   // Cables about upstream and downstram walls at the top (in horizontal segments) of a stub
-  // Chemical composition is the same as for MARS 'CABL' but density is reduced by factor of 0.7
+  // (Chemical composition is the same as for MARS 'CABL' but density is reduced by factor of 0.7)
   // Elements: H, C, Cl, Cu
+  // mass fractions converted into atomic fractions by table 40
   MObj.setMaterial(imat++,"StbTCABL",
-		   "  1001.70c 0.018 "
-		   " 06000.70c 0.147 "
-		   " 17035.70c 0.216 "
-		   " 29063.70c 0.619 ","",MLib);
+		   " 1001.70c 3.87320576137E-01 "
+		   " 06000.70c 2.65411684969E-01 "
+		   " 17035.70c 1.33953964738E-01 "
+		   " 29063.70c 2.13313774157E-01 ","",MLib);
   MObj.setDensity(-2.0272);
   MDB.resetMaterial(MObj);
 
