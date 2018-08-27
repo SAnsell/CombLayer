@@ -300,6 +300,8 @@ GrateMonoBox::createSurfaces()
 			   Origin+X*(overHangExtent+voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1006,
 			   Origin+Z*(voidHeight-overHangDepth),Z);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+1007,Origin-Z*voidDepth,Y,voidRadius+overHangExtent);
     
   return;
 }
@@ -321,72 +323,83 @@ GrateMonoBox::createObjects(Simulation& System)
   // Main Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 (-7 : 5)");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  addOuterSurf(Out);
-  /*
-  // PortVoids
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+  // main tank skins
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -3 5 -6");
+  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  // Main metal
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -14 5 -6");
+  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -12 13 -14 5 -6 (-1:2:-3:4) (-2:207) (1:107) ");
-  CellMap::makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out);
-  
-  // Port metal
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 107 -117 ");
-  CellMap::makeCell("PortWallA",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+    (SMap,buildIndex,"11 -1 13 -14 (-17 : 5) -6 107 ");
+  CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 207 -217 ");
-  CellMap::makeCell("PortWallB",System,cellIndex++,wallMat,0.0,Out+BPortStr);
-
-  // Flange
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
-  CellMap::makeCell("FlangeA",System,cellIndex++,wallMat,0.0,Out+FPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 217 -227 ");
-  CellMap::makeCell("FlangeB",System,cellIndex++,wallMat,0.0,Out+BPortStr);
-
-  // Flange Voids
-  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -11 117 -127 ");
-  CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
-  CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
-  
-  //Roof:
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 (-1:2:-3:4) 6 -16");
-  CellMap::makeCell("LowRoof",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 16 -26");
-  CellMap::makeCell("TopRoof",System,cellIndex++,wallMat,0.0,Out);
+    (SMap,buildIndex,"-12 2 13 -14 (-17 : 5) -6 207 ");
+  CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
 
-  //Base:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 (-1:2:-3:4) -5 15");
-  CellMap::makeCell("LowBase",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 -15 25");
-  CellMap::makeCell("TopBase",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -17 -5");
+  CellMap::makeCell("RoundWall",System,cellIndex++,wallMat,0.0,Out);
 
-  // Screen void
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 1003 -1004 (-11:12:-13:14) 5 -6 "
-     " (11:127) (-12:227)");
-  CellMap::makeCell("ScreenVoid",System,cellIndex++,0,0.0,Out);
+    (SMap,buildIndex," 1001 -1002 1003 -1004 6 -16");
+  CellMap::makeCell("Top",System,cellIndex++,wallMat,0.0,Out);
 
-    
+  // Screen voids
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 1003 -13 5 -6 ");
+  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 14 -1004  5 -6");
+  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,Out);
+
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 25 -26 ");
+    (SMap,buildIndex,"1001 -11  1003 -1004 (-1007:5) -6 127 ");
+  CellMap::makeCell("FrontScreen",System,cellIndex++,voidMat,0.0,Out);
+				 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"12 -1002  1003 -1004 (-1007:5) -6 227 ");
+  CellMap::makeCell("BackScreen",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 17 -1007 -5");
+  CellMap::makeCell("RoundScreen",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"1001 -1002 1003 -1004 -16 (-1007 : 5)");
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
   addOuterUnionSurf(Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
   addOuterUnionSurf(Out);
-  */
+
+  // PortVoids
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
+  CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 107 -117 ");
+  CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
+  CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,Out+FPortStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 111 117 -127 ");
+  CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,Out);
+
+  ELog::EM<<"BPornt == "<<BPortStr<<ELog::endDiag;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
+  CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 207 -217 ");
+  CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,Out+BPortStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 217 -227 ");
+  CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,Out+BPortStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
+  CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,Out);
+
+
+
   return;
 }
 
@@ -443,4 +456,4 @@ GrateMonoBox::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE maxpeemSystem

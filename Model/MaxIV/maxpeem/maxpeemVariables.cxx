@@ -101,17 +101,17 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setMat("Stainless304");
   MBoxGen.setWallThick(1.0);
   MBoxGen.setCF<CF63>();
-  MBoxGen.setAPortCF<CF40>();
-  MBoxGen.setPortLength(2.5,2.5); // La/Lb
+  MBoxGen.setAPortCF<CF63>();
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
-  // height+depth == 452mm  -- 110/ 342
-  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,77.2,11.0,34.20,117.1);
+  // 
+  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
 
   ELog::EM<<"Mon == "<<monoKey<<ELog::endDiag;
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(6.1);
+  PItemGen.setCF<setVariable::CF63>(7.5);
   PItemGen.setPlate(0.0,"Void");
 
   return;

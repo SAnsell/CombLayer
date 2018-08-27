@@ -157,6 +157,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(gateB);
   OR.addObject(bellowD);
   OR.addObject(pipeF);
+  OR.addObject(monoB);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
