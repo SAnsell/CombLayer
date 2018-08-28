@@ -190,6 +190,8 @@ class FixedComp
   virtual Geometry::Vec3D getLinkAxis(const long int) const;
   virtual std::string getLinkString(const long int) const;
   virtual double getLinkDistance(const long int,const long int) const;
+  virtual double getLinkDistance(const long int,const FixedComp&,
+				 const long int) const;
   virtual int getLinkSurf(const long int) const;
 
   HeadRule getFullRule(const std::string&) const;
