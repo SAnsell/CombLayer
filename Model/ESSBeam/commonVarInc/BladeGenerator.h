@@ -66,9 +66,11 @@ class BladeGenerator
   void resetPhase();
   void setPhase(const size_t,const std::vector<double>&,
 		const std::vector<double>&);
+  void addPhase(const double, const double,
+                const std::vector<double>&,
+                const std::vector<double>&);  
   void addPhase(const std::vector<double>&,
-		const std::vector<double>&);
-  
+                const std::vector<double>&);
   
   void generateBlades(FuncDataBase&,const std::string&,
 		      const double,const double,const double)  const;

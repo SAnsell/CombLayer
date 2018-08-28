@@ -134,7 +134,6 @@ LightShutter::operator=(const LightShutter& A)
   return *this;
 }
 
-
 LightShutter::~LightShutter() 
   /*!
     Destructor
@@ -149,17 +148,16 @@ LightShutter::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("LightShutter","populate");
-
   FixedOffset::populate(Control);
   
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
+  
+  mainMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MainMat",0);
+  wallMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WallMat", 0);
+  
   return;
 }
   
@@ -235,7 +233,6 @@ LightShutter::createObjects(Simulation& System)
   return;
 }
 
-  
 void
 LightShutter::createLinks()
   /*!
@@ -250,7 +247,6 @@ LightShutter::createLinks()
   FixedComp::setConnect(3,Origin+X*(wallThick+width/2.0),X);
   FixedComp::setConnect(3,Origin-Z*(wallThick+height/2.0),-Z);
   FixedComp::setConnect(3,Origin+Z*(wallThick+height/2.0),Z);
-	   
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(lightIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(lightIndex+2));

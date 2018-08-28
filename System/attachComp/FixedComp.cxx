@@ -1279,6 +1279,23 @@ FixedComp::getLinkDistance(const long int AIndex,
   return getLinkPt(AIndex).Distance(getLinkPt(BIndex));
 }
 
+double
+FixedComp::getLinkDistance(const long int AIndex,
+                           const FixedComp& FC,
+                           const long int BIndex) const
+  /*!
+    Accessor to the distance between link points
+    \param AIndex :: SIGNED +1 side index
+    \param FC :: FixedComp to use
+    \param BIndex :: SIGNED +1 side index 
+    \return Distance between points
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkDistance:"+keyName);
+
+  return getLinkPt(AIndex).Distance(FC.getLinkPt(BIndex));
+}
+
 Geometry::Vec3D
 FixedComp::getLinkPt(const std::string& sideName) const
   /*!

@@ -191,6 +191,33 @@ BladeGenerator::setPhase(const size_t index,
 }
 
 void
+BladeGenerator::addPhase(const double time, const double frequency,
+                         const std::vector<double>& CAngle,
+                         const std::vector<double>& OAngle)
+  /*!
+    Simple phase adder
+    \param time :: Time (sec)
+    \param frequency :: Frequency (deg/sec)
+    \param CAngle :: List of angles
+    \param OAngle :: Open angle of gap
+   */
+{
+  ELog::RegMethod Rega("BladeGenerator","addPhase");
+  
+  if (CAngle.size()!=OAngle.size() ||
+      OAngle.empty())
+    throw ColErr::MisMatch<size_t>(OAngle.size(),CAngle.size(),"Phase/Centres must be equal");
+
+  std::vector<double> MovingCAngle = CAngle;
+  for (size_t i=0;i<CAngle.size();i++)
+    MovingCAngle[i]+=std::fmod(time*frequency,360);
+
+  CentreAngle.push_back(MovingCAngle);
+  OpenAngle.push_back(OAngle);
+  return;
+}
+
+void
 BladeGenerator::addPhase(const std::vector<double>& CAngle,
 			 const std::vector<double>& OAngle)
   /*!
@@ -261,19 +288,19 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterMat",outerMat);
   
   for(size_t index=0;index<CentreAngle.size();index++)
-    {
-      
-      const std::string IndexStr(std::to_string(index));
-      const std::vector<double>& CRef=CentreAngle[index];
-      const std::vector<double>& ORef=OpenAngle[index];
-      Control.addVariable(keyName+IndexStr+"NBlades",CRef.size());
-      for(size_t j=0;j<CRef.size();j++)
-	{
-	  const std::string jStr(std::to_string(j));
-	  Control.addVariable(keyName+IndexStr+"PhaseAngle"+jStr,CRef[j]);
-	  Control.addVariable(keyName+IndexStr+"OpenAngle"+jStr,ORef[j]);
-	}
+  {
+    const std::string IndexStr(std::to_string(index));
+    const std::vector<double>& CRef=CentreAngle[index];
+    const std::vector<double>& ORef=OpenAngle[index];
+    Control.addVariable(keyName+IndexStr+"NBlades",CRef.size());
+    
+    for(size_t j=0;j<CRef.size();j++)
+	  {
+      const std::string jStr(std::to_string(j));
+      Control.addVariable(keyName+IndexStr+"PhaseAngle"+jStr,CRef[j]);
+      Control.addVariable(keyName+IndexStr+"OpenAngle"+jStr,ORef[j]);
     }
+  }
 
   // Checks:
   if (innerRadius>outerRadius-Geometry::zeroTol)

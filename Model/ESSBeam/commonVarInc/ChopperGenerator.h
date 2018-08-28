@@ -49,6 +49,7 @@ class ChopperGenerator
   double ringRadius;       ///< Radius of the ring 
 
   double motorRadius;      ///< Motor radius
+  double motorLength;      ///< Motor length
   double motorInner;       ///< Motor inner flange
   double motorOuter;       ///< Motor outer flange
   double portRadius;       ///< Port radius
@@ -76,6 +77,7 @@ class ChopperGenerator
   void setFrame(const double,const double);  
   void setMainRadius(const double);
   void setMotorRadius(const double);
+  void setMotorLength(const double);
   void setPortRadius(const double);
   void setReverseMotor(const bool);
   

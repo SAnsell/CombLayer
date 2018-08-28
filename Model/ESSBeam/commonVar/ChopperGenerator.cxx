@@ -1,9 +1,9 @@
-/********************************************************************* 
+/****************************************************************************
   CombLayer : MCNP(X) Input builder
  
  * File:   commonVar/ChopperGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ ChopperGenerator::ChopperGenerator() :
   mainZStep(28.0),height(86.5),width(86.5),
   shortWidth(50.5),shortHeight(50.5),
   mainRadius(38.122),windowThick(0.3),
-  ringRadius(40.0),motorRadius(10.0),
+  ringRadius(40.0),motorRadius(10.0),motorLength(10.0),
   motorInner(12.0),motorOuter(15.20),
   portRadius(10.0),portOuter(12.65),
   motorRevFlag(0),portWidth(11.6),
@@ -83,7 +83,7 @@ ChopperGenerator::ChopperGenerator(const ChopperGenerator& A) :
   mainZStep(A.mainZStep),height(A.height),width(A.width),
   shortWidth(A.shortWidth),shortHeight(A.shortHeight),
   mainRadius(A.mainRadius),windowThick(A.windowThick),
-  ringRadius(A.ringRadius),motorRadius(A.motorRadius),
+  ringRadius(A.ringRadius),motorRadius(A.motorRadius),motorLength(A.motorLength),
   motorInner(A.motorInner),
   motorOuter(A.motorOuter),portRadius(A.portRadius),
   portOuter(A.portOuter),portWidth(A.portWidth),
@@ -115,6 +115,7 @@ ChopperGenerator::operator=(const ChopperGenerator& A)
       windowThick=A.windowThick;
       ringRadius=A.ringRadius;
       motorRadius=A.motorRadius;
+      motorLength=A.motorLength;
       motorInner=A.motorInner;
       motorOuter=A.motorOuter;
       portRadius=A.portRadius;
@@ -181,6 +182,17 @@ ChopperGenerator::setMotorRadius(const double R)
   motorInner*=R/motorRadius;
   motorOuter*=R/motorRadius;
   motorRadius=R;
+  return;
+}
+
+void
+ChopperGenerator::setMotorLength(const double L)
+  /*!
+    Set the motor length for the chopper.
+    \param L :: Length
+  */
+{
+  motorLength = L;
   return;
 }
 
@@ -254,7 +266,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MainThick",voidLength);  // estimate
 
   const double wallThick((length-voidLength)/2.0);
-  Control.addVariable(keyName+"MotorBodyLength",5.0);
+  Control.addVariable(keyName+"MotorBodyLength",motorLength);
   Control.addVariable(keyName+"MotorPlateThick",wallThick*1.2);
   Control.addVariable(keyName+"MotorAxleRadius",0.5);
   Control.addVariable(keyName+"MotorBodyRadius",motorRadius);
