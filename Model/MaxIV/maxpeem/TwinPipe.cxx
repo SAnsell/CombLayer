@@ -182,7 +182,7 @@ TwinPipe::createSurfaces()
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   makeShiftedSurf(SMap,"front",buildIndex+11,1,Y,flangeALength);
-  makeShiftedSurf(SMap,"front",buildIndex+11,1,Y,coJoinLength);
+  makeShiftedSurf(SMap,"front",buildIndex+101,1,Y,coJoinLength);
 
   // Get A Pipe Vector:
   const Geometry::Quaternion QAxy=
@@ -194,16 +194,33 @@ TwinPipe::createSurfaces()
   const Geometry::Quaternion QBz=
     Geometry::Quaternion::calcQRotDeg(pipeBZAngle,X);
 
-  
-  /*  
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,radius+feThick+bellowThick);
+  Geometry::Vec3D YA(Y);
+  Geometry::Vec3D YB(Y);
+  QAz.rotate(YA);
+  QAxy.rotate(YA);
 
-  // FLANGE SURFACES FRONT/BACK:
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
-  */
+  QBz.rotate(YB);
+  QBxy.rotate(YB);
+  
+  // Co-join 
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coJoinRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,
+			      coJoinRadius+coJoinThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeCJRadius);
+  
+  // Pipe A
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,YA,pipeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,YA,
+			      pipeARadius+pipeAThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,YA,flangeARadius);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+YA*pipeALength,YA);
+  
+  // Pipe B
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,YB,pipeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,
+			      YB,pipeBRadius+pipeBThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,Origin,YB,flangeBRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+YB*pipeBLength,YB);
   return;
 }
 
