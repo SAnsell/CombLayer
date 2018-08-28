@@ -500,7 +500,8 @@ VESPA::buildOutGuide(Simulation& System,
   PitBPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
                       OutPitB->getKey("Mid").getFullRule(-2));
   PitBPortB->createAll(System,OutPitB->getKey("Inner"),2);
-  
+
+  // make a change
   const size_t lastIndex(ShieldArray.size()-1);
   for(size_t i=1;i<ShieldArray.size();i++)
     {
