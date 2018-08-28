@@ -96,13 +96,12 @@ class ExternalCut
 
   std::string getBridgeStr(const std::string&) const;
 
-  void getShiftedSurf(ModelSupport::surfRegister&,
+  void makeShiftedSurf(ModelSupport::surfRegister&,
 		      const std::string&,const int,
 		      const int,const Geometry::Vec3D&,const double) const;
   
   const HeadRule& getRule(const std::string&) const;
   const HeadRule& getDivider(const std::string&) const;
-
 
   
   Geometry::Vec3D interPoint(const std::string&,
