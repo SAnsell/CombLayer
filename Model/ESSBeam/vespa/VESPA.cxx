@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -105,8 +104,6 @@
 #include "CrystalMount.h"
 #include "TubeDetBox.h"
 #include "Cryostat.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 
 #include "VESPA.h"
 
@@ -223,11 +220,7 @@ VESPA::VESPA(const std::string& keyName) :
   
   // Jaws
   VJaws(new constructSystem::JawSet(newName+"VJaws")),
-
-  // Sample
-  Sample(new instrumentSystem::CylSample(newName+"Sample")),
-  
-  // Cryostat
+  Sample(new instrumentSystem::CylSample(newName+"Sample")),  
   Cryo(new constructSystem::Cryostat(newName+"Cryo"))
  /*!
     Constructor
@@ -313,19 +306,23 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(FocusJ);
   
   for(size_t i=0;i<4;i++)
-  {
-    typedef std::shared_ptr<constructSystem::TriangleShield> STYPE;
-    typedef std::shared_ptr<constructSystem::VacuumPipe> VTYPE;
-    typedef std::shared_ptr<beamlineSystem::GuideLine> GTYPE;
+    {
+      typedef std::shared_ptr<constructSystem::TriangleShield> STYPE;
+      typedef std::shared_ptr<constructSystem::VacuumPipe> VTYPE;
+      typedef std::shared_ptr<beamlineSystem::GuideLine> GTYPE;
+      const std::string NStr(std::to_string(i));
       
-    ShieldArray.push_back(STYPE(new constructSystem::TriangleShield(newName+"ShieldArray"+StrFunc::makeString(i))));
-    VPipeArray.push_back(VTYPE(new constructSystem::VacuumPipe(newName+"VPipeArray"+StrFunc::makeString(i))));
-    FocusArray.push_back(GTYPE(new beamlineSystem::GuideLine(newName+"FocusArray"+StrFunc::makeString(i))));
-    
-    OR.addObject(ShieldArray.back());
-    OR.addObject(VPipeArray.back());
-    OR.addObject(FocusArray.back());
-  }
+      ShieldArray.push_back(STYPE(new constructSystem::TriangleShield
+				  (newName+"ShieldArray"+NStr)));
+      VPipeArray.push_back(VTYPE(new constructSystem::VacuumPipe
+				 (newName+"VPipeArray"+NStr)));
+      FocusArray.push_back(GTYPE(new beamlineSystem::GuideLine
+				 (newName+"FocusArray"+NStr)));
+      
+      OR.addObject(ShieldArray.back());
+      OR.addObject(VPipeArray.back());
+      OR.addObject(FocusArray.back());
+    }
   
   OR.addObject(ShieldC);
   OR.addObject(VPipeK);
@@ -462,13 +459,6 @@ VESPA::buildBunkerUnits(Simulation& System,
   HShutter->addInsertCell(HCollar->getCell("Hole"));
   HShutter->createAll(System,*VPipeH,2);
   
-  // VPipeHS + FocusHS
-//  VPipeHS->addInsertCell(bunkerVoid);
-//  VPipeHS->addInsertCell(HCollar->getCell("Hole"));
-//  VPipeHS->createAll(System,*VPipeH,2);
-//  FocusHS->addInsertCzell(VPipeHS->getCells("Void"));
-//  FocusHS->addInsertCell(HCollar->getCell("Hole"));
-//  FocusHS->createAll(System,*VPipeHS,0,*VPipeHS,0);
   
   return;
 }
@@ -508,7 +498,8 @@ VESPA::buildOutGuide(Simulation& System,
   // T0 Chopper Pit Exit Port
   T0ExitPort->addInsertCell(ChopperT0Pit->getCells("MidLayerBack"));
   T0ExitPort->addInsertCell(ChopperT0Pit->getCells("Collet"));
-  T0ExitPort->setFaces(ChopperT0Pit->getKey("Inner").getFullRule(2),ChopperT0Pit->getKey("Mid").getFullRule(-2));
+  T0ExitPort->setFaces(ChopperT0Pit->getKey("Inner").getFullRule(2),
+		       ChopperT0Pit->getKey("Mid").getFullRule(-2));
   T0ExitPort->createAll(System,ChopperT0Pit->getKey("Inner"),2);
   
   // sFOC Chopper Pit
@@ -572,15 +563,15 @@ VESPA::buildOutGuide(Simulation& System,
   FocusArray[0]->createAll(System,*VPipeArray[0],0,*VPipeArray[0],0);
   
   for(size_t i=1;i<ShieldArray.size();i++)
-  {
-    ShieldArray[i]->addInsertCell(voidCell);
-    ShieldArray[i]->setFront(*ShieldArray[i-1],2);
-    ShieldArray[i]->createAll(System,*ShieldArray[i-1],2);
-    VPipeArray[i]->addInsertCell(ShieldArray[i]->getCells("Void"));
-    VPipeArray[i]->createAll(System,*ShieldArray[i-1],2);
-    FocusArray[i]->addInsertCell(VPipeArray[i]->getCell("Void"));
-    FocusArray[i]->createAll(System,*VPipeArray[i],0,*VPipeArray[i],0);
-  }
+    {
+      ShieldArray[i]->addInsertCell(voidCell);
+      ShieldArray[i]->setFront(*ShieldArray[i-1],2);
+      ShieldArray[i]->createAll(System,*ShieldArray[i-1],2);
+      VPipeArray[i]->addInsertCell(ShieldArray[i]->getCells("Void"));
+      VPipeArray[i]->createAll(System,*ShieldArray[i-1],2);
+      FocusArray[i]->addInsertCell(VPipeArray[i]->getCell("Void"));
+      FocusArray[i]->createAll(System,*VPipeArray[i],0,*VPipeArray[i],0);
+    }
   
   ELog::EM<<"----- Positions ----------------"<<ELog::endDiag;
   ELog::EM<<"| ChopperT0   = "<<ChopperT0->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
@@ -621,16 +612,9 @@ VESPA::buildHut(Simulation& System,
 {
   ELog::RegMethod RegA("VESPA","buildHut");
   
-  // what's this? need to check it...
-  // check if Previously built :
-//  if (OutPitB->hasItem("Outer"))
-//  {
-//  }
   
   // ShieldC
   ShieldC->addInsertCell(voidCell);
-//  ShieldC->setFront(*ShieldArray[ShieldArray.size()-1],2);
-//  ShieldC->createAll(System,*ShieldArray[ShieldArray.size()-1],2);//connectFC,connectIndex);
   
   ShieldC->setFront(connectFC,connectIndex);
   ShieldC->createAll(System,connectFC,connectIndex);
@@ -677,8 +661,11 @@ VESPA::buildHut(Simulation& System,
   ELog::EM<<"-----------------------------------"<<ELog::endDiag;
   
   ELog::EM<<"----- Distances -------------------"<<ELog::endDiag;
-  ELog::EM<<"| VPipeK1 - VPipeK2    = "<<VPipeK->getLinkDistance(1,*VPipeK,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| JawsSet - ChopperFOC = "<<VJaws->getLinkDistance(0,ChoppersFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| VPipeK1 - VPipeK2    = "
+	  <<VPipeK->getLinkDistance(1,*VPipeK,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| JawsSet - ChopperFOC = "
+	  <<VJaws->getLinkDistance(0,ChoppersFOC->getKey("Main"),0)
+	  <<" cm"<<ELog::endDiag;
   ELog::EM<<"-----------------------------------"<<ELog::endDiag;
   
   return;
@@ -705,24 +692,24 @@ VESPA::buildDetectorArray(Simulation& System,
   const size_t nDet=Control.EvalVar<size_t>(newName+"NDet");
   
   for(size_t i=0;i<nDet;i++)
-  {
-    typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
-    typedef std::shared_ptr<constructSystem::TubeDetBox> DTYPE;
+    {
+      typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
+      typedef std::shared_ptr<constructSystem::TubeDetBox> DTYPE;
     
-    XTYPE xsPtr(new constructSystem::CrystalMount(newName+"XStal",i));
-    DTYPE dsPtr(new constructSystem::TubeDetBox(newName+"DBox",i));
-    OR.addObject(xsPtr);
-    OR.addObject(dsPtr);
+      XTYPE xsPtr(new constructSystem::CrystalMount(newName+"XStal",i));
+      DTYPE dsPtr(new constructSystem::TubeDetBox(newName+"DBox",i));
+      OR.addObject(xsPtr);
+      OR.addObject(dsPtr);
+      
+      xsPtr->addInsertCell(voidCell);
+      xsPtr->createAll(System,sampleFC,sampleIndex);
+      
+      dsPtr->addInsertCell(voidCell);
+      dsPtr->createAll(System,*xsPtr,8);
     
-    xsPtr->addInsertCell(voidCell);
-    xsPtr->createAll(System,sampleFC,sampleIndex);
-    
-    dsPtr->addInsertCell(voidCell);
-    dsPtr->createAll(System,*xsPtr,8);
-    
-    XStalArray.push_back(xsPtr);
-    ADetArray.push_back(dsPtr);      
-  }
+      XStalArray.push_back(xsPtr);
+      ADetArray.push_back(dsPtr);      
+    }
   return;
 
 }
