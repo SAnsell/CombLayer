@@ -43,17 +43,17 @@ class TwinPipe :
   public attachSystem::ExternalCut
 {
  private:
-
-  double coJoinLength;          ///< Length of common pipe
-  double coJoinRadius;          ///< Radius of common pipe
-  double coJoinThick;           ///< Thickness of outer merge plate
   
+  double pipeAXStep;          ///< Offset of pipe
+  double pipeAZStep;          ///< Offset of pipe
   double pipeAXYAngle;          ///< Rotation of pipe A
   double pipeAZAngle;           ///< Rotation of pipe A about X
   double pipeARadius;           ///< void radius [inner] 
   double pipeALength;           ///< void length [total]
   double pipeAThick;            ///< pipe wall thickness
 
+  double pipeBXStep;          ///< Offset of pipe
+  double pipeBZStep;          ///< Offset of pipe
   double pipeBXYAngle;          ///< Rotation of pipe A
   double pipeBZAngle;           ///< Rotation of pipe A about X
   double pipeBRadius;           ///< void radius [inner] 
@@ -71,7 +71,10 @@ class TwinPipe :
 
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
-    
+
+  Geometry::Vec3D AYAxis;       ///< AY Axis
+  Geometry::Vec3D BYAxis;       ///< BY Axis
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

@@ -59,6 +59,7 @@ namespace xraySystem
   class Mirror;
   class PipeShield;
   class JawValve;
+  class TwinPipe;
     
   /*!
     \class maxpeemOpticsBeamline
@@ -140,6 +141,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
+  /// Splitter
+  std::shared_ptr<xraySystem::TwinPipe> splitter;
 
   MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
@@ -158,6 +161,9 @@ class maxpeemOpticsBeamline :
 		 const attachSystem::FixedComp&,const long int);
   void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object&,
 		       const attachSystem::FixedComp&,const long int);
+  void buildSplitter(Simulation&,HeadRule&,HeadRule&,
+		     MonteCarlo::Object&,MonteCarlo::Object&,
+		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

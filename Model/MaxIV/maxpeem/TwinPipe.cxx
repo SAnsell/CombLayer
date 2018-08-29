@@ -112,19 +112,19 @@ TwinPipe::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  coJoinRadius=Control.EvalVar<double>(keyName+"CoJoinRadius");
-  coJoinLength=Control.EvalVar<double>(keyName+"CoJoinLength");
-  coJoinThick=Control.EvalVar<double>(keyName+"CoJoinThick");
-
   pipeARadius=Control.EvalVar<double>(keyName+"PipeARadius");
   pipeALength=Control.EvalVar<double>(keyName+"PipeALength");
   pipeAThick=Control.EvalVar<double>(keyName+"PipeAThick");
+  pipeAXStep=Control.EvalVar<double>(keyName+"PipeAXStep");
+  pipeAZStep=Control.EvalVar<double>(keyName+"PipeAZStep");
   pipeAXYAngle=Control.EvalVar<double>(keyName+"PipeAXYAngle");
   pipeAZAngle=Control.EvalVar<double>(keyName+"PipeAZAngle");  
 
   pipeBRadius=Control.EvalVar<double>(keyName+"PipeBRadius");
   pipeBLength=Control.EvalVar<double>(keyName+"PipeBLength");
   pipeBThick=Control.EvalVar<double>(keyName+"PipeBThick");
+  pipeBXStep=Control.EvalVar<double>(keyName+"PipeBXStep");
+  pipeBZStep=Control.EvalVar<double>(keyName+"PipeBZStep");
   pipeBXYAngle=Control.EvalVar<double>(keyName+"PipeBXYAngle");
   pipeBZAngle=Control.EvalVar<double>(keyName+"PipeBZAngle");  
 
@@ -175,14 +175,6 @@ TwinPipe::createSurfaces()
 {
   ELog::RegMethod RegA("TwinPipe","createSurfaces");
   
-  // Inner void
-  if (!ExternalCut::isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    
-      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
-  makeShiftedSurf(SMap,"front",buildIndex+11,1,Y,flangeALength);
-  makeShiftedSurf(SMap,"front",buildIndex+101,1,Y,coJoinLength);
 
   // Get A Pipe Vector:
   const Geometry::Quaternion QAxy=
@@ -194,33 +186,48 @@ TwinPipe::createSurfaces()
   const Geometry::Quaternion QBz=
     Geometry::Quaternion::calcQRotDeg(pipeBZAngle,X);
 
-  Geometry::Vec3D YA(Y);
-  Geometry::Vec3D YB(Y);
-  QAz.rotate(YA);
-  QAxy.rotate(YA);
+  AYAxis=Y;
+  BYAxis=Y;
+  QAz.rotate(AYAxis);
+  QAxy.rotate(AYAxis);
 
-  QBz.rotate(YB);
-  QBxy.rotate(YB);
-  
-  // Co-join 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coJoinRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,
-			      coJoinRadius+coJoinThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeCJRadius);
+  QBz.rotate(BYAxis);
+  QBxy.rotate(BYAxis);
+
+  // Inner void
+  if (!ExternalCut::isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
+
+  makeShiftedSurf(SMap,"front",buildIndex+11,1,Y,flangeCJLength);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeCJRadius);
   
   // Pipe A
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,YA,pipeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,YA,
+  const Geometry::Vec3D ACent=Origin+X*pipeAXStep+Z*pipeAZStep;
+  ModelSupport::buildCylinder(SMap,buildIndex+107,ACent,AYAxis,pipeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,ACent,AYAxis,
 			      pipeARadius+pipeAThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,YA,flangeARadius);
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+YA*pipeALength,YA);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,ACent,AYAxis,flangeARadius);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+101,ACent+AYAxis*pipeALength,AYAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+111,
+			   ACent+AYAxis*(pipeALength-flangeALength),AYAxis);
   
   // Pipe B
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,YB,pipeBRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,
-			      YB,pipeBRadius+pipeBThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+227,Origin,YB,flangeBRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+YB*pipeBLength,YB);
+  const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;
+  ELog::EM<<"Origin == "<<Origin<<" :: "<<ACent<<" :: "<<BCent<<ELog::endDiag;
+  ELog::EM<<"Dist == "<<ACent.Distance(BCent)<<ELog::endDiag;
+  
+  ModelSupport::buildCylinder(SMap,buildIndex+207,BCent,BYAxis,pipeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,BCent,
+			      BYAxis,pipeBRadius+pipeBThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,BCent,BYAxis,flangeBRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+201,BCent+BYAxis*pipeBLength,BYAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+211,
+			   BCent+BYAxis*(pipeBLength-flangeBLength),BYAxis);
   return;
 }
 
@@ -232,74 +239,51 @@ TwinPipe::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("TwinPipe","createObjects");
-  /*
+
   std::string Out;
   
-  const std::string frontStr=frontRule();
-  const std::string backStr=backRule();
-  
-  // Void
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
+  const std::string frontStr=getRuleStr("front");
 
-  // FLANGE Front: 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -107 7 ");
+  // front flange
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -11 107 207 ");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,Out+frontStr);
-
-  // FLANGE Back: 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 7 ");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,Out+backStr);
-
-  // Inner clip if present
-  if (bellowStep>Geometry::zeroTol)
-    {
-
-      if (innerLayer)
-	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 7");
-	  makeCell("MainPipe",System,cellIndex++,feMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 17");
-	  makeCell("Cladding",System,cellIndex++,bellowMat,0.0,Out);
-	}
-      else
-	{
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 7 ");
-	  makeCell("FrontClip",System,cellIndex++,feMat,0.0,Out);
-	  
-	  Out=ModelSupport::getComposite(SMap,buildIndex," -12 22 -17 7 ");
-	  makeCell("BackClip",System,cellIndex++,feMat,0.0,Out);
-	  
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 7");
-	  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
-	}
- 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -27 17");
-      makeCell("FrontSpaceVoid",System,cellIndex++,0,0.0,Out);
-
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 22 -27 17");
-      makeCell("BackSpaceVoid",System,cellIndex++,0,0.0,Out);
-    }
-  else
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -22 -27 7 ");
-      makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
-    }
   
-  
+  // pipeA 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
+  makeCell("PipeAVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -101 107 -117 ");
+  makeCell("PipeAWall",System,cellIndex++,feMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -101 117 -127 ");
+  makeCell("PipeAFlange",System,cellIndex++,feMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -111 -127 117 ");
+  makeCell("PipeAOutVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  // pipe B
+  Out=ModelSupport::getComposite(SMap,buildIndex," -201 -207 ");
+  makeCell("PipeBVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+    
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -201 207 -217 ");
+  makeCell("PipeBWall",System,cellIndex++,feMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -201 217 -227 ");
+  makeCell("PipeBFlange",System,cellIndex++,feMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -211 217 -227 ");
+  makeCell("PipeBOutVoid",System,cellIndex++,voidMat,0.0,Out);
+
   // outer boundary [flange front]
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7 ");
   addOuterSurf(Out+frontStr);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 12 -207 ");
-  addOuterUnionSurf(Out+backStr);
-
-  
-  // outer boundary mid tube
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 11 -12 -27");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -101 -127 ");
   addOuterUnionSurf(Out);
-  */
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -201 -227 ");
+  addOuterUnionSurf(Out);
+
   return;
 }
-
 
   
 void
@@ -311,39 +295,25 @@ TwinPipe::createLinks()
 {
   ELog::RegMethod RegA("TwinPipe","createLinks");
 
-  // stuff for intersection
-  /*
-  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
-  
-  FixedComp::setConnect(7,Origin-Z*(radius+bellowThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+bellowThick),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+27));
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
 
-  // pipe wall
-  FixedComp::setConnect(9,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(10,Origin+Z*(radius+feThick),Z);
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+17));
-  */  
+  const Geometry::Vec3D ACent=Origin+X*pipeAXStep+Z*pipeAZStep;
+  const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;
+    
+  FixedComp::setConnect(1,ACent+AYAxis*pipeALength,AYAxis);
+  FixedComp::setConnect(2,BCent+BYAxis*pipeBLength,BYAxis);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+101));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+201));
+  
 
   return;
 }
-  
-  
+    
 void
 TwinPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
- /*!
+  /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

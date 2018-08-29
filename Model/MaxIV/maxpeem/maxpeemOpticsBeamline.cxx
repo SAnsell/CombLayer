@@ -95,6 +95,7 @@
 #include "JawValve.h"
 #include "FlangeMount.h"
 #include "GrateMonoBox.h"
+#include "TwinPipe.h"
 #include "maxpeemOpticsBeamline.h"
 
 namespace xraySystem
@@ -137,7 +138,9 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
   offPipeC(new constructSystem::OffsetFlangePipe(newName+"OffPipeC")),
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),  
-  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD"))
+  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
+  splitter(new xraySystem::TwinPipe(newName+"Splitter"))
+  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -176,6 +179,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(offPipeC);
   OR.addObject(M3Tube);
   OR.addObject(offPipeD);
+  OR.addObject(splitter);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -343,6 +347,31 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
   return;
 }
 
+void
+maxpeemOpticsBeamline::buildSplitter(Simulation& System,
+				     HeadRule& dividerA,
+				     HeadRule& dividerB,
+				     MonteCarlo::Object& masterCellA,
+				     MonteCarlo::Object& masterCellB,
+				     const attachSystem::FixedComp& initFC,
+				     const long int sideIndex)
+  /*!
+    Sub build of the m3-mirror package
+    \param System :: Simulation to use
+    \param dividerA :: Divider object main divider
+    \param masterCellA :: Main master volume [incoming]
+    \param masterCellB :: Extra master volume [created]
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
+
+
+  return;
+}
+
 
 void
 maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
@@ -398,7 +427,10 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeD,2);
   offPipeD->insertInCell(System,outerCell);
 
-  
+  splitter->createAll(System,*offPipeD,2);
+  outerCell=createOuterVoidUnit(System,masterCell,divider,*splitter,2);
+  splitter->insertInCell(System,outerCell);
+
   return;
 }
 

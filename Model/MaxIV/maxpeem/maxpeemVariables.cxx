@@ -66,6 +66,7 @@
 #include "PortChicaneGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
+#include "TwinPipeGenerator.h"
 
 namespace setVariable
 {
@@ -79,16 +80,39 @@ namespace maxpeemVar
   void opticsHutVariables(FuncDataBase&,const std::string&);
   void opticsBeamVariables(FuncDataBase&,const std::string&);
   void monoVariables(FuncDataBase&,const std::string&);
-  void m3MirrorVariables(FuncDataBase&,const std::string&);
+  void m1MirrorVariables(FuncDataBase&,const std::string&);
+  void splitterVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
+
+void
+splitterVariables(FuncDataBase& Control,
+  		  const std::string& splitKey)
+  /*!
+    Builds the variables for the slitter
+    \param Control :: Database
+    \param splitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","splitVariables");
+  setVariable::TwinPipeGenerator TwinGen;
+
+  TwinGen.setCF<CF40>();
+  TwinGen.setJoinFlangeCF<CF150>();
+  TwinGen.setAPos(-2.7,0);
+  TwinGen.setBPos(2.7,0);
+  TwinGen.setXYAngle(4.0,-4.0);
+  TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);  
+
+  return;
+}
 
   
 void
 m3MirrorVariables(FuncDataBase& Control,
 		  const std::string& mirrorKey)
   /*!
-    Builds the variables for the M1 Mirror
+    Builds the variables for the M3 Mirror
     \param Control :: Database
     \param mirrorKey :: prename
   */
@@ -413,6 +437,7 @@ opticsBeamVariables(FuncDataBase& Control,
   slitPackageVariables(Control,opticKey);
   monoVariables(Control,opticKey);
   m3MirrorVariables(Control,opticKey);
+  splitterVariables(Control,opticKey);
   return;
 }
 

@@ -179,7 +179,7 @@ ExternalCut::copyCutSurf(const std::string& extName,
 void
 ExternalCut::setCutSurf(const std::string& extName,
 			const int ESurf)
-/*!
+  /*!
     Set a a surface
     \param extName :: external-cut name
     \param ESurf :: surface number [signed]
