@@ -216,26 +216,26 @@ VESPAvariables(FuncDataBase& Control)
   
   // HCollar > Horse Collar
   HCGen.setMaterial("Stainless304");
-  HCGen.generateHorseCollar(Control,"vespaHCollar",45.24004,20,12,25);
+  HCGen.generateHorseCollar(Control,"vespaHCollar",80,20,12,25); //45.24004
   
   
   // VPipeH + FocusH > Pipe&guide to heavy shutter
-  PipeGen.generatePipe(Control,"vespaPipeH",1.0,44.24004);
-  FGen.generateTaper(Control,"vespaFH",42.24004,4.6,4.7,4.6,4.7);
+  PipeGen.generatePipe(Control,"vespaPipeH",1.0,50.24004); //44.24004
+  FGen.generateTaper(Control,"vespaFH",48.24004,4.6,4.7,4.6,4.7);
 
   
   // HShutter > Heavy Shutter
-  HSGen.setWallThick(4);
+  HSGen.setWallThick(0);
   HSGen.setSeparatorThick(2);
   HSGen.setSlabThick({10,10,10,30,10});
-  HSGen.generateHeavyShutter(Control,"vespaHShutter",44.0,40.0,40.0);
-  Control.addVariable("vespaHShutterZStep",70.0);
+  HSGen.generateHeavyShutter(Control,"vespaHShutter",HSGen.getLength()/2+2,14.0,18.0);
+  Control.addVariable("vespaHShutterZStep",0.0);
   
   
   // VPipeH + FocusH > Pipe inside heavy shutter
   PipeGen.generatePipe(Control,"vespaPipeHS",1.0,HSGen.getLength());
   FGen.generateTaper(Control,"vespaFHS",HSGen.getLength()-2,4.0,5.0,4.0,5.0);
-  Control.addVariable("vespaPipeHSZStep",0.0);
+  Control.addVariable("vespaPipeHSZStep",-70.0);
   
   
   // BEAM INSERT:
