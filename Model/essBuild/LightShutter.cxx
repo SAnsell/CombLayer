@@ -146,8 +146,8 @@ LightShutter::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
-  mainMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MainMat",0);
-  wallMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WallMat", 0);
+  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   
   return;
 }
