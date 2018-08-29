@@ -3,7 +3,7 @@
  
  * File:   essBuild/LightShutter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,11 +75,6 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "LightShutter.h"
 
@@ -89,9 +84,7 @@ namespace essSystem
 LightShutter::LightShutter(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  lightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(lightIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -101,7 +94,6 @@ LightShutter::LightShutter(const std::string& Key)  :
 LightShutter::LightShutter(const LightShutter& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  lightIndex(A.lightIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -123,7 +115,6 @@ LightShutter::operator=(const LightShutter& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -186,20 +177,20 @@ LightShutter::createSurfaces()
   ELog::RegMethod RegA("LightShutter","createSurface");
 
 
-  ModelSupport::buildPlane(SMap,lightIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,lightIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,lightIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,lightIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,lightIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,lightIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,lightIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,lightIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,lightIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,lightIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);
   
   return;
@@ -217,17 +208,15 @@ LightShutter::createObjects(Simulation& System)
 
   std::string Out;
   // Tugnsten middle
-  Out=ModelSupport::getComposite(SMap,lightIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  setCell("main",cellIndex-1);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  makeCell("Main",System,cellIndex++,mainMat,0.0,Out);
 
   // Steel wrapper
-  Out=ModelSupport::getComposite(SMap,lightIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  setCell("main",cellIndex-1);
+  makeCell("Wrapper",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,lightIndex," 1 -2 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16");
   addOuterSurf(Out);
 
   return;
@@ -248,12 +237,12 @@ LightShutter::createLinks()
   FixedComp::setConnect(3,Origin-Z*(wallThick+height/2.0),-Z);
   FixedComp::setConnect(3,Origin+Z*(wallThick+height/2.0),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(lightIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(lightIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(lightIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(lightIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(lightIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(lightIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   return;
 }

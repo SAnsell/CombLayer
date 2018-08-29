@@ -145,7 +145,7 @@ HorseCollar::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length",25);
+  length=Control.EvalVar<double>(keyName+"Length");
   internalRadius=Control.EvalVar<double>(keyName+"internalRadius");
   mainRadius=Control.EvalVar<double>(keyName+"mainRadius");
   

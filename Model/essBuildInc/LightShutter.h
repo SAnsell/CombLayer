@@ -35,14 +35,12 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class LightShutter : public attachSystem::ContainedComp,
+class LightShutter :
+  public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
-   
-  const int lightIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double length;                ///< Total length including void
   double width;                 ///< Width

@@ -433,15 +433,7 @@ VESPA::buildBunkerUnits(Simulation& System,
   JPipeCOut->createAll(System,TwinChopperC->getKey("Main"),2);
   FocusF->addInsertCell(JPipeCOut->getCells("Void"));
   FocusF->createAll(System,*JPipeCOut,7,*JPipeCOut,7);
-  
-  /*
-  ELog::EM<<"Distance JPipeIn LP2 - TwinChopperA LP1 : "<<Vec3D::Distance(JPipeAIn->getKey("Guide0"),2,TwinChopperA->getKey("Main"),1)<<ELog::endDiag;
-  const masterRotate& MR=masterRotate::Instance();
-  ELog::EM<<"TwinChopperARR LinkPt 0 : "<<MR.calcRotate(TwinChopperA->getKey("Main").getLinkPt(1))<<ELog::endDiag;
-  ELog::EM<<"TwinChopperA LinkPt 0 : "<<TwinChopperA->getKey("Main").getLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"TChopA -= "<<TwinChopperA->getKey("Beam").getLinkAxis(-1)<<ELog::endDiag;
-  */
-  
+    
   // VPipeG + FocusG
   VPipeG->addInsertCell(bunkerVoid);
   VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
@@ -484,24 +476,6 @@ VESPA::buildBunkerUnits(Simulation& System,
   VPipeHS->createAll(System,*VPipeH,2);
   FocusHS->addInsertCell(VPipeHS->getCells("Void"));
   FocusHS->createAll(System,*VPipeHS,0,*VPipeHS,0);  
-  
-//  ELog::EM<<"┌──── Positions ───────────────────"<<ELog::endDiag;
-//  ELog::EM<<"│ FocusA.axis    = "<<FocusA->getLinkAxis(0)<<ELog::endDiag;
-//  ELog::EM<<"│ FocusA.0       = "<<FocusA->getLinkPt(0)<<ELog::endDiag;
-//  ELog::EM<<"│ TwinChopperA.0 = "<<TwinChopperA->getLinkPt(0)<<ELog::endDiag;
-//  ELog::EM<<"│ TwinChopperB.0 = "<<TwinChopperB->getLinkPt(0)<<ELog::endDiag;
-//  ELog::EM<<"│ TwinChopperC.0 = "<<TwinChopperC->getLinkPt(0)<<ELog::endDiag;
-//  ELog::EM<<"│ ChopperFOC.0   = "<<ChopperFOC->getLinkPt(0)<<ELog::endDiag;
-//  ELog::EM<<"└──────────────────────────────────"<<ELog::endDiag;
-//  
-//  ELog::EM<<"┌──── Distances ───────────────────"<<ELog::endDiag;
-//  ELog::EM<<"│ VespaAxis - ISCS            = "<<FocusA->getLinkAxis(0).Distance(Geometry::Vec3D(0,0,0))<<" cm"<<ELog::endDiag;
-//  ELog::EM<<"│ FocusA - TwinChopperA       = "<<FocusA->getKey("Guide0").getLinkDistance(1,TwinChopperA->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-//  ELog::EM<<"│ TwinChopperA - TwinChopperB = "<<TwinChopperA->getLinkDistance(0,TwinChopperB->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-//  ELog::EM<<"│ TwinChopperB - TwinChopperC = "<<TwinChopperB->getLinkDistance(0,TwinChopperC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-//  ELog::EM<<"│ TwinChopperC - ChopperFOC   = "<<TwinChopperC->getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-//  ELog::EM<<"│ ChopperFOC - FocusG         = "<<ChopperFOC->getKey("Main").getLinkDistance(1,FocusG->getKey("Guide0"),2)<<" cm"<<ELog::endDiag;
-//  ELog::EM<<"└──────────────────────────────────"<<ELog::endDiag;
   
   return;
 }
@@ -615,26 +589,26 @@ VESPA::buildOutGuide(Simulation& System,
     FocusArray[i]->createAll(System,*VPipeArray[i],0,*VPipeArray[i],0);
   }
   
-  ELog::EM<<"┌──── Positions ───────────────────"<<ELog::endDiag;
-  ELog::EM<<"│ ChopperT0   = "<<ChopperT0->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
-  ELog::EM<<"│ ChoppersFOC = "<<ChoppersFOC->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
+  ELog::EM<<"----- Positions ----------------"<<ELog::endDiag;
+  ELog::EM<<"| ChopperT0   = "<<ChopperT0->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
+  ELog::EM<<"| ChoppersFOC = "<<ChoppersFOC->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
   for (unsigned i = 0; i < ShieldArray.size(); ++i)
   {
-    ELog::EM<<"│ FocusArray"<<(i)<<" = "<<FocusArray[i]->getKey("Guide0").getLinkPt(1)<<ELog::endDiag;
+    ELog::EM<<"| FocusArray"<<(i)<<" = "<<FocusArray[i]->getKey("Guide0").getLinkPt(1)<<ELog::endDiag;
   }
-  ELog::EM<<"└──────────────────────────────────"<<ELog::endDiag;
+  ELog::EM<<"--------------------------------"<<ELog::endDiag;
   
-  ELog::EM<<"┌──── Distances ───────────────────"<<ELog::endDiag;
-  ELog::EM<<"│ VPipeB1 - VPipeB2        = "<<VPipeB->getLinkDistance(1,*VPipeB,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ VPipeG1 - VPipeG2        = "<<VPipeG->getLinkDistance(1,*VPipeG,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ VPipeH1 - VPipeH2        = "<<VPipeH->getLinkDistance(1,*VPipeH,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ VPipeI1 - VPipeI2        = "<<VPipeI->getLinkDistance(1,*VPipeI,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ VPipeJ1 - VPipeJ2        = "<<VPipeJ->getLinkDistance(1,*VPipeJ,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ ShieldB1 - ShieldB2      = "<<ShieldB->getLinkDistance(1,*ShieldB,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ ChopperT0 - ChopperFOC   = "<<ChopperT0->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ ChoppersFOC - ChopperFOC = "<<ChoppersFOC->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ FocusJ1 - FocusJ2        = "<<FocusJ->getKey("Guide0").getLinkDistance(1,FocusJ->getKey("Guide0"),2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"└──────────────────────────────────"<<ELog::endDiag;
+  ELog::EM<<"---- Distances ----------------"<<ELog::endDiag;
+  ELog::EM<<"| VPipeB1 - VPipeB2        = "<<VPipeB->getLinkDistance(1,*VPipeB,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| VPipeG1 - VPipeG2        = "<<VPipeG->getLinkDistance(1,*VPipeG,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| VPipeH1 - VPipeH2        = "<<VPipeH->getLinkDistance(1,*VPipeH,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| VPipeI1 - VPipeI2        = "<<VPipeI->getLinkDistance(1,*VPipeI,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| VPipeJ1 - VPipeJ2        = "<<VPipeJ->getLinkDistance(1,*VPipeJ,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| ShieldB1 - ShieldB2      = "<<ShieldB->getLinkDistance(1,*ShieldB,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| ChopperT0 - ChopperFOC   = "<<ChopperT0->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| ChoppersFOC - ChopperFOC = "<<ChoppersFOC->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| FocusJ1 - FocusJ2        = "<<FocusJ->getKey("Guide0").getLinkDistance(1,FocusJ->getKey("Guide0"),2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"--------------------------------"<<ELog::endDiag;
   
   return;
 }
@@ -705,14 +679,14 @@ VESPA::buildHut(Simulation& System,
   Sample->setInsertCell(Cryo->getCell("SampleVoid"));
   Sample->createAll(System,*Cryo,0);
   
-  ELog::EM<<"┌──── Positions ───────────────────"<<ELog::endDiag;
-  ELog::EM<<"│ JawsSet = "<<VJaws->getLinkPt(0)<<ELog::endDiag;
-  ELog::EM<<"└──────────────────────────────────"<<ELog::endDiag;
+  ELog::EM<<"----- Positions -------------------"<<ELog::endDiag;
+  ELog::EM<<"| JawsSet = "<<VJaws->getLinkPt(0)<<ELog::endDiag;
+  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
   
-  ELog::EM<<"┌──── Distances ───────────────────"<<ELog::endDiag;
-  ELog::EM<<"│ VPipeK1 - VPipeK2    = "<<VPipeK->getLinkDistance(1,*VPipeK,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"│ JawsSet - ChopperFOC = "<<VJaws->getLinkDistance(0,ChoppersFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"└──────────────────────────────────"<<ELog::endDiag;
+  ELog::EM<<"----- Distances -------------------"<<ELog::endDiag;
+  ELog::EM<<"| VPipeK1 - VPipeK2    = "<<VPipeK->getLinkDistance(1,*VPipeK,2)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"| JawsSet - ChopperFOC = "<<VJaws->getLinkDistance(0,ChoppersFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
+  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
   
   return;
 }
@@ -775,49 +749,50 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
   startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  ELog::EM<<"BUILD ISOLATED Start/Stop:"<<startPoint<<" "<<stopPoint<<ELog::endDiag;
+  ELog::EM<<"BUILD ISOLATED Start/Stop:"
+	  <<startPoint<<" "<<stopPoint<<ELog::endDiag;
   
   const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
   long int startIndex(0);
   
   if (startPoint<1)
-  {
-    buildBunkerUnits(System,*FStart,startIndex,voidCell);
-    // Set the start point fo rb
-    FStart=&(FocusH->getKey("Guide0"));
-    startIndex=2;
-  }
+    {
+      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      // Set the start point fo rb
+      FStart=&(FocusH->getKey("Guide0"));
+      startIndex=2;
+    }
   
   if (stopPoint==2 || stopPoint==1) return;
 
   if (startPoint<2)
-  {
-    VPipeWall->addInsertCell(voidCell);
-    VPipeWall->createAll(System,*FStart,startIndex);
-    
-    FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-    FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-    FStart= &(FocusWall->getKey("Guide0"));
-    startIndex=2;
-    ChopperT0Pit->addFrontWall(*VPipeWall,2);
-  }
+    {
+      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      startIndex=2;
+      ChopperT0Pit->addFrontWall(*VPipeWall,2);
+    }
   
   if (stopPoint==3) return;
   
   if (startPoint<3)
-  {
-    buildOutGuide(System,*FStart,startIndex,voidCell);      
-    FStart=&(FocusArray[ShieldArray.size()-1]->getKey("Guide0"));
-    startIndex=2;
-  }
+    {
+      buildOutGuide(System,*FStart,startIndex,voidCell);      
+      FStart=&(FocusArray[ShieldArray.size()-1]->getKey("Guide0"));
+      startIndex=2;
+    }
   
   if (stopPoint==4) return;      
   
   if (startPoint<4)
-  {
-    buildHut(System,*FStart,startIndex,voidCell);
-    buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
-  }
+    {
+      buildHut(System,*FStart,startIndex,voidCell);
+      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
+    }
   
   return;
 }
@@ -841,7 +816,8 @@ VESPA::build(Simulation& System,
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
 
-  ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()<<" Bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
+  ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()
+	  <<" Bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)<<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*vespaAxis,Control,GItem,0);
@@ -854,7 +830,8 @@ VESPA::build(Simulation& System,
   
   if (stopPoint==1) return;            // STOP At monolith edge
   
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,bunkerObj.getCell("MainVoid"));
+  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+		   bunkerObj.getCell("MainVoid"));
   
   if (stopPoint==2) return;            // STOP At bunker edge
   
