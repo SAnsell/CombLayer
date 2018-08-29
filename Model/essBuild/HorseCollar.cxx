@@ -89,9 +89,7 @@ namespace essSystem
 HorseCollar::HorseCollar(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  horseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(horseIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -101,7 +99,6 @@ HorseCollar::HorseCollar(const std::string& Key) :
 HorseCollar::HorseCollar(const HorseCollar& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  horseIndex(A.horseIndex),cellIndex(A.cellIndex),
   length(A.length),internalRadius(A.internalRadius),mainRadius(A.mainRadius),
   mainMat(A.mainMat)
   /*!
@@ -123,7 +120,6 @@ HorseCollar::operator=(const HorseCollar& A)
     attachSystem::ContainedComp::operator=(A);
     attachSystem::FixedOffset::operator=(A);
     attachSystem::CellMap::operator=(A);
-    cellIndex=A.cellIndex;
     length=A.length;
     internalRadius=A.internalRadius;
     mainRadius=A.mainRadius;
@@ -149,11 +145,11 @@ HorseCollar::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  length=Control.EvalDefVar<double>(keyName+"Length",25);
-  internalRadius=Control.EvalDefVar<double>(keyName+"internalRadius",12);
-  mainRadius=Control.EvalDefVar<double>(keyName+"mainRadius",20);
+  length=Control.EvalVar<double>(keyName+"Length",25);
+  internalRadius=Control.EvalVar<double>(keyName+"internalRadius");
+  mainRadius=Control.EvalVar<double>(keyName+"mainRadius");
   
-  mainMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MainMat",0);
+  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   
   return;
 }
@@ -181,11 +177,11 @@ HorseCollar::createSurfaces()
 {
   ELog::RegMethod RegA("HorseCollar","createSurface");
   
-  ModelSupport::buildPlane(SMap,horseIndex+1,Origin-Y*length,Y);
-  ModelSupport::buildPlane(SMap,horseIndex+2,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   
-  ModelSupport::buildCylinder(SMap,horseIndex+7,Origin,Y,internalRadius);
-  ModelSupport::buildCylinder(SMap,horseIndex+17,Origin,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,internalRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,mainRadius);
   
   return;
 }
@@ -201,17 +197,17 @@ HorseCollar::createObjects(Simulation& System)
   
   std::string Out;
   // Void
-  Out=ModelSupport::getComposite(SMap,horseIndex," 1 -7 -2");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -2");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
-  addCell("Hole",cellIndex--);
+  addCell("Hole",cellIndex-1);
   
   // Steel wrapper
-  Out=ModelSupport::getComposite(SMap,horseIndex," 1 +7 -17 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 7 -17 -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addCell("Wall",cellIndex--);
+  addCell("Wall",cellIndex-1);
   
   // Outer boundary
-  Out=ModelSupport::getComposite(SMap,horseIndex," 1 -17 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 -2 ");
   addOuterSurf(Out);
   
   return;
@@ -225,12 +221,11 @@ HorseCollar::createLinks()
 {
   ELog::RegMethod RegA("HorseCollar","createLinks");
   
-  FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setConnect(1,Origin-Y*(length/2),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2),Y);
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(1,Origin+Y*length,Y);
   
-  FixedComp::setLinkSurf(0,-SMap.realSurf(horseIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(horseIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   
   return;
 }

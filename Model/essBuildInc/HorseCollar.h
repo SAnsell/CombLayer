@@ -40,10 +40,7 @@ class HorseCollar : public attachSystem::ContainedComp,
                     public attachSystem::CellMap
 {
  private:
-   
-  const int horseIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-  
+     
   double length;                ///< Length
   double internalRadius;        ///< Void radius
   double mainRadius;            ///< Main radius
