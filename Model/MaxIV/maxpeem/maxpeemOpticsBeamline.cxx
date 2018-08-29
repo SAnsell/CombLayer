@@ -269,12 +269,61 @@ maxpeemOpticsBeamline::constructMasterCell
 }
 
 int
+maxpeemOpticsBeamline::createDoubleVoidUnit(Simulation& System,
+					    MonteCarlo::Object& MCellNeg,
+					    MonteCarlo::Object& MCellPlus,
+					    HeadRule& divider,
+					    const attachSystem::FixedComp& FC,
+					    const long int sideIndex)
+ /*!
+    Construct two outer void objects in the main pipe
+    \param System :: Simulation
+    \param MCellNeg :: full master cell
+    \param MCellPlus :: full master cell
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","createDoubleOuterVoid");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+  
+  const HeadRule& backHR=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    ExternalCut::getRule("back");
+  
+  Out=getRuleStr("beam");
+  Out+=divider.display()+backHR.display();
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  divider=backHR;
+
+  // make the master cell valid:
+  
+  divider.makeComplement();
+
+
+  // make the master cell valid:
+
+  const Geometry::Vec3D DPoint(FC.getLinkPt(sideIndex));
+  Geometry::Vec3D crossX,crossY,crossZ;
+  FC.selectAltAxis(sideIndex,crossX,crossY,crossZ);
+  ModelSupport::buildPlane(SMap,buildIndex+10,DPoint,crossX);
+  ExternalCut::setCutSurf("middle",SMap.realSurf(buildIndex+10));
+  
+  divider.makeComplement();
+  refrontMasterCell(MCellNeg,MCellPlus,FC,sideIndex);
+  return cellIndex-1;
+}
+
+int
 maxpeemOpticsBeamline::createOuterVoidUnit(Simulation& System,
 					   MonteCarlo::Object& masterCell,
 					   HeadRule& divider,
 					   const attachSystem::FixedComp& FC,
 					   const long int sideIndex)
-/*!
+  /*!
     Construct outer void object main pipe
     \param System :: Simulation
     \param masterCell :: full master cell
@@ -327,6 +376,34 @@ maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCell,
   return;
 }
 
+
+void
+maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCellNeg,
+					 MonteCarlo::Object& MCellPlus,
+					 const attachSystem::FixedComp& FC,
+					 const long int sideIndex) const
+  /*!
+    This horrifc function to re-build a double MCell 
+    based on centre point split 
+
+    \param MCellNeg :: Based on the negative side
+    \param MCellPlus :: Based on the positive side
+    \param FC :: FixedComp
+    \param sideIndex :: side index for back of FC object
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","refrontMasterCell");
+
+  std::string Out;  
+
+  Out=getRuleStr("beam")+getRuleStr("back")+
+    FC.getLinkString(sideIndex);
+  MCellNeg.procString(Out+getComplementStr("middle"));
+  MCellPlus.procString(Out+getRuleStr("middle"));
+
+  return;
+}
+
 void
 maxpeemOpticsBeamline::insertFlanges(Simulation& System,
 				     const constructSystem::PipeTube& PT)
@@ -368,6 +445,10 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
 
+  int outerCell;
+  splitter->createAll(System,*offPipeD,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,dividerA,*splitter,2);
+  splitter->insertInCell(System,outerCell);
 
   return;
 }
@@ -423,13 +504,10 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);
 
+  MonteCarlo::Object MCellB;
   offPipeD->createAll(System,*M3Tube,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeD,2);
+  outerCell=createDoubleVoidUnit(System,masterCell,MCellB,divider,*offPipeD,2);
   offPipeD->insertInCell(System,outerCell);
-
-  splitter->createAll(System,*offPipeD,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*splitter,2);
-  splitter->insertInCell(System,outerCell);
 
   return;
 }

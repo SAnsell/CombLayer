@@ -145,13 +145,27 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<xraySystem::TwinPipe> splitter;
 
   MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
+  
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
 			  HeadRule&,
 			  const attachSystem::FixedComp&,
 			  const long int);
+
+  int createDoubleVoidUnit(Simulation&,
+			    MonteCarlo::Object&,
+			    MonteCarlo::Object&,
+			    HeadRule&,
+			    const attachSystem::FixedComp&,
+			    const long int);
+  
   void refrontMasterCell(MonteCarlo::Object&,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
+  
+  void refrontMasterCell(MonteCarlo::Object&,MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,
+			 const long int) const;
+  
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
