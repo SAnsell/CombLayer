@@ -285,11 +285,11 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(VPipeH);
   OR.addObject(FocusH);
 
-  OR.addObject(HCollar);
-
   OR.addObject(HShutter);
   OR.addObject(VPipeHS);
   OR.addObject(FocusHS);
+  
+  OR.addObject(HCollar);
   
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
@@ -455,35 +455,28 @@ VESPA::buildBunkerUnits(Simulation& System,
   FOCDisk->createAll(System,ChopperFOC->getKey("Main"),0);
   ChopperFOC->insertAxle(System,*FOCDisk);
   
-  // HCollar
-  if (HorseCollar_exist)
-  {
-    HCollar->addInsertCell(bunkerVoid);
-    HCollar->createAll(System,ChopperFOC->getKey("Beam"),2);
-  }
-  
   // VPipeH + FocusH
-  if (HorseCollar_exist)
-  {
-    VPipeH->addInsertCell(HCollar->getCell("Hole"));
-    FocusH->addInsertCell(HCollar->getCell("Hole"));
-  }
-  else
-    VPipeH->addInsertCell(bunkerVoid);
-
+  VPipeH->addInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
   FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
   
+  // HCollar
+  HCollar->addInsertCell(bunkerVoid);
+  HCollar->createAll(System,*VPipeH,2);
+  
   // HShutter
   HShutter->addInsertCell(bunkerVoid);
-//  HShutter->createAll(System,*VPipeH,2);
-
+  HShutter->addInsertCell(HCollar->getCell("Hole"));
+  HShutter->createAll(System,*VPipeH,2);
+  
   // VPipeHS + FocusHS
-  VPipeHS->addInsertCell(bunkerVoid);
-  VPipeHS->createAll(System,*VPipeH,2);
-  FocusHS->addInsertCell(VPipeHS->getCells("Void"));
-  FocusHS->createAll(System,*VPipeHS,0,*VPipeHS,0);  
+//  VPipeHS->addInsertCell(bunkerVoid);
+//  VPipeHS->addInsertCell(HCollar->getCell("Hole"));
+//  VPipeHS->createAll(System,*VPipeH,2);
+//  FocusHS->addInsertCzell(VPipeHS->getCells("Void"));
+//  FocusHS->addInsertCell(HCollar->getCell("Hole"));
+//  FocusHS->createAll(System,*VPipeHS,0,*VPipeHS,0);
   
 //  ELog::EM<<"┌──── Positions ───────────────────"<<ELog::endDiag;
 //  ELog::EM<<"│ FocusA.axis    = "<<FocusA->getLinkAxis(0)<<ELog::endDiag;

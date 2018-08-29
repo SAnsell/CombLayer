@@ -203,12 +203,12 @@ HorseCollar::createObjects(Simulation& System)
   // Void
   Out=ModelSupport::getComposite(SMap,horseIndex," 1 -7 -2");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
-  addCell("Hole",cellIndex--);
+  addCell("Hole",cellIndex-1);
   
   // Steel wrapper
   Out=ModelSupport::getComposite(SMap,horseIndex," 1 +7 -17 -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addCell("Wall",cellIndex--);
+  addCell("Wall",cellIndex-1);
   
   // Outer boundary
   Out=ModelSupport::getComposite(SMap,horseIndex," 1 -17 -2 ");
