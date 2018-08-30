@@ -139,8 +139,14 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   offPipeC(new constructSystem::OffsetFlangePipe(newName+"OffPipeC")),
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),  
   offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
-  splitter(new xraySystem::TwinPipe(newName+"Splitter"))
-  
+  splitter(new xraySystem::TwinPipe(newName+"Splitter")),
+  bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
+  gateAA(new constructSystem::GateValve(newName+"GateAA")),
+  pumpTubeAA(new constructSystem::PortTube(newName+"PumpTubeAA")),
+  bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
+  gateBA(new constructSystem::GateValve(newName+"GateBA")),
+  pumpTubeBA(new constructSystem::PortTube(newName+"PumpTubeBA"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -180,6 +186,12 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(M3Tube);
   OR.addObject(offPipeD);
   OR.addObject(splitter);
+  OR.addObject(bellowAA);
+  OR.addObject(bellowBA);
+  OR.addObject(gateAA);
+  OR.addObject(gateBA);
+  OR.addObject(pumpTubeAA);
+  OR.addObject(pumpTubeBA);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -336,11 +348,8 @@ maxpeemOpticsBeamline::createDoubleVoidUnit(Simulation& System,
   Out=getRuleStr("beam");
   Out+=divider.display()+backHR.display();
   makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-  divider=backHR;
   
-  // make the master cell valid:
-  divider.makeComplement();
-  // make the master cell valid:
+  // make the master cell valid :
   makeCell("masterCellB",System,cellIndex++,0,0.0,Out);
   masterCellB = System.findQhull(cellIndex-1);
 
@@ -430,7 +439,6 @@ maxpeemOpticsBeamline::createOuterVoidUnit(Simulation& System,
 
   refrontMasterCell(masterCell,FC,sideIndex);
   masterCell->addSurfString(middle.display());
-  ELog::EM<<"Cell == "<<*masterCell<<ELog::endDiag;
   return cellIndex-1;
 }
 
@@ -508,8 +516,7 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
 
 void
 maxpeemOpticsBeamline::buildSplitter(Simulation& System,
-				     HeadRule& dividerA,
-				     HeadRule& dividerB,
+				     HeadRule& divider,
 				     const attachSystem::FixedComp& initFC,
 				     const long int sideIndex)
   /*!
@@ -523,23 +530,39 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
 
+  int cellA,cellB;
 
-  int outerCell;
   offPipeD->createAll(System,initFC,sideIndex);
-  outerCell=createDoubleVoidUnit(System,dividerA,*offPipeD,2);
-  offPipeD->insertInCell(System,outerCell);
+  cellA=createDoubleVoidUnit(System,divider,*offPipeD,2);
+  offPipeD->insertInCell(System,cellA);
 
   splitter->createAll(System,*offPipeD,2);
-  const int cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
-  const int cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
+  cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
+  cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
+
   splitter->insertInCell("Flange",System,cellA);
   splitter->insertInCell("Flange",System,cellB);
   splitter->insertInCell("PipeA",System,cellA);
   splitter->insertInCell("PipeB",System,cellB);
 
-  
-  
+  // now build left/ right
+  // LEFT
+  bellowAA->createAll(System,*splitter,2);
+  cellA=constructDivideCell(System,0,*splitter,2,*bellowAA,2);
+  bellowAA->insertInCell(System,cellA);
 
+  gateAA->createAll(System,*bellowAA,2);
+  cellA=constructDivideCell(System,0,*bellowAA,2,*gateAA,2);
+  gateAA->insertInCell(System,cellA);
+  
+  // RIGHT
+  bellowBA->createAll(System,*splitter,3);
+  cellB=constructDivideCell(System,1,*splitter,3,*bellowBA,2);
+  bellowBA->insertInCell(System,cellB);
+
+  gateBA->createAll(System,*bellowBA,2);
+  cellB=constructDivideCell(System,1,*bellowBA,2,*gateBA,2);
+  gateBA->insertInCell(System,cellB);
   return;
 }
 
@@ -801,7 +824,7 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   buildMono(System,divider,masterCellA,*pipeF,2);
   buildM3Mirror(System,divider,masterCellA,*bellowE,2);
   
-  buildSplitter(System,divider,divider,*M3Tube,2);
+  buildSplitter(System,divider,*M3Tube,2);
   lastComp=offPipeA;
 
   return;

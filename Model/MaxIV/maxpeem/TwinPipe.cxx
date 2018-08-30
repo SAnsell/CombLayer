@@ -194,8 +194,6 @@ TwinPipe::createSurfaces()
   QBz.rotate(BYAxis);
   QBxy.rotate(BYAxis);
 
-  ELog::EM<<"A == "<<AYAxis <<ELog::endDiag;
-  ELog::EM<<"B == "<<BYAxis <<ELog::endDiag;
   // Inner void
   if (!ExternalCut::isActive("front"))
     {
@@ -218,10 +216,7 @@ TwinPipe::createSurfaces()
 			   ACent+AYAxis*(pipeALength-flangeALength),AYAxis);
   
   // Pipe B
-  const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;
-  ELog::EM<<"Origin == "<<Origin<<" :: "<<ACent<<" :: "<<BCent<<ELog::endDiag;
-  ELog::EM<<"Dist == "<<ACent.Distance(BCent)<<ELog::endDiag;
-  
+  const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;  
   ModelSupport::buildCylinder(SMap,buildIndex+207,BCent,BYAxis,pipeBRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,BCent,
 			      BYAxis,pipeBRadius+pipeBThick);

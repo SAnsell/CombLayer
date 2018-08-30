@@ -96,13 +96,36 @@ splitterVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","splitVariables");
   setVariable::TwinPipeGenerator TwinGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
 
+  
   TwinGen.setCF<CF40>();
   TwinGen.setJoinFlangeCF<CF150>();
   TwinGen.setAPos(-2.7,0);
   TwinGen.setBPos(2.7,0);
   TwinGen.setXYAngle(4.0,-4.0);
   TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);  
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,splitKey+"BellowAA",0,16.0);
+  BellowGen.generateBellow(Control,splitKey+"BellowBA",0,16.0);
+
+  GateGen.setLength(3.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,splitKey+"GateAA",0.0,0);
+  GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(2.5,2.5);
+  
+  PTubeGen.generateCFTube<CF63>(Control,splitKey+"PumpTubeAA",0.0,20.0);
+  Control.addVariable(splitKey+"PumpTubeAANPorts",0);
+  PTubeGen.generateCFTube<CF63>(Control,splitKey+"PumpTubeBA",0.0,20.0);
+  Control.addVariable(splitKey+"PumpTubeBANPorts",0);
 
   return;
 }

@@ -144,6 +144,21 @@ class maxpeemOpticsBeamline :
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
 
+  // PIPE A :: LEFT SIDE
+  // bellowA on left split
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  /// Gate valve for left
+  std::shared_ptr<constructSystem::GateValve> gateAA;
+  /// Pumping tube
+  std::shared_ptr<constructSystem::PortTube> pumpTubeAA;
+
+  
+  // PIPE B :: RIGHT SIDE
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  /// Gate valve for right
+  std::shared_ptr<constructSystem::GateValve> gateBA;
+  /// Pumping tube
+  std::shared_ptr<constructSystem::PortTube> pumpTubeBA;
 
   MonteCarlo::Object* masterCellA;
   MonteCarlo::Object* masterCellB;
@@ -189,7 +204,7 @@ class maxpeemOpticsBeamline :
 		 const attachSystem::FixedComp&,const long int);
   void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object*,
 		       const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,HeadRule&,HeadRule&,
+  void buildSplitter(Simulation&,HeadRule&,
 		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
