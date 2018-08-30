@@ -297,8 +297,7 @@ maxpeemOpticsBeamline::constructDivideCell(Simulation& System,
   std::string Inner = Out;
   Inner += FFC.getLinkString(frontIndex);
   Inner += BFC.getLinkString(-backIndex);
-  makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
-
+  makeCell("MasterVoid",System,cellIndex++,0,0.0,Inner);
   // outer cell and set 
   Out+=BFC.getLinkString(backIndex);
   Out+=getRuleStr("back");
@@ -530,19 +529,15 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   outerCell=createDoubleVoidUnit(System,dividerA,*offPipeD,2);
   offPipeD->insertInCell(System,outerCell);
 
-  ELog::EM<<"Outer goes into a NON masterCellA/B Cell "
-	  <<outerCell<<ELog::endDiag;
-  ELog::EM<<"Master A == "<<*masterCellA<<ELog::endDiag;
-  ELog::EM<<"Master B == "<<*masterCellB<<ELog::endDiag;
-
   splitter->createAll(System,*offPipeD,2);
-  //  int outerCellB=createOuterVoidUnit(System,masterCellB,dividerB,*splitter,3);
-  const int outerCellA=masterCellA->getName();
-  const int outerCellB=masterCellB->getName();
-  splitter->insertInCell("Flange",System,outerCellA);
-  splitter->insertInCell("Flange",System,outerCellB);
-  splitter->insertInCell("PipeA",System,outerCellA);
-  splitter->insertInCell("PipeB",System,outerCellB);
+  const int cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
+  const int cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
+  splitter->insertInCell("Flange",System,cellA);
+  splitter->insertInCell("Flange",System,cellB);
+  splitter->insertInCell("PipeA",System,cellA);
+  splitter->insertInCell("PipeB",System,cellB);
+
+  
   
 
   return;
