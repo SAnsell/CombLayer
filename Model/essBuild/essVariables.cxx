@@ -3,7 +3,7 @@
  
  * File:   essBuild/essVariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -86,6 +85,7 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("LowFocusZStep",-15.20);
 
   // TOP A FLIGHT
+  Control.addVariable("TopAFlightTapSurf", "cone");
   Control.addVariable("TopAFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
 
@@ -94,40 +94,35 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TopAFlightXYAngle",180.0);
   Control.addVariable("TopAFlightZAngle",0.0);
   Control.addVariable("TopAFlightTapSurf","cone");  // Step down angle
-  Control.addVariable("TopAFlightAngleZTop",1.0);  // Step down angle
-  Control.addVariable("TopAFlightAngleZBase",1.0); // Step up angle
+  Control.addVariable("TopAFlightAngleZTop",1.1);    // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("TopAFlightAngleZBase",1.33);// Step up angle ESS-0032315.3 
 
 
   //  Control.Parse("TopFlyTotalHeight");
-  Control.addVariable("TopAFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
+  Control.addVariable("TopAFlightHeight", 2.9);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
-  Control.addVariable("TopAFlightNLiner", 1);      // Liner
-  Control.addVariable("TopAFlightLinerThick1", 0.4);      // Liner
-  Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
+  Control.addVariable("TopAFlightNLiner", 0);      // Liner TSV32IS
+  //  Control.addVariable("TopAFlightLinerThick1", 0.4);      // Liner
+  //  Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
+  Control.addVariable("TopBFlightTapSurf", "cone");
   Control.addVariable("TopBFlightXStep",0.0);      // Step from centre
   Control.addVariable("TopBFlightZStep",0.0);      // Step from centre
   Control.addVariable("TopBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("TopBFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("TopBFlightXYAngle", .0);
   Control.addVariable("TopBFlightZAngle",0.0);
-  Control.addVariable("TopBFlightAngleZTop",0.0);  // Step down angle
-  Control.addVariable("TopBFlightAngleZBase",0.0); // Step up angle
-  Control.addVariable("TopBFlightHeight",4.6);     // Full height = TopFlyTotalHeight
-  Control.addVariable("TopBFlightWidth", 10.7);     // Full width
-  Control.addVariable("TopBFlightNLiner", 1);     
-  Control.addVariable("TopBFlightLinerThick1", 0.4); 
-  Control.addVariable("TopBFlightLinerMat1","Aluminium");
+    Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
+  Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
+  Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
+  Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
+  Control.addParse<double>("TopBFlightNLiner","TopAFlightNLiner");
 
   
-  Control.addVariable("BeRefXStep",0.0);  
-  Control.addVariable("BeRefYStep",0.0);  
-  Control.addVariable("BeRefZStep",0.0);
-  Control.addVariable("BeRefXYAngle",0.0); 
-  Control.addVariable("BeRefZAngle",0.0);
-  Control.addVariable("BeRefRadius",34.3);
-  Control.addVariable("BeRefHeight",74.2);
-  Control.addVariable("BeRefWallThick",3.0);
+  Control.addVariable("BeRefRadius",35.0);
+  Control.addVariable("BeRefHeight",37.3);
+  Control.addVariable("BeRefDepth",37.3);
+  Control.addVariable("BeRefWallThick",0.3);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
@@ -182,18 +177,9 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("BulkNLayer",3);
 
   Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
-  /*!
-    \todo : This is ugly conterintuative
-    and going to break if anyone make a change
-  */
 
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+"
-                "TopBeRefWaterDiscHeight0+TopBeRefWaterDiscDepth0+"
-		"TopBeRefWaterDiscHeight1+0.2");
-  Control.addVariable("BulkHeight1");
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0"
-		"+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");
-  Control.addVariable("BulkDepth1");
+  Control.addVariable("BulkHeight1",38.0);
+  Control.addVariable("BulkDepth1",38.0);
   Control.addVariable("BulkMat1","Void");
 
   Control.addVariable("BulkRadius2",65.0);

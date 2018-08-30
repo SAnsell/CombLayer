@@ -36,48 +36,28 @@ namespace constructSystem
 */
 
 class PortTube :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
-  public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+  public PipeTube
 {
  private:
+    
+  double portAXStep;       ///< In Port
+  double portAZStep;       ///< In Port
+  double portARadius;      ///< In Port
+  double portALen;         ///< In Port
+  double portAThick;       ///< In Port
 
-  double radius;              ///< radius of main tube
-  double wallThick;           ///< wall thickness of main tube
-  double length;              ///< Main length
-  
-  double inPortXStep;       ///< Out Port
-  double inPortZStep;       ///< Out Port
-  double inPortRadius;      ///< Out Port
-  double inPortLen;         ///< Out Port
-  double inPortThick;       ///< Out Port
-
-  double outPortXStep;       ///< Out Port
-  double outPortZStep;       ///< Out Port
-  double outPortRadius;      ///< Out Port
-  double outPortLen;         ///< Out Port
-  double outPortThick;       ///< Out Port
-
-  double flangeARadius;        ///< Joining Flange radius
-  double flangeALength;        ///< Joining Flange length
-  double flangeBRadius;        ///< Joining Flange radius
-  double flangeBLength;        ///< Joining Flange length
-
-  int voidMat;                ///< void material
-  int wallMat;                ///< Fe material layer
-
-  std::set<int> portCells;               ///< Extra cells for the port
-  std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
-  std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
-  std::vector<portItem> Ports;           ///< Vector of ports FixedComp
+  double portBXStep;       ///< Out Port
+  double portBZStep;       ///< Out Port
+  double portBRadius;      ///< Out Port
+  double portBLen;         ///< Out Port
+  double portBThick;       ///< Out Port
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createPorts(Simulation&);
+
+  virtual void applyPortRotation();
   
  public:
 
@@ -85,10 +65,7 @@ class PortTube :
   PortTube(const PortTube&);
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
-
-  void splitVoidPorts(Simulation&,const std::string&,const int,const int);
-  void addInsertPortCells(const int);
-  const portItem& getPort(const size_t) const;
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

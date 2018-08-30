@@ -75,8 +75,8 @@ namespace SurInter
 
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
-          const HeadRule& mainHR,const HeadRule& sndHR)
-  /*!
+	     const HeadRule& mainHR,const HeadRule& sndHR)
+/*!
     Given a line (origin:N) find the intersects wiht MainHR that
     satisfy sndHR
     \param Origin :: Origin of line
@@ -147,6 +147,7 @@ getLinePoint(const Geometry::Vec3D& Origin,
   MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
   return trackLine.getPoint(SPtr,NPoint);
 }
+
    
 template<>
 Geometry::Intersect*
@@ -401,7 +402,7 @@ makePoint(const Geometry::Plane* A,
 
 std::vector<Geometry::Vec3D>
 makePoint(const Geometry::Plane* A,const Geometry::Plane* B,
-		    const Geometry::Quadratic* C)
+	  const Geometry::Quadratic* C)
   /*!
     Calculate the intersection between three planes
     \param A :: Plane pointer 

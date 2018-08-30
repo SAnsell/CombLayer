@@ -57,6 +57,8 @@
 #include "TwinComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -715,7 +717,7 @@ objectRegister::write(const std::string& OFile) const
       const char* FStatus[]={"void","fixed"};
       std::ofstream OX(OFile.c_str());
 
-      boost::format FMT("%s%|30t|%d    ::     %d %|20t|(%s)");
+      boost::format FMT("%s%|40t|%d    ::     %d %|20t|(%s)");
       MTYPE::const_iterator mc;
       for(mc=regionMap.begin();mc!=regionMap.end();mc++)
 	{

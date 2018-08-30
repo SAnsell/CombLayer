@@ -62,6 +62,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -268,7 +270,6 @@ addToInsertLineCtrl(Simulation& System,
   System.populateCells(cellVec);
   MonteCarlo::Qhull* CRPtr=System.findQhull(cellN);
 
-
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))
     {
       const std::string excludeStr=CC.getExclude();
@@ -279,7 +280,7 @@ addToInsertLineCtrl(Simulation& System,
 
 void
 lineIntersect(Simulation& System,
-	      const FixedComp& FC,
+	      const attachSystem::FixedComp& FC,
 	      std::map<int,MonteCarlo::Object*>& OMap)
   /*!
     For all the tracks between fixed points in the FC 

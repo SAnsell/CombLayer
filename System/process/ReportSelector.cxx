@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/ReportSelector.cxx
+ * File:   process/ReportSelector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,8 @@
 
 
 void
-reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
+reportSelection(Simulation& System,
+		  const mainSystem::inputParam& IParam)
   /*!
     A system for reporting values 
     \param System :: Simulation to add tallies
@@ -82,6 +83,7 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
   const FuncDataBase& Control=System.getDataBase();
 
   const size_t nP=IParam.setCnt("report");
+
   //  boost::format FMTvec("%1$=%12.6g%2$=12.6g%3$=12.6g");
   for(size_t index=0;index<nP;index++)
     {
@@ -114,17 +116,18 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
           boost::format FMTdouble("%12.6f");
           const std::string FObject=IParam.outputItem<std::string>
             ("report",index,1,"objectName not given");
-          const std::string linkSide=
+          const attachSystem::FixedComp* FCPtr=
+            OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+
+	  const std::string linkSide=
             IParam.outputItem<std::string>
             ("report",index,2,"front/back/side not given");
-          const long int linkNumber=attachSystem::getLinkIndex(linkSide);
-          const attachSystem::FixedComp* TPtr=
-            OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+          const long int linkNumber=FCPtr->getSideIndex(linkSide);
           
-          const Geometry::Vec3D TPoint=TPtr->getLinkPt(linkNumber);
-          const Geometry::Vec3D TAxis=TPtr->getLinkAxis(linkNumber);
+          const Geometry::Vec3D TPoint=FCPtr->getLinkPt(linkNumber);
+          const Geometry::Vec3D TAxis=FCPtr->getLinkAxis(linkNumber);
           
-          ELog::EM<<TPtr->getKeyName()<<"["<<linkNumber<<"] ";
+          ELog::EM<<FCPtr->getKeyName()<<"["<<linkNumber<<"] ";
           const size_t len=ELog::EM.Estream().str().size();
           if (len<20)
             ELog::EM<<std::string(20-len,' ');

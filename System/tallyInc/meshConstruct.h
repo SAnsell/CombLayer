@@ -52,7 +52,6 @@ class meshConstruct
   /// Private constructor
   meshConstruct() {}
 
-
   static const std::string& getDoseConversion();
   static const std::string& getPhotonDoseConversion();
   static const std::string& getProtonDoseConversion();
@@ -64,16 +63,18 @@ class meshConstruct
  public:
 
   static void getObjectMesh(const mainSystem::inputParam&,
+			    const std::string&,
 			    const size_t,const size_t,
 			    Geometry::Vec3D&,
 			    Geometry::Vec3D&,
 			    std::array<size_t,3>&);
 
   static void getFreeMesh(const mainSystem::inputParam&,
-			    const size_t,const size_t,
-			    Geometry::Vec3D&,
-			    Geometry::Vec3D&,
-			    std::array<size_t,3>&);
+			  const std::string&,
+			  const size_t,const size_t,
+			  Geometry::Vec3D&,
+			  Geometry::Vec3D&,
+			  std::array<size_t,3>&);
 
   
   static void writeHelp(std::ostream&);

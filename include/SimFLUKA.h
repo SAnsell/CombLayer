@@ -51,6 +51,8 @@ class SimFLUKA : public Simulation
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
+
+  std::string sourceExtraName;    ///< Extra name if using combined sources
   
   FTallyTYPE FTItem;              ///< Fluka tally map
 
@@ -90,6 +92,8 @@ class SimFLUKA : public Simulation
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
   int getNextFTape() const;
+
+  virtual void setExtraSourceName(const std::string&);
   /// get RND seed
   long int getRNDseed() const { return rndSeed; }
 

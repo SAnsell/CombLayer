@@ -57,6 +57,7 @@ class flukaTally
   virtual ~flukaTally();
   
   void setKeyName(const std::string&);
+  void setBinary();
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);
   virtual void setDoseType(const std::string&,const std::string&);

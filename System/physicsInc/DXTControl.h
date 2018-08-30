@@ -3,7 +3,7 @@
  
  * File:   physicsInc/DXTControl.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ class DXTControl
   virtual ~DXTControl();
 
   void clear();
+  void setParticle(const std::string&);
   void setUnit(const Geometry::Vec3D&,const double,const double,const bool);
   void setDD(const double,const double);
 

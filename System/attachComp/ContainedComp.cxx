@@ -414,6 +414,7 @@ ContainedComp::validIntersection(const HeadRule& BObj,
   return 0;
 }
 
+
 std::string
 ContainedComp::getCompContainer(const Geometry::Surface* ASurf,
 				const Geometry::Surface* BSurf) const
@@ -601,7 +602,7 @@ ContainedComp::addInsertCell(const int CN)
     \param CN :: Cell number
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addInsertCell");
+  ELog::RegMethod RegA("ContainedComp","addInsertCell(in)");
   if (CN==0)
     throw ColErr::EmptyValue<int>("CN index");
   if (std::find(insertCells.begin(),insertCells.end(),CN)
@@ -665,6 +666,41 @@ ContainedComp::insertObjects(Simulation& System)
 }
 
 void
+ContainedComp::insertObjects(Simulation& System,
+			     const std::vector<Geometry::Vec3D>& testPts)
+  /*!
+    Insert the ContainedComp into the cell list
+    \param System :: Simulation to get objects from
+    \param testPts  :: unless TestPts are in teh cell no 
+    insertion takes place
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","insertObjects");
+  if (!hasOuterSurf()) return;
+
+  for(const int CN : insertCells)
+    {
+      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
+      if (outerObj)
+	{
+	  const HeadRule& HR=outerObj->getHeadRule();
+	  for(const Geometry::Vec3D& Pts : testPts)
+	    {
+	      if (HR.isValid(Pts))
+		{
+		  outerObj->addSurfString(getExclude());
+		  break;
+		}
+	    }
+	}	  
+      else
+	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
+    }
+  insertCells.clear();
+  return;
+}
+
+void
 ContainedComp::insertInCell(Simulation& System,
 			    const int cellN) const
   /*!
@@ -678,10 +714,12 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
 
   MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+
   if (outerObj)
     outerObj->addSurfString(getExclude());
   else
     throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+    
   return;
 }
 
@@ -725,3 +763,4 @@ ContainedComp::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE attachSystem
+ 

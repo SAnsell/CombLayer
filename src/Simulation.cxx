@@ -93,7 +93,6 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
 #include "ReadFunctions.h"
@@ -272,7 +271,6 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   if (mpt!=OList.end())
     {
       ELog::EM<<"Cell Exists Object ::"<<cellNumber<<std::endl;
-      ELog::EM<<"Call from: "<<RegA.getBasePtr()->getItem(-1)<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
   OList.insert(OTYPE::value_type(cellNumber,A.clone()));
@@ -286,6 +284,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       throw ColErr::InContainerError<int>(cellNumber,"cellNumber");
     }
 
+
   if (!QHptr->hasComplement() ||
       removeComplement(*QHptr))
     {
@@ -297,6 +296,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Cell==:"<<*QHptr<<ELog::endCrit;
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
+
   OR.addActiveCell(cellNumber);
   return 1;
 }
@@ -362,7 +362,7 @@ Simulation::addCell(const int Index,const int matNum,
   TX.setMaterial(matNum);
   TX.setTemp(matTemp);  
   TX.procHeadRule(RuleItem);
-  
+
   return addCell(Index,TX);
 }
 
@@ -441,10 +441,13 @@ Simulation::removeCell(const int cellNumber)
   OTYPE::iterator vc=OList.find(cellNumber);
   if (vc==OList.end())
     throw ColErr::InContainerError<int>(cellNumber,"cellNumber in OList");
+
+  OSMPtr->removeObject(vc->second);
   
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
   ST.checkDelete(this,vc->second);
   delete vc->second;
+
   OList.erase(vc);
 
   OR.removeActiveCell(cellNumber);
@@ -890,11 +893,9 @@ Simulation::validateObjSurfMap()
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
       MonteCarlo::Object* objPtr(mc->second);
-      if (!objPtr->isObjSurfValid())
+      if (!objPtr->isObjSurfValid() || !objPtr->isPopulated())
 	{
-	  if (objPtr->getSurfSet().empty())
-	    objPtr->createSurfaceList();
-	  // First add surface that are opposite 
+	  objPtr->createSurfaceList();
 	  OSMPtr->addSurfaces(objPtr);
 	  objPtr->setObjSurfValid();
 	}
@@ -1539,7 +1540,9 @@ Simulation::voidObject(const std::string& ObjName)
 int
 Simulation::splitObject(const int CA,const int SN)
   /*!
-    Split a cell into two based on surface 
+    Split a cell into two based on surface. Does not do 
+    any optimizatoin of the new cells. Uses the Shannon derivative
+    to produce the system
     Note the original surface is in the negative direction
     \param CA :: Cell number
     \param SN :: surface number
@@ -1548,13 +1551,11 @@ Simulation::splitObject(const int CA,const int SN)
 {
   ELog::RegMethod RegA("Simulation","splitObject");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   MonteCarlo::Object* CPtr = findQhull(CA);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CA,"Cell not found");
-
+  CPtr->populate();
   // get next cell
   const int CB=getNextCell(CA);
   
@@ -1564,7 +1565,7 @@ Simulation::splitObject(const int CA,const int SN)
 
   CHead.addIntersection(-SN);
   DHead.addIntersection(SN);
-  
+
   addCell(CB,CPtr->getMat(),CPtr->getTemp(),DHead);
   CPtr->procHeadRule(CHead);
 
@@ -1586,18 +1587,13 @@ Simulation::splitObject(const int CA,const int SN)
   
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
-    {
-      CPtr->procString(AX.writeMCNPX());
-    }
+    CPtr->procString(AX.writeMCNPX());
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
-    {
-      DPtr->procString(AX.writeMCNPX());
-    }
+    DPtr->procString(AX.writeMCNPX());
   
   return CB;
-
 }
 
 void

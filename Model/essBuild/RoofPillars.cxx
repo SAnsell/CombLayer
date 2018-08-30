@@ -250,8 +250,6 @@ RoofPillars::insertRoofCells(Simulation& System,
 		      if (NPtr)
 			{
 			  OMap.emplace(newCN,NPtr);
-			  ELog::EM<<"EMPLACE == "<<NPtr->getName()
-				  <<ELog::endDiag;
 			}
 		    }
 		}

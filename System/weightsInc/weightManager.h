@@ -68,6 +68,7 @@ class weightManager
   void maskCell(const int);
   bool isMasked(const int) const;
 
+  void writeFLUKA(std::ostream&) const;
   void writePHITS(std::ostream&) const;
   void write(std::ostream&) const;
 

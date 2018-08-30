@@ -43,7 +43,7 @@
   \file stringCombine.cxx 
 */
 
-namespace  StrFunc
+namespace StrFunc
 {
 
 char

@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WForm.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,13 +95,16 @@ class WForm
   virtual void populateCells(const std::map<int,MonteCarlo::Qhull*>&) =0;
   virtual void renumberCell(const int,const int) =0;
   virtual void balanceScale(const std::vector<double>&) =0;
+
+  virtual void writeFLUKA(std::ostream&) const =0;
   virtual void writePHITS(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;
 
   ///\endcond ABSTRACT
-  
-  // Nullop for non-cell
+
+  /// Nullop for non-cell
   virtual void writePHITSHead(std::ostream&) const {}
+  
   
 
 };

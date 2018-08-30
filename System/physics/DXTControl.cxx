@@ -113,6 +113,17 @@ DXTControl::clear()
   RadiiOuter.clear();
   return;
 }
+
+void
+DXTControl::setParticle(const std::string& P)
+  /*!
+    Set the particle [should check against particleConv.]
+    \param P :: Particle    
+   */
+{
+  particle=P;
+  return;
+}
   
 void
 DXTControl::setUnit(const Geometry::Vec3D& Pt,

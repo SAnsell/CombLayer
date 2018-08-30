@@ -77,6 +77,7 @@
 #include "inputSupport.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
 
@@ -104,10 +105,6 @@ activateLogging(ELog::RegMethod& RControl)
   ELog::EM.setDebug(ELog::debug);
   ELog::EM.setAction(ELog::error);       // Exit on Error
   ELog::EM.setColour();
-
-  ELog::FM.setNBasePtr(RControl.getBasePtr());
-  ELog::FM.setActive(255);
-  ELog::FM.setTypeFlag(0);
 
   ELog::RN.setNBasePtr(0);
   ELog::RN.setActive(255);
@@ -256,7 +253,7 @@ renumberCells(Simulation& System,const inputParam& IParam)
       // int cRange=IParam.getValue<int>("cellRange",1);
 
       size_t i=0;
-      const size_t dataCnt(IParam.dataCnt("renum"));
+      const size_t dataCnt(IParam.itemCnt("renum"));
       while(i<dataCnt)
 	{
 	  const std::string& Name=
@@ -523,8 +520,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   if (IParam.flag("noVariables"))
     SimFLUKAPtr->setNoVariables();
 
-  ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
-  //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+  ModelSupport::setDefaultPhysics(*SimFLUKAPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
   //
@@ -541,6 +537,46 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   do
     {
       SimProcess::writeIndexSimFLUKA(*SimFLUKAPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+
+void
+buildFullSimPHITS(SimPHITS* SimPHITSPtr,
+		 const mainSystem::inputParam& IParam,
+		 const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimFLUKAPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimPHITS");
+
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+
+  //  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
+  SimPHITSPtr->prepareWrite();
+  
+  // tallySystem::tallySelection(*SimPHITSPtr,IParam);
+  SimProcess::importanceSim(*SimPHITSPtr,IParam);
+
+  SimProcess::inputProcessForSim(*SimPHITSPtr,IParam); // energy cut etc
+  //  tallyModification(*SimPHITSPtr,IParam);
+
+  SDef::sourceSelection(*SimPHITSPtr,IParam);
+  SimPHITSPtr->masterSourceRotation();
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSimPHITS(*SimPHITSPtr,OName,MCIndex);
       MCIndex++;
     }
   while(MCIndex<multi);
@@ -637,6 +673,9 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);
+  SimPtr->createObjSurfMap();
+  //  SimPtr->createObjSurfMap();
+  
   if (createVTK(IParam,SimPtr,OName))
     return;
 
@@ -659,6 +698,13 @@ buildFullSimulation(Simulation* SimPtr,
   if (SimPOVPtr)
     {      
       buildFullSimPOVRay(SimPOVPtr,IParam,OName);
+      return;
+    }
+
+  SimPHITS* SimPHITSPtr=dynamic_cast<SimPHITS*>(SimPtr);
+  if (SimPHITSPtr)
+    {      
+      buildFullSimPHITS(SimPHITSPtr,IParam,OName);
       return;
     }
 

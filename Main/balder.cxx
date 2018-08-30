@@ -117,6 +117,7 @@ main(int argc,char* argv[])
       if (!SimPtr) return -1;
 
       // The big variable setting
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       setVariable::balderVariables(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);

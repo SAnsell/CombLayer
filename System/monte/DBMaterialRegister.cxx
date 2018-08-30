@@ -1180,8 +1180,31 @@ DBMaterial::initMaterial()
   
 
   // Material #140: Hydrogen gas for vacuum pipes (Brem production)
-  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
-  MObj.setMaterial(140,"H2Gas","1001.70c 0.001","",MLib);
+  // Total atom density 5.4127e-5 -  300K 0.08988 g/litre
+  MObj.setMaterial(140,"H2Gas","1001.70c 5.4127e-5","",MLib);
+  setMaterial(MObj);
+
+  // Material #141: Hydrogen gas+carbon+O for vacuum pipes (Brem production)
+  // Total atom density 2.4305e-5 Mol/Angstrom -  300K R 100kPa
+  // 80% H2  / 10% C / 10% O2
+  // Mass density  2.4305e-5 Mol/Angstrom -  300K R 100kPa
+  MObj.setMaterial(141,"VacuumResidual",
+		   "1001.70c 3.888e-5 "
+		   "6000.70c 2.43e-6 "
+		   "8016.70c 4.86e-6 ","",MLib);
+  setMaterial(MObj);
+
+  // Material Lead glas:
+  // still to be done
+  MObj.setMaterial(142,"LeadGlass",
+		   "82206.70c 0.00794248 "
+    	           "82207.70c 0.00728335 82208.70c 0.0172691 "
+		   "20040.70c 2.719913e-03 20042.70c 1.815314e-05 "
+		   "20043.70c 3.787750e-06 20044.70c 5.852775e-05 "
+		   "20046.70c 1.122296e-07 20048.70c 5.246735e-06 "
+		   "11023.70c 6.423108e-03  8016.70c 4.307240e-02 "
+		   "14028.70c 1.708774e-02 14029.70c 8.676740e-04 "
+		   "14030.70c 5.719771e-04 ","",MLib);
   setMaterial(MObj);
 
   return;

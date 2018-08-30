@@ -31,7 +31,10 @@ namespace SDef
   
   std::shared_ptr<SourceBase> makeActivationSource(const std::string&);
   
-  
+
+  std::string createKCodeSource(const std::string&,
+				const std::vector<Geometry::Vec3D>&);
+
   std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
 			       const attachSystem::FixedComp&,const long int);
   
@@ -52,7 +55,7 @@ namespace SDef
   std::string createESSPortSource(const mainSystem::MITYPE&,
 				  const attachSystem::FixedComp&,
 				  const long int);
-  
+    
   std::string createFlukaSource(const mainSystem::MITYPE&,const std::string&,
 				const attachSystem::FixedComp&,const long int);
 

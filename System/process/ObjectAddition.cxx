@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/TallySelector.cxx
+ * File:   process/ObjectAddition.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

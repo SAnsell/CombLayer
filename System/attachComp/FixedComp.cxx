@@ -65,7 +65,7 @@ namespace attachSystem
 FixedComp::FixedComp(const std::string& KN,const size_t NL) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
-  cellIndex(buildIndex+1),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
  /*!
@@ -79,7 +79,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& O) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
-  cellIndex(buildIndex+1),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),Origin(O),primeAxis(0),LU(NL)
   /*!
@@ -97,7 +97,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& zV) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
-  cellIndex(buildIndex+1),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
   Origin(O),primeAxis(0),LU(NL)
   /*!
@@ -385,7 +385,7 @@ FixedComp::reOrientate(const size_t index,
   if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
   
-  Geometry::Vec3D axisDir(ADir.unit());  
+  const Geometry::Vec3D axisDir(ADir.unit());  
 
   std::vector<Geometry::Vec3D*> AVec({&X,&Y,&Z});
 
@@ -1219,8 +1219,14 @@ FixedComp::getSideIndex(const std::string& sideName) const
   */
 {
   ELog::RegMethod RegA("FixedComp","getSideIndex");
+
   if (!sideName.empty())
     {
+      // return numbers:
+      long int linkPt(0);
+      if (StrFunc::convert(sideName,linkPt))
+	return linkPt;
+
       const long int negScale
 	((sideName[0]=='-' || sideName[0]=='#') ? -1 : 1);
 	 
@@ -1273,6 +1279,23 @@ FixedComp::getLinkDistance(const long int AIndex,
   return getLinkPt(AIndex).Distance(getLinkPt(BIndex));
 }
 
+double
+FixedComp::getLinkDistance(const long int AIndex,
+                           const FixedComp& FC,
+                           const long int BIndex) const
+  /*!
+    Accessor to the distance between link points
+    \param AIndex :: SIGNED +1 side index
+    \param FC :: FixedComp to use
+    \param BIndex :: SIGNED +1 side index 
+    \return Distance between points
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkDistance:"+keyName);
+
+  return getLinkPt(AIndex).Distance(FC.getLinkPt(BIndex));
+}
+
 Geometry::Vec3D
 FixedComp::getLinkPt(const std::string& sideName) const
   /*!
@@ -1315,6 +1338,18 @@ FixedComp::getLinkPt(const long int sideIndex) const
   if (!sideIndex) return Origin;
   const LinkUnit& LItem=getSignedRefLU(sideIndex);
   return LItem.getConnectPt();
+}
+
+int
+FixedComp::getLinkSurf(const std::string& sideName) const
+  /*!
+    Accessor to the link surface string
+    \param sideIndex :: Link number
+    \return Surface Key number
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkSurf(string)");
+  return getLinkSurf(getSideIndex(sideName));
 }
 
 int
@@ -1534,6 +1569,18 @@ FixedComp::applyRotation(const Geometry::Vec3D& Axis,
 }
 
 HeadRule
+FixedComp::getFullRule(const std::string& linkName) const
+  /*!
+    Get Full rule based on link name
+    \param linkName :: Name of link point
+    \return Main HeadRule    
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getFullRule(str)");
+  return getFullRule(getSideIndex(linkName));
+}
+
+HeadRule
 FixedComp::getFullRule(const long int sideIndex) const
   /*!
     Get the main full rule.
@@ -1541,7 +1588,7 @@ FixedComp::getFullRule(const long int sideIndex) const
     \return Main HeadRule
    */
 {
-  ELog::RegMethod RegA("FixedComp","getMainRule"); 
+  ELog::RegMethod RegA("FixedComp","getFullRule"); 
 
   const LinkUnit& LObj=getSignedRefLU(sideIndex);
   HeadRule Out=(sideIndex>0) ? 
@@ -1551,6 +1598,19 @@ FixedComp::getFullRule(const long int sideIndex) const
   return Out;
 }
 
+
+HeadRule
+FixedComp::getMainRule(const std::string& linkName) const
+  /*!
+    Get Main rule based on link name
+    \param linkName :: Name of link point
+    \return Main HeadRule    
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getMainRule(str)");
+  return getMainRule(getSideIndex(linkName));
+}
+  
 HeadRule
 FixedComp::getMainRule(const long int sideIndex) const
   /*!
@@ -1584,6 +1644,17 @@ FixedComp::getUSMainRule(const size_t Index) const
   return LU[Index].getMainRule();
 }
 
+HeadRule
+FixedComp::getCommonRule(const std::string& linkName) const
+  /*!
+    Get Common rule based on link name
+    \param linkName :: Name of link point
+    \return Common HeadRule    
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getCommonRule(str)");
+  return getCommonRule(getSideIndex(linkName));
+}
   
 HeadRule
 FixedComp::getCommonRule(const long int sideIndex) const

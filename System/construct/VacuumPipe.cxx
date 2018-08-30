@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -93,7 +94,11 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(0,"front");
+  FixedComp::nameSideIndex(1,"back");
+  FixedComp::nameSideIndex(6,"midPoint");
+}
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
@@ -308,8 +313,6 @@ VacuumPipe::applyActiveFrontBack()
   Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
   if (!RotAxis.nullVector())
     {
-      ELog::EM<<"R == "<<keyName<<" "<<curFP<<ELog::endDiag;
-      ELog::EM<<"R == "<<keyName<<" "<<curBP<<ELog::endDiag;
       const Geometry::Quaternion QR=
 	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
       Y=YAxis;
@@ -641,7 +644,7 @@ VacuumPipe::createLinks()
 {
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
-  //stufff for intersection
+  //stuff for intersection
 
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
@@ -673,7 +676,9 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
       FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
       FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
-      
+
+      FixedComp::nameSideIndex(7,"pipeOuterBase");
+      FixedComp::nameSideIndex(8,"pipeOuterTop");
     }
   else // rectangular pipe
     {
@@ -690,7 +695,7 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(8,Origin+Z*(height/2.0+feThick),Z);
       FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+15));
       FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+16));
-      }
+    }
   
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
@@ -712,6 +717,7 @@ VacuumPipe::createLinks()
       FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
       FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
     }
+
 
   return;
 }

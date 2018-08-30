@@ -99,7 +99,7 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   alignment(A.alignment),defType(A.defType),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
-  nps(A.nps),rndSeed(A.rndSeed),
+  nps(A.nps),rndSeed(A.rndSeed),sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
@@ -123,6 +123,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
+      sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
 	FTItem.emplace(TM.first,TM.second->clone());
@@ -176,6 +177,9 @@ SimFLUKA::setDefaultPhysics(const std::string& dName)
 
 void
 SimFLUKA::clearTally()
+  /*!
+    Remove all the tallies
+  */
 {
   for(FTallyTYPE::value_type& mc : FTItem)
     delete mc.second;
@@ -237,6 +241,17 @@ SimFLUKA::getTally(const int TI) const
 }
 
 void
+SimFLUKA::setExtraSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
+  */
+{
+  sourceExtraName=S;
+  return;
+}
+
+void
 SimFLUKA::processActiveMaterials() const
   /*!
     Set materials as active in DBMaterail Database
@@ -282,7 +297,7 @@ SimFLUKA::writeTransform(std::ostream& OX) const
   */
 
 {
-  OX<<"[transform]"<<std::endl;
+  OX<<"* [transform]"<<std::endl;
 
   TransTYPE::const_iterator vt;
   for(vt=TList.begin();vt!=TList.end();vt++)
@@ -319,6 +334,8 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("SimFLUKA","writeSurfaces");
+  
   OX<<"* SURFACE CARDS "<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =
@@ -413,13 +430,15 @@ SimFLUKA::writeWeights(std::ostream& OX) const
     type.
     \param OX :: Output stream
   */
-
 {
+  ELog::RegMethod RegA("SimFLUKA","writeWeights");
+  
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"* [weight]"<<std::endl;
-  WM.write(OX);
+  OX<<"* WEIGHT CARDS "<<std::endl;
+  
+  WM.writeFLUKA(OX);
   return;
 }
 
@@ -471,6 +490,14 @@ SimFLUKA::writeSource(std::ostream& OX) const
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
       SPtr->writeFLUKA(OX);
     }
+  if (!sourceExtraName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceExtraName,
+					     "SourceExtra not known");
+      SPtr->writeFLUKA(OX);
+    }
+
   OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
@@ -608,6 +635,7 @@ SimFLUKA::write(const std::string& Fname) const
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
+  writeWeights(OX);
   writeMaterial(OX);
   writeTally(OX);
   writeSource(OX);

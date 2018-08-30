@@ -122,7 +122,7 @@ sswConstruct::processSSW(SimMCNP& System,
         OR.getObjectThrow<attachSystem::FixedComp>
         (FCName,"FixedComp");
       
-      const long int sideIndex(attachSystem::getLinkIndex(linkPt));
+      const long int sideIndex(FCPtr->getSideIndex(linkPt));
       const std::set<int> OutSurf=
         FCPtr->getMainRule(sideIndex).getSurfSet();
       for(const int CN : OutSurf)

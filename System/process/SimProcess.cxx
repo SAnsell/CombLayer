@@ -95,7 +95,8 @@ writeMany(SimMCNP& System,const std::string& OName,const int Number)
 
 void
 writeIndexSim(SimMCNP& System,
-	      const std::string& OName,const int Number)
+	      const std::string& OName,
+	      const int Number)
   /*!
     Writes out many different files, each with a new random
     number

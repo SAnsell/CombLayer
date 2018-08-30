@@ -72,6 +72,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -132,6 +134,15 @@ TelescopicPipe::operator=(const TelescopicPipe& A)
   return *this;
 }
    
+TelescopicPipe*  
+TelescopicPipe::clone() const
+  /*!
+    Virtual copy constructor
+    \return new (this)
+  */
+{
+  return new TelescopicPipe(*this);
+}
 
 TelescopicPipe::~TelescopicPipe()
   /*!

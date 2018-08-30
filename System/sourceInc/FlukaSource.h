@@ -33,13 +33,14 @@ namespace SDef
   /// [-1:str/0:def/1:double] :: value unit in string form
   typedef std::pair<int,std::string> unitTYPE;
   /// default type : value unit form
+  std::ostream& operator<<(std::ostream&,const SDef::unitTYPE&);
 
 /*!
   \class FlukaSource
   \version 1.0
   \author S. Ansell
-  \date September 2015
-  \brief Circular Beam source
+  \date September 2018
+  \brief Fluka external source
 */
 
 class FlukaSource : 
@@ -54,7 +55,7 @@ class FlukaSource :
   void populate(const ITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
+  
  public:
 
   FlukaSource(const std::string&);

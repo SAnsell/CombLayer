@@ -80,6 +80,7 @@
 #include "cellValueSet.h"
 #include "pairValueSet.h"
 #include "flukaPhysics.h"
+#include "flukaDefPhysics.h"
 #include "flukaImpConstructor.h"
 #include "flukaProcess.h"
 
@@ -188,74 +189,6 @@ getActiveCell(const std::string& cell)
   return activeCell;
 }
   
-void 
-setDefaultPhysics(SimFLUKA& System,
-		  const mainSystem::inputParam& IParam)
-  /*!
-    Set the default Physics
-    \param System :: Simulation
-    \param IParam :: Input parameter
-  */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
-  
-  System.setNPS(IParam.getValue<size_t>("nps"));
-  System.setRND(IParam.getValue<long int>("random"));
-
-
-  flukaPhysics* PC=System.getPhysics();
-  if (!PC) return;
-
-  size_t nSet=IParam.setCnt("wMAT");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processMAT(*PC,IParam,index);
-    }
-
-  nSet=IParam.setCnt("wIMP");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processUnit(*PC,IParam,index);
-    }
-  
-  nSet=IParam.setCnt("wCUT");    
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processCUT(*PC,IParam,index);
-    }
-  
-  nSet=IParam.setCnt("wEMF");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processEMF(*PC,IParam,index);
-    }
-  
-  nSet=IParam.setCnt("wEXP");
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processEXP(*PC,IParam,index);
-    }
-
-  nSet=IParam.setCnt("wLAM");    
-  if (nSet)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processLAM(*PC,IParam,index);
-    }
-  
-  return; 
-}
 
 
 } // NAMESPACE flukaSystem

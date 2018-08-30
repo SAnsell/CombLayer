@@ -3,7 +3,7 @@
  
  * File:   geometry/Face.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -306,11 +306,11 @@ Face::calcTriGrp(const Face& A,TriGrp& GA) const
    // Compute distance signs  of p, q and r to the plane of triangle(a,b,c)
   const Vec3D DP=(b-a)*(c-a);
   double pd=DP.dotProd(p-a);
-  const int sP=(fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
+  const int sP=(std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
   pd=DP.dotProd(q-a);
-  const int sQ=(fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
+  const int sQ=(std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
   pd=DP.dotProd(r-a);
-  const int sR=(fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
+  const int sR=(std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
 
   if (sP==1)
     {
@@ -370,6 +370,7 @@ Face::calcTriGrp(const Face& A,TriGrp& GA) const
     }
   return 1;          // INTERTANGLED
 }
+  
 int
 Face::calcTriGrpCase(const Face& A,TriGrp& GA) const
   /*!
@@ -383,6 +384,7 @@ Face::calcTriGrpCase(const Face& A,TriGrp& GA) const
    */
 {
   ELog::RegMethod RegA("Face","calcTriGrp");
+
   const Vec3D& p = FPts[0]->getV();
   const Vec3D& q = FPts[1]->getV();
   const Vec3D& r = FPts[2]->getV();
@@ -393,11 +395,11 @@ Face::calcTriGrpCase(const Face& A,TriGrp& GA) const
    // Compute distance signs  of p, q and r to the plane of triangle(a,b,c)
   const Vec3D DP=(b-a)*(c-a);
   double pd=DP.dotProd(p-a);
-  const int sP=(fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 32 : 16);
+  const int sP=(std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 32 : 16);
   pd=DP.dotProd(q-a);
-  const int sQ=(fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 8 : 4);
+  const int sQ=(std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 8 : 4);
   pd=DP.dotProd(r-a);
-  const int sR=(fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 2 : 1);
+  const int sR=(std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 2 : 1);
 
   const int flag=sP+sQ+sR;
 
@@ -457,6 +459,7 @@ Face::calcTriGrpCase(const Face& A,TriGrp& GA) const
       return 1;
     case 1:        // 00-
       GA(q,r,r,p);
+      return 1;
     case 0:        // 000     [ ALL COPLANAR]
       return 0;
 
@@ -478,7 +481,7 @@ Face::orientation(const Vec3D& a,const Vec3D& b,
 {
   const Vec3D DP=(b-a)*(c-a);
   const double pd=DP.dotProd(d);
-  return (fabs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
+  return (std::abs(pd)<Geometry::zeroTol) ? 0 : ((pd>0) ? 1 : -1);
 }
 
 int

@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -90,7 +91,10 @@ CrossPipe::CrossPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(4,"baseFlange");
+  nameSideIndex(5,"topFlange");
+}
 
 CrossPipe::CrossPipe(const CrossPipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
@@ -176,6 +180,7 @@ CrossPipe::populate(const FuncDataBase& Control)
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  plateMat=ModelSupport::EvalDefMat<int>(Control,keyName+"PlateMat",feMat);
 
   return;
 }

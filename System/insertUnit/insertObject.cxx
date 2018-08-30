@@ -3,7 +3,7 @@
  
  * File:   construct/insertObject.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,7 +151,8 @@ insertObject::populate(const FuncDataBase& Control)
   if (!populated)
     {
       FixedOffset::populate(Control);      
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
+      defMat=ModelSupport::EvalMat<int>
+	(Control,keyName+"DefMat",keyName+"Mat");
       populated=1;
     }
   return;

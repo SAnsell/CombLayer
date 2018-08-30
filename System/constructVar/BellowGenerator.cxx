@@ -61,7 +61,7 @@ namespace setVariable
 BellowGenerator::BellowGenerator() :
   SplitPipeGenerator(),
   bellowStep(1.0),bellowThick(1.0),
-  bellowMat("Stainless304%Void%50.0")
+  bellowMat("Stainless304%Void%10.0")
   /*!
     Constructor and defaults
   */
@@ -86,7 +86,9 @@ BellowGenerator::setCF()
   bellowStep=CF::bellowStep;
   bellowThick=CF::bellowThick;
 
-  setMat(SplitPipeGenerator::getPipeMat(),100.0*CF::wallThick/CF::bellowThick);
+  // this sets to 10% the materials fraction based on a 50/50 split
+  setMat(SplitPipeGenerator::getPipeMat(),
+	 20.0*CF::wallThick/CF::bellowThick);
   return;
 }
 
@@ -114,7 +116,7 @@ BellowGenerator::setMat(const std::string& M,const double T)
     Set teh material and the bellow material as a fractional
     void material
     \param M :: Main material
-    \param T :: Fractional material
+    \param T :: Percentage of material
   */
 {
   SplitPipeGenerator::setMat(M);

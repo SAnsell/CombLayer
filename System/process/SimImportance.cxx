@@ -69,6 +69,7 @@
 #include "SimFLUKA.h"
 #include "MainProcess.h"
 #include "flukaProcess.h"
+#include "flukaDefPhysics.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -79,7 +80,8 @@ namespace SimProcess
 {
 
 void
-importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
+importanceSim(Simulation& System,
+	      const mainSystem::inputParam& IParam)
   /*!
     Apply importances/renumber and weights
     \param System :: Simuation object 
@@ -101,8 +103,13 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   SimFLUKA* flukaPtr=dynamic_cast<SimFLUKA*>(&System);
   if (flukaPtr)
     {
+      WeightSystem::WCellControl WCell;
+      WeightSystem::WWGControl WWGC;
+      WCell.processWeights(System,IParam);
+      WWGC.processWeights(System,IParam);
+      
       mainSystem::renumberCells(*flukaPtr,IParam);
-      flukaSystem::setDefaultPhysics(*flukaPtr,IParam);
+      flukaSystem::setModelPhysics(*flukaPtr,IParam);
       return;
     }
 

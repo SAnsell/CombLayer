@@ -50,7 +50,7 @@ class surfaceConstruct
 
   static int processSurfObject(SimMCNP&,const int,
 			       const std::string&,
-			       const long int,
+			       const std::string&,
 			       const std::vector<std::string>&);
   
   static int processSurfMap(SimMCNP&,const int,

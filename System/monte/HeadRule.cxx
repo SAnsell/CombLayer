@@ -728,6 +728,49 @@ HeadRule::getOppositeSurfaces() const
   return out;
 }
 
+const Geometry::Surface*
+HeadRule::getSurface(const int SN) const
+  /*!
+    Get a specific surface 
+    \param SN :: Surface number
+    \return Pointer to surface
+   */
+{
+  ELog::RegMethod RegA("HeadRule","getSurface");
+  
+  const Geometry::Surface* nullOut(0);
+  if (!HeadNode) return nullOut;
+
+  const int absSN(std::abs(SN));
+  const SurfPoint* SP;
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type())             // MUST BE INTERSECTION/Union
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
+	  if (SP && SP->getKeyN()==absSN)
+	    return SP->getKey();
+	}
+    }
+  return nullOut;
+}
 
 std::vector<const Geometry::Surface*>
 HeadRule::getSurfaces() const
@@ -2037,15 +2080,14 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
 
-
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   const Geometry::Vec3D Unit=VUnit.unit();
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurfList.begin();vc!=SurfList.end();vc++)
-    (*vc)->acceptVisitor(LI);
+
+  for(const Geometry::Surface* SPtr : SurfList)
+      SPtr->acceptVisitor(LI);
 
   // IPTS contains non-exit points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());

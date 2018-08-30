@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -81,7 +82,7 @@ namespace constructSystem
 
 VacuumBox::VacuumBox(const std::string& Key,
 		       const bool flag) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,10),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
@@ -247,7 +248,12 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // after rotation
   if (!centreOrigin)
-    Origin+=Y*(portATubeLength+feFront+voidLength/2.0);
+    Origin+=Y*(portATubeLength+feFront+voidLength/2.0)-
+      X*portAXStep-
+      Z*portAZStep;
+
+
+  
   return;
 }
 
@@ -264,13 +270,13 @@ VacuumBox::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(portATubeLength+voidLength/2.0),Y);
+	      Origin-Y*(portATubeLength+feFront+voidLength/2.0),Y);
       setFront(SMap.realSurf(buildIndex+101));
     }
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+102,
-			       Origin+Y*(portBTubeLength+voidLength/2.0),Y);
+	    Origin+Y*(portBTubeLength+feBack+voidLength/2.0),Y);
       setBack(-SMap.realSurf(buildIndex+102));
     }
   
@@ -316,8 +322,6 @@ VacuumBox::createSurfaces()
   // Flange cut
   FrontBackCut::getShiftedFront(SMap,buildIndex+111,1,Y,flangeALength);
   FrontBackCut::getShiftedBack(SMap,buildIndex+211,-1,Y,flangeBLength);
-  //ModelSupport::buildPlane(SMap,buildIndex+211,
-  //ACentre+Y*(portTubeLength+voidLength/2.0-flangeLength),Y);
 
   return;
 }
@@ -342,10 +346,10 @@ VacuumBox::createObjects(Simulation& System)
 
   // PortVoids
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
+  CellMap::makeCell("FPortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
+  CellMap::makeCell("BPortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
 
   // Main metal
   Out=ModelSupport::getComposite
@@ -368,10 +372,10 @@ VacuumBox::createObjects(Simulation& System)
 
   // Flange Voids
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -11 117 -127 ");
-  CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
+  CellMap::makeCell("FFlangeVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
-  CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
+  CellMap::makeCell("BFlangeVoid",System,cellIndex++,0,0.0,Out);
   
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
@@ -401,6 +405,7 @@ VacuumBox::createLinks()
   
   FrontBackCut::createFrontLinks(*this,ACentre,Y); 
   FrontBackCut::createBackLinks(*this,BCentre,Y);  
+
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
@@ -410,7 +415,22 @@ VacuumBox::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+
+
+  FixedComp::setConnect(7,ACentre+Z*(portATubeRadius+portAWallThick),Z);
+  FixedComp::setConnect(8,ACentre+Z*(portBTubeRadius+portBWallThick),Z);
+
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
   
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+  FixedComp::nameSideIndex(7,"frontPortWall");
+  FixedComp::nameSideIndex(8,"backPortWall");
+
+
   return;
 }
 
@@ -433,7 +453,7 @@ VacuumBox::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
   
   return;
 }

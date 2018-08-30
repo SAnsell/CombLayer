@@ -54,6 +54,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "objectRegister.h"
 #include "LinkSupport.h"
@@ -61,45 +63,6 @@
 namespace attachSystem
 {
 
-long int
-getLinkIndex(const std::string& linkName)
-  /*!
-    Convert a name front back etc into a standard link number
-    \param linkName :: Linkname with a leading - if name reverse
-    \return link number [-ve for beamFront/beamBack]
-  */
-{
-  ELog::RegMethod RegA("LinkSupport","getLinkIndex");
-
-  long int linkPt(0);
-  if (!StrFunc::convert(linkName,linkPt))
-    {
-      if (linkName=="origin") 
-	linkPt= 0;
-      else if (linkName=="front") 
-	linkPt= 1;
-      else if (linkName=="front-") 
-	linkPt= -1;
-      else if (linkName=="back")
-	linkPt= 2;
-      else if (linkName=="back-")
-	linkPt= -2;
-      else if (linkName=="beamFront")
-	linkPt=1001;
-      else if (linkName=="beamBack")
-	linkPt=1002;
-      else if (linkName=="beamFront-")
-	linkPt= -1001;
-      else if (linkName=="beamBack-")
-	linkPt= -1002;
-      else
-	{
-	  throw ColErr::InContainerError<std::string>
-	    (linkName,"linkName failure");
-	}
-    }
-  return linkPt;
-}
 
   
 int
@@ -127,7 +90,7 @@ getAttachPoint(const std::string& FCName,
     OR.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
-  const long int index=getLinkIndex(linkName);
+  const long int index=FC->getSideIndex(linkName);
   Pt=FC->getLinkPt(index);
   YAxis=FC->getLinkAxis(index);
   return 1;
@@ -162,7 +125,7 @@ getAttachPointWithXYZ(const std::string& FCName,
     OR.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
-  const long int index=getLinkIndex(linkName);
+  const long int index=FC->getSideIndex(linkName);
   // All these calls throw on error
   Pt=FC->getLinkPt(index);
   YAxis=FC->getLinkAxis(index);

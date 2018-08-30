@@ -826,23 +826,25 @@ Material::writePHITS(std::ostream& OX) const
   std::ostringstream cx;
   OX<<"$ Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc"<<std::endl;
   OX<<"mat["<<Mnum<<"]\n";
-
   
   cx.precision(10);
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
   for(const Zaid& ZItem: zaidVec)
     {
-      cx.str("");
-      if (ZItem.getIso())
+      if (ZItem.getZ())
 	{
-	  cx<<"  "<<ZItem.getIso()<<EL.elmSym(ZItem.getZ())
-	    <<"       "<<ZItem.getDensity();
-	}
-      else
-	{
-	  cx<<"    "<<EL.elmSym(ZItem.getZ())
-	    <<"       "<<ZItem.getDensity();
+	  cx.str("");
+	  if (ZItem.getIso())
+	    {
+	      cx<<"  "<<ZItem.getIso()<<EL.elmSym(ZItem.getZ())
+		<<"       "<<ZItem.getDensity();
+	    }
+	  else
+	    {
+	      cx<<"    "<<EL.elmSym(ZItem.getZ())
+		<<"       "<<ZItem.getDensity();
+	    }
 	}
 		  
       OX<<cx.str()<<std::endl;
@@ -878,7 +880,7 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<matName<<std::endl;
+  cx<<"MATERIAL 0.0  - "<<getMacroDensity()<<" -  -  - "<<matName<<std::endl;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");

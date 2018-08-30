@@ -114,12 +114,14 @@ createInputs(inputParam& IParam)
   IParam.regItem("PTRAC","ptrac");
 
   IParam.regItem("r","renum");
-  IParam.regMulti("R","report",1000,0);
+  IParam.regMulti("report","report",1000,0);
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
 
   IParam.regFlag("sdefVoid","sdefVoid");
-  IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
+  IParam.regMulti("sdefType","sdefType",10,0);
   IParam.regItem("sdefFile","sdefFile");
+  IParam.regMulti("sdefSource","sdefSource",1000,0);
+  IParam.regMulti("sdefSourceName","sdefSourceName",1000,0);
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);
   
@@ -147,8 +149,8 @@ createInputs(inputParam& IParam)
     
   IParam.regFlag("void","void");
   IParam.regItem("vtkMesh","vtkMesh",1);
-  IParam.regFlag("vtk","vtk");
-  IParam.regFlag("vcell","vcell");
+  IParam.regItem("vtk","vtk",0);
+  IParam.regItem("vtkType","vtkType",1);
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
 
@@ -242,6 +244,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
+  IParam.setDesc("sdefSource","Extra data for source.F");
   
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
@@ -261,7 +264,6 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
   IParam.setDesc("vtkMesh","Define mesh for MD5/VTK");
-  IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");
@@ -355,6 +357,7 @@ createDelftInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
   IParam.regDefItem<std::string>("buildType","buildType",1,"Full");
+
   IParam.regMulti("kcode","kcode",1000);
   IParam.regMulti("ksrcMat","ksrcMat",1000);
   IParam.regMulti("ksrcVec","ksrcVec",1000);
@@ -372,6 +375,11 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
   IParam.setDesc("fuelXML","Read the Fuel config from an XMLfile");
 
+  IParam.setValue("sdefType",std::string("kcode"));
+  IParam.setValue("sdefType",std::string("kcode"),1);
+  IParam.setValue("sdefType",std::string("kcode"),2);
+  IParam.setValue("sdefType",std::string("kcode"),3);
+  
   return;
 }
 

@@ -71,7 +71,7 @@ DelftCoreType(mainSystem::inputParam& IParam,
   ELog::RegMethod RegA("ReactorLayout[f]","DelftCoreType");
  
   const std::string CoreName=
-      IParam.dataCnt("coreType") ? IParam.getValue<std::string>("coreType") :
+      IParam.itemCnt("coreType") ? IParam.getValue<std::string>("coreType") :
         "Standard";
   if (CoreName=="Help" || CoreName=="help")
     {

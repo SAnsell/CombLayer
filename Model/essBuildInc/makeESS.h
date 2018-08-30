@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ namespace essSystem
   class BulkModule;
   class ShutterBay;
   class TelescopicPipe;
+  class ProtonTube;
   class PreModWing;
   class GuideBay;
   class BeamMonitor;
@@ -79,6 +80,7 @@ namespace essSystem
   class Chicane;
   class PBIP;
   class TSMainBuilding;
+  class EmptyCyl;
 
 
 
@@ -94,10 +96,15 @@ namespace essSystem
 class makeESS
 {
  private:
+
+  std::set<std::string> engFlags;        ///< engineering flags
   
   std::shared_ptr<WheelBase> Target;     ///< target object
+  std::shared_ptr<EmptyCyl> TargetTopClearance; ///< empty cell above target
+  std::shared_ptr<EmptyCyl> TargetLowClearance; ///< empty cell below target
+
   std::shared_ptr<BeRef> Reflector;      ///< reflector object
-  std::shared_ptr<TelescopicPipe> PBeam; ///< Proton Void
+  std::shared_ptr<ProtonTube> PBeam; ///< Proton Void
   std::shared_ptr<PBIP> pbip;            ///< proton beam instrumentation plug
   std::shared_ptr<BeamMonitor> BMon;     ///< Beam Monitor
 
@@ -159,6 +166,8 @@ class makeESS
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 
 
+  void setEngineeringFlag(const mainSystem::inputParam&);
+  
   void buildFocusPoints(Simulation&);
   
   void createGuides(Simulation&);
@@ -178,6 +187,8 @@ class makeESS
   void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
+  void makeTargetClearance(Simulation&,const bool);
+  
   void makeBunker(Simulation&,const mainSystem::inputParam&);
   
   void makeBeamLine(Simulation&,
@@ -204,7 +215,8 @@ class makeESS
   makeESS(const makeESS&);
   makeESS& operator=(const makeESS&);
   ~makeESS();
-  
+
+  bool hasEngineering(const std::string&) const;
   void build(Simulation&,const mainSystem::inputParam&);
 
 };

@@ -66,7 +66,7 @@ class VacBoxGenerator
   VacBoxGenerator();
   VacBoxGenerator(const VacBoxGenerator&);
   VacBoxGenerator& operator=(const VacBoxGenerator&);
-  ~VacBoxGenerator();
+  virtual ~VacBoxGenerator();
 
 
   /// set wall thickness
@@ -89,10 +89,10 @@ class VacBoxGenerator
   void setMat(const std::string& M) { wallMat=M; }
 
   
-  void generateBox(FuncDataBase&,const std::string&,
-		   const double,const double,const double,
-		   const double,const double) const;
-
+  virtual void generateBox(FuncDataBase&,const std::string&,
+			   const double,const double,const double,
+			   const double,const double) const;
+  
 };
 
 }

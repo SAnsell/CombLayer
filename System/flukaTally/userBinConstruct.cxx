@@ -129,7 +129,6 @@ userBinConstruct::convertTallyType(const std::string& TType)
   throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
 }
 
-  
 void
 userBinConstruct::processMesh(SimFLUKA& System,
 			      const mainSystem::inputParam& IParam,
@@ -157,9 +156,9 @@ userBinConstruct::processMesh(SimFLUKA& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh(IParam,Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getObjectMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   userBinConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
   

@@ -3,7 +3,7 @@
  
  * File:   attachComp/PositionSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
 	(DItems[itemIndex+1],"FixedComp");
       
       const long int linkNumber=
-        attachSystem::getLinkIndex(DItems[itemIndex+2]);
+        TPtr->getSideIndex(DItems[itemIndex+2]);
       Value=TPtr->getLinkPt(linkNumber);
       itemIndex+=3;
       return Value;
@@ -147,7 +147,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
       const attachSystem::FixedComp* TPtr=
         OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex+1],
 						   "FixedComp");
-      const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+2]);
+      const long int linkNumber=TPtr->getSideIndex(DItems[itemIndex+2]);
       Value=TPtr->getLinkPt(linkNumber);
 
       Geometry::Vec3D DVec;
@@ -179,7 +179,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex],
 						   "FixedComp");
 
-      const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+1]);
+      const long int linkNumber=TPtr->getSideIndex(DItems[itemIndex+1]);
       Value=TPtr->getLinkPt(linkNumber);
       ELog::EM<<"Item == "<<DItems[itemIndex]<<" "<<Value<<ELog::endDiag;
       itemIndex+=2;

@@ -64,10 +64,14 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "LayerComp.h"
+#include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -87,6 +91,7 @@
 #include "BilbaoWheel.h"
 #include "BeRef.h"
 #include "TelescopicPipe.h"
+#include "ProtonTube.h"
 #include "BeamMonitor.h"
 #include "EssModBase.h"
 #include "ConicInfo.h"
@@ -102,6 +107,7 @@
 #include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
+#include "GuideItem.h"
 #include "DiskPreMod.h"
 #include "DiskLayerMod.h"
 #include "PBIP.h"
@@ -118,6 +124,7 @@
 #include "F5Collimator.h"
 #include "TSMainBuilding.h"
 #include "Chicane.h"
+#include "EmptyCyl.h"
 #include "makeESS.h"
 
 namespace essSystem
@@ -125,7 +132,7 @@ namespace essSystem
 
 makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
-  PBeam(new TelescopicPipe("ProtonTube")),
+  PBeam(new ProtonTube("ProtonTube")),
   pbip(new PBIP("PBIP")),
   BMon(new BeamMonitor("BeamMonitor")),
 
@@ -211,6 +218,43 @@ makeESS::~makeESS()
 
 
 void
+makeESS::setEngineeringFlag(const mainSystem::inputParam& IParam)
+  /*!
+    Creates a simple set based on IParam values
+    Currently not checking but that should be added
+    \param IParam :: Input stream to process
+  */
+{
+  ELog::RegMethod RegA("makeESS","setEngineeringFlag");
+  if (IParam.flag("engineering"))
+    {
+      const std::vector<std::string> items=
+	IParam.getAllItems("engineering");
+      
+      for(const std::string& IV : items)
+	engFlags.insert(IV);
+
+      if (items.empty())
+	engFlags.insert("All");
+    }
+  return;  
+}
+
+bool
+makeESS::hasEngineering(const std::string& Item) const
+  /*!
+    Test to set if a flag is active 
+    \param All is a default for everything
+    \return true if flag exists
+  */
+{
+  return (engFlags.find("All")!=engFlags.end() ||
+	  engFlags.find(Item)!=engFlags.end());
+}
+  
+
+  
+void
 makeESS::makeTarget(Simulation& System,
 		    const std::string& targetType)
   /*!
@@ -224,7 +268,6 @@ makeESS::makeTarget(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);  
-
   
   // Best place to put this to allow simple call
   if (targetType=="help")
@@ -252,6 +295,82 @@ makeESS::makeTarget(Simulation& System,
   return;
 }
 
+void
+makeESS::makeTargetClearance(Simulation& System,
+			     const bool twisterActive)
+  /*!
+    Build clearance above and below the taret wheel
+    \param System :: Simulation
+    \param twisterActive :: Engineering active flag 
+  */
+{
+  ELog::RegMethod RegA("makeESS","makeTargetClearance");
+  
+  TargetTopClearance =
+    std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
+  TargetLowClearance =
+    std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetLowClearance"));
+
+  if (twisterActive)
+    {
+      // these numbers are horrific!!
+      buildTwister(System);
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+      TargetLowClearance->createAll(System,*Target,5,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+    }
+  else
+    {
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+      TargetLowClearance->createAll(System,*Target,5,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+    }
+
+  for (const std::shared_ptr<GuideBay>& GB : GBArray)
+    {
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
+
+      const std::vector<std::shared_ptr<GuideItem>>& GUnit =
+	GB->getGuideItems();
+      for (const std::shared_ptr<GuideItem>& GItem : GUnit)
+	{
+	  
+	  if (GItem->isActive())
+	    {
+	      ELog::EM<<"Inserting "<<GItem->getKeyName()
+		      <<" into TargetTopClearance"<< ELog::endDiag;
+	      attachSystem::addToInsertSurfCtrl
+		(System,*GItem,*TargetTopClearance);
+	    }
+	}
+    }
+
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(TargetTopClearance);
+  OR.addObject(TargetLowClearance);
+
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
+
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetLowClearance);
+  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*TargetLowClearance);
+  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*TargetLowClearance);
+
+  return;
+}
+
+  
 void 
 makeESS::createGuides(Simulation& System)
   /*!
@@ -629,7 +748,7 @@ makeESS::buildBunkerChicane(Simulation& System,
 	  const attachSystem::FixedComp* FCPtr=
 	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
 
-	  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+	  const long int linkIndex=FCPtr->getSideIndex(linkName);
           CF->createAll(System,*FCPtr,linkIndex);
 	}
       else
@@ -748,7 +867,7 @@ makeESS::makeBeamLine(Simulation& System,
 
   for(size_t j=0;j<NSet;j++)
     {
-      const size_t NItems=IParam.itemCnt("beamlines",0);
+      const size_t NItems=IParam.itemCnt("beamlines",j);
       size_t index=1;
       while(index<NItems)  // min of two items
 	{
@@ -985,7 +1104,7 @@ makeESS::build(Simulation& System,
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
   const size_t nF5=IParam.getValue<size_t>("nF5");
-  const int engActive=IParam.flag("eng");
+
   
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
@@ -1088,11 +1207,12 @@ makeESS::build(Simulation& System,
 
 
   createGuides(System);
+  makeTargetClearance(System,hasEngineering("Twister"));
   makeBunker(System,IParam);
 
   // THIS CANNOT BE RIGHT--- VERY INEFFICIENT
-  /*
-  TSMainBuildingObj->addInsertCell(74123);
+
+  TSMainBuildingObj->addInsertCell(voidCell);
   TSMainBuildingObj->createAll(System,World::masterOrigin(),0);
   attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABunker);
@@ -1106,7 +1226,8 @@ makeESS::build(Simulation& System,
 
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABHighBay);
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CDHighBay);
-  */
+  // ---------------------------------------------------------------------------------------
+
   
   // PROTON BEAMLINE
 
@@ -1115,19 +1236,26 @@ makeESS::build(Simulation& System,
   //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   //  Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
 
-  PBeam->setFront(*Reflector,1);
-  PBeam->setBack(*ShutterBayObj,-1);
-  PBeam->createAll(System,*Reflector,1);  
-  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,PBeam->getCC("Full"));
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,PBeam->getCC("Full"));
+  PBeam->setFront(*Bulk,4);
+  PBeam->setBack(*TSMainBuildingObj,-1);
+  PBeam->createAll(System,*Bulk,4,*ShutterBayObj,-6);
 
-  if (engActive)
-    buildTwister(System);
-  else
-    {
-      // if no -eng flag then Twister is not built -> must insert into Bulk
-      //   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
-    }
+  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
+				    PBeam->getCC("Full"));
+  attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
+				    PBeam->getCC("Sector3"));
+
+  // PBeam->setFront(*Reflector,1);
+  // PBeam->setBack(*ShutterBayObj,-1);
+  // PBeam->createAll(System,*Reflector,1);  
+  // attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,PBeam->getCC("Full"));
+  // attachSystem::addToInsertSurfCtrl(System,*Bulk,PBeam->getCC("Full"));
+
+  if (Twister)
+    attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
+
+  makeBeamLine(System,IParam);
+  //  buildF5Collimator(System, IParam);
 
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
@@ -1145,9 +1273,7 @@ makeESS::build(Simulation& System,
   if (lowModType != "None")
     ModPipes->buildLowPipes(System,lowPipeType);
 
-  makeBeamLine(System,IParam);
 
-  buildF5Collimator(System, nF5);
   ELog::EM<<"=Finished beamlines="<<ELog::endDiag;
   return;
 }

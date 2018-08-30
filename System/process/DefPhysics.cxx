@@ -76,6 +76,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "SimFLUKA.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
@@ -84,6 +85,12 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "cellValueSet.h"
+#include "pairValueSet.h"
+#include "flukaProcess.h"
+#include "flukaPhysics.h"
+#include "flukaImpConstructor.h"
+#include "flukaDefPhysics.h"
 #include "DefPhysics.h"
 
 namespace ModelSupport
@@ -156,7 +163,7 @@ procAngle(const mainSystem::inputParam& IParam,
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
       const int ZFlag=IParam.getDefValue<int>(1,"angle",index,3);
-      const long int axisIndex=attachSystem::getLinkIndex(CItem);
+      const long int axisIndex=GIPtr->getSideIndex(CItem);
 
       const Geometry::Vec3D AxisVec=
         GIPtr->getLinkAxis(axisIndex);
@@ -181,7 +188,7 @@ procAngle(const mainSystem::inputParam& IParam,
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
 
-      const long int sideIndex=attachSystem::getLinkIndex(CItem);
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
           
       Geometry::Vec3D LP=GIPtr->getLinkPt(sideIndex);
       LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
@@ -198,8 +205,8 @@ procAngle(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
-      
-      const long int sideIndex=attachSystem::getLinkIndex(CItem);
+
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
@@ -270,10 +277,10 @@ procOffset(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("0","offset",index,2);
-      const long int linkIndex=attachSystem::getLinkIndex(CItem);
-      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(linkIndex)
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
+      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(sideIndex)
               <<ELog::endDiag;
-      MR.addDisplace(-GIPtr->getLinkPt(linkIndex));
+      MR.addDisplace(-GIPtr->getLinkPt(sideIndex));
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -389,7 +396,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   const double phtModel=IParam.getValue<double>("photonModel");
 
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
-
+  ELog::EM<<"ECL == "<<elcAdd<<ELog::endDiag;
   PC.setMode("n p "+PList+elcAdd);
   PC.setPrintNum("10 110");
   
@@ -509,7 +516,7 @@ setDefaultPhysics(SimMCNP& System,
   PC.setPrintNum(IParam.getValue<std::string>("printTable"));
 
   // If Reactor stuff set and void
-  if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
+  if (IParam.hasKey("kcode") && IParam.itemCnt("kcode"))
     {
       setReactorPhysics(PC,Control,IParam);
       return;
@@ -600,12 +607,25 @@ setDefaultPhysics(SimMCNP& System,
       physicsSystem::PStandard* pe=
 	PC.addPhysCard<physicsSystem::PStandard>("phys","e");
       pe->setValues(1,maxEnergy);
-
     }
-
-  
   return; 
 }
 
+void 
+setDefaultPhysics(SimFLUKA& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","setDefaultPhysics");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
 
 } // NAMESPACE ModelSupport

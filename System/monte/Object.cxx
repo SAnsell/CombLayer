@@ -410,6 +410,7 @@ Object::procString(const std::string& cellStr)
    */
 {
   populated=0;
+  objSurfValid=0;
   return HRule.procString(cellStr);
 }
 
@@ -682,6 +683,7 @@ Object::getImplicatePairs(const int SN) const
   /*!
     Determine all the implicate pairs for the object
     The map is plane A has (sign A) implies plane B has (sign B)
+    \param SN :: Number of force side
     \return Map of surf -> surf
   */
 {
@@ -803,7 +805,6 @@ Object::createSurfaceList()
   ELog::RegMethod RegA("Object","createSurfaceList");
   
   populate();  // checked in populate
-
   std::ostringstream debugCX;
 
   SurList.clear();
@@ -999,7 +1000,7 @@ Object::forwardIntercept(const Geometry::Vec3D& IP,
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects).
-    This does not descriminate between ingoing and outgoing
+    This does descriminate between ingoing and outgoing
     tracks.
 
     \param IP :: Initial point

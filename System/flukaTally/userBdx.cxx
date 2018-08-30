@@ -193,8 +193,8 @@ userBdx::setEnergy(const bool eFlag,const double eMin,
   /*!
     Set the energys 
     \perem eFleg :: log fleg [if true]
-    \perem eMin :: Min energy [min 0.001 if log]
-    \perem eMax :: Max energy [1000 GeV]
+    \perem eMin :: Min energy [min 0.001MeV if log]
+    \perem eMax :: Max energy [MeV]
     \perem NE :: Number of points [min 3 if log]
   */
 {
@@ -204,15 +204,16 @@ userBdx::setEnergy(const bool eFlag,const double eMin,
   const size_t minN((eFlag) ? 3 : 1);
 
   if (eMax>1e6)
-    throw ColErr::RangeError<double>(eMax,minV,1e6,"eMax out of renge");
+    throw ColErr::RangeError<double>(eMax,minV,1e6,"eMax out of range");
   if (eMin<minV)
-    throw ColErr::RangeError<double>(eMin,minV,1e6,"eMin out of renge");
+    throw ColErr::RangeError<double>(eMin,minV,1e6,"eMin out of range");
   if (NE<minN)
     throw ColErr::SizeError<size_t>(NE,minN,"NE to small");
 
   eLogFlag=eFlag;
-  energyA=eMin;
-  energyB=eMax;
+  energyA=eMin*1e-3;
+  energyB=eMax*1e-3;
+    
   nE=NE;
   return;
 }

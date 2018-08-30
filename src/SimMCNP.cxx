@@ -100,7 +100,6 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
 #include "ReadFunctions.h"
@@ -494,12 +493,10 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
 
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
+  
+  for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
+    sm.second->write(OX);
 
-  std::map<int,Geometry::Surface*>::const_iterator mp;
-  for(mp=SurMap.begin();mp!=SurMap.end();mp++)
-    {
-      (mp->second)->write(OX);
-    }
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;
   return;

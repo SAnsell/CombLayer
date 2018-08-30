@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/strValueSet.h
+ * File:   flukaProcessInc/pairValueSet.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

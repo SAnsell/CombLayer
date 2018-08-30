@@ -194,7 +194,6 @@ beamTallyConstruct::processPoint(SimMCNP& System,
 	("tally",Index,2,"beamline number not given");
       const std::string face=IParam.getValueError<std::string>
 	("tally",Index,3,"beamline face : front/back not given");
-      const long int linkNumber=attachSystem::getLinkIndex(face);
 
       const double beamDist=
 	IParam.getDefValue<double>(1000.0,"tally",Index,3);
@@ -205,7 +204,7 @@ beamTallyConstruct::processPoint(SimMCNP& System,
       const double pointZRot=
 	IParam.getDefValue<double>(0.0,"tally",Index,6);
 
-      addViewInnerTally(System,beamNum-1,linkNumber,
+      addViewInnerTally(System,beamNum-1,face,
 			beamDist,timeOffset,
 			windowOffset,pointZRot);
       return;
@@ -522,7 +521,7 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
 void 
 beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 				 const int beamNum,
-				 const long int faceFlag,     
+    			         const std::string& faceName,     
 				 const double beamDist,
 				 const double timeOffset,
 				 const double windowOffset,
@@ -531,7 +530,7 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
     Adds a beamline tally to the system
     \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
-    \param faceFlag :: Face -- Front/Back
+    \param faceName :: Face -- Front/Back
     \param beamDist :: Distance from moderator face
     \param timeOffset :: Time back step for tally
     \param windowOffset :: Distance to move window towards tally point
@@ -550,14 +549,11 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 
   int masterPlane(0);
 
-  const attachSystem::FixedComp* ShutterPtr;
-
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
-    (StrFunc::makeString(std::string("shutter"),beamNum));
-
-  if (!ShutterPtr)    
-    throw ColErr::InContainerError<int>(beamNum,"Shutter Object not found");
-
+  const attachSystem::FixedComp* ShutterPtr=
+    OR.getObjectThrow<attachSystem::FixedComp>
+    ("shutter"+std::to_string(beamNum),
+     "Shutter Object not found");
+  const long int faceFlag=ShutterPtr->getSideIndex(faceName);
   // MODERATOR PLANE
   masterPlane=ShutterPtr->getExitWindow(0,Planes);
   const shutterSystem::BlockShutter* BSPtr=

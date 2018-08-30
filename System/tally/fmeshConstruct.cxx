@@ -105,9 +105,9 @@ fmeshConstruct::processMesh(SimMCNP& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object" || PType=="heatObject")
-    getObjectMesh(IParam,Index,3,APt,BPt,Nxyz);
+    getObjectMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free" || PType=="heat")
-    getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
+    getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   if (PType=="heatObject" || PType=="heat")
     fmeshConstruct::rectangleMesh(System,3,"void",APt,BPt,Nxyz);

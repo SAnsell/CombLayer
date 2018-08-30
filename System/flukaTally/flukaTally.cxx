@@ -157,7 +157,7 @@ flukaTally::getKeyName() const
 {
   return keyName;
 }
-  
+
 void
 flukaTally::setAuxParticles(const std::string& P)
   /*!
@@ -166,6 +166,18 @@ flukaTally::setAuxParticles(const std::string& P)
   */
 {
   auxParticle=P;
+  return;
+}
+
+void
+flukaTally::setBinary()
+  /*!
+    Set the tally to binary
+  */
+{
+  ELog::RegMethod RegA("flukaTally","setBinary");
+
+  outputUnit=-std::abs(outputUnit);
   return;
 }
 
@@ -190,6 +202,7 @@ flukaTally::setDoseType(const std::string& P,
 			const std::string& D)
   /*!
     Set the auxParticle [can be a range?]
+    \param P :: Particle type
     \param D :: set dose type
   */
 {
@@ -204,8 +217,7 @@ flukaTally::setDoseType(const std::string& P,
   const flukaGenParticle& FG=flukaGenParticle::Instance();
   
   auxParticle=StrFunc::toUpperString(FG.nameToFLUKA(P));
-  
-  const std::string Dupper=StrFunc::toUpperString(D);
+   const std::string Dupper=StrFunc::toUpperString(D);
   if (validDose.find(Dupper)==validDose.end())
     throw ColErr::InContainerError<std::string>(D,"Dose type not known");
 

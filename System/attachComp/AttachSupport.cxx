@@ -62,6 +62,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -69,8 +71,6 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "SurInter.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "AttachSupport.h"
 
 #include "Debug.h"

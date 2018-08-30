@@ -68,7 +68,6 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "Building.h"
 
 namespace epbSystem

@@ -68,7 +68,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "KCode.h"
+#include "KCodeSource.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
@@ -81,6 +81,8 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -274,58 +276,6 @@ makeDelft::makeRabbit(Simulation& System)
   return;
 }
 
-void 
-makeDelft::setSource(Simulation& System,
-		     const mainSystem::inputParam& IParam)
-  /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param IParam :: Input system
-  */
-{
-  // For output stream
-  ELog::RegMethod RControl("makeDelft","build");
-  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
-  
-  if (IParam.flag("kcode"))
-    {
-      const size_t NItems=IParam.itemCnt("kcode",0);
-      std::ostringstream cx;
-      for(size_t i=0;i<NItems;i++)
-	cx<<IParam.getValue<std::string>("kcode",i)<<" ";
-      
-      SDef::KCode KCard;
-      KCard.setLine(cx.str());
-
-      if (IParam.flag("ksrcMat"))
-	{
-	  const size_t fissileZaid=IParam.getDefValue<size_t>(0,"ksrcMat",0,0);
-	  std::vector<int> fuelCells=
-	    GridPlate->getFuelCells(System,fissileZaid);
-
-	  std::vector<Geometry::Vec3D> FissionVec;
-	  for(const int FC : fuelCells)
-	    {
-	      MonteCarlo::Qhull* OPtr=
-		System.findQhull(FC);
-	      if (!OPtr)
-		throw ColErr::InContainerError<int>(FC,"Cell Not found");
-	      if (OPtr->calcVertex())
-		{
-		  const Geometry::Vec3D& CPt(OPtr->getCofM());
-		  if (OPtr->isValid(CPt))
-		    FissionVec.push_back(CPt);
-		}		
-	    }
-	  ELog::EM<<"Fission size == "<<FissionVec.size()<<ELog::endDiag;
-	  KCard.setKSRC(FissionVec);
-	  SDB.registerSource("kcode",KCard);
-	}
-    }
-
-  return;
-}
-
 void
 makeDelft::buildCore(Simulation& System,
 		     const mainSystem::inputParam& IParam)
@@ -366,7 +316,6 @@ makeDelft::buildFlight(Simulation& System,
 
   if (flightConfig=="Single")
     return;
-
 
   FlightB->addInsertCell(Pool->getCells("Water"));
   FlightB->addInsertCell(74123);
