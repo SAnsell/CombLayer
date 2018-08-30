@@ -305,16 +305,21 @@ maxpeemOpticsBeamline::createDoubleVoidUnit(Simulation& System,
 
 
   // make the master cell valid:
+  ELog::EM<<"CellIndex== "<<cellIndex<<ELog::endDiag;
+  makeCell("masterCellB",System,cellIndex++,0,0.0,Out);
+  MCellPlus= *System.findQhull(cellIndex-1);
 
   const Geometry::Vec3D DPoint(FC.getLinkPt(sideIndex));
   Geometry::Vec3D crossX,crossY,crossZ;
   FC.selectAltAxis(sideIndex,crossX,crossY,crossZ);
   ModelSupport::buildPlane(SMap,buildIndex+10,DPoint,crossX);
   ExternalCut::setCutSurf("middle",SMap.realSurf(buildIndex+10));
-  
+
+
+
   divider.makeComplement();
   refrontMasterCell(MCellNeg,MCellPlus,FC,sideIndex);
-  return cellIndex-1;
+  return cellIndex-2;
 }
 
 int
@@ -398,6 +403,7 @@ maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCellNeg,
 
   Out=getRuleStr("beam")+getRuleStr("back")+
     FC.getLinkString(sideIndex);
+  
   MCellNeg.procString(Out+getComplementStr("middle"));
   MCellPlus.procString(Out+getRuleStr("middle"));
 
@@ -445,7 +451,18 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
 
+  ELog::EM<<"ASDFS "<<ELog::endDiag;
   int outerCell;
+  offPipeD->createAll(System,initFC,sideIndex);
+  outerCell=createDoubleVoidUnit(System,masterCellA,
+				 masterCellB,dividerA,*offPipeD,2);
+  ELog::EM<<"B "<<masterCellA<<ELog::endDiag;
+  ELog::EM<<"B "<<masterCellB<<ELog::endDiag;
+  ELog::EM<<"B "<<outerCell
+	  <<ELog::endDiag;
+  offPipeD->insertInCell(System,outerCell);
+  return;
+
   splitter->createAll(System,*offPipeD,2);
   outerCell=createOuterVoidUnit(System,masterCellA,dividerA,*splitter,2);
   splitter->insertInCell(System,outerCell);
@@ -504,10 +521,9 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);
 
-  MonteCarlo::Object MCellB;
-  offPipeD->createAll(System,*M3Tube,2);
-  outerCell=createDoubleVoidUnit(System,masterCell,MCellB,divider,*offPipeD,2);
-  offPipeD->insertInCell(System,outerCell);
+  // make null placeholder cell
+
+
 
   return;
 }
@@ -620,6 +636,7 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildObjects");
 
+  MonteCarlo::Object masterCellB;
   HeadRule divider;
   
   int outerCell;
@@ -711,7 +728,8 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   buildSlitPackage(System,divider,masterCell,*pipeC,2);
   buildMono(System,divider,masterCell,*pipeF,2);
   buildM3Mirror(System,divider,masterCell,*bellowE,2);
-  
+
+  buildSplitter(System,divider,divider,masterCell,masterCellB,*M3Tube,2);
   lastComp=offPipeA;
 
   return;
