@@ -273,6 +273,46 @@ maxpeemOpticsBeamline::constructMasterCell(Simulation& System,
 }
 
 int
+maxpeemOpticsBeamline::constructDivideCell(Simulation& System,
+					   const bool plusSide,
+					   const attachSystem::FixedComp& FFC,
+					   const long int frontIndex,
+					   const attachSystem::FixedComp& BFC,
+					   const long backIndex)
+ /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param FFC :: Front FC
+    \param BFC :: Back FC
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","constructDivideCell");
+
+  std::string Out;
+  Out=getRuleStr("beam");
+  Out += (plusSide) ? getRuleStr("middle") : getComplementStr("middle");
+  
+  // make inner cell
+
+  std::string Inner = Out;
+  Inner += FFC.getLinkString(frontIndex);
+  Inner += BFC.getLinkString(-backIndex);
+  makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
+
+  // outer cell and set 
+  Out+=BFC.getLinkString(backIndex);
+  Out+=getRuleStr("back");
+  if (plusSide)
+    masterCellB->procString(Out);
+  else
+    masterCellA->procString(Out);
+
+  // return current build cell:
+  return cellIndex-1;
+}
+
+  
+int
 maxpeemOpticsBeamline::createDoubleVoidUnit(Simulation& System,
 					    HeadRule& divider,
 					    const attachSystem::FixedComp& FC,
@@ -310,7 +350,7 @@ maxpeemOpticsBeamline::createDoubleVoidUnit(Simulation& System,
       const Geometry::Vec3D DPoint(FC.getLinkPt(sideIndex));
       Geometry::Vec3D crossX,crossY,crossZ;
       FC.selectAltAxis(sideIndex,crossX,crossY,crossZ);
-      ModelSupport::buildPlane(SMap,buildIndex+10,DPoint,-crossX);
+      ModelSupport::buildPlane(SMap,buildIndex+10,DPoint,crossX);
       ExternalCut::setCutSurf("middle",SMap.realSurf(buildIndex+10));
     }
   
@@ -438,7 +478,6 @@ maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object* MCellNeg,
   ELog::RegMethod RegA("maxpeemOpticsBeamline","refrontMasterCell");
 
   std::string Out;  
-
   Out=getRuleStr("beam")+getRuleStr("back")+
     FC.getLinkString(sideIndex);
 
@@ -489,43 +528,21 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   int outerCell;
   offPipeD->createAll(System,initFC,sideIndex);
   outerCell=createDoubleVoidUnit(System,dividerA,*offPipeD,2);
-
-  ELog::EM<<"MCEll == "<<masterCellB<<ELog::endDiag;    
-  ELog::EM<<"A "<<*masterCellA<<ELog::endDiag;
-  ELog::EM<<"B "<<*masterCellB<<ELog::endDiag;
-  ELog::EM<<"B "<<outerCell<<ELog::endDiag;
   offPipeD->insertInCell(System,outerCell);
 
+  ELog::EM<<"Outer goes into a NON masterCellA/B Cell "
+	  <<outerCell<<ELog::endDiag;
+  ELog::EM<<"Master A == "<<*masterCellA<<ELog::endDiag;
+  ELog::EM<<"Master B == "<<*masterCellB<<ELog::endDiag;
 
-  //  const int outCellA=masterCellA->getName();
-  //  const int outCellB=masterCellA->getName();
-  dividerB=dividerA;
   splitter->createAll(System,*offPipeD,2);
-  
-
-  HeadRule middleHR =getRule("middle");
-  ELog::EM<<"Divider A == "<<dividerA<<ELog::endDiag;
-  ELog::EM<<"Middle == "<<middleHR<<ELog::endDiag;
-  ELog::EM<<"CELL B == "<<*masterCellB<<ELog::endDiag;
-
-  int outCellB=
-    createOuterVoidUnit(System,masterCellB,middleHR,dividerA,*splitter,2);
-  middleHR.makeComplement();
-
-  ELog::EM<<"Divider B == "<<dividerB<<ELog::endDiag;
-  ELog::EM<<"Middle == "<<middleHR<<ELog::endDiag;
-  ELog::EM<<"CELL A == "<<*masterCellA<<ELog::endDiag;
-
-  int outCellA=
-    createOuterVoidUnit(System,masterCellA,middleHR,dividerB,*splitter,2);
-  
-  ELog::EM<<"Divider A == "<<dividerA<<ELog::endDiag;
   //  int outerCellB=createOuterVoidUnit(System,masterCellB,dividerB,*splitter,3);
-
-  //  splitter->insertInCell("Flange",System,outerCellA);
-  //  splitter->insertInCell("Flange",System,outerCellB);
-  //  splitter->insertInCell("PipeA",System,outerCellA);
-  //  splitter->insertInCell("PipeB",System,outerCellB);
+  const int outerCellA=masterCellA->getName();
+  const int outerCellB=masterCellB->getName();
+  splitter->insertInCell("Flange",System,outerCellA);
+  splitter->insertInCell("Flange",System,outerCellB);
+  splitter->insertInCell("PipeA",System,outerCellA);
+  splitter->insertInCell("PipeB",System,outerCellB);
   
 
   return;

@@ -149,6 +149,11 @@ class maxpeemOpticsBeamline :
   MonteCarlo::Object* masterCellB;
   
   void constructMasterCell(Simulation&,const HeadRule&);
+  int constructDivideCell(Simulation&,const bool,
+			   const attachSystem::FixedComp&,
+			   const long int,
+			   const attachSystem::FixedComp&,
+			   const long int);
   
   int createOuterVoidUnit(Simulation&,
 			  MonteCarlo::Object*,
