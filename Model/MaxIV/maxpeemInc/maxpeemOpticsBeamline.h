@@ -144,39 +144,47 @@ class maxpeemOpticsBeamline :
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
 
-  MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
+
+  MonteCarlo::Object* masterCellA;
+  MonteCarlo::Object* masterCellB;
   
-  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
+  void constructMasterCell(Simulation&,const HeadRule&);
+  
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
+			  const HeadRule&,HeadRule&,
+			  const attachSystem::FixedComp&,
+			  const long int);
+
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
 			  HeadRule&,
 			  const attachSystem::FixedComp&,
 			  const long int);
 
   int createDoubleVoidUnit(Simulation&,
-			    MonteCarlo::Object&,
-			    MonteCarlo::Object&,
-			    HeadRule&,
-			    const attachSystem::FixedComp&,
-			    const long int);
+			   HeadRule&,
+			   const attachSystem::FixedComp&,
+			   const long int);
   
-  void refrontMasterCell(MonteCarlo::Object&,
+  void refrontMasterCell(MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
   
-  void refrontMasterCell(MonteCarlo::Object&,MonteCarlo::Object&,
+  void refrontMasterCell(MonteCarlo::Object*,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
   
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
-  void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object&,
+  void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
-  void buildMono(Simulation&,HeadRule&,MonteCarlo::Object&,
+  void buildMono(Simulation&,HeadRule&,MonteCarlo::Object*,
 		 const attachSystem::FixedComp&,const long int);
-  void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object&,
+  void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object*,
 		       const attachSystem::FixedComp&,const long int);
   void buildSplitter(Simulation&,HeadRule&,HeadRule&,
-		     MonteCarlo::Object&,MonteCarlo::Object&,
 		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
