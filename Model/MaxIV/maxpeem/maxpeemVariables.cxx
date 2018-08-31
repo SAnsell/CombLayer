@@ -73,6 +73,7 @@ namespace setVariable
 
 namespace maxpeemVar
 {
+  void collimatorVariables(FuncDataBase&,const std::string&);
   void moveApertureTable(FuncDataBase&,const std::string&);
   void heatDumpVariables(FuncDataBase&,const std::string&);
   void shutterTable(FuncDataBase&,const std::string&);
@@ -84,6 +85,30 @@ namespace maxpeemVar
   void splitterVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
+
+void
+collimatorVariables(FuncDataBase& Control,
+		    const std::string& collKey)
+  /*!
+    Builds the variables for the collimator
+    \param Control :: Database
+    \param collKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","collimatorVariables");
+
+  Control.addVariable(collKey+"Width",4.0);
+  Control.addVariable(collKey+"Height",4.0);
+  Control.addVariable(collKey+"Length",16.0);
+  Control.addVariable(collKey+"InnerAWidth",1.2);
+  Control.addVariable(collKey+"InnerAHeight",1.2);
+  Control.addVariable(collKey+"InnerBWidth",1.2);
+  Control.addVariable(collKey+"InnerBHeight",1.2);
+  Control.addVariable(collKey+"Mat","Tantalum");
+
+  return;
+}
+  
 
 void
 splitterVariables(FuncDataBase& Control,
@@ -98,6 +123,7 @@ splitterVariables(FuncDataBase& Control,
   setVariable::TwinPipeGenerator TwinGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
+  setVariable::PipeGenerator PipeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
@@ -121,11 +147,25 @@ splitterVariables(FuncDataBase& Control,
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF40>();
   PTubeGen.setPortLength(2.5,2.5);
-  
-  PTubeGen.generateCFTube<CF63>(Control,splitKey+"PumpTubeAA",0.0,20.0);
-  Control.addVariable(splitKey+"PumpTubeAANPorts",0);
-  PTubeGen.generateCFTube<CF63>(Control,splitKey+"PumpTubeBA",0.0,20.0);
-  Control.addVariable(splitKey+"PumpTubeBANPorts",0);
+
+  const std::string pumpNameA=splitKey+"PumpTubeAA";
+  const std::string pumpNameB=splitKey+"PumpTubeBA";
+  const Geometry::Vec3D zVec(0,0,-1);
+  const Geometry::Vec3D centPoint(0,0,0);
+  PTubeGen.generateCFTube<CF63>(Control,pumpNameA,0.0,20.0);
+  Control.addVariable(pumpNameA+"NPorts",1);
+  PTubeGen.generateCFTube<CF63>(Control,pumpNameB,0.0,20.0);
+  Control.addVariable(pumpNameB+"NPorts",1);
+
+  PItemGen.setCF<setVariable::CF63>(14.95);
+  PItemGen.generatePort(Control,pumpNameA+"Port0",centPoint,zVec);
+  PItemGen.generatePort(Control,pumpNameB+"Port0",centPoint,zVec);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setCF<setVariable::CF50>();
+  PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
+  PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
   return;
 }
@@ -550,6 +590,7 @@ moveApertureTable(FuncDataBase& Control,
   // Aperature pipe is movable:
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipe",14.0,24.0);
+  collimatorVariables(Control,frontKey+"MoveCollA");
   
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",0,14.0);

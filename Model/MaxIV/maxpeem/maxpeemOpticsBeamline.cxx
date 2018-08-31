@@ -145,8 +145,9 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   pumpTubeAA(new constructSystem::PortTube(newName+"PumpTubeAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   gateBA(new constructSystem::GateValve(newName+"GateBA")),
-  pumpTubeBA(new constructSystem::PortTube(newName+"PumpTubeBA"))
-
+  pumpTubeBA(new constructSystem::PortTube(newName+"PumpTubeBA")),
+  outerPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
+  outerPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -192,6 +193,8 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(gateBA);
   OR.addObject(pumpTubeAA);
   OR.addObject(pumpTubeBA);
+  OR.addObject(outPipeA);
+  OR.addObject(outPipeB);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -554,6 +557,12 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   gateAA->createAll(System,*bellowAA,2);
   cellA=constructDivideCell(System,0,*bellowAA,2,*gateAA,2);
   gateAA->insertInCell(System,cellA);
+
+  pumpTubeAA->addInsertCell(masterCellA->getName());
+  pumpTubeAA->createAll(System,*gateAA,2);
+  cellA=constructDivideCell(System,0,*gateAA,2,*pumpTubeAA,2);
+  pumpTubeAA->insertInCell(System,cellA);
+  
   
   // RIGHT
   bellowBA->createAll(System,*splitter,3);
@@ -563,6 +572,13 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   gateBA->createAll(System,*bellowBA,2);
   cellB=constructDivideCell(System,1,*bellowBA,2,*gateBA,2);
   gateBA->insertInCell(System,cellB);
+
+  pumpTubeBA->addInsertCell(masterCellB->getName());
+  pumpTubeBA->createAll(System,*gateBA,2);
+  cellB=constructDivideCell(System,1,*gateBA,2,*pumpTubeBA,2);
+  pumpTubeBA->insertInCell(System,cellB);
+
+  
   return;
 }
 

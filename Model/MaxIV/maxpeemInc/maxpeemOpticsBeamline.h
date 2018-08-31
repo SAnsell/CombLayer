@@ -160,6 +160,11 @@ class maxpeemOpticsBeamline :
   /// Pumping tube
   std::shared_ptr<constructSystem::PortTube> pumpTubeBA;
 
+  /// Pipe to exit
+  std::shared_ptr<constructSystem::VacuumPipe> outPipeA;
+  /// Pipe to exit
+  std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
+
   MonteCarlo::Object* masterCellA;
   MonteCarlo::Object* masterCellB;
   

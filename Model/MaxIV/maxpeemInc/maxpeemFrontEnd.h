@@ -56,6 +56,7 @@ namespace xraySystem
   class BremBlock;
   class FlangeMount;
   class HeatDump;
+  class LCollimator;
   class SquareFMask;
   class Wiggler;
 
@@ -117,6 +118,8 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Variable Apperature pipe
   std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
+  /// L collimator
+  std::shared_ptr<xraySystem::LCollimator> moveCollA;
   /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Real Ion pump (KF40) 26cm vertioal
