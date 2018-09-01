@@ -146,8 +146,8 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   gateBA(new constructSystem::GateValve(newName+"GateBA")),
   pumpTubeBA(new constructSystem::PortTube(newName+"PumpTubeBA")),
-  outerPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
-  outerPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))
+  outPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
+  outPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -857,7 +857,22 @@ maxpeemOpticsBeamline::createLinks()
   return;
 }
   
+void
+maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
+					  const int hutCell,
+					  const int outCell)
+  /*!
+    Construct outgoing tracks
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
+
   
+  return;
+}
+
+
 void 
 maxpeemOpticsBeamline::createAll(Simulation& System,
 				 const attachSystem::FixedComp& FC,

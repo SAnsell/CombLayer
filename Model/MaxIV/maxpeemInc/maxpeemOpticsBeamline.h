@@ -152,7 +152,6 @@ class maxpeemOpticsBeamline :
   /// Pumping tube
   std::shared_ptr<constructSystem::PortTube> pumpTubeAA;
 
-  
   // PIPE B :: RIGHT SIDE
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   /// Gate valve for right
@@ -225,6 +224,8 @@ class maxpeemOpticsBeamline :
   maxpeemOpticsBeamline(const maxpeemOpticsBeamline&);
   maxpeemOpticsBeamline& operator=(const maxpeemOpticsBeamline&);
   ~maxpeemOpticsBeamline();
+
+  void buildOutGoingPipes(Simulation&,const int,const int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
