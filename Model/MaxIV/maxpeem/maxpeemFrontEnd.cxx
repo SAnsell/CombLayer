@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
@@ -133,6 +134,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
+  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
@@ -180,6 +182,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(ionPC);
   OR.addObject(bellowG);
   OR.addObject(aperturePipeB);
+  OR.addObject(moveCollB);
   OR.addObject(bellowH);
   OR.addObject(pipeC);
   OR.addObject(gateA);
@@ -436,6 +439,8 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
 
   // Next 4 objects need to be build before insertion
   aperturePipeB->createAll(System,*ionPC,2);
+  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
+  moveCollB->createAll(System,*aperturePipeB,0);
 
   // bellows AFTER movable aperture pipe
   bellowG->setFront(*ionPC,2);

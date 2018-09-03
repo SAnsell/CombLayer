@@ -120,6 +120,7 @@ class FixedComp
 		       const Geometry::Vec3D&);
 
   void linkAngleRotate(const size_t,const double,const double);
+  void linkAngleRotate(const size_t,const double,const double,const double);
   void linkShift(const size_t,const double,const double,const double);
 
   void reverseZ();

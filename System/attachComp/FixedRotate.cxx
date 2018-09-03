@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachComp/FixedOffset.cxx
+ * File:   attachComp/FixedRotate.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -58,16 +58,16 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 
 namespace attachSystem
 {
 
-FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
+FixedRotate::FixedRotate(const std::string& KN,const size_t NL) :
   FixedComp(KN,NL),
-  preXYAngle(0.0),preZAngle(0.0),
+  preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0)
+  xAngle(0.0),yAngle(0.0),zAngle(0.0)
  /*!
     Constructor 
     \param KN :: KeyName
@@ -75,34 +75,37 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   */
 {}
 
-FixedOffset::FixedOffset(const FixedOffset& A) : 
+FixedRotate::FixedRotate(const FixedRotate& A) : 
   FixedComp(A),
-  preXYAngle(A.preXYAngle),preZAngle(A.preZAngle),
+  preXAngle(A.preXAngle),preYAngle(A.preYAngle),
+  preZAngle(A.preZAngle),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle)
+  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle)
   /*!
     Copy constructor
-    \param A :: FixedOffset to copy
+    \param A :: FixedRotate to copy
   */
 {}
 
-FixedOffset&
-FixedOffset::operator=(const FixedOffset& A)
+FixedRotate&
+FixedRotate::operator=(const FixedRotate& A)
   /*!
     Assignment operator
-    \param A :: FixedOffset to copy
+    \param A :: FixedRotate to copy
     \return *this
   */
 {
   if (this!=&A)
     {
       FixedComp::operator=(A);
-      preXYAngle=A.preXYAngle;
+      preXAngle=A.preXAngle;
+      preYAngle=A.preYAngle;
       preZAngle=A.preZAngle;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
-      xyAngle=A.xyAngle;
+      xAngle=A.xAngle;
+      yAngle=A.yAngle;
       zAngle=A.zAngle;
     }
   return *this;
@@ -110,16 +113,17 @@ FixedOffset::operator=(const FixedOffset& A)
 
 
 void
-FixedOffset::populate(const FuncDataBase& Control)
+FixedRotate::populate(const FuncDataBase& Control)
   /*!
     Populate the variables
     \param Control :: Control data base
    */
 {
-  ELog::RegMethod RegA("FixedOffset","populate");
+  ELog::RegMethod RegA("FixedRotate","populate");
 
   // defaults used to fixedoffset can be used in a setting class.
-  preXYAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",preXYAngle);
+  preXAngle=Control.EvalDefVar<double>(keyName+"PreXAngle",preXAngle);
+  preYAngle=Control.EvalDefVar<double>(keyName+"PreXAngle",preYAngle);
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
@@ -133,7 +137,8 @@ FixedOffset::populate(const FuncDataBase& Control)
   yStep=Control.EvalDefVar<double>(keyName+"YStep",yStep);
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zStep);
   
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",xyAngle);
+  xAngle=Control.EvalDefVar<double>(keyName+"XAngle",xAngle);
+  yAngle=Control.EvalDefVar<double>(keyName+"YAngle",yAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
   
   return;
@@ -141,18 +146,20 @@ FixedOffset::populate(const FuncDataBase& Control)
 }
 
 void
-FixedOffset::populate(const std::map<std::string,
+FixedRotate::populate(const std::map<std::string,
 		      std::vector<std::string>>& inputMap)
   /*!
     Populate the variables
     \param inputMap :: Moifications from input stream
    */
 {
-  ELog::RegMethod RegA("FixedOffset","populate(map)");
+  ELog::RegMethod RegA("FixedRotate","populate(map)");
 
-  mainSystem::findInput(inputMap,"preXYAngle",0,preXYAngle);
+  mainSystem::findInput(inputMap,"preXAngle",0,preXAngle);
+  mainSystem::findInput(inputMap,"preYAngle",0,preXAngle);
   mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
-  mainSystem::findInput(inputMap,"xyAngle",0,xyAngle);
+  mainSystem::findInput(inputMap,"xAngle",0,xAngle);
+  mainSystem::findInput(inputMap,"yAngle",0,yAngle);
   mainSystem::findInput(inputMap,"zAngle",0,zAngle);
   mainSystem::findInput(inputMap,"xStep",0,xStep);
   mainSystem::findInput(inputMap,"yStep",0,yStep);
@@ -162,7 +169,7 @@ FixedOffset::populate(const std::map<std::string,
 }
 
 void
-FixedOffset::populate(const std::string& baseName,
+FixedRotate::populate(const std::string& baseName,
 		      const FuncDataBase& Control)
   /*!
     Populate the variables
@@ -170,11 +177,11 @@ FixedOffset::populate(const std::string& baseName,
     \param Control :: Control data base
    */
 {
-  ELog::RegMethod RegA("FixedOffset","populate(baseName)");
+  ELog::RegMethod RegA("FixedRotate","populate(baseName)");
 
   // defaults used to fixedoffset can be used in a setting class.
-  preXYAngle=Control.EvalDefPair<double>(keyName,baseName,
-					 "PreXYAngle",preXYAngle);
+  preXAngle=Control.EvalDefPair<double>(keyName,baseName,"PreXAngle",preXAngle);
+  preYAngle=Control.EvalDefPair<double>(keyName,baseName,"PreYAngle",preYAngle);
   preZAngle=Control.EvalDefPair<double>(keyName,baseName,"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefPair<Geometry::Vec3D>
@@ -183,44 +190,50 @@ FixedOffset::populate(const std::string& baseName,
   yStep=CentOffset.Y();
   zStep=CentOffset.Z();
 
-
   xStep=Control.EvalDefPair<double>(keyName,baseName,"XStep",xStep);
   yStep=Control.EvalDefPair<double>(keyName,baseName,"YStep",yStep);
   zStep=Control.EvalDefPair<double>(keyName,baseName,"ZStep",zStep);
-  xyAngle=Control.EvalDefPair<double>(keyName,baseName,"XYAngle",xyAngle);
+  
+  xAngle=Control.EvalDefPair<double>(keyName,baseName,"XAngle",xAngle);
+  yAngle=Control.EvalDefPair<double>(keyName,baseName,"YAngle",yAngle);
   zAngle=Control.EvalDefPair<double>(keyName,baseName,"ZAngle",zAngle);
   return;
   
 }
 
 void
-FixedOffset::setPreRotation(const double XYA,const double ZA)
+FixedRotate::setPreRotation(const double XA,const double YA,const double ZA)
   /*!
     Set the Pre-rotation values 
-    \param XYA :: xy angle rotation
-    \param ZA :: z angle rotation
+    \param XA :: x angle rotation
+    \param YA :: y angle rotation
+    \param ZA :: xy angle rotation
    */
 {
-  preXYAngle=XYA;
+  preXAngle=XA;
+  preYAngle=YA;
   preZAngle=ZA;
   return;
 }
 
 void
-FixedOffset::setRotation(const double XYA,const double ZA)
+FixedRotate::setRotation(const double XA,const double YA,
+			 const double ZA)
   /*!
     Set the Potation values 
-    \param XYA :: xy angle rotation
-    \param ZA :: xy angle rotation
+    \param XA :: x angle rotation
+    \param YA :: y angle rotation
+    \param ZA :: Z angle rotation
    */
 {
-  xyAngle=XYA;
+  xAngle=XA;
+  yAngle=YA;
   zAngle=ZA;
   return;
 }
 
 void
-FixedOffset::setOffset(const double XS,const double YS,const double ZS)
+FixedRotate::setOffset(const double XS,const double YS,const double ZS)
   /*!
     Set the Potation values 
     \param XS :: xStep
@@ -235,43 +248,43 @@ FixedOffset::setOffset(const double XS,const double YS,const double ZS)
 }
   
 void
-FixedOffset::applyOffset()
+FixedRotate::applyOffset()
   /*!
     Apply the rotation/step offset
   */
 {
-  ELog::RegMethod RegA("FixedOffset","applyOffset");
+  ELog::RegMethod RegA("FixedRotate","applyOffset");
 
-  FixedComp::applyAngleRotate(preXYAngle,preZAngle);
+  FixedComp::applyAngleRotate(preXAngle,preYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
-  FixedComp::applyAngleRotate(xyAngle,zAngle);
+  FixedComp::applyAngleRotate(xAngle,yAngle,zAngle);
   FixedComp::reOrientate();      // this might still be active
   return;
 }
 
 void
-FixedOffset::linkShift(const size_t sideIndex)
+FixedRotate::linkShift(const size_t sideIndex)
   /*!
     Apply a rotation to a link point axis
     \param sideIndex :: link point index [signed]
   */
 {
-  ELog::RegMethod RegA("FixedOffset","linkShift");
+  ELog::RegMethod RegA("FixedRotate","linkShift");
 
   FixedComp::linkShift(sideIndex,xStep,yStep,zStep);
   return;
 }
 
 void
-FixedOffset::linkAngleRotate(const size_t sideIndex)
+FixedRotate::linkAngleRotate(const size_t sideIndex)
   /*!
     Apply a rotation to a link point axis
     \param sideIndex :: link point index [signed]
    */
 {
-  ELog::RegMethod RegA("FixedOffset","lnkAngleRotate");
+  ELog::RegMethod RegA("FixedRotate","linkAngleRotate");
 
-  FixedComp::linkAngleRotate(sideIndex,xyAngle,zAngle);
+  FixedComp::linkAngleRotate(sideIndex,xAngle,yAngle,zAngle);
   return;
 }
 

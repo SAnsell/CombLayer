@@ -859,7 +859,7 @@ maxpeemOpticsBeamline::createLinks()
   
 void
 maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
-					  const int hutCell,
+					  const std::vector<int>& hutCell,
 					  const int outCell)
   /*!
     Construct outgoing tracks
@@ -868,7 +868,16 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
 
-  
+  outPipeA->addInsertCell(masterCellA->getName());
+  outPipeA->addInsertCell(hutCell);
+  outPipeA->addInsertCell(outCell);
+  outPipeA->createAll(System,*pumpTubeAA,2);
+
+  outPipeB->addInsertCell(masterCellB->getName());
+  outPipeB->addInsertCell(hutCell);
+  outPipeB->addInsertCell(outCell);
+  outPipeB->createAll(System,*pumpTubeBA,2);
+
   return;
 }
 

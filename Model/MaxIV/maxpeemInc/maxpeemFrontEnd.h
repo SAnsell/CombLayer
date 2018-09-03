@@ -129,6 +129,8 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// Variable Apperature pipe B
   std::shared_ptr<constructSystem::VacuumPipe> aperturePipeB;
+  /// L collimator
+  std::shared_ptr<xraySystem::LCollimator> moveCollB;
   /// bellows for exit of moveable aperatures
   std::shared_ptr<constructSystem::Bellows> bellowH;
   /// Exit of movables

@@ -67,6 +67,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
@@ -80,7 +81,8 @@ namespace xraySystem
 {
 
 LCollimator::LCollimator(const std::string& Key) :
-  attachSystem::ContainedSpace(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedSpace(),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
@@ -98,7 +100,7 @@ LCollimator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("LCollimator","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -141,9 +143,6 @@ LCollimator::createSurfaces()
    */
 {
   ELog::RegMethod RegA("LCollimator","createSurface");
-
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"Origin == "<<X<<ELog::endDiag;
   
   // full volume
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);

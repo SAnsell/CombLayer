@@ -606,7 +606,9 @@ moveApertureTable(FuncDataBase& Control,
   // Aperature pipe is movable:
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipeB",14.0,24.0);
-
+  collimatorVariables(Control,frontKey+"MoveCollB");
+  Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
+  
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowH",0,14.0);

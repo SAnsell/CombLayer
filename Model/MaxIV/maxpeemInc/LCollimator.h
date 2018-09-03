@@ -36,7 +36,7 @@ namespace xraySystem
   
 class LCollimator :
   public attachSystem::ContainedSpace,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {

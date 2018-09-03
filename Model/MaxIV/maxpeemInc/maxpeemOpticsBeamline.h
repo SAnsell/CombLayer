@@ -225,7 +225,7 @@ class maxpeemOpticsBeamline :
   maxpeemOpticsBeamline& operator=(const maxpeemOpticsBeamline&);
   ~maxpeemOpticsBeamline();
 
-  void buildOutGoingPipes(Simulation&,const int,const int);
+  void buildOutGoingPipes(Simulation&,const std::vector<int>&,const int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

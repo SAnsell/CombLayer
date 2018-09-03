@@ -303,6 +303,7 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       
       Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"2 -102 103 -104 -106 17M");
       makeCell("Back"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+      addCell("Back",cellIndex-1);
 
       Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"101 -1 103 -124 -106 7M ");
       if (layer=="Outer") Out+=ringWall;
