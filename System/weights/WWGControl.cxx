@@ -450,7 +450,6 @@ WWGControl::wwgCombine(const Simulation& System,
 	}
       else if (ptType=="Source" && sndPtType=="Source")
 	{
-	  ELog::EM<<"S "<<(long int )sourceFlux<<ELog::endDiag;
 	  sourceFlux->CADISnorm(System,*adjointFlux,
 				EBand,GridMidPt,sourcePt[ptIndex],
                                 sourcePt[sndPtIndex]);

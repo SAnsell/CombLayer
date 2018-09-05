@@ -448,6 +448,7 @@ VESPA::buildOutGuide(Simulation& System,
 
   // Elliptic 6m section
   VPipeOutA->addInsertCell(ShieldA->getCells("Void"));
+  VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
   VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
   VPipeOutA->addInsertCell(OutPitA->getCells("MidLayer"));
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);

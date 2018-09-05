@@ -226,7 +226,7 @@ VESPAvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"vespaPipeOutA",55.0,395.0);  
 
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"vespaFOutA",385.0,9.0,11.0,8.5,10.0);
+  FGen.generateTaper(Control,"vespaFOutA",380.0,9.0,11.0,8.5,10.0);
 
   Control.addVariable("vespaT0ExitPortShape","Circle");
   Control.addVariable("vespaT0ExitPortRadius",5.0);
