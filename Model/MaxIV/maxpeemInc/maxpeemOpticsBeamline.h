@@ -54,7 +54,7 @@ namespace xraySystem
 {
   class OpticsHutch;
   class GrateMonoBox;
-  class MonoCrystals;
+  class GratingMono;
   class FlangeMount;
   class Mirror;
   class PipeShield;
@@ -123,6 +123,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeF;
   /// Mono Box
   std::shared_ptr<xraySystem::GrateMonoBox> monoB;
+  /// Mono Box
+  std::shared_ptr<xraySystem::GratingMono> monoXtal;
   /// Pipe exiting slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeG;
   /// Gate valve

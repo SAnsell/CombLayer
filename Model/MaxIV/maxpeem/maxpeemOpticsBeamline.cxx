@@ -95,6 +95,7 @@
 #include "JawValve.h"
 #include "FlangeMount.h"
 #include "GrateMonoBox.h"
+#include "GratingMono.h"
 #include "TwinPipe.h"
 #include "maxpeemOpticsBeamline.h"
 
@@ -130,6 +131,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   monoB(new xraySystem::GrateMonoBox(newName+"MonoBox")),
+  monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
   pipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   gateC(new constructSystem::GateValve(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -177,6 +179,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(bellowD);
   OR.addObject(pipeF);
   OR.addObject(monoB);
+  OR.addObject(monoXtal);
   OR.addObject(pipeG);
   OR.addObject(gateC);
   OR.addObject(bellowE);
@@ -662,6 +665,9 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
   monoB->createAll(System,initFC,sideIndex);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*monoB,2);
   monoB->insertInCell(System,outerCell);
+  
+  monoXtal->addInsertCell(monoB->getCell("Void"));
+  monoXtal->createAll(System,*monoB,0);
 
   pipeG->createAll(System,*monoB,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeG,2);

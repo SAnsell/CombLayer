@@ -66,6 +66,7 @@
 #include "PortChicaneGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
+#include "GratingMonoGenerator.h"
 #include "TwinPipeGenerator.h"
 
 namespace setVariable
@@ -266,6 +267,7 @@ monoVariables(FuncDataBase& Control,
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GrateMonoBoxGenerator MBoxGen;
+  setVariable::GratingMonoGenerator MXtalGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
@@ -286,6 +288,8 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(7.5);
   PItemGen.setPlate(0.0,"Void");
+
+  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
