@@ -50,7 +50,6 @@
 #include "FuncDataBase.h"
 #include "essVariables.h"
 #include "LightShutterGenerator.h"
-#include "HorseCollarGenerator.h"
 #include "HeavyShutterGenerator.h"
 #include "ShieldGenerator.h"
 #include "FocusGenerator.h"
@@ -95,7 +94,6 @@ VESPAvariables(FuncDataBase& Control)
   setVariable::ChopperGenerator CGen;
   setVariable::CryoGenerator CryGen;
   setVariable::FocusGenerator FGen;
-  setVariable::HorseCollarGenerator HCGen;
   setVariable::HeavyShutterGenerator HSGen;
   setVariable::ShieldGenerator SGen;
   setVariable::PitGenerator PGen;
@@ -214,11 +212,6 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaFOCBlade",0.0,20.0,35.0);
   
   
-  // HCollar > Horse Collar
-  HCGen.setMaterial("Stainless304");
-  HCGen.generateHorseCollar(Control,"vespaHCollar",80,20,12,25); //45.24004
-  
-  
   // VPipeH + FocusH > Pipe&guide to heavy shutter
   PipeGen.generatePipe(Control,"vespaPipeH",1.0,50.24004); //44.24004
   FGen.generateTaper(Control,"vespaFH",48.24004,4.6,4.7,4.6,4.7);
@@ -232,10 +225,9 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaHShutterZStep",0.0);
   
   
-  // VPipeH + FocusH > Pipe inside heavy shutter
+  // VPipeHS + FocusHS > Pipe replacing heavy shutter
   PipeGen.generatePipe(Control,"vespaPipeHS",1.0,HSGen.getLength());
   FGen.generateTaper(Control,"vespaFHS",HSGen.getLength()-2,4.0,5.0,4.0,5.0);
-  Control.addVariable("vespaPipeHSZStep",-70.0);
   
   
   // BEAM INSERT:

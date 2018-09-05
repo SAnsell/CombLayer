@@ -84,7 +84,6 @@
 #include "VacuumPipe.h"
 #include "LightShutter.h"
 #include "HeavyShutter.h"
-#include "HorseCollar.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
@@ -172,9 +171,6 @@ VESPA::VESPA(const std::string& keyName) :
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
   FocusH(new beamlineSystem::GuideLine(newName+"FH")),
 
-  // Horse Collar  
-  HCollar(new essSystem::HorseCollar(newName+"HCollar")),
-  
   // Heavy Shutter
   HShutter(new essSystem::HeavyShutter(newName+"HShutter")),
 
@@ -281,8 +277,6 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(HShutter);
   OR.addObject(VPipeHS);
   OR.addObject(FocusHS);
-  
-  OR.addObject(HCollar);
   
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
@@ -450,15 +444,15 @@ VESPA::buildBunkerUnits(Simulation& System,
   FocusH->addInsertCell(VPipeH->getCells("Void"));
   FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
   
-  // HCollar
-  HCollar->addInsertCell(bunkerVoid);
-  HCollar->createAll(System,*VPipeH,2);
-  
   // HShutter
   HShutter->addInsertCell(bunkerVoid);
-  HShutter->addInsertCell(HCollar->getCell("Hole"));
-  HShutter->createAll(System,*VPipeH,2);
+//  HShutter->createAll(System,*VPipeH,2);
   
+  // VPipeHS + FocusHS
+  VPipeHS->addInsertCell(bunkerVoid);
+  VPipeHS->createAll(System,*VPipeH,2);
+  FocusHS->addInsertCell(VPipeHS->getCells("Void"));
+  FocusHS->createAll(System,*VPipeHS,0,*VPipeHS,0);
   
   return;
 }
