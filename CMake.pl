@@ -2,6 +2,7 @@
 
 ## use lib "/home/ansell/exe/getMk";
 
+use lib ".";
 use CMakeList;
 use strict;
 
