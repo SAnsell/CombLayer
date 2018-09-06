@@ -390,6 +390,7 @@ m1MirrorVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::GateValveGenerator GateGen;
+  setVariable::MirrorGenerator MirrGen;
   
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -397,6 +398,7 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",0,6.8);
   Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
 
   const std::string mName=mirrorKey+"M1Tube";
   const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
@@ -408,7 +410,16 @@ m1MirrorVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,6.8);
+  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
 
+
+  // mirror in M1Tube 
+  MirrGen.setPlate(28.0,1.0,9.0);  //guess
+  // y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
+  
   // joined and open
   GateGen.setLength(7.5);
   GateGen.setCF<setVariable::CF63>();

@@ -103,6 +103,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
+  /// M1 - Mirror
+  std::shared_ptr<xraySystem::Mirror> M1Mirror;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Gate valve
@@ -204,6 +206,8 @@ class maxpeemOpticsBeamline :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
+  void buildM1Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
+		     const attachSystem::FixedComp&,const long int);
   void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
   void buildMono(Simulation&,HeadRule&,MonteCarlo::Object*,

@@ -180,6 +180,10 @@ setXrayPhysics(flukaPhysics& PC,
       PC.setFlag("photonuc",MN);
       // Muon photon
       PC.setFlag("muphoton",MN);
+      // electronuclear
+      PC.setFlag("elecnucl",MN);
+      // muon pair
+      PC.setFlag("mupair",MN);
       
       // Compton PhotoElectic GammaPairProductuion      
       PC.setTHR("photthr",MN,"1e-3","1e-3","1.0");
