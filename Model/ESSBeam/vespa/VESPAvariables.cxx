@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vespa/VESPAvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -231,6 +231,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaT0ExitPortShape","Circle");
   Control.addVariable("vespaT0ExitPortRadius",5.0);
 
+  CGen.setReverseMotor(1);
   CGen.setMainRadius(38.0);
   CGen.setFrame(110.0,110.0);
   CGen.generateChopper(Control,"vespaChopperOutA",22.0,12.0,5.55);
@@ -243,7 +244,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaFOCBladeB",0.0,25.0,35.5);
 
   // Guide after wall [17.5m - 3.20] for wall
-  PipeGen.generatePipe(Control,"vespaPipeOutB",2.0,760.0);  //
+  PipeGen.generatePipe(Control,"vespaPipeOutB",2.0,765.0);  //
   Control.addVariable("vespaPipeOutBRadius",9.0);
   FGen.setYOffset(2.0);
   FGen.generateTaper(Control,"vespaFOutB",750.0,9.0,11.0,8.5,10.0);

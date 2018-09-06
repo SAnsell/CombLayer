@@ -169,6 +169,7 @@ VESPA::VESPA(const std::string& keyName) :
   
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
+  
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
   ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
