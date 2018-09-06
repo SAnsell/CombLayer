@@ -37,7 +37,7 @@ namespace xraySystem
 
 class TwinPipe :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::ExternalCut

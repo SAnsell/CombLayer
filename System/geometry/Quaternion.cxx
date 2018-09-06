@@ -628,7 +628,8 @@ Quaternion::basisRotate(const Vec3D& xa,const Vec3D& xb,
 			const Vec3D& xc,const Vec3D& ya,
 			const Vec3D& yb,const Vec3D& yc)
   /*!
-    Given basis set A convert to basis set B
+    Given basis set A convert to basis set B find the quaternion
+    that translates the basis sets
     Following the method in http://charles.karney.info/biblio/quat.html
     \param xa :: initial X
     \param xb :: initial Y

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/MonoCrystals.cxx
+ * File:   maxpeem/GratingMono.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -71,13 +71,13 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
-#include "MonoCrystals.h"
+#include "GratingMono.h"
 
 
 namespace xraySystem
 {
 
-MonoCrystals::MonoCrystals(const std::string& Key) :
+GratingMono::GratingMono(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,8),
   attachSystem::CellMap(),attachSystem::SurfMap()
@@ -92,47 +92,53 @@ MonoCrystals::MonoCrystals(const std::string& Key) :
 }
 
 
-MonoCrystals::~MonoCrystals()
+GratingMono::~GratingMono()
   /*!
     Destructor
    */
 {}
 
 void
-MonoCrystals::populate(const FuncDataBase& Control)
+GratingMono::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("MonoCrystals","populate");
+  ELog::RegMethod RegA("GratingMono","populate");
 
   FixedOffset::populate(Control);
 
-  gap=Control.EvalVar<double>(keyName+"Gap");
+  rotCent=Control.EvalVar<Geometry::Vec3D>(keyName+"RotCentre");
   theta=Control.EvalVar<double>(keyName+"Theta");
-  phiA=Control.EvalDefVar<double>(keyName+"PhiA",0.0);
-  phiB=Control.EvalDefVar<double>(keyName+"PhiB",0.0);
-  
-  widthA=Control.EvalPair<double>(keyName+"WidthA",keyName+"Width");
-  thickA=Control.EvalPair<double>(keyName+"ThickA",keyName+"Thick");
-  lengthA=Control.EvalPair<double>(keyName+"LengthA",keyName+"Length");
 
-  widthB=Control.EvalPair<double>(keyName+"WidthB",keyName+"Width");
-  thickB=Control.EvalPair<double>(keyName+"ThickB",keyName+"Thick");
-  lengthB=Control.EvalPair<double>(keyName+"LengthB",keyName+"Length");
-  
-  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
-  baseExtra=Control.EvalVar<double>(keyName+"BaseExtra");
+  mOffset=Control.EvalVar<Geometry::Vec3D>(keyName+"MirrorOffset");
+    
+  mWidth=Control.EvalVar<double>(keyName+"MirrorWidth");
+  mThick=Control.EvalVar<double>(keyName+"MirrorThick");
+  mLength=Control.EvalVar<double>(keyName+"MirrorLength");
 
-  xtalMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  gOffset=Control.EvalVar<Geometry::Vec3D>(keyName+"GrateOffset");
+  gWidth=Control.EvalVar<double>(keyName+"GrateWidth");
+  gThick=Control.EvalVar<double>(keyName+"GrateThick");
+  gLength=Control.EvalVar<double>(keyName+"GrateLength");
+
+  mBaseWidth=Control.EvalVar<double>(keyName+"MirrorBaseWidth");
+  mBaseThick=Control.EvalVar<double>(keyName+"MirrorBaseThick");
+  mBaseLength=Control.EvalVar<double>(keyName+"MirrorBaseLength");
+
+  gBaseWidth=Control.EvalVar<double>(keyName+"GrateBaseWidth");
+  gBaseThick=Control.EvalVar<double>(keyName+"GrateBaseThick");
+  gBaseLength=Control.EvalVar<double>(keyName+"GrateBaseLength");
+
+  xtalMat=ModelSupport::EvalMat<int>(Control,keyName+"XtalMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
   return;
 }
 
 void
-MonoCrystals::createUnitVector(const attachSystem::FixedComp& FC,
+GratingMono::createUnitVector(const attachSystem::FixedComp& FC,
                                const long int sideIndex)
   /*!
     Create the unit vectors.
@@ -141,19 +147,27 @@ MonoCrystals::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: direction for link
   */
 {
-  ELog::RegMethod RegA("MonoCrystals","createUnitVector");
+  ELog::RegMethod RegA("GratingMono","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();  
   return;
 }
 
 void
-MonoCrystals::createSurfaces()
+GratingMono::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
   */
 {
-  ELog::RegMethod RegA("MonoCrystals","createSurfaces");
+  ELog::RegMethod RegA("GratingMono","createSurfaces");
+
+  // Construct true rotCent:
+  const Geometry::Vec3D RC=Origin+X*rotCent.X()+
+    Y*rotCent.Y()+Z*rotCent.Z();
+  MCentre=Origin+X*mOffset.X()+
+    Y*mOffset.Y()+Z*mOffset.Z();
+  GCentre=Origin+X*gOffset.X()+
+    Y*gOffset.Y()+Z*gOffset.Z();
 
   // main xstal CENTRE AT ORIGIN 
   const Geometry::Quaternion QXA
@@ -166,42 +180,47 @@ MonoCrystals::createSurfaces()
   QXA.rotate(PY);
   QXA.rotate(PZ);
   
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(lengthA/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(lengthA/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(widthA/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(widthA/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*thickA,PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin,PZ);
-
-  const Geometry::Vec3D BOrg=
-    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
+  MCentre-=RC;
+  GCentre-=RC;
+  QXA.rotate(MCentre);
+  QXA.rotate(GCentre);
+  MCentre+=RC;
+  GCentre+=RC;
   
-  ModelSupport::buildPlane(SMap,buildIndex+201,BOrg-PY*(lengthB/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+202,BOrg+PY*(lengthB/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+203,BOrg-PX*(widthB/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+204,BOrg+PX*(widthB/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+205,BOrg,PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+206,BOrg+PZ*thickB,PZ);
-
+  ModelSupport::buildPlane(SMap,buildIndex+101,MCentre-PY*(mLength/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,MCentre+PY*(mLength/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,MCentre-PX*(mWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,MCentre+PX*(mWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+105,MCentre-PZ*mThick,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+106,MCentre,PZ);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+201,GCentre-PY*(gLength/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+202,GCentre+PY*(gLength/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+203,GCentre-PX*(gWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+204,GCentre+PX*(gWidth/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+205,GCentre,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+206,GCentre+PZ*gThick,PZ);
   
   return; 
 }
 
 void
-MonoCrystals::createObjects(Simulation& System)
+GratingMono::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("MonoCrystals","createObjects");
+  ELog::RegMethod RegA("GratingMono","createObjects");
 
   std::string Out;
   // xstal A
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 101 -102 103 -104 105 -106 ");
   makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 201 -202 203 -204 205 -206 ");
   makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);
   addOuterUnionSurf(Out);
   
@@ -209,29 +228,27 @@ MonoCrystals::createObjects(Simulation& System)
 }
 
 void
-MonoCrystals::createLinks()
+GratingMono::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("MonoCrystals","createLinks");
+  ELog::RegMethod RegA("GratingMono","createLinks");
 
-  const Geometry::Vec3D BOrg=
-    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
 
   // top surface going back down beamline to ring
-  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(0,MCentre,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
 
   // top surface going to experimental area
-  FixedComp::setConnect(1,BOrg,Y);
+  FixedComp::setConnect(1,GCentre,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+205));
 
   return;
 }
 
 void
-MonoCrystals::createAll(Simulation& System,
+GratingMono::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
@@ -241,7 +258,7 @@ MonoCrystals::createAll(Simulation& System,
     \param sideIndex :: Side point
    */
 {
-  ELog::RegMethod RegA("MonoCrystals","createAll");
+  ELog::RegMethod RegA("GratingMono","createAll");
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);

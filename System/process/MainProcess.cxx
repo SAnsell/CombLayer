@@ -531,7 +531,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   tallyModification(*SimFLUKAPtr,IParam);
 
   SDef::flukaSourceSelection(*SimFLUKAPtr,IParam);
-  SimFLUKAPtr->masterSourceRotation();
+  //  SimFLUKAPtr->masterSourceRotation();
   // Ensure we done loop
 
   do
@@ -572,7 +572,6 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   //  tallyModification(*SimPHITSPtr,IParam);
 
   SDef::sourceSelection(*SimPHITSPtr,IParam);
-  SimPHITSPtr->masterSourceRotation();
   // Ensure we done loop
   do
     {
@@ -614,7 +613,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   tallyModification(*SimMCPtr,IParam);
 
   SDef::sourceSelection(*SimMCPtr,IParam);
-  SimMCPtr->masterSourceRotation();
+  //  SimMCPtr->masterSourceRotation();
   // Ensure we done loop
   do
     {

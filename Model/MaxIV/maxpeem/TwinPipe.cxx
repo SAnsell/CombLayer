@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -72,6 +71,7 @@
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -85,7 +85,7 @@ namespace xraySystem
 
 TwinPipe::TwinPipe(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedGroup("Flange","PipeA","PipeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -216,10 +216,7 @@ TwinPipe::createSurfaces()
 			   ACent+AYAxis*(pipeALength-flangeALength),AYAxis);
   
   // Pipe B
-  const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;
-  ELog::EM<<"Origin == "<<Origin<<" :: "<<ACent<<" :: "<<BCent<<ELog::endDiag;
-  ELog::EM<<"Dist == "<<ACent.Distance(BCent)<<ELog::endDiag;
-  
+  const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;  
   ModelSupport::buildCylinder(SMap,buildIndex+207,BCent,BYAxis,pipeBRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,BCent,
 			      BYAxis,pipeBRadius+pipeBThick);
@@ -276,16 +273,15 @@ TwinPipe::createObjects(Simulation& System)
 
   // outer boundary [flange front]
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 -7 ");
-  addOuterSurf(Out+frontStr);
+  addOuterSurf("Flange",Out+frontStr);
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -101 -127 ");
-  addOuterUnionSurf(Out);
+  addOuterSurf("PipeA",Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -201 -227 ");
-  addOuterUnionSurf(Out);
+  addOuterUnionSurf("PipeB",Out);
 
   return;
 }
 
-  
 void
 TwinPipe::createLinks()
   /*!
@@ -305,7 +301,6 @@ TwinPipe::createLinks()
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+101));
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+201));
   
-
   return;
 }
     

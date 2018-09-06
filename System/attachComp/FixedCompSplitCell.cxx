@@ -78,7 +78,8 @@ namespace attachSystem
 
 std::vector<int>
 FixedComp::splitObject(Simulation& System,
-		       const int SNoffset,const int cellN,
+		       const int SNoffset,
+		       const int cellN,
 		       const Geometry::Vec3D& Org,
 		       const Geometry::Vec3D& XYZ)
   /*!
@@ -88,8 +89,8 @@ FixedComp::splitObject(Simulation& System,
     \param System :: Simuation for the model
     \param SNoffset :: Number for new surface [relative to build index]
     \param cellN :: Cell number to split
-    \param Org :: Origin offset relative to FC
-    \param XYZ :: XYZ plane
+    \param Org :: Origin offset relative to FC basis set + Origin
+    \param XYZ :: XYZ plane  [relative to XYZ]
     \return cellList 
   */
 {
