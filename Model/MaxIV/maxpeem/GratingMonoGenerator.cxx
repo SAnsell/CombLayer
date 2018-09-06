@@ -71,6 +71,51 @@ GratingMonoGenerator::GratingMonoGenerator() :
   */
 {}
 
+GratingMonoGenerator::GratingMonoGenerator(const GratingMonoGenerator& A) : 
+  rotCent(A.rotCent),theta(A.theta),mOffset(A.mOffset),
+  mWidth(A.mWidth),mThick(A.mThick),mLength(A.mLength),
+  gOffset(A.gOffset),gWidth(A.gWidth),gThick(A.gThick),
+  gLength(A.gLength),mBaseThick(A.mBaseThick),mBaseWidth(A.mBaseWidth),
+  mBaseLength(A.mBaseLength),gBaseThick(A.gBaseThick),
+  gBaseWidth(A.gBaseWidth),gBaseLength(A.gBaseLength),
+  xtalMat(A.xtalMat),baseMat(A.baseMat)
+  /*!
+    Copy constructor
+    \param A :: GratingMonoGenerator to copy
+  */
+{}
+
+GratingMonoGenerator&
+GratingMonoGenerator::operator=(const GratingMonoGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: GratingMonoGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      rotCent=A.rotCent;
+      theta=A.theta;
+      mOffset=A.mOffset;
+      mWidth=A.mWidth;
+      mThick=A.mThick;
+      mLength=A.mLength;
+      gOffset=A.gOffset;
+      gWidth=A.gWidth;
+      gThick=A.gThick;
+      gLength=A.gLength;
+      mBaseThick=A.mBaseThick;
+      mBaseWidth=A.mBaseWidth;
+      mBaseLength=A.mBaseLength;
+      gBaseThick=A.gBaseThick;
+      gBaseWidth=A.gBaseWidth;
+      gBaseLength=A.gBaseLength;
+      xtalMat=A.xtalMat;
+      baseMat=A.baseMat;
+    }
+  return *this;
+}
   
 GratingMonoGenerator::~GratingMonoGenerator() 
  /*!
@@ -81,21 +126,26 @@ GratingMonoGenerator::~GratingMonoGenerator()
 void
 GratingMonoGenerator::generateGrating(FuncDataBase& Control,
 				      const std::string& keyName,
-				      const double yStep) const
+				      const double yStep,
+				      const double zStep) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
+    \param zStep :: Step above beam
   */
 {
   ELog::RegMethod RegA("GratingMonoGenerator","generateBox");
   
   Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"ZStep",zStep);
 
   Control.addVariable(keyName+"RotCentre",rotCent);
   Control.addVariable(keyName+"Theta",theta);
 
+
+  
   Control.addVariable(keyName+"MirrorOffset",mOffset);
   Control.addVariable(keyName+"MirrorWidth",mWidth);
   Control.addVariable(keyName+"MirrorThick",mThick);

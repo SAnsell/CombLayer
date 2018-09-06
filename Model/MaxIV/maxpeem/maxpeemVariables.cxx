@@ -188,6 +188,7 @@ m3MirrorVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::JawValveGenerator JawGen;
+  setVariable::MirrorGenerator MirrGen;
   
   // will be rotated vertical
   const std::string viewName=mirrorKey+"ViewTube";
@@ -247,6 +248,12 @@ m3MirrorVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,mName,0.0,32.0);  // centre 13.5cm
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
+  // mirror in M3Tube 
+  MirrGen.setPlate(28.0,1.0,9.0);  //guess
+  // y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M3Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  Control.addVariable(mirrorKey+"M3MirrorYAngle",90.0);
+
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeD",0,20.6);
@@ -289,7 +296,7 @@ monoVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF63>(7.5);
   PItemGen.setPlate(0.0,"Void");
 
-  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0);
+  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window

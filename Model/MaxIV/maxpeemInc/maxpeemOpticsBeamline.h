@@ -143,6 +143,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeC;
   /// M3 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
+  /// M3 - Mirror
+  std::shared_ptr<xraySystem::Mirror> M3Mirror;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
   /// Splitter

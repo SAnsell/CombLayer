@@ -142,7 +142,8 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
   offPipeC(new constructSystem::OffsetFlangePipe(newName+"OffPipeC")),
-  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),  
+  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
+  M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
   offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
@@ -191,6 +192,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(pumpTubeB);
   OR.addObject(offPipeC);
   OR.addObject(M3Tube);
+  OR.addObject(M3Mirror);
   OR.addObject(offPipeD);
   OR.addObject(splitter);
   OR.addObject(bellowAA);
@@ -645,9 +647,8 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);
 
-  // make null placeholder cell
-
-
+  M3Mirror->addInsertCell(M3Tube->getCell("Void"));
+  M3Mirror->createAll(System,*M3Tube,0);
 
   return;
 }
