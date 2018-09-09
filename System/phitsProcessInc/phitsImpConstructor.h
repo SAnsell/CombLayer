@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/FlukaDefPhysics.h
+ * File:   phitsProcessInc/phitsImpConstructor.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,27 +19,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_FlukaDefPhysics_h
-#define flukaSystem_FlukaDefPhysics_h
+#ifndef physicsSystem_phitsImpConstructor_h
+#define physicsSystem_phitsImpConstructor_h
+
+///\file 
 
 class Simulation;
-class SimFLUKA;
-class FuncDataBase;
+namespace Geometry
+{
+  class Plane;
+}
 
 namespace mainSystem
 {
   class inputParam;
 }
 
-namespace flukaSystem
+namespace phitsSystem
 {
-  class flukaPhysics;
+  class phitsPhysics;
+/*!
+  \class phitsImpConstructor
+  \brief Controls importance of cells in PHITS
+  \author S. Ansell
+  \version 1.0
+  \date September 2018
+*/
 
-  void setModelPhysics(SimFLUKA&, const mainSystem::inputParam&);
-    
-  void setXrayPhysics(flukaPhysics&,const mainSystem::inputParam&);
+class phitsImpConstructor 
+{
+ private:
+
+  /// Typedef for ENDL type in help
+  typedef ELog::OutputLog<ELog::EReport>& (*ENDL)
+    (ELog::OutputLog<ELog::EReport>&);
+
+ 
+ public:
+
+  /// null constructor
+  phitsImpConstructor() {}
+  /// null copy constructor
+  phitsImpConstructor(const phitsImpConstructor&) {}
+  /// null assignment operator
+  phitsImpConstructor& operator=(const phitsImpConstructor&) { return *this; }
+  ~phitsImpConstructor() {}  ///< Destructor
+
+};
+
 }
-
 
 #endif
  

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/FlukaDefPhysics.h
+ * File:   phitsProcessInc/phitsProcess.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -17,13 +17,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
+
  ****************************************************************************/
-#ifndef flukaSystem_FlukaDefPhysics_h
-#define flukaSystem_FlukaDefPhysics_h
+#ifndef phitsSystem_phitsProcess_h
+#define phitsSystem_phitsProcess_h
 
 class Simulation;
-class SimFLUKA;
+class SimPHITS;
 class FuncDataBase;
 
 namespace mainSystem
@@ -31,13 +33,9 @@ namespace mainSystem
   class inputParam;
 }
 
-namespace flukaSystem
+namespace phitsSystem
 {
-  class flukaPhysics;
-
-  void setModelPhysics(SimFLUKA&, const mainSystem::inputParam&);
-    
-  void setXrayPhysics(flukaPhysics&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
 }
 
 

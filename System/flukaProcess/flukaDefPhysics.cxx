@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/flukaDefPhysics.cxx
+ * File:   flukaProcess/flukaDefPhysics.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
