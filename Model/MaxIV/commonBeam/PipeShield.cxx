@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/PipeShield.cxx
+ * File:   commonBeam/PipeShield.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -222,12 +222,20 @@ PipeShield::createObjects(Simulation& System)
   std::string Out;
   const std::string fStr(getRuleStr("front"));
   const std::string bStr(getRuleStr("back"));
-  const std::string rStr(getRuleStr("inner")+getRuleStr("innerTwo"));
+  const std::string rAStr(getRuleStr("inner"));
+  const std::string rBStr(getRuleStr("innerTwo"));
 
   // inner clearance gap
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 -17 ");
-  Out+=fStr+bStr+rStr;
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
+  Out+=fStr+bStr+rAStr;
   makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+
+  if (!rBStr.empty())
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -17 ");
+      Out+=fStr+bStr+rBStr;
+      makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+    }
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 7 17 ");
   Out+=fStr+bStr;

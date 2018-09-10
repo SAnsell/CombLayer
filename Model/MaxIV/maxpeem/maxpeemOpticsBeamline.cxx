@@ -562,8 +562,11 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 
   screenB->addInsertCell(cellA);
   screenB->addInsertCell(cellB);
-  screenB->
+  screenB->setCutSurf("inner",*splitter,"pipeAOuterTop");
+  screenB->setCutSurf("innerTwo",*splitter,"pipeBOuterTop");
   screenB->createAll(System,*splitter,0);
+  screenB->insertInCell(System,splitter->getCell("PipeAOutVoid"));
+  screenB->insertInCell(System,splitter->getCell("PipeBOutVoid"));
   
   // now build left/ right
   // LEFT

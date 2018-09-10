@@ -304,12 +304,42 @@ TwinPipe::createLinks()
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+101));
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+201));
 
-  FixedComp::setConnect(3,Cent-AXAxis*radius+AYAxis*pipeALength/2.0,-AXAxis);
-  FixedComp::setConnect(4,Origin+X*radius,X);
-  FixedComp::setConnect(5,Origin-Z*radius,-Z);
-  FixedComp::setConnect(6,Origin+Z*radius,Z);
-  FixedComp::nameSideIndex(7,"pipeOuterBase");
-  FixedComp::nameSideIndex(8,"pipeOuterTop");
+  const Geometry::Vec3D APipe(ACent+AYAxis*(pipeALength/2.0));
+  const double ARadius(pipeARadius+pipeAThick);
+  FixedComp::setConnect(3,APipe-AXAxis*ARadius,-AXAxis);
+  FixedComp::setConnect(4,APipe+AXAxis*ARadius,AXAxis);
+  FixedComp::setConnect(5,APipe-Z*ARadius,-Z);
+  FixedComp::setConnect(6,APipe+Z*ARadius,Z);
+
+ 
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+117));
+
+  const Geometry::Vec3D BPipe(ACent+BYAxis*(pipeBLength/2.0));
+  const double BRadius(pipeBRadius+pipeBThick);
+  FixedComp::setConnect(7,BPipe-BXAxis*BRadius,-BXAxis);
+  FixedComp::setConnect(8,BPipe+BXAxis*BRadius,BXAxis);
+  FixedComp::setConnect(9,BPipe-Z*BRadius,-Z);
+  FixedComp::setConnect(10,BPipe+Z*BRadius,Z);
+
+ 
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+217));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+217));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+217));
+
+
+  FixedComp::nameSideIndex(3,"pipeAOuterLeft");
+  FixedComp::nameSideIndex(4,"pipeAOuterRight");
+  FixedComp::nameSideIndex(5,"pipeAOuterBase");
+  FixedComp::nameSideIndex(6,"pipeAOuterTop");
+
+  FixedComp::nameSideIndex(7,"pipeBOuterLeft");
+  FixedComp::nameSideIndex(8,"pipeBOuterRight");
+  FixedComp::nameSideIndex(9,"pipeBOuterBase");
+  FixedComp::nameSideIndex(10,"pipeBOuterTop");
   
 
   return;
