@@ -203,6 +203,9 @@ PipeShield::createSurfaces()
 
   
   ExternalCut::makeExpandedSurf(SMap,"inner",buildIndex+7,Origin,clearGap);
+  if (isActive("innerTwo"))
+    ExternalCut::makeExpandedSurf(SMap,"innerTwo",
+				  buildIndex+17,Origin,clearGap);
 
   return;
 }
@@ -219,14 +222,14 @@ PipeShield::createObjects(Simulation& System)
   std::string Out;
   const std::string fStr(getRuleStr("front"));
   const std::string bStr(getRuleStr("back"));
-  const std::string rStr(getRuleStr("inner"));
+  const std::string rStr(getRuleStr("inner")+getRuleStr("innerTwo"));
 
   // inner clearance gap
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 -17 ");
   Out+=fStr+bStr+rStr;
   makeCell("clearGap",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 7 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 7 17 ");
   Out+=fStr+bStr;
   makeCell("Main",System,cellIndex++,mat,0.0,Out);
 

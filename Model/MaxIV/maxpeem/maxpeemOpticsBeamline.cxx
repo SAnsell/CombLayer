@@ -127,6 +127,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
@@ -146,6 +147,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
   offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
+  screenB(new xraySystem::PipeShield(newName+"ScreenB")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   gateAA(new constructSystem::GateValve(newName+"GateAA")),
   pumpTubeAA(new constructSystem::PortTube(newName+"PumpTubeAA")),
@@ -176,6 +178,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(offPipeB);
   OR.addObject(gateA);
   OR.addObject(pipeC);
+  OR.addObject(screenA);
   OR.addObject(pipeD);
   OR.addObject(slitTube);
   OR.addObject(pipeE);
@@ -557,6 +560,11 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   splitter->insertInCell("PipeA",System,cellA);
   splitter->insertInCell("PipeB",System,cellB);
 
+  screenB->addInsertCell(cellA);
+  screenB->addInsertCell(cellB);
+  screenB->
+  screenB->createAll(System,*splitter,0);
+  
   // now build left/ right
   // LEFT
   bellowAA->createAll(System,*splitter,2);
@@ -571,8 +579,7 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   pumpTubeAA->createAll(System,*gateAA,2);
   cellA=constructDivideCell(System,0,*gateAA,2,*pumpTubeAA,2);
   pumpTubeAA->insertInCell(System,cellA);
-  
-  
+    
   // RIGHT
   bellowBA->createAll(System,*splitter,3);
   cellB=constructDivideCell(System,1,*splitter,3,*bellowBA,2);
@@ -797,6 +804,10 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCellA,divider,*pipeC,2);
   pipeC->insertInCell(System,outerCell);
 
+  screenA->addInsertCell(outerCell);
+  screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
+  screenA->createAll(System,*pipeC,0);
+  
   return;
 }
 

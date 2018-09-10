@@ -295,12 +295,23 @@ TwinPipe::createLinks()
 
   const Geometry::Vec3D ACent=Origin+X*pipeAXStep+Z*pipeAZStep;
   const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;
-    
+
+  const Geometry::Vec3D AXAxis=Z*AYAxis;
+  const Geometry::Vec3D BXAxis=Z*BYAxis;
+  
   FixedComp::setConnect(1,ACent+AYAxis*pipeALength,AYAxis);
   FixedComp::setConnect(2,BCent+BYAxis*pipeBLength,BYAxis);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+101));
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+201));
+
+  FixedComp::setConnect(3,Cent-AXAxis*radius+AYAxis*pipeALength/2.0,-AXAxis);
+  FixedComp::setConnect(4,Origin+X*radius,X);
+  FixedComp::setConnect(5,Origin-Z*radius,-Z);
+  FixedComp::setConnect(6,Origin+Z*radius,Z);
+  FixedComp::nameSideIndex(7,"pipeOuterBase");
+  FixedComp::nameSideIndex(8,"pipeOuterTop");
   
+
   return;
 }
     

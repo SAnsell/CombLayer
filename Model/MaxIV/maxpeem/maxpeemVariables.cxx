@@ -84,9 +84,34 @@ namespace maxpeemVar
   void monoVariables(FuncDataBase&,const std::string&);
   void m1MirrorVariables(FuncDataBase&,const std::string&);
   void splitterVariables(FuncDataBase&,const std::string&);
+  void shieldVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
 
+void
+shieldVariables(FuncDataBase& Control,
+		const std::string& shieldKey)
+  /*!
+    Build the shield unit variables
+    \param Control :: Database
+    \param collKey :: prename
+  */
+{
+  ELog::RegMethod RegA("maxpeemVariables[F]","shieldVariables");
+
+  ELog::EM<<"Shield key == "<<shieldKey<<ELog::endDiag;
+  Control.addVariable(shieldKey+"YStep",0.0);
+  Control.addVariable(shieldKey+"Length",7.0);
+  Control.addVariable(shieldKey+"Width",80.0);
+  Control.addVariable(shieldKey+"Height",80.0);
+  Control.addVariable(shieldKey+"WallThick",0.5);
+  Control.addVariable(shieldKey+"ClearGap",0.2);
+  Control.addVariable(shieldKey+"WallMat","Stainless304");
+  Control.addVariable(shieldKey+"Mat","Lead");
+
+  return;
+}
+  
 void
 collimatorVariables(FuncDataBase& Control,
 		    const std::string& collKey)
@@ -130,7 +155,7 @@ splitterVariables(FuncDataBase& Control,
 
   
   TwinGen.setCF<CF40>();
-  TwinGen.setJoinFlangeCF<CF150>();
+  TwinGen.setJoinFlangeCF<CF100>();
   TwinGen.setAPos(-2.7,0);
   TwinGen.setBPos(2.7,0);
   TwinGen.setXYAngle(4.0,-4.0);
@@ -168,9 +193,10 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
+  shieldVariables(Control,splitKey+"ScreenB");
+
   return;
 }
-
   
 void
 m3MirrorVariables(FuncDataBase& Control,
@@ -335,6 +361,9 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,33.6);
+
+
+  shieldVariables(Control,slitKey+"ScreenA");
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
@@ -641,7 +670,7 @@ moveApertureTable(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeC",52.0,10.0);
-
+  
   return;
 }
 

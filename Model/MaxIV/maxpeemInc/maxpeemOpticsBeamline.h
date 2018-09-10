@@ -111,6 +111,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// Large Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// Shield between pipes
+  std::shared_ptr<xraySystem::PipeShield> screenA;
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// Small Pipe to slit section
@@ -149,6 +151,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
+  /// Shield between pipes
+  std::shared_ptr<xraySystem::PipeShield> screenB;
 
   // PIPE A :: LEFT SIDE
   // bellowA on left split
