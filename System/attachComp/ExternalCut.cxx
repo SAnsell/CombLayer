@@ -179,7 +179,7 @@ ExternalCut::copyCutSurf(const std::string& extName,
 void
 ExternalCut::setCutSurf(const std::string& extName,
 			const int ESurf)
-/*!
+  /*!
     Set a a surface
     \param extName :: external-cut name
     \param ESurf :: surface number [signed]
@@ -429,7 +429,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("ExternalCut","getShiftedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
   
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
@@ -544,6 +544,36 @@ ExternalCut::interPoint(const std::string& extName,
   
   
   return SurInter::getLinePoint(Centre,CAxis,CU->main,CU->divider);
+}
+
+
+
+void
+ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
+			    const std::string& extName,
+			    const int index,
+			    const int dFlag,
+			    const Geometry::Vec3D& YAxis,
+			    const double length) const
+  /*!
+    Support function to calculate the shifted surface based
+    on surface type and form
+    \param SMap :: local surface register
+    \param extName :: cut unit name
+    \param index :: offset index
+    \param expandCentre :: Centre for expansion
+    \param dExtra :: displacement extra [cm]
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+
+  const cutUnit* CU=findUnit(extName);
+  if (!CU)
+    throw ColErr::InContainerError<std::string>(extName,"Unit not named");
+  
+  makeShiftedSurf(SMap,CU->main,index,dFlag,YAxis,length);
+
+  return;
 }
 
 void

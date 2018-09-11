@@ -54,11 +54,12 @@ namespace xraySystem
 {
   class OpticsHutch;
   class GrateMonoBox;
-  class MonoCrystals;
+  class GratingMono;
   class FlangeMount;
   class Mirror;
   class PipeShield;
   class JawValve;
+  class TwinPipe;
     
   /*!
     \class maxpeemOpticsBeamline
@@ -102,12 +103,16 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
+  /// M1 - Mirror
+  std::shared_ptr<xraySystem::Mirror> M1Mirror;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Gate valve
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// Large Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// Shield between pipes
+  std::shared_ptr<xraySystem::PipeShield> screenA;
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// Small Pipe to slit section
@@ -122,6 +127,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeF;
   /// Mono Box
   std::shared_ptr<xraySystem::GrateMonoBox> monoB;
+  /// Mono Box
+  std::shared_ptr<xraySystem::GratingMono> monoXtal;
   /// Pipe exiting slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeG;
   /// Gate valve
@@ -138,26 +145,83 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeC;
   /// M3 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
+  /// M3 - Mirror
+  std::shared_ptr<xraySystem::Mirror> M3Mirror;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
+  /// Splitter
+  std::shared_ptr<xraySystem::TwinPipe> splitter;
+  /// Shield between pipes
+  std::shared_ptr<xraySystem::PipeShield> screenB;
 
-  MonteCarlo::Object& constructMasterCell(Simulation&,const HeadRule&);
-  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
+  // PIPE A :: LEFT SIDE
+  // bellowA on left split
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  /// Gate valve for left
+  std::shared_ptr<constructSystem::GateValve> gateAA;
+  /// Pumping tube
+  std::shared_ptr<constructSystem::PortTube> pumpTubeAA;
+
+  // PIPE B :: RIGHT SIDE
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  /// Gate valve for right
+  std::shared_ptr<constructSystem::GateValve> gateBA;
+  /// Pumping tube
+  std::shared_ptr<constructSystem::PortTube> pumpTubeBA;
+
+  /// Pipe to exit
+  std::shared_ptr<constructSystem::VacuumPipe> outPipeA;
+  /// Pipe to exit
+  std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
+
+  MonteCarlo::Object* masterCellA;
+  MonteCarlo::Object* masterCellB;
+  
+  void constructMasterCell(Simulation&,const HeadRule&);
+  int constructDivideCell(Simulation&,const bool,
+			   const attachSystem::FixedComp&,
+			   const long int,
+			   const attachSystem::FixedComp&,
+			   const long int);
+  
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
+			  const HeadRule&,HeadRule&,
+			  const attachSystem::FixedComp&,
+			  const long int);
+
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
 			  HeadRule&,
 			  const attachSystem::FixedComp&,
 			  const long int);
-  void refrontMasterCell(MonteCarlo::Object&,
+
+  int createDoubleVoidUnit(Simulation&,
+			   HeadRule&,
+			   const attachSystem::FixedComp&,
+			   const long int);
+  
+  void refrontMasterCell(MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
+  
+  void refrontMasterCell(MonteCarlo::Object*,MonteCarlo::Object*,
+			 const attachSystem::FixedComp&,
+			 const long int) const;
+  
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
-  void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object&,
+  void buildM1Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
-  void buildMono(Simulation&,HeadRule&,MonteCarlo::Object&,
+  void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
+		     const attachSystem::FixedComp&,const long int);
+  void buildMono(Simulation&,HeadRule&,MonteCarlo::Object*,
 		 const attachSystem::FixedComp&,const long int);
-  void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object&,
+  void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object*,
 		       const attachSystem::FixedComp&,const long int);
+  void buildSplitter(Simulation&,HeadRule&,
+		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -172,6 +236,8 @@ class maxpeemOpticsBeamline :
   maxpeemOpticsBeamline(const maxpeemOpticsBeamline&);
   maxpeemOpticsBeamline& operator=(const maxpeemOpticsBeamline&);
   ~maxpeemOpticsBeamline();
+
+  void buildOutGoingPipes(Simulation&,const std::vector<int>&,const int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -278,6 +278,7 @@ VESPAvariables(FuncDataBase& Control)
   PipeGen.setPipe(9.0,0.5);
   PipeGen.generatePipe(Control,"vespaPipeI",58.0,441.76);
   FGen.clearYOffset();
+<<<<<<< HEAD
   FGen.generateTaper(Control,"vespaFI",439.76,y(1556.99998),y(1556.99998+439.76),y(1556.99998),y(1556.99998+439.76));
   
   
@@ -287,6 +288,14 @@ VESPAvariables(FuncDataBase& Control)
   PGen.generatePit(Control,"vespaChoppersFOCPit",484.76,40.0,130.0,110.0,40.0);
   
   // ChoppersFOC + SFOCDisk > Sub Frame Overlap Chopper (sFOC) and its disk
+=======
+  FGen.generateTaper(Control,"vespaFOutA",380.0,9.0,11.0,8.5,10.0);
+
+  Control.addVariable("vespaT0ExitPortShape","Circle");
+  Control.addVariable("vespaT0ExitPortRadius",5.0);
+
+  CGen.setReverseMotor(1);
+>>>>>>> 1d8fa07b2ef58bb768c63c44f40d9542a34aec1b
   CGen.setMainRadius(38.0);
   CGen.setFrame(110.0,110.0);
   CGen.setMotorRadius(10.0);
@@ -294,6 +303,7 @@ VESPAvariables(FuncDataBase& Control)
   CGen.generateChopper(Control,"vespaChoppersFOC",14.0,12.0,5.55);
   BGen.setThick({0.2,0.2});
   BGen.setGap(3.0);
+<<<<<<< HEAD
 //  BGen.addPhase(time,sFOCFrequency,{0.0},{320.0});
 //  BGen.addPhase(time,sFOCFrequency,{30.0},{320.0});
   BGen.addPhase(time,sFOCFrequency,{0.0},{360});
@@ -307,6 +317,18 @@ VESPAvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"vespaFJ",746.5,y(2038.75998),y(2038.75998+746.5),y(2038.75998),y(2038.75998+746.5));
   
   // ShieldB > Second triangular shielding
+=======
+  BGen.addPhase({0.0},{320.0});
+  BGen.addPhase({30.0},{320.0});
+  BGen.generateBlades(Control,"vespaFOCBladeB",0.0,25.0,35.5);
+
+  // Guide after wall [17.5m - 3.20] for wall
+  PipeGen.generatePipe(Control,"vespaPipeOutB",2.0,765.0);  //
+  Control.addVariable("vespaPipeOutBRadius",9.0);
+  FGen.setYOffset(2.0);
+  FGen.generateTaper(Control,"vespaFOutB",750.0,9.0,11.0,8.5,10.0);
+
+>>>>>>> 1d8fa07b2ef58bb768c63c44f40d9542a34aec1b
   SGen.clearLayers();
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");

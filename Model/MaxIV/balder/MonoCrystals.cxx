@@ -80,9 +80,7 @@ namespace xraySystem
 MonoCrystals::MonoCrystals(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,8),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  xtalIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(xtalIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -168,22 +166,22 @@ MonoCrystals::createSurfaces()
   QXA.rotate(PY);
   QXA.rotate(PZ);
   
-  ModelSupport::buildPlane(SMap,xtalIndex+101,Origin-PY*(lengthA/2.0),PY);
-  ModelSupport::buildPlane(SMap,xtalIndex+102,Origin+PY*(lengthA/2.0),PY);
-  ModelSupport::buildPlane(SMap,xtalIndex+103,Origin-PX*(widthA/2.0),PX);
-  ModelSupport::buildPlane(SMap,xtalIndex+104,Origin+PX*(widthA/2.0),PX);
-  ModelSupport::buildPlane(SMap,xtalIndex+105,Origin-PZ*thickA,PZ);
-  ModelSupport::buildPlane(SMap,xtalIndex+106,Origin,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(lengthA/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(lengthA/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*thickA,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin,PZ);
 
   const Geometry::Vec3D BOrg=
     Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
   
-  ModelSupport::buildPlane(SMap,xtalIndex+201,BOrg-PY*(lengthB/2.0),PY);
-  ModelSupport::buildPlane(SMap,xtalIndex+202,BOrg+PY*(lengthB/2.0),PY);
-  ModelSupport::buildPlane(SMap,xtalIndex+203,BOrg-PX*(widthB/2.0),PX);
-  ModelSupport::buildPlane(SMap,xtalIndex+204,BOrg+PX*(widthB/2.0),PX);
-  ModelSupport::buildPlane(SMap,xtalIndex+205,BOrg,PZ);
-  ModelSupport::buildPlane(SMap,xtalIndex+206,BOrg+PZ*thickB,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+201,BOrg-PY*(lengthB/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+202,BOrg+PY*(lengthB/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+203,BOrg-PX*(widthB/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+204,BOrg+PX*(widthB/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+205,BOrg,PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+206,BOrg+PZ*thickB,PZ);
 
   
   return; 
@@ -200,10 +198,10 @@ MonoCrystals::createObjects(Simulation& System)
 
   std::string Out;
   // xstal A
-  Out=ModelSupport::getComposite(SMap,xtalIndex," 101 -102 103 -104 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,xtalIndex," 201 -202 203 -204 205 -206 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
   makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);
   addOuterUnionSurf(Out);
   

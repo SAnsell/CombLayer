@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/MonoCrystals.h
+ * File:   balderInc/MonoCrystals.h
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -42,9 +42,6 @@ class MonoCrystals :
   public attachSystem::SurfMap
 {
  private:
-
-  const int xtalIndex;     ///< Index of surface offset
-  int cellIndex;           ///< Cell index
 
   double gap;              ///< Gap thickness
   double theta;            ///< Theta angle

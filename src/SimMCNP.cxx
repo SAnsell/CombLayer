@@ -130,6 +130,7 @@ SimMCNP::~SimMCNP()
 {
   ELog::RegMethod RegA("SimMCNP","delete operator");
 
+  delete PhysPtr;
   deleteTally();
 }
 

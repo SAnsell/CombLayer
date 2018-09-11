@@ -66,7 +66,7 @@
 #include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -79,7 +79,7 @@ namespace xraySystem
 
 Mirror::Mirror(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -89,7 +89,7 @@ Mirror::Mirror(const std::string& Key) :
 {}
 
 Mirror::Mirror(const Mirror& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   theta(A.theta),phi(A.phi),radius(A.radius),width(A.width),
   thick(A.thick),length(A.length),baseTop(A.baseTop),
@@ -112,7 +112,7 @@ Mirror::operator=(const Mirror& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       theta=A.theta;
@@ -148,7 +148,7 @@ Mirror::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Mirror","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   theta=Control.EvalVar<double>(keyName+"Theta");
   phi=Control.EvalDefVar<double>(keyName+"Phi",0.0);

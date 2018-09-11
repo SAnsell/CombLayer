@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -116,7 +115,7 @@ MirrorGenerator::setPlate(const double L,const double T,
     Set the mirror plate
     \param L :: Length of mirror [Y]
     \param T :: Thickness [Z] of mirror plate
-    \param W :: Widht [X]  mirror plate
+    \param W :: Width [X]  mirror plate
    */
 {
   length=L;

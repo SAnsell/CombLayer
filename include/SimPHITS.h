@@ -24,6 +24,12 @@
 
 class localRotate;
 
+namespace phitsSystem
+{
+  class phitsTally;
+  class phitsPhysics;
+}
+
 /*!
   \class SimPHITS
   \brief Modifides Simulation to output PHITS input file
@@ -37,6 +43,11 @@ class SimPHITS : public Simulation
 
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
+
+  /// Tally  : tally
+  //  typedef std::map<int,phitsSystem::phitsTally*> FTallyTYPE;
+
+  phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics
   
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -55,6 +66,11 @@ class SimPHITS : public Simulation
   SimPHITS(const SimPHITS&);
   SimPHITS& operator=(const SimPHITS&);
   virtual ~SimPHITS() {}           ///< Destructor
+
+  //phitsSystem::phitsTally* getTally(const int) const;
+
+  /// access to physics
+  phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }
 
   virtual void write(const std::string&) const;
 

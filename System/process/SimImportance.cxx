@@ -112,7 +112,18 @@ importanceSim(Simulation& System,
       flukaSystem::setModelPhysics(*flukaPtr,IParam);
       return;
     }
-
+  SimPHITS* phitsPtr=dynamic_cast<SimPHITS*>(&System);
+  if (phitsPtr)
+    {
+      WeightSystem::WCellControl WCell;
+      WCell.processWeights(System,IParam);
+      
+      mainSystem::renumberCells(*phitsPtr,IParam);
+      //      phitsSystem::setModelPhysics(*phitsPtr,IParam);
+      return;
+    }
+  
+  
   ELog::EM<<"Unknown Sim for importance sampling"<<ELog::endDiag;
   return;
   

@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
@@ -95,6 +96,9 @@
 #include "JawValve.h"
 #include "FlangeMount.h"
 #include "GrateMonoBox.h"
+#include "GratingMono.h"
+#include "TwinPipe.h"
+#include "Mirror.h"
 #include "maxpeemOpticsBeamline.h"
 
 namespace xraySystem
@@ -119,9 +123,11 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
+  M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
@@ -129,6 +135,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   monoB(new xraySystem::GrateMonoBox(newName+"MonoBox")),
+  monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
   pipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   gateC(new constructSystem::GateValve(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -136,8 +143,19 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
   offPipeC(new constructSystem::OffsetFlangePipe(newName+"OffPipeC")),
-  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),  
-  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD"))
+  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
+  M3Mirror(new xraySystem::Mirror(newName+"M3Mirror")),
+  offPipeD(new constructSystem::OffsetFlangePipe(newName+"OffPipeD")),
+  splitter(new xraySystem::TwinPipe(newName+"Splitter")),
+  screenB(new xraySystem::PipeShield(newName+"ScreenB")),
+  bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
+  gateAA(new constructSystem::GateValve(newName+"GateAA")),
+  pumpTubeAA(new constructSystem::PortTube(newName+"PumpTubeAA")),
+  bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
+  gateBA(new constructSystem::GateValve(newName+"GateBA")),
+  pumpTubeBA(new constructSystem::PortTube(newName+"PumpTubeBA")),
+  outPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
+  outPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -160,6 +178,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(offPipeB);
   OR.addObject(gateA);
   OR.addObject(pipeC);
+  OR.addObject(screenA);
   OR.addObject(pipeD);
   OR.addObject(slitTube);
   OR.addObject(pipeE);
@@ -167,6 +186,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(bellowD);
   OR.addObject(pipeF);
   OR.addObject(monoB);
+  OR.addObject(monoXtal);
   OR.addObject(pipeG);
   OR.addObject(gateC);
   OR.addObject(bellowE);
@@ -175,7 +195,17 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(pumpTubeB);
   OR.addObject(offPipeC);
   OR.addObject(M3Tube);
+  OR.addObject(M3Mirror);
   OR.addObject(offPipeD);
+  OR.addObject(splitter);
+  OR.addObject(bellowAA);
+  OR.addObject(bellowBA);
+  OR.addObject(gateAA);
+  OR.addObject(gateBA);
+  OR.addObject(pumpTubeAA);
+  OR.addObject(pumpTubeBA);
+  OR.addObject(outPipeA);
+  OR.addObject(outPipeB);
 }
   
 maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
@@ -233,50 +263,137 @@ maxpeemOpticsBeamline::createSurfaces()
 }
 
   
-MonteCarlo::Object&
-maxpeemOpticsBeamline::constructMasterCell
-(Simulation& System,const HeadRule& cutHR)
+void
+maxpeemOpticsBeamline::constructMasterCell(Simulation& System,
+					   const HeadRule& cutHR)
  /*!
     Construct outer void object main pipe
     \param System :: Simulation
     \param cutHR :: Start of cut fixed comp
-    \return cell object
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","constructMasterCell");
 
   std::string Out;
 
+  masterCellA=0;
   const int CN=getCell("MasterVoid");
-  MonteCarlo::Object& MCell=*System.findQhull(CN);    
-  if (cutHR.hasRule())
+  if (CN)
     {
-      const int SN=getRule("back").getPrimarySurface();
-      MCell.removeSurface(SN);
-      MCell.addSurfString(cutHR.display());
+      MonteCarlo::Object* MCell  = System.findQhull(CN);    
+      if (MCell && cutHR.hasRule())
+	{
+	  const int SN=getRule("back").getPrimarySurface();
+	  MCell->removeSurface(SN);
+	  MCell->addSurfString(cutHR.display());
+	  
+	  Out=cutHR.complement().display()+getRuleStr("back")+
+	    getRuleStr("beam");
+	  makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
+	  masterCellA=System.findQhull(cellIndex-1);
+	}
+    }
+  else
+    throw ColErr::InContainerError<int>(CN,"Cell number for masterCell");
+  return;
+}
 
-      Out=cutHR.complement().display()+getRuleStr("back")+getRuleStr("beam");
-      makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
-      
-      return *System.findQhull(cellIndex-1);
+int
+maxpeemOpticsBeamline::constructDivideCell(Simulation& System,
+					   const bool plusSide,
+					   const attachSystem::FixedComp& FFC,
+					   const long int frontIndex,
+					   const attachSystem::FixedComp& BFC,
+					   const long backIndex)
+ /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param FFC :: Front FC
+    \param BFC :: Back FC
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","constructDivideCell");
+
+  std::string Out;
+  Out=getRuleStr("beam");
+  Out += (plusSide) ? getRuleStr("middle") : getComplementStr("middle");
+  
+  // make inner cell
+
+  std::string Inner = Out;
+  Inner += FFC.getLinkString(frontIndex);
+  Inner += BFC.getLinkString(-backIndex);
+  makeCell("MasterVoid",System,cellIndex++,0,0.0,Inner);
+  // outer cell and set 
+  Out+=BFC.getLinkString(backIndex);
+  Out+=getRuleStr("back");
+  if (plusSide)
+    masterCellB->procString(Out);
+  else
+    masterCellA->procString(Out);
+
+  // return current build cell:
+  return cellIndex-1;
+}
+
+  
+int
+maxpeemOpticsBeamline::createDoubleVoidUnit(Simulation& System,
+					    HeadRule& divider,
+					    const attachSystem::FixedComp& FC,
+					    const long int sideIndex)
+ /*!
+    Construct two outer void objects in the main pipe
+    \param System :: Simulation
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline",
+		       "createDoubleOuterVoidUnit");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+  
+  const HeadRule& backHR=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    ExternalCut::getRule("back");
+  
+  Out=getRuleStr("beam");
+  Out+=divider.display()+backHR.display();
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  
+  // make the master cell valid :
+  makeCell("masterCellB",System,cellIndex++,0,0.0,Out);
+  masterCellB = System.findQhull(cellIndex-1);
+
+  if (!ExternalCut::isActive("middle"))
+    {
+      const Geometry::Vec3D DPoint(FC.getLinkPt(sideIndex));
+      Geometry::Vec3D crossX,crossY,crossZ;
+      FC.selectAltAxis(sideIndex,crossX,crossY,crossZ);
+      ModelSupport::buildPlane(SMap,buildIndex+10,DPoint,crossX);
+      ExternalCut::setCutSurf("middle",SMap.realSurf(buildIndex+10));
     }
   
-  return MCell;
+  refrontMasterCell(masterCellA,masterCellB,FC,sideIndex);
+  return cellIndex-2;
 }
 
 int
 maxpeemOpticsBeamline::createOuterVoidUnit(Simulation& System,
-					   MonteCarlo::Object& masterCell,
+					   MonteCarlo::Object* masterCell,
 					   HeadRule& divider,
 					   const attachSystem::FixedComp& FC,
 					   const long int sideIndex)
-/*!
+  /*!
     Construct outer void object main pipe
     \param System :: Simulation
     \param masterCell :: full master cell
     \param FC :: FixedComp
     \param sideIndex :: link point
-    \return cell nubmer
+    \return cell number
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","createOuterVoid");
@@ -301,15 +418,56 @@ maxpeemOpticsBeamline::createOuterVoidUnit(Simulation& System,
   return cellIndex-1;
 }
 
+int
+maxpeemOpticsBeamline::createOuterVoidUnit(Simulation& System,
+					   MonteCarlo::Object* masterCell,
+					   const HeadRule& middle,
+					   HeadRule& divider,
+					   const attachSystem::FixedComp& FC,
+					   const long int sideIndex)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell number
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","createOuterVoid");
+
+  // construct an cell based on previous cell:
+  std::string Out;
+  
+  const HeadRule& backHR=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    ExternalCut::getRule("back");
+  
+  Out=getRuleStr("beam");
+  Out+=divider.display()+backHR.display()+middle.display();
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  divider=backHR;
+
+  // make the master cell valid:
+  
+  divider.makeComplement();
+
+  refrontMasterCell(masterCell,FC,sideIndex);
+  masterCell->addSurfString(middle.display());
+  return cellIndex-1;
+}
+
+
 
 void
-maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCell,
+maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object* MCell,
 					 const attachSystem::FixedComp& FC,
 					 const long int sideIndex) const
   /*!
-    This horrifc function to re-build MCell so that it is correct
+    This horrific function to re-build MCell so that it is correct
     as createOuterVoid consumes the front of the master cell
     \param MCell :: master cell object
+    \param middel
     \param FC :: FixedComp
     \param sideIndex :: side index for back of FC object
   */
@@ -319,7 +477,35 @@ maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCell,
   std::string Out;  
   Out=getRuleStr("beam")+getRuleStr("back")+
     FC.getLinkString(sideIndex);
-  MCell.procString(Out);
+  MCell->procString(Out);
+  return;
+}
+
+
+void
+maxpeemOpticsBeamline::refrontMasterCell(MonteCarlo::Object* MCellNeg,
+					 MonteCarlo::Object* MCellPlus,
+					 const attachSystem::FixedComp& FC,
+					 const long int sideIndex) const
+  /*!
+    This horrifc function to re-build a double MCell 
+    based on centre point split 
+
+    \param MCellNeg :: Based on the negative side
+    \param MCellPlus :: Based on the positive side
+    \param FC :: FixedComp
+    \param sideIndex :: side index for back of FC object
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","refrontMasterCell");
+
+  std::string Out;  
+  Out=getRuleStr("beam")+getRuleStr("back")+
+    FC.getLinkString(sideIndex);
+
+  MCellNeg->procString(Out+getComplementStr("middle"));
+  MCellPlus->procString(Out+getRuleStr("middle"));
+
   return;
 }
 
@@ -343,11 +529,83 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
   return;
 }
 
+void
+maxpeemOpticsBeamline::buildSplitter(Simulation& System,
+				     HeadRule& divider,
+				     const attachSystem::FixedComp& initFC,
+				     const long int sideIndex)
+  /*!
+    Sub build of the spliter package
+    \param System :: Simulation to use
+    \param dividerA :: Divider object main divider
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
+
+  int cellA,cellB;
+
+  offPipeD->createAll(System,initFC,sideIndex);
+  cellA=createDoubleVoidUnit(System,divider,*offPipeD,2);
+  offPipeD->insertInCell(System,cellA);
+
+  splitter->createAll(System,*offPipeD,2);
+  cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
+  cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
+
+  splitter->insertInCell("Flange",System,cellA);
+  splitter->insertInCell("Flange",System,cellB);
+  splitter->insertInCell("PipeA",System,cellA);
+  splitter->insertInCell("PipeB",System,cellB);
+
+  screenB->addInsertCell(cellA);
+  screenB->addInsertCell(cellB);
+  screenB->setCutSurf("inner",*splitter,"pipeAOuterTop");
+  screenB->setCutSurf("innerTwo",*splitter,"pipeBOuterTop");
+  screenB->createAll(System,*splitter,0);
+  screenB->insertInCell(System,splitter->getCell("PipeAOutVoid"));
+  screenB->insertInCell(System,splitter->getCell("PipeBOutVoid"));
+  
+  // now build left/ right
+  // LEFT
+  bellowAA->createAll(System,*splitter,2);
+  cellA=constructDivideCell(System,0,*splitter,2,*bellowAA,2);
+  bellowAA->insertInCell(System,cellA);
+
+  gateAA->createAll(System,*bellowAA,2);
+  cellA=constructDivideCell(System,0,*bellowAA,2,*gateAA,2);
+  gateAA->insertInCell(System,cellA);
+
+  pumpTubeAA->addInsertCell(masterCellA->getName());
+  pumpTubeAA->createAll(System,*gateAA,2);
+  cellA=constructDivideCell(System,0,*gateAA,2,*pumpTubeAA,2);
+  pumpTubeAA->insertInCell(System,cellA);
+    
+  // RIGHT
+  bellowBA->createAll(System,*splitter,3);
+  cellB=constructDivideCell(System,1,*splitter,3,*bellowBA,2);
+  bellowBA->insertInCell(System,cellB);
+
+  gateBA->createAll(System,*bellowBA,2);
+  cellB=constructDivideCell(System,1,*bellowBA,2,*gateBA,2);
+  gateBA->insertInCell(System,cellB);
+
+  pumpTubeBA->addInsertCell(masterCellB->getName());
+  pumpTubeBA->createAll(System,*gateBA,2);
+  cellB=constructDivideCell(System,1,*gateBA,2,*pumpTubeBA,2);
+  pumpTubeBA->insertInCell(System,cellB);
+
+  
+  return;
+}
+
 
 void
 maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
 				     HeadRule& divider,
-				     MonteCarlo::Object& masterCell,
+				     MonteCarlo::Object* masterCell,
 				     const attachSystem::FixedComp& initFC, 
 				     const long int sideIndex)
   /*!
@@ -362,10 +620,9 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM3Mirror");
 
   int outerCell;
-
   
   // FAKE insertcell: required
-  viewTube->addInsertCell(masterCell.getName());
+  viewTube->addInsertCell(masterCell->getName());
   viewTube->createAll(System,initFC,sideIndex);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*viewTube,2);
   viewTube->insertInCell(System,outerCell);
@@ -374,17 +631,23 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*slitsB,2);
   slitsB->insertInCell(System,outerCell);
 
-  // FAKE insertcell: reqruired
+  // FAKE insertcell: required
   
-  pumpTubeB->addInsertCell(masterCell.getName());
+  pumpTubeB->addInsertCell(masterCell->getName());
   pumpTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeB->createAll(System,*slitsB,2);
+
 
   const constructSystem::portItem& CPI=pumpTubeB->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,divider,
 				CPI,CPI.getSideIndex("OuterPlate"));
   pumpTubeB->insertInCell(System,outerCell);
-  pumpTubeB->intersectPorts(System,1,2);
+  //  pumpTubeB->intersectPorts(System,1,2);
+  ELog::EM<<"Out cell == "<<outerCell<<ELog::endDiag;
+  pumpTubeB->splitObjectAbsolute(System,1501,outerCell,
+				 pumpTubeB->getLinkPt(0),
+				 Geometry::Vec3D(0,0,1));
+  cellIndex++;
   
   offPipeC->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeC,2);
@@ -394,18 +657,16 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);
 
-  offPipeD->createAll(System,*M3Tube,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeD,2);
-  offPipeD->insertInCell(System,outerCell);
+  M3Mirror->addInsertCell(M3Tube->getCell("Void"));
+  M3Mirror->createAll(System,*M3Tube,0);
 
-  
   return;
 }
 
 void
 maxpeemOpticsBeamline::buildMono(Simulation& System,
 				 HeadRule& divider,
-				 MonteCarlo::Object& masterCell,
+				 MonteCarlo::Object* masterCell,
 				 const attachSystem::FixedComp& initFC, 
 				 const long int sideIndex)
   /*!
@@ -424,6 +685,9 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
   monoB->createAll(System,initFC,sideIndex);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*monoB,2);
   monoB->insertInCell(System,outerCell);
+  
+  monoXtal->addInsertCell(monoB->getCell("Void"));
+  monoXtal->createAll(System,*monoB,0);
 
   pipeG->createAll(System,*monoB,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeG,2);
@@ -444,7 +708,7 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
 void
 maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 					HeadRule& divider,
-					MonteCarlo::Object& masterCell,
+					MonteCarlo::Object* masterCell,
 					const attachSystem::FixedComp& initFC, 
 					const long int sideIndex)
   /*!
@@ -464,8 +728,8 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeD,2);
   pipeD->insertInCell(System,outerCell);
 
-  // FAKE insertcell: reqruired
-  slitTube->addInsertCell(masterCell.getName());
+  // FAKE insertcell: required
+  slitTube->addInsertCell(masterCell->getName());
   slitTube->createAll(System,*pipeD,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*slitTube,2);
   slitTube->insertInCell(System,outerCell);
@@ -474,6 +738,11 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
 
+  slitTube->splitObject(System,1501,outerCell,
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+  cellIndex++;
+
   pipeE->createAll(System,*slitTube,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeE,2);
   pipeE->insertInCell(System,outerCell);
@@ -481,7 +750,6 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
   const constructSystem::portItem& SPI=slitTube->getPort(3);
   // this needs teh plate as well if constructed
   SPI.insertCellMapInCell(System,"Flange",0,outerCell);
-  
   
   gateB->createAll(System,*pipeE,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*gateB,2);
@@ -499,6 +767,52 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
   return;
 }
  
+void
+maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
+				     HeadRule& divider,
+				     MonteCarlo::Object* masterCell,
+				     const attachSystem::FixedComp& initFC, 
+				     const long int sideIndex)
+  /*!
+    Sub build of the m1-mirror package
+    \param System :: Simulation to use
+    \param divider :: Divider object
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM1Mirror");
+
+  int outerCell;
+
+  M1Tube->setFront(initFC,sideIndex);
+  M1Tube->createAll(System,initFC,sideIndex);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*M1Tube,2);
+  M1Tube->insertInCell(System,outerCell);
+
+
+  M1Mirror->addInsertCell(M1Tube->getCell("Void"));
+  M1Mirror->createAll(System,*M1Tube,0);
+  
+  offPipeB->createAll(System,*M1Tube,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*offPipeB,2);
+  offPipeB->insertInCell(System,outerCell);
+
+  gateA->createAll(System,*offPipeB,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*gateA,2);
+  gateA->insertInCell(System,outerCell);
+
+  pipeC->createAll(System,*gateA,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*pipeC,2);
+  pipeC->insertInCell(System,outerCell);
+
+  screenA->addInsertCell(outerCell);
+  screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
+  screenA->createAll(System,*pipeC,0);
+  
+  return;
+}
 
 void
 maxpeemOpticsBeamline::buildObjects(Simulation& System)
@@ -518,90 +832,84 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   // in the hut beam port
   bellowA->createAll(System,*this,0);
   divider=bellowA->getFullRule(1);
-  MonteCarlo::Object& masterCell=constructMasterCell(System,divider);
+  constructMasterCell(System,divider);
+
   divider.makeComplement();
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowA,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   ionPA->createAll(System,*bellowA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*ionPA,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*ionPA,2);
   ionPA->insertInCell(System,outerCell);
-    
-  // FAKE insertcell: reqruired
-  gateTubeA->addInsertCell(masterCell.getName());
+  
+  // FAKE insertcell: required
+  gateTubeA->addInsertCell(masterCellA->getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*ionPA,2);  
 
+  
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,
   				GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeA->insertInCell(System,outerCell);
 
   bellowB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowB,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
 
   insertFlanges(System,*gateTubeA);
 
+     
+
   pipeA->createAll(System,*bellowB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeA,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 
   // FAKE insertcell: reqruired
-  florTubeA->addInsertCell(masterCell.getName());
+  florTubeA->addInsertCell(masterCellA->getName());
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*pipeA,2);  
 
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,
   				FPI,FPI.getSideIndex("OuterPlate"));
   florTubeA->insertInCell(System,outerCell);
 
   bellowC->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*bellowC,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
 
   insertFlanges(System,*florTubeA);
   
   pipeB->createAll(System,*bellowC,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeB,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
-  // FAKE insertcell: reqruired
-  pumpTubeA->addInsertCell(masterCell.getName());
+
+  // FAKE insertcell: required
+  pumpTubeA->addInsertCell(masterCellA->getName());
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*pipeB,2);
 
   const constructSystem::portItem& CPI=pumpTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,
   				CPI,CPI.getSideIndex("OuterPlate"));
   pumpTubeA->insertInCell(System,outerCell);
   pumpTubeA->intersectPorts(System,1,2);
 
   offPipeA->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeA,2);
+  outerCell=createOuterVoidUnit(System,masterCellA,divider,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
-  M1Tube->createAll(System,*offPipeA,offPipeA->getSideIndex("FlangeBCentre"));
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*M1Tube,2);
-  M1Tube->insertInCell(System,outerCell);
+  buildM1Mirror(System,divider,masterCellA,*offPipeA,
+		offPipeA->getSideIndex("FlangeBCentre"));
+  buildSlitPackage(System,divider,masterCellA,*pipeC,2);
+  buildMono(System,divider,masterCellA,*pipeF,2);
 
-  offPipeB->createAll(System,*M1Tube,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeB,2);
-  offPipeB->insertInCell(System,outerCell);
-
-  gateA->createAll(System,*offPipeB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*gateA,2);
-  gateA->insertInCell(System,outerCell);
-
-  pipeC->createAll(System,*gateA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
+    
+  buildM3Mirror(System,divider,masterCellA,*bellowE,2);
   
-  buildSlitPackage(System,divider,masterCell,*pipeC,2);
-  buildMono(System,divider,masterCell,*pipeF,2);
-  buildM3Mirror(System,divider,masterCell,*bellowE,2);
-  
+  buildSplitter(System,divider,*M3Tube,2);
   lastComp=offPipeA;
 
   return;
@@ -618,7 +926,31 @@ maxpeemOpticsBeamline::createLinks()
   return;
 }
   
-  
+void
+maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
+					  const std::vector<int>& hutCell,
+					  const int outCell)
+  /*!
+    Construct outgoing tracks
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
+
+  outPipeA->addInsertCell(masterCellA->getName());
+  outPipeA->addInsertCell(hutCell);
+  outPipeA->addInsertCell(outCell);
+  outPipeA->createAll(System,*pumpTubeAA,2);
+
+  outPipeB->addInsertCell(masterCellB->getName());
+  outPipeB->addInsertCell(hutCell);
+  outPipeB->addInsertCell(outCell);
+  outPipeB->createAll(System,*pumpTubeBA,2);
+
+  return;
+}
+
+
 void 
 maxpeemOpticsBeamline::createAll(Simulation& System,
 				 const attachSystem::FixedComp& FC,

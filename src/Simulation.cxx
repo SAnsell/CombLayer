@@ -123,7 +123,7 @@ Simulation::Simulation(const Simulation& A) :
     \param A :: Simulation to copy
   */
 {
-      ELog::EM<<"CALLING INCORRECT Simulation(Simulation)"<<ELog::endCrit;
+  ELog::EM<<"CALLING INCORRECT Simulation(Simulation)"<<ELog::endCrit;
 }
 
 Simulation&
@@ -163,7 +163,7 @@ Simulation::~Simulation()
   delete OSMPtr;
   deleteObjects();
   ModelSupport::SimTrack::Instance().clearSim(this);
-
+  
 }
 
 void
@@ -1688,6 +1688,7 @@ Simulation::makeObjectsDNForCNF()
 	}
       ELog::EM<<"\n END DNF/CNF "<<ELog::endDiag;
     }
+  validateObjSurfMap();
   return;
 }
 

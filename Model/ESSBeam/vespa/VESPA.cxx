@@ -189,10 +189,23 @@ VESPA::VESPA(const std::string& keyName) :
   T0Disk(new constructSystem::DiskChopper(newName+"T0Blade")),
   T0ExitPort(new constructSystem::HoleShape(newName+"T0ExitPort")),
   
+<<<<<<< HEAD
   // Triangular Shielding A
   ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),  
   VPipeI(new constructSystem::VacuumPipe(newName+"PipeI")),
   FocusI(new beamlineSystem::GuideLine(newName+"FI")),
+=======
+  OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
+  ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
+  
+  VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
+  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
+
+  OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
+  PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
+  PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
+>>>>>>> 1d8fa07b2ef58bb768c63c44f40d9542a34aec1b
   
   // ChoppersFOC and ChoppersFOC Pit
   ChoppersFOCPit(new constructSystem::ChopperPit(newName+"ChoppersFOCPit")),
@@ -509,6 +522,7 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(ChoppersFOCPit->getCells("MidLayer"));
   ShieldA->setBack(ChoppersFOCPit->getKey("Mid"),1);
   ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
+<<<<<<< HEAD
   
   // VPipeI + FocusI
   VPipeI->addInsertCell(ShieldA->getCells("Void"));
@@ -532,6 +546,29 @@ VESPA::buildOutGuide(Simulation& System,
   
   // ShieldB
   ShieldB->addInsertCell(ChoppersFOCPit->getCells("Outer"));
+=======
+
+  // Elliptic 6m section
+  VPipeOutA->addInsertCell(ShieldA->getCells("Void"));
+  VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
+  VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
+  VPipeOutA->addInsertCell(OutPitA->getCells("MidLayer"));
+  VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+
+  FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
+  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+
+  // First Chopper
+  ChopperOutA->addInsertCell(OutPitA->getCells("Void"));
+  ChopperOutA->createAll(System,FocusOutA->getKey("Guide0"),2);
+
+  // Double disk chopper
+  FOCDiskB->addInsertCell(ChopperOutA->getCell("Void"));
+  FOCDiskB->createAll(System,ChopperOutA->getKey("Main"),0);
+  ChopperOutA->insertAxle(System,*FOCDiskB); 
+ 
+  ShieldB->addInsertCell(OutPitA->getCells("Outer"));
+>>>>>>> 1d8fa07b2ef58bb768c63c44f40d9542a34aec1b
   ShieldB->addInsertCell(voidCell);
   ShieldB->setFront(ChoppersFOCPit->getKey("Mid"),2);
   ShieldB->createAll(System,ChoppersFOC->getKey("Beam"),2);

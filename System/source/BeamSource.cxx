@@ -166,7 +166,8 @@ BeamSource::rotate(const localRotate& LR)
   */
 {
   ELog::RegMethod Rega("BeamSource","rotate");
-  FixedComp::applyRotation(LR);  
+  FixedComp::applyRotation(LR);
+  ELog::EM<<"Applied Rotation == "<<Origin<<ELog::endDiag;
   return;
 }
   
@@ -231,7 +232,7 @@ BeamSource::createAll(const ITYPE& inputMap,
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
-  ELog::EM<<"lin == "<<FC.getKeyName()<<" "<<linkIndex<<ELog::endDiag;
+  ELog::EM<<"linkunit: == "<<FC.getKeyName()<<" "<<linkIndex<<ELog::endDiag;
     
   populate(inputMap);
   createUnitVector(FC,linkIndex);

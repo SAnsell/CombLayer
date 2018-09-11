@@ -199,7 +199,8 @@ procAngle(const mainSystem::inputParam& IParam,
       MR.addRotation(Geometry::Vec3D(0,0,1),
                      Geometry::Vec3D(0,0,0),angleZ);
     }
-  else  if (AItem=="objAxis" || AItem=="ObjAxis")
+  else  if (AItem=="objAxis" || AItem=="ObjAxis" ||
+	    AItem=="objYAxis" || AItem=="ObjYAxis")
     {
       const attachSystem::FixedComp* GIPtr=
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
@@ -210,12 +211,24 @@ procAngle(const mainSystem::inputParam& IParam,
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
-      
-      const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
-	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
-      
-      MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
-		     -180.0*QR.getTheta()/M_PI);
+
+      if (AItem=="objYAxis" || AItem=="ObjYAxis")
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(0,1,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+      else
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+
     }
   else if (AItem=="free" || AItem=="FREE")
     {

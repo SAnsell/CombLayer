@@ -166,6 +166,7 @@ MAXPEEM::build(Simulation& System,
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
 
+
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
@@ -181,6 +182,10 @@ MAXPEEM::build(Simulation& System,
   opticsBeam->setCutSurf("beam",opticsHut->getSurf("BeamTube"));
     
   opticsBeam->createAll(System,*joinPipe,2);
+  return;
+  ELog::EM<<"OUTER == "<<r1Ring->getCell("OuterSegment",OIndex)<<ELog::endDiag;
+  opticsBeam->buildOutGoingPipes(System,opticsHut->getCells("Back"),
+				 r1Ring->getCell("OuterSegment",OIndex));
   
   return;
 }

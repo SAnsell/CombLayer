@@ -328,7 +328,7 @@ R1Ring::createObjects(Simulation& System)
   for(size_t i=1;i<NPoints+2;i++)
     {
       Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (i==concavePts[index])
+      if (index<concavePts.size() && i==concavePts[index])
 	{
 	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
 	  if (index)
@@ -342,7 +342,6 @@ R1Ring::createObjects(Simulation& System)
 	}
       surfN= (i==NPoints) ? 1000 : surfN+10;
     }
-  
   Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
   makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+TBase);
 

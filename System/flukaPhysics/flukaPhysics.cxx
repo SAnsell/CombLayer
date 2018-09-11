@@ -60,7 +60,9 @@ flukaPhysics::flukaPhysics() :
   // note flag: -1 particle / 0 cell / 1 material  
   flagValue({
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
+      { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
+      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECNUC") },
       { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
     }),
 
@@ -115,6 +117,8 @@ flukaPhysics::flukaPhysics() :
       { "electron", unitTYPE(0," 2.0 1.0 %2 R0 R1 1.0 ") },
       { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
+      { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
@@ -126,6 +130,7 @@ flukaPhysics::flukaPhysics() :
       { "elpothr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
       { "pairbrem", unitTYPE(1,"3.0 %2 %3 M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+      { "mupair", unitTYPE(1,"1111.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
       { "lpb", unitTYPE(0,"1022 %2 %3 R0 R1 1.0 ") },

@@ -272,19 +272,18 @@ ObjSurfMap::findNextObject(const int SN,
   
   // DEBUG CODE FOR FAILURE:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  const masterRotate& MR=masterRotate::Instance();
 
   ELog::EM<<"Failure to find surface on "<<SN<<" :: "
-	  <<MR.calcRotate(Pos)<<ELog::endCrit;
+	  <<Pos<<ELog::endCrit;
 
   ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<MR.calcRotate(Pos)<<" :: "<<SN<<ELog::endDiag;
+	  <<Pos<<" :: "<<SN<<ELog::endDiag;
   if (SurI.getSurf(abs(SN)))
     {
       Geometry::Surface* SPtr=SurI.getSurf(abs(SN));
       ELog::EM<<"Surface == "<<*SPtr<<ELog::endWarn;
-      ELog::EM<<"Distance == "<<SPtr->distance(Pos)<<ELog::endDiag;
-      Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
+      ELog::EM<<"Distance [should be 0 ]== "<<SPtr->distance(Pos)<<ELog::endDiag;
+      const Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
       ELog::EM<<"SurfaceNormal == "<<N<<ELog::endDiag;
     }
   else
