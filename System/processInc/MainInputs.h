@@ -37,6 +37,7 @@ namespace mainSystem
 {
   class inputParam;
 
+  void createPHITSInputs(inputParam&);
 
   void createBilbauInputs(inputParam&);
   void createBNCTInputs(inputParam&);
