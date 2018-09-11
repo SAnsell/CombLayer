@@ -70,6 +70,7 @@
 #include "MainProcess.h"
 #include "flukaProcess.h"
 #include "flukaDefPhysics.h"
+#include "phitsDefPhysics.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -119,7 +120,7 @@ importanceSim(Simulation& System,
       WCell.processWeights(System,IParam);
       
       mainSystem::renumberCells(*phitsPtr,IParam);
-      //      phitsSystem::setModelPhysics(*phitsPtr,IParam);
+      phitsSystem::setModelPhysics(*phitsPtr,IParam);
       return;
     }
   

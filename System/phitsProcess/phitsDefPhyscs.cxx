@@ -98,6 +98,10 @@ setModelPhysics(SimPHITS& System,
   
   phitsSystem::phitsPhysics* PC=System.getPhysics();
   if (!PC) return;
+
+  if (IParam.flag("icntl"))
+    System.setICNTL(IParam.getValue<std::string>("icntl"));
+      
   
   return; 
 }

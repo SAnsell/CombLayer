@@ -41,6 +41,7 @@ class SimPHITS : public Simulation
 {
  private:
 
+  int icntl;                           ///< ICNTL
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
 
@@ -67,6 +68,7 @@ class SimPHITS : public Simulation
   SimPHITS& operator=(const SimPHITS&);
   virtual ~SimPHITS() {}           ///< Destructor
 
+  void setICNTL(const std::string&);
   //phitsSystem::phitsTally* getTally(const int) const;
 
   /// access to physics

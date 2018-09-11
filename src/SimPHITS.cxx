@@ -141,6 +141,30 @@ SimPHITS::operator=(const SimPHITS& A)
   return *this;
 }
 
+void
+SimPHITS::setICNTL(const std::string& ICName)
+  /*!
+    Given the icntl name find the correct icntl number
+    \param ICName :: Name to convert to number
+   */
+{
+  ELog::RegMethod RegA("SimPHITS","setICNTL");
+
+  int icn(0);
+  if (StrFunc::convert(ICName,icn))
+    {
+      icntl=icn;
+      return;
+    }
+  else if (ICName=="plot")
+    {
+      icntl=8;
+      return;
+    }
+    
+  throw ColErr::InContainerError<std::string>(ICName,"ICName");
+  return;
+}
 
 void
 SimPHITS::writeSource(std::ostream& OX) const
@@ -319,11 +343,11 @@ SimPHITS::writePhysics(std::ostream& OX) const
   boost::format FMT("%1$8.0d ");
   OX<<"[Parameters]"<<std::endl;
 
-  OX<<" icntl       =        "<<(FMT % 0)<<std::endl;
+  OX<<" icntl       =        "<<(FMT % icntl)<<std::endl;
   OX<<" maxcas      =        "<<(FMT % (nps/10))<<std::endl;
   OX<<" maxbch      =        "<<(FMT % 10)<<std::endl;
   OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
-  OX<<" file(1)     = /home/stuartansell/phits"<<std::endl;  
+  OX<<" file(1)     = /home/ansell/phits"<<std::endl;  
   OX<<" file(6)     = phits.out"<<std::endl;
   OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
 
