@@ -145,14 +145,21 @@ makeLinac::build(Simulation& System,
   const size_t nStubs(LinacTunnel->getNStubs());
   for (size_t i=0; i<nStubs; i++)
     {
-      std::shared_ptr<Stub> stub(new Stub("Stub", 100+i*10));
-      OR.addObject(stub);
-      stub->setFront(*KG,7);
-      stub->setBack(*LinacTunnel,-13);
-      stub->createAll(System,*LinacTunnel,0);
-      attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
-      attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,stub->getCC("Leg1"));
-      attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
+      const size_t stubNumber(100+i*10);
+      const size_t active = System.getDataBase().EvalDefVar<size_t>
+	("Stub"+std::to_string(stubNumber)+"Active", 1);
+      if (active)
+	{
+	  std::shared_ptr<Stub> stub(new Stub("Stub", stubNumber));
+	  OR.addObject(stub);
+	  stub->setFront(*KG,7);
+	  stub->setBack(*LinacTunnel,-13);
+	  stub->createAll(System,*LinacTunnel,0);
+	  attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
+	  attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,
+					    stub->getCC("Leg1"));
+	  attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
+	}
     }
   return;
 }
