@@ -214,7 +214,7 @@ phitsTally::setDoseType(const std::string& P,
       "EAPMP","ERTMP","EWTMP",
       "AMB74","AMBGS"
       });
-  const phitsGenParticle& FG=phitsGenParticle::Instance();
+  const particleConv& FG=particleConv::Instance();
   
   auxParticle=StrFunc::toUpperString(FG.nameToPHITS(P));
    const std::string Dupper=StrFunc::toUpperString(D);
