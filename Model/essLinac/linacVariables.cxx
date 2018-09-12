@@ -75,6 +75,8 @@ EssLinacVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
+  Control.addVariable("EngineeringActive",0);
+
   Control.addVariable("LinacEngineeringActive",1);
   const double dtl1Start(1103.6973); // email from Carl-Johan 5 Jun 2018
   Control.addVariable("LinacLengthBack",-dtl1Start);
@@ -438,6 +440,15 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("FEBDropHatchLength", 1100.0);
   Control.addVariable("FEBDropHatchWidth",   377.0);
   Control.addVariable("FEBDropHatchWallThick", 70.0);
+
+  // RFQ
+  Control.addVariable("RFQYStep", 233.697); // so the distance b/w start of RFQ and DTL1 as in rbfrend2-9102
+  Control.addVariable("RFQLength", 640.0);
+  Control.addVariable("RFQWidth", 29.0);
+  Control.addVariable("RFQHeight", 29.0);
+  Control.addVariable("RFQWallThick", 5.6);
+  Control.addVariable("RFQMainMat", "Void");
+  Control.addVariable("RFQWallMat", "Copper");
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
