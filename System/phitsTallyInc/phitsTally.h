@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/flukaTally.h
+ * File:   phitsTallyInc/phitsTally.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,24 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_flukaTally_h
-#define flukaSystem_flukaTally_h
+#ifndef phitsSystem_phitsTally_h
+#define phitsSystem_phitsTally_h
 
-namespace flukaSystem
+namespace phitsSystem
 {
 
   class auxScore;
   
 /*!
-  \class flukaTally
+  \class phitsTally
   \version 1.0
   \author S. Ansell
-  \date February 2018
-  \brief Holds a fluka tally object as a base class
+  \date September 2018
+  \brief Holds a phits tally object as a base class
   
 */
 
-class flukaTally
+class phitsTally
 {
  protected:
 
@@ -49,12 +49,12 @@ class flukaTally
   
  public:
   
-  explicit flukaTally(const int);
-  flukaTally(const std::string&,const int);
-  flukaTally(const flukaTally&);
-  flukaTally& operator=(const flukaTally&);
-  virtual flukaTally* clone() const; 
-  virtual ~flukaTally();
+  explicit phitsTally(const int);
+  phitsTally(const std::string&,const int);
+  phitsTally(const phitsTally&);
+  phitsTally& operator=(const phitsTally&);
+  virtual phitsTally* clone() const; 
+  virtual ~phitsTally();
   
   void setKeyName(const std::string&);
   void setBinary();
@@ -74,8 +74,8 @@ class flukaTally
 };
 
 std::ostream&
-operator<<(std::ostream&,const flukaTally&);
+operator<<(std::ostream&,const phitsTally&);
   
-}  // NAMESPACE flukaSystem
+}  // NAMESPACE phitsSystem
 
 #endif

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/phitsDefPhysics.cxx
+ * File:   phitsProcess/phitsDefPhysics.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -112,7 +112,7 @@ setXrayPhysics(phitsPhysics& PC,
 	       const mainSystem::inputParam& IParam)
   /*!
     Set the neutron Physics for PHITS run on a reactor
-    \param PC :: Physcis cards
+    \param PC :: Physics cards
     \param IParam :: Input stream
   */
 {
