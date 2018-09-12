@@ -69,10 +69,13 @@ class Linac : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
 
   size_t nTSW;                   ///< Number of TSWs
+  // Max number of stubs (individual stubs can be switched on/of
+  // with their Active flags)
+  size_t nStubs;
+  size_t nDTL; ///< number of DTL tanks
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
   std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup
-  size_t nDTL; ///< number of DTL tanks
   std::shared_ptr<DTLArray> dtl;   /// array of DTL tanks
 
   void layerProcess(Simulation& System, const std::string& cellName,
@@ -98,6 +101,7 @@ class Linac : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+  size_t getNStubs() const { return nStubs; }
 
 };
 

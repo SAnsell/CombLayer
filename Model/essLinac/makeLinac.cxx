@@ -142,8 +142,8 @@ makeLinac::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
   attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
 
-  const size_t Nstubs(2);
-  for (size_t i=0; i<Nstubs; i++)
+  const size_t nStubs(LinacTunnel->getNStubs());
+  for (size_t i=0; i<nStubs; i++)
     {
       std::shared_ptr<Stub> stub(new Stub("Stub", 100+i*10));
       OR.addObject(stub);

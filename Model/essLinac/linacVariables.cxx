@@ -305,6 +305,7 @@ EssLinacVariables(FuncDataBase& Control)
 			   "-(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570)"); // check
   Control.addVariable("KGZStep", 573.5);
 
+  Control.addVariable("LinacNStubs", 2);
   // Stub dimensions are measured from ESS-0308575 (email from Pontus 16.05)
   // Lengths are defined as in Sullivan, page 68
   Control.addVariable("Stub100WallThick", 30); // MARS
