@@ -61,36 +61,17 @@ operator<<(std::ostream& OX,const phitsTally& TX)
    */
 {
   TX.write(OX);
-  TX.writeAuxScore(OX);
   return OX;
 }
 
-phitsTally::phitsTally(const std::string& MK,const int ID)  :
-  keyName(MK),outputUnit(ID)
-  /*!
-    Constructor 
-    \param MK :: Keyname
-    \param ID :: phitsTally ID number
-  */
-{}
-
 phitsTally::phitsTally(const int ID)  :
-  outputUnit(ID)
+  idNumber(ID)
   /*!
     Constructor 
     \param ID :: phitsTally ID number
   */
 {}
 
-phitsTally::phitsTally(const phitsTally& A)  :
-  keyName(A.keyName),outputUnit(A.outputUnit),
-  comments(A.comments),auxParticle(A.auxParticle),
-  doseType(A.doseType)
-  /*!
-    Copy constructor
-    \param A :: phitsTally object to copy
-  */
-{}
 
 phitsTally*
 phitsTally::clone() const
@@ -102,41 +83,11 @@ phitsTally::clone() const
   return new phitsTally(*this);
 }
 
-phitsTally&
-phitsTally::operator=(const phitsTally& A) 
-  /*!
-    Assignment operator 
-    \param A :: phitsTally object to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      keyName=A.keyName;
-      outputUnit=A.outputUnit;
-      comments=A.comments;
-      auxParticle=A.auxParticle;
-      doseType=A.doseType;
-    }
-  return *this;
-}
-
 phitsTally::~phitsTally()
  /*!
    Destructor
  */
 {}
-
-void
-phitsTally::setKeyName(const std::string& K)
-  /*!
-    Set the keyname
-    \param K :: Keyname
-  */
-{
-  keyName=K;
-  return;
-}
 
 void
 phitsTally::setComment(const std::string& C)
@@ -149,37 +100,6 @@ phitsTally::setComment(const std::string& C)
   return;
 }
 
-const std::string&
-phitsTally::getKeyName() const
-  /*!
-    Get full name including output number
-  */
-{
-  return keyName;
-}
-
-void
-phitsTally::setAuxParticles(const std::string& P)
-  /*!
-    Set the auxParticle [can be a range?]
-    \param P :: auxParticle (or key name) 
-  */
-{
-  auxParticle=P;
-  return;
-}
-
-void
-phitsTally::setBinary()
-  /*!
-    Set the tally to binary
-  */
-{
-  ELog::RegMethod RegA("phitsTally","setBinary");
-
-  outputUnit=-std::abs(outputUnit);
-  return;
-}
 
 void
 phitsTally::setEnergy(const bool,const double,
@@ -197,44 +117,6 @@ phitsTally::setAngle(const bool,const double,
  */
 {}
   
-void
-phitsTally::setDoseType(const std::string& P,
-			const std::string& D)
-  /*!
-    Set the auxParticle [can be a range?]
-    \param P :: Particle type
-    \param D :: set dose type
-  */
-{
-  ELog::RegMethod RegA("phitsTally","setDoseType");
-
-  static const std::set<std::string> validDose
-    ({
-      "EAP74","ERT74","EWT74",
-      "EAPMP","ERTMP","EWTMP",
-      "AMB74","AMBGS"
-      });
-  const particleConv& FG=particleConv::Instance();
-  
-  auxParticle=StrFunc::toUpperString(FG.nameToPHITS(P));
-   const std::string Dupper=StrFunc::toUpperString(D);
-  if (validDose.find(Dupper)==validDose.end())
-    throw ColErr::InContainerError<std::string>(D,"Dose type not known");
-
-  doseType=Dupper;
-  return;
-}
-  
-void
-phitsTally::writeAuxScore(std::ostream&) const
-  /*!
-    Writes out the phitsTally depending on the 
-    fields that have been set.
-    \param OX :: Output Stream
-  */
-{
-  return;
-}
 
 void
 phitsTally::write(std::ostream&) const
