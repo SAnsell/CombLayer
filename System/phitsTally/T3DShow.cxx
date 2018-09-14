@@ -124,41 +124,6 @@ T3DShow::setParticle(const std::string& P)
 }
 
 void
-T3DShow::setDoseType(const std::string& P,
-		     const std::string& D)
-  /*!
-    Set the auxParticle [can be a range?]
-    \param P :: particle to use
-    \param D :: set dose type
-  */
-{
-  ELog::RegMethod RegA("T3DShow","setDoseType");
-
-  phitsTally::setDoseType(P,D);
-  return;
-}
-
-  
-void
-T3DShow::setIndex(const std::array<size_t,3>& IDX)
-  /*!
-    Sets the individual index for each x,y,z
-    \param IDX :: array of three object
-  */
-{
-  ELog::RegMethod RegA("T3DShow","setIndex");
-  for(size_t i=0;i<3;i++)
-    {
-      if (!IDX[i])
-	throw ColErr::IndexError<size_t>(IDX[i],i,"IDX[index] zero");
-      Pts[i]=IDX[i];
-    }
-  
-  return;
-}
-
-
-void
 T3DShow::setCoordinates(const Geometry::Vec3D& A,
 			const Geometry::Vec3D& B)
   /*!
@@ -186,23 +151,6 @@ T3DShow::setCoordinates(const Geometry::Vec3D& A,
   return;
 }
 
-void
-T3DShow::writeAuxScore(std::ostream& OX) const
-  /*!
-    Write an auxScore card
-    \param OX :: Ouput stream
-  */
-{
-  if (!auxParticle.empty() && particle=="DOSE-EQ")
-    {
-      std::ostringstream cx;
-      cx<<"AUXSCORE USRBIN "<<auxParticle<<" - "<<keyName
-	<<" "<<keyName<<" - "<<doseType;
-      StrFunc::writePHITS(cx.str(),OX);  
-    }
-  return;
-}
-
   
 void
 T3DShow::write(std::ostream& OX) const
@@ -213,20 +161,6 @@ T3DShow::write(std::ostream& OX) const
 {
   std::ostringstream cx;
   
-  cx<<"USRBIN "<<meshType<<" "<<particle<<" "
-    <<outputUnit<<" "<<maxCoord;  
-  cx<<" mesh"<<std::to_string(std::abs(outputUnit));
-  
-  StrFunc::writePHITS(cx.str(),OX);
-
-  cx.str("");
-  cx<<"USRBIN "<<minCoord<<" ";
-  
-  for(size_t i=0;i<3;i++)
-    cx<<Pts[i]<<" ";
-  cx<<"  & ";
-  StrFunc::writePHITS(cx.str(),OX);  
-  writeAuxScore(OX);
   return;
 }
 

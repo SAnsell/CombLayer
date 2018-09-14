@@ -40,13 +40,14 @@ class phitsTally
 {
  protected:
 
-  std::string keyName;              ///< tally name
-  int outputUnit;                   ///< Fortran output number
+  const int idNumber;
   std::string comments;             ///< comment line
 
-  std::string auxParticle;          ///< Auxillary particle
-  std::string doseType;             ///< Auxillary dose type if used
-  
+  bool epsFlag;                     //< Write an eps file
+  bool vtkFlag;                     //< Write a vtk file
+  bool vtkFormat;                   ///< Write VTK in binary
+  std::string fileName;             ///< file name
+
  public:
   
   explicit phitsTally(const int);
@@ -56,21 +57,15 @@ class phitsTally
   virtual phitsTally* clone() const; 
   virtual ~phitsTally();
   
-  void setKeyName(const std::string&);
-  void setBinary();
   void setComment(const std::string&);
-  void setAuxParticles(const std::string&);
-  virtual void setDoseType(const std::string&,const std::string&);
+
   virtual void setEnergy(const bool,const double,const double,const size_t);
   virtual void setAngle(const bool,const double,const double,const size_t);
 
   const std::string& getKeyName() const;
-  /// access out unit
-  int getOutUnit() const { return outputUnit; }
-
   
   virtual void write(std::ostream&) const;
-  virtual void writeAuxScore(std::ostream&) const;
+
 };
 
 std::ostream&

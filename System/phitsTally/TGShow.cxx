@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   phitsTally/phitsTally.cxx
+ * File:   phitsTally/TGShow.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -21,112 +21,102 @@
  ****************************************************************************/
 #include <iostream>
 #include <iomanip>
-#include <sstream>
 #include <fstream>
-#include <complex>
 #include <cmath>
 #include <string>
+#include <sstream>
 #include <list>
+#include <vector>
 #include <set>
 #include <map>
-#include <vector>
 #include <iterator>
-#include <algorithm>
+#include <array>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "mathSupport.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "particleConv.h"
+#include "Quaternion.h"
+#include "Mesh3D.h"
+
 #include "phitsTally.h"
+#include "TGShow.h"
 
 namespace phitsSystem
 {
 
-std::ostream&
-operator<<(std::ostream& OX,const phitsTally& TX)
+TGShow::TGShow(const int ID) :
+  phitsTally(ID)
   /*!
-    Generic writing function
-    \param OX :: Output stream
-    \param TX :: phitsTally
-    \return Output stream
-   */
-{
-  TX.write(OX);
-  return OX;
-}
-
-phitsTally::phitsTally(const int ID)  :
-  idNumber(ID)
-  /*!
-    Constructor 
-    \param ID :: phitsTally ID number
+    Constructor
+    \param ID :: Identity number of tally 
   */
 {}
-
-
-phitsTally*
-phitsTally::clone() const
+  
+TGShow*
+TGShow::clone() const
   /*!
-    Basic clone class
-    \return new this
+    Clone object
+    \return new (this)
   */
 {
-  return new phitsTally(*this);
+  return new TGShow(*this);
 }
 
-phitsTally::~phitsTally()
- /*!
-   Destructor
- */
+TGShow::~TGShow()
+  /*!
+    Destructor
+  */
 {}
-
+  
 void
-phitsTally::setComment(const std::string& C)
+TGShow::setCoordinates(const Geometry::Vec3D& A,
+		       const Geometry::Vec3D& B)
   /*!
-    Set the comment line
-    \param C :: New comment
+    Sets the min/max coordinates
+    \param A :: First coordinate
+    \param B :: Second coordinate
   */
 {
-  comments=C;
+  ELog::RegMethod RegA("TGShow","setCoordinates");
+  
+  minCoord=A;
+  maxCoord=B;
+  // Add some checking here
+  for(size_t i=0;i<3;i++)
+    {
+      if (std::abs(minCoord[i]-maxCoord[i])<Geometry::zeroTol)
+	throw ColErr::NumericalAbort(StrFunc::makeString(minCoord)+" ::: "+
+				     StrFunc::makeString(maxCoord)+
+				     " Equal components");
+      if (minCoord[i]>maxCoord[i])
+	std::swap(minCoord[i],maxCoord[i]);
+    }
+
+
   return;
 }
 
-
-void
-phitsTally::setEnergy(const bool,const double,
-		      const double,const size_t)
-  /*!
-    Null op call for non-energy detectors
-  */
-{}
-
-void
-phitsTally::setAngle(const bool,const double,
-		      const double,const size_t)
- /*!
-   Null op call for non-angle detectors
- */
-{}
   
-
 void
-phitsTally::write(std::ostream&) const
+TGShow::write(std::ostream& OX) const
   /*!
-    Writes out the phitsTally depending on the 
-    fields that have been set.
-    \param OX :: Output Stream
-  */
+    Write out the mesh tally into the tally region
+    \param OX :: Output stream
+   */
 {
   return;
 }
 
 }  // NAMESPACE phitsSystem
+

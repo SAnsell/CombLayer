@@ -218,7 +218,7 @@ Mesh3D::midPoints() const
   ELog::RegMethod RegA("Mesh3D","midPoints");
 
   std::vector<Geometry::Vec3D> midPt;
-  if (!NX*NY*NZ) return midPt;           // origin on failure
+  if (NX*NY*NZ==0) return midPt;           // origin on failure
 
   double xA,xB,yA,yB,zA,zB;
   xB=getXCoordinate(0);
