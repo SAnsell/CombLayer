@@ -22,6 +22,11 @@
 #ifndef phitsSystem_MeshXYZ_h
 #define phitsSystem_MeshXYZ_h
 
+namespace Geometry
+{
+  class Transform;
+}
+
 namespace phitsSystem
 {
 
@@ -37,14 +42,13 @@ class MeshXYZ
 {
  private:
 
-  bool logSpace;                ///< log bins
+  std::array<int,3> logSpace;   ///< log bins
   size_t NX;                    ///< Total number of X BINS
   size_t NY;                    ///< Total number of Y BINS
   size_t NZ;                    ///< Total number of Z BINS
 
   Geometry::Vec3D minPoint;    ///< lower point
   Geometry::Vec3D maxPoint;    ///< top point
-
 
   Geometry::Transform* TransPtr;
   
@@ -67,6 +71,11 @@ class MeshXYZ
   size_t getZSize() const { return NZ; }    ///< number of Z-cells
   
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;  
+
+  void setLog(const size_t index) { logSpace[index % 3]=1; }
+  void setLinear(const size_t index) { logSpace[index % 3]=0; }
+  void setSize(const size_t,const size_t,const size_t);
+  void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
   void write(std::ostream&) const;
 

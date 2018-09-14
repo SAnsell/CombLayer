@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,6 +45,7 @@
 #include "BaseModVisit.h" 
 #include "support.h"
 #include "writeSupport.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -56,39 +56,12 @@ namespace phitsSystem
 {
 
 MeshXYZ::MeshXYZ() :
-  NX(0),NY(0),NZ(0),TransPtr(0)
+  logSpace({0,0,0}),NX(0),NY(0),NZ(0),TransPtr(0)
   /*!
     Constructor [makes XYZ mesh]
   */
 {}
 
-MeshXYZ::MeshXYZ(const MeshXYZ& A) : 
-  minPoint(A.minPoint),maxPoint(A.maxPoint),NX(A.NX),
-  NY(A.NY),NZ(A.NZ),TransPtr(A.TransPtr)
-  /*!
-    Copy constructor
-    \param A :: MeshXYZ to copy
-  */
-{}
-
-MeshXYZ&
-MeshXYZ::operator=(const MeshXYZ& A)
-  /*!
-    Assignment operator
-    \param A :: MeshXYZ to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      minPoint=A.minPoint;
-      maxPoint=A.maxPoint;
-      NX=A.NX;
-      NY=A.NY;
-      NZ=A.NZ;
-    }
-  return *this;
-}
   
 Geometry::Vec3D
 MeshXYZ::point(const size_t a,const size_t b,const size_t c) const
@@ -111,13 +84,49 @@ MeshXYZ::point(const size_t a,const size_t b,const size_t c) const
   if (NX*NY*NZ==0) return minPoint; 
 
   Geometry::Vec3D D=maxPoint-minPoint;
-  D[0]*= static_cast<double>(a)/NX;
-  D[1]*= static_cast<double>(b)/NY;
-  D[2]*= static_cast<double>(c)/NZ;
+  // make for logspace
+  D[0]*= 0.5+static_cast<double>(a)/static_cast<double>(NX);
+  D[1]*= 0.5+static_cast<double>(b)/static_cast<double>(NY);
+  D[2]*= 0.5+static_cast<double>(c)/static_cast<double>(NZ);
   
   return minPoint+D;
 }
+
+void
+MeshXYZ::setSize(const size_t XP,const size_t YP,const size_t ZP)
+{
+  NX=XP;
+  NY=YP;
+  NZ=ZP;
+  return;
+}
+
+void
+MeshXYZ::setCoordinates(const Geometry::Vec3D& A,
+			const Geometry::Vec3D& B)
+  /*!
+    Sets the min/max coordinates
+    \param A :: First coordinate
+    \param B :: Second coordinate
+  */
+{
+  ELog::RegMethod RegA("MeshXYZ","setCoordinates");
   
+  minPoint=A;
+  maxPoint=B;
+  // Add some checking here
+  for(size_t i=0;i<3;i++)
+    {
+      if (std::abs(minPoint[i]-maxPoint[i])<Geometry::zeroTol)
+	throw ColErr::NumericalAbort(StrFunc::makeString(minPoint)+" ::: "+
+				     StrFunc::makeString(maxPoint)+
+				     " Equal components");
+      if (minPoint[i]>maxPoint[i])
+	std::swap(minPoint[i],maxPoint[i]);
+    }
+  return;
+}
+
 void
 MeshXYZ::write(std::ostream& OX) const
   /*!
@@ -127,8 +136,52 @@ MeshXYZ::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("MeshXYZ","write");
 
-  std::ostringstream cx;
-  for
+  if (NX*NY*NZ==0) return;
+
+  OX<<"mesh = xyz\n";
+
+  if (NX>1)
+    {
+      OX<<"x-type = "<<(2+logSpace[0])<<"\n";
+      OX<<"nx = "<<NX<<"\n";
+      OX<<"xmin = "<<minPoint[0]<<"\n";
+      OX<<"xmax = "<<maxPoint[0]<<"\n";
+    }
+  else
+    {
+      OX<<"x-type = 1\n";
+      OX<<"nx = 1 \n";
+      OX<<"     "<<minPoint[0]<<" "<<maxPoint[0]<<"\n";
+    }
+
+  if (NY>1)
+    {
+      OX<<"y-type = "<<(2+logSpace[1])<<"\n";
+      OX<<"ny = "<<NY<<"\n";
+      OX<<"ymin = "<<minPoint[1]<<"\n";
+      OX<<"ymax = "<<maxPoint[1]<<"\n";
+    }
+  else
+    {
+      OX<<"y-type = 1\n";
+      OX<<"ny = 1 \n";
+      OX<<"    "<<minPoint[1]<<" "<<maxPoint[1]<<"\n";
+    }
+
+  if (NZ>1)
+    {
+      OX<<"x-type = "<<(2+logSpace[2])<<"\n";
+      OX<<"nz = "<<NZ<<"\n";
+      OX<<"zmin = "<<minPoint[2]<<"\n";
+      OX<<"zmax = "<<maxPoint[2]<<"\n";
+    }
+  else
+    {
+      OX<<"z-type = 1\n";
+      OX<<"nz = 1 \n";
+      OX<<"     "<<minPoint[2]<<" "<<maxPoint[2]<<"\n";
+    }
+    
   return;
 }
 

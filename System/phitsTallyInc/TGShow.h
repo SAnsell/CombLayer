@@ -36,10 +36,9 @@ class TGShow : public phitsTally
 {
  private:
 
+  MeshXYZ mesh;                     ///< Mesh volume
   int axisDirection;                ///< Axis direction xy,yz,xz
   int trcl;                         ///< transform number
-  
-  void writeMesh(std::ostream&) const;
   
  public:
 

@@ -79,31 +79,6 @@ TGShow::~TGShow()
   */
 {}
   
-void
-TGShow::setCoordinates(const Geometry::Vec3D& A,
-		       const Geometry::Vec3D& B)
-  /*!
-    Sets the min/max coordinates
-    \param A :: First coordinate
-    \param B :: Second coordinate
-  */
-{
-  ELog::RegMethod RegA("TGShow","setCoordinates");
-  
-  minCoord=A;
-  maxCoord=B;
-  // Add some checking here
-  for(size_t i=0;i<3;i++)
-    {
-      if (std::abs(minCoord[i]-maxCoord[i])<Geometry::zeroTol)
-	throw ColErr::NumericalAbort(StrFunc::makeString(minCoord)+" ::: "+
-				     StrFunc::makeString(maxCoord)+
-				     " Equal components");
-      if (minCoord[i]>maxCoord[i])
-	std::swap(minCoord[i],maxCoord[i]);
-    }
-  return;
-}
 
   
 void
