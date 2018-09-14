@@ -47,7 +47,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Mesh3D.h"
+#include "MeshXYZ.h"
 
 #include "phitsTally.h"
 #include "TGShow.h"
@@ -102,8 +102,6 @@ TGShow::setCoordinates(const Geometry::Vec3D& A,
       if (minCoord[i]>maxCoord[i])
 	std::swap(minCoord[i],maxCoord[i]);
     }
-
-
   return;
 }
 

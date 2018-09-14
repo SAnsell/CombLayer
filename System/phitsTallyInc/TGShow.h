@@ -37,13 +37,7 @@ class TGShow : public phitsTally
  private:
 
   int axisDirection;                ///< Axis direction xy,yz,xz
-  int meshType;                     ///< type / 10 / 0 for mesh
-  
   int trcl;                         ///< transform number
-  
-  std::array<size_t,3> Pts;      ///< N-Points
-  Geometry::Vec3D minCoord;      ///< Min coordinate
-  Geometry::Vec3D maxCoord;      ///< Max coordinate
   
   void writeMesh(std::ostream&) const;
   
@@ -54,27 +48,10 @@ class TGShow : public phitsTally
   virtual TGShow* clone() const; 
   TGShow& operator=(const TGShow&);
   virtual ~TGShow();
-  
-  void setPointMesh() { meshType=0; }  ///< Set as a point mesh
-  void setGridMesh() { meshType=10; }  ///< Set as a grid [default] mesh
-  
-  void setParticle(const std::string&);
-  virtual void setDoseType(const std::string&,const std::string&);
- 
+     
   void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
-
-  /// Access the centre
-  Geometry::Vec3D getCentre() const { return (minCoord+maxCoord)/2.0; }
-  /// access min/max point
-  const Geometry::Vec3D& getMinPt() const { return minCoord; }
-  /// access min/max point
-  const Geometry::Vec3D& getMaxPt() const { return maxCoord; }
-  /// access min/max point
-  const std::array<size_t,3>& getNPt() const { return Pts; }
   
-  void writeCoordinates(std::ostream&) const;
-  virtual void writeAuxScore(std::ostream&) const;
   virtual void write(std::ostream&) const;
   
 };

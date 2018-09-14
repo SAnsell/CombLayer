@@ -56,12 +56,39 @@ namespace phitsSystem
 {
 
 MeshXYZ::MeshXYZ() :
-  NX(0),NY(0),NZ(0)
+  NX(0),NY(0),NZ(0),TransPtr(0)
   /*!
     Constructor [makes XYZ mesh]
   */
 {}
 
+MeshXYZ::MeshXYZ(const MeshXYZ& A) : 
+  minPoint(A.minPoint),maxPoint(A.maxPoint),NX(A.NX),
+  NY(A.NY),NZ(A.NZ),TransPtr(A.TransPtr)
+  /*!
+    Copy constructor
+    \param A :: MeshXYZ to copy
+  */
+{}
+
+MeshXYZ&
+MeshXYZ::operator=(const MeshXYZ& A)
+  /*!
+    Assignment operator
+    \param A :: MeshXYZ to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      minPoint=A.minPoint;
+      maxPoint=A.maxPoint;
+      NX=A.NX;
+      NY=A.NY;
+      NZ=A.NZ;
+    }
+  return *this;
+}
   
 Geometry::Vec3D
 MeshXYZ::point(const size_t a,const size_t b,const size_t c) const
@@ -90,9 +117,6 @@ MeshXYZ::point(const size_t a,const size_t b,const size_t c) const
   
   return minPoint+D;
 }
-
-
-
   
 void
 MeshXYZ::write(std::ostream& OX) const
@@ -104,6 +128,7 @@ MeshXYZ::write(std::ostream& OX) const
   ELog::RegMethod RegA("MeshXYZ","write");
 
   std::ostringstream cx;
+  for
   return;
 }
 

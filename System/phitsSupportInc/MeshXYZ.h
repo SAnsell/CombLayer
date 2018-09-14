@@ -37,13 +37,14 @@ class MeshXYZ
 {
  private:
 
+  bool logSpace;                ///< log bins
+  size_t NX;                    ///< Total number of X BINS
+  size_t NY;                    ///< Total number of Y BINS
+  size_t NZ;                    ///< Total number of Z BINS
 
   Geometry::Vec3D minPoint;    ///< lower point
   Geometry::Vec3D maxPoint;    ///< top point
 
-  size_t NX;                    ///< Total number of X BINS
-  size_t NY;                    ///< Total number of Y BINS
-  size_t NZ;                    ///< Total number of Z BINS
 
   Geometry::Transform* TransPtr;
   
