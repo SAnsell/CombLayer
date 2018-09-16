@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTally/flukaTallyBuilder.cxx
+ * File:   phitsTally/phitsTallyBuilder.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -54,27 +54,28 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Simulation.h"
-#include "SimFLUKA.h"
+#include "SimPHITS.h"
 
-#include "userBinConstruct.h"
-#include "userDumpConstruct.h"
-#include "userBdxConstruct.h"
-#include "flukaTallyBuilder.h"
+#include "MeshXYZ.h"
+#include "phitsTally.h"
+#include "TGShow.h"
+#include "tgshowConstruct.h"
+#include "phitsTallyBuilder.h"
 
-namespace flukaSystem
+namespace phitsSystem
 {
 
 void
-tallySelection(SimFLUKA& System,
+tallySelection(SimPHITS& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     An amalgumation of values to determine what sort of tallies to put
     in the system.
-    \param System :: SimFLUKA to add tallies
+    \param System :: SimPHITS to add tallies
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("flukaTallyBuilder[F]","tallySelection(basic)");
+  ELog::RegMethod RegA("phitsTallyBuilder","tallySelection(basic)");
   
   System.populateCells();
   System.createObjSurfMap();
@@ -91,12 +92,8 @@ tallySelection(SimFLUKA& System,
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
       
-      else if (TType=="mesh")
-	userBinConstruct::processMesh(System,IParam,i);
-      else if (TType=="dump")
-	userDumpConstruct::processDump(System,IParam,i);
-      else if (TType=="surface")
-	userBdxConstruct::processBDX(System,IParam,i);
+      else if (TType=="gshow")
+	tgshowConstruct::processMesh(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
@@ -115,7 +112,7 @@ helpTallyType(const std::string& HType)
     \param HType :: specialization if present that help is required for
   */
 {
-  ELog::RegMethod("flukaTallBuilder[F]","helpTallyType");
+  ELog::RegMethod("phitsTallyBuilder[F]","helpTallyType");
 
   if (HType=="mesh")
     {}
@@ -131,4 +128,4 @@ helpTallyType(const std::string& HType)
 }
 
 
-} // NAMESPACE flukaSystem
+} // NAMESPACE phitsSystem

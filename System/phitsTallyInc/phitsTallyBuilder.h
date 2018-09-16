@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/flukaTallyBuilder.h
+ * File:   tallyInc/phitsTallyBuilder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaTallyBuilder_h
-#define flukaTallyBuilder_h
+#ifndef phitsTallyBuilder_h
+#define phitsTallyBuilder_h
 
 class Simulation;
-class SimFLUKA;
+class SimPHITS;
 
-namespace flukaSystem
+namespace phitsSystem
 {
    
-  void tallySelection(SimFLUKA&,const mainSystem::inputParam&);
+  void tallySelection(SimPHITS&,const mainSystem::inputParam&);
   void helpTallyType(const std::string&);
 
 }

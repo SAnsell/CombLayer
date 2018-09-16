@@ -102,6 +102,13 @@ phitsTally::setComment(const std::string& C)
 
 
 void
+phitsTally::setParticle(const std::string&)
+  /*!
+    Null op call for non-particle detectors
+  */
+{}
+
+void
 phitsTally::setEnergy(const bool,const double,
 		      const double,const size_t)
   /*!

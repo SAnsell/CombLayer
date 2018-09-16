@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/flukaTallyBuilder.h
+ * File:   phitsTallyInc/phitsTallyModification.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,20 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaTallyBuilder_h
-#define flukaTallyBuilder_h
+#ifndef phitsSystem_phitsTallyModification_h
+#define phitsSystem_phitsTallyModification_h
 
 class Simulation;
-class SimFLUKA;
+class SimPHITS;
 
-namespace flukaSystem
+namespace phitsSystem
 {
-   
-  void tallySelection(SimFLUKA&,const mainSystem::inputParam&);
-  void helpTallyType(const std::string&);
 
-}
+  std::set<phitsTally*>
+    getActiveTally(SimPHITS&,const std::string&);
+
   
 
+  int setParticle(SimPHITS&,const std::string&,
+		     const std::string&);
+
+  int setEnergy(SimPHITS&,const std::string&,
+		const double,const double,
+		const size_t,const bool);
+
+  int setAngle(SimPHITS&,const std::string&,
+	       const double,const double,
+	       const size_t,const bool);
+  
+  int setParticleType(SimPHITS&,const int,const std::string&);
+
+    
+}  // namespace phitsSystem 
+
 #endif
- 

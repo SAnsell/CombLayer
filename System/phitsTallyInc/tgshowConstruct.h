@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/flukaTallyBuilder.h
+ * File:   phitsTallyInc/tgshowConstruct.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,20 +19,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaTallyBuilder_h
-#define flukaTallyBuilder_h
+#ifndef phitsSystem_tgshowConstruct_h
+#define phitsSystem_tgshowConstruct_h
+
+namespace attachSystem
+{
+  class FixedComp;
+}
+
+namespace mainSystem
+{
+  class inputParam;
+}
 
 class Simulation;
-class SimFLUKA;
 
-namespace flukaSystem
+namespace phitsSystem
 {
-   
-  void tallySelection(SimFLUKA&,const mainSystem::inputParam&);
-  void helpTallyType(const std::string&);
+
+/*!
+  \class tgshowConstruct
+  \version 1.0
+  \author S. Ansell
+  \date September 2018
+  \brief Constructs a mesh tally from inputParam
+*/
+
+class tgshowConstruct 
+{
+  private:
+  
+  /// Private constructor
+  tgshowConstruct() {}
+
+  static void createTally(SimPHITS&,
+			  const int,
+			  const Geometry::Vec3D&,const Geometry::Vec3D&,
+			  const std::array<size_t,3>&);
+  
+
+  static std::string convertTallyType(const std::string&);
+  
+ public:
+
+  static void processMesh(SimPHITS&,const mainSystem::inputParam&,
+			  const size_t);
+  
+  static void writeHelp(std::ostream&);
+};
 
 }
-  
 
 #endif
  
