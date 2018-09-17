@@ -265,13 +265,11 @@ BeamSource::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("BeamSource","writePHITS");
 
-  const particleConv& PC=particleConv::Instance();
   boost::format fFMT("%1$11.6g%|14t|");
 
   const double phi=180.0*acos(Y[0])/M_PI;
   
   OX<<"  s-type =  1        # axial source \n";
-  OX<<" proj =   "<<PC.nameToPHITS(particleType)<<"\n";
   OX<<"  r0  =   "<<(fFMT % radius)   <<"  # radius [cm]\n";
   OX<<"  x0  =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
   OX<<"  y0  =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
@@ -282,13 +280,7 @@ BeamSource::writePHITS(std::ostream& OX) const
   if (angleSpread>Geometry::zeroTol)
     OX<<" dom =    "<<(fFMT % angleSpread)<<"  # solid angle to X axis [deg]\n";
 
-  
-  if (Energy.size()==1)
-    OX<<" e0   =   "<<(fFMT % Energy.front())   <<"  # single energy point \n"
-  else
-    
-    OX<<" e0   =   "<<(fFMT % Energy.front())   <<"  # single energy point \n"
-
+  writePHITS(OX);
   OX<<std::endl;
   return;
 }

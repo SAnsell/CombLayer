@@ -973,6 +973,7 @@ Simulation::setSourceName(const std::string& S)
    \param S :: Source name
   */
 {
+  ELog::EM<<"Source == "<<S<<ELog::endDiag;
   sourceName=S;
   return;
 }

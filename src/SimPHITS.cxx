@@ -111,7 +111,7 @@
 
 
 SimPHITS::SimPHITS() :
-  Simulation(),nps(10000),rndSeed(1234567871),
+  Simulation(),icntl(0),nps(10000),rndSeed(1234567871),
   PhysPtr(new phitsSystem::phitsPhysics())
   /*!
     Constructor
@@ -187,10 +187,8 @@ SimPHITS::writeSource(std::ostream& OX) const
 
   const SDef::SourceBase* SBPtr=
     SDB.getSource<SDef::SourceBase>(sourceName);
-  SBPtr->writePHITS(OX);
-  //  sdefCard.writePHITS(OX);
-  
-
+  if (SBPtr)
+    SBPtr->writePHITS(OX);
   return;
 }
 
@@ -362,14 +360,14 @@ SimPHITS::writePhysics(std::ostream& OX) const
 
   if (WM.hasParticle("n"))
     {
+      ELog::EM<<"WEIGHT"<<ELog::endErr;
       const WeightSystem::WForm* NWForm=WM.getParticle("n");
       NWForm->writePHITSHead(OX);
     }
-  
   OX<<"$ ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
 
   
-  OX<<std::endl;  // MCNPX requires a blank line to terminate
+  OX<<std::endl;
   return;
 }
 
