@@ -86,9 +86,9 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "commonVar","simpleItem","physics","simMC",
 			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			     "insertUnit","flukaProcess","flukaPhysics",
-			     "flukaTally","tally",
+			     "insertUnit",
      			     "phitsProcess","phitsPhysics",
+			     "flukaProcess","flukaPhysics","flukaTally","tally",
 			     "source","instrument","work"
     	 	             ]);
 

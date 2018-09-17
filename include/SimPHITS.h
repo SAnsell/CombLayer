@@ -74,6 +74,10 @@ class SimPHITS : public Simulation
   virtual ~SimPHITS() {}           ///< Destructor
 
   void setICNTL(const std::string&);
+  /// set nps [move to physics]
+  void setNPS(const size_t N) { nps=N; }
+  /// set rndseed [move to physics]
+  void setRND(const long int N) { rndSeed=N; }
 
   /// access to physics
   phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }

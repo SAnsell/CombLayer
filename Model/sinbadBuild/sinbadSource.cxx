@@ -45,9 +45,8 @@
 #include "WorkData.h"
 #include "sinbadSource.h"
 
-using namespace std;
-namespace SDef
 
+namespace SDef
 {
 
 sinbadSource::sinbadSource() : 
@@ -668,20 +667,19 @@ sinbadSource::createSourceSinbad(SDef::Source& sourceCard)
   // D3.addUnit(SI3);  
   // D3.addUnit(SP3);  
   D3.addUnit(SB3);  
-  // std::cout<<" AAA "<<SB3<<std::endl;
   sourceCard.setData("dir",D3);  
  
   sourceCard.setComp("vec",Geometry::Vec3D(0,1,0 ));
 
   // array limits==
-  int nx49(16);
-  int nz49(17);
-  int nx75(6);
-  int nz75(13);
-  int nx35(16);
-  int nz35(17);
-  int nx36(6);
-  int nz36(13);
+  size_t nx49(16);
+  size_t nz49(17);
+  size_t nx75(6);
+  size_t nz75(13);
+  size_t nx35(16);
+  size_t nz35(17);
+  size_t nx36(6);
+  size_t nz36(13);
 
   double nuclearZ(-6.6);
   double nuclearX(2.5);
@@ -692,15 +690,16 @@ sinbadSource::createSourceSinbad(SDef::Source& sourceCard)
   SDef::SrcProb SP4(' ');
   double hVal=0.0;
   //ori  SP4.addData(hVal);
-  for(unsigned iz=0;iz<nz49-1;iz++) 
-   {SI4.addData(sinbadSource49[nz49-1-iz][0]+nuclearZ); 
-    hVal=0; 
-    for(unsigned ix=0;ix<nx49-1;ix++) 
-      {
-	hVal+=sinbadSource49[nz49-1-iz-1][ix+1]*
-        (sinbadSource49[0][ix+1]-sinbadSource49[0][ix])*
-        (sinbadSource49[nz49-1-iz-1][0]-sinbadSource49[nz49-1-iz][0]);
-      }
+  for(size_t iz=1;iz<nz49;iz++) 
+   {
+     SI4.addData(sinbadSource49[nz49-iz][0]+nuclearZ); 
+     hVal=0; 
+     for(size_t ix=1;ix<nx49;ix++) 
+       {
+	 hVal+=sinbadSource49[nz49-iz][ix]*
+	   (sinbadSource49[0][ix]-sinbadSource49[0][ix-1])*
+	   (sinbadSource49[nz49-(iz+1)][0]-sinbadSource49[nz49-iz][0]);
+       }
 
     //ori   if(iz<nz36-2)SP4.addData(hVal);
     SP4.addData(1.0);   
@@ -714,72 +713,59 @@ sinbadSource::createSourceSinbad(SDef::Source& sourceCard)
   //
 
   //  for(unsigned ix=0;ix<15;ix++) SI4.addData(sinbadSource36[0][ix]-2.5); 
-  for(unsigned ix=0;ix<nx49-1;ix++) SI4.addData(sinbadSource49[0][ix]); 
+  for(size_t ix=1;ix<nx49;ix++)
+    SI4.addData(sinbadSource49[0][ix-1]); 
+
   SDef::DSTerm<int>* DS5=D5.getDS<int>(); 
   DS5->setType("z",'s');
-  for (unsigned is=6;is<nz49+2;is++) DS5->addData(is);
-  
+  for (size_t is=6;is<nz49+2;is++)
+    DS5->addData(is);
  
   SDef::DSIndex DI6(std::string("z"));
   SDef::SrcInfo SI6('A');
-  //  for(unsigned ix=0;ix<15;ix++) SI5.addData(sinbadSource49[0][ix]-2.5); 
-  for(unsigned ix=0;ix<nx49;ix++) SI6.addData(sinbadSource49[0][ix]); 
+
+  for(size_t ix=0;ix<nx49;ix++)
+    SI6.addData(sinbadSource49[0][ix]); 
 
   // starting dist number==6
-  int sn(6);
+  size_t sn(6);
   // ATTENZIONE 20!!!!
-  for (unsigned is=sn;is<nz49+sn-2;is++) 
+  for (size_t is=sn;is<nz49+(sn-2);is++) 
    {
      SDef::SrcProb SP6 (' ');
-    //ori    SP6.addData(0.0);
-    //ori   for (unsigned ix=1;ix<nx49;ix++)
-
-    for (unsigned ix=0;ix<nx49;ix++)
-      {
-      //ori  SP6.addData(sinbadSource49[nz49+sn-2-is][ix]*
-      //ori (sinbadSource49[0][ix]-sinbadSource49[0][ix-1]));
-      SP6.addData(1.0);
-
-       //       if(ix<15)
-      //   std::cout<<" S "<<sinbadSource49[nz49-is+sn-2][ix]<<" x "<<sinbadSource49[0][ix-1]<<std::endl;
- 
-  
-     }
-       DI6.addData(is,&SI6,0,&SP6);
-
+     for (size_t ix=0;ix<nx49;ix++)
+       {
+	 SP6.addData(1.0);
+       }
+     DI6.addData(is,&SI6,0,&SP6);
    }
   D5.addUnit(&DI6);
   sourceCard.setData("x",D5); 
  
- //49//////////////
+  //49//////////////
   int cellNum(41);
-/////////////////
+  /////////////////
 
   SDef::SrcData D21(21);
   SDef::SrcInfo SI21('L');
   SDef::SrcProb SP21(' ');
-   for(unsigned ix=0;ix<nx49-1;ix++)   
+  for(size_t ix=1;ix<nx49;ix++)   
     { 
-     for(unsigned iz=0;iz<nz49-2;iz++) 
-      {
-       if(iz==nz49-3)cellNum++;
-       SI21.addData(cellNum++);
-       SP21.addData(sinbadSource49[nz49-1-iz-1][ix+1]);
-      }
-    if(ix==nx49-3)
+      for(size_t iz=2;iz<nz49;iz++) 
+	{
+	  if(iz==nz49-1) cellNum++;   // why ?
+  	  SI21.addData(cellNum++);
+	  SP21.addData(sinbadSource49[nz49-iz][ix]);
+	}
+      if(ix==nx49-2) cellNum++;
       cellNum++;
-    cellNum++;
-   }  
+    }  
 
   D21.addUnit(SI21);  
   D21.addUnit(SP21);  
   sourceCard.setData("cel",D21);  
 
- sourceCard.setComp("eff", 0.00000001);
-
-
-
-
+  sourceCard.setComp("eff", 0.00000001);
   return;
 }  
 

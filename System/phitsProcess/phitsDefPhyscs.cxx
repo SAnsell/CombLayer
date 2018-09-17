@@ -94,8 +94,9 @@ setModelPhysics(SimPHITS& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod Rega("phitsDefPhysics","setModelPhysics");
-  
+  ELog::RegMethod RegA("phitsDefPhysics[F]","setModelPhysics");
+
+  ELog::EM<<"CAll here "<<ELog::endDiag;
   phitsSystem::phitsPhysics* PC=System.getPhysics();
   if (!PC) return;
 
@@ -111,12 +112,12 @@ void
 setXrayPhysics(phitsPhysics& PC,
 	       const mainSystem::inputParam& IParam)
   /*!
-    Set the neutron Physics for PHITS run on a reactor
+    Set the xray Physics for PHITS run on a synchrotron
     \param PC :: Physics cards
     \param IParam :: Input stream
   */
 {
-  ELog::RegMethod RegA("DefPhysics","setXrayPhysics");
+  ELog::RegMethod RegA("phitsDefPhysics[F]","setXrayPhysics");
 
   const std::string PModel=IParam.getValue<std::string>("physModel");
   typedef std::tuple<size_t,std::string,std::string,

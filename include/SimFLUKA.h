@@ -81,7 +81,7 @@ class SimFLUKA : public Simulation
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
 
-    flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
+  flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
     
   // TALLY Processing 
   void addTally(const flukaSystem::flukaTally&);

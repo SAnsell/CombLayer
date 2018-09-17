@@ -77,6 +77,7 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimFLUKA.h"
+#include "SimPHITS.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
@@ -470,7 +471,7 @@ setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
     Catch all for non-specialized Simulation units
    */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(default)");
   ELog::EM<<"NO OP in base call"<<ELog::endErr;
   return;
 }
@@ -633,7 +634,24 @@ setDefaultPhysics(SimFLUKA& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("flukaProcess[F]","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(fluka)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
+
+void 
+setDefaultPhysics(SimPHITS& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics for phits
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(phits)");
 
   // trick to allow 1e8 entries etc.
   System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));

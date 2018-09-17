@@ -74,6 +74,8 @@ createInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainProcess[F]","createInputs");
 
   std::vector<std::string> RItems(10,"");
+
+  createPHITSInputs(IParam);
   
   IParam.regMulti("activation","activation",10000,1);
 
@@ -326,7 +328,6 @@ createSiliconInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("si","silicon",1,"Silicon");
   IParam.regDefItem<int>("n","nps",1,20);
   IParam.regItem("o","output");
-  IParam.regDefItem<long int>("s","random",1,37564232L);
 
   IParam.setDesc("bias","");
   IParam.setDesc("detSize","Width/Height of the area-detector");
@@ -335,7 +336,6 @@ createSiliconInputs(inputParam& IParam)
   IParam.setDesc("silicon","Silicon vane material");
   IParam.setDesc("nps","Number of simulated points");
   IParam.setDesc("output","Output file");
-  IParam.setDesc("random","");
 
   return;
 }
