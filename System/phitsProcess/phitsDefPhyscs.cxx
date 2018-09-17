@@ -96,12 +96,16 @@ setModelPhysics(SimPHITS& System,
 {
   ELog::RegMethod RegA("phitsDefPhysics[F]","setModelPhysics");
 
-  ELog::EM<<"CAll here "<<ELog::endDiag;
+
   phitsSystem::phitsPhysics* PC=System.getPhysics();
   if (!PC) return;
 
+  ELog::EM<<"CAll here "<<IParam.flag("icntl")<<ELog::endDiag;
   if (IParam.flag("icntl"))
-    System.setICNTL(IParam.getValue<std::string>("icntl"));
+    {
+      ELog::EM<<"VAL "<<IParam.getValue<std::string>("icntl")<<ELog::endDiag;
+      System.setICNTL(IParam.getValue<std::string>("icntl"));
+    }
       
   
   return; 

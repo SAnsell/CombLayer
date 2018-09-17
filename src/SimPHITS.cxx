@@ -104,12 +104,15 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "phitsPhysics.h"
+#include "phitsTally.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
 
 SimPHITS::SimPHITS() :
-  Simulation(),nps(10000),rndSeed(1234567871)
+  Simulation(),nps(10000),rndSeed(1234567871),
+  PhysPtr(new phitsSystem::phitsPhysics())
   /*!
     Constructor
   */
@@ -117,7 +120,8 @@ SimPHITS::SimPHITS() :
 
 
 SimPHITS::SimPHITS(const SimPHITS& A) :
-  Simulation(A),nps(A.nps),rndSeed(A.rndSeed)
+  Simulation(A),nps(A.nps),rndSeed(A.rndSeed),
+  PhysPtr(new phitsSystem::phitsPhysics(*PhysPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -137,6 +141,7 @@ SimPHITS::operator=(const SimPHITS& A)
       Simulation::operator=(A);
       nps=A.nps;
       rndSeed=A.rndSeed;
+      *PhysPtr=*PhysPtr;
     }
   return *this;
 }
@@ -269,15 +274,15 @@ SimPHITS::writeSurfaces(std::ostream& OX) const
   */
 
 {
-  OX<<"  [surface] " <<std::endl;
+  OX<<"[surface] " <<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap=
     ModelSupport::surfIndex::Instance().surMap();
-  std::map<int,Geometry::Surface*>::const_iterator mp;
-  for(mp=SurMap.begin();mp!=SurMap.end();mp++)
-    {
-      (mp->second)->write(OX);
-    }
+
+  for(const std::map<int,Geometry::Surface*>
+	::value_type& mp : SurMap)
+    mp.second->write(OX);
+
   return;
 } 
 
@@ -388,7 +393,8 @@ SimPHITS::write(const std::string& Fname) const
   writeTransform(OX);
   writeTally(OX);
   writeSource(OX);
-  
+
+  OX<<"[end]"<<std::endl;
   OX.close();
   return;
 }

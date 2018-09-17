@@ -101,7 +101,6 @@ FixedComp::splitObject(Simulation& System,
   const Geometry::Vec3D O=Origin+X*Org[0]+Y*Org[1]+Z*Org[2];
   Geometry::Vec3D Axis=X*XYZ[0]+Y*XYZ[1]+Z*XYZ[2];
   Axis.makeUnit();
-  ELog::EM<<"Build == "<<buildIndex+SNoffset<<" "<<Axis<<ELog::endDiag;
     
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,O,Axis);
   const int cellExtra=

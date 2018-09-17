@@ -50,8 +50,7 @@ class SimPHITS : public Simulation
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
 
-
-  PTallyTYPE PTItem;              ///< Fluka tally map
+  PTallyTYPE PTItem;                   ///< Phits tally map
   
   phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics
   
