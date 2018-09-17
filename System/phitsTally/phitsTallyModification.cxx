@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   phitsTally/phitsTallySelector.cxx
+ * File:   phitsTally/phitsTallyModification.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -65,7 +65,7 @@ std::set<phitsTally*>
 getActiveTally(SimPHITS& Sim,const std::string& tName)
   /*!
     Get a set of points to matching tallys
-    \param Simulation :: Si
+    \param Sim :: Simulation model
     \param tName :: tally name [or wild card component]
     \return Points to tallys
    */
@@ -73,9 +73,9 @@ getActiveTally(SimPHITS& Sim,const std::string& tName)
   ELog::RegMethod RegA("phitsTallyModification[F]","getActiveTally");
 
   std::set<phitsTally*> Out;
-  SimPHITS::FTallyTYPE& tmap=Sim.getTallyMap();
+  SimPHITS::PTallyTYPE& tmap=Sim.getTallyMap();
 
-  for(SimPHITS::FTallyTYPE::value_type& mc : tmap)
+  for(SimPHITS::PTallyTYPE::value_type& mc : tmap)
     {
       std::string KN=mc.second->getKeyName();
       if (tName.back()=='*')
@@ -105,9 +105,9 @@ setParticleType(SimPHITS& Sim,const int tNumber,
   ELog::RegMethod RegA("phitsTallyModificaiton[F]","setParticleType");
 
   
-  SimPHITS::FTallyTYPE& tmap=Sim.getTallyMap();
+  SimPHITS::PTallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
-  for(SimPHITS::FTallyTYPE::value_type& mc : tmap)
+  for(SimPHITS::PTallyTYPE::value_type& mc : tmap)
     {
       if (tNumber==0 || mc.first==tNumber ||
           (tNumber<0 && (mc.first % 10) == -tNumber))
@@ -138,7 +138,7 @@ setParticle(SimPHITS& Sim,const std::string& tName,
     getActiveTally(Sim,tName);
 
   for(phitsTally* mc: ATallySet)
-    mc->setParticles(particle);
+    mc->setParticle(particle);
 
   return static_cast<int>(ATallySet.size());
 }
@@ -197,4 +197,4 @@ setAngle(SimPHITS& Sim,const std::string& tName,
 }
 
 }  // NAMESPACE phitsSystem
-g
+

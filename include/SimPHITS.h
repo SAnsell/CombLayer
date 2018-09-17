@@ -39,15 +39,20 @@ namespace phitsSystem
  */
 class SimPHITS : public Simulation
 {
+ public:
+
+  /// Tally  : tally
+  typedef std::map<int,phitsSystem::phitsTally*> PTallyTYPE;
+
  private:
 
   int icntl;                           ///< ICNTL
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
 
-  /// Tally  : tally
-  //  typedef std::map<int,phitsSystem::phitsTally*> FTallyTYPE;
 
+  PTallyTYPE PTItem;              ///< Fluka tally map
+  
   phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics
   
   // ALL THE sub-write stuff
@@ -69,11 +74,17 @@ class SimPHITS : public Simulation
   virtual ~SimPHITS() {}           ///< Destructor
 
   void setICNTL(const std::string&);
-  //phitsSystem::phitsTally* getTally(const int) const;
 
   /// access to physics
   phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }
 
+
+  // TALLY Processing 
+  void addTally(const phitsSystem::phitsTally&);
+  phitsSystem::phitsTally* getTally(const int) const;
+  PTallyTYPE& getTallyMap() { return PTItem; }            ///< Access tally map
+  const PTallyTYPE& getTallyMap() const { return PTItem; }  ///< Access constant
+  
   virtual void write(const std::string&) const;
 
 };

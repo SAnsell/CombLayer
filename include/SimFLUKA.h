@@ -81,13 +81,14 @@ class SimFLUKA : public Simulation
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
 
+    flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
+    
   // TALLY Processing 
   void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
-  flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
-
   /// Access tally items
   FTallyTYPE& getTallyMap() { return FTItem; }
+
 
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
