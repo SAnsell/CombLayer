@@ -198,14 +198,19 @@ RFQ::createSurfaces()
 {
   ELog::RegMethod RegA("RFQ","createSurfaces");
 
+
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  Geometry::Vec3D dirZ(Z);
+  Geometry::Quaternion::calcQRotDeg(45,Y).rotate(dirZ);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0),dirZ);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0),dirZ);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+  dirZ = Z;
+  Geometry::Quaternion::calcQRotDeg(-45,Y).rotate(dirZ);
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(width/2.0),dirZ);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(width/2.0),dirZ);
 
   return;
 }
@@ -220,7 +225,7 @@ RFQ::createObjects(Simulation& System)
   ELog::RegMethod RegA("RFQ","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
   addOuterSurf(Out);
