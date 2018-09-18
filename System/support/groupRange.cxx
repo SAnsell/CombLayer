@@ -1,0 +1,340 @@
+#include <iostream>
+#include <cmath>
+#include <complex>
+#include <vector>
+#include <limits>
+
+#include "Exception.h"
+#include "groupRange.h"
+
+
+std::ostream&
+operator<<(std::ostream& OX,const groupRange& A)
+  /*!
+    Standard stream operator
+    \param OX :: output stream
+    \param A :: groupRange item
+   */
+{
+  A.write(OX);
+  return OX;
+}
+
+groupRange::groupRange() 
+  /*!
+    Constructor [empty]
+  */
+{}
+
+groupRange::groupRange(const int V) :
+  LowUnit({V}),HighUnit({V})
+  /*!
+    Constructor
+    \param V :: Single Value to set 
+  */
+{}
+
+groupRange::groupRange(const int LV,const int HV) :
+  LowUnit(std::min(LV,HV)),HighUnit(std::max(LV,HV))
+  /*!
+    Constructor
+    \param LV :: Low values [not check]
+    \param HV :: High values [not check]
+  */
+{}
+
+groupRange::groupRange(const groupRange& A) : 
+  LowUnit(A.LowUnit),HighUnit(A.HighUnit)
+  /*!
+    Copy constructor
+    \param A :: groupRange to copy
+  */
+{}
+
+groupRange&
+groupRange::operator=(const groupRange& A)
+  /*!
+    Assignment operator
+    \param A :: groupRange to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      LowUnit=A.LowUnit;
+      HighUnit=A.HighUnit;
+    }
+  return *this;
+}
+
+size_t
+groupRange::validIndex(const int V) const
+  /*!
+    Simple determination if V is with the range
+    throw if not and then return the index
+    \param V :: Value to check
+    \return index
+   */
+{
+  const size_t out=valueIndex(V);
+  if (out>LowUnit.size())
+    throw ColErr::InContainerError<int>(V,"V not in group index");
+  return out;
+}
+
+size_t
+groupRange::valueIndex(const int V) const
+  /*!
+    Simple determination if V is with the range
+    \param V :: Value to check
+    \return index or > UnitLow.size()
+  */
+{
+  std::vector<int>::const_iterator 
+    xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
+  if (xV!=LowUnit.end() &&  V >= *xV)
+    {
+      const size_t index=static_cast<size_t>(distance(LowUnit.begin(),xV));
+      if (V > HighUnit[index])
+	return index;
+    }
+  return std::numeric_limits<size_t>::max();
+}
+
+bool
+groupRange::valid(const int V) const
+  /*!
+    Simple determination if V is with the range
+    \param V :: Value to check
+    \return true if within range
+   */
+{
+  std::vector<int>::const_iterator 
+    xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
+  if (xV==LowUnit.end() ||  V < *xV) return 0;
+  const size_t index=static_cast<size_t>(distance(LowUnit.begin(),xV));
+  return  (V > HighUnit[index] ) ? 0 : 1;
+}
+
+
+void
+groupRange::merge()
+  /*!
+    Merge units that overlap
+  */
+{
+  if (LowUnit.empty()) return;
+  std::vector<int> lOut;
+  std::vector<int> hOut;
+  lOut.push_back(LowUnit.front());
+  hOut.push_back(HighUnit.front());
+  for(size_t index=1;index<LowUnit.size();index++)
+    {
+      const int LV(LowUnit[index]);
+      const int HV(HighUnit[index]);
+      if (LV>hOut.back())
+	{
+	  lOut.push_back(LV);
+	  hOut.push_back(HV);
+	}
+      else if (HV>hOut.back())
+	{
+	  hOut.back()=HV;
+	}
+    }
+  LowUnit=lOut;
+  HighUnit=lOut;
+  return;
+}
+
+groupRange&
+groupRange::combine(const groupRange& A) 
+  /*!
+    Combine the biggest mixed range
+    \param A :: groupRange to combine
+    \return new groupRange
+  */
+{
+  std::vector<int> lOut;
+  std::vector<int> hOut;
+  size_t indexA(0);
+  size_t indexB(0);
+
+  
+  while(indexA< LowUnit.size() && indexB< A.LowUnit.size())
+    {
+      const int ALV(LowUnit[indexA]);
+      const int BLV(A.LowUnit[indexB]);
+      const int AHV(HighUnit[indexA]);
+      const int BHV(A.HighUnit[indexB]);
+      
+      if (ALV<=BLV)
+	{
+	  lOut.push_back(ALV);
+	  if (BLV<=AHV)  // combinination possible
+	    {
+	      hOut.push_back(std::max(AHV,BHV));
+	      indexA++;
+	      indexB++;
+	    }
+	  else
+	    {
+	      hOut.push_back(AHV);
+	      indexA++;
+	    }
+	}
+      else   // reverse of above [can be made tidy?]
+	{
+	  lOut.push_back(BLV);
+	  if (ALV<=BHV)  // combinination possible
+	    {
+	      hOut.push_back(std::max(AHV,BHV));
+	      indexA++;
+	      indexB++;
+	    }
+	  else
+	    {
+	      hOut.push_back(BHV);
+	      indexB++;
+	    }
+	}
+    }
+  for(;indexA<LowUnit.size();indexA++)
+    {
+      lOut.push_back(LowUnit[indexA]);
+      hOut.push_back(HighUnit[indexA]);
+    }
+  for(;indexB<A.LowUnit.size();indexB++)
+    {
+      lOut.push_back(A.LowUnit[indexB]);
+      hOut.push_back(A.HighUnit[indexB]);
+    }
+
+  // now do cross-merge
+  LowUnit=lOut;
+  HighUnit=hOut;
+  merge();
+  return *this;
+}
+
+void
+groupRange::addItem(const int A)
+  /*!
+    Add an item if required
+    \param A :: Item to remove
+  */
+{
+  if (valid(A)) return;
+
+  const size_t indexM=valueIndex(A-1);
+  const size_t indexP=valueIndex(A+1);
+
+  // special case exactly between two units
+  if (indexP<LowUnit.size() && indexM<LowUnit.size())
+    {
+      HighUnit[indexM]=HighUnit[indexP];
+      LowUnit.erase(LowUnit.begin()+indexP);
+      HighUnit.erase(HighUnit.begin()+indexP);
+      return;
+    }
+  
+  // special case one below a unit:
+  if (indexP<LowUnit.size())
+    {
+      LowUnit[indexP]--;
+      return;
+    }
+  // special case one above a unit:
+  if (indexM<LowUnit.size())
+    {
+      HighUnit[indexM]++;
+      return;
+    }
+  
+  // create a new unit:
+  std::vector<int>::const_iterator 
+    xV=lower_bound(LowUnit.begin(),LowUnit.end(),A);
+  const long int offset=distance(LowUnit.cbegin(),xV);
+  LowUnit.insert(xV,A);
+  HighUnit.insert(HighUnit.begin()+offset,A);
+  return;
+}
+
+void
+groupRange::removeItem(const int A)
+  /*!
+    Remove an item if possible
+    \param A :: Item to remove
+  */
+{
+  const size_t index=valueIndex(A);
+  if (index>=LowUnit.size()) return;
+
+  // case 1: short unit to be deleted
+  if (LowUnit[index]==HighUnit[index])
+    {
+      LowUnit.erase(LowUnit.begin()+index);
+      HighUnit.erase(HighUnit.begin()+index);
+      return;
+    }
+
+  // case 2: at front 
+  if (LowUnit[index]==A)
+    {
+      LowUnit[index]++;
+      return;
+    }
+
+  // case 3: at back
+  if (HighUnit[index]==A)
+    {
+      HighUnit[index]--;
+      return;
+    }
+  // splitting required
+  const int HL=HighUnit[index];
+  HighUnit[index]=A-1;
+  LowUnit.insert(LowUnit.begin(),A+1);
+  HighUnit.insert(HighUnit.begin(),HL);
+  return;
+}
+
+void
+groupRange::move(const int A,const int B)
+  /*!
+    Move A to B: 
+    Note A MUST exist and B MUST NOT exist
+    \param A :: A
+  */
+{
+  
+  const size_t VA=validIndex(A);
+  if (valid(B))
+    throw ColErr::InContainerError<int>
+      (B,"groupRangeMove::B value already present");
+  
+  removeItem(A);
+  addItem(B);
+  return;
+}
+
+
+void
+groupRange::write(std::ostream& OX) const
+  /*!
+    Output function
+    \param OX :: Output stream
+   */
+{
+  for(size_t i=0;i<LowUnit.size();i++)
+    {
+      const int LA(LowUnit[i]);
+      const int HA(HighUnit[i]);
+      if (LA==HA)
+	OX<<LA<<" ";
+      else
+	OX<<"["<<LA<<" "<<HA<<"] ";
+    }
+  return;
+}
+
