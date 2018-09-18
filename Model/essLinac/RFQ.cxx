@@ -203,16 +203,23 @@ RFQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(width/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(width/2.0),Z);
+
   // inner surfaces
   Geometry::Vec3D dirX(X);
+  const double dx(width/2.0-wallThick*cos(theta*M_PI/180.0));
   Geometry::Quaternion::calcQRotDeg(-theta,Y).rotate(dirX);
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0),dirX);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0),dirX);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(dx),dirX);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(dx),dirX);
 
   Geometry::Vec3D dirZ(Z);
   Geometry::Quaternion::calcQRotDeg(-theta,Y).rotate(dirZ);
-  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(width/2.0),dirZ);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(width/2.0),dirZ);
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(dx),dirZ);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(dx),dirZ);
 
   // outer surfaces
   ModelSupport::buildShiftedPlane(SMap,surfIndex+23,
@@ -244,10 +251,10 @@ RFQ::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 23 -24 25 -26 (-13:14:-15:16) ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 23 -24 25 -26 3 -4 5 -6 (-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 23 -24 25 -26 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 23 -24 25 -26 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;
