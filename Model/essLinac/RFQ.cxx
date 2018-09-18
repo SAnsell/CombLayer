@@ -198,19 +198,35 @@ RFQ::createSurfaces()
 {
   ELog::RegMethod RegA("RFQ","createSurfaces");
 
+  const double theta(45.0);
 
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
-  Geometry::Vec3D dirZ(Z);
-  Geometry::Quaternion::calcQRotDeg(45,Y).rotate(dirZ);
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0),dirZ);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0),dirZ);
+  // inner surfaces
+  Geometry::Vec3D dirX(X);
+  Geometry::Quaternion::calcQRotDeg(-theta,Y).rotate(dirX);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0),dirX);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0),dirX);
 
-  dirZ = Z;
-  Geometry::Quaternion::calcQRotDeg(-45,Y).rotate(dirZ);
+  Geometry::Vec3D dirZ(Z);
+  Geometry::Quaternion::calcQRotDeg(-theta,Y).rotate(dirZ);
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(width/2.0),dirZ);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(width/2.0),dirZ);
+
+  // outer surfaces
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+23,
+                                  SMap.realPtr<Geometry::Plane>(surfIndex+13),
+				  -wallThick);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+24,
+                                  SMap.realPtr<Geometry::Plane>(surfIndex+14),
+                                  wallThick);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+25,
+                                  SMap.realPtr<Geometry::Plane>(surfIndex+15),
+                                  -wallThick);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+26,
+                                  SMap.realPtr<Geometry::Plane>(surfIndex+16),
+                                  wallThick);
 
   return;
 }
@@ -228,6 +244,10 @@ RFQ::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 23 -24 25 -26 (-13:14:-15:16) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 23 -24 25 -26 ");
   addOuterSurf(Out);
 
   return;
