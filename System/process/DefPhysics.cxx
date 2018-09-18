@@ -519,7 +519,7 @@ setDefaultPhysics(SimMCNP& System,
   
   const std::string PModel=IParam.getValue<std::string>("physModel");
   const double maxEnergy=IParam.getDefValue<double>
-    (2000.0,"maxEnergy");
+    (3000.0,"maxEnergy");
 
   setGenericPhysics(System,PModel);
   
