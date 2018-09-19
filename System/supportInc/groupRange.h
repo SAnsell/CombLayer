@@ -50,7 +50,7 @@ public:
   groupRange& operator=(const groupRange&);
   ~groupRange() {}    ///< Destructor
 
-  bool empty() const { return LowUnit.empty(); }     /// empty flag
+  bool empty() const { return LowUnit.empty(); }     ///< empty flag
   void merge();  
   bool valid(const int) const;
   groupRange& combine(const groupRange&);

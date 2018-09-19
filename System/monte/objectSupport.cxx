@@ -54,6 +54,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"

@@ -67,6 +67,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"

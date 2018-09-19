@@ -69,6 +69,8 @@
 #include "CellMap.h"
 #include "objectRegister.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SurInter.h"
 #include "AttachSupport.h"

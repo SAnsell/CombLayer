@@ -61,6 +61,8 @@
 #include "SecondTrack.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "masterWrite.h"
 #include "ReportSelector.h" 

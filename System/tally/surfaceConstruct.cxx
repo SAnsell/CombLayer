@@ -61,6 +61,8 @@
 #include "LinkSupport.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"

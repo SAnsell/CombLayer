@@ -65,6 +65,8 @@
 #include "PhysCard.h"
 #include "PhysicsCards.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "objectRegister.h"

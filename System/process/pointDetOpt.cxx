@@ -62,6 +62,8 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"

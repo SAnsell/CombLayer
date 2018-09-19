@@ -72,6 +72,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "ModeCard.h"

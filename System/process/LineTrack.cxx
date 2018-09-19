@@ -67,6 +67,8 @@
 #include "DBMaterial.h"
 #include "ObjTrackItem.h"
 #include "neutron.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 

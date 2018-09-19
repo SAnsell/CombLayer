@@ -55,6 +55,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"

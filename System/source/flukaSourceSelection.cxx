@@ -63,6 +63,8 @@
 #include "FixedComp.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"

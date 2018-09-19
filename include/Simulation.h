@@ -67,10 +67,9 @@ namespace MonteCarlo
 
   Contains the running simulation information 
   Mainly list of maps and process information
-  Is expected to be mainly a singleton class.
 */
 
-class Simulation
+class Simulation : public objectGroups
 {
  protected:
 

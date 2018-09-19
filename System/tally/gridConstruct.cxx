@@ -74,6 +74,8 @@
 #include "TwinComp.h"
 #include "PositionSupport.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "Line.h"

@@ -53,6 +53,8 @@
 #include "masterWrite.h"
 #include "objectRegister.h"
 #include "surfIndex.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
