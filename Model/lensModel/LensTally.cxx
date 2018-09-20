@@ -67,6 +67,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Source.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkUnit.h"

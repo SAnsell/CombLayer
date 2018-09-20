@@ -75,6 +75,8 @@
 #include "TwinComp.h"
 #include "LinearComp.h"
 #include "PositionSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkSupport.h"

@@ -72,9 +72,9 @@ class objectGroups
   int getNextCell(const int) const;
   
   int cell(const std::string&,const int = 10000);
-  int getCell(const std::string&) const;
-  int getLast(const std::string&) const;
-  int getRange(const std::string&) const;
+  //  int getCell(const std::string&) const;
+  //  int getLast(const std::string&) const;
+  //  int getRange(const std::string&) const;
   
   std::string inRange(const int) const;
   bool hasCell(const std::string&,const int) const;

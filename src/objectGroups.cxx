@@ -24,6 +24,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <memory>
 #include <vector>
 #include <map>
 #include <list>
@@ -67,9 +68,6 @@
 
 #include "objectGroups.h"
 
-namespace ModelSupport
-{
-
 objectGroups::objectGroups() : 
   cellNumber(1000000)
   /*!
@@ -91,28 +89,19 @@ objectGroups::reset()
   */
 {
   Components.erase(Components.begin(),Components.end());
+  regionMap.erase(regionMap.begin(),regionMap.end());
   activeCells.clear();
   return;
 }
-  
-objectGroups& 
-objectGroups::Instance() 
-  /*!
-    Effective this object			
-    \return objectGroups object
-  */
-{
-  static objectGroups A;
-  return A;
-}
 
+/*
 int
 objectGroups::getCell(const std::string& Name) const
-  /*!
+  /* !
     Get the start cell of an object
     \param Name :: Name of the object to get
     \return Cell number of first cell in range
-  */
+  * /
 {
   MTYPE::const_iterator mc;
   mc=regionMap.find(Name);
@@ -122,11 +111,11 @@ objectGroups::getCell(const std::string& Name) const
 
 int
 objectGroups::getRange(const std::string& Name) const
-  /*!
+  /* !
     Get the range of an object
     \param Name :: Name of the object to get
     \return Range
-   */
+   * /
 {
   MTYPE::const_iterator mc=
     regionMap.find(Name);
@@ -137,11 +126,11 @@ objectGroups::getRange(const std::string& Name) const
 
 int
 objectGroups::getLast(const std::string& Name) const
-  /*!
+  /* !
     Get the last cell in the range of an object
     \param Name :: Name of the object to get
     \return Range
-   */
+   * /
 {
   MTYPE::const_iterator mc=
     regionMap.find(Name);
@@ -149,6 +138,7 @@ objectGroups::getLast(const std::string& Name) const
   return (mc!=regionMap.end()) ?
     mc->second.second : 0;
 }
+  */
 
 bool
 objectGroups::hasCell(const std::string& Name,
@@ -164,8 +154,8 @@ objectGroups::hasCell(const std::string& Name,
   
   MTYPE::const_iterator mc=regionMap.find(Name);
   if (mc==regionMap.end()) return 0;
-  const MTYPE::mapped_type& PI(mc->second);
-  return (cellN>=PI.first && cellN<=PI.second) ? 1 : 0;
+  const groupRange& GR(mc->second);
+  return GR.valid(cellN);
 }
   
   

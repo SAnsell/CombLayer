@@ -62,6 +62,8 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

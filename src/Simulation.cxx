@@ -99,6 +99,8 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SimTrack.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 
 Simulation::Simulation()  :

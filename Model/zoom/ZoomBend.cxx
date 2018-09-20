@@ -72,6 +72,8 @@
 #include "SurInter.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"

@@ -67,6 +67,8 @@
 #include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"

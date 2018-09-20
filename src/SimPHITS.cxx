@@ -106,6 +106,8 @@
 #include "sourceDataBase.h"
 #include "phitsPhysics.h"
 #include "phitsTally.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 

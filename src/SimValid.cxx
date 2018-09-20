@@ -61,6 +61,8 @@
 #include "surfRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimValid.h"
 

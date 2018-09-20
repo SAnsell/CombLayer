@@ -80,6 +80,8 @@
 #include "flukaTally.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 

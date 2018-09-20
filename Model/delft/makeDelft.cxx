@@ -74,6 +74,8 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

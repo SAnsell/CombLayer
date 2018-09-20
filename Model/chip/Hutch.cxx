@@ -73,6 +73,8 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "createDivide.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SpecialSurf.h"
 #include "ModelSupport.h"

@@ -61,6 +61,8 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "ModeCard.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

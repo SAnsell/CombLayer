@@ -23,7 +23,8 @@
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
+#include <memory>
 #include <vector>
 #include <map> 
 #include <list> 
