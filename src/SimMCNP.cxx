@@ -1,6 +1,6 @@
-/********************************************************************* 
-  CombLayer : MCNP(X) Input builder
- 
+/****************************************************************************
+ * CombLayer : MCNP(X) Input builder
+ *
  * File:   src/SimMCNP.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -384,9 +384,9 @@ SimMCNP::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- TALLY CARDS --------------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
   std::vector<tallySystem::tmeshTally*> TMeshVec;
   for(const TallyTYPE::value_type& TM : TItem)
     {
@@ -444,14 +444,14 @@ SimMCNP::writeTransform(std::ostream& OX) const
   */
 
 {
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- TRANSFORM CARDS -----------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- TRANSFORM CARDS ----------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
 
   for(const TransTYPE::value_type& vt : TList)
     vt.second.write(OX);
 
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   return;
 }
 
@@ -465,15 +465,15 @@ SimMCNP::writeCells(std::ostream& OX) const
   */
 
 {
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- CELL CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- CELL CARDS ---------------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     {
       mp->second->write(OX);
     }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   OX<<std::endl;  // Empty line manditory for MCNPX
   return;
 }
@@ -488,9 +488,9 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
   */
 
 {
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- SURFACE CARDS -------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- SURFACE CARDS ------------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
@@ -498,7 +498,7 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->write(OX);
 
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   OX<<std::endl;
   return;
 }
@@ -512,9 +512,9 @@ SimMCNP::writeMaterial(std::ostream& OX) const
   */
 
 {
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- MATERIAL CARDS -----------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
 
@@ -529,7 +529,7 @@ SimMCNP::writeMaterial(std::ostream& OX) const
     }
 
   DB.writeMCNPX(OX);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   return;
 }
 
@@ -546,11 +546,11 @@ SimMCNP::writeWeights(std::ostream& OX) const
   
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- WEIGHT CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- WEIGHT CARDS -------------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
   WM.write(OX);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   return;
 }
 
@@ -569,9 +569,9 @@ SimMCNP::writeSource(std::ostream& OX) const
   SDef::sourceDataBase& SDB=
     SDef::sourceDataBase::Instance();
 
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- SOURCE CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- SOURCE CARDS -------------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
 
   if (!sourceName.empty())
     {
@@ -579,7 +579,7 @@ SimMCNP::writeSource(std::ostream& OX) const
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
       SPtr->write(OX);
     }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   return;
 }
 
@@ -595,9 +595,9 @@ SimMCNP::writePhysics(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimMCNP","writePhysics");
 
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- PHYSICS CARDS --------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
+  OX<<"c --- PHYSICS CARDS ------------------------------------------------------------"<<std::endl;
+  OX<<"c ------------------------------------------------------------------------------"<<std::endl;
 
   // Processing for point tallies
   std::map<int,tallySystem::Tally*>::const_iterator mc;
@@ -632,7 +632,7 @@ SimMCNP::writePhysics(std::ostream& OX) const
   
   // Remaining Physics cards
   PhysPtr->write(OX,cellOutOrder,voidCells);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"c =============================================================================="<<std::endl;
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
 }

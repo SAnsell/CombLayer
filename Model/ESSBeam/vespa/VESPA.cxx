@@ -189,23 +189,10 @@ VESPA::VESPA(const std::string& keyName) :
   T0Disk(new constructSystem::DiskChopper(newName+"T0Blade")),
   T0ExitPort(new constructSystem::HoleShape(newName+"T0ExitPort")),
   
-<<<<<<< HEAD
   // Triangular Shielding A
   ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),  
   VPipeI(new constructSystem::VacuumPipe(newName+"PipeI")),
   FocusI(new beamlineSystem::GuideLine(newName+"FI")),
-=======
-  OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
-  
-  VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
-  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
-
-  OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-  PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
-  PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
->>>>>>> b88c39ce7c887a4b05f30ebd65b6aecde8ad8ffd
   
   // ChoppersFOC and ChoppersFOC Pit
   ChoppersFOCPit(new constructSystem::ChopperPit(newName+"ChoppersFOCPit")),
@@ -522,7 +509,6 @@ VESPA::buildOutGuide(Simulation& System,
   ShieldA->addInsertCell(ChoppersFOCPit->getCells("MidLayer"));
   ShieldA->setBack(ChoppersFOCPit->getKey("Mid"),1);
   ShieldA->createAll(System,FocusWall->getKey("Shield"),2);
-<<<<<<< HEAD
   
   // VPipeI + FocusI
   VPipeI->addInsertCell(ShieldA->getCells("Void"));
@@ -546,29 +532,6 @@ VESPA::buildOutGuide(Simulation& System,
   
   // ShieldB
   ShieldB->addInsertCell(ChoppersFOCPit->getCells("Outer"));
-=======
-
-  // Elliptic 6m section
-  VPipeOutA->addInsertCell(ShieldA->getCells("Void"));
-  VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
-  VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
-  VPipeOutA->addInsertCell(OutPitA->getCells("MidLayer"));
-  VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
-
-  FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
-
-  // First Chopper
-  ChopperOutA->addInsertCell(OutPitA->getCells("Void"));
-  ChopperOutA->createAll(System,FocusOutA->getKey("Guide0"),2);
-
-  // Double disk chopper
-  FOCDiskB->addInsertCell(ChopperOutA->getCell("Void"));
-  FOCDiskB->createAll(System,ChopperOutA->getKey("Main"),0);
-  ChopperOutA->insertAxle(System,*FOCDiskB); 
- 
-  ShieldB->addInsertCell(OutPitA->getCells("Outer"));
->>>>>>> b88c39ce7c887a4b05f30ebd65b6aecde8ad8ffd
   ShieldB->addInsertCell(voidCell);
   ShieldB->setFront(ChoppersFOCPit->getKey("Mid"),2);
   ShieldB->createAll(System,ChoppersFOC->getKey("Beam"),2);
@@ -604,26 +567,26 @@ VESPA::buildOutGuide(Simulation& System,
       FocusArray[i]->createAll(System,*VPipeArray[i],0,*VPipeArray[i],0);
     }
   
-  ELog::EM<<"----- Positions ----------------"<<ELog::endDiag;
-  ELog::EM<<"| ChopperT0   = "<<ChopperT0->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
-  ELog::EM<<"| ChoppersFOC = "<<ChoppersFOC->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
-  for (unsigned i = 0; i < ShieldArray.size(); ++i)
-  {
-    ELog::EM<<"| FocusArray"<<(i)<<" = "<<FocusArray[i]->getKey("Guide0").getLinkPt(1)<<ELog::endDiag;
-  }
-  ELog::EM<<"--------------------------------"<<ELog::endDiag;
-  
-  ELog::EM<<"---- Distances ----------------"<<ELog::endDiag;
-  ELog::EM<<"| VPipeB1 - VPipeB2        = "<<VPipeB->getLinkDistance(1,*VPipeB,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| VPipeG1 - VPipeG2        = "<<VPipeG->getLinkDistance(1,*VPipeG,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| VPipeH1 - VPipeH2        = "<<VPipeH->getLinkDistance(1,*VPipeH,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| VPipeI1 - VPipeI2        = "<<VPipeI->getLinkDistance(1,*VPipeI,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| VPipeJ1 - VPipeJ2        = "<<VPipeJ->getLinkDistance(1,*VPipeJ,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| ShieldB1 - ShieldB2      = "<<ShieldB->getLinkDistance(1,*ShieldB,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| ChopperT0 - ChopperFOC   = "<<ChopperT0->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| ChoppersFOC - ChopperFOC = "<<ChoppersFOC->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| FocusJ1 - FocusJ2        = "<<FocusJ->getKey("Guide0").getLinkDistance(1,FocusJ->getKey("Guide0"),2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"--------------------------------"<<ELog::endDiag;
+//  ELog::EM<<"----- Positions ----------------"<<ELog::endDiag;
+//  ELog::EM<<"| ChopperT0   = "<<ChopperT0->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
+//  ELog::EM<<"| ChoppersFOC = "<<ChoppersFOC->getKey("Beam").getLinkPt(0)<<ELog::endDiag;
+//  for (unsigned i = 0; i < ShieldArray.size(); ++i)
+//  {
+//    ELog::EM<<"| FocusArray"<<(i)<<" = "<<FocusArray[i]->getKey("Guide0").getLinkPt(1)<<ELog::endDiag;
+//  }
+//  ELog::EM<<"--------------------------------"<<ELog::endDiag;
+//  
+//  ELog::EM<<"---- Distances ----------------"<<ELog::endDiag;
+//  ELog::EM<<"| VPipeB1 - VPipeB2        = "<<VPipeB->getLinkDistance(1,*VPipeB,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| VPipeG1 - VPipeG2        = "<<VPipeG->getLinkDistance(1,*VPipeG,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| VPipeH1 - VPipeH2        = "<<VPipeH->getLinkDistance(1,*VPipeH,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| VPipeI1 - VPipeI2        = "<<VPipeI->getLinkDistance(1,*VPipeI,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| VPipeJ1 - VPipeJ2        = "<<VPipeJ->getLinkDistance(1,*VPipeJ,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| ShieldB1 - ShieldB2      = "<<ShieldB->getLinkDistance(1,*ShieldB,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| ChopperT0 - ChopperFOC   = "<<ChopperT0->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| ChoppersFOC - ChopperFOC = "<<ChoppersFOC->getKey("Main").getLinkDistance(0,ChopperFOC->getKey("Main"),0)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| FocusJ1 - FocusJ2        = "<<FocusJ->getKey("Guide0").getLinkDistance(1,FocusJ->getKey("Guide0"),2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"--------------------------------"<<ELog::endDiag;
   
   return;
 }
@@ -687,17 +650,17 @@ VESPA::buildHut(Simulation& System,
   Sample->setInsertCell(Cryo->getCell("SampleVoid"));
   Sample->createAll(System,*Cryo,0);
   
-  ELog::EM<<"----- Positions -------------------"<<ELog::endDiag;
-  ELog::EM<<"| JawsSet = "<<VJaws->getLinkPt(0)<<ELog::endDiag;
-  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
-  
-  ELog::EM<<"----- Distances -------------------"<<ELog::endDiag;
-  ELog::EM<<"| VPipeK1 - VPipeK2    = "
-	  <<VPipeK->getLinkDistance(1,*VPipeK,2)<<" cm"<<ELog::endDiag;
-  ELog::EM<<"| JawsSet - ChopperFOC = "
-	  <<VJaws->getLinkDistance(0,ChoppersFOC->getKey("Main"),0)
-	  <<" cm"<<ELog::endDiag;
-  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
+//  ELog::EM<<"----- Positions -------------------"<<ELog::endDiag;
+//  ELog::EM<<"| JawsSet = "<<VJaws->getLinkPt(0)<<ELog::endDiag;
+//  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
+//  
+//  ELog::EM<<"----- Distances -------------------"<<ELog::endDiag;
+//  ELog::EM<<"| VPipeK1 - VPipeK2    = "
+//	  <<VPipeK->getLinkDistance(1,*VPipeK,2)<<" cm"<<ELog::endDiag;
+//  ELog::EM<<"| JawsSet - ChopperFOC = "
+//	  <<VJaws->getLinkDistance(0,ChoppersFOC->getKey("Main"),0)
+//	  <<" cm"<<ELog::endDiag;
+//  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
   
   return;
 }
