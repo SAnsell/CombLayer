@@ -45,6 +45,7 @@ public:
   /// constructor
   groupRange();
   explicit groupRange(const int);
+  explicit groupRange(const std::vector<int>&);
   groupRange(const int,const int);
   groupRange(const groupRange&);
   groupRange& operator=(const groupRange&);
@@ -55,7 +56,11 @@ public:
   bool valid(const int) const;
   groupRange& combine(const groupRange&);
 
+  void setItems(const std::vector<int>&);
+  
   void addItem(const int);
+  void addItem(const std::vector<int>&);
+  
   void removeItem(const int); 
   void move(const int,const int);
   std::vector<int> getAllCells() const;
