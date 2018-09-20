@@ -3,7 +3,7 @@
  
  * File:   geometry/localRotate.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -232,10 +232,10 @@ localRotate::applyFull(Geometry::Vec3D& Pt) const
     \param Pt :: Point to rotate
   */
 {
-  void (transComp::*fn)(Geometry::Vec3D&) const =  &transComp::apply;
-  for_each(Transforms.begin(),Transforms.end(),
-	   std::bind<void>(fn,std::placeholders::_1,
-			     std::ref(Pt)));
+    
+  for(const TPtr& transPtr : Transforms)
+    transPtr->apply(Pt);
+  
   return;
 }
 

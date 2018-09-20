@@ -3,7 +3,7 @@
  
  * File:   construct/HoleShape.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -221,11 +221,16 @@ HoleShape::populate(const FuncDataBase& Control)
   setShape(shapeName);
 
   radialStep=Control.EvalDefVar<double>(keyName+"RadialStep",0.0);
+
   angleCentre=Control.EvalDefVar<double>(keyName+"AngleCentre",0.0);
   angleOffset=Control.EvalDefVar<double>(keyName+"AngleOffset",0.0);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   xradius=Control.EvalDefVar<double>(keyName+"XRadius",radius);
+
+  const double masterAngle=
+    Control.EvalDefVar<double>(keyName+"MasterAngle",0.0);
+  setMasterAngle(masterAngle);
   return;
 }
 

@@ -198,7 +198,7 @@ FixedOffset::setPreRotation(const double XYA,const double ZA)
   /*!
     Set the Pre-rotation values 
     \param XYA :: xy angle rotation
-    \param ZA :: xy angle rotation
+    \param ZA :: z angle rotation
    */
 {
   preXYAngle=XYA;
@@ -256,7 +256,7 @@ FixedOffset::linkShift(const size_t sideIndex)
     \param sideIndex :: link point index [signed]
   */
 {
-  ELog::RegMethod RegA("FixedOffset","applyOffset");
+  ELog::RegMethod RegA("FixedOffset","linkShift");
 
   FixedComp::linkShift(sideIndex,xStep,yStep,zStep);
   return;
@@ -269,7 +269,7 @@ FixedOffset::linkAngleRotate(const size_t sideIndex)
     \param sideIndex :: link point index [signed]
    */
 {
-  ELog::RegMethod RegA("FixedOffset","applyOffset");
+  ELog::RegMethod RegA("FixedOffset","lnkAngleRotate");
 
   FixedComp::linkAngleRotate(sideIndex,xyAngle,zAngle);
   return;

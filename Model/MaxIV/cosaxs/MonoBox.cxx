@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/MonoBox.cxx
+ * File:   cosaxs/MonoBox.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -94,7 +94,6 @@ MonoBox::MonoBox(const std::string& Key,
   */
 {}
 
-
   
 MonoBox::~MonoBox() 
   /*!
@@ -171,7 +170,7 @@ MonoBox::populate(const FuncDataBase& Control)
 
 void
 MonoBox::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -392,8 +391,8 @@ MonoBox::createLinks()
 
 void
 MonoBox::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int FIndex)
+		   const attachSystem::FixedComp& FC,
+		   const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

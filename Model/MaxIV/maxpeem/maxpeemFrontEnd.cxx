@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
@@ -94,6 +95,7 @@
 #include "FlangeMount.h"
 #include "HeatDump.h"
 #include "BremBlock.h"
+#include "LCollimator.h"
 
 #include "maxpeemFrontEnd.h"
 
@@ -127,10 +129,12 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
+  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),  
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
+  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
@@ -173,10 +177,12 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(bellowE);
   OR.addObject(aperturePipe);
+  OR.addObject(moveCollA);
   OR.addObject(bellowF);
   OR.addObject(ionPC);
   OR.addObject(bellowG);
   OR.addObject(aperturePipeB);
+  OR.addObject(moveCollB);
   OR.addObject(bellowH);
   OR.addObject(pipeC);
   OR.addObject(gateA);
@@ -354,6 +360,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   heatBox->insertInCell(System,outerCell);
     
   heatTopFlange->addInsertCell("Flange",outerCell);
+  heatTopFlange->addInsertCell("Body",heatBox->getCell("Void"));
   heatTopFlange->setBladeCentre(*heatBox,0);
   heatTopFlange->createAll(System,*heatBox,2);
 
@@ -401,7 +408,9 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
   int outerCell;
   // NOTE order for master cell [Next 4 object
   aperturePipe->createAll(System,*pipeB,2);
-
+  moveCollA->addInsertCell(aperturePipe->getCell("Void"));
+  moveCollA->createAll(System,*aperturePipe,0);
+  
   // bellows AFTER movable aperture pipe
   bellowE->setFront(*pipeB,2);
   bellowE->setBack(*aperturePipe,1);
@@ -430,6 +439,8 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
 
   // Next 4 objects need to be build before insertion
   aperturePipeB->createAll(System,*ionPC,2);
+  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
+  moveCollB->createAll(System,*aperturePipeB,0);
 
   // bellows AFTER movable aperture pipe
   bellowG->setFront(*ionPC,2);

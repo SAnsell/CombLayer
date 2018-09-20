@@ -41,7 +41,7 @@ class PipeShield : public attachSystem::ContainedSpace,
   public attachSystem::ExternalCut
 {
  private:
-
+  
   double height;                 ///< thickness of collimator
   double width;                  ///< main width
   double length;                 ///< thickness of collimator
@@ -49,7 +49,8 @@ class PipeShield : public attachSystem::ContainedSpace,
   double wallThick;              ///< wall thickness
   int mat;                       ///< material
   int wallMat;                   ///< wall material
-  
+
+
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();

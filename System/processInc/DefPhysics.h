@@ -25,6 +25,7 @@
 class Simulation;
 class SimMCNP;
 class SimFLUKA;
+class SimPHITS;
 class FuncDataBase;
 
 namespace mainSystem
@@ -57,6 +58,7 @@ namespace ModelSupport
   
   void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
   void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
 }
 

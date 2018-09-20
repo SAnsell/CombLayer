@@ -40,7 +40,7 @@ namespace ModelSupport
 
 class objectRegister
 {
- private:
+ public:
  
   /// Storage type : name : startPt : size 
   typedef std::map<std::string,std::pair<int,int> > MTYPE;
@@ -49,6 +49,8 @@ class objectRegister
   /// Index of them
   typedef std::map<std::string,CTYPE> cMapTYPE;
 
+ private:
+ 
   int cellNumber;                  ///< Current new cell number
   MTYPE regionMap;                 ///< Index of kept object number
   MTYPE renumMap;                  ///< Index of renumbered units

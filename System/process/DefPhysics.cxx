@@ -77,6 +77,7 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimFLUKA.h"
+#include "SimPHITS.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
@@ -199,7 +200,8 @@ procAngle(const mainSystem::inputParam& IParam,
       MR.addRotation(Geometry::Vec3D(0,0,1),
                      Geometry::Vec3D(0,0,0),angleZ);
     }
-  else  if (AItem=="objAxis" || AItem=="ObjAxis")
+  else  if (AItem=="objAxis" || AItem=="ObjAxis" ||
+	    AItem=="objYAxis" || AItem=="ObjYAxis")
     {
       const attachSystem::FixedComp* GIPtr=
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
@@ -210,12 +212,24 @@ procAngle(const mainSystem::inputParam& IParam,
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
-      
-      const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
-	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
-      
-      MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
-		     -180.0*QR.getTheta()/M_PI);
+
+      if (AItem=="objYAxis" || AItem=="ObjYAxis")
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(0,1,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+      else
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -457,7 +471,7 @@ setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
     Catch all for non-specialized Simulation units
    */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(default)");
   ELog::EM<<"NO OP in base call"<<ELog::endErr;
   return;
 }
@@ -505,7 +519,7 @@ setDefaultPhysics(SimMCNP& System,
   
   const std::string PModel=IParam.getValue<std::string>("physModel");
   const double maxEnergy=IParam.getDefValue<double>
-    (2000.0,"maxEnergy");
+    (3000.0,"maxEnergy");
 
   setGenericPhysics(System,PModel);
   
@@ -620,7 +634,24 @@ setDefaultPhysics(SimFLUKA& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("flukaProcess[F]","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(fluka)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
+
+void 
+setDefaultPhysics(SimPHITS& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics for phits
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(phits)");
 
   // trick to allow 1e8 entries etc.
   System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));

@@ -65,6 +65,7 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
+#include "particleConv.h"
 #include "IMPConstructor.h"
 
 namespace physicsSystem
@@ -85,6 +86,7 @@ IMPConstructor::processUnit(PhysicsCards& PC,
 {
   ELog::RegMethod RegA("IMPConstructor","processUnit");
 
+  const particleConv& pConv=particleConv::Instance();
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -136,9 +138,10 @@ IMPConstructor::processUnit(PhysicsCards& PC,
     }
   else
     {
-      PC.isolateCell("imp",particle);
+      const std::string PItem=pConv.nameToMCNP(particle);
+      PC.isolateCell("imp",PItem);
       for(const int CN : Cells)
-	PC.setCells("imp",particle,CN,value);
+	PC.setCells("imp",PItem,CN,value);
     }      
   return;
 }

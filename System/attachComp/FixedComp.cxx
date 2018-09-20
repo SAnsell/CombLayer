@@ -567,6 +567,39 @@ FixedComp::linkAngleRotate(const size_t sideIndex,
 }
 
 void
+FixedComp::linkAngleRotate(const size_t sideIndex,
+			   const double xAngle,
+			   const double yAngle,
+			   const double zAngle)
+ /*!
+   Rotate a link point axis [not connection point]
+   \param sideIndex :: signed ink point 
+   \param xAngle :: X Rotation [third]
+   \param xAngle :: Y Rotation [second]
+   \param zAngle :: Z Rotation [first]
+ */
+{
+  ELog::RegMethod RegA("FixedComp","linkAngleRotate");
+
+  LinkUnit& LItem=getLU(sideIndex);
+
+  const Geometry::Quaternion Qz=
+    Geometry::Quaternion::calcQRotDeg(zAngle,Z);
+  const Geometry::Quaternion Qy=
+    Geometry::Quaternion::calcQRotDeg(yAngle,Y);
+  const Geometry::Quaternion Qx=
+    Geometry::Quaternion::calcQRotDeg(xAngle,X);
+
+  Geometry::Vec3D Axis=LItem.getAxis();
+  Qz.rotate(Axis);
+  Qy.rotate(Axis);
+  Qx.rotate(Axis);
+  LItem.setAxis(Axis);
+  
+  return;
+}
+
+void
 FixedComp::applyFullRotate(const double xAngle,
                            const double yAngle,
 			   const double zAngle,
@@ -885,6 +918,7 @@ FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR)
   */
 {
   ELog::RegMethod RegA("FixedComp","setBridgeSurf(HR)");
+
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
 
@@ -928,7 +962,8 @@ FixedComp::addBridgeSurf(const size_t Index,
 }
 
 void
-FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
+FixedComp::setConnect(const size_t Index,
+		      const Geometry::Vec3D& C,
 		      const Geometry::Vec3D& A)
  /*!
    Set the axis of the linked component
@@ -1636,7 +1671,7 @@ FixedComp::getUSMainRule(const size_t Index) const
     \return Main HeadRule
    */
 {
-  ELog::RegMethod RegA("FixedComp","getMainRule"); 
+  ELog::RegMethod RegA("FixedComp","getUSMainRule"); 
 
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
@@ -1664,7 +1699,7 @@ FixedComp::getCommonRule(const long int sideIndex) const
     \return Main HeadRule
   */
 {
-  ELog::RegMethod RegA("FixedComp","getSignedCommonRule"); 
+  ELog::RegMethod RegA("FixedComp","getCommonRule(long int)"); 
 
   const LinkUnit& LObj=getSignedRefLU(sideIndex);
   return LObj.getCommonRule();
@@ -1678,7 +1713,7 @@ FixedComp::getUSCommonRule(const size_t Index) const
     \return Common Headrule 
    */
 {
-  ELog::RegMethod RegA("FixedComp","getMainRule"); 
+  ELog::RegMethod RegA("FixedComp","getUSCommonRule"); 
 
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");

@@ -531,7 +531,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   tallyModification(*SimFLUKAPtr,IParam);
 
   SDef::flukaSourceSelection(*SimFLUKAPtr,IParam);
-  SimFLUKAPtr->masterSourceRotation();
+  //  SimFLUKAPtr->masterSourceRotation();
   // Ensure we done loop
 
   do
@@ -558,11 +558,8 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimPHITS");
 
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
 
-  //  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
+  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
   SimPHITSPtr->prepareWrite();
   
   // tallySystem::tallySelection(*SimPHITSPtr,IParam);
@@ -572,8 +569,11 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   //  tallyModification(*SimPHITSPtr,IParam);
 
   SDef::sourceSelection(*SimPHITSPtr,IParam);
-  SimPHITSPtr->masterSourceRotation();
+  //  SimPHITSPtr->masterSourceRotation();
   // Ensure we done loop
+  
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
   do
     {
       SimProcess::writeIndexSimPHITS(*SimPHITSPtr,OName,MCIndex);
@@ -614,7 +614,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   tallyModification(*SimMCPtr,IParam);
 
   SDef::sourceSelection(*SimMCPtr,IParam);
-  SimMCPtr->masterSourceRotation();
+  //  SimMCPtr->masterSourceRotation();
   // Ensure we done loop
   do
     {
@@ -707,23 +707,6 @@ buildFullSimulation(Simulation* SimPtr,
       buildFullSimPHITS(SimPHITSPtr,IParam,OName);
       return;
     }
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
-  // 
-  SimProcess::importanceSim(*SimPtr,IParam);
-  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-
-  SDef::sourceSelection(*SimPtr,IParam);
-  SimPtr->masterSourceRotation();
-  // Ensure we done loop
-  do
-    {
-      //SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
-      MCIndex++;
-    }
-  while(MCIndex<multi);
 
   return;
 }

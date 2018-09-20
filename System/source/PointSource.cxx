@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -106,7 +107,8 @@ PointSource::clone() const
     \return new this
   */
 {
-  return new PointSource(*this);
+  PointSource* Ptr=new PointSource(*this);
+  return Ptr;  
 }
 
   
@@ -227,8 +229,18 @@ PointSource::writePHITS(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("PointSource","writePHITS");
+  boost::format fFMT("%1$11.6g%|14t|");
+  
+  OX<<"  s-type =  9        # spherical source \n";
+  OX<<"  x0  =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
+  OX<<"  y0  =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
+  OX<<"  z0  =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
+  OX<<"  r0  =   0.0 \n";
+  OX<<"  r1  =   0.0 \n";
+  OX<<"  dir =   all   # Isotropic from centre \n";
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  SourceBase::writePHITS(OX);
+  OX<<std::endl;
   return;
 }
 
@@ -247,3 +259,4 @@ PointSource::writeFLUKA(std::ostream& OX) const
 
 
 } // NAMESPACE SDef
+ 

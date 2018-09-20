@@ -132,10 +132,6 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
 
-  holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
-  holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
-  holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",0.0);
-
   inletXStep=Control.EvalDefVar<double>(keyName+"InletXStep",0.0);
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
@@ -249,10 +245,6 @@ maxpeemOpticsHut::createSurfaces()
     ModelSupport::buildCylinder
       (SMap,buildIndex+7,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
 
-  if (holeRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder
-      (SMap,buildIndex+17,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
-
   if (beamTubeRadius>Geometry::zeroTol)
     {
       ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,beamTubeRadius);
@@ -311,6 +303,7 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       
       Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"2 -102 103 -104 -106 17M");
       makeCell("Back"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+      addCell("Back",cellIndex-1);
 
       Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"101 -1 103 -124 -106 7M ");
       if (layer=="Outer") Out+=ringWall;
@@ -323,11 +316,6 @@ maxpeemOpticsHut::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -7 ");
       makeCell("InletHole",System,cellIndex++,0,0.0,Out+ringWall);
-    }
-  if (holeRadius>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 2 -302 -17");
-      makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
     }
   
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -302 303 -304 (-314:-324) -306 ");
