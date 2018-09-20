@@ -34,7 +34,7 @@ template<typename T> class Matrix;
 const double zeroTol(1e-8);       ///< Zero occured
 const double shiftTol(1e-5);      ///< Shift a point to change state
 const double parallelTol(1e-10);  ///< parallel occored
-const int Nprecision(10);         ///< Precision of the output
+const int Nprecision(11);         ///< Precision of the output
 
 /*!
   \class Vec3D
