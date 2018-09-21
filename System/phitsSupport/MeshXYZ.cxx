@@ -62,6 +62,35 @@ MeshXYZ::MeshXYZ() :
   */
 {}
 
+MeshXYZ::MeshXYZ(const MeshXYZ& A) : 
+  logSpace(A.logSpace),NX(A.NX),NY(A.NY),NZ(A.NZ),
+  minPoint(A.minPoint),maxPoint(A.maxPoint),TransPtr(A.TransPtr)
+  /*!
+    Copy constructor
+    \param A :: MeshXYZ to copy
+  */
+{}
+
+MeshXYZ&
+MeshXYZ::operator=(const MeshXYZ& A)
+  /*!
+    Assignment operator
+    \param A :: MeshXYZ to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      logSpace=A.logSpace;
+      NX=A.NX;
+      NY=A.NY;
+      NZ=A.NZ;
+      minPoint=A.minPoint;
+      maxPoint=A.maxPoint;
+    }
+  return *this;
+}
+
   
 Geometry::Vec3D
 MeshXYZ::point(const size_t a,const size_t b,const size_t c) const
