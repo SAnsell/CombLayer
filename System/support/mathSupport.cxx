@@ -355,6 +355,33 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   return;
 }
 
+template<typename T,typename U>
+void
+pairSort(std::vector<T>& aVec,std::vector<U>& bVec)
+  /*!
+    Function to take a sort the vector and se
+    so as to produce an index.
+    \param aVec :: Vector of un-sorted values
+    \param bVec :: Vector of un-sorted values [secondary]
+    \tparam T :: primary type
+    \tparam U :: second type
+  */
+{
+  std::vector<size_t> index;
+  indexSort(aVec,index);
+  std::vector<T> tmpA(aVec.size());
+  std::vector<U> tmpB(bVec.size());
+  for(size_t i=0;i<index.size();i++)
+    {
+      const size_t I(index[i]);
+      tmpA[i]=aVec[I];
+      tmpB[i]=bVec[I];
+    }
+  aVec=tmpA;
+  bVec=tmpB;
+  return;
+}
+
 
 template<typename T>
 size_t
@@ -877,6 +904,9 @@ template void indexSort(const std::vector<int>&,std::vector<int>&);
 template void indexSort(const std::vector<std::string>&,std::vector<int>&);
 template void indexSort(const std::vector<double>&,std::vector<size_t>&);
 template void indexSort(const std::vector<int>&,std::vector<size_t>&);
+
+template void pairSort(std::vector<double>&,std::vector<double>&);
+template void pairSort(std::vector<int>&,std::vector<int>&);
 
 //template void indexSort(const std::vector<MapSupport::Range<int>>&,
 //                        std::vector<size_t>&);

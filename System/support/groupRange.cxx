@@ -5,6 +5,7 @@
 #include <limits>
 
 #include "Exception.h"
+#include "mathSupport.h"
 #include "groupRange.h"
 
 
@@ -33,6 +34,17 @@ groupRange::groupRange(const int V) :
     \param V :: Single Value to set 
   */
 {}
+
+groupRange::groupRange(const std::vector<int>& AVec) 
+  /*!
+    Constructor
+    \param AVec :: Vect to set
+  */
+{
+  for(const int I : AVec)
+    addItem(I);
+  return;
+}
 
 groupRange::groupRange(const int LV,const int HV) :
   LowUnit(std::min(LV,HV)),HighUnit(std::max(LV,HV))
@@ -90,13 +102,22 @@ groupRange::valueIndex(const int V) const
     \return index or > UnitLow.size()
   */
 {
-  std::vector<int>::const_iterator 
-    xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
-  if (xV!=LowUnit.end() &&  V >= *xV)
+  if (!LowUnit.empty())
     {
-      const size_t index=static_cast<size_t>(distance(LowUnit.begin(),xV));
-      if (V > HighUnit[index])
-	return index;
+      std::vector<int>::const_iterator 
+	xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
+      if (xV!=LowUnit.end())
+	{
+	  if (V >= *xV)
+	    {
+	      const size_t index=
+		static_cast<size_t>(distance(LowUnit.cbegin(),xV));
+	      if (V <= HighUnit[index])
+		return index;
+	    }
+	}
+      else if ( V<=HighUnit.back())
+	return HighUnit.size()-1;
     }
   return std::numeric_limits<size_t>::max();
 }
@@ -124,26 +145,29 @@ groupRange::merge()
   */
 {
   if (LowUnit.empty()) return;
+  // First index sort the list
+  pairSort(LowUnit,HighUnit);
+
   std::vector<int> lOut;
   std::vector<int> hOut;
+  
   lOut.push_back(LowUnit.front());
   hOut.push_back(HighUnit.front());
   for(size_t index=1;index<LowUnit.size();index++)
     {
       const int LV(LowUnit[index]);
       const int HV(HighUnit[index]);
-      if (LV>hOut.back())
+      if (LV<=hOut.back()+1 && HV>hOut.back())
+	hOut.back()=HV;
+      else 
 	{
 	  lOut.push_back(LV);
 	  hOut.push_back(HV);
 	}
-      else if (HV>hOut.back())
-	{
-	  hOut.back()=HV;
-	}
+
     }
   LowUnit=lOut;
-  HighUnit=lOut;
+  HighUnit=hOut;
   return;
 }
 
@@ -160,7 +184,6 @@ groupRange::combine(const groupRange& A)
   size_t indexA(0);
   size_t indexB(0);
 
-  
   while(indexA< LowUnit.size() && indexB< A.LowUnit.size())
     {
       const int ALV(LowUnit[indexA]);
@@ -218,6 +241,32 @@ groupRange::combine(const groupRange& A)
 }
 
 void
+groupRange::setItems(const std::vector<int>& AVec)
+  /*!
+    Set the system to be a vector
+    \param AVec :: Unordered vector
+  */
+{
+  LowUnit.clear();
+  HighUnit.clear();
+  for(const int I : AVec)
+    addItem(I);
+  return;
+}
+
+void
+groupRange::addItem(const std::vector<int>& AVec)
+  /*!
+    Add an item if required [uses merge for efficiency]
+    \param AVec :: Item to add
+  */
+{
+  groupRange A(AVec);
+  this->combine(A);
+  return;
+}
+
+void
 groupRange::addItem(const int A)
   /*!
     Add an item if required
@@ -228,7 +277,6 @@ groupRange::addItem(const int A)
 
   const size_t indexM=valueIndex(A-1);
   const size_t indexP=valueIndex(A+1);
-
   // special case exactly between two units
   if (indexP<LowUnit.size() && indexM<LowUnit.size())
     {
@@ -306,18 +354,37 @@ groupRange::move(const int A,const int B)
     Note A MUST exist and B MUST NOT exist
     \param A :: A
   */
-{
-  
-  const size_t VA=validIndex(A);
+{ 
+  if (!valid(A))
+    throw ColErr::InContainerError<int>
+      (A,"groupRange::Move:A not in group index");
+
   if (valid(B))
     throw ColErr::InContainerError<int>
-      (B,"groupRangeMove::B value already present");
+      (B,"groupRange::Move:B value already present");
   
   removeItem(A);
   addItem(B);
   return;
 }
 
+std::vector<int>
+groupRange::getAllCells() const
+  /*!
+    Fill a vector with all cells
+    \return Vector of all cells
+   */
+{
+  std::vector<int> Out;
+  for(size_t i=0;i<LowUnit.size();i++)
+    {
+      int LA(LowUnit[i]);
+      const int HA(HighUnit[i]);
+      for(;LA<=HA;LA++)
+	Out.push_back(LA);
+    }
+  return Out;
+}
 
 void
 groupRange::write(std::ostream& OX) const

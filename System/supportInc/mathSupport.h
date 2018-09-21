@@ -117,6 +117,10 @@ T norm(const std::vector<T>&);
 template<typename T,typename U> 
 void indexSort(const std::vector<T>&,std::vector<U>&);
 
+/// Use index sort on a pair of vectors
+template<typename T,typename U> 
+void pairSort(std::vector<T>&,std::vector<U>&);
+
 
 /*!
   \namespace mathFunc

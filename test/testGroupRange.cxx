@@ -30,6 +30,7 @@
 #include <stack>
 #include <map>
 #include <tuple>
+#include <algorithm>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,7 +46,6 @@
 #include "testFunc.h"
 #include "testGroupRange.h"
 
-using namespace Geometry;
 
 testGroupRange::testGroupRange() 
   /*!
@@ -74,10 +74,12 @@ testGroupRange::applyTest(const int extra)
   typedef int (testGroupRange::*testPtr)();
   testPtr TPtr[]=
     {
+      &testGroupRange::testInsert,
       &testGroupRange::testMerge
     };
   const std::vector<std::string> TestName=
     {
+      "Insert",
       "Merge"
     };
   
@@ -101,6 +103,57 @@ testGroupRange::applyTest(const int extra)
 }
 
 int
+testGroupRange::testInsert()
+  /*!
+    Tests the merge units
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testInsert");
+
+  groupRange A;
+
+  const std::vector<int> testVec({3,4,5,7,21,1,2,-3,-4,-5,7});
+  std::vector<int> orderVec(testVec);
+
+  std::sort(orderVec.begin(),orderVec.end());
+  orderVec.erase
+    (std::unique(orderVec.begin(),orderVec.end()),
+     orderVec.end());
+
+  for(const int I : testVec)
+    A.addItem(I);
+
+  const std::vector<int> outVec=A.getAllCells();
+
+  if (outVec!=orderVec)
+    {
+      ELog::EM<<"Failed :"<<ELog::endDiag;
+      ELog::EM<<"TestVec = ";
+      for(const int I : testVec)
+	ELog::EM<<I<<" ";
+      ELog::EM<<ELog::endDiag;
+
+      ELog::EM<<"OrderVec = ";
+      for(const int I : orderVec)
+	ELog::EM<<I<<" ";
+      ELog::EM<<ELog::endDiag;
+
+      ELog::EM<<"OutVec = ";
+      for(const int I : outVec)
+	ELog::EM<<I<<" ";
+      ELog::EM<<ELog::endDiag;
+
+      ELog::EM<<"A == "<<A<<ELog::endDiag;
+      return -1;
+    }
+  ELog::EM<<"A == "<<A<<ELog::endDiag;
+  return 0;
+}
+
+
+int
 testGroupRange::testMerge()
   /*!
     Tests the merge units
@@ -110,14 +163,26 @@ testGroupRange::testMerge()
 {
   ELog::RegMethod RegA("testGroupRange","testMerge");
 
-  groupRange A;
-  A.addItem(3);
-  A.addItem(4);
-  A.addItem(5);
+  const std::vector<int> testVecA({3,4,5,7,9,21,1});
+  const std::vector<int> testVecB({1,4,5,8,21,1});
+  const std::vector<int> testVecC({1,3,4,5,7,8,9,21});
+  
+  groupRange A(testVecA);
+  groupRange APrime(A);
+  groupRange B(testVecB);
 
-  
-  
-  
+  A.combine(B);
+  const std::vector<int> outVec=A.getAllCells();
+
+  if (testVecC!=outVec)
+    {
+      ELog::EM<<"Failed :"<<ELog::endDiag;
+      ELog::EM<<"A    = "<<APrime<<ELog::endDiag;;
+      ELog::EM<<"B    = "<<B<<ELog::endDiag;;
+      ELog::EM<<"Comb = "<<A<<ELog::endDiag;;
+      return -1;
+    }
+
   return 0;
 }
 
