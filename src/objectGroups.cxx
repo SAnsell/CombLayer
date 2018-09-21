@@ -94,52 +94,6 @@ objectGroups::reset()
   return;
 }
 
-/*
-int
-objectGroups::getCell(const std::string& Name) const
-  /* !
-    Get the start cell of an object
-    \param Name :: Name of the object to get
-    \return Cell number of first cell in range
-  * /
-{
-  MTYPE::const_iterator mc;
-  mc=regionMap.find(Name);
-  return (mc!=regionMap.end())
-    ? mc->second.first : 0;
-}
-
-int
-objectGroups::getRange(const std::string& Name) const
-  /* !
-    Get the range of an object
-    \param Name :: Name of the object to get
-    \return Range
-   * /
-{
-  MTYPE::const_iterator mc=
-    regionMap.find(Name);
-
-  return (mc!=regionMap.end()) ?
-    (mc->second.second-mc->second.first) : 0;
-}
-
-int
-objectGroups::getLast(const std::string& Name) const
-  /* !
-    Get the last cell in the range of an object
-    \param Name :: Name of the object to get
-    \return Range
-   * /
-{
-  MTYPE::const_iterator mc=
-    regionMap.find(Name);
-
-  return (mc!=regionMap.end()) ?
-    mc->second.second : 0;
-}
-  */
-
 bool
 objectGroups::hasCell(const std::string& Name,
 		      const int cellN) const
@@ -159,6 +113,39 @@ objectGroups::hasCell(const std::string& Name,
 }
   
   
+groupRange&
+objectGroups::inRangeGroup(const int Index) 
+  /*!
+    Determine in the cell in range and return object
+    \param Index :: cell number to get
+    \return groupRange 
+   */
+{
+  ELog::RegMethod RegA("objectGroups","inRangeGroup");
+  
+  static std::string prevName;
+
+  // Quick check to determine if it is the same one as before!
+  // Note: groupRange could have been updated to can't store
+  MTYPE::iterator mc;
+  mc=regionMap.find(prevName);
+
+  if (mc!=regionMap.end() && 
+      mc->second.valid(Index))
+    return mc->second;
+    
+  for(mc=regionMap.begin();mc!=regionMap.end();mc++)
+    {
+      if (mc->second.valid(Index))
+	{
+	  prevName=mc->first;
+	  return mc->second;
+	}
+    }
+  throw ColErr::InContainerError<int>
+    (Index,"Cell Index not in groupRange");
+}
+
 std::string
 objectGroups::inRange(const int Index) const
   /*!
@@ -167,22 +154,22 @@ objectGroups::inRange(const int Index) const
     \return string
    */
 {
-  static std::string prev;
-  
+  static std::string prevName;
+
+  // Quick check to determine if it is the same one as before!
+  // Note: groupRange could have been updated to can't store
   MTYPE::const_iterator mc;
-  mc=regionMap.find(prev);
+  mc=regionMap.find(prevName);
 
   if (mc!=regionMap.end() && 
-      Index>=mc->second.first && 
-      Index<=mc->second.second)
+      mc->second.valid(Index))
     return mc->first;
     
   for(mc=regionMap.begin();mc!=regionMap.end();mc++)
     {
-      const std::pair<int,int>& IP=mc->second;
-      if (Index>=IP.first && Index<=IP.second)
+      if (mc->second.valid(Index))
 	{
-	  prev=mc->first;
+	  prevName=mc->first;
 	  return mc->first;
 	}
     }
@@ -212,23 +199,27 @@ objectGroups::removeActiveCell(const int cellN)
 }
 
 void
-objectGroups::renumberActiveCell(const int oldCellN,
-				 const int newCellN)
+objectGroups::renumberCell(const int oldCellN,
+			   const int newCellN)
   /*!
-    Renumber the active set
+    Renumber the cell both in the range AND the active
     \param oldCellN :: old cell number
     \param newCellN :: new cell number
   */
 {
-  ELog::RegMethod RegA("objectGroups","renumberActiveCell");
+  ELog::RegMethod RegA("objectGroups","renumberCell");
 
+  // first find if in active unit
   std::set<int>::iterator sc=activeCells.find(oldCellN);
   if (sc==activeCells.end())
     throw ColErr::InContainerError<int>(oldCellN,"Cell number");
 
   activeCells.erase(sc);
   activeCells.insert(newCellN);
-  
+
+  // Next move the range:
+  groupRange& GRP=inRange(oldCellN);
+  GRP.move(oldCellN,newCellN);
   return;
 }
 
@@ -244,15 +235,12 @@ objectGroups::cell(const std::string& Name,const int size)
 {
   ELog::RegMethod RegA("objectGroups","cell");
 
-
   MTYPE::const_iterator mc=regionMap.find(Name);  
   if (mc!=regionMap.end())
-    {
-      if (mc->second.second<size)
-	ELog::EM<<"Insufficient space reserved for "<<Name<<ELog::endErr;
-      return mc->second.first;
-    }
-  regionMap.emplace(Name,std::pair<int,int>(cellNumber,cellNumber+size));
+    return mc->second.getFirst();
+
+  // create anew region  re
+  regionMap.emplace(Name,groupRange(cellNumber,cellNumber+size);
   cellNumber+=size;
   return cellNumber-size;
 }
@@ -468,82 +456,13 @@ objectGroups::getObject(const std::string& Name) const
   return 0;
 }
 
-int
-objectGroups::getRenumberCell(const std::string& Name) const
-  /*!
-    Get the start cell of an object [renumbered]
-    \param Name :: Name of the object to get
-    \return Cell number
-  */
-{
-  MTYPE::const_iterator mc;
-  mc=renumMap.find(Name);
-  
-  if (mc!=renumMap.end())
-    return mc->second.first;
-  // maybe we have object but it is actually zero celled
-  mc=regionMap.find(Name);
-  return (mc!=regionMap.end()) ? mc->second.first : 0;
-}
 
-int
-objectGroups::getRenumberRange(const std::string& Name) const
-  /*!
-    Get the range of cells of an object
-    \param Name :: Name of the object to get
-    \return Cell number
-  */
-{
-  // NOTE: renumber not always complete as zero cell objects not present
-  MTYPE::const_iterator mc=
-    renumMap.find(Name);
-  
-  if (mc!=renumMap.end())
-    return mc->second.second;
-  // maybe we have object but it is actually zero celled
-  mc=regionMap.find(Name);
-  return (mc!=regionMap.end()) ? mc->second.second : 0;
-}
 
-std::string
-objectGroups::inRenumberRange(const int Index) const
-  /*!
-    Get the range of an object
-    \param Index :: Offset number
-    \return string of object
-   */
-{
-  static std::string prev;
-  
-  MTYPE::const_iterator mc;
-  // normally same as previous search
-  if (!prev.empty())
-    {
-      mc=renumMap.find(prev);
-      if (mc!=renumMap.end() && 
-	  Index>=mc->second.first && 
-	  Index<=mc->second.second)
-	return mc->first;
-    }
-  for(mc=renumMap.begin();mc!=renumMap.end();mc++)
-    {
-      const std::pair<int,int>& IP=mc->second;
-      if (Index>=IP.first && Index<=IP.second)
-	{
-	  prev=mc->first;
-	  return mc->first;
-	}
-    }
-  return std::string("");
-}
 
-  
 void
-objectGroups::setRenumber(const std::string& key,
-			    const int startN,const int endN)
+objectGroups::renumberCell(const int startN,const int endN)
   /*!
     Insert renumber into the system :
-    \param key :: Keyname [nop if not present in renumMap]
     \param startN :: First cell number
     \param endN :: last cell number
   */

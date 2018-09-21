@@ -61,6 +61,8 @@ class objectGroups
     getInternalObject(const std::string&) const;
   attachSystem::FixedComp*
     getInternalObject(const std::string&);
+
+  groupRange& inRangeGroup(const int);
   
  public:
   
@@ -72,9 +74,6 @@ class objectGroups
   int getNextCell(const int) const;
   
   int cell(const std::string&,const int = 10000);
-  //  int getCell(const std::string&) const;
-  //  int getLast(const std::string&) const;
-  //  int getRange(const std::string&) const;
   
   std::string inRange(const int) const;
   bool hasCell(const std::string&,const int) const;
@@ -93,11 +92,9 @@ class objectGroups
     getObjectThrow(const std::string&,const std::string&);
   bool hasObject(const std::string&) const;
 
-  void setRenumber(const std::string&,const int,const int);
-
   void addActiveCell(const int);
   void removeActiveCell(const int);
-  void renumberActiveCell(const int,const int);
+  void renumberCell(const int,const int);
 
   /// get active cells
   const std::set<int>& getActiveCells() const
