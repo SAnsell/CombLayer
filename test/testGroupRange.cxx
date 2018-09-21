@@ -74,11 +74,13 @@ testGroupRange::applyTest(const int extra)
   typedef int (testGroupRange::*testPtr)();
   testPtr TPtr[]=
     {
+      &testGroupRange::testGetNext,
       &testGroupRange::testInsert,
       &testGroupRange::testMerge
     };
   const std::vector<std::string> TestName=
     {
+      "GetNext",
       "Insert",
       "Merge"
     };
@@ -97,6 +99,56 @@ testGroupRange::applyTest(const int extra)
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
 	    return retValue;
+	}
+    }
+  return 0;
+}
+
+
+int
+testGroupRange::testGetNext()
+  /*!
+    Tests the get Next functoin
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testMerge");
+
+  const std::vector<int> testVec({3,4,5,7,21,1,2,-3,-4,-5,7});
+  
+  groupRange A(testVec);
+  const std::vector<int> outVec=A.getAllCells();
+
+  int res(-300);
+  for(const int Ans :outVec)
+    {
+      res=A.getNext(res);      
+      if (res!=Ans)
+	{
+	  ELog::EM<<"Failed :"<<ELog::endDiag;
+	  ELog::EM<<"A      = "<<A<<ELog::endDiag;;
+	  ELog::EM<<"Ans    = "<<Ans<<ELog::endDiag;;
+	  ELog::EM<<"Res    = "<<res<<ELog::endDiag;;
+	  return -1;
+	}
+    }
+  /// Now test intermidiates
+  typedef std::tuple<int,int> TTYPE;
+  const std::vector<TTYPE> Tests({
+      TTYPE(6,7),
+      TTYPE(18,21)
+	});
+  
+  for(const TTYPE& tc : Tests)
+    {
+      res=A.getNext(std::get<0>(tc));
+      if (res!=std::get<1>(tc))
+	{
+	  ELog::EM<<"Res    == "<<res<<ELog::endDiag;
+	  ELog::EM<<"Start  == "<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Expect == "<<std::get<1>(tc)<<ELog::endDiag;
+	  return -1;
 	}
     }
   return 0;

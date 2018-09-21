@@ -67,6 +67,7 @@ public:
 
   int getFirst() const;
   int getLast() const;
+  int getNext(const int) const;
   
   void write(std::ostream&) const;
 }; 
