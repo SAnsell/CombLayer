@@ -386,6 +386,30 @@ groupRange::getAllCells() const
   return Out;
 }
 
+int
+groupRange::getFirst() const
+  /*!
+    Get the first valid cell
+    \return Vector of all cells
+   */
+{
+  if (LowUnit.empty())
+    throw ColErr::EmptyContainer("groupRange");
+  return LowUnit.front();
+}
+
+int
+groupRange::getLast() const
+  /*!
+    Fill a vector with all cells
+    \return Vector of all cells
+   */
+{
+  if (HighUnit.empty())
+    throw ColErr::EmptyContainer("groupRange");
+  return HighUnit.back();
+}
+
 void
 groupRange::write(std::ostream& OX) const
   /*!
