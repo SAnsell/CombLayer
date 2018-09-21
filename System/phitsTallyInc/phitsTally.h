@@ -25,7 +25,6 @@
 namespace phitsSystem
 {
 
-  class auxScore;
   
 /*!
   \class phitsTally
@@ -40,7 +39,8 @@ class phitsTally
 {
  protected:
 
-  const int idNumber;
+  const std::string keyName;        ///< Master name
+  const int idNumber;               ///< In number
   std::string comments;             ///< comment line
 
   bool epsFlag;                     //< Write an eps file
@@ -63,7 +63,8 @@ class phitsTally
   virtual void setEnergy(const bool,const double,const double,const size_t);
   virtual void setAngle(const bool,const double,const double,const size_t);
 
-  const std::string& getKeyName() const;
+  /// accessor to keyname
+  const std::string& getKeyName() const { return keyName; }
   
   virtual void write(std::ostream&) const;
 

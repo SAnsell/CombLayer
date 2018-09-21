@@ -62,6 +62,34 @@ TGShow::TGShow(const int ID) :
     \param ID :: Identity number of tally 
   */
 {}
+
+TGShow::TGShow(const TGShow& A) : 
+  phitsTally(A),
+  mesh(A.mesh),axisDirection(A.axisDirection),trcl(A.trcl)
+  /*!
+    Copy constructor
+    \param A :: TGShow to copy
+  */
+{}
+
+TGShow&
+TGShow::operator=(const TGShow& A)
+  /*!
+    Assignment operator
+    \param A :: TGShow to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      phitsTally::operator=(A);
+      mesh=A.mesh;
+      axisDirection=A.axisDirection;
+      trcl=A.trcl;
+    }
+  return *this;
+}
+
   
 TGShow*
 TGShow::clone() const
@@ -78,7 +106,32 @@ TGShow::~TGShow()
     Destructor
   */
 {}
-  
+
+void
+TGShow::setIndex(const std::array<size_t,3>& A)
+  /*!
+    Sets the size but work should be done here to
+    make one coordinate size 1 etc.
+    \param A :: Array of X,Y,Z size
+   */
+{
+  ELog::RegMethod RegA("TGShow","setIndex");
+  mesh.setSize(A[0],A[1],A[2]);
+  return;
+}
+
+void
+TGShow::setCoordinates(const Geometry::Vec3D& A,const Geometry::Vec3D& B)
+  /*!
+    Sets the coordinates but work should be done here to
+    make one coordinate size 1 etc.
+    \param A :: Array of X,Y,Z size
+   */
+{
+  ELog::RegMethod RegA("TGShow","setCoordinates");
+  mesh.setCoordinates(A,B);
+  return;
+}
 
   
 void

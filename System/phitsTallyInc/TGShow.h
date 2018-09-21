@@ -27,9 +27,9 @@ namespace phitsSystem
 /*!
   \class TGShow
   \version 1.0
-  \date Ferbruary 2018
+  \date Septebmer 2018
   \author S. Ansell
-  \brief userbin for phits
+  \brief 2d plot for phits
 */
 
 class TGShow : public phitsTally
@@ -44,7 +44,7 @@ class TGShow : public phitsTally
 
   explicit TGShow(const int);
   TGShow(const TGShow&);
-  virtual TGShow* clone() const; 
+  virtual TGShow* clone() const;  
   TGShow& operator=(const TGShow&);
   virtual ~TGShow();
      
