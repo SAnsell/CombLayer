@@ -386,6 +386,69 @@ groupRange::getAllCells() const
   return Out;
 }
 
+int
+groupRange::getFirst() const
+  /*!
+    Get the first valid cell
+    \return Vector of all cells
+   */
+{
+  if (LowUnit.empty())
+    throw ColErr::EmptyContainer("groupRange");
+  return LowUnit.front();
+}
+
+int
+groupRange::getLast() const
+  /*!
+    Fill a vector with all cells
+    \return Vector of all cells
+   */
+{
+  if (HighUnit.empty())
+    throw ColErr::EmptyContainer("groupRange");
+  return HighUnit.back();
+}
+
+int
+groupRange::getNext(const int cellNV) const
+  /*!
+    Returns the next valid cell after cellN
+    \param cellNV :: Cell number
+    \throw RangeError if cellN exceeds last index
+  */
+{
+  if (LowUnit.empty())
+    throw ColErr::RangeError<int>(cellNV,0,0,"CellN out of groupRange");
+
+  const ColErr::RangeError<int> ErrorOut
+    (cellNV,LowUnit.front(),HighUnit.back(),"CellN out of groupRange");
+  if (HighUnit.back()<=cellNV)
+    throw ErrorOut;
+  if (LowUnit.front()>cellNV)
+    return LowUnit.front();
+  
+  const int cellPlus(cellNV+1);
+
+  std::vector<int>::const_iterator 
+    xV=lower_bound(LowUnit.begin(),LowUnit.end(),cellPlus);
+  if (xV!=LowUnit.end())
+    {
+      if (cellPlus == *xV)
+	return *xV;
+      
+      // xV CANNOT be begin, must be outer.
+      const size_t index=
+	static_cast<size_t>(distance(LowUnit.cbegin(),xV))-1;
+      return (cellPlus > HighUnit[index]) ? *xV : cellPlus;
+    }      
+  else if ( cellNV<HighUnit.back())  // special case for outer unit
+    {
+      return cellPlus;
+    }
+  throw ErrorOut;
+}
+
 void
 groupRange::write(std::ostream& OX) const
   /*!

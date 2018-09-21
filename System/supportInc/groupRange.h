@@ -64,6 +64,10 @@ public:
   void removeItem(const int); 
   void move(const int,const int);
   std::vector<int> getAllCells() const;
+
+  int getFirst() const;
+  int getLast() const;
+  int getNext(const int) const;
   
   void write(std::ostream&) const;
 }; 
