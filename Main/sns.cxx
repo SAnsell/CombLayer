@@ -66,6 +66,8 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "mainJobs.h"

@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBlock.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,7 +40,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -147,7 +147,7 @@ collInsertBlock::populate(const Simulation& System,
   for(size_t i=0;i<Size;i++)
     {
       const std::string KN=keyName+
-	StrFunc::makeString(blockIndex+1)+sndKey[i];
+	std::to_string(blockIndex+1)+sndKey[i];
       if (Control.hasVariable(KN))
 	setVar(Control,i,KN);
       else if (blkPtr)

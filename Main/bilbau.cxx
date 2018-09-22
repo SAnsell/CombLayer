@@ -62,6 +62,8 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "DefPhysics.h"
 #include "Volumes.h"

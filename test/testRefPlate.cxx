@@ -60,6 +60,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "simpleObj.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "World.h"

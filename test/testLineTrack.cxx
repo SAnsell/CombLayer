@@ -67,6 +67,8 @@
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "neutron.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LineTrack.h"

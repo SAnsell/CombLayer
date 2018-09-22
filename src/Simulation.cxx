@@ -113,7 +113,8 @@ Simulation::Simulation()  :
   ModelSupport::SimTrack::Instance().addSim(this);
 }
 
-Simulation::Simulation(const Simulation& A) : 
+Simulation::Simulation(const Simulation& A) :
+  objectGroups(A),
   inputFile(A.inputFile),
   cmdLine(A.cmdLine),DB(A.DB),
   OSMPtr(new ModelSupport::ObjSurfMap(*A.OSMPtr)),

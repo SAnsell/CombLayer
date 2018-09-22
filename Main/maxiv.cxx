@@ -67,6 +67,8 @@
 #include "SimProcess.h"
 #include "SimImportance.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h" 
 #include "SimPHITS.h"

@@ -94,6 +94,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkUnit.h"

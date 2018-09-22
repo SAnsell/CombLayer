@@ -75,6 +75,33 @@ objectGroups::objectGroups() :
   */
 {}
 
+
+objectGroups::objectGroups(const objectGroups& A) : 
+  cellNumber(A.cellNumber),regionMap(A.regionMap),
+  Components(A.Components),activeCells(A.activeCells)
+  /*!
+    Copy constructor
+    \param A :: objectGroups to copy
+  */
+{}
+
+objectGroups&
+objectGroups::operator=(const objectGroups& A)
+  /*!
+    Assignment operator
+    \param A :: objectGroups to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      cellNumber=A.cellNumber;
+      regionMap=A.regionMap;
+      Components=A.Components;
+      activeCells=A.activeCells;
+    }
+  return *this;
+}
   
 objectGroups::~objectGroups() 
   /*!
@@ -154,6 +181,7 @@ objectGroups::inRange(const int Index) const
     \return string
    */
 {
+  ELog::RegMethod RegA("objectGroups","inRange");
   static std::string prevName;
 
   // Quick check to determine if it is the same one as before!
@@ -218,7 +246,16 @@ objectGroups::renumberCell(const int oldCellN,
   activeCells.insert(newCellN);
 
   // Next move the range:
-  groupRange& GRP=inRange(oldCellN);
+  const std::string gName=inRange(oldCellN);
+  if (!gName.empty())
+    {
+      attachSystem::CellMap* CMPtr=
+	getObject<attachSystem::CellMap>(gName);
+      if (CMPtr)
+	CMPtr->renumberCell(oldCellN,newCellN);
+    }
+  
+  groupRange& GRP=inRangeGroup(oldCellN);
   GRP.move(oldCellN,newCellN);
   return;
 }
@@ -240,7 +277,7 @@ objectGroups::cell(const std::string& Name,const int size)
     return mc->second.getFirst();
 
   // create anew region  re
-  regionMap.emplace(Name,groupRange(cellNumber,cellNumber+size);
+  regionMap.emplace(Name,groupRange(cellNumber,cellNumber+size));
   cellNumber+=size;
   return cellNumber-size;
 }
@@ -455,51 +492,7 @@ objectGroups::getObject(const std::string& Name) const
   const std::string PostItem=Name.substr(pos);
   return 0;
 }
-
-
-
-
-void
-objectGroups::renumberCell(const int startN,const int endN)
-  /*!
-    Insert renumber into the system :
-    \param startN :: First cell number
-    \param endN :: last cell number
-  */
-{
-  ELog::RegMethod RegA("objectGroups","setRenumber");
-  if (regionMap.find(key)!=regionMap.end())
-    {
-      MTYPE::iterator mc=renumMap.find(key);
-      if (mc!=renumMap.end())
-	mc->second=std::pair<int,int>(startN,endN);
-      else
-	renumMap.emplace(key,std::pair<int,int>(startN,endN));
-    }
-  return;
-}
   
-int
-objectGroups::calcRenumber(const int CN) const
-  /*!
-    Take a cell number and calculate the renumber [not ideal]
-    \param CN :: orignal cell number
-    \return correct offset number
-   */
-{
-  const std::string key=inRange(CN);
-  if (key.empty())
-    return CN;
-
-  MTYPE::const_iterator Amc=regionMap.find(key);
-  MTYPE::const_iterator Bmc=renumMap.find(key);
-  if (Bmc==renumMap.end())
-    return CN;
-
-  const int Cdiff=CN-Amc->second.first;
-  return Bmc->second.first+Cdiff-1;
-}
-
 std::vector<int>
 objectGroups::getObjectRange(const std::string& objName) const
   /*!
@@ -535,9 +528,6 @@ objectGroups::getObjectRange(const std::string& objName) const
           throw ColErr::InContainerError<std::string>
             (objName,"Object empty");
         }
-      
-      for(int& CN : Out)
-	CN=calcRenumber(CN);
       return Out;
     }
   
@@ -556,48 +546,14 @@ objectGroups::getObjectRange(const std::string& objName) const
         std::swap(ANum,BNum);
       std::vector<int> Out(static_cast<size_t>(1+BNum-ANum));
       std::iota(Out.begin(),Out.end(),ANum);
-      for(int& CN : Out)
-        CN=calcRenumber(CN);
-
       return Out;
     }
 
   // SPECIALS:
   if (objName=="All" || objName=="all")
-    {
-      std::vector<int> Out;
-      for(const int CN : activeCells)
-        Out.push_back(calcRenumber(CN));
-      return Out;
-    }
+    return std::vector<int>(activeCells.begin(),activeCells.end());
 
-  
-  // Just an object name:
-
-  const int BStart=getCell(objName);
-  const int BRange=getRange(objName);
-
-  if (BStart==0)
-    throw ColErr::InContainerError<std::string>
-      (objName,"Object name not found");
-  
-  if (!BRange)
-    return std::vector<int>();
-  // Loop forward to find first element in set :
-  // then step forward until out of range.
-  std::vector<int> Out;
-  std::set<int>::const_iterator sc=activeCells.end();
-
-  for(int i=BStart;i<BRange+BStart;i++)
-    {
-      sc=activeCells.find(i);
-      if (sc!=activeCells.end())
-	Out.push_back(*sc);
-      
-    }
-  for(int& CN : Out)
-    CN=calcRenumber(CN);
-  return Out;
+  return getObjectRange(objName);
 }
   
 void
@@ -619,7 +575,7 @@ objectGroups::rotateMaster()
 void
 objectGroups::write(const std::string& OFile) const
   /*!
-    Write out to a file
+    Write out to a file 
     \param OFile :: output file
   */
 {
@@ -629,19 +585,17 @@ objectGroups::write(const std::string& OFile) const
       const char* FStatus[]={"void","fixed"};
       std::ofstream OX(OFile.c_str());
 
-      boost::format FMT("%s%|40t|%d    ::     %d %|20t|(%s)");
+      boost::format FMT("%s%|40t|(%s)");
       MTYPE::const_iterator mc;
       for(mc=regionMap.begin();mc!=regionMap.end();mc++)
 	{
 	  const CTYPE::element_type* FPTR=
 	    getObject<CTYPE::element_type>(mc->first);
 	  const int flag=(FPTR) ? 1 : 0;
-	  OX<<(FMT % mc->first % mc->second.first % 
-	       mc->second.second % FStatus[flag]);
+	  OX<<(FMT % mc->first) % FStatus[flag];
 	  if (flag)
 	    OX<<" "<<FPTR->getCentre();
-	  OX<<std::endl;
-
+	  OX<<" :: "<<mc->second<<std::endl;
 	}
     }
   return;

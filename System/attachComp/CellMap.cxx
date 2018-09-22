@@ -480,5 +480,19 @@ CellMap::deleteCellWithData(Simulation& System,
   System.removeCell(CN);  // too complex to handle from ObjPtr
   return Out;
 }
- 
+
+void
+CellMap::renumberCell(const int oldCell,const int newCell)
+  /*!
+    Renumber cell -- decide not to do anything if not found
+    \param oldCell :: old cell number
+    \param newCell :: new cell number
+  */
+{
+  ELog::RegMethod RegA("CellMap","renumberCell");
+  
+  changeCell(oldCell,newCell);
+  return;
+}
+
 }  // NAMESPACE attachSystem

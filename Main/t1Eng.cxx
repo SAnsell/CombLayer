@@ -65,6 +65,8 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h" 
 #include "SimPHITS.h"
 #include "ContainedComp.h"

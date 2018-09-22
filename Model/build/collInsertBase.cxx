@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "collInsertBase.h"
 
@@ -91,7 +90,7 @@ operator<<(std::ostream& OX,
 
 
 collInsertBase::collInsertBase(const int N,const int SN,
-				 const std::string& Key) :
+			       const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,4),
   blockIndex(N),surfIndex(SN),cellIndex(SN+1),
   populated(0),insertCell(0)

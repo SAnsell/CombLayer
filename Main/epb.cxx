@@ -76,6 +76,8 @@
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "PointWeights.h"
