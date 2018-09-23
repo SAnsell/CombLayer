@@ -47,7 +47,7 @@ groupRange::groupRange(const std::vector<int>& AVec)
 }
 
 groupRange::groupRange(const int LV,const int HV) :
-  LowUnit(std::min(LV,HV)),HighUnit(std::max(LV,HV))
+  LowUnit({std::min(LV,HV)}),HighUnit({std::max(LV,HV)})
   /*!
     Constructor
     \param LV :: Low values [not check]
@@ -77,6 +77,37 @@ groupRange::operator=(const groupRange& A)
       HighUnit=A.HighUnit;
     }
   return *this;
+}
+
+
+bool
+groupRange::operator==(const groupRange& A) const
+  /*!
+    Equality operator
+    \param A :: groupRange to check
+    \return true if A==this
+  */
+{
+  if (this==&A) return 1;
+  if (LowUnit.size()!=A.LowUnit.size()) return 0;
+
+  for(size_t i=0;i<LowUnit.size();i++)
+    if (LowUnit[i]!=A.LowUnit[i] ||
+	HighUnit[i]!=A.HighUnit[i])
+      return 0;
+
+  return 1;
+}
+
+bool
+groupRange::operator!=(const groupRange& A) const
+  /*!
+    Inequality operator
+    \param A :: groupRange to check
+    \return true if A!=this
+  */
+{
+  return !(this->operator==(A));
 }
 
 size_t
@@ -157,9 +188,10 @@ groupRange::merge()
     {
       const int LV(LowUnit[index]);
       const int HV(HighUnit[index]);
+      
       if (LV<=hOut.back()+1 && HV>hOut.back())
 	hOut.back()=HV;
-      else 
+      else if (LV>hOut.back()+1) 
 	{
 	  lOut.push_back(LV);
 	  hOut.push_back(HV);
@@ -307,6 +339,25 @@ groupRange::addItem(const int A)
   HighUnit.insert(HighUnit.begin()+offset,A);
   return;
 }
+
+void
+groupRange::addItem(const int lowV,const int highV)
+  /*!
+    Add range stream
+    \param lowV :: low value
+    \param highV :: high value [inclusive]
+  */
+{
+  const int LV(std::min<int>(lowV,highV));
+  const int HV(std::max<int>(lowV,highV));
+
+  groupRange A(LV,HV);
+  std::cout<<"VL == "<<A<<std::endl;
+  combine(A);
+
+  return;
+}
+
 
 void
 groupRange::removeItem(const int A)

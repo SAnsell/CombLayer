@@ -265,8 +265,6 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   */
 {
   ELog::RegMethod RegA("Simulation","addCell(int,Qhull)");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   OTYPE::iterator mpt=OList.find(cellNumber);
   
@@ -300,7 +298,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
 
-  OR.addActiveCell(cellNumber);
+  objectGroups::addActiveCell(cellNumber);
   return 1;
 }
 
@@ -438,8 +436,6 @@ Simulation::removeCell(const int cellNumber)
    */
 {
   ELog::RegMethod RegItem("Simulation","removeCell");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   OTYPE::iterator vc=OList.find(cellNumber);
   if (vc==OList.end())
@@ -453,7 +449,7 @@ Simulation::removeCell(const int cellNumber)
 
   OList.erase(vc);
 
-  OR.removeActiveCell(cellNumber);
+  objectGroups::removeActiveCell(cellNumber);
 
   return;
 }
@@ -1363,9 +1359,14 @@ Simulation::calcCellRenumber(const std::vector<int>& cOffset,
 {
   ELog::RegMethod RegA("Simulation","calcCellRenumber");
 
+
+  groupRange protectRange;
+  // for(size_t i=0;i<cOffset.size();i++)
+  //   protectRange.add
   // This is ordered:
   std::map<int,int> renumberMap;
   int nNum(1);
+  
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
@@ -1416,7 +1417,8 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
 
-  const std::map<int,int> RMap=calcCellRenumber(cOffset,cRange);
+  const std::map<int,int> RMap=
+    calcCellRenumber(cOffset,cRange);
   
   std::string oldUnit,keyUnit;
   int orStartNumber(0);

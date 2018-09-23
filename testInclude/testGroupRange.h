@@ -37,6 +37,7 @@ class testGroupRange
 private:
 
   //Tests 
+  int testAddItem();
   int testGetNext();
   int testInsert();
   int testMerge();

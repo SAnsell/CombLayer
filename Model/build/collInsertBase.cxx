@@ -275,10 +275,10 @@ collInsertBase::initialize(Simulation& System,
 
 void
 collInsertBase::setOrigin(const Geometry::Vec3D& OG,
-			   const double xStart,
-			   const double xAngle,
-			   const double zStart,
-			   const double zAngle)
+			  const double xStart,
+			  const double xAngle,
+			  const double zStart,
+			  const double zAngle)
   /*!
     Set the origin
     \param OG :: Origin

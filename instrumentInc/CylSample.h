@@ -40,7 +40,6 @@ class CylSample : public attachSystem::ContainedComp,
 {
  private:
   
-
   size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights

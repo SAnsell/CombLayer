@@ -51,6 +51,9 @@ public:
   groupRange& operator=(const groupRange&);
   ~groupRange() {}    ///< Destructor
 
+  bool operator==(const groupRange&) const;
+  bool operator!=(const groupRange&) const;
+  
   bool empty() const { return LowUnit.empty(); }     ///< empty flag
   void merge();  
   bool valid(const int) const;
@@ -59,6 +62,7 @@ public:
   void setItems(const std::vector<int>&);
   
   void addItem(const int);
+  void addItem(const int,const int);
   void addItem(const std::vector<int>&);
   
   void removeItem(const int); 
