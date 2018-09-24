@@ -211,7 +211,7 @@ RFQ::createSurfaces()
 
   // inner surfaces
   Geometry::Vec3D dirX(X);
-  const double dx(outerWidth/2.0-wallThick*cos(theta*M_PI/180.0));
+  const double dx(innerWidth/2.0/cos(theta*M_PI/180.0));
   Geometry::Quaternion::calcQRotDeg(-theta,Y).rotate(dirX);
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(dx),dirX);
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(dx),dirX);
