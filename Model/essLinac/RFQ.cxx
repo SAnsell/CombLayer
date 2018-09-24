@@ -101,7 +101,7 @@ RFQ::RFQ(const RFQ& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),outerWidth(A.outerWidth),height(A.height),
+  length(A.length),outerWidth(A.outerWidth),innerWidth(A.innerWidth),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -126,7 +126,7 @@ RFQ::operator=(const RFQ& A)
       engActive=A.engActive;
       length=A.length;
       outerWidth=A.outerWidth;
-      height=A.height;
+      innerWidth=A.innerWidth;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -164,7 +164,7 @@ RFQ::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
-  height=Control.EvalVar<double>(keyName+"Height");
+  innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");

@@ -47,7 +47,7 @@ class RFQ : public attachSystem::ContainedComp,
 
   double length;                ///< Total length including void
   double outerWidth;            ///< Outer Width
-  double height;                ///< height
+  double innerWidth;            ///< Inner Width
 
   double wallThick;             ///< Thickness of wall
 

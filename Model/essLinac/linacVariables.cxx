@@ -445,7 +445,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("RFQYStep", 233.697); // so the distance b/w start of RFQ and DTL1 as in rbfrend2-9102
   Control.addVariable("RFQLength", 640.0);
   Control.addVariable("RFQOuterWidth", 29.0);
-  Control.addVariable("RFQHeight", 29.0);
+  Control.addVariable("RFQInnerWidth", 18.0);
   Control.addVariable("RFQWallThick", 5.6);
   Control.addVariable("RFQMainMat", "Void");
   Control.addVariable("RFQWallMat", "Copper");
