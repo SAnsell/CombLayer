@@ -104,6 +104,7 @@ RFQ::RFQ(const RFQ& A) :
   length(A.length),outerWidth(A.outerWidth),innerWidth(A.innerWidth),
   wallThick(A.wallThick),
   vaneThick(A.vaneThick),
+  vaneLength(A.vaneLength),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -130,6 +131,7 @@ RFQ::operator=(const RFQ& A)
       innerWidth=A.innerWidth;
       wallThick=A.wallThick;
       vaneThick=A.vaneThick;
+      vaneLength=A.vaneLength;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -169,6 +171,7 @@ RFQ::populate(const FuncDataBase& Control)
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   vaneThick=Control.EvalVar<double>(keyName+"VaneThick");
+  vaneLength=Control.EvalVar<double>(keyName+"VaneLength");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -225,18 +228,10 @@ RFQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(dx),dirZ);
 
   // outer surfaces
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+23,
-                                  SMap.realPtr<Geometry::Plane>(surfIndex+13),
-				  -wallThick);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+24,
-                                  SMap.realPtr<Geometry::Plane>(surfIndex+14),
-                                  wallThick);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+25,
-                                  SMap.realPtr<Geometry::Plane>(surfIndex+15),
-                                  -wallThick);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+26,
-                                  SMap.realPtr<Geometry::Plane>(surfIndex+16),
-                                  wallThick);
+  for (int i=13; i<=16; i++)
+    ModelSupport::buildShiftedPlane(SMap,surfIndex+10+i,
+				    SMap.realPtr<Geometry::Plane>(surfIndex+i),
+				    (i%2) ? -wallThick : wallThick);
 
   // corners
   Geometry::Vec3D A;
@@ -266,6 +261,12 @@ RFQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(vaneThick/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(vaneThick/2.0),Z);
 
+  const double VL(vaneLength*cos(theta*M_PI/180));
+  for (int i=33; i<=36; i++)
+    ModelSupport::buildShiftedPlane(SMap,surfIndex+i+100,
+				    SMap.realPtr<Geometry::Plane>(surfIndex+i),
+				    (i%2) ? VL : -VL);
+
   return;
 }
 
@@ -283,24 +284,31 @@ RFQ::createObjects(Simulation& System)
   std::string Out;
 
   // vanes
-  Out=ModelSupport::getComposite(SMap,surfIndex," (33:-36) 105 -106 -103 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " (33:-36) 105 -106 -103 -133 136 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 35 -36 13 -105 -103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," (35:33) 103 -104 -105 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," (35:33) 103 -104 -133 -135 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 33 -34 15 104 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," (-34:35) 105 -106 103 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " (-34:35) 105 -106 103 134 -135 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 35 -36 -14 106 104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," (-36:-34) 103 -104 106 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," (-36:-34) 103 -104 134 136 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 33 -34 -16 106 -103 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
+
+  // central void
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " (133:-136) (-134:135) 105 -106 : ((133:135) 103 -104 (-134:-136) )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
 

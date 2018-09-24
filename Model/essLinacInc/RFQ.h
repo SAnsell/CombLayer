@@ -51,6 +51,7 @@ class RFQ : public attachSystem::ContainedComp,
 
   double wallThick;             ///< Thickness of wall
   double vaneThick;             ///< Vane thickness
+  double vaneLength; ///< Length of vane thick section
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material

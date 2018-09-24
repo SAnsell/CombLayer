@@ -442,6 +442,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("FEBDropHatchWallThick", 70.0);
 
   // RFQ
+  // dimensions as in rbfrend2-9102
   Control.addVariable("RFQYStep", 233.697); // so the distance b/w start of RFQ and DTL1 as in rbfrend2-9102
   Control.addVariable("RFQLength", 640.0);
   Control.addVariable("RFQOuterWidth", 29.0);
@@ -450,6 +451,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("RFQMainMat", "Void");
   Control.addVariable("RFQWallMat", "Copper");
   Control.addVariable("RFQVaneThick", 2.0);
+  Control.addVariable("RFQVaneLength", 6.8); // measured from tip to tip of triangles
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
