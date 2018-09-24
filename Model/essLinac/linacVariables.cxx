@@ -449,6 +449,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("RFQWallThick", 5.6);
   Control.addVariable("RFQMainMat", "Void");
   Control.addVariable("RFQWallMat", "Copper");
+  Control.addVariable("RFQVaneThick", 2.0);
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");

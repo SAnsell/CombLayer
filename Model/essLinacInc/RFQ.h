@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/RFQ.h
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_RFQ_h
@@ -50,18 +50,19 @@ class RFQ : public attachSystem::ContainedComp,
   double innerWidth;            ///< Inner Width
 
   double wallThick;             ///< Thickness of wall
+  double vaneThick;             ///< Vane thickness
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   RFQ(const std::string&);
@@ -69,7 +70,7 @@ class RFQ : public attachSystem::ContainedComp,
   RFQ& operator=(const RFQ&);
   virtual RFQ* clone() const;
   virtual ~RFQ();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -77,5 +78,5 @@ class RFQ : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/RFQ.cxx
  *
  * Copyright (c) 2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -96,13 +96,14 @@ RFQ::RFQ(const std::string& Key)  :
   */
 {}
 
-RFQ::RFQ(const RFQ& A) : 
+RFQ::RFQ(const RFQ& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),outerWidth(A.outerWidth),innerWidth(A.innerWidth),
   wallThick(A.wallThick),
+  vaneThick(A.vaneThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -128,6 +129,7 @@ RFQ::operator=(const RFQ& A)
       outerWidth=A.outerWidth;
       innerWidth=A.innerWidth;
       wallThick=A.wallThick;
+      vaneThick=A.vaneThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -143,8 +145,8 @@ RFQ::clone() const
 {
     return new RFQ(*this);
 }
-  
-RFQ::~RFQ() 
+
+RFQ::~RFQ()
   /*!
     Destructor
   */
@@ -166,13 +168,14 @@ RFQ::populate(const FuncDataBase& Control)
   outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
   innerWidth=Control.EvalVar<double>(keyName+"InnerWidth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  vaneThick=Control.EvalVar<double>(keyName+"VaneThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
-  
+
 void
 RFQ::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -189,7 +192,7 @@ RFQ::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 RFQ::createSurfaces()
   /*!
@@ -257,9 +260,15 @@ RFQ::createSurfaces()
 			 SMap.realSurfPtr(surfIndex+1));
   ModelSupport::buildPlane(SMap, surfIndex+36, A, dirZ);
 
+  // vanes
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(vaneThick/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(vaneThick/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(vaneThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(vaneThick/2.0),Z);
+
   return;
 }
-  
+
 void
 RFQ::createObjects(Simulation& System)
   /*!
@@ -272,9 +281,28 @@ RFQ::createObjects(Simulation& System)
   const std::string Side(ModelSupport::getComposite(SMap,surfIndex," 1 -2 "));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 13 -14 15 -16 (-36:33) (35:33) (-34:35) (-36:-34) ");
+
+  // vanes
+  Out=ModelSupport::getComposite(SMap,surfIndex," (33:-36) 105 -106 -103 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 35 -36 13 -105 -103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," (35:33) 103 -104 -105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 33 -34 15 104 -105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," (-34:35) 105 -106 103 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 35 -36 -14 106 104 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," (-36:-34) 103 -104 106 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 33 -34 -16 106 -103 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
+
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 23 -13 35 -36 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
@@ -308,7 +336,7 @@ RFQ::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 RFQ::createLinks()
   /*!
@@ -319,13 +347,13 @@ RFQ::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 RFQ::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -344,7 +372,7 @@ RFQ::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }
