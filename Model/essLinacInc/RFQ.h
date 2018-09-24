@@ -46,7 +46,7 @@ class RFQ : public attachSystem::ContainedComp,
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
+  double outerWidth;            ///< Outer Width
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall

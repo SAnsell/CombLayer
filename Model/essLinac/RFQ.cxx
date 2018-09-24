@@ -101,7 +101,7 @@ RFQ::RFQ(const RFQ& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),outerWidth(A.outerWidth),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -125,7 +125,7 @@ RFQ::operator=(const RFQ& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
-      width=A.width;
+      outerWidth=A.outerWidth;
       height=A.height;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
@@ -163,7 +163,7 @@ RFQ::populate(const FuncDataBase& Control)
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -203,15 +203,15 @@ RFQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(outerWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(width/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(width/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(outerWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(outerWidth/2.0),Z);
 
   // inner surfaces
   Geometry::Vec3D dirX(X);
-  const double dx(width/2.0-wallThick*cos(theta*M_PI/180.0));
+  const double dx(outerWidth/2.0-wallThick*cos(theta*M_PI/180.0));
   Geometry::Quaternion::calcQRotDeg(-theta,Y).rotate(dirX);
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(dx),dirX);
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(dx),dirX);
