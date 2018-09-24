@@ -1434,6 +1434,7 @@ ExitAbort::what() const throw()
 
 ///\cond TEMPLATE
 
+class orderGroup;
 namespace Geometry { 
   class Surface;
   class Face;
@@ -1458,6 +1459,7 @@ template class ColErr::EmptyValue<MonteCarlo::Object*>;
 template class ColErr::EmptyValue<Geometry::Surface*>;
 template class ColErr::EmptyValue<Geometry::Face*>;
 template class ColErr::EmptyValue<Geometry::Edge*>;
+template class ColErr::EmptyValue<orderGroup*>;
 template class ColErr::EmptyValue<void>;
 template class ColErr::EmptyValue<int>;
 template class ColErr::EmptyValue<long int>;

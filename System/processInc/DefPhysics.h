@@ -44,8 +44,10 @@ namespace ModelSupport
   void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
   void setGenericPhysics(SimMCNP&,const std::string&);
   
-  void procOffset(const mainSystem::inputParam&,const size_t);
-  void procAngle(const mainSystem::inputParam&,const size_t);
+  void procOffset(const objectGroups&,const mainSystem::inputParam&,
+		  const size_t);
+  void procAngle(const objectGroups&,const mainSystem::inputParam&,
+		 const size_t);
 
 
 
@@ -53,7 +55,7 @@ namespace ModelSupport
 			 const double); 
   void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
 			 const mainSystem::inputParam&); 
-  void setDefRotation(const mainSystem::inputParam&);
+  void setDefRotation(const objectGroups&,const mainSystem::inputParam&);
 
   
   void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);

@@ -91,8 +91,6 @@ flukaSourceSelection(Simulation& System,
 {
   ELog::RegMethod RegA("SourceSelector[F]","flukaSourceSelection");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
   
@@ -108,7 +106,7 @@ flukaSourceSelection(Simulation& System,
   
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
-    *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
+    *(System.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
 
   const long int linkIndex=(DSnd.empty()) ? 0 :  FC.getSideIndex(DSnd);
 

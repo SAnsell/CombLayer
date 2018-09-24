@@ -79,11 +79,13 @@ namespace tallySystem
 {
 
 void
-meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
-                            Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
+meshConstruct::calcXYZ(const objectGroups& OGrp,
+		       const std::string& object,const std::string& linkPos,
+		       Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
   /*!
     Calculate the grid positions relative to an object
     Note that for the mesh it must align on 
+    \param OGrp :: Object group
     \param object :: object name
     \param linkPos :: link position
     \param APos :: Lower corner
@@ -92,11 +94,9 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
 {
   ELog::RegMethod RegA("meshConstruct","calcXYZ");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* FC=
-    OR.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
+    OGrp.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
   const long int sideIndex=FC->getSideIndex(linkPos);
 
   attachSystem::FixedComp A("tmpComp",0);
@@ -144,7 +144,8 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
 
 
 void
-meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
+meshConstruct::getObjectMesh(const objectGroups& OGrp,
+			     const mainSystem::inputParam& IParam,
 			     const std::string& itemName,
 			     const size_t Index,
 			     const size_t offset,
@@ -153,6 +154,7 @@ meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
 			     std::array<size_t,3>& Nxyz)     
   /*!
     Get mesh grid for the tally
+    \param OGrp :: object group
     \param IParam :: Main input parameters
     \param itemName :: Name to search
     \param Index :: index of the -T card
@@ -177,7 +179,7 @@ meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
   Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
   Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
   
-  calcXYZ(place,linkName,APt,BPt);
+  calcXYZ(OGrp,place,linkName,APt,BPt);
   
   return;
 }

@@ -155,9 +155,6 @@ sourceSelection(Simulation& System,
 
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
   const std::string DSnd=IParam.getDefValue<std::string>("","sdefObj",1);
   const std::string Dist=IParam.getDefValue<std::string>("","sdefObj",2);
@@ -170,7 +167,7 @@ sourceSelection(Simulation& System,
   
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
-    *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
+    *(System.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
 
 
   const long int linkIndex=(DSnd.empty()) ?  0 :

@@ -120,9 +120,6 @@ fissionConstruct::processPower(SimMCNP& System,
 {
   ELog::RegMethod RegA("fissionConstruct","processPower");
 
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
-
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
     throw ColErr::IndexError<size_t>(NItems,3,
@@ -133,9 +130,8 @@ fissionConstruct::processPower(SimMCNP& System,
     (IParam.getValue<std::string>("tally",Index,2)); 
 
   // returns 0 if failed to find
-  const int cellOffset=OR.getCell(CellRegion);
-  const int cellRange=(cellOffset) ? 
-    OR.getRange(CellRegion) : 100000;
+  const int cellOffset=System.getFirstCell(CellRegion);
+  
   
   size_t nCount((cellOffset) ? 3 : 2);
   
@@ -146,12 +142,12 @@ fissionConstruct::processPower(SimMCNP& System,
     {
       std::string CVal=
 	IParam.getValue<std::string>("tally",Index,nCount);
+
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
       else if (convertRange(CVal,RA,RB))
 	{
-	  RB=std::max<int>(cellRange,RB);
 	  for(;RA<=RB;RA++)
 	    if (System.existCell(RA+cellOffset))
 	      cellVec.push_back(RA+cellOffset);

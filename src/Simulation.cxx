@@ -1350,50 +1350,54 @@ Simulation::getCellVectorRange(const int RA,const int RB) const
 std::map<int,int>
 Simulation::calcCellRenumber(const std::vector<int>& cOffset,
 			     const std::vector<int>& cRange) const
-/*
+  /*!
     Re-arrange all the cell numbers to be sequentual from 1-N.
+    excluding those in the ranges between cOffset and cOffset+cRange.
+    Then each cOffset in order is set at 10001, 20001 unless the
+    number of normal cells have exceeded 10001 etc and then it is 20001 etc
     \param cOffset :: Protected start
     \param cRange :: Protected range
-    \return map of nubmer to move
+    \return map of oldCell and new cell nubmers
   */
 {
   ELog::RegMethod RegA("Simulation","calcCellRenumber");
 
+  // create a protected range unit to test ALL active cells
+  groupRange fullRange;
+  std::vector<groupRange> partRange;
+  for(size_t i=0;i<cOffset.size();i++)
+    {
+      fullRange.addItem(cOffset[i],cOffset[i]+cRange[i]);
+      partRange.push_back(groupRange(cOffset[i],cOffset[i]+cRange[i]));
+    }
 
-  groupRange protectRange;
-  // for(size_t i=0;i<cOffset.size();i++)
-  //   protectRange.add
-  // This is ordered:
   std::map<int,int> renumberMap;
   int nNum(1);
-  
+
+  std::set<int> protectedCell;
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
-      const int cNum=vc->second->getName();
-
-      // NUMBER not in RANGE:
-      const size_t cIndex=inUnorderedRange(cOffset,cRange,cNum);
-      if (!cIndex)
+      
+      const int cNum=vc->second->getName();      
+      if (!fullRange.valid(cNum))
 	{
-	  size_t nIndex=inUnorderedRange(cOffset,cRange,nNum);
-	  while(nIndex)
-	    {
-	      nNum = cOffset[nIndex-1]+cRange[nIndex-1]+1;
-	      nIndex=inUnorderedRange(cOffset,cRange,nNum);
-	    }
-	  while(renumberMap.find(nNum)!=renumberMap.end())
-	    nNum += 10000;
 	  renumberMap.emplace(cNum,nNum);
 	  nNum++;
 	}
       else
 	{
-	  int offsetNNum(cNum-cOffset[cIndex-1]+cRange[cIndex-1]);
-	  while(renumberMap.find(offsetNNum)!=renumberMap.end())
-	    offsetNNum += 10000;
-	  renumberMap.emplace(cNum,offsetNNum);
+	  protectedCell.insert(cNum);
 	}
+    }
+  const int baseCN(10000*(1+(nNum/10000)));
+  for(const int cNum : protectedCell)
+    {
+      size_t index;
+      for(index=0;index<partRange.size() &&
+	    !partRange[index].valid(cNum);index++) ;
+
+      renumberMap.emplace(cNum,baseCN+static_cast<int>(index)*10000);
     }
   return renumberMap;
 }
@@ -1526,19 +1530,17 @@ Simulation::voidObject(const std::string& ObjName)
 {
   ELog::RegMethod RegA("Simulation","voidObject");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  const int cellN=OR.getCell(ObjName);
-  const int cellRange=OR.getRange(ObjName);
-  if (!cellN)
-    throw ColErr::InContainerError<std::string>(ObjName,"ObjName");
-
-  for(int i=1;i<=cellRange;i++)
+  // full name:
+  //   (a) Object:CellMap
+  //   (b) Number - Number
+  //   (c) All
+  //   (d) Object
+  const std::vector<int> cellRange=getObjectRange(ObjName);
+  for(const int cellN : cellRange)
     {
-      MonteCarlo::Qhull* QH=findQhull(cellN+i);
-      if (!QH) return;
-      QH->setMaterial(0);
+      MonteCarlo::Qhull* QH=findQhull(cellN);
+      if (QH) 
+	QH->setMaterial(0);
     }
   return;
 }
@@ -1731,8 +1733,6 @@ Simulation::masterRotation()
 {
   ELog::RegMethod RegA("Simulation","masterRotation");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   masterRotate& MR = masterRotate::Instance();
   
@@ -1748,7 +1748,7 @@ Simulation::masterRotation()
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
 
-  OR.rotateMaster();
+  objectGroups::rotateMaster();
   
   return;
 }

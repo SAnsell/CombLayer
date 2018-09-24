@@ -39,8 +39,11 @@ class objectGroups
 {
  public:
  
-  /// Storage type : name : startPt : size 
+  /// Storage type : name : activeUnits
   typedef std::map<std::string,groupRange> MTYPE;
+
+  /// Storage type : cell/cellZone  : name
+  typedef std::map<int,std::string> RTYPE;
 
   /// Storage of component pointers
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
@@ -49,19 +52,25 @@ class objectGroups
   typedef std::map<std::string,CTYPE> cMapTYPE;
 
  private:
- 
+
+  const int cellZone;              ///< Range for each segment
   int cellNumber;                  ///< Current new cell number
-  MTYPE regionMap;                 ///< Index of kept object number
+
+  MTYPE regionMap;                 ///< Index of object numbers [name:grp]
+  RTYPE rangeMap;                  ///< Range of objects [index : name]
 
   cMapTYPE Components;             ///< Pointer to real objects
-  
-  std::set<int> activeCells;          ///< All Active cells
+  std::set<int> activeCells;       ///< All Active cells
 
+  void buildMain();
+  
   const attachSystem::FixedComp*
     getInternalObject(const std::string&) const;
   attachSystem::FixedComp*
     getInternalObject(const std::string&);
 
+  groupRange& getGroup(const std::string&);
+  const groupRange& getGroup(const std::string&) const;
   groupRange& inRangeGroup(const int);
   
  public:
@@ -92,10 +101,12 @@ class objectGroups
     getObjectThrow(const std::string&,const std::string&);
   bool hasObject(const std::string&) const;
 
+  bool isActive(const int) const;
+  
   void addActiveCell(const int);
   void removeActiveCell(const int);
   void renumberCell(const int,const int);
-
+  
   /// get active cells
   const std::set<int>& getActiveCells() const
      { return activeCells; }
@@ -103,7 +114,9 @@ class objectGroups
   /// Get full components list
   const cMapTYPE& getComponents() const
     { return Components; }
-      
+
+  int getFirstCell(const std::string&) const;
+  int getLastCell(const std::string&) const;
   std::vector<int> getObjectRange(const std::string&) const;
   
   void reset();

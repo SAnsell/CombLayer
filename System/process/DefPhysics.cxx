@@ -100,9 +100,11 @@ namespace ModelSupport
 {
 
 void
-setDefRotation(const mainSystem::inputParam& IParam)
+setDefRotation(const objectGroups& OGrp,
+	       const mainSystem::inputParam& IParam)
   /*!
     Apply a standard rotation to the simulation
+    \param OGrp :: Object group
     \param IParam :: Parameter set
    */
 {
@@ -128,30 +130,30 @@ setDefRotation(const mainSystem::inputParam& IParam)
     {
       const size_t nP=IParam.setCnt("offset");
       for(size_t i=0;i<nP;i++)
-        procOffset(IParam,i);
+        procOffset(OGrp,IParam,i);
     }
   if (IParam.flag("angle"))
     {
       const size_t nP=IParam.setCnt("angle");
       for(size_t i=0;i<nP;i++)
-        procAngle(IParam,i);
+        procAngle(OGrp,IParam,i);
     }
   return;
 }
 
 void
-procAngle(const mainSystem::inputParam& IParam,
+procAngle(const objectGroups& OGrp,
+	  const mainSystem::inputParam& IParam,
           const size_t index)
   /*!
     Process an angle unit
+    \param OGrp :: Object group
     \param IParam :: Input param
     \param index :: set index
   */
 {
   ELog::RegMethod RegA("DefPhysics[F]","procAngle");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   masterRotate& MR = masterRotate::Instance();
 
   const std::string AItem=
@@ -162,7 +164,7 @@ procAngle(const mainSystem::inputParam& IParam,
   if (AItem=="object" || AItem=="Object")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
       const int ZFlag=IParam.getDefValue<int>(1,"angle",index,3);
@@ -187,7 +189,7 @@ procAngle(const mainSystem::inputParam& IParam,
   else  if (AItem=="objPoint" || AItem=="ObjPoint")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
 
@@ -206,7 +208,7 @@ procAngle(const mainSystem::inputParam& IParam,
 	    AItem=="objYAxis" || AItem=="ObjYAxis")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
 
@@ -269,17 +271,17 @@ procAngle(const mainSystem::inputParam& IParam,
 
 
 void
-procOffset(const mainSystem::inputParam& IParam,
+procOffset(const objectGroups& OGrp,
+	   const mainSystem::inputParam& IParam,
            const size_t index)
   /*!
     Process an offset unit
+    \param OGrp :: Object group
     \param IParam :: Input param
     \param index :: set index
   */
 {
   ELog::RegMethod RegA("DefPhysics[F]","procOffset");
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   masterRotate& MR = masterRotate::Instance();  
 
   const std::string AItem=
@@ -290,7 +292,7 @@ procOffset(const mainSystem::inputParam& IParam,
   if (AItem=="object" || AItem=="Object")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("0","offset",index,2);
       const long int sideIndex=GIPtr->getSideIndex(CItem);
@@ -363,7 +365,7 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
 
 void 
 setNeutronPhysics(physicsSystem::PhysicsCards& PC,
-		  const FuncDataBase& Control,
+		  const FuncDataBase&,
 		  const double maxEnergy)
   /*!
     Set the neutron Physics for MCNP run

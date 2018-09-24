@@ -233,34 +233,34 @@ insertCurve::createSurfaces()
     {
       Geometry::Vec3D AAxis(X);
       QFront.rotate(AAxis);
-      ModelSupport::buildPlane(SMap,ptIndex+1,Centre,AAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Centre,AAxis);
     }
   if (!backActive())
     {
       Geometry::Vec3D BAxis(X);
       QFront.invRotate(BAxis);
-      ModelSupport::buildPlane(SMap,ptIndex+2,Centre,BAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Centre,BAxis);
     }
 
   
-  ModelSupport::buildCylinder(SMap,ptIndex+7,Centre,Z,radius-width/2.0);
-  ModelSupport::buildCylinder(SMap,ptIndex+17,Centre,Z,radius+width/2.0);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Centre,Z,radius-width/2.0);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Centre,Z,radius+width/2.0);
 
-  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   if (!frontActive())
-    setSurf("Front",ptIndex+1);
+    setSurf("Front",buildIndex+1);
   else
     setSurf("Front",getFrontRule().getPrimarySurface());
 
   if (!backActive())
-    setSurf("Back",SMap.realSurf(ptIndex+2));
+    setSurf("Back",SMap.realSurf(buildIndex+2));
   else
     setSurf("Back",getBackRule().getPrimarySurface());
 
-  setSurf("InnerRadius",SMap.realSurf(ptIndex+7));
-  setSurf("OuterRadius",SMap.realSurf(ptIndex+17));
+  setSurf("InnerRadius",SMap.realSurf(buildIndex+7));
+  setSurf("OuterRadius",SMap.realSurf(buildIndex+17));
   return;
 }
 
@@ -281,14 +281,14 @@ insertCurve::createLinks()
     {
       APt=Centre+(Y*cos(theta)-X*sin(theta)) * (yFlag*radius);
       FixedComp::setConnect(0,APt,-X*yFlag);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
       BPt=Centre+(Y*cos(theta)+X*sin(theta)) * (yFlag*radius);
       FixedComp::setConnect(1,BPt,X*yFlag);
-      FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
   
   FixedComp::setConnect(2,Origin-Y*(width/2.0),-Y);
@@ -296,20 +296,20 @@ insertCurve::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+17));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(6,APt-Z*(height/2.0),-X*yFlag);
   FixedComp::setConnect(7,BPt-Z*(height/2.0),X*yFlag);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+1));
-  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+2));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(8,APt+Z*(height/2.0),-X*yFlag);
   FixedComp::setConnect(9,BPt+Z*(height/2.0),X*yFlag);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+1));
-  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+2));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+2));
 
 
   return;
@@ -325,7 +325,7 @@ insertCurve::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertCurve","createObjects");
 
   std::string Out=
-    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 7 -17 5 -6 ");
+    ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 7 -17 5 -6 ");
   Out+=frontRule();
   Out+=backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));

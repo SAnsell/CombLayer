@@ -158,11 +158,11 @@ insertShell::createSurfaces()
 {
   ELog::RegMethod RegA("insertShell","createSurface");
 
-  ModelSupport::buildSphere(SMap,ptIndex+7,Origin,innerRadius);
-  ModelSupport::buildSphere(SMap,ptIndex+17,Origin,outerRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+7,Origin,innerRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+17,Origin,outerRadius);
 
-  setSurf("InnerSurf",SMap.realSurf(ptIndex+7));
-  setSurf("OuterSurf",SMap.realSurf(ptIndex+17));
+  setSurf("InnerSurf",SMap.realSurf(buildIndex+7));
+  setSurf("OuterSurf",SMap.realSurf(buildIndex+17));
   return;
 }
 
@@ -181,9 +181,9 @@ insertShell::createLinks()
     {
       const double SN((i%2) ? 1.0 : -1.0);
       FixedComp::setConnect(i,Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
-      FixedComp::setLinkSurf(i,SMap.realSurf(ptIndex+7));
+      FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+7));
       FixedComp::setConnect(i+6,Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
-      FixedComp::setLinkSurf(i+6,SMap.realSurf(ptIndex+17));
+      FixedComp::setLinkSurf(i+6,SMap.realSurf(buildIndex+17));
     }
   
   return;
@@ -199,14 +199,14 @@ insertShell::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertShell","createObjects");
   
   std::string Out=
-    ModelSupport::getComposite(SMap,ptIndex," 7 -17 ");
+    ModelSupport::getComposite(SMap,buildIndex," 7 -17 ");
   CellMap::makeCell("Main",System,cellIndex++,defMat,0.0,Out);
 
   if (innerMat>=0)
     {
-      Out=ModelSupport::getComposite(SMap,ptIndex," -7 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
       CellMap::makeCell("Void",System,cellIndex++,innerMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,ptIndex," -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 ");
     }
 
   addOuterSurf(Out);

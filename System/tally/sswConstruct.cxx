@@ -98,8 +98,6 @@ sswConstruct::processSSW(SimMCNP& System,
   */
 {
   ELog::RegMethod RegA("sswConstruct","processSSW");
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
@@ -121,7 +119,7 @@ sswConstruct::processSSW(SimMCNP& System,
       const std::string linkPt=
         IParam.getValueError<std::string>("tally",Index,3,eMess);
       const attachSystem::FixedComp* FCPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>
+        System.getObjectThrow<attachSystem::FixedComp>
         (FCName,"FixedComp");
       
       const long int sideIndex(FCPtr->getSideIndex(linkPt));
@@ -140,7 +138,7 @@ sswConstruct::processSSW(SimMCNP& System,
         IParam.getDefValue<size_t>(0,"tally",Index,4);
 
       const attachSystem::SurfMap* SMPtr=
-        OR.getObjectThrow<attachSystem::SurfMap>(SMName,"SurfMap");
+        System.getObjectThrow<attachSystem::SurfMap>(SMName,"SurfMap");
 
       if (index)
 	SList.push_back(SMPtr->getSurf(surfObj,index-1));

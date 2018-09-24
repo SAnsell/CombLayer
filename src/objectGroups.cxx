@@ -68,16 +68,19 @@
 
 #include "objectGroups.h"
 
-objectGroups::objectGroups() : 
-  cellNumber(1000000)
+objectGroups::objectGroups() :
+  cellZone(10000),cellNumber(1000000)
   /*!
     Constructor
   */
-{}
+{
+  buildMain();
+}
 
 
 objectGroups::objectGroups(const objectGroups& A) : 
-  cellNumber(A.cellNumber),regionMap(A.regionMap),
+  cellZone(A.cellZone),cellNumber(A.cellNumber),
+  regionMap(A.regionMap),rangeMap(A.rangeMap),
   Components(A.Components),activeCells(A.activeCells)
   /*!
     Copy constructor
@@ -97,6 +100,7 @@ objectGroups::operator=(const objectGroups& A)
     {
       cellNumber=A.cellNumber;
       regionMap=A.regionMap;
+      rangeMap=A.rangeMap;
       Components=A.Components;
       activeCells=A.activeCells;
     }
@@ -117,7 +121,20 @@ objectGroups::reset()
 {
   Components.erase(Components.begin(),Components.end());
   regionMap.erase(regionMap.begin(),regionMap.end());
+  rangeMap.erase(rangeMap.begin(),rangeMap.end());
+
   activeCells.clear();
+  buildMain();
+  return;
+}
+
+void
+objectGroups::buildMain()
+  /*!
+    Initialize a low cell number for the first 100000 units
+  */
+{
+  regionMap.emplace("Primary",groupRange());
   return;
 }
 
@@ -125,7 +142,7 @@ bool
 objectGroups::hasCell(const std::string& Name,
 		      const int cellN) const
   /*!
-    Determine if a cell is within a range
+    Determine if a cell has been placed in a range
     \param Name :: object name    
     \param cellN :: cell number
     \return true if cellN is registered to region
@@ -141,9 +158,55 @@ objectGroups::hasCell(const std::string& Name,
   
   
 groupRange&
+objectGroups::getGroup(const std::string& gName) 
+  /*!
+    Determine in the cell in range and return object
+    thrs can throw if object is not in range
+    \param gName :: Group name
+    \return groupRange 
+   */
+{
+  ELog::RegMethod RegA("objectGroups","getGroup");
+  
+  // Quick check to determine if it is the same one as before!
+  // Note: groupRange could have been updated to can't store
+  MTYPE::iterator mc;
+  mc=regionMap.find(gName);
+
+  if (mc==regionMap.end())
+    throw ColErr::InContainerError<std::string>(gName,"gName");
+
+  return mc->second;
+}
+
+const groupRange&
+objectGroups::getGroup(const std::string& gName)  const
+  /*!
+    Determine in the cell in range and return object
+    thrs can throw if object is not in range
+    \param gName :: Group name
+    \return groupRange 
+   */
+{
+  ELog::RegMethod RegA("objectGroups","getGroup[const]");
+  
+  // Quick check to determine if it is the same one as before!
+  // Note: groupRange could have been updated to can't store
+  MTYPE::const_iterator mc;
+  mc=regionMap.find(gName);
+
+  if (mc==regionMap.end())
+    throw ColErr::InContainerError<std::string>
+      (gName,"gName not in groupRange");
+
+  return mc->second;
+}
+
+groupRange&
 objectGroups::inRangeGroup(const int Index) 
   /*!
     Determine in the cell in range and return object
+    thrs can throw if object is not in range
     \param Index :: cell number to get
     \return groupRange 
    */
@@ -160,7 +223,22 @@ objectGroups::inRangeGroup(const int Index)
   if (mc!=regionMap.end() && 
       mc->second.valid(Index))
     return mc->second;
-    
+
+  // ok that failed -- but maybe it is just a zoned name
+  const int CNX(Index/cellZone);
+  RTYPE::const_iterator rc=rangeMap.find(CNX);
+  if (rc!=rangeMap.end())
+    {
+      mc=regionMap.find(rc->second);
+      if (mc!=regionMap.end() && 
+	  mc->second.valid(Index))
+	{
+	  prevName=rc->second;
+	  return mc->second;
+	}
+    }
+  
+  // Everything failed : exhausive search
   for(mc=regionMap.begin();mc!=regionMap.end();mc++)
     {
       if (mc->second.valid(Index))
@@ -178,7 +256,7 @@ objectGroups::inRange(const int Index) const
   /*!
     Determine in the cell in within range
     \param Index :: cell number to test
-    \return string
+    \return name of object / empty string if not found
    */
 {
   ELog::RegMethod RegA("objectGroups","inRange");
@@ -192,7 +270,21 @@ objectGroups::inRange(const int Index) const
   if (mc!=regionMap.end() && 
       mc->second.valid(Index))
     return mc->first;
-    
+
+  // ok that failed -- but maybe it is just a zoned name
+  const int CNX(Index/cellZone);
+  RTYPE::const_iterator rc=rangeMap.find(CNX);
+  if (rc!=rangeMap.end())
+    {
+      mc=regionMap.find(rc->second);
+      if (mc!=regionMap.end() && 
+	  mc->second.valid(Index))
+	{
+	  prevName=rc->second;
+	  return prevName;
+	}
+    }
+
   for(mc=regionMap.begin();mc!=regionMap.end();mc++)
     {
       if (mc->second.valid(Index))
@@ -211,18 +303,54 @@ objectGroups::addActiveCell(const int cellN)
     \param cellN :: cell number
   */
 {
+  ELog::RegMethod RegA("objectGroups","addActiveCell");
+  
   activeCells.insert(cellN);
+
+  std::string unit("Primary");
+  if (cellN>10*cellZone)
+    {
+      const int CNS=cellN/cellZone;
+      
+      const RTYPE::const_iterator mc=rangeMap.find(CNS);
+      if (mc==rangeMap.end())
+	throw ColErr::InContainerError<int>
+	  (cellN,"CellN/10000 not in rangeMap");
+      unit=mc->second;
+    }
+  
+  const MTYPE::iterator mcr=regionMap.find(unit);
+  if (mcr==regionMap.end())
+    throw ColErr::InContainerError<std::string>
+      (unit,"region not in regionMap");
+  mcr->second.addItem(cellN);
+
   return;
 }
 
 void
 objectGroups::removeActiveCell(const int cellN)
   /*!
-    Deletes an active cell
+    Deletes an active cell -- note that this 
+    can either (a) be in an normal cell (b) after a renumber
     \param cellN :: cell number
   */
 {
+  ELog::RegMethod RegA("objectGroups","removeActiveCell");
+  
   activeCells.erase(cellN);
+
+  const std::string gName=inRange(cellN);
+  if (gName.empty())
+    throw ColErr::InContainerError<int>(cellN,"Removing void cell");
+
+  const MTYPE::iterator mcr=regionMap.find(gName);
+  if (mcr==regionMap.end())
+    throw ColErr::InContainerError<std::string>
+      (gName,"region not in regionMap");
+  
+  mcr->second.removeItem(cellN);
+  
   return;
 }
 
@@ -253,10 +381,10 @@ objectGroups::renumberCell(const int oldCellN,
 	getObject<attachSystem::CellMap>(gName);
       if (CMPtr)
 	CMPtr->renumberCell(oldCellN,newCellN);
+
+      groupRange& GRP=getGroup(gName);
+      GRP.move(oldCellN,newCellN);
     }
-  
-  groupRange& GRP=inRangeGroup(oldCellN);
-  GRP.move(oldCellN,newCellN);
   return;
 }
 
@@ -265,21 +393,33 @@ int
 objectGroups::cell(const std::string& Name,const int size)
   /*!
     Add a component and get a new cell number 
+    This is called via FixedComp and creates an active range
     \param Name :: Name of the unit
-    \param size :: Size of unit to register
+    \param size :: Size of unit to register [units of 10000]
     \return the start number of the cellvalue
   */
 {
   ELog::RegMethod RegA("objectGroups","cell");
 
-  MTYPE::const_iterator mc=regionMap.find(Name);  
-  if (mc!=regionMap.end())
-    return mc->second.getFirst();
+  ELog::EM<<"ASDFADSF "<<ELog::endDiag;
+  if (!size)
+    throw ColErr::EmptyValue<size_t>("size");
 
-  // create anew region  re
-  regionMap.emplace(Name,groupRange(cellNumber,cellNumber+size));
-  cellNumber+=size;
-  return cellNumber-size;
+  const size_t range=( (1+(size-1)/cellZone) );
+
+  MTYPE::const_iterator mc=regionMap.find(Name);
+  if (mc!=regionMap.end())
+    throw ColErr::InContainerError<std::string>(Name,"Name present");
+  
+  // create a new region [empty]
+  regionMap.emplace(Name,groupRange());
+  for(size_t i=0;i<range;i++)
+    {
+      rangeMap.emplace((cellNumber/cellZone),Name);
+      cellNumber+=cellZone;
+    }
+  
+  return cellNumber-cellZone*static_cast<int>(range);
 }
 
 void
@@ -326,6 +466,17 @@ objectGroups::addObject(const std::string& Name,
 }
 
 bool
+objectGroups::isActive(const int cellN) const
+  /*!
+    Determine if a cell is active
+    \param cellN :: Cell number
+    \return true if active
+  */
+{
+  return (activeCells.find(cellN)!=activeCells.end());
+}
+
+bool
 objectGroups::hasObject(const std::string& Name) const
   /*!
     Find a FixedComp [if it exists]
@@ -343,7 +494,7 @@ attachSystem::FixedComp*
 objectGroups::getInternalObject(const std::string& Name) 
   /*!
     Find a FixedComp [if it exists] (from group name if used)
-    \param Name :: Name [divided by : if group:head]
+    \param Name :: Name [divided by : FixedGroup : GroupName]
     \return ObjectPtr / 0 
   */
 {
@@ -452,7 +603,7 @@ objectGroups::getObjectThrow(const std::string& Name,
 template<typename T>
 T*
 objectGroups::getObjectThrow(const std::string& Name,
-                                const std::string& Err) 
+			     const std::string& Err) 
   /*!
     Find a FixedComp [if it exists]
     \param Name :: Name
@@ -492,7 +643,35 @@ objectGroups::getObject(const std::string& Name) const
   const std::string PostItem=Name.substr(pos);
   return 0;
 }
-  
+
+int
+objectGroups::getFirstCell(const std::string& objName) const
+  /*!
+    If an object exists return the offset or return 0
+    The assumption is that you want either the start point or 
+    after a renumber the start number
+    \param objName :: Object name to find
+    \return region offset / 0 
+  */
+{
+  MTYPE::const_iterator mc=regionMap.find(objName);
+  return (mc==regionMap.end()) ? 0 : mc->second.getFirst();
+}
+
+int
+objectGroups::getFirstCell(const std::string& objName) const
+  /*!
+    If an object exists return the offset or return 0
+    The assumption is that you want either the start point or 
+    after a renumber the start number
+    \param objName :: Object name to find
+    \return region offset / 0 
+  */
+{
+  MTYPE::const_iterator mc=regionMap.find(objName);
+  return (mc==regionMap.end()) ? 0 : mc->second.getFirst();
+}
+
 std::vector<int>
 objectGroups::getObjectRange(const std::string& objName) const
   /*!
@@ -505,8 +684,9 @@ objectGroups::getObjectRange(const std::string& objName) const
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
 
+  
   std::string::size_type pos=objName.find(":");
-  // CELL Range ::  objectName:cellName
+  // CELLMAP Range ::  objectName:cellName
   if (pos!=0 && pos!=std::string::npos)
     {
       const std::string itemName=objName.substr(0,pos);
@@ -531,21 +711,25 @@ objectGroups::getObjectRange(const std::string& objName) const
       return Out;
     }
   
-  // Simple number range
+  // SIMPLE NUMBER RANGE  M - N
   pos=objName.find("-");
   if (pos!=std::string::npos)
     {
-      long int ANum,BNum;
+      int ANum,BNum;
       const std::string AName=objName.substr(0,pos);
       const std::string BName=objName.substr(pos+1);
       if (!StrFunc::convert(AName,ANum) ||
           !StrFunc::convert(BName,BNum) )
         throw ColErr::InContainerError<std::string>
           (objName,"objectName does not convert to numbers");
+      
       if (ANum>BNum)
         std::swap(ANum,BNum);
-      std::vector<int> Out(static_cast<size_t>(1+BNum-ANum));
-      std::iota(Out.begin(),Out.end(),ANum);
+      std::vector<int> Out;
+      for(int index=ANum;index<BNum;index++)
+	if (isActive(index))
+	  Out.push_back(index);
+
       return Out;
     }
 
@@ -553,7 +737,9 @@ objectGroups::getObjectRange(const std::string& objName) const
   if (objName=="All" || objName=="all")
     return std::vector<int>(activeCells.begin(),activeCells.end());
 
-  return getObjectRange(objName);
+  // BASIC
+  const groupRange& GRP=getGroup(objName); 
+  return GRP.getAllCells();
 }
   
 void
@@ -567,7 +753,7 @@ objectGroups::rotateMaster()
   
   for(cMapTYPE::value_type& AUnit : Components)
     AUnit.second->applyRotation(MR);
-
+  
   return;
 }
 

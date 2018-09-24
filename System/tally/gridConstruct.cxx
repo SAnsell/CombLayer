@@ -77,6 +77,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
@@ -167,7 +168,7 @@ gridConstruct::processGrid(SimMCNP& System,
       ELog::EM<<"OI == "<<offsetIndex<<ELog::endDiag;
 
 
-      if (!calcGlobalCXY(place,linkName,TOrigin,XVec,YVec))
+      if (!calcGlobalCXY(System,place,linkName,TOrigin,XVec,YVec))
 	applyMultiGrid(System,initNPD,NPD,TOrigin,XVec,YVec);
     }
 
@@ -179,7 +180,8 @@ gridConstruct::processGrid(SimMCNP& System,
 }
 
 int
-gridConstruct::calcGlobalCXY(const std::string& Place,
+gridConstruct::calcGlobalCXY(const objectGroups& OGrp,
+			     const std::string& Place,
 			     const std::string& linkName,
 			     Geometry::Vec3D& Centre,
 			     Geometry::Vec3D& XVec,
@@ -198,11 +200,8 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
 {
   ELog::RegMethod RegA("gridConstruct","calcGlobalCXY");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* FC=
-    OR.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
+    OGrp.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
   
   const long int linkNumber=FC->getSideIndex(linkName);
   const Geometry::Vec3D O=FC->getLinkPt(linkNumber);

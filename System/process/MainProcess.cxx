@@ -269,8 +269,8 @@ renumberCells(Simulation& System,const inputParam& IParam)
 	  if (!StrFunc::convert(Name,xOffset) || 
 	      !StrFunc::convert(Range,xRange))
 	    {
-	      xOffset=OR.getCell(Name);
-	      xRange=OR.getRange(Name);			
+	      xOffset=Sytem.getFirstCell(Name);
+	      xRange=System.getLastCell(Name)-xOffset;			
 	      i--;              // using names
 	    }
 	  
