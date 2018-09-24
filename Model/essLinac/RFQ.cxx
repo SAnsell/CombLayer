@@ -233,39 +233,26 @@ RFQ::createSurfaces()
 				    SMap.realPtr<Geometry::Plane>(surfIndex+i),
 				    (i%2) ? -wallThick : wallThick);
 
-  // corners
-  Geometry::Vec3D A;
-  A = SurInter::getPoint(SMap.realSurfPtr(surfIndex+26),
-			 SMap.realSurfPtr(surfIndex+3),
-			 SMap.realSurfPtr(surfIndex+1));
-  ModelSupport::buildPlane(SMap, surfIndex+33, A, dirX);
+  const double VL(vaneLength*cos(theta*M_PI/180));
+  for (int i=0; i<4; i++)
+    {
+      const int s((i%3) ? 4 : 3);
+      const Geometry::Vec3D A =
+	SurInter::getPoint(SMap.realSurfPtr(surfIndex+26-i),
+			   SMap.realSurfPtr(surfIndex+s),
+			   SMap.realSurfPtr(surfIndex+1));
+      const Geometry::Plane *p =
+	ModelSupport::buildPlane(SMap,surfIndex+33+i, A, i<2 ? dirX : dirZ);
 
-  A = SurInter::getPoint(SMap.realSurfPtr(surfIndex+25),
-			 SMap.realSurfPtr(surfIndex+4),
-			 SMap.realSurfPtr(surfIndex+1));
-  ModelSupport::buildPlane(SMap, surfIndex+34, A, dirX);
+      ModelSupport::buildShiftedPlane(SMap,surfIndex+i+133,p,
+				      (i%2) ? -VL : VL);
+    }
 
-  A = SurInter::getPoint(SMap.realSurfPtr(surfIndex+24),
-			 SMap.realSurfPtr(surfIndex+4),
-			 SMap.realSurfPtr(surfIndex+1));
-  ModelSupport::buildPlane(SMap, surfIndex+35, A, dirZ);
-
-  A = SurInter::getPoint(SMap.realSurfPtr(surfIndex+23),
-			 SMap.realSurfPtr(surfIndex+3),
-			 SMap.realSurfPtr(surfIndex+1));
-  ModelSupport::buildPlane(SMap, surfIndex+36, A, dirZ);
-
-  // vanes
+  // Vanes
   ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(vaneThick/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(vaneThick/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(vaneThick/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(vaneThick/2.0),Z);
-
-  const double VL(vaneLength*cos(theta*M_PI/180));
-  for (int i=33; i<=36; i++)
-    ModelSupport::buildShiftedPlane(SMap,surfIndex+i+100,
-				    SMap.realPtr<Geometry::Plane>(surfIndex+i),
-				    (i%2) ? VL : -VL);
 
   return;
 }
@@ -283,7 +270,7 @@ RFQ::createObjects(Simulation& System)
 
   std::string Out;
 
-  // vanes
+  // Vanes
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " (33:-36) 105 -106 -103 -133 136 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
