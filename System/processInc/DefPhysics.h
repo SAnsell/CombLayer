@@ -22,6 +22,7 @@
 #ifndef ModelSupport_DefPhysics_h
 #define ModelSupport_DefPhysics_h
 
+class objectGroups;
 class Simulation;
 class SimMCNP;
 class SimFLUKA;

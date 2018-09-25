@@ -220,6 +220,7 @@ PWTConstructor::procType(std::vector<std::string>& StrItem,
   return 0;
 }
 
+
 void
 PWTConstructor::processUnit(const objectGroups& OGrp,
 			    PhysicsCards& PC,
@@ -256,7 +257,7 @@ PWTConstructor::processUnit(const objectGroups& OGrp,
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wPWT "+IParam.getFull("wPWT",Index),0);	
 
-  sortZone();
+
   PWTControl& PWT=PC.getPWTCard();
     
   if (!procType(StrItem,PWT))

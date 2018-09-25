@@ -877,6 +877,9 @@ template attachSystem::TwinComp*
 template attachSystem::SecondTrack* 
   objectGroups::getObjectThrow(const std::string&,const std::string&);
 
+template attachSystem::LayerComp* 
+  objectGroups::getObjectThrow(const std::string&,const std::string&);
+
 template attachSystem::CellMap* 
   objectGroups::getObjectThrow(const std::string&,const std::string&);
 

@@ -55,7 +55,7 @@ class PWTConstructor
   static bool getVector(const objectGroups&,
 			const std::vector<std::string>&,
 			const size_t,Geometry::Vec3D&);
-  void sortZone();
+
   bool procZone(const objectGroups&,std::vector<std::string>&);
   bool procType(std::vector<std::string>&,PWTControl&);
   

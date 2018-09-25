@@ -93,10 +93,7 @@ testRefPlate::initSim()
   ELog::RegMethod RegA("testRefPlate","initSim");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
-
   SObj=std::shared_ptr<testSystem::simpleObj>(new simpleObj("testSimple"));
-  OR.reset();
   ASim.resetAll();
 
 
