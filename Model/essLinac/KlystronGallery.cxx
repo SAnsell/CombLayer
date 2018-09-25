@@ -224,10 +224,10 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
 
   Geometry::Vec3D topNorm(Z);
-  Geometry::Quaternion::calcQRotDeg(roofAngle,Y).rotate(topNorm);
+  Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+6,
-			   Origin+X*(widthRight)+Z*(height),topNorm);
+			   Origin-X*(widthLeft)+Z*(height),topNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
@@ -237,7 +237,7 @@ KlystronGallery::createSurfaces()
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,
-			   Origin+X*(widthRight)+
+			   Origin-X*(widthLeft)+
 			   Z*(height+roofThick/cos(roofAngle*M_PI/180)),
 			   topNorm);
 
@@ -275,43 +275,39 @@ KlystronGallery::createLinks()
 {
   ELog::RegMethod RegA("KlystronGallery","createLinks");
 
+  const Geometry::Vec3D midY(Y*((lengthFront-lengthBack)/2.0));
+
   FixedComp::setConnect(0,Origin-Y*(lengthBack+wallThick),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+11));
 
   FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
 
-  FixedComp::setConnect(2,Origin-X*(widthLeft+wallThick)+
-			Y*((lengthFront-lengthBack)/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(widthLeft+wallThick)+midY,-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick)+
-			Y*((lengthFront-lengthBack)/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(widthRight+wallThick)+midY,X);
   FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(depth+floorThick)+
-			Y*((lengthFront-lengthBack)/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(depth+floorThick)+midY,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
 
-  FixedComp::setConnect(5,Origin+X*(widthRight)+
-			Z*(height+roofThick/cos(roofAngle*M_PI/180))+
-			Y*((lengthFront-lengthBack)/2.0),Z);
+  // highest roof x+ corner
+  FixedComp::setConnect(5,Origin-X*(widthLeft)+
+			Z*(height+roofThick/cos(roofAngle*M_PI/180))+midY,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
 
-  FixedComp::setConnect(6,Origin+X*(widthRight)+
-			Y*((lengthFront-lengthBack)/2.0),X);
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+4));
+  FixedComp::setConnect(6,Origin-X*(widthLeft)+midY,-X);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+3));
 
-  FixedComp::setConnect(7,Origin-Z*(depth)+
-			Y*((lengthFront-lengthBack)/2.0),Z);
+  FixedComp::setConnect(7,Origin-Z*(depth)+midY,Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+5));
 
-  FixedComp::setConnect(8,Origin+X*(widthRight)+Z*(height)+
-			Y*((lengthFront-lengthBack)/2.0),-Z);
+  FixedComp::setConnect(8,Origin-X*(widthLeft)+Z*(height)+midY,-Z);
   FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
 
-  //  for (int i=0; i<=9; i++)
-  //     ELog::EM << "KG lp " << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
+   // for (int i=0; i<9; i++)
+   //    ELog::EM << "KG lp " << i << ":\t" << getLinkSurf(i+1) << " " << getLinkPt(i+1) << ELog::endDiag;
 
 
   return;

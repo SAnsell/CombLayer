@@ -302,7 +302,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGAirMat", "Air");
   // 130 and 570 are stub legs lengths
   Control.addParse<double>("KGXStep",
-			   "-(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570)"); // check
+			   "(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570)"); // check
   Control.addVariable("KGZStep", 573.5);
 
   Control.addVariable("LinacNStubs", 2);
@@ -444,8 +444,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
   Control.addVariable("BermHeight", 550);
   Control.addVariable("BermDepth",  500);
-  Control.addVariable("BermWidthLeft", 4000);
-  Control.addVariable("BermWidthRight", 3500);
+  Control.addVariable("BermWidthLeft", 3500);
+  Control.addVariable("BermWidthRight", 4000);
   Control.addVariable("BermMat", "ClayTillLera");
   Control.addVariable("BermRoofAngle", 4.76); // approx
 

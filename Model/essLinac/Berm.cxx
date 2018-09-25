@@ -213,8 +213,9 @@ Berm::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
 
   Geometry::Vec3D topNorm(Z);
-  Geometry::Quaternion::calcQRotDeg(roofAngle,Y).rotate(topNorm);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height)+X*widthRight,
+  Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
+  ModelSupport::buildPlane(SMap,surfIndex+6,
+			   Origin+Z*(height)-X*widthLeft,
 			   topNorm);
 
   return;
@@ -235,12 +236,12 @@ Berm::createObjects(Simulation& System,const attachSystem::FixedComp& KG,
   ELog::RegMethod RegA("Berm","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 -6 ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 5 -6 ") +
     KG.getLinkString(kgSide);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 5 ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 ") +
     KG.getLinkString(-kgSide) + KG.getLinkString(kgFloor);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   addOuterUnionSurf(Out);

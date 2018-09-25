@@ -127,6 +127,7 @@ makeLinac::build(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  //  LinacTunnel->addInsertCell(voidCell);
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
   feb->addInsertCell(voidCell);
@@ -136,7 +137,7 @@ makeLinac::build(Simulation& System,
   KG->createAll(System,*LinacTunnel,0);
 
   berm->addInsertCell(voidCell);
-  berm->createAll(System,*LinacTunnel,0,*KG,4,5);
+  berm->createAll(System,*LinacTunnel,0,*KG,3,5);
 
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
   attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
@@ -153,7 +154,7 @@ makeLinac::build(Simulation& System,
 	  std::shared_ptr<Stub> stub(new Stub("Stub", stubNumber));
 	  OR.addObject(stub);
 	  stub->setFront(*KG,7);
-	  stub->setBack(*LinacTunnel,-13);
+	  stub->setBack(*LinacTunnel,-14);
 	  stub->createAll(System,*LinacTunnel,0);
 	  attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
 	  attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,
