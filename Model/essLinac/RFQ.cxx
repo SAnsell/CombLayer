@@ -295,7 +295,7 @@ RFQ::createObjects(Simulation& System)
 
   // central void
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " (133:-136) (-134:135) 105 -106 : ((133:135) 103 -104 (-134:-136) )");
+				 " ((133:-136) (-134:135) 105 -106 : (133:135) 103 -104 (-134:-136) ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
 
