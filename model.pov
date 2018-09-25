@@ -6,7 +6,7 @@ global_settings {
 assumed_gamma 1.0
 }
 
-#declare cameraNumber = 3; // 0: DTL global view;  1: beam dump view;  2: PMQ view
+#declare cameraNumber = 3; // 0: DTL global view;  1: beam dump view;  2: PMQ view; 3: FEB+tunnel view
 #declare lightSource  = 0; // 0: as defined in the camera definition; 1: simple array of point lights; 2: array of area_light
 
 #switch ( cameraNumber )
@@ -28,15 +28,12 @@ assumed_gamma 1.0
     < 21, -4000, 0 >  White
   }
 #break
-#case(3) // Stub1 view
- #declare cameraLocation = <-1400, 1300, 600>;
- #declare cameraLookAt   = <-800,  1885, 300>;
- #declare cameraAngle = 70;
+#case(3) // FEB+tunnel
+ #declare cameraLocation = <3000, -3000, 3000>;
+ #declare cameraLookAt   = <0, 1000, 0>;
+ #declare cameraAngle = 90;
   light_source {
-    < -525, 1200, 700 >  White
-  }
-  light_source {
-    < -865, 1835, 400 >  White
+    < -4000, -3000, 1500 >  White
     shadowless
   }
 #break
