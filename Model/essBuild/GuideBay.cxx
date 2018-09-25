@@ -383,11 +383,9 @@ GuideBay::createGuideItems(Simulation& System,
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* ModFC=
-    OR.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
+    System.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
                                                "Focus unit not found");
   const std::string BL=StrFunc::makeString("G",bayNumber)+"BLine"+modName;
   
@@ -401,7 +399,7 @@ GuideBay::createGuideItems(Simulation& System,
   
   attachSystem::ContainedGroup* CG=
     (!wheelName.empty()) ?
-    OR.getObjectThrow<attachSystem::ContainedGroup>
+    System.getObjectThrow<attachSystem::ContainedGroup>
     (wheelName,"Wheel unit not found") : 0;
     
   for(size_t i=0;i<nItems;i++)
@@ -415,7 +413,6 @@ GuideBay::createGuideItems(Simulation& System,
 
       GA->createAll(System,*ModFC,FI,GB);
       GUnit.push_back(GA);
-      OR.addObject(GUnit.back());
 
       // Add wheel to inner cell if required
       if (GA->hasItem("BodyMetal"))

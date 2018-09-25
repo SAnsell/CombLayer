@@ -95,7 +95,16 @@ objectRegister::Instance()
   return A;
 }
 
-
+void
+objectRegister::setObjectGroup(objectGroups& OGrp)
+  /*!
+    Set the object group
+    \param OGrp :: Object group [typcially simulation]
+   */
+{
+  GPtr=&OGrp;
+  return;
+}
   
 int
 objectRegister::cell(const std::string& Name,const int size)

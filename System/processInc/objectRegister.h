@@ -63,7 +63,7 @@ class objectRegister
 
   static objectRegister& Instance();
 
-  void setObjectGroup(const objectGroups&);
+  void setObjectGroup(objectGroups&);
   
   int cell(const std::string&,const int = 10000);
 

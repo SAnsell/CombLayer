@@ -88,8 +88,7 @@ namespace constructSystem
 LinkWrapper::LinkWrapper(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::ExcludedComp(),
   attachSystem::FixedComp(Key,40),InOutLinkB(20),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1),nLayers(0)
+  nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -100,8 +99,8 @@ LinkWrapper::LinkWrapper(const LinkWrapper& A) :
   attachSystem::ContainedComp(A),
   attachSystem::ExcludedComp(A),
   attachSystem::FixedComp(A),InOutLinkB(A.InOutLinkB),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),surfNum(A.surfNum),
-  surfCent(A.surfCent),surfAxis(A.surfAxis),flag(A.flag),
+  surfNum(A.surfNum),surfCent(A.surfCent),
+  surfAxis(A.surfAxis),flag(A.flag),
   surfEntryOrder(A.surfEntryOrder),nLayers(A.nLayers),
   layerThick(A.layerThick),layerMat(A.layerMat),
   defMat(A.defMat),mask(A.mask)
@@ -124,7 +123,6 @@ LinkWrapper::operator=(const LinkWrapper& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::ExcludedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       surfNum=A.surfNum;
       surfCent=A.surfCent;
       surfAxis=A.surfAxis;
@@ -146,16 +144,14 @@ LinkWrapper::~LinkWrapper()
 {}
 
 void
-LinkWrapper::populate(const Simulation& System)
+LinkWrapper::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("LinkWrapper","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   for(size_t i=0;i<nLayers;i++)
     {
@@ -307,7 +303,7 @@ LinkWrapper::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,refIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void
@@ -383,7 +379,8 @@ LinkWrapper::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("LinkWrapper","createAll");
-  populate(System);
+  
+  populate(System.getDataBase());
   processMask();
 
   createUnitVector(FC);

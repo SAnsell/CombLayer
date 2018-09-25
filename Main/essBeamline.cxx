@@ -133,7 +133,7 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -154,7 +154,6 @@ main(int argc,char* argv[])
     }
 
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

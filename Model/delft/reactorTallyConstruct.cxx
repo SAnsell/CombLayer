@@ -96,17 +96,13 @@ reactorTallyConstruct::processPower(SimMCNP& System,
    */
 {
   ELog::RegMethod RegA("reactorTallyConstruct","processPower");
-
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
-
 				     
   const std::string PType=IParam.getValueError<std::string>
     ("tally",Index,1,"Insufficient items for tally");
   
   const delftSystem::ReactorGrid* GPtr=
     dynamic_cast<const delftSystem::ReactorGrid*>
-    (OR.getObject<attachSystem::FixedComp>(PType));
+    (System.getObject<attachSystem::FixedComp>(PType));
   
   if (!GPtr)
     throw ColErr::InContainerError<std::string>
