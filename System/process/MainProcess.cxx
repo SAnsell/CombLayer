@@ -82,6 +82,7 @@
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
+#include "World.h"
 
 #include "MainProcess.h"
 
@@ -415,6 +416,8 @@ createSimulation(inputParam& IParam,
       SimPtr=SMCPtr;
     }
   OR.setObjectGroup(*SimPtr);
+  buildWorld(*SimPtr);
+  
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
   // CNF split the cells
@@ -424,6 +427,17 @@ createSimulation(inputParam& IParam,
   
   return SimPtr;
 }
+
+void
+buildWorld(objectGroups& OGrp)
+{
+  std::shared_ptr<attachSystem::FixedComp> worldPtr=
+    std::make_shared<attachSystem::FixedComp>(World::masterOrigin());
+
+  OGrp.addObject(worldPtr);
+  return;
+}
+
 
 void
 InputModifications(Simulation* SimPtr,inputParam& IParam,

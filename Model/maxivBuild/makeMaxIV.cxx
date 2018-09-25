@@ -94,7 +94,12 @@ makeMaxIV::makeMaxIV() :
  /*!
     Constructor
  */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(r1Ring);
+}
 
 
 makeMaxIV::~makeMaxIV()
@@ -236,7 +241,6 @@ makeMaxIV::build(Simulation& System,
   //  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
-  
   if (makeBeamLine(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
   else

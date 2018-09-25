@@ -62,12 +62,12 @@ class objectGroups
   cMapTYPE Components;             ///< Pointer to real objects
   std::set<int> activeCells;       ///< All Active cells
 
-  void buildMain();
-  
   const attachSystem::FixedComp*
     getInternalObject(const std::string&) const;
   attachSystem::FixedComp*
     getInternalObject(const std::string&);
+
+ protected:
 
   groupRange& getGroup(const std::string&);
   const groupRange& getGroup(const std::string&) const;
@@ -121,7 +121,10 @@ class objectGroups
   
   void reset();
   void rotateMaster();
+  
   void write(const std::string&) const;
+
+  std::ostream& writeRange(std::ostream&,const std::string&) const;
   
 };
 

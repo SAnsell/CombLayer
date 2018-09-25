@@ -128,7 +128,7 @@ BALDER::BALDER(const std::string& KN) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(ringCaveA);
   OR.addObject(ringCaveB);
   OR.addObject(frontBeam);

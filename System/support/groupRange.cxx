@@ -162,9 +162,18 @@ groupRange::valid(const int V) const
     \return true if within range
    */
 {
+  if (LowUnit.empty()) return 0;
+  
   std::vector<int>::const_iterator 
     xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
-  if (xV==LowUnit.end() ||  V < *xV) return 0;
+
+  if (xV==LowUnit.end())
+    return (V>HighUnit.back()) ? 0 : 1;
+  if (V==*xV) return 1;
+  if (xV!=LowUnit.begin())
+    xV--;
+  
+  if (V < *xV) return 0;
   const size_t index=static_cast<size_t>(distance(LowUnit.begin(),xV));
   return  (V > HighUnit[index] ) ? 0 : 1;
 }
@@ -367,7 +376,6 @@ groupRange::addItem(const int lowV,const int highV)
   const int HV(std::max<int>(lowV,highV));
 
   groupRange A(LV,HV);
-  std::cout<<"VL == "<<A<<std::endl;
   combine(A);
 
   return;

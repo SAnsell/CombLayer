@@ -1364,6 +1364,7 @@ Simulation::calcCellRenumber(const std::vector<int>& cOffset,
 {
   ELog::RegMethod RegA("Simulation","calcCellRenumber");
 
+  //  const groupRange& zeroRange=objectGroups::getGroup("World");
   // create a protected range unit to test ALL active cells
   groupRange fullRange;
   std::vector<groupRange> partRange;
@@ -1374,32 +1375,37 @@ Simulation::calcCellRenumber(const std::vector<int>& cOffset,
     }
 
   std::map<int,int> renumberMap;
-  int nNum(1);
-
+  int nNum(1);  // alway present
+  
   std::set<int> protectedCell;
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
-      
       const int cNum=vc->second->getName();      
       if (!fullRange.valid(cNum))
 	{
-	  renumberMap.emplace(cNum,nNum);
 	  nNum++;
+	  renumberMap.emplace(cNum,nNum);
 	}
       else
 	{
 	  protectedCell.insert(cNum);
 	}
     }
+  
   const int baseCN(10000*(1+(nNum/10000)));
+  std::vector<int> offset(partRange.size()+1);  // just in case
+  for(size_t i=0;i<offset.size();i++)
+    offset[i]=static_cast<int>(i)*10000+baseCN;
   for(const int cNum : protectedCell)
     {
       size_t index;
       for(index=0;index<partRange.size() &&
 	    !partRange[index].valid(cNum);index++) ;
-
-      renumberMap.emplace(cNum,baseCN+static_cast<int>(index)*10000);
+      
+      renumberMap.emplace(cNum,offset[index]);
+      offset[index]++;
+      
     }
   return renumberMap;
 }
@@ -1428,7 +1434,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
     {
       const int cNum=RMItem.first;
       const int nNum=RMItem.second;
-
+      ELog::EM<<"CNum == "<<cNum<<" "<<nNum<<ELog::endDiag;
       MonteCarlo::Qhull* oPtr=findQhull(cNum);
       if (oPtr)
 	{

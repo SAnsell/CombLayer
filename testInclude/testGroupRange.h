@@ -41,6 +41,7 @@ private:
   int testGetNext();
   int testInsert();
   int testMerge();
+  int testValid();
   
 public:
 

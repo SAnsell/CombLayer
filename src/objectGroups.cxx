@@ -73,10 +73,7 @@ objectGroups::objectGroups() :
   /*!
     Constructor
   */
-{
-  buildMain();
-}
-
+{}
 
 objectGroups::objectGroups(const objectGroups& A) : 
   cellZone(A.cellZone),cellNumber(A.cellNumber),
@@ -124,19 +121,10 @@ objectGroups::reset()
   rangeMap.erase(rangeMap.begin(),rangeMap.end());
 
   activeCells.clear();
-  buildMain();
   return;
 }
 
-void
-objectGroups::buildMain()
-  /*!
-    Initialize a low cell number for the first 100000 units
-  */
-{
-  regionMap.emplace("Primary",groupRange());
-  return;
-}
+
 
 bool
 objectGroups::hasCell(const std::string& Name,
@@ -308,7 +296,7 @@ objectGroups::addActiveCell(const int cellN)
   
   activeCells.insert(cellN);
 
-  std::string unit("Primary");
+  std::string unit("World");
   if (cellN>10*cellZone)
     {
       const int CNS=cellN/cellZone;
@@ -349,9 +337,8 @@ objectGroups::removeActiveCell(const int cellN)
   if (mcr==regionMap.end())
     throw ColErr::InContainerError<std::string>
       (gName,"region not in regionMap");
-  
+
   mcr->second.removeItem(cellN);
-  
   return;
 }
 
@@ -366,6 +353,7 @@ objectGroups::renumberCell(const int oldCellN,
 {
   ELog::RegMethod RegA("objectGroups","renumberCell");
 
+  ELog::EM<<"od == "<<oldCellN<<" "<<newCellN<<ELog::endDiag;
   // first find if in active unit
   std::set<int>::iterator sc=activeCells.find(oldCellN);
   if (sc==activeCells.end())
@@ -402,7 +390,6 @@ objectGroups::cell(const std::string& Name,const int size)
 {
   ELog::RegMethod RegA("objectGroups","cell");
 
-  ELog::EM<<"ASDFADSF "<<ELog::endDiag;
   if (!size)
     throw ColErr::EmptyValue<size_t>("size");
 
@@ -456,6 +443,7 @@ objectGroups::addObject(const std::string& Name,
   */
 {
   ELog::RegMethod RegA("objectGroups","addObject");
+  
   // First check that we have it in Register:
   if (regionMap.find(Name)==regionMap.end())
     throw ColErr::InContainerError<std::string>(Name,"regionMap empty");
@@ -753,6 +741,17 @@ objectGroups::rotateMaster()
   return;
 }
 
+std::ostream&
+objectGroups::writeRange(std::ostream& OX,
+			 const std::string& gName) const
+{
+  ELog::RegMethod RegA("objectGroups","writeRange");
+
+  // BASIC [and throws]
+  const groupRange& GRP=getGroup(gName); 
+  OX<<GRP;
+  return OX;
+}
   
 void
 objectGroups::write(const std::string& OFile) const

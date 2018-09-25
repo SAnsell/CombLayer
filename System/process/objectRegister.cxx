@@ -105,6 +105,46 @@ objectRegister::setObjectGroup(objectGroups& OGrp)
   GPtr=&OGrp;
   return;
 }
+
+void
+objectRegister::addObject(const CTYPE& Ptr)
+  /*! 
+    Register a shared_ptr of an object. 
+    Requirement that 
+    - (a) The object already exists as a range
+    - (b) No repeat object
+    All failures result in an exception.
+    \param Ptr :: FixedComp object [shared_ptr]
+  */
+{
+  ELog::RegMethod RegA("objectRegister","addObject(Obj)");
+  if (Ptr)
+    addObject(Ptr->getKeyName(),Ptr);
+  else
+    throw ColErr::EmptyValue<void>("Ptr Shared_ptr");
+  return;
+}
+
+void
+objectRegister::addObject(const std::string& Name,
+			  const CTYPE& Ptr)
+  /*!
+    Register a shared_ptr of an object. 
+    Requirement that 
+    - (a) The object already exists as a range
+    - (b) No repeat object
+    All failures result in an exception.
+    \param Name :: Name of the object						
+    \param Ptr :: Shared_ptr
+  */
+{
+  ELog::RegMethod RegA("objectRegister","addObject");
+
+  if (GPtr)
+    GPtr->addObject(Name,Ptr);
+  return;
+}
+
   
 int
 objectRegister::cell(const std::string& Name,const int size)
@@ -122,4 +162,6 @@ objectRegister::cell(const std::string& Name,const int size)
   return GPtr->cell(Name,size);
 }
 
+
+  
 } // NAMESPACE ModelSupport

@@ -70,8 +70,8 @@ class objectRegister
   // to be removed:
     /// Storage of component pointers
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
-  void addObject(const std::string&,const CTYPE&) {}
-  void addObject(const CTYPE&) {}
+  void addObject(const std::string&,const CTYPE&);
+  void addObject(const CTYPE&);
 
 };
 

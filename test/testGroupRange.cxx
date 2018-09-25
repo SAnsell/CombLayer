@@ -78,14 +78,16 @@ testGroupRange::applyTest(const int extra)
       &testGroupRange::testAddItem,
       &testGroupRange::testGetNext,
       &testGroupRange::testInsert,
-      &testGroupRange::testMerge
+      &testGroupRange::testMerge,
+      &testGroupRange::testValid
     };
   const std::vector<std::string> TestName=
     {
       "AddItem",
       "GetNext",
       "Insert",
-      "Merge"
+      "Merge",
+      "Valid"
     };
   
   const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -310,6 +312,68 @@ testGroupRange::testMerge()
 	}
     }
   
+  return 0;
+}
+
+int
+testGroupRange::testValid()
+  /*!
+    Tests the valid units
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testMerge");
+
+  typedef std::tuple<std::string,int,bool> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      	TTYPE("[100 200] [300 400]",101,1),
+        TTYPE("[100 200]",101,1),
+	TTYPE("[100 200]",99,0),
+	TTYPE("[100 200]",201,0),
+	TTYPE("[100 200] [300 400]",201,0),
+	TTYPE("[100 200] [300 400]",401,0),
+	TTYPE("[100 200] [300 400]",301,1),
+	  TTYPE("[100 200] [300 400]",99,0),
+	  TTYPE("[100 200] [300 400]",100,1),
+	  TTYPE("[100 200] [300 400]",300,1),
+	  TTYPE("[100 200] [300 400]",400,1)
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      groupRange AGrp;
+      int A,B;
+      std::string Line=std::get<0>(tc);
+      while(!StrFunc::isEmpty(Line))
+	{
+	  std::string Units=StrFunc::getDelimUnit("[","]",Line);
+	  if (StrFunc::section(Units,A) &&
+	      StrFunc::section(Units,B))
+	    {
+	      AGrp.addItem(A,B);
+	    }
+	  else if (StrFunc::section(Line,A))
+	    {
+	      AGrp.addItem(A);
+	    }
+	  else
+	    {
+	      ELog::EM<<"Failed to read line "<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      if (AGrp.valid(std::get<1>(tc))!=std::get<2>(tc))
+	{
+	  ELog::EM<<"AGrp = "<<AGrp<<ELog::endDiag;
+	  ELog::EM<<"cell = "<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"RET  = "<<AGrp.valid(std::get<1>(tc))<<ELog::endDiag;
+	  return -1;
+	}
+    }
+      
+	      
   return 0;
 }
 

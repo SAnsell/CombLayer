@@ -459,6 +459,31 @@ hasComment(const std::string& A,const std::string& singleKey,
   return -1;
 }
 
+std::string
+getDelimUnit(const std::string& A,
+	     const std::string& B,
+	     std::string& Item)
+  /*!
+    Splits the first instance of A xxxx B and returns
+    xxx between A  and B. Removes AxxxB from the 
+    string
+    \param A :: Deliminer A
+    \param B :: Deliminer B
+    \param Item :: Full line
+    \return section unit [empty on failure / but also close units]
+  */
+{
+  std::string Out;
+  const std::string::size_type posA=Item.find(A);
+  const std::string::size_type posB=Item.find(B,posA+1);
+  if (posB==std::string::npos || posB-posA<2)
+    return Out;
+
+  Out=Item.substr(posA+1,posB-posA-1);
+  Item.erase(posA,1+posB-posA);
+  
+  return Out;
+}
 
 int
 quoteBlock(std::string& Line,std::string& Unit)
@@ -531,8 +556,8 @@ singleLine(const std::string& A)
 std::string
 frontBlock(const std::string& A)
   /*!
-    Returns the string from the first non-space to the 
-    last non-space 
+    Returns the string that starts from the first
+    front space.
     \param A :: string to process
     \returns shortened string
   */
