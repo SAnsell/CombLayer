@@ -353,7 +353,6 @@ objectGroups::renumberCell(const int oldCellN,
 {
   ELog::RegMethod RegA("objectGroups","renumberCell");
 
-  ELog::EM<<"od == "<<oldCellN<<" "<<newCellN<<ELog::endDiag;
   // first find if in active unit
   std::set<int>::iterator sc=activeCells.find(oldCellN);
   if (sc==activeCells.end())
