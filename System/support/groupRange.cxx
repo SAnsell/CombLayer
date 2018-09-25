@@ -2,6 +2,7 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <set>
 #include <limits>
 
 #include "Exception.h"

@@ -648,11 +648,9 @@ objectGroups::getObject(const std::string& Name) const
 int
 objectGroups::getFirstCell(const std::string& objName) const
   /*!
-    If an object exists return the offset or return 0
-    The assumption is that you want either the start point or 
-    after a renumber the start number
+    Returns the first numbe rin a region
     \param objName :: Object name to find
-    \return region offset / 0 
+    \return first nubmer [or zero]
   */
 {
   MTYPE::const_iterator mc=regionMap.find(objName);
@@ -660,17 +658,15 @@ objectGroups::getFirstCell(const std::string& objName) const
 }
 
 int
-objectGroups::getFirstCell(const std::string& objName) const
+objectGroups::getLastCell(const std::string& objName) const
   /*!
-    If an object exists return the offset or return 0
-    The assumption is that you want either the start point or 
-    after a renumber the start number
+    Returns the last number in a region or zero
     \param objName :: Object name to find
-    \return region offset / 0 
+    \return region last unit
   */
 {
   MTYPE::const_iterator mc=regionMap.find(objName);
-  return (mc==regionMap.end()) ? 0 : mc->second.getFirst();
+  return (mc==regionMap.end()) ? 0 : mc->second.getLast();
 }
 
 std::vector<int>
