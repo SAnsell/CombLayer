@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -93,9 +92,7 @@ Box::Box(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,9),
   attachSystem::LayerComp(0),
-  attachSystem::CellMap(),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -107,7 +104,6 @@ Box::Box(const Box& A) :
   attachSystem::FixedOffset(A),
   attachSystem::LayerComp(A),
   attachSystem::CellMap(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   nLayers(A.nLayers),
   length(A.length),width(A.width),height(A.height),
@@ -135,7 +131,6 @@ Box::operator=(const Box& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       engActive=A.engActive;
       nLayers=A.nLayers;
       length=A.length;
@@ -234,7 +229,7 @@ Box::createSurfaces()
 {
   ELog::RegMethod RegA("Box","createSurfaces");
 
-  int SI(surfIndex);
+  int SI(buildIndex);
   for (size_t i=0;i<nLayers;i++)
     {
       const double l = length[i]/2.0;
@@ -263,7 +258,7 @@ Box::createObjects(Simulation& System)
   ELog::RegMethod RegA("Box","createObjects");
 
   std::string Out;
-  int SI(surfIndex);
+  int SI(buildIndex);
   for (size_t i=0; i<nLayers; i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 5 -6 ");
@@ -294,7 +289,7 @@ Box::createLinks()
 {
   ELog::RegMethod RegA("Box","createLinks");
 
-  const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
+  const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
 
   const double l = length[nLayers-1]/2.0;
   const double w = width[nLayers-1]/2.0;
@@ -316,10 +311,10 @@ Box::createLinks()
 
   // inner link points for F5 collimators
   FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+5));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
 
   return;
 }
@@ -342,7 +337,7 @@ Box::getLayerSurf(const size_t layerIndex,
 
 std::string
 Box::getLayerString(const size_t layerIndex,
-                           const long int sideIndex) const
+		    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layer string
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -355,7 +350,7 @@ Box::getLayerString(const size_t layerIndex,
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+surfIndex);
+  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 
   std::string Out;
   const long int uSIndex(std::abs(sideIndex));

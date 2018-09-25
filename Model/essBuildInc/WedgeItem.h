@@ -40,9 +40,6 @@ class WedgeItem : public attachSystem::ContainedComp,
 {
  private:
 
-  const int wedgeIndex;          ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-
   double length;                 ///< Length
   double baseWidth;              ///< Base width
   double tipWidth;               ///< Tip width

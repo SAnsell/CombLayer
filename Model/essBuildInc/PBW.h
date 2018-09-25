@@ -26,6 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
+  class TelescopicPipe;
 
 /*!
   \class PBW
@@ -35,15 +36,11 @@ namespace essSystem
   \brief Proton beam window
 */
 
-  class TelescopicPipe;
 
 class PBW : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
 {
  private:
-
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
 

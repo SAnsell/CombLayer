@@ -46,6 +46,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "F5Calc.h"
 #include "F5Collimator.h"
@@ -54,9 +55,8 @@ namespace essSystem
 {
 
 F5Collimator::F5Collimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6)
   /*!
      Constructor
      \param Key :: Name of construction key
@@ -78,10 +78,7 @@ F5Collimator::populate(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("F5Collimator","populate");
-  
-  xStep=Control.EvalVar<double>(keyName+"X");
-  yStep=Control.EvalVar<double>(keyName+"Y");
-  zStep=Control.EvalVar<double>(keyName+"Z");
+  FixedOffset::populate(Control);
   
   length=Control.EvalVar<double>(keyName+"Length"); // along x
   wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
@@ -151,50 +148,51 @@ F5Collimator::createUnitVector(const attachSystem::FixedComp& FC)
     Create the unit vectors
     \param FC :: Fixed Component
   */
-  {
-    ELog::RegMethod RegA("F5Collimator","createUnitVector");
-    attachSystem::FixedComp::createUnitVector(FC);
-    applyShift(xStep,yStep,zStep);
-    applyAngleRotate(xyAngle,zAngle);
+{
+  ELog::RegMethod RegA("F5Collimator","createUnitVector");
+  attachSystem::FixedComp::createUnitVector(FC,0);
+  applyOffset();
+    
+  return;
+}
+
+void
+F5Collimator::createSurfaces()
+{
+  /*!
+    Create Surfaces for the F5 collimator
+  */
+  ELog::RegMethod RegA("F5Collimator","createSurfaces");
   
-    return;
-  }
-
-  void F5Collimator::createSurfaces()
-  {
-    /*!
-      Create Surfaces for the F5 collimator
-    */
-    ELog::RegMethod RegA("F5Collimator","createSurfaces");
-      
-    ModelSupport::buildPlane(SMap,colIndex+1, Origin-X*1.0, X);
-    ModelSupport::buildPlane(SMap,colIndex+11, Origin-X*(1.0+wall), X);
-    ModelSupport::buildPlane(SMap,colIndex+2, Origin+X*length, X);
-
-    ModelSupport::buildPlane(SMap,colIndex+3, Origin-Y*(width/2.0), Y);
-    ModelSupport::buildPlane(SMap,colIndex+13, Origin-Y*(width/2.0+wall), Y);
-    ModelSupport::buildPlane(SMap,colIndex+4, Origin+Y*(width/2.0), Y);
-    ModelSupport::buildPlane(SMap,colIndex+14, Origin+Y*(width/2.0+wall), Y);
-
-    ModelSupport::buildPlane(SMap,colIndex+5, Origin-Z*(height/2.0), Z); 
-    ModelSupport::buildPlane(SMap,colIndex+15, Origin-Z*(height/2.0+wall), Z);
-    ModelSupport::buildPlane(SMap,colIndex+6, Origin+Z*(height/2.0), Z);
-    ModelSupport::buildPlane(SMap,colIndex+16, Origin+Z*(height/2.0+wall), Z);
-
-    return; 
-  }
-
-  void F5Collimator::addToInsertChain(attachSystem::ContainedComp& CC) const
+  ModelSupport::buildPlane(SMap,buildIndex+1, Origin-X*1.0, X);
+  ModelSupport::buildPlane(SMap,buildIndex+11, Origin-X*(1.0+wall), X);
+  ModelSupport::buildPlane(SMap,buildIndex+2, Origin+X*length, X);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+3, Origin-Y*(width/2.0), Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13, Origin-Y*(width/2.0+wall), Y);
+  ModelSupport::buildPlane(SMap,buildIndex+4, Origin+Y*(width/2.0), Y);
+  ModelSupport::buildPlane(SMap,buildIndex+14, Origin+Y*(width/2.0+wall), Y);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+5, Origin-Z*(height/2.0), Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+15, Origin-Z*(height/2.0+wall), Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6, Origin+Z*(height/2.0), Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16, Origin+Z*(height/2.0+wall), Z);
+  
+  return; 
+}
+  
+void
+F5Collimator::addToInsertChain(attachSystem::ContainedComp& CC) const
   /*!
     Adds this object to the containedComp to be inserted.
     \param CC :: ContainedComp object to add to this
   */
-  {
-    for(int i=colIndex+1;i<cellIndex;i++)
-      CC.addInsertCell(i);
-    
-    return;
-  }
+{
+  for(int i=buildIndex+1;i<cellIndex;i++)
+    CC.addInsertCell(i);
+  
+  return;
+}
 
 
 void
@@ -209,15 +207,15 @@ F5Collimator::createObjects(Simulation& System)
   std::string Out;
   
   int voidMat = 0;//1001;
-  Out=ModelSupport::getComposite(SMap,colIndex, " 11 -2 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 11 -2 13 -14 15 -16");
   addOuterSurf(Out);
   
   // Internal region
-  Out=ModelSupport::getComposite(SMap,colIndex," 1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0, Out));
   
   // Wall
-  Out=ModelSupport::getComposite(SMap, colIndex,
+  Out=ModelSupport::getComposite(SMap, buildIndex,
 				 " (11 -2 13 -14 15 -16) (-1:2:-3:4:-5:6) ");
   MonteCarlo::Qhull c = MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out);
   c.setImp(0);
@@ -235,20 +233,20 @@ void F5Collimator::createLinks()
   ELog::RegMethod RegA("F5Collimator","createLinks");
   
   FixedComp::setConnect(0,   Origin-X*(1.0+wall), -X);
-  FixedComp::setLinkSurf(0, -SMap.realSurf(colIndex+1));
+  FixedComp::setLinkSurf(0, -SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,   Origin+X*length,  X);
   
   FixedComp::setConnect(2,   Origin-Y*(width/2+wall), -Y);
   FixedComp::setConnect(3,   Origin+Y*(width/2+wall),  Y);
   
-    FixedComp::setConnect(4,   Origin-Z*(height/2+wall), -Z); 
-    FixedComp::setConnect(5,   Origin+Z*(height/2+wall),  Z); 
-
-    for (size_t i=0; i<6; i++)
-      FixedComp::setLinkSurf(i,SMap.realSurf(colIndex+static_cast<int>(i)));
-    
-    return;
+  FixedComp::setConnect(4,   Origin-Z*(height/2+wall), -Z); 
+  FixedComp::setConnect(5,   Origin+Z*(height/2+wall),  Z); 
+  
+  for (size_t i=0; i<6; i++)
+    FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+static_cast<int>(i)));
+  
+  return;
 }
   
 

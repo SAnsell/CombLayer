@@ -42,8 +42,6 @@ class GuideItem : public attachSystem::ContainedGroup,
  private:
   
   const std::string baseName;   ///< Base keyname
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int active;                   ///< Build/don't build flag
   
   double beamXStep;             ///< Beam port X-offset

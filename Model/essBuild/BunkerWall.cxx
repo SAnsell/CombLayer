@@ -92,10 +92,9 @@ namespace essSystem
 
 BunkerWall::BunkerWall(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(bunkerName+"Wall",6),
+  attachSystem::FixedComp(bunkerName+"Wall",6,20000),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
-  wallIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
-  cellIndex(wallIndex+1),activeWall(0),frontSurf(0),backSurf(0),
+  activeWall(0),frontSurf(0),backSurf(0),
   topSurf(0),baseSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -106,8 +105,7 @@ BunkerWall::BunkerWall(const std::string& bunkerName) :
 BunkerWall::BunkerWall(const BunkerWall& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  baseName(A.baseName),wallIndex(A.wallIndex),
-  cellIndex(A.cellIndex),wallThick(A.wallThick),
+  baseName(A.baseName),wallThick(A.wallThick),
   wallMat(A.wallMat),activeWall(A.activeWall),nVert(A.nVert),
   nRadial(A.nRadial),nMedial(A.nMedial),vert(A.vert),
   radial(A.radial),medial(A.medial),nBasic(A.nBasic),
@@ -135,7 +133,6 @@ BunkerWall::operator=(const BunkerWall& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
       activeWall=A.activeWall;

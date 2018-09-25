@@ -66,7 +66,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -81,9 +80,7 @@ FocusPoints::FocusPoints(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{
-  ModelSupport::objectRegister::Instance().cell(keyName);
-}
+{}
 
 FocusPoints::FocusPoints(const FocusPoints& A) : 
   attachSystem::FixedOffset(A),

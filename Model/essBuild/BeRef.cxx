@@ -81,8 +81,7 @@ namespace essSystem
 BeRef::BeRef(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,11),
   attachSystem::CellMap(),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1),engActive(0),
+  engActive(0),
   InnerCompTop(new BeRefInnerStructure(Key+"TopInnerStructure")),
   InnerCompLow(new BeRefInnerStructure(Key+"LowInnerStructure"))
   /*!
@@ -98,7 +97,6 @@ BeRef::BeRef(const std::string& Key) :
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),InnerCompTop(A.InnerCompTop->clone()),
   InnerCompLow(A.InnerCompLow->clone()),
   radius(A.radius),height(A.height),depth(A.depth),
@@ -128,7 +126,6 @@ BeRef::operator=(const BeRef& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       engActive=A.engActive;
       *InnerCompTop = *A.InnerCompTop;
       *InnerCompLow = *A.InnerCompLow;
@@ -241,17 +238,17 @@ BeRef::createSurfaces()
 
   // DIVIDER PLANES:
   
-  ModelSupport::buildPlane(SMap,refIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,refIndex+2,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,X);  
   
-  ModelSupport::buildCylinder(SMap,refIndex+7,Origin,Z,radius);  
-  ModelSupport::buildCylinder(SMap,refIndex+17,Origin,Z,radius+wallThick);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius+wallThick);  
 
-  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*depth,Z);  
-  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*height,Z);
-  ModelSupport::buildPlane(SMap,refIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(depth+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height+wallThick),Z);  
 
   //define planes where the Be is substituted by Fe
@@ -259,29 +256,30 @@ BeRef::createSurfaces()
   // Inner planes
   
   // wall and all gaps
-  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-
 			   Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+
 			   Z*(topVoidThick+targSepThick/2.0+wallThickLow),Z);  
 
-  ModelSupport::buildPlane(SMap,refIndex+115,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+115,Origin-
 			   Z*(lowVoidThick+targSepThick/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+116,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+
 			   Z*(topVoidThick+targSepThick/2.0),Z);  
   
-  ModelSupport::buildPlane(SMap,refIndex+205,Origin-Z*(targSepThick/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+206,Origin+Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(targSepThick/2.0),Z);  
 
   // void volume (since we can't cool there)
   if (voidCylRadius>Geometry::zeroTol)
     {
-      ModelSupport::buildCylinder(SMap,refIndex+307,Origin,Z,voidCylRadius);
-      ModelSupport::buildPlane(SMap,refIndex+305,Origin-
+      ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Z,voidCylRadius);
+      ModelSupport::buildPlane(SMap,buildIndex+305,Origin-
 			       Z*(lowVoidThick+targSepThick/2.0+
 				  wallThickLow-voidCylDepth),Z);        
-      // ModelSupport::buildShiftedPlane(SMap,refIndex+305,
-      // 				      SMap.realPtr<Geometry::Plane>(refIndex+105),
-      // 				      -voidCylDepth);
+      // ModelSupport::buildShiftedPlane
+      // (SMap,buildIndex+305,
+      //       SMap.realPtr<Geometry::Plane>(buildIndex+105),
+      //       -voidCylDepth);
     }
 
   
@@ -302,64 +300,64 @@ BeRef::createObjects(Simulation& System)
   if (voidCylRadius>Geometry::zeroTol)
     {
       //  void volume
-      Out=ModelSupport::getComposite(SMap,refIndex," -307 305 -105 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -307 305 -105 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 (307:-305) ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 (307:-305) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,lowRefMat,0.0,Out));
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,lowRefMat,0.0,Out));
     }
   setCell("lowBe",cellIndex-1);
   
   // low void
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -205");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 115 -205");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("lowVoid",cellIndex-1);
   // Target void
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 205 -206");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 205 -206");
   System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
   setCell("targetVoid",cellIndex-1);
   
   // top Segment
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 -116 206");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -116 206");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("topVoid",cellIndex-1);
 
   // top segment
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 -6 106");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -6 106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,topRefMat,0.0,Out));
   setCell("topBe",cellIndex-1);
   
   if (wallThick>Geometry::zeroTol)
     {
 
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -105 (7:-5)");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -105 (7:-5)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,lowWallMat,0.0,Out));
       setCell("lowWall",cellIndex-1);
       
       if (wallThickLow>Geometry::zeroTol)
 	{
 	  // divide layer
-	  Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -17 105 -115 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,lowWallMat,0.0,Out));
 	  setCell("lowWallDivider",cellIndex-1);
 	  
 	  // divide layer
-	  Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -106 116 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,topWallMat,0.0,Out));
 	}
 
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 106 (7:6)");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 -16 106 (7:6)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,topWallMat,0.0,Out));
       
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -16 ");
     }
   else
-    Out=ModelSupport::getComposite(SMap,refIndex," -17 5 -6 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -6 ");
 
   addOuterSurf(Out);
   return; 
@@ -374,41 +372,43 @@ BeRef::createLinks()
   */
 {
   FixedComp::setConnect(0,Origin+Y*radius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+17));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(refIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*radius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+17));
-  FixedComp::addLinkSurf(1,SMap.realSurf(refIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(2,Origin+Y*radius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+17));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(refIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(3,Origin+Y*radius,-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+17));
-  FixedComp::addLinkSurf(3,SMap.realSurf(refIndex+2));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(4,Origin-Z*(depth+wallThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+15));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
 
   FixedComp::setConnect(5,Origin+Z*(height+wallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+16));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   FixedComp::setConnect(6,Origin-Z*depth,-Z);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+5));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(7,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+6));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(8,Origin+Y*radius,-Y);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+7));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(9,Origin-Z*(lowVoidThick+targSepThick/2.0+wallThickLow),-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(refIndex+105));
+  FixedComp::setConnect(9,Origin-Z*(lowVoidThick+targSepThick/2.0+
+				    wallThickLow),-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
 
-  FixedComp::setConnect(10,Origin+Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(refIndex+106));
+  FixedComp::setConnect(10,Origin+Z*(lowVoidThick+targSepThick/2.0+
+				     wallThickLow),Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
 
   return;
 }

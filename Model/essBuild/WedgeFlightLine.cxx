@@ -90,9 +90,7 @@ namespace essSystem
 {
 
 WedgeFlightLine::WedgeFlightLine(const std::string& TKey) :
-  moderatorSystem::BasicFlightLine(TKey),
-  wedgeIndex(ModelSupport::objectRegister::Instance().cell(TKey+"Wedge")),
-  cellIndex(wedgeIndex+1)
+  moderatorSystem::BasicFlightLine(TKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param TKey :: Name for item in search
@@ -101,7 +99,6 @@ WedgeFlightLine::WedgeFlightLine(const std::string& TKey) :
 
 WedgeFlightLine::WedgeFlightLine(const WedgeFlightLine& A) : 
   moderatorSystem::BasicFlightLine(A),
-  wedgeIndex(A.wedgeIndex),cellIndex(A.cellIndex),
   nWedges(A.nWedges),wedges(A.wedges)
   /*!
     Copy constructor
@@ -120,7 +117,6 @@ WedgeFlightLine::operator=(const WedgeFlightLine& A)
   if (this!=&A)
     {
       moderatorSystem::BasicFlightLine::operator=(A);
-      cellIndex=A.cellIndex;
       nWedges=A.nWedges;
       wedges=A.wedges;
     }
@@ -191,15 +187,15 @@ WedgeFlightLine::buildWedges(Simulation& System,
     this->getLinkString(-12);
   
   // Create the radial surfaces that divide the wedges 
-  int index(flightIndex+1001);
+  int index(buildIndex+1001);
   for(size_t i=0;i<nWedges;i++,index++)
     ModelSupport::buildPlaneRotAxis(SMap,index,
                                     wedges[i]->getCentre(),
                                     wedges[i]->getY(),Z,90.0);
 
   // Create the void radial objects
-  index=flightIndex+1000;
-  int prevIndex(-(flightIndex+2));  // trick to get flightIndex+3 surface
+  index=buildIndex+1000;
+  int prevIndex(-(buildIndex+2));  // trick to get buildIndex+3 surface
   std::string prevWedge;
   for (size_t i=0;i<nWedges;i++)
     {
@@ -215,7 +211,7 @@ WedgeFlightLine::buildWedges(Simulation& System,
       
       prevIndex=index++;
     }
-  Out=ModelSupport::getComposite(SMap,index-1,flightIndex," -1 -4M ")
+  Out=ModelSupport::getComposite(SMap,index-1,buildIndex," -1 -4M ")
     +prevWedge;
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DiskLayerMod.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,6 @@ class DiskLayerMod : public attachSystem::ContainedComp,
 {
  private:
   
-  const int modIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   size_t midIndex;                ///< Mid index
   double midZ;                    ///< step in Z
   double zStep;                   ///< Step away from target

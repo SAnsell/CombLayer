@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2FlowGuide.cxx 
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,9 +93,7 @@ H2FlowGuide::H2FlowGuide(const std::string& baseKey,
 			 const std::string& extraKey,
 			 const std::string& finalKey ) :
   attachSystem::FixedComp(baseKey+extraKey+finalKey,6),
-  baseName(baseKey),midName(extraKey),endName(finalKey),
-  flowIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(flowIndex+1)
+  baseName(baseKey),midName(extraKey),endName(finalKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Butterfly main key
@@ -107,8 +105,6 @@ H2FlowGuide::H2FlowGuide(const std::string& baseKey,
 H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) : 
   attachSystem::FixedComp(A),
   baseName(A.baseName),midName(A.midName),endName(A.endName),
-  flowIndex(A.flowIndex),
-  cellIndex(A.cellIndex),
   baseThick(A.baseThick),baseLen(A.baseLen),
   armThick(A.armThick), armLen(A.armLen),
   baseArmSep(A.baseArmSep),
@@ -209,30 +205,30 @@ H2FlowGuide::createSurfaces()
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
   // base
-  ModelSupport::buildPlane(SMap,flowIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin+Y*(baseOffset.Y()-baseThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*(baseOffset.Y()+baseThick/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,flowIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin+X*(baseOffset.X()+armThick/2.0+baseArmSep),X);
-  ModelSupport::buildPlane(SMap,flowIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*(baseOffset.X()+armThick/2.0+baseArmSep+baseLen),X);
 
-  ModelSupport::buildPlane(SMap,flowIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(baseOffset.X()+armThick/2.0+baseArmSep),X);
-  ModelSupport::buildPlane(SMap,flowIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin-X*(baseOffset.X()+armThick/2.0+baseArmSep+baseLen),X);
 
   // arm
-  ModelSupport::buildPlane(SMap,flowIndex+101,
+  ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin+Y*(armOffset.Y()-armLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+102,
+  ModelSupport::buildPlane(SMap,buildIndex+102,
 			   Origin+Y*(armOffset.Y()+armLen/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,flowIndex+103,
+  ModelSupport::buildPlane(SMap,buildIndex+103,
 			   Origin+X*(armOffset.X()-armThick/2.0),X);
-  ModelSupport::buildPlane(SMap,flowIndex+104,
+  ModelSupport::buildPlane(SMap,buildIndex+104,
 			   Origin+X*(armOffset.X()+armThick/2.0),X);
   
 
@@ -268,17 +264,17 @@ H2FlowGuide::createObjects(Simulation& System,
     HW.getLinkString(14);
   HeadRule wallExclude;
   // base
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 ");
   wallExclude.procString(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -13 14 ");
   wallExclude.addUnion(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   // arm
-  Out=ModelSupport::getComposite(SMap,flowIndex," 101 -102 103 -104 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 

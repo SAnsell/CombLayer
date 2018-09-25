@@ -46,9 +46,6 @@ class BunkerWall : public attachSystem::ContainedComp,
  private:
 
   const std::string baseName;     ///< Bunker base name
-  const int wallIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   
   double wallThick;              ///< Wall thickness
   int wallMat;                   ///< Default wall material

@@ -1434,7 +1434,6 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
     {
       const int cNum=RMItem.first;
       const int nNum=RMItem.second;
-      ELog::EM<<"CNum == "<<cNum<<" "<<nNum<<ELog::endDiag;
       MonteCarlo::Qhull* oPtr=findQhull(cNum);
       if (oPtr)
 	{

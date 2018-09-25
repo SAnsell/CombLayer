@@ -3,7 +3,7 @@
  
  * File:   essBuild/EdgeWater.cxx 
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,20 +95,16 @@ EdgeWater::EdgeWater(const std::string& key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(key,6),
-  attachSystem::CellMap(),
-  edgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(edgeIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: Name for item in search
-
   */
 {}
 
 EdgeWater::EdgeWater(const EdgeWater& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
-  edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
   width(A.width),wallThick(A.wallThick),modMat(A.modMat),
   wallMat(A.wallMat),modTemp(A.modTemp)
   /*!
@@ -208,12 +204,12 @@ EdgeWater::createSurfaces()
 
   // Only x surfaces:
 
-  ModelSupport::buildPlane(SMap,edgeIndex+1,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,edgeIndex+2,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,edgeIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,edgeIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+X*(wallThick+width/2.0),X);
 
 
@@ -221,12 +217,12 @@ EdgeWater::createSurfaces()
   // front dividers:
   const Geometry::Vec3D EdPtA=Origin-X*(cutWidth/2.0);
   const Geometry::Vec3D EdPtB=Origin+X*(cutWidth/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+103,EdPtA,X,Z,cutAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+104,EdPtB,X,Z,-cutAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+103,EdPtA,X,Z,cutAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+104,EdPtB,X,Z,-cutAngle);
   
-  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+203,EdPtA-X*wallThick,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+203,EdPtA-X*wallThick,
 				  X,Z,cutAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+204,EdPtB+X*wallThick,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+204,EdPtB+X*wallThick,
 				  X,Z,-cutAngle);
   
   return;
@@ -247,33 +243,33 @@ EdgeWater::createObjects(Simulation& System,
 
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 103 -104");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
 				   modTemp,Out+container+divider));
   CellMap::setCell("Water",  cellIndex-1);
   
   // Two walls : otherwise divider container
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 103 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
   CellMap::addCell("Wall",  cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12 -104 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
   CellMap::addCell("Wall",  cellIndex-1);
 
   // front walls
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -103 203 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -103 203 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
   CellMap::addCell("Wall",  cellIndex-1);
   CellMap::setCell("InnerAlSupply",  cellIndex-1);
     
-  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 104 -204");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 104 -204");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
   CellMap::addCell("Wall",  cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 203 -204");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 203 -204");
   addOuterSurf(Out+divider);
   return;
 }
@@ -290,13 +286,13 @@ EdgeWater::createLinks()
   std::string Out;
   HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 203 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 203 ");
   HR.procString(Out);
   HR.makeComplement();
   FixedComp::setLinkSurf(2,HR);
   FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 -204 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -12 -204 ");
   HR.procString(Out);
   HR.makeComplement();
   FixedComp::setConnect(3,Origin+X*(wallThick+cutWidth/2.0),X);

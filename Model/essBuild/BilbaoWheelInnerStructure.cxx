@@ -3,7 +3,7 @@
  
   * File:   essBuild/BilbaoWheelInnerStructure.cxx
   *
-  * Copyright (c) 2004-2017 by Stuart Ansell/Konstain Batkov
+  * Copyright (c) 2004-2018 by Stuart Ansell/Konstain Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -80,9 +80,7 @@ namespace essSystem
 
 BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6),
-  insIndex(ModelSupport::objectRegister::Instance().cell(Key,100000)), 
-  cellIndex(insIndex+1)
+  attachSystem::FixedComp(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -92,7 +90,7 @@ BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
 BilbaoWheelInnerStructure::BilbaoWheelInnerStructure
 (const BilbaoWheelInnerStructure& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  insIndex(A.insIndex),cellIndex(A.cellIndex),xyAngle(A.xyAngle),
+  xyAngle(A.xyAngle),
   temp(A.temp),brickLen(A.brickLen),brickWidth(A.brickWidth),
   brickGapLen(A.brickGapLen),brickGapWidth(A.brickGapWidth),
   nSectors(A.nSectors),nBrickSectors(A.nBrickSectors),
@@ -118,7 +116,6 @@ BilbaoWheelInnerStructure::operator=(const BilbaoWheelInnerStructure& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xyAngle=A.xyAngle;
       temp=A.temp;
       brickLen=A.brickLen;
@@ -217,11 +214,11 @@ BilbaoWheelInnerStructure::createSurfaces(const attachSystem::FixedComp& Wheel)
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createSurfaces");
   
-  ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
   
   // segmentation
   const double dTheta = 360.0/static_cast<double>(nSectors);
-  int SIsec(insIndex+0);
+  int SIsec(buildIndex+0);
 
   // -dTheta is needed to shoot a proton in the center of a sector,
   // but not between them
@@ -301,7 +298,7 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
     Wheel.getLinkString(10); // min+max radii
 
 
-  int SIsec(insIndex+0), SI1;
+  int SIsec(buildIndex+0), SI1;
   std::string Out;
   if (nSectors==1)
     System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
@@ -310,7 +307,7 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
       for (size_t j=0;j<nSectors;j++)
 	{
 	  // Tungsten
-	  SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
+	  SI1 = (j!=nSectors-1) ? SIsec+10 : buildIndex+0;
 	  Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
 	  if (j>=nBrickSectors)
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
@@ -355,7 +352,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   const Geometry::Surface *outerCyl =
     SMap.realSurfPtr(Wheel.getLinkSurf(10));
   
-  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(buildIndex+5);
   
   const double sectorAngle = getSectorAngle(sector)*M_PI/180.0;
   Geometry::Vec3D nearPt(125*sin(sectorAngle), -125*cos(sectorAngle), 0);
@@ -366,7 +363,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
   
   // radial planes
-  int SI(insIndex+1000*(static_cast<int>(sector)+1));
+  int SI(buildIndex+1000*(static_cast<int>(sector)+1));
   // first (outermost) layer
   Geometry::Plane *prad1(0); // first radial plane of the bricks
   Geometry::Vec3D p4;        // intersection of radial plane and inner cylinder:
@@ -413,7 +410,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   // tangential (perpendicular to radial) planes
   // only 2 layers are needed since other layers use the same planes
   Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
-  int SJ(insIndex+1000*(static_cast<int>(sector)+1));
+  int SJ(buildIndex+1000*(static_cast<int>(sector)+1));
   for (int i=0; i<50; i++)
     {
       // 1st layer
@@ -454,7 +451,7 @@ BilbaoWheelInnerStructure::sideIntersect(const std::string& surf,
   
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
-  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(buildIndex+5);
   
   HeadRule HR(surf);
   HR.populateSurf();
@@ -493,7 +490,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   HR.procString(side2);
   const Geometry::Plane* plSide2 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
   //    const Geometry::Plane *pz =
-  SMap.realPtr<Geometry::Plane>(insIndex+5);
+  SMap.realPtr<Geometry::Plane>(buildIndex+5);
   
   std::string sideStr = side1 + side2;
   const std::string vertStr = Wheel.getLinkString(7) +
@@ -503,7 +500,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   const std::string outerCyl = Wheel.getLinkString(10);
   
   std::string Out,Out1;
-  int SI(insIndex+1000*(static_cast<int>(sector+1)));
+  int SI(buildIndex+1000*(static_cast<int>(sector+1)));
   // He layer in front of the bricks
   Out = ModelSupport::getComposite(SMap, SI, " 5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
@@ -521,7 +518,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   for (size_t i=0; i<nBrickLayers; i++)
     {
       layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
-      int SJ(insIndex+1000*(static_cast<int>(sector)+1));
+      int SJ(buildIndex+1000*(static_cast<int>(sector)+1));
       firstBrick = false;
       lastBrick = false;
       for (int j=0; j<27; j++) // !!! TMP

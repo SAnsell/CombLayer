@@ -85,9 +85,7 @@ namespace essSystem
 
 Chicane::Chicane(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  chicaneIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(chicaneIndex+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,9 +94,7 @@ Chicane::Chicane(const std::string& Key)  :
 
 Chicane::Chicane(const Chicane& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::FrontBackCut(A),
-  chicaneIndex(A.chicaneIndex),
-  cellIndex(A.cellIndex),nBlock(A.nBlock),CUnits(A.CUnits)
+  attachSystem::FrontBackCut(A)
   /*!
     Copy constructor
     \param A :: Chicane to copy
@@ -118,7 +114,6 @@ Chicane::operator=(const Chicane& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       nBlock=A.nBlock;
       CUnits=A.CUnits;
     }
@@ -206,7 +201,7 @@ Chicane::createSurfaces()
 {
   ELog::RegMethod RegA("Chicane","createSurfaces");
   
-  int CIndex(chicaneIndex);
+  int CIndex(buildIndex);
   Geometry::Vec3D blockOrg(Origin);
   for(const chicaneUnit& CU : CUnits)
     {
@@ -237,7 +232,7 @@ Chicane::createObjects(Simulation& System)
 
 
   std::string Out;
-  int CIndex(chicaneIndex);
+  int CIndex(buildIndex);
   for(const chicaneUnit& CU : CUnits)
     {
       Out=ModelSupport::getComposite(SMap,CIndex," 1 -2 3 -4 5 -6 ");
@@ -261,7 +256,7 @@ Chicane::createLinks()
   attachSystem::FixedComp::setNConnect(10*CUnits.size()+4);
   
   Geometry::Vec3D blockOrg(Origin);
-  int CIndex(chicaneIndex);
+  int CIndex(buildIndex);
   size_t linkOffset(0);
   std::vector<Geometry::Vec3D> Delta;
   for(const chicaneUnit& CU : CUnits)
