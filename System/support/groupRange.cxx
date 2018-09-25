@@ -273,6 +273,20 @@ groupRange::combine(const groupRange& A)
 }
 
 void
+groupRange::setItems(const std::set<int>& AVec)
+  /*!
+    Set the system to be a vector
+    \param AVec :: Unordered vector
+  */
+{
+  LowUnit.clear();
+  HighUnit.clear();
+  for(const int I : AVec)
+    addItem(I);
+  return;
+}
+
+void
 groupRange::setItems(const std::vector<int>& AVec)
   /*!
     Set the system to be a vector

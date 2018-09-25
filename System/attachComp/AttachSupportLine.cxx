@@ -233,11 +233,8 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const std::vector<int> CNum=
-    OR.getObjectRange(OuterFC.getKeyName());
+    System.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)
     addToInsertLineCtrl(System,InsertFC,CC,CN);
 
@@ -265,10 +262,8 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   const std::vector<int>& cellVec=
-    OR.getObjectRange(InsertFC.getKeyName());
+    System.getObjectRange(InsertFC.getKeyName());
   System.populateCells(cellVec);
   MonteCarlo::Qhull* CRPtr=System.findQhull(cellN);
 

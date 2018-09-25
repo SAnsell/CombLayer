@@ -103,7 +103,7 @@ class objectGroups
 
   bool isActive(const int) const;
   
-  void addActiveCell(const int);
+  std::string addActiveCell(const int);
   void removeActiveCell(const int);
   void renumberCell(const int,const int);
   

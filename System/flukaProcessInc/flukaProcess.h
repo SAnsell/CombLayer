@@ -22,6 +22,7 @@
 #ifndef flukaSystem_flukaProcess_h
 #define flukaSystem_flukaProcess_h
 
+class objectGroups;
 class Simulation;
 class SimFLUKA;
 class FuncDataBase;
@@ -33,9 +34,9 @@ namespace mainSystem
 
 namespace flukaSystem
 {
-  std::set<int> getActiveUnit(const int,const std::string&);
+  std::set<int> getActiveUnit(const objectGroups&,const int,const std::string&);
   std::set<int> getActiveMaterial(std::string);
-  std::set<int> getActiveCell(const std::string&);
+  std::set<int> getActiveCell(const objectGroups&,const std::string&);
   std::set<int> getActiveParticle(const std::string&);
   void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
 }

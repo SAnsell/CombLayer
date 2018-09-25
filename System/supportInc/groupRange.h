@@ -59,6 +59,7 @@ public:
   bool valid(const int) const;
   groupRange& combine(const groupRange&);
 
+  void setItems(const std::set<int>&);
   void setItems(const std::vector<int>&);
   
   void addItem(const int);

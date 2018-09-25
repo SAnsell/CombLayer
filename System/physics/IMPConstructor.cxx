@@ -65,6 +65,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "particleConv.h"
@@ -74,12 +75,12 @@ namespace physicsSystem
 {
   
 void
-IMPConstructor::processUnit(PhysicsCards& PC,
-			    Simulation& System,
+IMPConstructor::processUnit(SimMCNP& System,
                             const mainSystem::inputParam& IParam,
                             const size_t setIndex)
   /*!
     Set individual IMP based on Iparam
+    \param OGrp :: object groups
     \param PC :: PhysicsCards
     \param System :: Simulation
     \param IParam :: input stream
@@ -89,8 +90,8 @@ IMPConstructor::processUnit(PhysicsCards& PC,
   ELog::RegMethod RegA("IMPConstructor","processUnit");
 
   const particleConv& pConv=particleConv::Instance();
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+
+  physicsSystem::PhysicsCards& PC=System.getPC();
 
   int value;
   std::string particle=IParam.getValueError<std::string>
@@ -119,8 +120,7 @@ IMPConstructor::processUnit(PhysicsCards& PC,
     IParam.getValueError<std::string>
     ("wIMP",setIndex,index,"No objName for wIMP");
 
-  const std::vector<int> Cells=
-    OR.getObjectRange(objName);
+  const std::vector<int> Cells=System.getObjectRange(objName);
   if (Cells.empty())
     throw ColErr::InContainerError<std::string>
       (objName,"Empty cell");

@@ -123,11 +123,13 @@ DXTConstructor::processDD(PhysicsCards& PC,
 }
  
 void
-DXTConstructor::processUnit(PhysicsCards& PC,
+DXTConstructor::processUnit(const objectGroups& OGrp,
+			    PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
  /*!
    Add dxtran component 
+   \param OGrp :: Current object group
    \param PC :: Physics/fixed points
    \param IParam :: Main input parameters
    \param Index :: index of the -wDXT card
@@ -176,7 +178,7 @@ DXTConstructor::processUnit(PhysicsCards& PC,
       
       Geometry::Vec3D PPoint,XAxis,YAxis,ZAxis;
       if (!attachSystem::getAttachPointWithXYZ
-             (place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
+	  (OGrp,place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
 

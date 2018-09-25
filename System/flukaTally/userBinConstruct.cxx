@@ -48,7 +48,6 @@
 #include "support.h"
 #include "stringCombine.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
@@ -158,7 +157,8 @@ userBinConstruct::processMesh(SimFLUKA& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getObjectMesh
+      (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
     tallySystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 

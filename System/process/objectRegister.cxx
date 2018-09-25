@@ -63,7 +63,8 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "objectGroup.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "objectRegister.h"
 
 namespace ModelSupport
@@ -108,7 +109,7 @@ objectRegister::cell(const std::string& Name,const int size)
   ELog::RegMethod RegA("objectRegister","cell");
 
   if (!GPtr)
-    throw ColErr::EmptyValue<orderGroup*>("orderGroup Unregistered");
+    throw ColErr::EmptyValue<objectGroups*>("orderGroup Unregistered");
   return GPtr->cell(Name,size);
 }
 

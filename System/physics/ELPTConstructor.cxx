@@ -75,6 +75,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
@@ -96,12 +97,11 @@ ELPTConstructor::ELPTConstructor()
 
 
 void
-ELPTConstructor::processUnit(PhysicsCards& PC,const Simulation& System,
-			    const mainSystem::inputParam& IParam,
-			    const size_t Index) 
+ELPTConstructor::processUnit(SimMCNP& System,
+			     const mainSystem::inputParam& IParam,
+			     const size_t Index) 
   /*!
     Add ext component 
-    \param PC :: physics system
     \param System :: Simulation for cell map
     \param IParam :: Main input parameters
     \param Index :: index of the -wECut card
@@ -109,7 +109,8 @@ ELPTConstructor::processUnit(PhysicsCards& PC,const Simulation& System,
 {
   ELog::RegMethod RegA("ELPTConstructor","processUnit");
   double ECutValue(0.0);  /// ENERGY cut value;
-  
+
+  physicsSystem::PhysicsCards& PC=System.getPC();
   const size_t NParam=IParam.itemCnt("wECut",Index);
   if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wECut");
@@ -133,7 +134,7 @@ ELPTConstructor::processUnit(PhysicsCards& PC,const Simulation& System,
       (IParam.getValue<std::string>("wECut",Index,j));
 
   if (!StrFunc::section(FStr,ECutValue) ||
-      !ZUnits.procZone(StrItem))
+      !ZUnits.procZone(System,StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wECut "+IParam.getFull("wECut",Index),0);	
   ZUnits.addData(ECutValue);

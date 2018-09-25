@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1Reflector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -368,9 +368,9 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[3]->addSurface("WatSouthFlight",3); 
   Boxes[3]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,1));  //
   Boxes[3]->addSurface("MerlinMod",-6);  //  What is this for?     
-  Boxes[3]->addExcludeObj("MerlinMod");
-  Boxes[3]->addExcludeObj("MerlinFlight","outer");
-  Boxes[3]->addExcludeObj(TName);
+  Boxes[3]->addExcludeObj(System,"MerlinMod");
+  Boxes[3]->addExcludeObj(System,"MerlinFlight","outer");
+  Boxes[3]->addExcludeObj(System,TName);
 
   Boxes[3]->createAll(System,*this);
 
@@ -386,8 +386,8 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[4]->addSurface(*Boxes[0],7);
 
   Boxes[4]->addSurface(Origin-Z*(zStep*2.0),Geometry::Vec3D(0,0,-1));
-  Boxes[4]->addExcludeObj(TName);
-  Boxes[4]->addExcludeObj("ProtonVoid");    
+  Boxes[4]->addExcludeObj(System,TName);
+  Boxes[4]->addExcludeObj(System,"ProtonVoid");    
   Boxes[4]->createAll(System,*this);
   
 
@@ -404,9 +404,9 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[5]->addSurface(*Boxes[0],7);
   Boxes[5]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  // roof    
 
-  Boxes[5]->addExcludeObj("H2Mod");
-  Boxes[5]->addExcludeObj("H2Flight","outer");
-  Boxes[5]->addExcludeObj(TName);
+  Boxes[5]->addExcludeObj(System,"H2Mod");
+  Boxes[5]->addExcludeObj(System,"H2Flight","outer");
+  Boxes[5]->addExcludeObj(System,TName);
 
   Boxes[5]->createAll(System,*this);
 
@@ -490,12 +490,12 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[10]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,1));  
   Boxes[10]->addSurface("WaterMod",-6);  
 
-  Boxes[10]->addExcludeObj(TName);
-  Boxes[10]->addExcludeObj("ProtonVoid");                     
-  Boxes[10]->addExcludeObj("WaterMod");
-  Boxes[10]->addExcludeObj(*Boxes[2]);
-  Boxes[10]->addExcludeObj("WatNorthFlight","outer");
-  Boxes[10]->addExcludeObj("WatSouthFlight","outer");
+  Boxes[10]->addExcludeObj(System,TName);
+  Boxes[10]->addExcludeObj(System,"ProtonVoid");                     
+  Boxes[10]->addExcludeObj(System,"WaterMod");
+  Boxes[10]->addExcludeObj(System,*Boxes[2]);
+  Boxes[10]->addExcludeObj(System,"WatNorthFlight","outer");
+  Boxes[10]->addExcludeObj(System,"WatSouthFlight","outer");
   Boxes[10]->maskSection(4);
   Boxes[10]->createAll(System,*this);
 
@@ -510,12 +510,12 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[11]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,1));  //        
   Boxes[11]->addSurface("WaterMod",-6);  //     
     
-  Boxes[11]->addExcludeObj(TName); 
-  Boxes[11]->addExcludeObj("ProtonVoid");             
-  Boxes[11]->addExcludeObj("WaterMod");
-  Boxes[11]->addExcludeObj(*Boxes[2]);
-  Boxes[11]->addExcludeObj("WatNorthFlight","outer");
-  Boxes[11]->addExcludeObj("WatSouthFlight","outer");
+  Boxes[11]->addExcludeObj(System,TName); 
+  Boxes[11]->addExcludeObj(System,"ProtonVoid");             
+  Boxes[11]->addExcludeObj(System,"WaterMod");
+  Boxes[11]->addExcludeObj(System,*Boxes[2]);
+  Boxes[11]->addExcludeObj(System,"WatNorthFlight","outer");
+  Boxes[11]->addExcludeObj(System,"WatSouthFlight","outer");
 
   Boxes[11]->maskSection(3);
   Boxes[11]->createAll(System,*this);
@@ -534,9 +534,9 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[12]->addSurface(*Boxes[0],7);  
   Boxes[12]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  //          
 
-  Boxes[12]->addExcludeObj(TName);
-  Boxes[12]->addExcludeObj("ProtonVoid");
-  Boxes[12]->addExcludeObj("CH4FlightS","outer");
+  Boxes[12]->addExcludeObj(System,TName);
+  Boxes[12]->addExcludeObj(System,"ProtonVoid");
+  Boxes[12]->addExcludeObj(System,"CH4FlightS","outer");
 
   Boxes[12]->maskSection(3);
   Boxes[12]->maskSection(4);
@@ -553,10 +553,10 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[13]->addSurface("CH4FlightN",-3);  // base
   Boxes[13]->addSurface(*Boxes[0],7);  
   Boxes[13]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  //     
-  Boxes[13]->addExcludeObj(TName);
-  Boxes[13]->addExcludeObj("ProtonVoid");
-  Boxes[13]->addExcludeObj("CH4FlightN","outer");
-  Boxes[13]->addExcludeObj("H2Mod");
+  Boxes[13]->addExcludeObj(System,TName);
+  Boxes[13]->addExcludeObj(System,"ProtonVoid");
+  Boxes[13]->addExcludeObj(System,"CH4FlightN","outer");
+  Boxes[13]->addExcludeObj(System,"H2Mod");
 
 //  Boxes[13]->maskSection(2);
   Boxes[13]->maskSection(3);
@@ -572,9 +572,9 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[14]->addSurface(*Boxes[0],7);  
   Boxes[14]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  // 
     
-  Boxes[14]->addExcludeObj(TName);
-  Boxes[14]->addExcludeObj("ProtonVoid");
-  Boxes[14]->addExcludeObj("CH4Mod");
+  Boxes[14]->addExcludeObj(System,TName);
+  Boxes[14]->addExcludeObj(System,"ProtonVoid");
+  Boxes[14]->addExcludeObj(System,"CH4Mod");
   Boxes[14]->maskSection("0 1 2 3");
   Boxes[14]->createAll(System,*this);    
 
@@ -596,7 +596,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[16]->addSurface(*this,"-4 -5 -6 11");  // sides
   Boxes[16]->addSurface(*Boxes[0],7);
   Boxes[16]->addSurface(Origin-Z*zStep*2.0,Geometry::Vec3D(0,0,-1));  // roof
-  Boxes[16]->addExcludeObj(TName);
+  Boxes[16]->addExcludeObj(System,TName);
 
   Boxes[16]->createAll(System,*this);
   
@@ -678,7 +678,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[20]->addSurface("CH4Mod",1);
   Boxes[20]->addSurface(*Boxes[0],24); 
 
-  Boxes[20]->addExcludeObj("H2Mod");
+  Boxes[20]->addExcludeObj(System,"H2Mod");
   Boxes[20]->maskSection(0);
   Boxes[20]->maskSection(1);  
   Boxes[20]->maskSection(4);

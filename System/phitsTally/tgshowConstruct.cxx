@@ -157,9 +157,11 @@ tgshowConstruct::processMesh(SimPHITS& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getObjectMesh
+      (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getFreeMesh
+      (IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   tgshowConstruct::createTally(System,nextId,APt,BPt,Nxyz);
   

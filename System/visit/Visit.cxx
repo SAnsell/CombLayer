@@ -335,9 +335,6 @@ Visit::populatePoint(const Simulation& System,
 
   MonteCarlo::Object* ObjPtr(0);
   Geometry::Vec3D aVec;
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const bool aEmptyFlag=Active.empty();
 
@@ -360,7 +357,8 @@ Visit::populatePoint(const Simulation& System,
 	      // Active Set Code:
 	      if (!aEmptyFlag)
 		{
-		  const std::string rangeStr=OR.inRange(ObjPtr->getName());
+		  const std::string rangeStr=
+		    System.inRange(ObjPtr->getName());
 		  if (Active.find(rangeStr)!=Active.end())
 		    mesh[i][j][k]=getResult(ObjPtr);
 		  else

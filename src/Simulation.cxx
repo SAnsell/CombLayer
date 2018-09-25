@@ -298,7 +298,9 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
 
-  objectGroups::addActiveCell(cellNumber);
+
+  QHptr->setFCUnit(objectGroups::addActiveCell(cellNumber));
+  
   return 1;
 }
 
@@ -1415,26 +1417,17 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 {
   ELog::RegMethod RegA("Simulation","renumberCells");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
 
   const std::map<int,int> RMap=
     calcCellRenumber(cOffset,cRange);
-  
-  std::string oldUnit,keyUnit;
-  int orStartNumber(0);
-  const attachSystem::CellMap* CMapPtr(0);
-  int cNum(0),nNum(0);
-
-  
+    
   OTYPE newMap;           // New map with correct numbering
   for(const std::map<int,int>::value_type& RMItem : RMap)
     {
-      cNum=RMItem.first;
-      nNum=RMItem.second;
+      const int cNum=RMItem.first;
+      const int nNum=RMItem.second;
 
       MonteCarlo::Qhull* oPtr=findQhull(cNum);
       if (oPtr)
@@ -1443,39 +1436,13 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	  newMap.emplace(nNum,oPtr);
 
 	  WM.renumberCell(cNum,nNum);
-
-	  // objectRegister update
-	  keyUnit=OR.inRange(cNum);
-	  if (keyUnit!=oldUnit)
-	    {
-	      if (orStartNumber)
-		OR.setRenumber(oldUnit,orStartNumber,nNum-1);
-	      oldUnit=keyUnit;
-	      orStartNumber=nNum;
-	    }
-	  OR.renumberActiveCell(cNum,nNum);
-	  
-          CMapPtr=OR.getObject<attachSystem::CellMap>(keyUnit);
+	  objectGroups::renumberCell(cNum,nNum);
 	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
-		  <<" Object:"<<keyUnit;
+		  <<" Object:"<<oPtr->getFCUnit()<<ELog::endBasic;
+	}
 
-	}
-      ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum<<" Object:"<<keyUnit;
-      if (CMapPtr)
-        {
-          const std::string& cName=CMapPtr->getName(cNum);
-          if (!cName.empty()) ELog::RN<<" ("<<cName<<")";
-	}
-      ELog::RN<<ELog::endBasic;
     }    
-
-  // Last item
-  if (orStartNumber)
-    {
-      OR.setRenumber(keyUnit,orStartNumber,nNum);
-      OList=newMap;
-    }
-  
+  OList=newMap;
   return RMap;
 }
 

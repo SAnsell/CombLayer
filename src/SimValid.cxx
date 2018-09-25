@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -260,13 +260,11 @@ SimValid::runFixedComp(const Simulation& System,
 {
   ELog::RegMethod RegA("SimValid","runFixedComp");
   
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   typedef std::map<std::string,CTYPE> cMapTYPE;
 
-  const cMapTYPE& CM=OR.getComponents();
+  const cMapTYPE& CM=System.getComponents();
 
   for(const cMapTYPE::value_type& FCitem : CM)
     {

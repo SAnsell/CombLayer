@@ -22,7 +22,12 @@
 #ifndef ModelSupport_objectRegister_h
 #define ModelSupport_objectRegister_h
 
-class objectGroup;
+namespace attachSystem
+{
+  class FixedComp;
+}
+
+class objectGroups;
 
 namespace ModelSupport
 {
@@ -44,7 +49,7 @@ class objectRegister
 {
  private:
  
-  objectGroup* GPtr;    ///< The official object group pointer
+  objectGroups* GPtr;    ///< The official object group pointer
 
   objectRegister();
   ///\cond SINGLETON
@@ -58,10 +63,16 @@ class objectRegister
 
   static objectRegister& Instance();
 
-  void setObjectGroup(const objectGroup&);
+  void setObjectGroup(const objectGroups&);
   
   int cell(const std::string&,const int = 10000);
-  
+
+  // to be removed:
+    /// Storage of component pointers
+  typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
+  void addObject(const std::string&,const CTYPE&) {}
+  void addObject(const CTYPE&) {}
+
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   constructInc/LinkWrapper.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,8 +82,10 @@ class LinkWrapper : public attachSystem::ContainedComp,
   void addSurface(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void addSurface(const attachSystem::FixedComp&,const long int);
   void addSurface(const attachSystem::FixedComp&,std::string);
-  void addSurface(const std::string&,const std::string&);
-  void addSurface(const std::string&,const long int);
+  void addSurface(const objectGroups& OGrp,const std::string&,
+		  const std::string&);
+  void addSurface(const objectGroups& OGrp,const std::string&,
+		  const long int);
  
   /// Get Central cell [last built]
   int centralCell() const { return cellIndex-1; }

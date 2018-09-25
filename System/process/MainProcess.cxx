@@ -244,9 +244,6 @@ renumberCells(Simulation& System,const inputParam& IParam)
   if (!IParam.flag("renum") && !IParam.flag("cellRange"))
     return;
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   if (IParam.flag("renum"))
     {
       std::vector<int> rOffset;
@@ -269,7 +266,7 @@ renumberCells(Simulation& System,const inputParam& IParam)
 	  if (!StrFunc::convert(Name,xOffset) || 
 	      !StrFunc::convert(Range,xRange))
 	    {
-	      xOffset=Sytem.getFirstCell(Name);
+	      xOffset=System.getFirstCell(Name);
 	      xRange=System.getLastCell(Name)-xOffset;			
 	      i--;              // using names
 	    }
@@ -496,7 +493,6 @@ exitDelete(Simulation* SimPtr)
  */
 {
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return;
 }
@@ -671,7 +667,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
   
-  ModelSupport::setDefRotation(IParam);
+  ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);

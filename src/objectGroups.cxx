@@ -296,11 +296,12 @@ objectGroups::inRange(const int Index) const
   return std::string("");
 }
 
-void
+std::string
 objectGroups::addActiveCell(const int cellN)
   /*!
     Adds an active cell
     \param cellN :: cell number
+    \return the activeCell unit
   */
 {
   ELog::RegMethod RegA("objectGroups","addActiveCell");
@@ -325,7 +326,7 @@ objectGroups::addActiveCell(const int cellN)
       (unit,"region not in regionMap");
   mcr->second.addItem(cellN);
 
-  return;
+  return unit;
 }
 
 void
@@ -683,7 +684,6 @@ objectGroups::getObjectRange(const std::string& objName) const
   */
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
-
   
   std::string::size_type pos=objName.find(":");
   // CELLMAP Range ::  objectName:cellName

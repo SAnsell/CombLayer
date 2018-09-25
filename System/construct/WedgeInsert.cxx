@@ -3,7 +3,7 @@
  
  * File:   construct/WedgeInsert.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -78,7 +77,7 @@ namespace constructSystem
 {
 
 WedgeInsert::WedgeInsert(const std::string& Key,const size_t Index) :
-  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
+  attachSystem::FixedOffset(Key+std::to_string(Index),6),
   attachSystem::ContainedComp(),baseName(Key),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wedgeIndex+1)
@@ -268,10 +267,9 @@ WedgeInsert::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("WedgeInsert","createObjects");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+
   const attachSystem::LayerComp* LCPtr=
-    OR.getObjectThrow<attachSystem::LayerComp>(FC.getKeyName(),"LayerComp");
+    System.getObjectThrow<attachSystem::LayerComp>(FC.getKeyName(),"LayerComp");
 
   std::string Out;
   const std::string CShape=

@@ -3,7 +3,7 @@
  
  * File:   construct/LinkWrapper.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,7 +211,8 @@ LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
 }
 
 void
-LinkWrapper::addSurface(const std::string& FCName,
+LinkWrapper::addSurface(const objectGroups& OGrp,
+			const std::string& FCName,
 			const long int linkIndex)
 /*!
   Add a boundary surface
@@ -221,32 +222,30 @@ LinkWrapper::addSurface(const std::string& FCName,
 {
   ELog::RegMethod RegA("LinkWrapper","addSurface(string,Index)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const attachSystem::FixedComp* FCptr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
+    OGrp.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
 
   addSurface(*FCptr,linkIndex);
   return;
 }
 
 void
-LinkWrapper::addSurface(const std::string& FCName,
+LinkWrapper::addSurface(const objectGroups& OGrp,
+			const std::string& FCName,
 			const std::string& LList)
 /*!
   Add a boundary surface
+  \param OGrp :: outer group
   \param FCName :: Fixed object to use
   \param LList :: Link surface index 
 */
 {
   ELog::RegMethod RegA("LinkWrapper","addSurface(string,string)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const attachSystem::FixedComp* FCptr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
+    OGrp.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
 
   addSurface(*FCptr,LList);
   return;
