@@ -236,10 +236,9 @@ KlystronGallery::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,
-			   Origin-X*(widthLeft)+
-			   Z*(height+roofThick/cos(roofAngle*M_PI/180)),
-			   topNorm);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+16,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+6),
+				  roofThick);
 
   return;
 }
