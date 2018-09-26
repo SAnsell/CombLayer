@@ -41,8 +41,6 @@ class VacTank : public attachSystem::ContainedComp,
 {
  private:
   
-  const int tankIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double radius;                ///< Radius
   double length;                ///< length [void]

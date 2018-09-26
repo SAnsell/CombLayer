@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/RentrantBS.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -83,9 +82,7 @@ namespace essSystem
 
 RentrantBS::RentrantBS(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  bstopIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bstopIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,7 +92,6 @@ RentrantBS::RentrantBS(const std::string& Key) :
 RentrantBS::RentrantBS(const RentrantBS& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  bstopIndex(A.bstopIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),depth(A.depth),
   length(A.length),b4cThick(A.b4cThick),feRadius(A.feRadius),
   feLength(A.feLength),outerRadius(A.outerRadius),
@@ -123,7 +119,6 @@ RentrantBS::operator=(const RentrantBS& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -215,32 +210,32 @@ RentrantBS::createSurfaces()
   ELog::RegMethod RegA("RentrantBS","createSurfaces");
 
   // Concrete outer
-  ModelSupport::buildPlane(SMap,bstopIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,bstopIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,bstopIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,bstopIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,bstopIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,bstopIndex+6,Origin+Z*height,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
 
 
   // Radii:
-  ModelSupport::buildCylinder(SMap,bstopIndex+7,Origin,Y,feRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,feRadius);
 
-  ModelSupport::buildCylinder(SMap,bstopIndex+107,Origin,Y,outerRadius);
-  ModelSupport::buildCylinder(SMap,bstopIndex+117,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,outerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,
 			      outerRadius+outerFeRadius);  
 
-  ModelSupport::buildCylinder(SMap,bstopIndex+207,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,bstopIndex+217,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,
 			      innerRadius+innerFeRadius);  
 
-  ModelSupport::buildPlane(SMap,bstopIndex+101,Origin+Y*outerCut,Y);
-  ModelSupport::buildPlane(SMap,bstopIndex+111,
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*outerCut,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+111,
 			   Origin+Y*(outerCut+outerFeStep),Y);
-  ModelSupport::buildPlane(SMap,bstopIndex+201,Origin+Y*(innerCut+outerCut),Y);
-  ModelSupport::buildPlane(SMap,bstopIndex+211,
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(innerCut+outerCut),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+211,
 			   Origin+Y*(innerCut+outerCut+innerFeStep),Y);
-  ModelSupport::buildPlane(SMap,bstopIndex+301,
+  ModelSupport::buildPlane(SMap,buildIndex+301,
 			   Origin+Y*(feLength+innerCut+outerCut),Y);
 
   // B4C Layer
@@ -260,48 +255,48 @@ RentrantBS::createObjects(Simulation& System)
   std::string Out;
   
   // Inner cylinder :
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"1 -101 -107");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 -107");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"1 -101 -117 107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 -117 107 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"1 -101 3 -4 5 -6 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6 117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
 
   // innter void + next
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"101 -201 -207");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -201 -207");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"101 -111 -117 207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111 -117 207 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"101 -111  117 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111  117 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
 
   // inner void surround
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"111 -211 -217 207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"111 -211 -217 207 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
 
   // extra concrete
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"111 -211  217 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"111 -211  217 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
 
   // === MAin
   // Steel section
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"201 -301 -207");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -301 -207");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
 
 
   // extra concrete
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"211 -301 3 -4 5 -6 207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"211 -301 3 -4 5 -6 207 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
 
   // extra concrete
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"301 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,bstopIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
 
   return;
