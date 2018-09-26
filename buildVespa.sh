@@ -8,13 +8,15 @@
  -matDB shielding \
  -n 1000 \
  -angle objAxis vespaAxis 0 \
- -wDXT object TopFlyMidWater 0 5 1.0 \
- -wDXT objOffset G4BLine1:Beam front 'Vec3D(0,4,0)' 4.0 1.0 \
- -wDD 0.5 100 0.5 100\
  VESPA
 
 
 sed -i "s/wwp:n 8 1.4 5 -1 -2 0/wwp:n 8 1.4 5 -1 -1 0/" VESPA1.x
+
+
+# -wDXT object TopFlyMidWater 0 5 1.0 \
+# -wDXT objOffset G4BLine1:Beam front 'Vec3D(0,4,0)' 4.0 1.0 \
+# -wDD 0.5 100 0.5 100\
 
 # -X :: produce il foglio xml
 # -x :: carica il foglio xml
