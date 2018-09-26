@@ -70,9 +70,7 @@ namespace muSystem
 {
 
 muonTube::muonTube(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
-  tubeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tubeIndex+1)
+  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -81,7 +79,6 @@ muonTube::muonTube(const std::string& Key)  :
 
 muonTube::muonTube(const muonTube& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  tubeIndex(A.tubeIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   radius(A.radius),thick(A.thick),length(A.length),
   mat(A.mat)
@@ -103,7 +100,6 @@ muonTube::operator=(const muonTube& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -172,10 +168,10 @@ muonTube::createSurfaces()
 {
   ELog::RegMethod RegA("muonTube","createSurface");
 
-  ModelSupport::buildPlane(SMap,tubeIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,tubeIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildCylinder(SMap,tubeIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,tubeIndex+17,Origin,Y,radius-thick);      
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius-thick);      
 
   return;
 }
@@ -192,15 +188,15 @@ muonTube::createObjects(Simulation& System)
   std::string Out;
 
   // Steel
-  Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -7 17 ");  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 17 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
     // hole
-  Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addBoundarySurf(Out);   // Inner part
 
-  Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 ");
   addOuterSurf(Out);
   
   return;
@@ -222,12 +218,12 @@ muonTube::createLinks()
   FixedComp::setConnect(4,Origin-Z*radius,-Z);
   FixedComp::setConnect(5,Origin+Z*radius,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(tubeIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(tubeIndex+2));  
-  FixedComp::setLinkSurf(2,SMap.realSurf(tubeIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(tubeIndex+17));
-  FixedComp::setLinkSurf(4,SMap.realSurf(tubeIndex+17));
-  FixedComp::setLinkSurf(5,SMap.realSurf(tubeIndex+17));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
 
   return;
 }

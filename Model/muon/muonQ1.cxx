@@ -3,7 +3,7 @@
  
  * File:   muon/muonQ1.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -73,9 +72,7 @@ namespace muSystem
 {
 
 muonQ1::muonQ1(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
-  muQ1Index(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(muQ1Index+1)
+  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -84,7 +81,6 @@ muonQ1::muonQ1(const std::string& Key)  :
 
 muonQ1::muonQ1(const muonQ1& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  muQ1Index(A.muQ1Index),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
   xSize(A.xSize),ySize(A.ySize),zSize(A.zSize),
@@ -111,7 +107,6 @@ muonQ1::operator=(const muonQ1& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -207,62 +202,62 @@ muonQ1::createSurfaces()
   ELog::RegMethod RegA("muonQ1","createSurface");
 
   // Outer layer:
-  ModelSupport::buildPlane(SMap,muQ1Index+1,Origin-Y*ySize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+2,Origin+Y*ySize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+3,Origin-X*xSize/2.0,X);
-  ModelSupport::buildPlane(SMap,muQ1Index+4,Origin+X*xSize/2.0,X);
-  ModelSupport::buildPlane(SMap,muQ1Index+5,Origin-Z*zSize/2.0,Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+6,Origin+Z*zSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*ySize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ySize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize/2.0,Z);
          // Corners:
-  ModelSupport::buildPlane(SMap,muQ1Index+101,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin
 			   -X*xSize/2.0-Z*(zSize/2.0-cutLenOut),-X-Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+102,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin
 			   -X*xSize/2.0+Z*(zSize/2.0-cutLenOut),-X+Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+103,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin
 			   +X*xSize/2.0-Z*(zSize/2.0-cutLenOut),X-Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+104,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin
 			   +X*xSize/2.0+Z*(zSize/2.0-cutLenOut),X+Z);
 
   // Steel layer:
-  ModelSupport::buildPlane(SMap,muQ1Index+11,Origin-Y*copperYSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+12,Origin+Y*copperYSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+13,Origin-X*(xSize/2.0-steelThick),X);
-  ModelSupport::buildPlane(SMap,muQ1Index+14,Origin+X*(xSize/2.0-steelThick),X);
-  ModelSupport::buildPlane(SMap,muQ1Index+15,Origin-Z*(zSize/2.0-steelThick),Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+16,Origin+Z*(zSize/2.0-steelThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*copperYSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*copperYSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(xSize/2.0-steelThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(xSize/2.0-steelThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(zSize/2.0-steelThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(zSize/2.0-steelThick),Z);
          // Corners:
-  ModelSupport::buildPlane(SMap,muQ1Index+111,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin
 			   -X*(xSize/2.0-steelThick)-Z*(zSize/2.0-steelThick-cutLenMid),-X-Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+112,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+112,Origin
 			   -X*(xSize/2.0-steelThick)+Z*(zSize/2.0-steelThick-cutLenMid),-X+Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+113,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+113,Origin
 			   +X*(xSize/2.0-steelThick)-Z*(zSize/2.0-steelThick-cutLenMid),X-Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+114,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+114,Origin
 			   +X*(xSize/2.0-steelThick)+Z*(zSize/2.0-steelThick-cutLenMid),X+Z);
 
   // Coper layer:
-//  ModelSupport::buildPlane(SMap,muQ1Index+21,Origin-Y*copperYSize/2.0,Y);
-//  ModelSupport::buildPlane(SMap,muQ1Index+22,Origin+Y*copperYSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+23,Origin-X*(xSize/2.0-steelThick-copperThick),X);
-  ModelSupport::buildPlane(SMap,muQ1Index+24,Origin+X*(xSize/2.0-steelThick-copperThick),X);
-  ModelSupport::buildPlane(SMap,muQ1Index+25,Origin-Z*(zSize/2.0-steelThick-copperThick),Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+26,Origin+Z*(zSize/2.0-steelThick-copperThick),Z);
+//  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*copperYSize/2.0,Y);
+//  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*copperYSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(xSize/2.0-steelThick-copperThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(xSize/2.0-steelThick-copperThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(zSize/2.0-steelThick-copperThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(zSize/2.0-steelThick-copperThick),Z);
 
   // Inserts - top & bottom:
-  ModelSupport::buildPlane(SMap,muQ1Index+31,Origin-Y*insertSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+32,Origin+Y*insertSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+33,Origin-X*insertSize/2.0,X);
-  ModelSupport::buildPlane(SMap,muQ1Index+34,Origin+X*insertSize/2.0,X);
-  ModelSupport::buildPlane(SMap,muQ1Index+35,Origin-Z*(zSize/2.0-steelThick-copperThick-insertThick),Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+36,Origin+Z*(zSize/2.0-steelThick-copperThick-insertThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+31,Origin-Y*insertSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+32,Origin+Y*insertSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin-X*insertSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+X*insertSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*(zSize/2.0-steelThick-copperThick-insertThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*(zSize/2.0-steelThick-copperThick-insertThick),Z);
   
    // Inserts - left & right:
-//  ModelSupport::buildPlane(SMap,muQ1Index+31,Origin-Y*insertSize/2.0,Y);
-//  ModelSupport::buildPlane(SMap,muQ1Index+32,Origin+Y*insertSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,muQ1Index+43,Origin-X*(xSize/2.0-steelThick-copperThick-insertThick),X);
-  ModelSupport::buildPlane(SMap,muQ1Index+44,Origin+X*(xSize/2.0-steelThick-copperThick-insertThick),X);
-  ModelSupport::buildPlane(SMap,muQ1Index+45,Origin-Z*insertSize/2.0,Z);
-  ModelSupport::buildPlane(SMap,muQ1Index+46,Origin+Z*insertSize/2.0,Z); 
+//  ModelSupport::buildPlane(SMap,buildIndex+31,Origin-Y*insertSize/2.0,Y);
+//  ModelSupport::buildPlane(SMap,buildIndex+32,Origin+Y*insertSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+43,Origin-X*(xSize/2.0-steelThick-copperThick-insertThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+44,Origin+X*(xSize/2.0-steelThick-copperThick-insertThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*insertSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*insertSize/2.0,Z); 
   
   return;
 }
@@ -284,28 +279,28 @@ muonQ1::createObjects(Simulation& System)
   std::string Out5;
     
     // Steel
-  Out=ModelSupport::getComposite(SMap,muQ1Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 3 -4 5 -6 -101 -102 -103 -104 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out1=ModelSupport::getComposite(SMap,muQ1Index,
+  Out1=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-13:14:-15:16:111:112:113:114)");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out+Out1));  
 
     // Copper
-  Out=ModelSupport::getComposite(SMap,muQ1Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 -111 -112 -113 -114 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
-  Out1=ModelSupport::getComposite(SMap,muQ1Index,
+  Out1=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-23:24:-25:26)");
-  Out2=ModelSupport::getComposite(SMap,muQ1Index,
+  Out2=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-31:32:-33:34:-36:16)");  	
-  Out3=ModelSupport::getComposite(SMap,muQ1Index,
+  Out3=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-31:32:-33:34:35:-15)");
-  Out4=ModelSupport::getComposite(SMap,muQ1Index,
+  Out4=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-31:32:-13:43:-45:46)"); 
-  Out5=ModelSupport::getComposite(SMap,muQ1Index,
+  Out5=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-31:32:-44:14:-45:46)");
   
   // This is junk!!
@@ -314,24 +309,24 @@ muonQ1::createObjects(Simulation& System)
 
 
     // Inserts
-  Out=ModelSupport::getComposite(SMap,muQ1Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 33 -34 36 -16 ");    
   System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
 
-  Out=ModelSupport::getComposite(SMap,muQ1Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 33 -34 -35 15 ");    
   System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
 
-  Out=ModelSupport::getComposite(SMap,muQ1Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 13 -43 45 -46 ");    
   System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
 
-  Out=ModelSupport::getComposite(SMap,muQ1Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 44 -14 45 -46 ");    
   System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
 
     // Void
-  Out=ModelSupport::getComposite(SMap,muQ1Index,"11 -12 23 -24 25 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 23 -24 25 -26 ");
   
   // This is junk!!
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
@@ -348,12 +343,12 @@ muonQ1::createLinks()
 {
   ELog::RegMethod RegA("muonQ1","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(muQ1Index+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(muQ1Index+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(muQ1Index+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(muQ1Index+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(muQ1Index+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(muQ1Index+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(0,Origin-Y*ySize/2.0,-Y);
   FixedComp::setConnect(1,Origin+Y*ySize/2.0,Y);

@@ -3,7 +3,7 @@
  
  * File:   muon/muonCarbonTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goron Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goron Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,13 +43,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -80,9 +78,7 @@ namespace muSystem
 {
 
 muonCarbonTarget::muonCarbonTarget(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
-  muCtIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(muCtIndex+1)
+  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -144,12 +140,12 @@ muonCarbonTarget::createSurfaces()
   ELog::RegMethod RegA("muonCarbonTarget","createSurface");
 
   // CH4 layer
-  ModelSupport::buildPlane(SMap,muCtIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,muCtIndex+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,muCtIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,muCtIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,muCtIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,muCtIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   return;
 }
@@ -165,7 +161,7 @@ muonCarbonTarget::createObjects(Simulation& System)
   
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,muCtIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
@@ -182,12 +178,12 @@ muonCarbonTarget::createLinks()
 {
   ELog::RegMethod RegA("muonCarbonTarget","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(muCtIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(muCtIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(muCtIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(muCtIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(muCtIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(muCtIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);

@@ -40,8 +40,6 @@ class muBeamWindow : public attachSystem::FixedComp,
 {
  private:
   
-  const int bwinIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double xStep;                   ///< XStep value
   double yStep;                   ///< yStep
