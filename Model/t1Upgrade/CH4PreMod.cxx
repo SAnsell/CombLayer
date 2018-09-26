@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4PreMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -240,58 +239,58 @@ CH4PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   getConnectPoints(FC,frontIndex);
   
   // Front point is effectively a falling back surface
-  ModelSupport::buildPlane(SMap,preIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   sidePts[2]-X*alThick,X);
-  ModelSupport::buildPlane(SMap,preIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   sidePts[3]+X*alThick,X);
-  ModelSupport::buildPlane(SMap,preIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   sidePts[4]-Z*alThick,Z);
-  ModelSupport::buildPlane(SMap,preIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   sidePts[5]+Z*alThick,Z);
 
   // Water phase
-  ModelSupport::buildPlane(SMap,preIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   sidePts[2]-X*(alThick+sideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   sidePts[3]+X*(alThick+sideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   sidePts[4]-Z*(alThick+baseThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   sidePts[5]+Z*(alThick+topThick),Z);
 
   // OuterAl phase
-  ModelSupport::buildPlane(SMap,preIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 			   sidePts[2]-X*(2.0*alThick+sideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 			   sidePts[3]+X*(2.0*alThick+sideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+35,
+  ModelSupport::buildPlane(SMap,buildIndex+35,
 			   sidePts[4]-Z*(2*alThick+baseThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 			   sidePts[5]+Z*(2*alThick+topThick),Z);
 
 
   // Vac phase
-  ModelSupport::buildPlane(SMap,preIndex+43,
+  ModelSupport::buildPlane(SMap,buildIndex+43,
 			   sidePts[2]-X*(2.0*alThick+sideThick+vacThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+44,
+  ModelSupport::buildPlane(SMap,buildIndex+44,
 			   sidePts[3]+X*(2.0*alThick+sideThick+vacThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+45,
+  ModelSupport::buildPlane(SMap,buildIndex+45,
 			   sidePts[4]-Z*(2.0*alThick+baseThick+vacThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+46,
+  ModelSupport::buildPlane(SMap,buildIndex+46,
 			   sidePts[5]+Z*(2.0*alThick+topThick+vacThick),Z);
 
   // Al + Water End caps:
-  ModelSupport::buildPlane(SMap,preIndex+121,sidePts[0]+Y*frontExt,Y);
-  ModelSupport::buildPlane(SMap,preIndex+122,sidePts[1]-Y*backExt,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+121,sidePts[0]+Y*frontExt,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+122,sidePts[1]-Y*backExt,Y);
 
-  ModelSupport::buildPlane(SMap,preIndex+131,sidePts[0]+
+  ModelSupport::buildPlane(SMap,buildIndex+131,sidePts[0]+
 			   Y*(frontExt+alThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+132,sidePts[1]-
+  ModelSupport::buildPlane(SMap,buildIndex+132,sidePts[1]-
 			   Y*(backExt+alThick),Y);
 
-  ModelSupport::buildPlane(SMap,preIndex+141,sidePts[0]+
+  ModelSupport::buildPlane(SMap,buildIndex+141,sidePts[0]+
 			   Y*(frontExt+alThick+vacThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+142,sidePts[1]-
+  ModelSupport::buildPlane(SMap,buildIndex+142,sidePts[1]-
 			   Y*(backExt+alThick+vacThick),Y);
 
 
@@ -336,29 +335,29 @@ CH4PreMod::createObjects(Simulation& System,
   FullInner[FullInner.size()-1]=')';
   // Wrap AL:
   std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"13 -14 15 -16 -131 132");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"13 -14 15 -16 -131 132");
   Out+=Inner+touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Water:
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "-121 122 23 -24 25 -26 (-13:14:-15:16)");
   Out+=touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "-131 132 33 -34 35 -36 (-23:24:-25:26)");
   Out+=touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Front al wrapper
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "-131 121 23 -24 25 -26 (-13:14:-15:16)");
   Out+=touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Front al wrapper
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "132 -122 23 -24 25 -26 (-13:14:-15:16)");
   Out+=touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
@@ -368,20 +367,20 @@ CH4PreMod::createObjects(Simulation& System,
 
   // VAC Outer:
   std::string IOut;
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"-141 142 43 -44 45 -46 ");  
-  IOut=ModelSupport::getSetComposite(SMap,preIndex,"33 -34 35 -36 -131 132");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"-141 142 43 -44 45 -46 ");  
+  IOut=ModelSupport::getSetComposite(SMap,buildIndex,"33 -34 35 -36 -131 132");
   IOut+=Inner+touch;
   Out+="#("+IOut+")";
   Out+=FullInner;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				    "43 -44 45 -46 ");  
   Out+=(backExt+alThick+vacThick>Geometry::zeroTol) ? 
-    ModelSupport::getSetComposite(SMap,preIndex,"142 ") : 
+    ModelSupport::getSetComposite(SMap,buildIndex,"142 ") : 
     BFace;
   Out+=(frontExt+alThick+vacThick>Geometry::zeroTol) ? 
-    ModelSupport::getSetComposite(SMap,preIndex,"-141 ") : 
+    ModelSupport::getSetComposite(SMap,buildIndex,"-141 ") : 
     FFace; 
   addOuterSurf(Out);
   return;
@@ -446,7 +445,7 @@ CH4PreMod::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("CH4PreMod","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return std::to_string(getLayerSurf(layerIndex,sideIndex));
 }
 
 int
@@ -473,9 +472,9 @@ CH4PreMod::getLayerSurf(const size_t layerIndex,
   const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
   int SI;
   if (uSIndex<3)
-    SI=preIndex+static_cast<int>(120+layerIndex*10+uSIndex);
+    SI=buildIndex+static_cast<int>(120+layerIndex*10+uSIndex);
   else 
-    SI=preIndex+static_cast<int>(layerIndex*10+uSIndex);
+    SI=buildIndex+static_cast<int>(layerIndex*10+uSIndex);
 
   return signValue*SMap.realSurf(SI);
 }
@@ -498,12 +497,12 @@ CH4PreMod::createLinks()
   FixedComp::setConnect(4,sidePts[4]-Z*layT,-Z);
   FixedComp::setConnect(5,sidePts[5]+Z*layT,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(preIndex+141));
-  FixedComp::setLinkSurf(1,SMap.realSurf(preIndex+142));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(preIndex+43));
-  FixedComp::setLinkSurf(3,SMap.realSurf(preIndex+44));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+45));
-  FixedComp::setLinkSurf(5,SMap.realSurf(preIndex+46));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+141));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+142));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+43));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+44));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+45));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
   return;
 }
 

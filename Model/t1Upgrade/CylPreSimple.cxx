@@ -79,8 +79,7 @@ CylPreSimple::CylPreSimple(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1),nView(0)
+  nView(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -90,7 +89,7 @@ CylPreSimple::CylPreSimple(const std::string& Key) :
 CylPreSimple::CylPreSimple(const CylPreSimple& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),innerRadius(A.innerRadius),
+  innerRadius(A.innerRadius),
   innerHeight(A.innerHeight),innerDepth(A.innerDepth),
   radius(A.radius),height(A.height),depth(A.depth),
   mat(A.mat),temp(A.temp),nView(A.nView),viewY(A.viewY),
@@ -114,7 +113,6 @@ CylPreSimple::operator=(const CylPreSimple& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       innerRadius=A.innerRadius;
       innerHeight=A.innerHeight;
       innerDepth=A.innerDepth;
@@ -256,13 +254,13 @@ CylPreSimple::createSurfaces()
   ELog::RegMethod RegA("CylPreSimple","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,Y);  
   // First surface when needed:
 
-  ModelSupport::buildCylinder(SMap,modIndex+9,Origin,Z,innerRadius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+9,Origin,Z,innerRadius);  
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
@@ -273,7 +271,7 @@ CylPreSimple::createSurfaces()
   // For flight line 100
   for(size_t flIndex=0;flIndex<nView;flIndex++)
     {
-      const int baseIndex(modIndex+static_cast<int>(100*(flIndex+1)));
+      const int baseIndex(buildIndex+static_cast<int>(100*(flIndex+1)));
       // create mid divider:
       ModelSupport::buildPlane(SMap,baseIndex+1,Origin,viewY[flIndex]);  
       
@@ -315,8 +313,8 @@ CylPreSimple::createObjects(Simulation& System,
 
   std::string Out;
 
-  int SI(modIndex);
-  int CI(modIndex);  // Cut index
+  int SI(buildIndex);
+  int CI(buildIndex);  // Cut index
 
   // Process even number of surfaces:
   const size_t even(!(nLayers % 2 ) ? nLayers-2 : nLayers);
@@ -330,7 +328,7 @@ CylPreSimple::createObjects(Simulation& System,
 	{
 	  Out+=ModelSupport::getComposite
 	    (SMap,CI+100*static_cast<int>(viewIndex),
-	     modIndex+100*static_cast<int>(viewIndex),
+	     buildIndex+100*static_cast<int>(viewIndex),
 	     " (-101M:103:104:105:106) ");
 	}
       if (i)
@@ -347,12 +345,12 @@ CylPreSimple::createObjects(Simulation& System,
   for(size_t i=0;i<(nLayers-1)/2;i++)
     {
       // Layer is between i+1 and nLayers-1-evenCut-i
-      const int SI(modIndex+10*static_cast<int>(i));
-      const int CI(modIndex+10*static_cast<int>(nLayers-2-evenCut-i));
+      const int SI(buildIndex+10*static_cast<int>(i));
+      const int CI(buildIndex+10*static_cast<int>(nLayers-2-evenCut-i));
 
       for(size_t viewIndex=0;viewIndex<nView;viewIndex++)
 	{	  
-	  const int divideN(modIndex+100*static_cast<int>(viewIndex));
+	  const int divideN(buildIndex+100*static_cast<int>(viewIndex));
 	  Out=ModelSupport::getComposite(SMap,SI,CI," 7 -7M ");
 	  Out+=ModelSupport::getComposite(SMap,SI+100*static_cast<int>(viewIndex),
 					  divideN," 101M (103:104:105:106) -113 -114 -115 -116");
@@ -361,13 +359,13 @@ CylPreSimple::createObjects(Simulation& System,
     }
   
   // Finally the void cell:  
-  Out=ModelSupport::getComposite(SMap,modIndex,
-				 modIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 buildIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
 
   for(size_t viewIndex=0;viewIndex<nView;viewIndex++)
     {	  
       std::string OComp(Out);
-      OComp+=ModelSupport::getComposite(SMap,modIndex+100*static_cast<int>(viewIndex),
+      OComp+=ModelSupport::getComposite(SMap,buildIndex+100*static_cast<int>(viewIndex),
 				 "101 -103 -104 -105 -106 " );
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OComp));
     }
@@ -387,14 +385,14 @@ CylPreSimple::createLinks()
 
   if (nLayers)
     {
-      const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+      const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
       FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
+      FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
+      FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
       
       FixedComp::setConnect(4,Origin-Z*(height[nLayers-1]/2.0),-Z);
       FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
@@ -404,11 +402,11 @@ CylPreSimple::createLinks()
 
       FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
       FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
+      FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
 
       FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
+      FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
 
     }
   else 
@@ -491,8 +489,8 @@ CylPreSimple::getLayerSurf(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(!layerIndex ? modIndex :
-	       10*static_cast<int>(layerIndex-1)+modIndex);
+  const int SI(!layerIndex ? buildIndex :
+	       10*static_cast<int>(layerIndex-1)+buildIndex);
 
   const int signValue((sideIndex<0) ? -1 : 1);
   
@@ -504,7 +502,7 @@ CylPreSimple::getLayerSurf(const size_t layerIndex,
     case 4:
       return (layerIndex) ? 
 	SMap.realSurf(SI+7) :
-	SMap.realSurf(modIndex+9);
+	SMap.realSurf(buildIndex+9);
     case 5:
       return -signValue*SMap.realSurf(SI+5);
     case 6:
@@ -528,8 +526,8 @@ CylPreSimple::getLayerString(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(!layerIndex ? modIndex :
-	       10*static_cast<int>(layerIndex-1)+modIndex);
+  const int SI(!layerIndex ? buildIndex :
+	       10*static_cast<int>(layerIndex-1)+buildIndex);
 
   std::ostringstream cx;
   switch(sideIndex)
@@ -538,15 +536,15 @@ CylPreSimple::getLayerString(const size_t layerIndex,
     case -1:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+2)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<< -SMap.realSurf(buildIndex+2)<<" ";
       break;
     case 2:
     case -2:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<<SMap.realSurf(modIndex+2)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<<SMap.realSurf(buildIndex+2)<<" ";
       break;
     case 3:
     case -3:
@@ -560,15 +558,15 @@ CylPreSimple::getLayerString(const size_t layerIndex,
     case -5:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<< -SMap.realSurf(buildIndex+1)<<" ";
       break;
     case 6:
     case -6:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< SMap.realSurf(modIndex+1)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<< SMap.realSurf(buildIndex+1)<<" ";
       break;
     }
   if (sideIndex<0)

@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/CylReflector.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@ class CylReflector : public attachSystem::ContainedComp,
 {
  private:
   
-  const int refIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   size_t nLayer;                 ///< Number of layers
   std::vector<double> radius;        ///< radius of outer
@@ -76,7 +74,7 @@ class CylReflector : public attachSystem::ContainedComp,
   std::string getComposite(const std::string&) const;
 
   // Main cell
-  int getInnerCell() const { return refIndex+1; }
+  int getInnerCell() const { return buildIndex+1; }
   std::vector<int> getCells() const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,

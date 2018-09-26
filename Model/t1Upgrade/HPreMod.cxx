@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/HPreMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,9 +79,7 @@ namespace ts1System
 {
 
 HPreMod::HPreMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(preIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +88,6 @@ HPreMod::HPreMod(const std::string& Key)  :
 
 HPreMod::HPreMod(const HPreMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex),
   populated(A.populated),centOrgFlag(A.centOrgFlag),
   lSideThick(A.lSideThick),rSideThick(A.rSideThick),topThick(A.topThick),
   baseThick(A.baseThick),backThick(A.backThick),
@@ -115,7 +112,6 @@ HPreMod::operator=(const HPreMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       centOrgFlag=A.centOrgFlag;
       lSideThick=A.lSideThick;
@@ -247,54 +243,54 @@ HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
   getConnectPoints(FC,frontIndex);
   
   // Front point is effectively a falling back surface
-  ModelSupport::buildPlane(SMap,preIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   sidePts[0]-Y*alThick,Y);
-  ModelSupport::buildPlane(SMap,preIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   sidePts[1]-Y*alThick,Y);
-  ModelSupport::buildPlane(SMap,preIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   sidePts[2]-X*alThick,X);
-  ModelSupport::buildPlane(SMap,preIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   sidePts[3]+X*alThick,X);
-  ModelSupport::buildPlane(SMap,preIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   sidePts[4]-Z*alThick,Z);
-  ModelSupport::buildPlane(SMap,preIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   sidePts[5]+Z*alThick,Z);
 
   // Water phase
-  ModelSupport::buildPlane(SMap,preIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   sidePts[1]-Y*(alThick+backThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   sidePts[2]-X*(alThick+lSideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   sidePts[3]+X*(alThick+rSideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   sidePts[4]-Z*(alThick+baseThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   sidePts[5]+Z*(alThick+topThick),Z);
 
   // OuterAl phase
-  ModelSupport::buildPlane(SMap,preIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 			   sidePts[1]-Y*(2.0*alThick+backThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 			   sidePts[2]-X*(2.0*alThick+lSideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 			   sidePts[3]+X*(2.0*alThick+rSideThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+35,
+  ModelSupport::buildPlane(SMap,buildIndex+35,
 			   sidePts[4]-Z*(2*alThick+baseThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 			   sidePts[5]+Z*(2*alThick+topThick),Z);
 
 
   // Vac phase
-  ModelSupport::buildPlane(SMap,preIndex+42,
+  ModelSupport::buildPlane(SMap,buildIndex+42,
 			   sidePts[1]-Y*(2.0*alThick+backThick+vacThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+43,
+  ModelSupport::buildPlane(SMap,buildIndex+43,
 			   sidePts[2]-X*(2.0*alThick+lSideThick+vacThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+44,
+  ModelSupport::buildPlane(SMap,buildIndex+44,
 			   sidePts[3]+X*(2.0*alThick+rSideThick+vacThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+45,
+  ModelSupport::buildPlane(SMap,buildIndex+45,
 			   sidePts[4]-Z*(2.0*alThick+baseThick+vacThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+46,
+  ModelSupport::buildPlane(SMap,buildIndex+46,
 			   sidePts[5]+Z*(2.0*alThick+topThick+vacThick),Z);
 
   return;
@@ -332,26 +328,26 @@ HPreMod::createObjects(Simulation& System,
 
   // Wrap AL:
   std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"12 13 -14 15 -16 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"12 13 -14 15 -16 ");
   Out+=FFace+Inner;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 			       "32 33 -34 35 -36 (11:-22:-23:24:-25:26) "
 				    "(-11:-13:14:-15:16)");
   Out+=FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
   // Water:
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  " -11 22 23 -24 25 -26 (-12:-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // Clearance Void
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  " 42 43 -44 45 -46 (-32:-33:34:-35:36) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FFace));
 
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"42 43 -44 45 -46 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"42 43 -44 45 -46 ");
   Out+=FFace;
   addOuterSurf(Out);
   return;
@@ -374,11 +370,11 @@ HPreMod::createLinks()
   FixedComp::setConnect(5,sidePts[5]+Z*layT,Z);
 
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(preIndex+42));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(preIndex+43));
-  FixedComp::setLinkSurf(3,SMap.realSurf(preIndex+44));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+45));
-  FixedComp::setLinkSurf(5,SMap.realSurf(preIndex+46));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+43));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+44));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+45));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
   return;
 
 }

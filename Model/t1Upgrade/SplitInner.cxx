@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/SplitInner.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,9 +83,7 @@ namespace ts1System
 {
 
 SplitInner::SplitInner(const std::string& Key,const std::string& LKey) :
-  ts1System::CH4Layer(LKey),IKeyName(Key),
-  innerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(innerIndex+1)
+  ts1System::CH4Layer(LKey),IKeyName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,8 +95,8 @@ SplitInner::SplitInner(const std::string& Key,const std::string& LKey) :
 
 SplitInner::SplitInner(const SplitInner& A) : 
   ts1System::CH4Layer(A),
-  IKeyName(A.IKeyName),innerIndex(A.innerIndex),
-  cellIndex(A.cellIndex),innerNLayer(A.innerNLayer),
+  IKeyName(A.IKeyName),
+  innerNLayer(A.innerNLayer),
   thick(A.thick),mat(A.mat),temp(A.temp)
   /*!
     Copy constructor
@@ -117,7 +115,6 @@ SplitInner::operator=(const SplitInner& A)
   if (this!=&A)
     {
       ts1System::CH4Layer::operator=(A);
-      cellIndex=A.cellIndex;
       innerNLayer=A.innerNLayer;
       thick=A.thick;
       mat=A.mat;
@@ -195,7 +192,7 @@ SplitInner::createSurfaces()
 {
   ELog::RegMethod RegA("SplitInner","createSurface");
   
-  int iLayer(innerIndex);
+  int iLayer(buildIndex);
 
   for(size_t i=0;i<innerNLayer;i++)
     {
@@ -217,7 +214,7 @@ SplitInner::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SplitInner","createObjects");
 
-  int iLayer(innerIndex);
+  int iLayer(buildIndex);
 
   std::string Edge=
     ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
