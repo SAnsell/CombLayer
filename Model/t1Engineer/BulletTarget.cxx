@@ -77,7 +77,6 @@ namespace ts1System
 
 BulletTarget::BulletTarget(const std::string& Key)  :
   TargetBase(Key,12),
-  tIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   PlateTarObj(new BulletPlates("BPlates")),
   PressVObj(new BulletVessel("BVessel"))
   /*!
@@ -101,7 +100,7 @@ BulletTarget::BulletTarget(const std::string& Key)  :
 
 BulletTarget::BulletTarget(const BulletTarget& A) : 
   constructSystem::TargetBase(A),
-  tIndex(A.tIndex),PlateTarObj(A.PlateTarObj),
+  PlateTarObj(A.PlateTarObj),
   PressVObj(A.PressVObj)
   /*!
     Copy constructor

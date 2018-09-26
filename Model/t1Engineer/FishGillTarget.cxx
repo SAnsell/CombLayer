@@ -77,7 +77,6 @@ namespace ts1System
 
 FishGillTarget::FishGillTarget(const std::string& Key)  :
   TargetBase(Key,12),
-  tIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   PlateTarObj(new BulletPlates("BPlates")),
   PressVObj(new FishGillVessel("BVessel"))
   /*!
@@ -99,7 +98,7 @@ FishGillTarget::FishGillTarget(const std::string& Key)  :
 
 FishGillTarget::FishGillTarget(const FishGillTarget& A) : 
   constructSystem::TargetBase(A),
-  tIndex(A.tIndex),PlateTarObj(A.PlateTarObj),
+  PlateTarObj(A.PlateTarObj),
   PressVObj(A.PressVObj)
   /*!
     Copy constructor

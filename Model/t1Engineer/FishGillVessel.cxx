@@ -3,7 +3,7 @@
  
  * File:   t1Engineering/FishGillVessel.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -80,9 +79,7 @@ namespace ts1System
 {
 
 FishGillVessel::FishGillVessel(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
-  pvIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pvIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +88,7 @@ FishGillVessel::FishGillVessel(const std::string& Key)  :
 
 FishGillVessel::FishGillVessel(const FishGillVessel& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  pvIndex(A.pvIndex),cellIndex(A.cellIndex),frontClear(A.frontClear),
+  frontClear(A.frontClear),
   frontThick(A.frontThick),frontWaterThick(A.frontWaterThick),
   mainRadius(A.mainRadius),radii(A.radii),length(A.length),
   waterHeight(A.waterHeight),taVertThick(A.taVertThick),
@@ -116,7 +113,6 @@ FishGillVessel::operator=(const FishGillVessel& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       frontClear=A.frontClear;
       frontThick=A.frontThick;
       frontWaterThick=A.frontWaterThick;
@@ -160,7 +156,7 @@ FishGillVessel::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nRadii;i++)
     {
-      const std::string Rkey=StrFunc::makeString(i);
+      const std::string Rkey=std::to_string(i);
       const double R=Control.EvalPair<double>(keyName+"Radius"+Rkey,
 					      keyName+"Radius");
       radii.push_back(R);
@@ -209,23 +205,23 @@ FishGillVessel::createSurfaces()
   ELog::RegMethod RegA("FishGillVessel","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,pvIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin-Y*(frontClear+frontThick+frontWaterThick),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(frontThick+frontWaterThick),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*frontWaterThick,Y);
 
   // This could be a copy of the exterior of Plate target
-  ModelSupport::buildCylinder(SMap,pvIndex+8,Origin,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,mainRadius);
   // clearance gap
-  ModelSupport::buildCylinder(SMap,pvIndex+18,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,Y,
 			      mainRadius+clearRadialThick);
   
   // Dividing plane
-  ModelSupport::buildPlane(SMap,pvIndex+3,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
 
-  int PV(pvIndex);
+  int PV(buildIndex);
   Geometry::Vec3D CPt(Origin);
   for(size_t i=0;i<length.size();i++)
     {
@@ -256,20 +252,20 @@ FishGillVessel::createSurfaces()
       PV+=100;
     }
   
-  ModelSupport::buildPlane(SMap,pvIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(waterHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(waterHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,pvIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(waterHeight/2.0+taVertThick),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(waterHeight/2.0+taVertThick),Z);
 
 
-  ModelSupport::buildPlane(SMap,pvIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
      Origin-Z*(waterHeight/2.0+taVertThick+clearVertThick),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
      Origin+Z*(waterHeight/2.0+taVertThick+clearVertThick),Z);
 
   return;
@@ -290,73 +286,73 @@ FishGillVessel::createObjects(Simulation& System,
   
   const std::string FFace=TarObj.getLinkString(frontIndex);
   // Front water space
-  Out=ModelSupport::getComposite(SMap,pvIndex,"21 5 -6 -8 ")+FFace;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 5 -6 -8 ")+FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
   
   // Void
-  Out=ModelSupport::getComposite(SMap,pvIndex,"1 -11 ((-27 25 -26) : -18) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 ((-27 25 -26) : -18) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Wal
-  Out=ModelSupport::getComposite(SMap,pvIndex,"11 -21 -17 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -21 -17 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"21 -8 6 -16 ")+FFace;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -8 6 -16 ")+FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"21 -8 -5 15 ")+FFace;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -8 -5 15 ")+FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"11 -8 16 -26 ")+FFace;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -8 16 -26 ")+FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"11 -8 -15 25 ")+FFace;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -8 -15 25 ")+FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"1 -18 ")+FFace;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -18 ")+FFace;
   addOuterUnionSurf(Out);
   
-  int PV(pvIndex);
+  int PV(buildIndex);
 
   // Note special first surface Special for first contact:
-  std::string frontSurf=ModelSupport::getComposite(SMap,pvIndex," 21 ");
-  const std::string overLap=ModelSupport::getComposite(SMap,pvIndex," 1 ");
-  const std::string IRadius=ModelSupport::getComposite(SMap,pvIndex," 8 ");
+  std::string frontSurf=ModelSupport::getComposite(SMap,buildIndex," 21 ");
+  const std::string overLap=ModelSupport::getComposite(SMap,buildIndex," 1 ");
+  const std::string IRadius=ModelSupport::getComposite(SMap,buildIndex," 8 ");
 
   for(size_t i=0;i<length.size();i++)
     {
       // WATER
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,"-3M -2 -7 5M -6M 8M ");
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,"-3M -2 -7 5M -6M 8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,"3M -2 -7 5M -6M 8M ");
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,"3M -2 -7 5M -6M 8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
 
       // TA layer
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-3M -2 -17 15M -16M (7: -5M :6M)  8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "3M -2 -17 15M -16M (7: -5M :6M)  8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
       
       // Clear
       if (!i)
-	frontSurf=ModelSupport::getComposite(SMap,pvIndex," 11 ");	
+	frontSurf=ModelSupport::getComposite(SMap,buildIndex," 11 ");	
 
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-3M -2 -27 25M -26M (17: -15M :16M) 8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "3M -2 -27 25M -26M (17: -15M : 16M) 8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,"-2 -27 25M -26M ");
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,"-2 -27 25M -26M ");
       if (i)
 	addOuterUnionSurf(Out+frontSurf);
       else
@@ -368,17 +364,17 @@ FishGillVessel::createObjects(Simulation& System,
 
   // WRAP ROUND CLEARANCE:
   PV-=100;
-  Out=ModelSupport::getComposite(SMap,pvIndex,PV,"11 -18 (-25:26) -2M");
+  Out=ModelSupport::getComposite(SMap,buildIndex,PV,"11 -18 (-25:26) -2M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+IRadius));
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,pvIndex," 11 -8 (-25 : 26) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -8 (-25 : 26) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FFace));
 
 
   // BACKPLATE:
   const std::string BFace=TarObj.getLinkString(2);
-  Out=ModelSupport::getComposite(SMap,pvIndex,PV," -8 -2M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,PV," -8 -2M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BFace));
   
   
@@ -395,15 +391,15 @@ FishGillVessel::createLinks()
   ELog::RegMethod RegA("FishGillVessel","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(frontClear+frontThick+frontWaterThick),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(pvIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   // set Links :: Inner links:
   
   FixedComp::setConnect(7,Origin-Z*(waterHeight/2.0),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(pvIndex+5));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(8,Origin+Z*(waterHeight/2.0),-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(pvIndex+6));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
   return;
 }
 

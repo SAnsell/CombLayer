@@ -84,8 +84,7 @@ BulletDivider::BulletDivider(const std::string& Key,const int Index,
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key+StrFunc::makeString(Index),6),
   ID(Index),baseName(Key),
-  divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(divIndex+1),divDirection(sideDir)
+  divDirection(sideDir)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,8 +95,8 @@ BulletDivider::BulletDivider(const std::string& Key,const int Index,
 
 BulletDivider::BulletDivider(const BulletDivider& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  ID(A.ID),baseName(A.baseName),divIndex(A.divIndex),
-  cellIndex(A.cellIndex),divDirection(A.divDirection),
+  ID(A.ID),baseName(A.baseName),
+  divDirection(A.divDirection),
   YStep(A.YStep),radii(A.radii),length(A.length),
   endPts(A.endPts),wallThick(A.wallThick),wallMat(A.wallMat)
   /*!
@@ -118,7 +117,6 @@ BulletDivider::operator=(const BulletDivider& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       YStep=A.YStep;
       radii=A.radii;
       length=A.length;
@@ -224,12 +222,12 @@ BulletDivider::createSurfaces()
   
   // Dividing plane
   const Geometry::Vec3D XDir= (divDirection>0) ? X : -X;
-  ModelSupport::buildPlane(SMap,divIndex+3,Origin,XDir);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,XDir);
 
     // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,divIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
 
-  int DV(divIndex);
+  int DV(buildIndex);
   Geometry::Vec3D CPt(Origin);
   double tAngle(0.0);
   for(size_t i=0;i<length.size();i++)
@@ -291,20 +289,20 @@ BulletDivider::createObjects(Simulation& System,
   const std::string innerRadii=TarObj.getLinkString(radialSide);
   const std::string vertCut=VesselObj.getLinkString(topSide)+
     VesselObj.getLinkString(baseSide);
-  int DV(divIndex);
+  int DV(buildIndex);
 
   // Note special first surface Special for first contact:
   std::string frontSurf=
-    ModelSupport::getComposite(SMap,divIndex," 1 ")+innerRadii;
+    ModelSupport::getComposite(SMap,buildIndex," 1 ")+innerRadii;
 
   for(size_t i=0;i<length.size();i++)
     {
       // TA 
-      Out=ModelSupport::getComposite(SMap,DV,divIndex,"-2 3M -17 7");
+      Out=ModelSupport::getComposite(SMap,DV,buildIndex,"-2 3M -17 7");
       Out+=frontSurf+vertCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   
-      Out=ModelSupport::getComposite(SMap,DV,divIndex," -2 -17 7 ");
+      Out=ModelSupport::getComposite(SMap,DV,buildIndex," -2 -17 7 ");
       addOuterUnionSurf(Out+frontSurf+vertCut);
       
       frontSurf=ModelSupport::getComposite(SMap,DV," 2 ");
