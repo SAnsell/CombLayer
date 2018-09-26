@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   phitsTallyInc/TGShow.h
+ * File:   testInclude/testGroupRange.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,42 +19,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef phitsSystem_TGShow_h
-#define phitsSystem_TGShow_h
+#ifndef testGroupRange_h
+#define testGroupRange_h 
 
-namespace phitsSystem
-{
 /*!
-  \class TGShow
+  \class testGroupRange 
+  \brief Test class for the groupRange class
   \version 1.0
-  \date Septebmer 2018
-  \author S. Ansell
-  \brief 2d plot for phits
+  \date September 2018
+  \author S.Ansell
+  
+
 */
 
-class TGShow : public phitsTally
+class testGroupRange 
 {
- private:
+private:
 
-  MeshXYZ mesh;                     ///< Mesh volume
-  int axisDirection;                ///< Axis direction xy,yz,xz
-  int trcl;                         ///< transform number
+  //Tests 
+  int testGetNext();
+  int testInsert();
+  int testMerge();
   
- public:
+public:
 
-  explicit TGShow(const int);
-  TGShow(const TGShow&);
-  virtual TGShow* clone() const;  
-  TGShow& operator=(const TGShow&);
-  virtual ~TGShow();
-     
-  void setIndex(const std::array<size_t,3>&);
-  void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  
-  virtual void write(std::ostream&) const;
+  testGroupRange();
+  ~testGroupRange();
+
+  int applyTest(const int extra);
   
 };
-
-}
 
 #endif

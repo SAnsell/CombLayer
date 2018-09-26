@@ -72,6 +72,44 @@ phitsTally::phitsTally(const int ID)  :
   */
 {}
 
+phitsTally::phitsTally(const std::string& KName,const int ID)  :
+  keyName(KName),idNumber(ID)
+  /*!
+    Constructor 
+    \param KName :: keyname
+    \param ID :: phitsTally ID number
+  */
+{}
+
+phitsTally::phitsTally(const phitsTally& A) : 
+  keyName(A.keyName),idNumber(A.idNumber),
+  comments(A.comments),epsFlag(A.epsFlag),
+  vtkFlag(A.vtkFlag),vtkFormat(A.vtkFormat),fileName(A.fileName)
+  /*!
+    Copy constructor
+    \param A :: phitsTally to copy
+  */
+{}
+
+phitsTally&
+phitsTally::operator=(const phitsTally& A)
+  /*!
+    Assignment operator
+    \param A :: phitsTally to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      comments=A.comments;
+      epsFlag=A.epsFlag;
+      vtkFlag=A.vtkFlag;
+      vtkFormat=A.vtkFormat;
+      fileName=A.fileName;
+    }
+  return *this;
+}
+
 
 phitsTally*
 phitsTally::clone() const

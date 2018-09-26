@@ -58,7 +58,7 @@ class T3DShow : public phitsTally
   void setGridMesh() { meshType=10; }  ///< Set as a grid [default] mesh
   
   void setParticle(const std::string&);
-  virtual void setDoseType(const std::string&,const std::string&);
+  //  virtual void setDoseType(const std::string&,const std::string&);
  
   void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -73,7 +73,6 @@ class T3DShow : public phitsTally
   const std::array<size_t,3>& getNPt() const { return Pts; }
   
   void writeCoordinates(std::ostream&) const;
-  virtual void writeAuxScore(std::ostream&) const;
   virtual void write(std::ostream&) const;
   
 };

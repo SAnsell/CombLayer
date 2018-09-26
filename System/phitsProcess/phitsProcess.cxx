@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcess/flukaProcess.cxx
+ * File:   phitsProcess/phitsProcess.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
