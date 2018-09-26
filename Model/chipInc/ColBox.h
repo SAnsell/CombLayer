@@ -39,8 +39,6 @@ class ColBox : public attachSystem::ContainedComp,
 {
  private:
   
-  const int colIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
  
   int insertCell;               ///< Cell to insert into

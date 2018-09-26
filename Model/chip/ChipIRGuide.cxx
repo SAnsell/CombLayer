@@ -100,8 +100,7 @@ namespace hutchSystem
 ChipIRGuide::ChipIRGuide(const std::string& Key) : 
   attachSystem::TwinComp(Key,12),
   attachSystem::ContainedGroup("inner","outer","leftwall","rightwall"),
-  guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),Filter("chipFilter"),nLayers(0),
+  Filter("chipFilter"),nLayers(0),
   nConcLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -111,7 +110,6 @@ ChipIRGuide::ChipIRGuide(const std::string& Key) :
 
 ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
-  guideIndex(A.guideIndex),cellIndex(A.cellIndex),
   Filter(A.Filter),beamAngle(A.beamAngle),sideBeamAngle(A.sideBeamAngle),
   shutterAngle(A.shutterAngle),gLen(A.gLen),hYStart(A.hYStart),
   hFWallThick(A.hFWallThick),xShift(A.xShift),zShift(A.zShift),
@@ -157,7 +155,6 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
     {
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
-      cellIndex=A.cellIndex;
       Filter=A.Filter;
       beamAngle=A.beamAngle;
       sideBeamAngle=A.sideBeamAngle;
@@ -475,7 +472,7 @@ ChipIRGuide::createLiner(const int index,const double offset)
 {
   ELog::RegMethod RegA("ChipIRGuide","createLiner");
 
-  const int GI(guideIndex+index);
+  const int GI(buildIndex+index);
   // INNER VOID CORE [+ve X : +ve z]
   ModelSupport::buildPlane(SMap,GI+3,
 			   bEnter-bX*(innerALWall+offset),
@@ -508,8 +505,8 @@ ChipIRGuide::createSurfaces(const shutterSystem::GeneralShutter& GS)
 {
   ELog::RegMethod RegA("ChipIRGuide","createSurface(GeneralShutter)");
  
-  SMap.addMatch(guideIndex+100,GS.getDivideSurf());
-  SMap.addMatch(guideIndex+1,monoWallSurf);
+  SMap.addMatch(buildIndex+100,GS.getDivideSurf());
+  SMap.addMatch(buildIndex+1,monoWallSurf);
   createSurfacesCommon();
 
   return;
@@ -524,8 +521,8 @@ ChipIRGuide::createSurfaces()
 {
   ELog::RegMethod RegA("ChipIRGuide","createSurface(void)");
   const double surfRadius(200.0);
-  ModelSupport::buildPlane(SMap,guideIndex+100,Origin-Y*surfRadius,-Y);
-  ModelSupport::buildCylinder(SMap,guideIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin-Y*surfRadius,-Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+1,
 			      Origin-Y*surfRadius,Z,surfRadius);
   createSurfacesCommon();
 
@@ -540,9 +537,9 @@ ChipIRGuide::createSurfacesCommon()
 {
   ELog::RegMethod RegA("ChipIRGuide","createSurfaceCommon");
  
-  ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*gLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*gLen,Y);
 
-  ModelSupport::buildPlane(SMap,guideIndex+1002,
+  ModelSupport::buildPlane(SMap,buildIndex+1002,
 			   Origin+Y*(gLen-hFWallThick),Y);
 
   createLiner(0,0.0); // Inner vacuum
@@ -553,85 +550,85 @@ ChipIRGuide::createSurfacesCommon()
   //  [sides]
   Geometry::Vec3D rX(X);
   Geometry::Quaternion::calcQRotDeg(-leftSteelAngle,Z).rotate(rX);
-  ModelSupport::buildPlane(SMap,guideIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*leftSteelInner,rX);
   rX=X;
   Geometry::Quaternion::calcQRotDeg(rightSteelAngle,Z).rotate(rX);
-  ModelSupport::buildPlane(SMap,guideIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*rightSteelInner,rX);
-  ModelSupport::buildPlane(SMap,guideIndex+113,
+  ModelSupport::buildPlane(SMap,buildIndex+113,
 			   Origin-X*leftSteelFlat,X);
-  ModelSupport::buildPlane(SMap,guideIndex+114,
+  ModelSupport::buildPlane(SMap,buildIndex+114,
 			   Origin+X*rightSteelFlat,X);
   // Steel follows guide vertically:
-  ModelSupport::buildPlane(SMap,guideIndex+115,
+  ModelSupport::buildPlane(SMap,buildIndex+115,
 			   Origin-Z*floorSteel,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+116,
+  ModelSupport::buildPlane(SMap,buildIndex+116,
 			   Origin+Z*roofSteel,bZ);
 
   // Concrete:
-  ModelSupport::buildPlane(SMap,guideIndex+204,Origin+X*rightConcFlat,X);
-  ModelSupport::buildPlane(SMap,guideIndex+205,Origin-Z*floorConc,Z);
-  ModelSupport::buildPlane(SMap,guideIndex+206,Origin+Z*roofConc,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*rightConcFlat,X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*floorConc,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*roofConc,Z);
 
   // Left Wall
   rX=X;
   Geometry::Quaternion::calcQRotDeg(-leftConcAngle,Z).rotate(rX);  
-  ModelSupport::buildPlane(SMap,guideIndex+213,
+  ModelSupport::buildPlane(SMap,buildIndex+213,
 			   Origin-X*leftConcInner,rX);
   // Block wall [Left only]:
-  ModelSupport::buildPlane(SMap,guideIndex+303,
+  ModelSupport::buildPlane(SMap,buildIndex+303,
 			   Origin-X*(leftConcInner+blockWallThick),rX);
-  ModelSupport::buildPlane(SMap,guideIndex+306,
+  ModelSupport::buildPlane(SMap,buildIndex+306,
 			   Origin+Z*(blockWallHeight-floorConc),Z);
-  ModelSupport::buildPlane(SMap,guideIndex+302,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+
 			   Y*(gLen+blockWallLen),Y);
 
   // Extra wall on left:
   rX=X;
   Geometry::Quaternion::calcQRotDeg(-extraWallSideAngle,Z).rotate(rX);  
-  ModelSupport::buildPlane(SMap,guideIndex+403,Origin-X*
+  ModelSupport::buildPlane(SMap,buildIndex+403,Origin-X*
 			   (leftConcInner+blockWallThick+extraWallThick),rX);
-  ModelSupport::buildPlane(SMap,guideIndex+406,
+  ModelSupport::buildPlane(SMap,buildIndex+406,
 			   Origin+Z*(extraWallHeight-floorConc),Z);
   // Dont add gLen to extra wall - can be shorter than guide
   rX=X;
   Geometry::Quaternion::calcQRotDeg(extraWallEndAngle,Z).rotate(rX);  
-  ModelSupport::buildPlane(SMap,guideIndex+402,Origin+Y*extraWallLen,rX);
+  ModelSupport::buildPlane(SMap,buildIndex+402,Origin+Y*extraWallLen,rX);
   
 
   // Right Wall [W2 side]
   rX=X;
   Geometry::Quaternion::calcQRotDeg(rightConcAngle,Z).rotate(rX);  
-  ModelSupport::buildPlane(SMap,guideIndex+214,
+  ModelSupport::buildPlane(SMap,buildIndex+214,
 			   Origin+X*rightConcInner,rX);
 
 
   // Extra wall on right [W2 side]:
-  ModelSupport::buildPlane(SMap,guideIndex+503,
+  ModelSupport::buildPlane(SMap,buildIndex+503,
 			   Origin+X*(rightConcInner+rightWallThick),rX);
-  ModelSupport::buildPlane(SMap,guideIndex+506,
+  ModelSupport::buildPlane(SMap,buildIndex+506,
 			   Origin+Z*(rightWallHeight-floorConc),Z);
-  ModelSupport::buildPlane(SMap,guideIndex+502,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+502,Origin+
 			   Y*rightWallLen,Y);
 
   // RemedialWall wall on right [W2 side]:
   // extended out from 214/204
-  ModelSupport::buildPlane(SMap,guideIndex+604,
+  ModelSupport::buildPlane(SMap,buildIndex+604,
 			   Origin+X*(rightConcFlat+remedialWestWallThick),X);
-  ModelSupport::buildPlane(SMap,guideIndex+614,
+  ModelSupport::buildPlane(SMap,buildIndex+614,
 			   Origin+X*(rightConcInner+remedialWestWallThick),rX);
-  ModelSupport::buildPlane(SMap,guideIndex+606,
+  ModelSupport::buildPlane(SMap,buildIndex+606,
 			   Origin+Z*(remedialWallHeight-floorConc),Z);
 
 
   // Wedge shielding piece on TSA side
 //  rX=X;
 //  Geometry::Quaternion::calcQRotDeg(leftWedgeAngle,Z).rotate(rX);  
-//  ModelSupport::buildPlane(SMap,guideIndex+603,
+//  ModelSupport::buildPlane(SMap,buildIndex+603,
 //			   Origin-X*(leftConcInner+blockWallThick+
 //				     extraWallThick+leftWedgeThick),rX);
-//ModelSupport::buildPlane(SMap,guideIndex+606,
+//ModelSupport::buildPlane(SMap,buildIndex+606,
 //                          Origin+Z*(leftWedgeHeight-floorConc),Z);
 
   return;
@@ -649,10 +646,10 @@ ChipIRGuide::calcTallyPlanes(const int frontFlag,
 {
   Planes.clear();
   for(int i=3;i<=6;i++)
-    Planes.push_back(SMap.realSurf(guideIndex+i));
-  Planes.push_back(-SMap.realSurf(guideIndex+100));
+    Planes.push_back(SMap.realSurf(buildIndex+i));
+  Planes.push_back(-SMap.realSurf(buildIndex+100));
   return (frontFlag==1) ? 
-    SMap.realSurf(guideIndex+1) : SMap.realSurf(guideIndex+2);
+    SMap.realSurf(buildIndex+1) : SMap.realSurf(buildIndex+2);
 }
 
 void
@@ -667,13 +664,13 @@ ChipIRGuide::createObjects(Simulation& System)
       
   std::string Out;
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-100 1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-100 1 -2 3 -4 5 -6");
   voidCells.push_back(cellIndex);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // Cell liner:
   const std::string BasicOut=
-    ModelSupport::getComposite(SMap,guideIndex,"-100 1 -2 ");
-  int GI(guideIndex);
+    ModelSupport::getComposite(SMap,buildIndex,"-100 1 -2 ");
+  int GI(buildIndex);
   for(size_t i=0;i<LMat.size();i++)
     {
       Out=BasicOut+
@@ -687,7 +684,7 @@ ChipIRGuide::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,GI," (-3:4:-5:6) ");
     
   // First Layer
-  Out+=ModelSupport::getComposite(SMap,guideIndex,
+  Out+=ModelSupport::getComposite(SMap,buildIndex,
        "-100 1 -2 13 113 -14 -114 115 -116 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
@@ -695,64 +692,64 @@ ChipIRGuide::createObjects(Simulation& System)
 
   // Concrete:
   // Roof:
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 116 -206 213 -204 -214");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
 
   // Floor
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 -115 205 213 -204 -214 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
 
   // Right Wall
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100  1 -1002 115 -116 (14:114) -204 -214 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   //  voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("ConcRight",cellIndex-1));
 
   // Left Wall
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 115 -116 (-13:-113) 213 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("ConcLeft",cellIndex-1));
 
   // BlockWall
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 205 -306 -213 303 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 306 -206 -213 303 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Extra left Wall
   // everything below wall height to limit of wall length
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 402 205 -406 -303 403 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   //above wall height, below roof
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 406 -206 -303 403 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // below wall height beyond end of wall length
 
   // Extra right Wall [W2 side]
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -502 205 -506 214 -503 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
 
   // REMEDIAL WALL West [W2 side]
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 (214:204) (502:503:506) "
 				 "205 -606 -604 -614 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcW2",cellIndex-1));
 
     // REMEDIAL ROOF to the wall
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 -214 -204 213 206 -606");
   System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcRoof",cellIndex-1));
@@ -760,25 +757,25 @@ ChipIRGuide::createObjects(Simulation& System)
 
 
  //above wall height, below roof
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -502 506 -206 214 -503 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Add full outer system
   // Inner 
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -2 113 -114 115 -116 ");
   addOuterSurf("inner",Out);  
 
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 213 -204 -214 205 -606 ");
   addOuterSurf("outer",Out);  
   
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
                                  "-100 1 205 -206 -213 -302 403 (402:303)");
   addOuterSurf("leftwall",Out);
 
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
                                  "-100 1 -1002 -614 -604 (214:204) 205 -606 ");
   addOuterSurf("rightwall",Out);
 
@@ -795,7 +792,7 @@ ChipIRGuide::addInsertPlate(Simulation& System)
   ELog::RegMethod RegA("ChipIRGuide","addInsertPlate");
 
   ScatterPlate SP("chipGPlate");
-  SP.addBoundarySurf(ModelSupport::getComposite(SMap,guideIndex,"3 -4 5 -6"));
+  SP.addBoundarySurf(ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6"));
   if (!voidCells.empty())
     SP.addInsertCell(voidCells.front());
 
@@ -829,27 +826,27 @@ ChipIRGuide::layerProcess(Simulation& System)
       
       // Cell Specific:
       DA.setCellN(layerCells["SteelInner"]);
-      DA.setOutNum(cellIndex,guideIndex+801);
-      const int linerOffset(guideIndex
+      DA.setOutNum(cellIndex,buildIndex+801);
+      const int linerOffset(buildIndex
 			    +20*static_cast<int>(LThick.size()));
 
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
 
       surroundRule.setSurfPair(SMap.realSurf(linerOffset+3),
-			       SMap.realSurf(guideIndex+13));
+			       SMap.realSurf(buildIndex+13));
       surroundRule.setSurfPair(SMap.realSurf(linerOffset+3),
-			       SMap.realSurf(guideIndex+113));
+			       SMap.realSurf(buildIndex+113));
       surroundRule.setSurfPair(SMap.realSurf(linerOffset+4),
-			       SMap.realSurf(guideIndex+14));
+			       SMap.realSurf(buildIndex+14));
       surroundRule.setSurfPair(SMap.realSurf(linerOffset+4),
-			       SMap.realSurf(guideIndex+114));
+			       SMap.realSurf(buildIndex+114));
       surroundRule.setSurfPair(SMap.realSurf(linerOffset+5),
-			       SMap.realSurf(guideIndex+115));
+			       SMap.realSurf(buildIndex+115));
       surroundRule.setSurfPair(SMap.realSurf(linerOffset+6),
-			       SMap.realSurf(guideIndex+116));
+			       SMap.realSurf(buildIndex+116));
       OutA=ModelSupport::getComposite(SMap,linerOffset," (-3:4:-5:6) ");
-      OutB=ModelSupport::getComposite(SMap,guideIndex,
+      OutB=ModelSupport::getComposite(SMap,buildIndex,
 				      " 13 113 -14 -114 115 -116 ");
 
       surroundRule.setInnerRule(OutA);
@@ -880,9 +877,9 @@ ChipIRGuide::layerProcess(Simulation& System)
 	BX={{213,13},{213,113}};
 	
       cellIndex=DA.procSurfDivide(System,SMap,layerCells["ConcRight"],
-			guideIndex,1600,cellIndex,AX,"(14:114)","-214 -204");
+			buildIndex,1600,cellIndex,AX,"(14:114)","-214 -204");
       cellIndex=DA.procSurfDivide(System,SMap,layerCells["ConcLeft"],
-			guideIndex,2400,cellIndex,BX,"213","(-13:-113)");
+			buildIndex,2400,cellIndex,BX,"213","(-13:-113)");
     }
 
   // ----------------------
@@ -902,7 +899,7 @@ ChipIRGuide::layerProcess(Simulation& System)
       const std::vector<std::pair<int,int> > 
 	AX={{214,614},{204,604}};
       cellIndex=DA.procSurfDivide(System,SMap,layerCells["RWConcW2"],
-			guideIndex,3000,cellIndex,AX,
+			buildIndex,3000,cellIndex,AX,
 			"(204:214)","-614 -604");
     }
   
@@ -924,15 +921,15 @@ ChipIRGuide::writeMasterPoints()
   std::vector<Geometry::Plane*> boxSurf;
   // not realPtr throws
   for(int i=0;i<4;i++)
-    boxSurf.push_back(SMap.realPtr<Geometry::Plane>(guideIndex+3+i));
+    boxSurf.push_back(SMap.realPtr<Geometry::Plane>(buildIndex+3+i));
 
   // Points are a-b, c-d hence swap b/c
   std::swap(boxSurf[1],boxSurf[2]);
 
   // get front and back
-  const Geometry::Surface* FSurf=SMap.realSurfPtr(guideIndex+1);
-  const Geometry::Surface* BSurf=SMap.realSurfPtr(guideIndex+2);
-  const Geometry::Surface* testSurf=SMap.realSurfPtr(guideIndex+100);
+  const Geometry::Surface* FSurf=SMap.realSurfPtr(buildIndex+1);
+  const Geometry::Surface* BSurf=SMap.realSurfPtr(buildIndex+2);
+  const Geometry::Surface* testSurf=SMap.realSurfPtr(buildIndex+100);
 
   std::vector<Geometry::Vec3D> Out;
   // Calculate the points at the guides  [FrontSurf]
@@ -967,7 +964,7 @@ ChipIRGuide::writeMasterPoints()
 	Out[i]+Out[(i+1) % 4]+Out[i+4]+Out[4+((i+1) % 4)];
       Cp/=4.0;
       const Geometry::Plane* PX=
-	SMap.realPtr<Geometry::Plane>(gIndex[i]+guideIndex);
+	SMap.realPtr<Geometry::Plane>(gIndex[i]+buildIndex);
       FixedComp::setConnect(cNum[i],Cp,PX->getNormal()*signV);      
     }
   
@@ -1003,17 +1000,17 @@ ChipIRGuide::createLinks()
   FixedComp::setConnect(1,Origin+Y*gLen,Y);
   FixedComp::setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
   
-  FixedComp::setLinkSurf(1,SMap.realSurf(guideIndex+2));  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+3));  
-  FixedComp::setLinkSurf(3,SMap.realSurf(guideIndex+4));  
-  FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+6));  
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));  
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));  
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));  
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(guideIndex+1002));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1002));
 
   // OutersideWalls
-  FixedComp::setLinkSurf(7,-SMap.realSurf(guideIndex+213));
-  FixedComp::setLinkSurf(8,SMap.realSurf(guideIndex+604));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+213));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+604));
       
 
 
@@ -1035,14 +1032,14 @@ ChipIRGuide::exitWindow(const double Dist,
 {
   window.clear();
   // Not valid numbers:
-  window.push_back(SMap.realSurf(guideIndex+23));
-  window.push_back(SMap.realSurf(guideIndex+24));
-  window.push_back(SMap.realSurf(guideIndex+25));
-  window.push_back(SMap.realSurf(guideIndex+26));
+  window.push_back(SMap.realSurf(buildIndex+23));
+  window.push_back(SMap.realSurf(buildIndex+24));
+  window.push_back(SMap.realSurf(buildIndex+25));
+  window.push_back(SMap.realSurf(buildIndex+26));
   // Note cant rely on exit point because that is the 
   // virtual 46 degree exit point.
   Pt=getExit()+bY*Dist; 
-  return SMap.realSurf(guideIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
 
 
@@ -1055,7 +1052,7 @@ ChipIRGuide::addWallCuts(Simulation& System)
 {
   ELog::RegMethod RegA("ChipIRGuide","makeWallCuts");
 
-  const int GI(guideIndex+static_cast<int>(LMat.size())*20);
+  const int GI(buildIndex+static_cast<int>(LMat.size())*20);
   std::string Out;
 
   for(std::shared_ptr<constructSystem::WallCut> WC : WCObj)
@@ -1065,17 +1062,17 @@ ChipIRGuide::addWallCuts(Simulation& System)
       if (kN=="SteelInnerRight")
 	{
 	  WC->addInsertCell(layerCells["SteelInner"]);
-	  Out=ModelSupport::getComposite(SMap,guideIndex,GI,"4M -14");
+	  Out=ModelSupport::getComposite(SMap,buildIndex,GI,"4M -14");
 	}
       else if (kN=="SteelInnerLeft")
 	{
 	  WC->addInsertCell(layerCells["SteelInner"]);
-	  Out=ModelSupport::getComposite(SMap,guideIndex,GI,"-3M 13");
+	  Out=ModelSupport::getComposite(SMap,buildIndex,GI,"-3M 13");
 	}
       else if (kN=="SteelOuterLeft")
 	{
 	  WC->addInsertCell(layerCells["SteelInner"]);
-	  Out=ModelSupport::getComposite(SMap,guideIndex,GI,"-3M 113");
+	  Out=ModelSupport::getComposite(SMap,buildIndex,GI,"-3M 113");
 	}
       else if (kN=="SteelInner")
 	{
@@ -1085,7 +1082,7 @@ ChipIRGuide::addWallCuts(Simulation& System)
       else if (kN=="SteelRightVertical")
 	{
 	  WC->addInsertCell(layerCells["SteelInner"]);
-	  Out=ModelSupport::getComposite(SMap,guideIndex," -14 -114 115 -116");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -14 -114 115 -116");
 	}
 
       else

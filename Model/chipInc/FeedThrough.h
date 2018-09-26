@@ -40,8 +40,6 @@ class FeedThrough : public attachSystem::FixedComp
  private:
   
   const size_t ID;              ///< Identity number
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   ModelSupport::BoxLine CollTrack;   ///< Collimator track
   

@@ -72,8 +72,6 @@ class ChipIRHutch : public attachSystem::FixedGroup,
 {
  private:
   
-  const int hutchIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Index of cells
   int populated;                ///< populated or not
 
   std::shared_ptr<PreCollimator> PreColObj;      ///< PreCollimator
