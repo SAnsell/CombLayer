@@ -40,8 +40,6 @@ class BeFilter : public attachSystem::ContainedComp,
 {
  private:
   
-  const int beFilterIndex;        ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double width;                   ///< width of Be filter
   double height;                  ///< height of Be filter

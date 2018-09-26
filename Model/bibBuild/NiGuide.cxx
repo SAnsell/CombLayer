@@ -3,7 +3,7 @@
  
  * File:   bibBuild/NiGuide.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,9 +76,7 @@ namespace bibSystem
 {
 
 NiGuide::NiGuide(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  niGuideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(niGuideIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -87,7 +85,6 @@ NiGuide::NiGuide(const std::string& Key) :
 
 NiGuide::NiGuide(const NiGuide& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  niGuideIndex(A.niGuideIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),
   length(A.length),wallThick(A.wallThick),wallMat(A.wallMat)
   /*!
@@ -108,7 +105,6 @@ NiGuide::operator=(const NiGuide& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -178,19 +174,19 @@ NiGuide::createSurfaces(const attachSystem::FixedComp& FCA,
 {
   ELog::RegMethod RegA("NiGuide","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,niGuideIndex+2,Origin+Y*length,Y);    
-  ModelSupport::buildPlane(SMap,niGuideIndex+3,Origin-X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,niGuideIndex+4,Origin+X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,niGuideIndex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,niGuideIndex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);    
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);  
   
-  ModelSupport::buildPlane(SMap,niGuideIndex+11,Origin-X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,niGuideIndex+12,Origin+X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,niGuideIndex+13,Origin-Z*(height/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,niGuideIndex+14,Origin+Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+Z*(height/2.0+wallThick),Z);  
   
-  SMap.addMatch(niGuideIndex+21,FCA.getLinkSurf(sideIndexA)); 
-  SMap.addMatch(niGuideIndex+22,FCB.getLinkSurf(sideIndexB)); 
+  SMap.addMatch(buildIndex+21,FCA.getLinkSurf(sideIndexA)); 
+  SMap.addMatch(buildIndex+22,FCB.getLinkSurf(sideIndexB)); 
 
 
   return; 
@@ -209,16 +205,16 @@ NiGuide::createObjects(Simulation& System,
   std::string Out;
 
   // NiGuide
-  Out=ModelSupport::getComposite(SMap,niGuideIndex,"21 22 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 22 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,niGuideIndex,"21 22 -2 11 -12 13 -14  (-3:4:-5:6)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 22 -2 11 -12 13 -14  (-3:4:-5:6)");
   Out+=CC.getContainer(); /// Con esto se incluye tooooodo lo que hay en el interior de esta celda en la guia
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   
   
-  Out=ModelSupport::getComposite(SMap,niGuideIndex,"21 22 -2 11 -12 13 -14" ); /** Hay que añadir una superficie externa*/
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 22 -2 11 -12 13 -14" ); /** Hay que añadir una superficie externa*/
   addOuterSurf(Out);
 
   return; 
@@ -244,12 +240,12 @@ NiGuide::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);  
 
   // WHY HAVENT I WRITTEN AutoLinkSurf()
-  FixedComp::setLinkSurf(0,-SMap.realSurf(niGuideIndex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
-  FixedComp::setLinkSurf(1,SMap.realSurf(niGuideIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(niGuideIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(niGuideIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(niGuideIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(niGuideIndex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   
   return;
 }

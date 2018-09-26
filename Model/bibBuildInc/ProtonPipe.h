@@ -40,8 +40,6 @@ class ProtonPipe : public attachSystem::ContainedComp,
 {
  private:
   
-  const int protonIndex;          ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
 
   double radius;                  ///< Radius of inner pipe

@@ -40,8 +40,6 @@ class NiGuide : public attachSystem::ContainedComp,
 {
  private:
   
-  const int niGuideIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double width;                   ///< width of Ni guide
   double height;                  ///< height of Ni guide

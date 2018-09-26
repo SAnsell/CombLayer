@@ -79,8 +79,7 @@ namespace bibSystem
 
 BWaterPipe::BWaterPipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),Central("BWatPipe")
+  Central("BWatPipe")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +88,6 @@ BWaterPipe::BWaterPipe(const std::string& Key)  :
 
 BWaterPipe::BWaterPipe(const BWaterPipe& A) : 
   attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   Central(A.Central),Xoffset(A.Xoffset),Yoffset(A.Yoffset),
   waterMat(A.waterMat),alMat(A.alMat),watRadius(A.watRadius),
   wallRadius(A.wallRadius),clearRadius(A.clearRadius),
@@ -111,7 +109,6 @@ BWaterPipe::operator=(const BWaterPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       Central=A.Central;
       Xoffset=A.Xoffset;
       Yoffset=A.Yoffset;

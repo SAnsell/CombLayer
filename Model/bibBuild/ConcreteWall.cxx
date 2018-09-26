@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -85,9 +84,7 @@ namespace bibSystem
 {
 
 ConcreteWall::ConcreteWall(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  wallIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(wallIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,7 +93,6 @@ ConcreteWall::ConcreteWall(const std::string& Key)  :
 
 ConcreteWall::ConcreteWall(const ConcreteWall& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  wallIndex(A.wallIndex),cellIndex(A.cellIndex),
   innerRadius(A.innerRadius),
   thickness(A.thickness),height(A.height),base(A.base),
   mat(A.mat)
@@ -118,7 +114,6 @@ ConcreteWall::operator=(const ConcreteWall& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       innerRadius=A.innerRadius;
       thickness=A.thickness;
       height=A.height;
@@ -185,15 +180,15 @@ ConcreteWall::createSurfaces(const attachSystem::FixedComp& ReflFC,
   // rotation of axis:
 
   const long int SI(std::abs(sideIndex));
-  SMap.addMatch(wallIndex+7,ReflFC.getLinkSurf(SI));
-  SMap.addMatch(wallIndex+1,ReflFC.getLinkSurf(1+((SI+1) % 3)));
-  SMap.addMatch(wallIndex+2,ReflFC.getLinkSurf(1+((SI+2) % 3)));
+  SMap.addMatch(buildIndex+7,ReflFC.getLinkSurf(SI));
+  SMap.addMatch(buildIndex+1,ReflFC.getLinkSurf(1+((SI+1) % 3)));
+  SMap.addMatch(buildIndex+2,ReflFC.getLinkSurf(1+((SI+2) % 3)));
 
-  ModelSupport::buildCylinder(SMap,wallIndex+17,Origin,Z,innerRadius);
-  ModelSupport::buildCylinder(SMap,wallIndex+27,Origin,Z,innerRadius+thickness);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,innerRadius+thickness);
 
-  ModelSupport::buildPlane(SMap,wallIndex+5,Origin-Z*base,Z);
-  ModelSupport::buildPlane(SMap,wallIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*base,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
 
 
@@ -211,17 +206,17 @@ ConcreteWall::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,wallIndex,"7 -17 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -17 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wallIndex,"17 -27 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"17 -27 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
   // Inner core separte to avoid need to track by guides
-  Out=ModelSupport::getComposite(SMap,wallIndex,"-7 5 -6 (-1:-2)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 5 -6 (-1:-2)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wallIndex,"-27 5 -6"); 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 5 -6"); 
   addOuterSurf(Out);
   addBoundarySurf(Out);
   
@@ -239,16 +234,16 @@ ConcreteWall::createLinks()
   // set Links :: Inner links:
 
   FixedComp::setConnect(0,Origin+Y*innerRadius,Z);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(wallIndex+17));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+17));
 
   FixedComp::setConnect(1,Origin+Y*(innerRadius+thickness),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(wallIndex+27));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+27));
 
   FixedComp::setConnect(2,Origin-Z*base,-Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(wallIndex+5));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(3,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(wallIndex+6));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+6));
 
   return;
 }
