@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   sinbadBuild/sinbadShield.cxx
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -43,7 +64,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -54,9 +74,7 @@ namespace sinbadSystem
 {
 
 sinbadShield::sinbadShield(const std::string& Key) : 
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  slabIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(slabIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -102,22 +120,22 @@ sinbadShield::populate(const Simulation& System)
   HM=0;
   for(size_t i=0;i<nSlab;i++)
     {
-      W=Control.EvalVar<double>(StrFunc::makeString(keyName+"WidthSlab",i));
+      W=Control.EvalVar<double>(keyName+"WidthSlab"+std::to_string(i));
       width.push_back(W);
-      L=Control.EvalDefVar<double>(StrFunc::makeString(keyName+"LengthSlab",i),
-				   lengthSlab);
+      L=Control.EvalDefVar<double>
+	(keyName+"LengthSlab"+std::to_string(i),lengthSlab);
       length.push_back(L);
       if(LM<L) 
 	LM=L;
       
       H=Control.EvalDefVar<double>
-	(StrFunc::makeString(keyName+"HeightSlab",i),heightSlab);
+	(keyName+"HeightSlab"+std::to_string(i),heightSlab);
       height.push_back(H);
       if(HM<H) 
 	HM=H;
 
       M=ModelSupport::EvalMat<int>
-	(Control,StrFunc::makeString(keyName+"MaterialSlab",i));
+	(Control,keyName+"MaterialSlab"+std::to_string(i));
       mat.push_back(M);   
     }
 
@@ -128,12 +146,12 @@ sinbadShield::populate(const Simulation& System)
 
   for(int i=0;i<detN;i++)
     {
-    DY=Control.EvalVar<double>(StrFunc::makeString("49DetectorOffSetY",i));
-    //   PY.push_back(DY);
+      DY=Control.EvalVar<double>("49DetectorOffSetY"+std::to_string(i));
+      //   PY.push_back(DY);
       // this for 49
     PY.push_back(DY+1.45);
 
-
+    
     }
   return;
 }
@@ -168,9 +186,9 @@ sinbadShield::createSurfaces()
  
   double cumThick=offSetY;
 
-  //  ModelSupport::buildPlane(SMap,slabIndex+3,Origin,Y );
-  int SI1(slabIndex);
-  int SI2(slabIndex+1000);
+  //  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,Y );
+  int SI1(buildIndex);
+  int SI2(buildIndex+1000);
 
   for(size_t i=0;i<=nSlab;i++)
    {
@@ -208,11 +226,11 @@ sinbadShield::createObjects(Simulation& System)
   std::string Out;
   std::string OutTot;
 
-  int SI2(slabIndex);
+  int SI2(buildIndex);
 
   for(size_t i=0;i<nSlab;i++)
    {
-     Out=ModelSupport::getComposite(SMap,slabIndex,SI2,"1M -2M 3M -13M 5M -6M");
+     Out=ModelSupport::getComposite(SMap,buildIndex,SI2,"1M -2M 3M -13M 5M -6M");
      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temperatureSlab,Out));
      SI2+=10; 
      // 49
@@ -220,7 +238,7 @@ sinbadShield::createObjects(Simulation& System)
 
    }
 
-   OutTot=ModelSupport::getComposite(SMap,slabIndex,SI2,
+   OutTot=ModelSupport::getComposite(SMap,buildIndex,SI2,
 				     "(1001 -1002 3 -3M 1005 -1006)");
       
 

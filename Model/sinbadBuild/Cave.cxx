@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   sinbadBuild/Cave.cxx
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -54,9 +75,7 @@ namespace sinbadSystem
 {
 
 Cave::Cave(const std::string& Key) : 
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  caveIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(caveIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -117,19 +136,19 @@ Cave::createSurfaces()
 {
   ELog::RegMethod RegA("Cave","createSurface");
 
-  ModelSupport::buildPlane(SMap,caveIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,caveIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,caveIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,caveIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,caveIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,caveIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,caveIndex+11,Origin-Y*(wallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,caveIndex+12,Origin+Y*(wallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,caveIndex+13,Origin-X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,caveIndex+14,Origin+X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,caveIndex+15,Origin-Z*(wallThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,caveIndex+16,Origin+Z*(wallThick+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wallThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wallThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wallThick+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wallThick+height/2.0),Z);
   
   return;
 }
@@ -145,14 +164,14 @@ Cave::createObjects(Simulation& System)
   ELog::RegMethod RegA("Cave","createObjects");
   std::string Out;
    
-  Out=ModelSupport::getComposite(SMap,caveIndex," 1 -2 3 -4 5 -6  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6  ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));  
-  Out=ModelSupport::getComposite(SMap,caveIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");  
 
-  Out=ModelSupport::getComposite(SMap,caveIndex," 11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
   
   return;

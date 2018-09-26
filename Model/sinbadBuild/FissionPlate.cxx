@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   sinbadBuild/FissionPlate.cxx
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -44,7 +65,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -125,13 +145,13 @@ FissionPlate::getXSurf(const long int Index) const
 {
   ELog::RegMethod RegA("FissionPlate","getXSurf");
 
-  const int SI(slabIndex+1000+(static_cast<int>(Index)-1)*10);
+  const int SI(buildIndex+1000+(static_cast<int>(Index)-1)*10);
   if (Index>0 && Index<static_cast<long int>(nXSpace)-1)
     return ModelSupport::getComposite(SMap,SI," 3 -13 ");
   if (Index==0)
-    return ModelSupport::getComposite(SMap,slabIndex,SI," 3 -13M ");
+    return ModelSupport::getComposite(SMap,buildIndex,SI," 3 -13M ");
   // right hand edge:
-  return ModelSupport::getComposite(SMap,slabIndex,SI," 3M -4 ");
+  return ModelSupport::getComposite(SMap,buildIndex,SI," 3M -4 ");
 }
 
 
@@ -145,13 +165,13 @@ FissionPlate::getZSurf(const long int Index) const
 {
   ELog::RegMethod RegA("FissionPlate","getZSurf");
   
-  const int SI(slabIndex+1000+(static_cast<int>(Index)-1)*10);
+  const int SI(buildIndex+1000+(static_cast<int>(Index)-1)*10);
   if (Index>0 && Index<static_cast<long int>(nZSpace)-1)
     return ModelSupport::getComposite(SMap,SI," 5 -15 ");
   if (Index==0)
-    return ModelSupport::getComposite(SMap,slabIndex,SI," 5 -15M ");
+    return ModelSupport::getComposite(SMap,buildIndex,SI," 5 -15M ");
   // top edge:
-  return ModelSupport::getComposite(SMap,slabIndex,SI," 5M -6 ");
+  return ModelSupport::getComposite(SMap,buildIndex,SI," 5M -6 ");
 }
 
 template<typename T>
@@ -175,9 +195,9 @@ FissionPlate::getXZ(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FissionPlate","getXZ");
 
-  const std::string LN=StrFunc::makeString(std::string("L"),dLayer);
-  const std::string XN=StrFunc::makeString(std::string("X"),I);
-  const std::string ZN=StrFunc::makeString(std::string("Z"),J);
+  const std::string LN="L"+std::to_string(dLayer);
+  const std::string XN="X"+std::to_string(I);
+  const std::string ZN="Z"+std::to_string(J);
   const std::string PreName=keyName+SubKey+LN;
   if (Control.hasVariable(PreName+XN+ZN))
     return Control.EvalVar<T>(PreName+XN+ZN);
@@ -206,8 +226,8 @@ FissionPlate::populate(const FuncDataBase& Control)
   // First determin if we have any index layers to process:
   const std::string KN=keyName+"DivIndex";
   for(size_t i=0;i<nSlab && 
-	Control.hasVariable(KN+StrFunc::makeString(i));i++)
-    DIndex.push_back(Control.EvalVar<size_t>(KN+StrFunc::makeString(i)));
+	Control.hasVariable(KN+std::to_string(i));i++)
+    DIndex.push_back(Control.EvalVar<size_t>(KN+std::to_string(i)));
 
   if (DIndex.empty() || 
       (*std::max_element(DIndex.begin(),DIndex.end())>=nSlab))
@@ -233,14 +253,14 @@ FissionPlate::populate(const FuncDataBase& Control)
   double XV,ZV;
   for(size_t i=0;i<nXSpace-1;i++)
     {
-      XV=Control.EvalVar<double>(keyName+"XPt"+StrFunc::makeString(i));
+      XV=Control.EvalVar<double>(keyName+"XPt"+std::to_string(i));
       XPts.push_back(XV);
     }
   std::sort(XPts.begin(),XPts.end());
   
   for(size_t i=0;i<nZSpace-1;i++)
     {
-      ZV=Control.EvalVar<double>(keyName+"ZPt"+StrFunc::makeString(i));
+      ZV=Control.EvalVar<double>(keyName+"ZPt"+std::to_string(i));
       ZPts.push_back(ZV);
     }
   std::sort(ZPts.begin(),ZPts.end());
@@ -284,14 +304,14 @@ FissionPlate::createSurfaces()
   LayerPlate::createSurfaces();
   if (!nDivide) return;
 
-  int SI(slabIndex+1000);  
+  int SI(buildIndex+1000);  
   std::vector<double>::const_iterator vc;
   for(size_t i=0;i<XPts.size();i++)    
     {
       ModelSupport::buildPlane(SMap,SI+3,Origin+X*XPts[i],X);
       SI+=10;
     }
-  SI=(slabIndex+1000);
+  SI=(buildIndex+1000);
   for(size_t i=0;i<ZPts.size();i++)   
     {
       ModelSupport::buildPlane(SMap,SI+5,Origin+Z*ZPts[i],Z);

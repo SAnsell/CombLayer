@@ -56,8 +56,7 @@ namespace sinbadSystem
 
 LayerPlate::LayerPlate(const std::string& Key) : 
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  slabIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(slabIndex+1),frontShared(1)
+  frontShared(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -66,7 +65,6 @@ LayerPlate::LayerPlate(const std::string& Key) :
 
 LayerPlate::LayerPlate(const LayerPlate& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  slabIndex(A.slabIndex),cellIndex(A.cellIndex),
   frontShared(A.frontShared),
   width(A.width),height(A.height),nSlab(A.nSlab),
   thick(A.thick),mat(A.mat),matTemp(A.matTemp),
@@ -89,7 +87,6 @@ LayerPlate::operator=(const LayerPlate& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       frontShared=A.frontShared;
       width=A.width;
       height=A.height;
@@ -133,7 +130,7 @@ LayerPlate::getCellIndex(const size_t lNumber) const
     throw ColErr::IndexError<size_t>
       (lNumber,nSlab,"lNumber");
   
-  return slabIndex+1+static_cast<int>(lNumber);
+  return buildIndex+1+static_cast<int>(lNumber);
 }
 
 std::string
@@ -152,7 +149,7 @@ LayerPlate::getFrontSurface(const size_t layerIndex,
 
   if (layerIndex>0 || !sideIndex || !frontShared)
     {
-      const int SI(slabIndex+static_cast<int>(layerIndex)*10);
+      const int SI(buildIndex+static_cast<int>(layerIndex)*10);
       return ModelSupport::getComposite(SMap,SI," 1 ");
     }
   return FC.getLinkString(sideIndex);
@@ -172,7 +169,7 @@ LayerPlate::getBackSurface(const size_t layerIndex,
 {
   ELog::RegMethod RegA("LayerPlate","getBackSurface");
 
-  const int SI(slabIndex+static_cast<int>(layerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
   return ModelSupport::getComposite(SMap,SI," -11 ");  
 }
 
@@ -247,16 +244,16 @@ LayerPlate::createSurfaces()
   // Special case for sideIndex 1
   //  
 
-  ModelSupport::buildPlane(SMap,slabIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,slabIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,slabIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,slabIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   if (radiusWindow>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,slabIndex+7,Origin,Y,radiusWindow);
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radiusWindow);
 
   
-  int SI(slabIndex);
+  int SI(buildIndex);
   double totalThick(0.0);
   for(size_t i=0;i<=nSlab;i++)
    {
@@ -293,18 +290,18 @@ LayerPlate::createObjects(Simulation& System,
   std::string Out;
 
   // Front one uses FC/sideIndex 
-  Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
+  Out=FSurf+ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
   
-  int SI(slabIndex);
+  int SI(buildIndex);
   for(size_t i=1;i<nSlab;i++)
    {
      SI+=10;
-     Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
+     Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -11M 3 -4 5 -6");
      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
    }
   
-  Out=ModelSupport::getComposite(SMap,slabIndex,SI," -11M 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI," -11M 3 -4 5 -6");
   addOuterSurf(FSurf+Out);
   return;
 }
@@ -318,17 +315,17 @@ LayerPlate::createLinks()
   ELog::RegMethod RegA("LayerPlate","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(slabIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
   // Attacth 1 : provided by createSurfaces
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(slabIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   FixedComp::setConnect(3,Origin+X*(width/2.0),-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(slabIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(slabIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(slabIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

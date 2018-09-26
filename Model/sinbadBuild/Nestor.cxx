@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   sinbadBuild/Nestor.cxx
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -43,7 +64,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -54,9 +74,7 @@ namespace sinbadSystem
 {
 
 Nestor::Nestor(const std::string& Key) : 
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  slabIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(slabIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -65,7 +83,6 @@ Nestor::Nestor(const std::string& Key) :
 
 Nestor::Nestor(const Nestor& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  slabIndex(A.slabIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),width(A.width),
   height(A.height),nSlab(A.nSlab),thick(A.thick),mat(A.mat),
   matTemp(A.matTemp),radiusWindow(A.radiusWindow)
@@ -87,7 +104,6 @@ Nestor::operator=(const Nestor& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -132,7 +148,7 @@ Nestor::getCellIndex(const size_t lNumber) const
     throw ColErr::IndexError<size_t>
       (lNumber,nSlab,"lNumber");
   
-  return slabIndex+1+static_cast<int>(lNumber);
+  return buildIndex+1+static_cast<int>(lNumber);
 }
 
 std::string
@@ -151,7 +167,7 @@ Nestor::getFrontSurface(const size_t layerIndex,
 
   if (layerIndex>0 || !sideIndex)
     {
-      const int SI(slabIndex+static_cast<int>(layerIndex)*10);
+      const int SI(buildIndex+static_cast<int>(layerIndex)*10);
       return ModelSupport::getComposite(SMap,SI," 1 ");
     }
   return FC.getLinkString(sideIndex);
@@ -171,7 +187,7 @@ Nestor::getBackSurface(const size_t layerIndex,
 {
   ELog::RegMethod RegA("Nestor","getBackSurface");
 
-  const int SI(slabIndex+static_cast<int>(layerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
   return ModelSupport::getComposite(SMap,SI," -11 ");  
 }
 
@@ -200,7 +216,7 @@ Nestor::populate(const FuncDataBase& Control)
   
   for(size_t i=0;i<nSlab;i++)
     {
-      const std::string NStr(StrFunc::makeString(i));
+      const std::string NStr(std::to_string(i));
       Len=Control.EvalVar<double>(keyName+"Thick"+NStr);
       Tmp=Control.EvalDefVar<double>(keyName+"Temp"+NStr,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);
@@ -242,15 +258,15 @@ Nestor::createSurfaces()
   // Special case for sideIndex 1
   //  
 
-  ModelSupport::buildPlane(SMap,slabIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,slabIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,slabIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,slabIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   // radius of widnow
-  ModelSupport::buildCylinder(SMap,slabIndex+7,Origin,Y,radiusWindow);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radiusWindow);
 
   
-  int SI(slabIndex);
+  int SI(buildIndex);
   double totalThick(0.0);
   for(size_t i=0;i<=nSlab;i++)
    {
@@ -280,18 +296,18 @@ Nestor::createObjects(Simulation& System,
   std::string Out;
 
   // Front one uses FC/sideIndex 
-  Out=FSurf+ModelSupport::getComposite(SMap,slabIndex," -11 3 -4 5 -6");
+  Out=FSurf+ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
   
-  int SI(slabIndex);
+  int SI(buildIndex);
   for(size_t i=1;i<nSlab;i++)
    {
      SI+=10;
-     Out=ModelSupport::getComposite(SMap,slabIndex,SI,"1M -11M 3 -4 5 -6");
+     Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -11M 3 -4 5 -6");
      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
    }
   
-  Out=ModelSupport::getComposite(SMap,slabIndex,SI," -11M 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI," -11M 3 -4 5 -6");
   addOuterSurf(FSurf+Out);
   return;
 }
