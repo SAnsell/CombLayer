@@ -81,9 +81,7 @@ namespace constructSystem
 
 ChopperHousing::ChopperHousing(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(houseIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -93,7 +91,6 @@ ChopperHousing::ChopperHousing(const std::string& Key) :
 ChopperHousing::ChopperHousing(const ChopperHousing& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  houseIndex(A.houseIndex),cellIndex(A.cellIndex),
   voidHeight(A.voidHeight),voidWidth(A.voidWidth),
   voidDepth(A.voidDepth),voidThick(A.voidThick),
   wallThick(A.wallThick),wallMat(A.wallMat)
@@ -116,7 +113,6 @@ ChopperHousing::operator=(const ChopperHousing& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       voidHeight=A.voidHeight;
       voidWidth=A.voidWidth;
       voidDepth=A.voidDepth;
@@ -184,23 +180,23 @@ ChopperHousing::createSurfaces()
 
 
   // Inner void
-  ModelSupport::buildPlane(SMap,houseIndex+1,Origin-Y*(voidThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+2,Origin+Y*(voidThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,houseIndex+4,Origin+X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,houseIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,houseIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
   // Wall system [front face is link surf]
-  ModelSupport::buildPlane(SMap,houseIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(wallThick+voidThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(wallThick+voidThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(wallThick+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,houseIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(wallThick+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,houseIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(voidHeight+wallThick),Z);
   
   return;
@@ -218,18 +214,18 @@ ChopperHousing::createObjects(Simulation& System)
   std::string Out;
 
   // Void 
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Wall
-  Out=ModelSupport::getComposite(SMap,houseIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 5 -16 (-1:2:-3:4:6)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 13 -14 5 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 5 -16");
   addOuterSurf(Out);      
   return;
 }
@@ -250,12 +246,12 @@ ChopperHousing::createLinks()
   FixedComp::setConnect(4,Origin-Y*(voidDepth+wallThick),-Z);
   FixedComp::setConnect(5,Origin-Y*(voidHeight+wallThick),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(houseIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(houseIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(houseIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(houseIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(houseIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(houseIndex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   
   return;
 }

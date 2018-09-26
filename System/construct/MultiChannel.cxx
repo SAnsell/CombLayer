@@ -84,8 +84,7 @@ namespace constructSystem
 MultiChannel::MultiChannel(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
-  chnIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(chnIndex+1),setFlag(0)
+  setFlag(0)
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -95,7 +94,6 @@ MultiChannel::MultiChannel(const std::string& Key) :
 MultiChannel::MultiChannel(const MultiChannel& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  chnIndex(A.chnIndex),cellIndex(A.cellIndex),
   setFlag(A.setFlag),topRule(A.topRule),baseRule(A.baseRule),
   topSurf(A.topSurf),baseSurf(A.baseSurf),
   divider(A.divider),leftStruct(A.leftStruct),
@@ -123,7 +121,6 @@ MultiChannel::operator=(const MultiChannel& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       
-      cellIndex=A.cellIndex;
       setFlag=A.setFlag;
       topSurf=A.topSurf;
       baseSurf=A.baseSurf;
@@ -199,7 +196,7 @@ MultiChannel::processSurface(const size_t index,
   // Currently we only can deal with two types of surface [ plane/plane
   // and plane/cylinder
   
-  const int surfN(chnIndex+static_cast<int>(index)*10+3);
+  const int surfN(buildIndex+static_cast<int>(index)*10+3);
   int surfNX(surfN);
 
   Geometry::Surface* PX=
@@ -224,8 +221,8 @@ MultiChannel::createSurfaces()
   ELog::EM<<"Surface == "<<Origin<<ELog::endDiag;
   ELog::EM<<"Surface == "<<length<<ELog::endDiag;
   
-  ModelSupport::buildPlane(SMap,chnIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,chnIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   
   // first problem is to determine the build step:
   const double TotalD=topSurf->distance(Origin)+
@@ -262,11 +259,11 @@ MultiChannel::createObjects(Simulation& System)
   std::string Out;
 
 
-  std::string FB=ModelSupport::getComposite(SMap,chnIndex,"1 -2");
+  std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
   FB+=leftStruct.display()+rightStruct.display();
 
   HeadRule BHR(baseRule);
-  int SN(chnIndex);
+  int SN(buildIndex);
   for(size_t i=0;i<nBlades;i++)
     {
       Out=BHR.display()+ModelSupport::getComposite(SMap,SN," -3 ");
@@ -297,9 +294,9 @@ MultiChannel::createLinks()
   ELog::RegMethod RegA("MultiChannel","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(chnIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(chnIndex+2));      
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
   
   return;
 }

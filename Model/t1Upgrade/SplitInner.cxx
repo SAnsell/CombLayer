@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -172,14 +171,14 @@ SplitInner::populate(const FuncDataBase& Control)
 	}
       else 
 	{
-	  T=Control.EvalVar<double>
-	    (IKeyName+StrFunc::makeString("Thick",i+1));
+	  T=Control.EvalVar<double>(IKeyName+"Thick"+std::to_string(i+1));
 	}
       
       tval=Control.EvalVar<double>
-	(IKeyName+StrFunc::makeString("Temp",i+1));
-      matN=ModelSupport::EvalMat<int>(Control,
-	    IKeyName+StrFunc::makeString("Mat",i+1));
+	(IKeyName+"Temp"+std::to_string(i+1));
+      matN=ModelSupport::EvalMat<int>
+	(Control,IKeyName+"Mat"+std::to_string(i+1));
+
       TFront+=T;
       thick.push_back(TFront);
       temp.push_back(tval);
@@ -221,11 +220,11 @@ SplitInner::createObjects(Simulation& System)
   int iLayer(innerIndex);
 
   std::string Edge=
-    ModelSupport::getComposite(SMap,modIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   // front / back:
   HeadRule frontX,backX;
-  createFrontRule(LVec[0],modIndex,0,frontX);
-  createBackRule(LVec[0],modIndex,0,backX);
+  createFrontRule(LVec[0],buildIndex,0,frontX);
+  createBackRule(LVec[0],buildIndex,0,backX);
   std::string prevLayer=frontX.display();
   std::string Out;
   for(size_t i=0;i<innerNLayer;i++)

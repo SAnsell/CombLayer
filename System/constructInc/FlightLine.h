@@ -49,8 +49,6 @@ class FlightLine : public attachSystem::ContainedGroup,
 {
  private:
   
-  const int flightIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane

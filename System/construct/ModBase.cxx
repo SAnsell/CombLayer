@@ -3,7 +3,7 @@
  
  * File:   construct/ModBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -81,9 +80,7 @@ namespace constructSystem
 
 ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedOffset(Key,nLinks),attachSystem::CellMap(),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+  attachSystem::FixedOffset(Key,nLinks),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,8 +90,7 @@ ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
 
 ModBase::ModBase(const ModBase& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex)
+  attachSystem::FixedOffset(A),attachSystem::CellMap(A)
   /*!
     Copy constructor
     \param A :: ModBase to copy
@@ -115,7 +111,6 @@ ModBase::operator=(const ModBase& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
     }
   return *this;
 }
@@ -143,8 +138,7 @@ ModBase::populate(const FuncDataBase& Control)
   flightSides.clear();
   for(size_t i=0;i<NFlight;i++)
     {
-      const std::string kName=keyName+"FlightSide"+
-	StrFunc::makeString(i);
+      const std::string kName=keyName+"FlightSide"+std::to_string(i);
       const long int I=Control.EvalVar<long int>(kName);  
       flightSides.push_back(I);
     }
@@ -194,7 +188,7 @@ ModBase::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,modIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 

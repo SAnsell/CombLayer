@@ -136,17 +136,18 @@ groupRange::valueIndex(const int V) const
 {
   if (!LowUnit.empty())
     {
+      // this is next AFTER value of low
       std::vector<int>::const_iterator 
 	xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
       if (xV!=LowUnit.end())
 	{
-	  if (V >= *xV)
-	    {
-	      const size_t index=
-		static_cast<size_t>(distance(LowUnit.cbegin(),xV));
-	      if (V <= HighUnit[index])
-		return index;
-	    }
+	  if (V<*xV && xV!=LowUnit.begin())
+	    xV--;
+	  
+	  const size_t index=
+	    static_cast<size_t>(distance(LowUnit.cbegin(),xV));
+	  if (V>=*xV && V <= HighUnit[index])
+	    return index;
 	}
       else if ( V<=HighUnit.back())
 	return HighUnit.size()-1;
@@ -333,6 +334,7 @@ groupRange::addItem(const int A)
 
   const size_t indexM=valueIndex(A-1);
   const size_t indexP=valueIndex(A+1);
+    
   // special case exactly between two units
   if (indexP<LowUnit.size() && indexM<LowUnit.size())
     {
@@ -418,6 +420,7 @@ groupRange::removeItem(const int A)
   HighUnit[index]=A-1;
   LowUnit.insert(LowUnit.begin(),A+1);
   HighUnit.insert(HighUnit.begin(),HL);
+  pairSort(LowUnit,HighUnit);
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/InnerLayer.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -221,15 +221,15 @@ InnerLayer::createObjects(Simulation& System)
 
   // Poison layers [negative side first]:
   const std::string Edge=
-    ModelSupport::getComposite(SMap,modIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   const double ch4Temp=LVec[0].getTemp();
   const int ch4Mat=LVec[0].getMat();
   int nextPoisLayer(innerIndex+500);
 
   // front / back:
   HeadRule frontX,backX;
-  createFrontRule(LVec[0],modIndex,0,frontX);
-  createBackRule(LVec[0],modIndex,0,backX);
+  createFrontRule(LVec[0],buildIndex,0,frontX);
+  createBackRule(LVec[0],buildIndex,0,backX);
   for(size_t i=0;i<nPoison;i++)
     {
       if (i)

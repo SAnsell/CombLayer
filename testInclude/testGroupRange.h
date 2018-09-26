@@ -36,11 +36,13 @@ class testGroupRange
 {
 private:
 
+  static groupRange makeGrp(std::string);
   //Tests 
   int testAddItem();
   int testGetNext();
   int testInsert();
   int testMerge();
+  int testRemove();
   int testValid();
   
 public:

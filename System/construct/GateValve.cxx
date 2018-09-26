@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/GateValve
+ * File:   construct/GateValve.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

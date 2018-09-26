@@ -88,8 +88,7 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Main",16,"Beam",3,"Hole",0),
   attachSystem::CellMap(),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
+  holeIndex(0),nHole(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,7 +98,7 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
 RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   attachSystem::CellMap(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),xyAngle(A.xyAngle),
+  xyAngle(A.xyAngle),
   zAngle(A.zAngle),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),rotDepth(A.rotDepth),radius(A.radius),
   thick(A.thick),defMat(A.defMat),holeIndex(A.holeIndex),
@@ -125,7 +124,6 @@ RotaryCollimator::operator=(const RotaryCollimator& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       xStep=A.xStep;
@@ -250,10 +248,10 @@ RotaryCollimator::createSurfaces()
   // INNER PLANES
   
   // Front/Back
-  ModelSupport::buildPlane(SMap,colIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*thick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*thick,Y);
   // Master Cylinder
-  ModelSupport::buildCylinder(SMap,colIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   return;
 }
@@ -268,7 +266,7 @@ RotaryCollimator::createObjects(Simulation& System)
   ELog::RegMethod RegA("RotaryCollimator","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   addOuterSurf(Out);
   //
   // Sectors
@@ -278,7 +276,7 @@ RotaryCollimator::createObjects(Simulation& System)
   for(size_t i=0;i<nHole;i++)
     {
       std::shared_ptr<HoleShape>& HU=Holes[i];
-      HU->setFaces(SMap.realSurf(colIndex+1),-SMap.realSurf(colIndex+2));
+      HU->setFaces(SMap.realSurf(buildIndex+1),-SMap.realSurf(buildIndex+2));
       HU->createAllNoPopulate(System,*this,0);  // Use THIS Origin (rot centre)
       if (HU->getShape())
 	HoleExclude.addIntersection(HU->getExclude());
@@ -332,13 +330,13 @@ RotaryCollimator::createLinks()
   beamFC.setConnect(1,PtB.first,beamFC.getY());
   beamFC.setConnect(2,(PtB.first+PtA.first)/2,
                     beamFC.getY());  // mid point [NO SURF]
-  beamFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setConnect(1,Origin+Y*thick,Y);
-  mainFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   const size_t nExtra(6);
   const double angleStep(2.0*M_PI/nExtra);
@@ -347,7 +345,7 @@ RotaryCollimator::createLinks()
     {
       const Geometry::Vec3D Axis(X*cos(angle)+Z*sin(angle));
       mainFC.setConnect(i+2,Origin+Y*(thick/2.0)+Axis*radius,Axis);
-      mainFC.setLinkSurf(i+2,SMap.realSurf(colIndex+7));
+      mainFC.setLinkSurf(i+2,SMap.realSurf(buildIndex+7));
       angle+=angleStep;
     }
   // Front/back points as well
@@ -356,10 +354,10 @@ RotaryCollimator::createLinks()
     {
       // front
       mainFC.setConnect(i+8,Origin+ADir[i]*radius,-Y);
-      mainFC.setLinkSurf(i+8,-SMap.realSurf(colIndex+1));
+      mainFC.setLinkSurf(i+8,-SMap.realSurf(buildIndex+1));
       // back
       mainFC.setConnect(i+12,Origin+Y*thick+ADir[i]*radius,Y);
-      mainFC.setLinkSurf(i+12,SMap.realSurf(colIndex+2));
+      mainFC.setLinkSurf(i+12,SMap.realSurf(buildIndex+2));
     }
 
   // Process holes:

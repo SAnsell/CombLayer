@@ -89,8 +89,7 @@ boxPort::boxPort(const std::string& BKey,
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   baseName(BKey),
-  boxIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(boxIndex+1),populated(0),innerExclude(0),
+  populated(0),innerExclude(0),
   NBolts(0),sealRadius(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -252,25 +251,25 @@ boxPort::createSurfaces()
   ELog::RegMethod RegA("boxPort","createSurfaces");
    // Construct surfaces:
 
-  ModelSupport::buildPlane(SMap,boxIndex+3,Origin-X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,boxIndex+4,Origin+X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,boxIndex+5,Origin-Z*(innerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,boxIndex+6,Origin+Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(innerHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,boxIndex+13,Origin-X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,boxIndex+14,Origin+X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,boxIndex+15,Origin-Z*(outerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,boxIndex+16,Origin+Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(outerHeight/2.0),Z);
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,boxIndex+1,Origin-Y*(thick/2.0),Y);
-      setFront(SMap.realSurf(boxIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
+      setFront(SMap.realSurf(buildIndex+1));
     }
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,boxIndex+2,Origin+Y*(thick/2.0),Y);
-      setBack(-SMap.realSurf(boxIndex+2));
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
+      setBack(-SMap.realSurf(buildIndex+2));
       
     }
   
@@ -296,7 +295,7 @@ boxPort::createObjects(Simulation& System)
 
   const std::string FBStr=frontRule()+backRule();
   const std::string EdgeStr=ModelSupport::getComposite
-    (SMap,boxIndex," 13 -14 15 -16 (-3:4:-5:6) ");
+    (SMap,buildIndex," 13 -14 15 -16 (-3:4:-5:6) ");
 
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,FBStr+EdgeStr));
@@ -305,11 +304,11 @@ boxPort::createObjects(Simulation& System)
 
   if (innerExclude)
     {
-      Out=ModelSupport::getComposite(SMap,boxIndex," 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FBStr));
       addCell("InnerVoid",cellIndex-1);
       
-      Out=ModelSupport::getComposite(SMap,boxIndex," 13 -14 15 -16 ");      
+      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");      
       addOuterSurf(Out+FBStr);
     }
   else

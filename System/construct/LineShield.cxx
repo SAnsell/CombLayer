@@ -84,8 +84,7 @@ namespace constructSystem
 LineShield::LineShield(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  shieldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(shieldIndex+1),activeFront(0),activeBack(0)
+  activeFront(0),activeBack(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,7 +94,6 @@ LineShield::LineShield(const std::string& Key) :
 LineShield::LineShield(const LineShield& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  shieldIndex(A.shieldIndex),cellIndex(A.cellIndex),
   activeFront(A.activeFront),activeBack(A.activeBack),
   frontSurf(A.frontSurf),frontCut(A.frontCut),
   backSurf(A.backSurf),backCut(A.backCut),
@@ -125,7 +123,6 @@ LineShield::operator=(const LineShield& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       activeFront=A.activeFront;
       activeBack=A.activeBack;
       frontSurf=A.frontSurf;
@@ -269,17 +266,17 @@ LineShield::createSurfaces()
 
   // Inner void
   if (!activeFront)
-    ModelSupport::buildPlane(SMap,shieldIndex+1,Origin-Y*(length/2.0),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
       
   if (!activeBack)
-    ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   if (activeFront)
     removeFrontOverLap();
   
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
-  int SI(shieldIndex+10);
+  int SI(buildIndex+10);
   for(size_t i=1;i<nSeg;i++)
     {
       segLen+=segStep;
@@ -287,7 +284,7 @@ LineShield::createSurfaces()
       SI+=10;
     }
 
-  int WI(shieldIndex);
+  int WI(buildIndex);
   for(size_t i=0;i<nWallLayers;i++)
     {
       ModelSupport::buildPlane(SMap,WI+3,
@@ -297,7 +294,7 @@ LineShield::createSurfaces()
       WI+=10;
     }
 
-  int RI(shieldIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nRoofLayers;i++)
     {
       ModelSupport::buildPlane(SMap,RI+6,
@@ -305,7 +302,7 @@ LineShield::createSurfaces()
       RI+=10;
     }
 
-  int FI(shieldIndex);
+  int FI(buildIndex);
   for(size_t i=0;i<nFloorLayers;i++)
     {
       ModelSupport::buildPlane(SMap,FI+5,
@@ -328,19 +325,19 @@ LineShield::createObjects(Simulation& System)
   
   const std::string frontStr
     (activeFront ? frontSurf.display()+frontCut.display() : 
-     ModelSupport::getComposite(SMap,shieldIndex," 1 "));
+     ModelSupport::getComposite(SMap,buildIndex," 1 "));
   const std::string backStr
     (activeBack ? backSurf.display()+backCut.display() : 
-     ModelSupport::getComposite(SMap,shieldIndex," -2 "));
+     ModelSupport::getComposite(SMap,buildIndex," -2 "));
 
   // Inner void is a single segment
-  Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out+frontStr+backStr);
 
   // Loop over all segments:
   std::string FBStr;
-  int SI(shieldIndex);
-  int WI(shieldIndex),RI(shieldIndex),FI(shieldIndex);    
+  int SI(buildIndex);
+  int WI(buildIndex),RI(buildIndex),FI(buildIndex);    
   for(size_t index=0;index<nSeg;index++)
     {
       FBStr=((index) ?
@@ -353,31 +350,31 @@ LineShield::createObjects(Simulation& System)
 
       // Inner is a single component
       // Walls are contained:
-      WI=shieldIndex;
+      WI=buildIndex;
       for(size_t i=1;i<nWallLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 13 -3 5M -6M ");
+	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 13 -3 5M -6M ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 		 
-	  Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 4 -14 5M -6M ");
+	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 4 -14 5M -6M ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 	  WI+=10;
 	}
 
       // Roof on top of walls are contained:
-      RI=shieldIndex;
+      RI=buildIndex;
       for(size_t i=1;i<nRoofLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,RI,shieldIndex," 3M -4M -16 6 ");
+	  Out=ModelSupport::getComposite(SMap,RI,buildIndex," 3M -4M -16 6 ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
 	  RI+=10;
 	}
     
       // Floor complete:
-      FI=shieldIndex;
+      FI=buildIndex;
       for(size_t i=1;i<nFloorLayers;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
@@ -387,10 +384,10 @@ LineShield::createObjects(Simulation& System)
 	}
       
       // Left corner
-      RI=shieldIndex;
+      RI=buildIndex;
       for(size_t i=1;i<nRoofLayers;i++)
 	{
-	  WI=shieldIndex;
+	  WI=buildIndex;
 	  for(size_t j=1;j<nWallLayers;j++)
 	    {
 	      const int mat((i>j) ? roofMat[i] : wallMat[j]);
@@ -426,14 +423,14 @@ LineShield::createLinks()
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
 
-  const int WI(shieldIndex+(static_cast<int>(nWallLayers)-1)*10);
-  const int RI(shieldIndex+(static_cast<int>(nRoofLayers)-1)*10);
-  const int FI(shieldIndex+(static_cast<int>(nFloorLayers)-1)*10);
+  const int WI(buildIndex+(static_cast<int>(nWallLayers)-1)*10);
+  const int RI(buildIndex+(static_cast<int>(nRoofLayers)-1)*10);
+  const int FI(buildIndex+(static_cast<int>(nFloorLayers)-1)*10);
 
   if (!activeFront)
     {
       FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(shieldIndex+1));      
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));      
     }
   else
     {
@@ -445,7 +442,7 @@ LineShield::createLinks()
   if (!activeBack)
     {
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
   else
     {
@@ -518,7 +515,7 @@ LineShield::getXSectionIn() const
 {
   ELog::RegMethod RegA("LineShield","getXSectionIn");
   const std::string Out=
-    ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   HeadRule HR(Out);
   HR.populateSurf();
   return HR;

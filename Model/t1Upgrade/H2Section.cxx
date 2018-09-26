@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/H2Section.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -210,7 +209,7 @@ H2Section::createSurfaces()
 //      const double hStep((depth-nSi*siThick)/(nSi+1));
       const double hStep((depth-nSi*siThick)/(nSi+3));      
       double yPos(-depth/2.0);
-      int plateIndex(modIndex+100);
+      int plateIndex(buildIndex+100);
       for(int i=0;i<nSi;i++)
 	{
 	  yPos+=hStep;
@@ -222,100 +221,100 @@ H2Section::createSurfaces()
     }
 
   // H2 layer
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,modIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,modIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   // Al layer
-  ModelSupport::buildPlane(SMap,modIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(depth/2.0+backWall),Y);
-  ModelSupport::buildPlane(SMap,modIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(depth/2.0+frontWall),Y);
-  ModelSupport::buildPlane(SMap,modIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0+mainWall),X);
-  ModelSupport::buildPlane(SMap,modIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0+mainWall),X);
-  ModelSupport::buildPlane(SMap,modIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+mainWall),Z);
-  ModelSupport::buildPlane(SMap,modIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+mainWall),Z);
 
   double offset=vacGap;
   // vac layer
-  ModelSupport::buildPlane(SMap,modIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*(depth/2.0+backWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(depth/2.0+frontWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(height/2.0+mainWall+offset),Z);
-  ModelSupport::buildPlane(SMap,modIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(height/2.0+mainWall+offset),Z);
 
   offset+=midAlThick;
   // al mid layer
-  ModelSupport::buildPlane(SMap,modIndex+31,
+  ModelSupport::buildPlane(SMap,buildIndex+31,
 			   Origin-Y*(depth/2.0+backWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 			   Origin+Y*(depth/2.0+frontWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+35,
+  ModelSupport::buildPlane(SMap,buildIndex+35,
 			   Origin-Z*(height/2.0+mainWall+offset),Z);
-  ModelSupport::buildPlane(SMap,modIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 			   Origin+Z*(height/2.0+mainWall+offset),Z);
 
   offset+=heGap;
   // al mid layer
-  ModelSupport::buildPlane(SMap,modIndex+41,
+  ModelSupport::buildPlane(SMap,buildIndex+41,
 			   Origin-Y*(depth/2.0+backWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+42,
+  ModelSupport::buildPlane(SMap,buildIndex+42,
 			   Origin+Y*(depth/2.0+frontWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+43,
+  ModelSupport::buildPlane(SMap,buildIndex+43,
 			   Origin-X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+44,
+  ModelSupport::buildPlane(SMap,buildIndex+44,
 			   Origin+X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+45,
+  ModelSupport::buildPlane(SMap,buildIndex+45,
 			   Origin-Z*(height/2.0+mainWall+offset),Z);
-  ModelSupport::buildPlane(SMap,modIndex+46,
+  ModelSupport::buildPlane(SMap,buildIndex+46,
 			   Origin+Z*(height/2.0+mainWall+offset),Z);
 
   offset+=outAlThick;
   // al mid layer
-  ModelSupport::buildPlane(SMap,modIndex+51,
+  ModelSupport::buildPlane(SMap,buildIndex+51,
 			   Origin-Y*(depth/2.0+backWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+52,
+  ModelSupport::buildPlane(SMap,buildIndex+52,
 			   Origin+Y*(depth/2.0+frontWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+53,
+  ModelSupport::buildPlane(SMap,buildIndex+53,
 			   Origin-X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+54,
+  ModelSupport::buildPlane(SMap,buildIndex+54,
 			   Origin+X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+55,
+  ModelSupport::buildPlane(SMap,buildIndex+55,
 			   Origin-Z*(height/2.0+mainWall+offset),Z);
-  ModelSupport::buildPlane(SMap,modIndex+56,
+  ModelSupport::buildPlane(SMap,buildIndex+56,
 			   Origin+Z*(height/2.0+mainWall+offset),Z);
 
   offset+=outGap;
   // al mid layer
-  ModelSupport::buildPlane(SMap,modIndex+61,
+  ModelSupport::buildPlane(SMap,buildIndex+61,
 			   Origin-Y*(depth/2.0+backWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+62,
+  ModelSupport::buildPlane(SMap,buildIndex+62,
 			   Origin+Y*(depth/2.0+frontWall+offset),Y);
-  ModelSupport::buildPlane(SMap,modIndex+63,
+  ModelSupport::buildPlane(SMap,buildIndex+63,
 			   Origin-X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+64,
+  ModelSupport::buildPlane(SMap,buildIndex+64,
 			   Origin+X*(width/2.0+mainWall+offset),X);
-  ModelSupport::buildPlane(SMap,modIndex+65,
+  ModelSupport::buildPlane(SMap,buildIndex+65,
 			   Origin-Z*(height/2.0+mainWall+offset),Z);
-  ModelSupport::buildPlane(SMap,modIndex+66,
+  ModelSupport::buildPlane(SMap,buildIndex+66,
 			   Origin+Z*(height/2.0+mainWall+offset),Z);
 
 
@@ -338,7 +337,7 @@ H2Section::addToInsertChain(attachSystem::ContainedComp& CC) const
 {
   ELog::RegMethod RegA("H2Section","addToInsertChain");
 
-  for(int i=modIndex+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     CC.addInsertCell(i);
   return;
  }
@@ -355,67 +354,67 @@ H2Section::createObjects(Simulation& System)
   
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,modIndex,"61 -62 63 -64 65 -66 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"61 -62 63 -64 65 -66 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
   
   if (nSi>0)
     {
-      int plateIndex(modIndex+100);
+      int plateIndex(buildIndex+100);
       // inital
-      Out=ModelSupport::getComposite(SMap,modIndex,"1 -101 3 -4 5 -6");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
       for(int i=0;i<nSi;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,modIndex,
+	  Out=ModelSupport::getComposite(SMap,buildIndex,
 					 plateIndex,"1M -2M 3 -4 5 -6");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,siMat,lh2Temp,Out));
 	  if (i!=nSi-1)
 	    {
-	      Out=ModelSupport::getComposite(SMap,modIndex,
+	      Out=ModelSupport::getComposite(SMap,buildIndex,
 					     plateIndex,"2M -11M 3 -4 5 -6");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
 	    }
 	  plateIndex+=10;
 	}
       // final
-      Out=ModelSupport::getComposite(SMap,modIndex,plateIndex-10,
+      Out=ModelSupport::getComposite(SMap,buildIndex,plateIndex-10,
 				     "2M -2 3 -4 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,modIndex,"1 -2 3 -4 5 -6");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
     }
 
   // AL
 
-  Out=ModelSupport::getComposite(SMap,modIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,lh2Temp,Out));
 
   // vac layer
-  Out=ModelSupport::getComposite(SMap,modIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "31 -32 33 -34 35 -36 (-21:22:-23:24:-25:26)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Ter layer
-  Out=ModelSupport::getComposite(SMap,modIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "41 -42 43 -44 45 -46 (-31:32:-33:34:-35:36)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "51 -52 53 -54 55 -56 (-41:42:-43:44:-45:46)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,modIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "61 -62 63 -64 65 -66 (-51:52:-53:54:-55:56)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
@@ -431,12 +430,12 @@ H2Section::createLinks()
   // set Links:
   ELog::RegMethod RegA("H2Section","createLinks");
   
-  FixedComp::setLinkSurf(0,-SMap.realSurf(modIndex+61));
-  FixedComp::setLinkSurf(1,SMap.realSurf(modIndex+62));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(modIndex+63));
-  FixedComp::setLinkSurf(3,SMap.realSurf(modIndex+64));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(modIndex+65));
-  FixedComp::setLinkSurf(5,SMap.realSurf(modIndex+66));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+61));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+62));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+63));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+64));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+65));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+66));
 
   return;
 }
@@ -489,7 +488,7 @@ H2Section::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("H2Section","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return std::to_string(getLayerSurf(layerIndex,sideIndex));
 }
 
 int
@@ -510,7 +509,7 @@ H2Section::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 
   const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
-  const int SI(modIndex+static_cast<int>(layerIndex*10+uSIndex));
+  const int SI(buildIndex+static_cast<int>(layerIndex*10+uSIndex));
   int signValue((sideIndex<0) ? -1 : 1);
   signValue *= (sideIndex % 2) ? -1 : 1;
   return signValue*SMap.realSurf(SI);

@@ -60,6 +60,39 @@ testGroupRange::~testGroupRange()
   */
 {}
 
+groupRange
+testGroupRange::makeGrp(std::string Line) 
+  /*!
+    Bulid a group
+    \param Line :: line to build from 
+    \return Group range
+   */
+{
+  ELog::RegMethod RegA("testGroupRange","makeGrp");
+
+  groupRange AGrp;
+  int A,B;
+  while(!StrFunc::isEmpty(Line))
+    {
+      std::string Units=StrFunc::getDelimUnit("[","]",Line);
+      if (StrFunc::section(Units,A) &&
+	  StrFunc::section(Units,B))
+	{
+	  AGrp.addItem(A,B);
+	}
+      else if (StrFunc::section(Line,A))
+	{
+	  AGrp.addItem(A);
+	}
+      else
+	{
+	  ELog::EM<<"Failed to read line "<<ELog::endDiag;
+	  return AGrp;
+	}
+    }
+  return AGrp;
+}
+
 int 
 testGroupRange::applyTest(const int extra)
   /*!
@@ -79,6 +112,7 @@ testGroupRange::applyTest(const int extra)
       &testGroupRange::testGetNext,
       &testGroupRange::testInsert,
       &testGroupRange::testMerge,
+      &testGroupRange::testRemove,
       &testGroupRange::testValid
     };
   const std::vector<std::string> TestName=
@@ -87,6 +121,7 @@ testGroupRange::applyTest(const int extra)
       "GetNext",
       "Insert",
       "Merge",
+      "Remove",
       "Valid"
     };
   
@@ -312,6 +347,49 @@ testGroupRange::testMerge()
 	}
     }
   
+  return 0;
+}
+
+int
+testGroupRange::testRemove()
+  /*!
+    Tests the removal of units
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testRemoval");
+
+  typedef std::tuple<std::string,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+        TTYPE("[100 200] [300 400]",101,"100 [102 200] [300 400]"),
+      	TTYPE("[100 200] [300 400]",201,"[100 200] [300 400]"),
+      	TTYPE("[100 200] [300 400]",200,"[100 199] [300 400]"),
+	TTYPE("[100 200] [300 400]",100,"[101 200] [300 400]"),
+	TTYPE("[100 200] [300 400]",300,"[100 200] [301 400]"),
+	TTYPE("[100 200] [300 400]",301,"[100 200] 300 [302 400]")
+    });
+
+  int tCnt(0);
+  for(const TTYPE& tc : Tests)
+    {
+      tCnt++;
+      const int cellN=std::get<1>(tc);
+      groupRange AGrp=makeGrp(std::get<0>(tc));
+      AGrp.removeItem(cellN);
+      groupRange BGrp=makeGrp(std::get<2>(tc));
+      
+      if (AGrp!=BGrp)
+	{
+	  ELog::EM<<"TEST = "<<tCnt<<ELog::endDiag;
+	  ELog::EM<<"AGrp = "<<AGrp<<ELog::endDiag;
+	  ELog::EM<<"BGrp = "<<BGrp<<ELog::endDiag;
+	  return -1;
+	}
+    }
+      
+	      
   return 0;
 }
 

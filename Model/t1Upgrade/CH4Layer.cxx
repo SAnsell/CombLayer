@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4Layer.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -158,14 +157,16 @@ CH4Layer::checkUnit(const FuncDataBase& Control,const std::string& KN,
    */
 {
   ELog::RegMethod RegA("CH4Layer","checkUnit");
-  const std::string keyA=KN+StrFunc::makeString(A,Index);
+  const std::string keyA=KN+A+std::to_string(Index);
 
   if (Control.hasVariable(keyA))
     return Control.EvalVar<double>(keyA)*AScale;
-  const std::string keyB=KN+StrFunc::makeString(B,Index);
+
+  const std::string keyB=KN+B+std::to_string(Index);
   if (Control.hasVariable(keyB))
     return Control.EvalVar<double>(keyB)*BScale;
-  const std::string keyC=KN+StrFunc::makeString(C,Index);
+
+  const std::string keyC=KN+C+std::to_string(Index);
   // Allow this to throw
   if (!defFlag)
     return Control.EvalVar<double>(keyC)*CScale;
@@ -207,9 +208,9 @@ CH4Layer::populate(const FuncDataBase& Control)
 		      "Round",0.5,"Round",1.0,1,0.0);
 
       mat=ModelSupport::EvalMat<int>
-	(Control,keyName+StrFunc::makeString("Mat",i+1));
+	(Control,keyName+"Mat"+std::to_string(i+1));
       temp=Control.EvalDefVar<double>
-	(keyName+StrFunc::makeString("Temp",i+1),0.0);
+	(keyName+"Temp"+std::to_string(i+1),0.0);
       
       LayerInfo IDX(Front,Back,Left,Right,Base,Top);
       IDX.setRounds(frontRad,backRad,round);
@@ -253,7 +254,7 @@ CH4Layer::createLayerSurf(const std::vector<LayerInfo>& LayVec,
 	  if (Yshift<Geometry::zeroTol)
 	    throw ColErr::RangeError<double>(radF,MWidth,1e10,
 					     "RadF too low of surface:"+
-					     StrFunc::makeString(i+1));
+					     std::to_string(i+1));
 	  
 	  Yshift=sqrt(Yshift);
 	  const Geometry::Vec3D RCent=Origin-Y*(FD-Yshift)+
@@ -294,7 +295,7 @@ CH4Layer::createLayerSurf(const std::vector<LayerInfo>& LayVec,
 	  if (Yshift<Geometry::zeroTol)
 	    throw ColErr::RangeError<double>(radB,MWidth,1e10,
 					     "RadB too low of surface:"+
-					     StrFunc::makeString(i+1));
+					     std::to_string(i+1));
 	  Yshift=sqrt(Yshift);
 	  const Geometry::Vec3D RCent=Origin+Y*(BD-Yshift)+
 	    X*(LWidth-RWidth);
@@ -347,7 +348,7 @@ CH4Layer::createSurfaces()
 {
   ELog::RegMethod RegA("CH4Layer","createSurface");
 
-  createLayerSurf(LVec,modIndex);
+  createLayerSurf(LVec,buildIndex);
   return;
 }
 
@@ -361,7 +362,7 @@ CH4Layer::createFrontRule(const LayerInfo& LInfo,
     radius status
     \param LInfo :: Layer Info for radius etc
     \param offsetIndex :: Object registered number
-    \param lIndex :: layerIndex normaly : modIndex+30*lIndex
+    \param lIndex :: layerIndex normaly : buildIndex+30*lIndex
     \param FX :: Front head rule
 
   */
@@ -433,13 +434,13 @@ CH4Layer::createObjects(Simulation& System)
 
   std::string Out;
 
-  int ch4Layer(modIndex);
+  int ch4Layer(buildIndex);
 
   HeadRule frontX,backX;
 
   Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
-  createFrontRule(LVec[0],modIndex,0,frontX);
-  createBackRule(LVec[0],modIndex,0,backX);
+  createFrontRule(LVec[0],buildIndex,0,frontX);
+  createBackRule(LVec[0],buildIndex,0,backX);
 		 
   // Outer layers:
   ch4Layer+=30;
@@ -450,8 +451,8 @@ CH4Layer::createObjects(Simulation& System)
       Exclude.addIntersection(frontX);
       Exclude.addIntersection(backX);
       Exclude.makeComplement();
-      createFrontRule(LVec[i],modIndex,i,frontX);
-      createBackRule(LVec[i],modIndex,i,backX);
+      createFrontRule(LVec[i],buildIndex,i,frontX);
+      createBackRule(LVec[i],buildIndex,i,backX);
 
       HeadRule Main;
       Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
@@ -518,14 +519,14 @@ CH4Layer::getLayerString(const size_t layerIndex,
     {
       HeadRule RX;
       if (uSIndex==1)
-	createFrontRule(LVec[layerIndex],modIndex,layerIndex,RX);
+	createFrontRule(LVec[layerIndex],buildIndex,layerIndex,RX);
       else
-	createBackRule(LVec[layerIndex],modIndex,layerIndex,RX);
+	createBackRule(LVec[layerIndex],buildIndex,layerIndex,RX);
       if (sideIndex<0)
 	RX.makeComplement();
       return RX.display();
     }
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return std::to_string(getLayerSurf(layerIndex,sideIndex));
 }
 
 int
@@ -546,7 +547,7 @@ CH4Layer::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
-  const int SI(modIndex+static_cast<int>(layerIndex*30+uSIndex));
+  const int SI(buildIndex+static_cast<int>(layerIndex*30+uSIndex));
   int signValue=(sideIndex % 2) ? -1 : 1;
   if (sideIndex<0)
     signValue*=-1;

@@ -83,8 +83,7 @@ namespace constructSystem
 RingSeal::RingSeal(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  ringIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ringIndex+1),standardInsert(0),setFlag(0)
+  standardInsert(0),setFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -94,7 +93,6 @@ RingSeal::RingSeal(const std::string& Key) :
 RingSeal::RingSeal(const RingSeal& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  ringIndex(A.ringIndex),cellIndex(A.cellIndex),
   NSection(A.NSection),NTrack(A.NTrack),radius(A.radius),
   deltaRad(A.deltaRad),thick(A.thick),mat(A.mat),
   standardInsert(A.standardInsert),
@@ -119,7 +117,6 @@ RingSeal::operator=(const RingSeal& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       NSection=A.NSection;
       NTrack=A.NTrack;
       radius=A.radius;
@@ -189,19 +186,19 @@ RingSeal::createSurfaces()
 {
   ELog::RegMethod RegA("RingSeal","createSurfaces");
   
-  ModelSupport::buildPlane(SMap,ringIndex+1,Origin-Y*(thick/2.0),Y);
-  ModelSupport::buildPlane(SMap,ringIndex+2,Origin+Y*(thick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
   
   if (!(setFlag & 1))
     {
       const Geometry::Cylinder* CPtr=
-	ModelSupport::buildCylinder(SMap,ringIndex+7,Origin,Y,radius);
+	ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
       innerStruct.procSurface(CPtr);
     }
   if (!(setFlag & 2))
     {
       const Geometry::Cylinder* CPtr=
-	ModelSupport::buildCylinder(SMap,ringIndex+17,Origin,Y,radius+deltaRad);
+	ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+deltaRad);
       outerStruct.procSurface(CPtr);
       outerStruct.makeComplement();
     }
@@ -215,7 +212,7 @@ RingSeal::createSurfaces()
         Geometry::Quaternion::calcQRotDeg(angleR,Y);
       Geometry::Vec3D DPAxis(X);
       QStartSeg.rotate(DPAxis);
-      int DI(ringIndex);
+      int DI(buildIndex);
       for(size_t i=0;i<NSection;i++)
         {
           ModelSupport::buildPlane(SMap,DI+3,Origin,DPAxis);
@@ -237,13 +234,13 @@ RingSeal::createObjects(Simulation& System)
   
   std::string Out,SealStr;
 
-  SealStr=ModelSupport::getComposite(SMap,ringIndex," 1 -2 ");
+  SealStr=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
   SealStr+=innerStruct.display()+outerStruct.display();
 
   if (NSection>1)
     {
       // start from segment:1 and do seg:0 at end 
-      int prevRingIndex(ringIndex);
+      int prevRingIndex(buildIndex);
       for(size_t i=1;i<NSection;i++)
         {
           Out=ModelSupport::getComposite(SMap,prevRingIndex," 3 -13 ");
@@ -252,7 +249,7 @@ RingSeal::createObjects(Simulation& System)
           prevRingIndex+=10;
         }
 
-      Out=ModelSupport::getComposite(SMap,prevRingIndex,ringIndex,
+      Out=ModelSupport::getComposite(SMap,prevRingIndex,buildIndex,
                                      " 3 -3M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+SealStr));
       addCell("Ring",cellIndex-1);
@@ -321,12 +318,12 @@ RingSeal::createLinks()
   setConnect(4,Origin-Z*(radius+deltaRad/2.0),-Z);
   setConnect(5,Origin+Z*(radius+deltaRad/2.0),Z);
 
-  setLinkSurf(0,-SMap.realSurf(ringIndex+1));
-  setLinkSurf(1,SMap.realSurf(ringIndex+2));
-  setLinkSurf(2,SMap.realSurf(ringIndex+17));
-  setLinkSurf(3,SMap.realSurf(ringIndex+17));
-  setLinkSurf(4,SMap.realSurf(ringIndex+17));
-  setLinkSurf(5,SMap.realSurf(ringIndex+17));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  setLinkSurf(5,SMap.realSurf(buildIndex+17));
   
   return;
 }

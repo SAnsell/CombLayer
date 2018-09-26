@@ -78,9 +78,7 @@ namespace constructSystem
 
 WedgeInsert::WedgeInsert(const std::string& Key,const size_t Index) :
   attachSystem::FixedOffset(Key+std::to_string(Index),6),
-  attachSystem::ContainedComp(),baseName(Key),
-  wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(wedgeIndex+1)
+  attachSystem::ContainedComp(),baseName(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -90,8 +88,7 @@ WedgeInsert::WedgeInsert(const std::string& Key,const size_t Index) :
 
 WedgeInsert::WedgeInsert(const WedgeInsert& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  baseName(A.baseName),wedgeIndex(A.wedgeIndex),
-  cellIndex(A.cellIndex),
+  baseName(A.baseName),
   viewWidth(A.viewWidth),viewHeight(A.viewHeight),
   viewXY(A.viewXY),viewZ(A.viewZ),wall(A.wall),
   mat(A.mat),wallMat(A.wallMat),temp(A.temp)
@@ -113,7 +110,6 @@ WedgeInsert::operator=(const WedgeInsert& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       viewWidth=A.viewWidth;
       viewHeight=A.viewHeight;
       viewXY=A.viewXY;
@@ -216,29 +212,29 @@ WedgeInsert::createSurfaces()
   Qz.invRotate(vZPlus);
   
   // Back plane
-  ModelSupport::buildPlane(SMap,wedgeIndex+1,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);  
   // sides:
-  ModelSupport::buildPlane(SMap,wedgeIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*(viewWidth/2.0),vXMinus);  
-  ModelSupport::buildPlane(SMap,wedgeIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*(viewWidth/2.0),vXPlus);  
-  ModelSupport::buildPlane(SMap,wedgeIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(viewHeight/2.0),vZMinus);  
-  ModelSupport::buildPlane(SMap,wedgeIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(viewHeight/2.0),vZPlus);  
 
   if (wall>Geometry::zeroTol)
     {
       // Back plane
-      ModelSupport::buildPlane(SMap,wedgeIndex+11,Origin-Y*wall,Y);  
+      ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*wall,Y);  
       // sides:
-      ModelSupport::buildPlane(SMap,wedgeIndex+13,
+      ModelSupport::buildPlane(SMap,buildIndex+13,
 			       Origin-X*(wall+viewWidth/2.0),vXMinus);  
-      ModelSupport::buildPlane(SMap,wedgeIndex+14,
+      ModelSupport::buildPlane(SMap,buildIndex+14,
 			       Origin+X*(wall+viewWidth/2.0),vXPlus);  
-      ModelSupport::buildPlane(SMap,wedgeIndex+15,
+      ModelSupport::buildPlane(SMap,buildIndex+15,
 			       Origin-Z*(wall+viewHeight/2.0),vZMinus);  
-      ModelSupport::buildPlane(SMap,wedgeIndex+16,
+      ModelSupport::buildPlane(SMap,buildIndex+16,
 			       Origin+Z*(wall+viewHeight/2.0),vZPlus);  
     }
 
@@ -279,16 +275,16 @@ WedgeInsert::createObjects(Simulation& System,
   if (wall>Geometry::zeroTol)
     {
 
-      Out=ModelSupport::getComposite(SMap,wedgeIndex," 1 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 3 -4 5 -6 ");
       Out+=CShape;
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,wedgeIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 11 13 -14 15 -16 ( -1:-3:4:-5:6 )" );
       Out+=CShape;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,wedgeIndex," 11 13 -14 15 -16 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 13 -14 15 -16 ");
       
       addOuterSurf(Out);      
     }
@@ -305,7 +301,7 @@ WedgeInsert::createLinks()
   ELog::RegMethod RegA("WedgeInsert","createLinks");
 
 
-  const int WI((wall>Geometry::zeroTol) ? wedgeIndex+10 : wedgeIndex);
+  const int WI((wall>Geometry::zeroTol) ? buildIndex+10 : buildIndex);
   FixedComp::setConnect(0,Origin-Y*wall,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(WI+1));
 

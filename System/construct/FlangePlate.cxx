@@ -88,9 +88,7 @@ namespace constructSystem
 FlangePlate::FlangePlate(const std::string& Key) : 
   attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  plateIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(plateIndex+1)
+  attachSystem::SurfMap(),attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -101,7 +99,6 @@ FlangePlate::FlangePlate(const FlangePlate& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  plateIndex(A.plateIndex),cellIndex(A.cellIndex),
   radius(A.radius),thick(A.thick),innerRadius(A.innerRadius),
   plateMat(A.plateMat),innerMat(A.innerMat)
   /*!
@@ -125,7 +122,6 @@ FlangePlate::operator=(const FlangePlate& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       thick=A.thick;
       innerRadius=A.innerRadius;
@@ -193,20 +189,20 @@ FlangePlate::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,plateIndex+1,Origin-Y*(thick/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
       setFront(SMap.realSurf(1));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,plateIndex+2,Origin+Y*(thick/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
       setBack(-SMap.realSurf(2));
     }
-  ModelSupport::buildCylinder(SMap,plateIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   if (innerRadius>Geometry::zeroTol &&
       innerRadius<radius-Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,plateIndex+107,Origin,Y,innerRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,innerRadius);
   
   return;
 }
@@ -227,19 +223,19 @@ FlangePlate::createObjects(Simulation& System)
 
   if (innerRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,plateIndex," 107 -7 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," 107 -7 ");
       makeCell("Main",System,cellIndex++,plateMat,0.0,Out+frontStr+backStr);
 
-      Out=ModelSupport::getSetComposite(SMap,plateIndex," -107 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -107 ");
       makeCell("Inner",System,cellIndex++,innerMat,0.0,Out+frontStr+backStr);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,plateIndex," -7 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
       makeCell("Main",System,cellIndex++,plateMat,0.0,Out+frontStr+backStr);
     }
 
-  Out=ModelSupport::getSetComposite(SMap,plateIndex," -7 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
   addOuterSurf(Out+backStr+frontStr);
 
   return;

@@ -480,6 +480,7 @@ getDelimUnit(const std::string& A,
     return Out;
 
   Out=Item.substr(posA+1,posB-posA-1);
+
   Item.erase(posA,1+posB-posA);
   
   return Out;

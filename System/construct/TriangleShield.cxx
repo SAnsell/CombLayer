@@ -3,7 +3,7 @@
  
  * File:   construct/TriangleShield.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -86,9 +85,7 @@ namespace constructSystem
 TriangleShield::TriangleShield(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),
-  shieldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(shieldIndex+1)
+  attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -230,20 +227,20 @@ TriangleShield::createSurfaces()
   // Inner void
   if (!FrontBackCut::frontActive())
     {
-      ModelSupport::buildPlane(SMap,shieldIndex+1,Origin-Y*(length/2.0),Y);
-      setFront(SMap.realSurf(shieldIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!FrontBackCut::backActive())
     {
-      ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
-      setBack(-SMap.realSurf(shieldIndex+2));
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      setBack(-SMap.realSurf(buildIndex+2));
       if (endWall>Geometry::zeroTol)
 	{
-	  ModelSupport::buildPlane(SMap,shieldIndex+1002,
+	  ModelSupport::buildPlane(SMap,buildIndex+1002,
 				   Origin+Y*(length/2.0-endWall),Y);
 	  if (endVoid>Geometry::zeroTol)
-	    ModelSupport::buildCylinder(SMap,shieldIndex+1007,
+	    ModelSupport::buildCylinder(SMap,buildIndex+1007,
 					Origin,Y,endVoid);
 	}
 	    
@@ -253,7 +250,7 @@ TriangleShield::createSurfaces()
   
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
-  int SI(shieldIndex+10);
+  int SI(buildIndex+10);
   for(size_t i=1;i<nSeg;i++)
     {
       segLen+=segStep;
@@ -272,7 +269,7 @@ TriangleShield::createSurfaces()
   QRight.rotate(XR);
 
   const Geometry::Vec3D RotOrigin=Origin-Y*(length/2.0);
-  int WI(shieldIndex);
+  int WI(buildIndex);
   for(size_t i=0;i<nWallLayers;i++)
     { 
       ModelSupport::buildPlane(SMap,WI+3,
@@ -282,7 +279,7 @@ TriangleShield::createSurfaces()
       WI+=10;
     }
 
-  int RI(shieldIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nRoofLayers;i++)
     {
       ModelSupport::buildPlane(SMap,RI+6,
@@ -290,7 +287,7 @@ TriangleShield::createSurfaces()
       RI+=10;
     }
 
-  int FI(shieldIndex);
+  int FI(buildIndex);
   for(size_t i=0;i<nFloorLayers;i++)
     {
       ModelSupport::buildPlane(SMap,FI+5,
@@ -314,19 +311,19 @@ TriangleShield::createObjects(Simulation& System)
   const std::string frontStr=frontRule();
   const std::string backStr=backRule();
   const std::string backEndStr=(endWall>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,shieldIndex," -1002 " ) :
+    ModelSupport::getComposite(SMap,buildIndex," -1002 " ) :
     backStr;
   
   // Inner void is a single segment
-  Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
 				   frontStr+backEndStr));
   addCell("Void",cellIndex-1);
 
   // Loop over all segments:
   std::string FBStr;
-  int SI(shieldIndex);
-  int WI(shieldIndex),RI(shieldIndex),FI(shieldIndex);    
+  int SI(buildIndex);
+  int WI(buildIndex),RI(buildIndex),FI(buildIndex);    
   for(size_t index=0;index<nSeg;index++)
     {
       FBStr=((index) ?
@@ -339,31 +336,31 @@ TriangleShield::createObjects(Simulation& System)
 
       // Inner is a single component
       // Walls are contained:
-      WI=shieldIndex;
+      WI=buildIndex;
       for(size_t i=1;i<nWallLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 13 -3 5M -6M ");
+	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 13 -3 5M -6M ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 		 
-	  Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 4 -14 5M -6M ");
+	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 4 -14 5M -6M ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 	  WI+=10;
 	}
 
       // Roof on top of walls are contained:
-      RI=shieldIndex;
+      RI=buildIndex;
       for(size_t i=1;i<nRoofLayers;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,RI,shieldIndex," 3M -4M -16 6 ");
+	  Out=ModelSupport::getComposite(SMap,RI,buildIndex," 3M -4M -16 6 ");
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
 	  RI+=10;
 	}
     
       // Floor complete:
-      FI=shieldIndex;
+      FI=buildIndex;
       for(size_t i=1;i<nFloorLayers;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
@@ -373,10 +370,10 @@ TriangleShield::createObjects(Simulation& System)
 	}
       
       // Left corner
-      RI=shieldIndex;
+      RI=buildIndex;
       for(size_t i=1;i<nRoofLayers;i++)
 	{
-	  WI=shieldIndex;
+	  WI=buildIndex;
 	  for(size_t j=1;j<nWallLayers;j++)
 	    {
 	      const int mat((i>j) ? roofMat[i] : wallMat[j]);
@@ -395,12 +392,12 @@ TriangleShield::createObjects(Simulation& System)
   if (endWall>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-      Out+=ModelSupport::getSetComposite(SMap,shieldIndex," 1002 1007 " );
+      Out+=ModelSupport::getSetComposite(SMap,buildIndex," 1002 1007 " );
       Out+=backStr;
       System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
       if (endVoid>Geometry::zeroTol)
 	{
-	  Out=ModelSupport::getComposite(SMap,shieldIndex," 1002 -1007 " );
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -1007 " );
 	  Out+=backStr;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 	  addCell("Void",cellIndex-1);	  
@@ -430,9 +427,9 @@ TriangleShield::createLinks()
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
 
-  const int WI(shieldIndex+(static_cast<int>(nWallLayers)-1)*10);
-  const int RI(shieldIndex+(static_cast<int>(nRoofLayers)-1)*10);
-  const int FI(shieldIndex+(static_cast<int>(nFloorLayers)-1)*10);
+  const int WI(buildIndex+(static_cast<int>(nWallLayers)-1)*10);
+  const int RI(buildIndex+(static_cast<int>(nRoofLayers)-1)*10);
+  const int FI(buildIndex+(static_cast<int>(nFloorLayers)-1)*10);
 
 
 
@@ -456,7 +453,7 @@ TriangleShield::getXSectionIn() const
 {
   ELog::RegMethod RegA("TriangleShield","getXSectionIn");
   const std::string Out=
-    ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   HeadRule HR(Out);
   HR.populateSurf();
   return HR;

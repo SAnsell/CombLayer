@@ -73,7 +73,7 @@ class CylMod : public constructSystem::ModBase
   virtual CylMod* clone() const;
   
   /// Accessor to the main H2 body
-  virtual int getMainBody() const { return modIndex+1; }
+  virtual int getMainBody() const { return buildIndex+1; }
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
