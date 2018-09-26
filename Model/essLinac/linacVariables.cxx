@@ -79,8 +79,8 @@ EssLinacVariables(FuncDataBase& Control)
   const double dtl1Start(1103.6973); // email from Carl-Johan 5 Jun 2018
   Control.addVariable("LinacLengthBack",-dtl1Start);
   Control.addVariable("LinacLengthFront",51044.4); // MARS
-  Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011
-  Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011
+  Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011  + email from Pontus 26 Sep 2018
+  Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011 + email from Pontus 26 Sep 2018
   Control.addVariable("LinacHeight",200.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacDepth",150.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacWallThick",50.0); // K01-20---6-G01---011
@@ -302,7 +302,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("KGAirMat", "Air");
   // 130 and 570 are stub legs lengths
   Control.addParse<double>("KGXStep",
-			   "(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+570)"); // check
+			   "(LinacWidthLeft+KGWidthRight+LinacWallThick+KGWallThick+130+600)"); // check
   Control.addVariable("KGZStep", 573.5);
 
   Control.addVariable("LinacNStubs", 2);
@@ -310,7 +310,7 @@ EssLinacVariables(FuncDataBase& Control)
   // Lengths are defined as in Sullivan, page 68
   Control.addVariable("Stub100WallThick", 30); // MARS
   Control.addParse<double>("Stub100Length1",
-			   "340.0+LinacWidthRight+LinacWallThick-Stub100WallThick");
+			   "340.0+LinacWidthLeft+LinacWallThick-Stub100WallThick");
   Control.addParse<double>("Stub100Length2", "610.0-2*Stub100WallThick");
   Control.addVariable("Stub100Width",   180.0);
   Control.addVariable("Stub100Height",  150.0);
