@@ -551,7 +551,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
       	    }
 	}
     }
-  ELog::EM<<"Cell == "<<cellN<<ELog::endDiag;
   System.removeCell(cellN);
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);

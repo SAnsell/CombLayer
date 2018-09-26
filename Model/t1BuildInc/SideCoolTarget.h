@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/SideCoolTarget.h
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,6 @@ class SideCoolTarget : public constructSystem::TargetBase
 {
  private:
   
-  const int tarIndex;           ///< Index of surface offset
-
-  int cellIndex;                ///< Cell index
-  
   double mainLength;            ///< Straight length
   
   double xRadius;               ///< Inner W radius [elipse]
@@ -90,7 +86,7 @@ class SideCoolTarget : public constructSystem::TargetBase
   virtual ~SideCoolTarget();
 
   /// Main cell body
-  int getMainBody() const { return tarIndex+1; }
+  int getMainBody() const { return buildIndex+1; }
   virtual std::vector<int> getInnerCells() const;
   void addInnerBoundary(attachSystem::ContainedComp&) const;
 

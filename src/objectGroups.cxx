@@ -329,7 +329,6 @@ objectGroups::removeActiveCell(const int cellN)
   
   activeCells.erase(cellN);
 
-  ELog::EM<<"REmov == "<<cellN<<ELog::endDiag;
   const std::string gName=inRange(cellN);
   if (gName.empty())
     throw ColErr::InContainerError<int>(cellN,"Removing void cell");
@@ -339,9 +338,7 @@ objectGroups::removeActiveCell(const int cellN)
     throw ColErr::InContainerError<std::string>
       (gName,"region not in regionMap");
 
-  ELog::EM<<"PRE == "<<mcr->second<<ELog::endDiag;
   mcr->second.removeItem(cellN);
-  ELog::EM<<"POST == "<<mcr->second<<ELog::endDiag;
   return;
 }
 

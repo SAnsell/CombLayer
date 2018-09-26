@@ -86,8 +86,7 @@ namespace ts1System
 
 H2Pipe::H2Pipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),Central("H2Centre")
+  Central("H2Centre")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,7 +95,6 @@ H2Pipe::H2Pipe(const std::string& Key)  :
 
 H2Pipe::H2Pipe(const H2Pipe& A) : 
   attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   Central(A.Central),Xoffset(A.Xoffset),Yoffset(A.Yoffset),
   h2Mat(A.h2Mat),alMat(A.alMat),steelMat(A.steelMat),h2Temp(A.h2Temp),
   h2InnerRadius(A.h2InnerRadius),alInnerRadius(A.alInnerRadius),
@@ -123,7 +121,6 @@ H2Pipe::operator=(const H2Pipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       Central=A.Central;
       Xoffset=A.Xoffset;
       Yoffset=A.Yoffset;

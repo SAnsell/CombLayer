@@ -87,8 +87,7 @@ namespace ModelSupport
 boxUnit::boxUnit(const std::string& Key,const size_t index) : 
   attachSystem::FixedComp(StrFunc::makeString(Key,index),6),
   attachSystem::ContainedComp(),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1),prev(0),next(0),maxExtent(0.0),
+  prev(0),next(0),maxExtent(0.0),
   activeFlag(0),nSides(0)
  /*!
    Constructor
@@ -99,7 +98,7 @@ boxUnit::boxUnit(const std::string& Key,const size_t index) :
 
 boxUnit::boxUnit(const boxUnit& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),prev(A.prev),
+  prev(A.prev),
   next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),XUnit(A.XUnit),ZUnit(A.ZUnit),
   maxExtent(A.maxExtent),
@@ -122,7 +121,6 @@ boxUnit::operator=(const boxUnit& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       APt=A.APt;
       BPt=A.BPt;
       Axis=A.Axis;
@@ -354,14 +352,14 @@ boxUnit::createSurfaces()
   // top / bottom plane
   if (!ASurf.hasRule())
     {
-      ModelSupport::buildPlane(SMap,surfIndex+1,APt,ANorm);
-      ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+1)));
+      ModelSupport::buildPlane(SMap,buildIndex+1,APt,ANorm);
+      ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(buildIndex+1)));
       ASurf.populateSurf();
     }
   if (!BSurf.hasRule())
     {
-      ModelSupport::buildPlane(SMap,surfIndex+2,BPt,BNorm);
-      BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+2)));
+      ModelSupport::buildPlane(SMap,buildIndex+2,BPt,BNorm);
+      BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(buildIndex+2)));
       BSurf.populateSurf();
     }
   
@@ -369,7 +367,7 @@ boxUnit::createSurfaces()
   nSides=boxVar.back().getSides();    
 
   size_t bitIndex(1);    // Index for flag bit
-  int surfOffset(surfIndex);         // Cnt
+  int surfOffset(buildIndex);         // Cnt
   for(size_t i=0;i<boxVar.size();i++)      // layers:
     {
       if (!activeFlag || (activeFlag & bitIndex))
@@ -429,7 +427,7 @@ boxUnit::createOuterObjects()
   ELog::RegMethod RegA("boxUnit","createOuterObject");
 
   const size_t outerIndex=getOuterIndex();
-  const int SI(surfIndex+static_cast<int>(outerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(outerIndex)*10);
 
   const std::string FBSurf=createCaps();
 
@@ -456,7 +454,7 @@ boxUnit::createObjects(Simulation& System)
   const std::string FBSurf=createCaps();  
 
   std::string Out;
-  int SI(surfIndex);
+  int SI(buildIndex);
   int SIprev(0);
   size_t bitIndex(1);
   // Sides string

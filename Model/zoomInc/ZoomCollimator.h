@@ -47,8 +47,6 @@ class ZoomCollimator : public attachSystem::TwinComp,
 {
  private:
   
-  const int colIndex;          ///< Index of surface offset
-  int cellIndex;               ///< Cell index
 
   ZoomStack cStack;            ///< Zoom stack
 

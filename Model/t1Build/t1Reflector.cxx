@@ -87,8 +87,7 @@ namespace ts1System
 
 t1Reflector::t1Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,11),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +96,7 @@ t1Reflector::t1Reflector(const std::string& Key)  :
 
 t1Reflector::t1Reflector(const t1Reflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),populated(A.populated),
+  populated(A.populated),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),xSize(A.xSize),ySize(A.ySize),
   ySizeColdCut(A.ySizeColdCut),zSize(A.zSize),cutLen(A.cutLen),
@@ -121,7 +120,6 @@ t1Reflector::operator=(const t1Reflector& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -204,24 +202,24 @@ t1Reflector::createSurfaces()
   ELog::RegMethod RegA("t1Reflector","createSurface");
 
   // Outer layer:
-  ModelSupport::buildPlane(SMap,refIndex+1,Origin-Y*ySize/2.0,Y);
-  ModelSupport::buildPlane(SMap,refIndex+2,Origin+Y*ySize/2.0,Y);
-  ModelSupport::buildPlane(SMap,refIndex+3,Origin-X*xSize/2.0,X);
-  ModelSupport::buildPlane(SMap,refIndex+4,Origin+X*xSize/2.0,X);
-  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*zSize/2.0,Z);
-  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*zSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*ySize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ySize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize/2.0,Z);
   // Corners:
-  ModelSupport::buildPlane(SMap,refIndex+11,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin
 			   -X*xSize/2.0-Y*(ySize/2.0-cutLen),-X-Y);
-  ModelSupport::buildPlane(SMap,refIndex+12,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin
 			   -X*xSize/2.0+Y*(ySize/2.0-cutLen),-X+Y);
-  ModelSupport::buildPlane(SMap,refIndex+13,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin
 			   +X*xSize/2.0-Y*(ySize/2.0-cutLen),X-Y);
-  ModelSupport::buildPlane(SMap,refIndex+14,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin
 			   +X*xSize/2.0+Y*(ySize/2.0-cutLen),X+Y);
 
   // Cold Moderators- Different Thickness:
-  ModelSupport::buildPlane(SMap,refIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(ySize/2.0-ySizeColdCut),Y);
 
   return;
@@ -234,7 +232,7 @@ t1Reflector::addToInsertChain(attachSystem::ContainedComp& CC) const
     \param CC :: ContainedComp object to add to this
   */
 {
-  for(int i=refIndex+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     CC.addInsertCell(i);
   return;
 }
@@ -249,7 +247,7 @@ t1Reflector::createObjects(Simulation&)
   ELog::RegMethod RegA("t1Reflector","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,refIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 3 -4 5 -6 -11 -12 -13 -14");
   addOuterSurf(Out);
   addBoundarySurf(Out);
@@ -265,18 +263,18 @@ t1Reflector::createLinks()
 {
   ELog::RegMethod RegA("t1Reflector","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(refIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+11));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(refIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+12));
-  FixedComp::setLinkSurf(4,SMap.realSurf(refIndex+2));
-  FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+14));
-  FixedComp::setLinkSurf(6,SMap.realSurf(refIndex+4));
-  FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+13));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+5));
-  FixedComp::setLinkSurf(9,SMap.realSurf(refIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+6));
   
-  FixedComp::setLinkSurf(10,SMap.realSurf(refIndex+22));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+22));
 
   FixedComp::setConnect(0,Origin-Y*ySize/2.0,-Y);
   FixedComp::setConnect(2,Origin-X*xSize/2.0,-X);
@@ -303,7 +301,7 @@ t1Reflector::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,refIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void
@@ -327,7 +325,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[0]->addSurface(Origin-Z*baseZCut,Geometry::Vec3D(0,0,-1));  // base
   Boxes[0]->addSurface(Origin,Geometry::Vec3D(-1,0,0));  // base
   //  Boxes[0]->maskSection(5);
-  //  Boxes[0]->addInsertCell(refIndex+1);
+  //  Boxes[0]->addInsertCell(buildIndex+1);
   Boxes[0]->createAll(System,*this);
   
   // ---------------- RIGHT BASE --------------------------------

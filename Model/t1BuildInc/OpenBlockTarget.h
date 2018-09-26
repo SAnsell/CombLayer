@@ -39,8 +39,6 @@ class OpenBlockTarget : public constructSystem::TargetBase
 {
  private:
   
-  const int ptIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate

@@ -50,8 +50,6 @@ class t1Reflector : public attachSystem::ContainedComp,
 {
  private:
   
-  const int refIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   double xStep;                 ///< Offset on X to Target

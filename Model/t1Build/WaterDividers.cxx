@@ -3,7 +3,7 @@
  
  * File:   t1Build/WaterDividers.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,9 +80,7 @@ namespace ts1System
 {
 
 WaterDividers::WaterDividers(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
-  wIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(wIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +89,6 @@ WaterDividers::WaterDividers(const std::string& Key)  :
 
 WaterDividers::WaterDividers(const WaterDividers& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  wIndex(A.wIndex),cellIndex(A.cellIndex),
   conHeight(A.conHeight),
   fblkConnect(A.fblkConnect),fblkSize(A.fblkSize),
   fblkSndStep(A.fblkSndStep),fblkSndOut(A.fblkSndOut),
@@ -128,7 +125,6 @@ WaterDividers::operator=(const WaterDividers& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       conHeight=A.conHeight;
       fblkConnect=A.fblkConnect;
       fblkSize=A.fblkSize;
@@ -257,11 +253,11 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
   ELog::RegMethod RegA("WaterDividers","createSurface");
 
   // VacVessel values [Back plate]: 
-  SMap.addMatch(wIndex+2002,Vessel.getLinkSurf(2));
+  SMap.addMatch(buildIndex+2002,Vessel.getLinkSurf(2));
   const Geometry::Vec3D VesselPt=Vessel.getLinkPt(2);
 
-  SMap.addMatch(wIndex+2005,Vessel.getLinkSurf(5));
-  SMap.addMatch(wIndex+2006,Vessel.getLinkSurf(6));
+  SMap.addMatch(buildIndex+2005,Vessel.getLinkSurf(5));
+  SMap.addMatch(buildIndex+2006,Vessel.getLinkSurf(6));
 
 
   // FORWARD DIVIDER
@@ -270,39 +266,39 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
     PT.plateEdge(fblkConnect,PWidth,PLen);
   PLen/=2.0;
   // Target connected block
-  ModelSupport::buildPlane(SMap,wIndex+1,PCent-Y*PLen,Y);
-  ModelSupport::buildPlane(SMap,wIndex+2,PCent+Y*PLen,Y);
-  ModelSupport::buildPlane(SMap,wIndex+3,PCent-X*PWidth,X);
-  ModelSupport::buildPlane(SMap,wIndex+4,PCent+X*PWidth,X);
-  ModelSupport::buildPlane(SMap,wIndex+5,Origin-Z*conHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,wIndex+6,Origin+Z*conHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,PCent-Y*PLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,PCent+Y*PLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,PCent-X*PWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,PCent+X*PWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*conHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*conHeight/2.0,Z);
   // Outside of target connected block
-  ModelSupport::buildPlane(SMap,wIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   PCent-X*(PWidth+fblkSize),X);
-  ModelSupport::buildPlane(SMap,wIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   PCent+X*(PWidth+fblkSize),X);
   
   // snd block:
-  ModelSupport::buildPlane(SMap,wIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   PCent+Y*(fblkSndStep-fblkSndLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,wIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   PCent+Y*(fblkSndStep+fblkSndLen/2.0),Y);
 
   ModelSupport::buildPlane
-    (SMap,wIndex+23,PCent-X*(PWidth+fblkSndOut-fblkSndWidth/2.0),X);
+    (SMap,buildIndex+23,PCent-X*(PWidth+fblkSndOut-fblkSndWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+33,PCent-X*(PWidth+fblkSndOut+fblkSndWidth/2.0),X);
+    (SMap,buildIndex+33,PCent-X*(PWidth+fblkSndOut+fblkSndWidth/2.0),X);
 
   ModelSupport::buildPlane
-    (SMap,wIndex+24,PCent+X*(PWidth+fblkSndOut-fblkSndWidth/2.0),X);
+    (SMap,buildIndex+24,PCent+X*(PWidth+fblkSndOut-fblkSndWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+34,PCent+X*(PWidth+fblkSndOut+fblkSndWidth/2.0),X);
+    (SMap,buildIndex+34,PCent+X*(PWidth+fblkSndOut+fblkSndWidth/2.0),X);
 
   // Connector [surf 47,49]:
   Geometry::Vec3D A,B;
   for(int lrSign=-1;lrSign<2;lrSign+=2)  // left/right sign
     {
-      int index((lrSign<0) ? wIndex+47 : wIndex+57);
+      int index((lrSign<0) ? buildIndex+47 : buildIndex+57);
       for(int fbSign=-1;fbSign<2;fbSign+=2,index++)   // front/back
 	{
 	  A=PCent+X*(lrSign*(PWidth+fblkSize))+Y*(fbSign*PLen);
@@ -314,24 +310,24 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
 
   // Long divider:
   ModelSupport::buildPlane
-    (SMap,wIndex+63,PCent-X*(PWidth+fblkSndOut-fblkWallThick/2.0),X);
+    (SMap,buildIndex+63,PCent-X*(PWidth+fblkSndOut-fblkWallThick/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+73,PCent-X*(PWidth+fblkSndOut+fblkWallThick/2.0),X);
+    (SMap,buildIndex+73,PCent-X*(PWidth+fblkSndOut+fblkWallThick/2.0),X);
 
   ModelSupport::buildPlane
-    (SMap,wIndex+64,PCent+X*(PWidth+fblkSndOut-fblkWallThick/2.0),X);
+    (SMap,buildIndex+64,PCent+X*(PWidth+fblkSndOut-fblkWallThick/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+74,PCent+X*(PWidth+fblkSndOut+fblkWallThick/2.0),X);
+    (SMap,buildIndex+74,PCent+X*(PWidth+fblkSndOut+fblkWallThick/2.0),X);
   
   // End block:
-  ModelSupport::buildPlane(SMap,wIndex+81,VesselPt-Y*(fblkEndLen),Y);
-  ModelSupport::buildPlane(SMap,wIndex+83,
+  ModelSupport::buildPlane(SMap,buildIndex+81,VesselPt-Y*(fblkEndLen),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+83,
 			   PCent-X*(PWidth+fblkSndOut+fblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+84,
+  ModelSupport::buildPlane(SMap,buildIndex+84,
 			   PCent-X*(PWidth+fblkSndOut-fblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+93,
+  ModelSupport::buildPlane(SMap,buildIndex+93,
 			   PCent+X*(PWidth+fblkSndOut-fblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+94,
+  ModelSupport::buildPlane(SMap,buildIndex+94,
 			   PCent+X*(PWidth+fblkSndOut+fblkEndThick/2.0),X);
 
 
@@ -341,83 +337,83 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
     PT.plateEdge(mblkConnect,MWidth,MLen);
   MLen/=2.0;
 
-  ModelSupport::buildPlane(SMap,wIndex+101,MCent-Y*MLen,Y);
-  ModelSupport::buildPlane(SMap,wIndex+102,MCent+Y*MLen,Y);
-  ModelSupport::buildPlane(SMap,wIndex+103,MCent-X*MWidth,X);
-  ModelSupport::buildPlane(SMap,wIndex+104,MCent+X*MWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+101,MCent-Y*MLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,MCent+Y*MLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,MCent-X*MWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,MCent+X*MWidth,X);
 
 
-  ModelSupport::buildPlane(SMap,wIndex+113,
+  ModelSupport::buildPlane(SMap,buildIndex+113,
 			   MCent-X*(MWidth+mblkSize),X);
-  ModelSupport::buildPlane(SMap,wIndex+114,
+  ModelSupport::buildPlane(SMap,buildIndex+114,
 			   MCent+X*(MWidth+mblkSize),X);
   // Extension block
-  ModelSupport::buildPlane(SMap,wIndex+122,
+  ModelSupport::buildPlane(SMap,buildIndex+122,
 			   MCent+Y*(MLen+mblkExtLen),Y);
-  ModelSupport::buildPlane(SMap,wIndex+123,
+  ModelSupport::buildPlane(SMap,buildIndex+123,
 			   MCent-X*(MWidth+mblkSize-mblkExtWidth),X);
-  ModelSupport::buildPlane(SMap,wIndex+124,
+  ModelSupport::buildPlane(SMap,buildIndex+124,
 			   MCent+X*(MWidth+mblkSize-mblkExtWidth),X);
 
   // OuterCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+137,
+  ModelSupport::buildCylinder(SMap,buildIndex+137,
 			      MCent-X*(MWidth+mblkSize-mblkOutRad)
 			      -Y*(MLen-mblkOutRad),Z,mblkOutRad);
-  ModelSupport::buildPlane(SMap,wIndex+132,
+  ModelSupport::buildPlane(SMap,buildIndex+132,
 			   MCent-Y*(MLen-mblkOutRad),Y);
-  ModelSupport::buildPlane(SMap,wIndex+133,
+  ModelSupport::buildPlane(SMap,buildIndex+133,
 			   MCent-X*(MWidth+mblkSize-mblkOutRad),X);
 
   // InnerCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+147,
+  ModelSupport::buildCylinder(SMap,buildIndex+147,
 		      MCent-X*(MWidth+mblkSize-mblkExtWidth-mblkOutRad)
 			      +Y*(MLen+mblkInRad),Z,mblkInRad);
-  ModelSupport::buildPlane(SMap,wIndex+142,
+  ModelSupport::buildPlane(SMap,buildIndex+142,
 			   MCent+Y*(MLen+mblkInRad),Y);
-  ModelSupport::buildPlane(SMap,wIndex+143,
+  ModelSupport::buildPlane(SMap,buildIndex+143,
 		   MCent-X*(MWidth+mblkSize-mblkExtWidth-mblkOutRad),X);
 
   // OuterCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+138,
+  ModelSupport::buildCylinder(SMap,buildIndex+138,
 			      MCent+X*(MWidth+mblkSize-mblkOutRad)
 			      -Y*(MLen-mblkOutRad),Z,mblkOutRad);
-  ModelSupport::buildPlane(SMap,wIndex+134,
+  ModelSupport::buildPlane(SMap,buildIndex+134,
 			   MCent+X*(MWidth+mblkSize-mblkOutRad),X);
 
   // InnerCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+148,
+  ModelSupport::buildCylinder(SMap,buildIndex+148,
 		      MCent+X*(MWidth+mblkSize-mblkExtWidth-mblkOutRad)
 			      +Y*(MLen+mblkInRad),Z,mblkInRad);
-  ModelSupport::buildPlane(SMap,wIndex+144,
+  ModelSupport::buildPlane(SMap,buildIndex+144,
 		   MCent+X*(MWidth+mblkSize-mblkExtWidth-mblkOutRad),X);
 
   // Long divider:
   ModelSupport::buildPlane
-    (SMap,wIndex+163,MCent-X*(MWidth+mblkSize-mblkExtWidth/2.0
+    (SMap,buildIndex+163,MCent-X*(MWidth+mblkSize-mblkExtWidth/2.0
 			      -mblkWallThick/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+173,MCent-X*(MWidth+mblkSize-mblkExtWidth/2.0
+    (SMap,buildIndex+173,MCent-X*(MWidth+mblkSize-mblkExtWidth/2.0
 			      +mblkWallThick/2.0),X);
 
   ModelSupport::buildPlane
-    (SMap,wIndex+164,MCent+X*(MWidth+mblkSize-mblkExtWidth/2.0
+    (SMap,buildIndex+164,MCent+X*(MWidth+mblkSize-mblkExtWidth/2.0
 			      -mblkWallThick/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+174,MCent+X*(MWidth+mblkSize-mblkExtWidth/2.0
+    (SMap,buildIndex+174,MCent+X*(MWidth+mblkSize-mblkExtWidth/2.0
 			      +mblkWallThick/2.0),X);
 
   // End block:
-  ModelSupport::buildPlane(SMap,wIndex+181,VesselPt-Y*(mblkEndLen),Y);
-  ModelSupport::buildPlane(SMap,wIndex+183,
+  ModelSupport::buildPlane(SMap,buildIndex+181,VesselPt-Y*(mblkEndLen),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+183,
 			   MCent-X*(MWidth+mblkSize-mblkExtWidth/2.0
 				    +mblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+184,
+  ModelSupport::buildPlane(SMap,buildIndex+184,
 			   MCent-X*(MWidth+mblkSize-mblkExtWidth/2.0
 				    -mblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+193,
+  ModelSupport::buildPlane(SMap,buildIndex+193,
 			   MCent+X*(MWidth+mblkSize-mblkExtWidth/2.0
 				    -mblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+194,
+  ModelSupport::buildPlane(SMap,buildIndex+194,
 			   MCent+X*(MWidth+mblkSize-mblkExtWidth/2.0
 				    +mblkEndThick/2.0),X);
 
@@ -433,102 +429,102 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
   BLen=1.1;
   BConst=0.2;
 
-  ModelSupport::buildPlane(SMap,wIndex+201,BCent-Y*BConst-Y*BLen,Y);
-  ModelSupport::buildPlane(SMap,wIndex+202,BCent-Y*BConst+Y*BLen,Y);
-  ModelSupport::buildPlane(SMap,wIndex+203,BCent-Y*BConst-X*BWidth,X);
-  ModelSupport::buildPlane(SMap,wIndex+204,BCent-Y*BConst+X*BWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+201,BCent-Y*BConst-Y*BLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,BCent-Y*BConst+Y*BLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+203,BCent-Y*BConst-X*BWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,BCent-Y*BConst+X*BWidth,X);
 
 
-  ModelSupport::buildPlane(SMap,wIndex+213,
+  ModelSupport::buildPlane(SMap,buildIndex+213,
 			   BCent-Y*BConst-X*(BWidth+bblkSize),X);
-  ModelSupport::buildPlane(SMap,wIndex+214,
+  ModelSupport::buildPlane(SMap,buildIndex+214,
 			   BCent-Y*BConst+X*(BWidth+bblkSize),X);
   // Extension block
-  ModelSupport::buildPlane(SMap,wIndex+222,
+  ModelSupport::buildPlane(SMap,buildIndex+222,
 			   BCent-Y*BConst+Y*(BLen+bblkExtLen),Y);
-  ModelSupport::buildPlane(SMap,wIndex+223,
+  ModelSupport::buildPlane(SMap,buildIndex+223,
 			   BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth),X);
-  ModelSupport::buildPlane(SMap,wIndex+224,
+  ModelSupport::buildPlane(SMap,buildIndex+224,
 			   BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth),X);
 
   // OuterCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+237,
+  ModelSupport::buildCylinder(SMap,buildIndex+237,
 			      BCent-Y*BConst-X*(BWidth+bblkSize-bblkOutRad)
 			      -Y*(BLen-bblkOutRad),Z,bblkOutRad);
-  ModelSupport::buildPlane(SMap,wIndex+232,
+  ModelSupport::buildPlane(SMap,buildIndex+232,
 			   BCent-Y*BConst-Y*(BLen-bblkOutRad),Y);
-  ModelSupport::buildPlane(SMap,wIndex+233,
+  ModelSupport::buildPlane(SMap,buildIndex+233,
 			   BCent-Y*BConst-X*(BWidth+bblkSize-bblkOutRad),X);
 
   // InnerCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+247,
+  ModelSupport::buildCylinder(SMap,buildIndex+247,
 		      BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth-bblkOutRad)
 			      +Y*(BLen+bblkInRad),Z,bblkInRad);
-  ModelSupport::buildPlane(SMap,wIndex+242,
+  ModelSupport::buildPlane(SMap,buildIndex+242,
 			   BCent-Y*BConst+Y*(BLen+bblkInRad),Y);
-  ModelSupport::buildPlane(SMap,wIndex+243,
+  ModelSupport::buildPlane(SMap,buildIndex+243,
 		   BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth-bblkOutRad),X);
 
   // OuterCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+238,
+  ModelSupport::buildCylinder(SMap,buildIndex+238,
 			      BCent-Y*BConst+X*(BWidth+bblkSize-bblkOutRad)
 			      -Y*(BLen-bblkOutRad),Z,bblkOutRad);
-  ModelSupport::buildPlane(SMap,wIndex+234,
+  ModelSupport::buildPlane(SMap,buildIndex+234,
 			   BCent-Y*BConst+X*(BWidth+bblkSize-bblkOutRad),X);
 
   // InnerCylinders:
-  ModelSupport::buildCylinder(SMap,wIndex+248,
+  ModelSupport::buildCylinder(SMap,buildIndex+248,
 		      BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth-bblkOutRad)
 			      +Y*(BLen+bblkInRad),Z,bblkInRad);
-  ModelSupport::buildPlane(SMap,wIndex+244,
+  ModelSupport::buildPlane(SMap,buildIndex+244,
 		   BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth-bblkOutRad),X);
 
   // Long divider:
   ModelSupport::buildPlane
-    (SMap,wIndex+263,BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth/2.0
+    (SMap,buildIndex+263,BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth/2.0
 			      -bblkWallThick/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+273,BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth/2.0
+    (SMap,buildIndex+273,BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth/2.0
 			      +bblkWallThick/2.0),X);
 
   ModelSupport::buildPlane
-    (SMap,wIndex+264,BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth/2.0
+    (SMap,buildIndex+264,BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth/2.0
 			      -bblkWallThick/2.0),X);
   ModelSupport::buildPlane
-    (SMap,wIndex+274,BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth/2.0
+    (SMap,buildIndex+274,BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth/2.0
 			      +bblkWallThick/2.0),X);
 
   // End block:
-  // ModelSupport::buildPlane(SMap,wIndex+281,VesselPt-Y*(bblkEndLen),Y);
-  ModelSupport::buildPlane(SMap,wIndex+283,
+  // ModelSupport::buildPlane(SMap,buildIndex+281,VesselPt-Y*(bblkEndLen),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+283,
 			   BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth/2.0
 				    +bblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+284,
+  ModelSupport::buildPlane(SMap,buildIndex+284,
 			   BCent-Y*BConst-X*(BWidth+bblkSize-bblkExtWidth/2.0
 				    -bblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+293,
+  ModelSupport::buildPlane(SMap,buildIndex+293,
 			   BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth/2.0
 				    -bblkEndThick/2.0),X);
-  ModelSupport::buildPlane(SMap,wIndex+294,
+  ModelSupport::buildPlane(SMap,buildIndex+294,
 			   BCent-Y*BConst+X*(BWidth+bblkSize-bblkExtWidth/2.0
 				    +bblkEndThick/2.0),X);
 
   // Insert:
 
-  ModelSupport::buildPlane(SMap,wIndex+301,VesselPt-Y*insOutThick,Y);
-  ModelSupport::buildPlane(SMap,wIndex+303,VesselPt-X*insWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,wIndex+304,VesselPt+X*insWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,wIndex+305,VesselPt-Z*insHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,wIndex+306,VesselPt+Z*insHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+301,VesselPt-Y*insOutThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+303,VesselPt-X*insWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,VesselPt+X*insWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+305,VesselPt-Z*insHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+306,VesselPt+Z*insHeight/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,wIndex+401,VesselPt-Y*insInThick,Y);
-  ModelSupport::buildCylinder(SMap,wIndex+407,Origin,Y,insRad);
+  ModelSupport::buildPlane(SMap,buildIndex+401,VesselPt-Y*insInThick,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Y,insRad);
 
   // Corners:
 
-  ModelSupport::buildPlane(SMap,wIndex+501,VesselPt-Y*cornerThick,Y);
-  ModelSupport::buildPlane(SMap,wIndex+503,VesselPt-X*cornerWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,wIndex+504,VesselPt+X*cornerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+501,VesselPt-Y*cornerThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+503,VesselPt-X*cornerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+504,VesselPt+X*cornerWidth/2.0,X);
 
   return;
 }
@@ -544,31 +540,31 @@ WaterDividers::createObjects(Simulation& System)
 
   std::string Out;
   // Front divider:
-  Out=ModelSupport::getComposite(SMap,wIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 47 33 (-2:-48:-23) -3 -22 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,wIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -57 -34 (-2:58:24) 4 -22 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Thin divider
-  Out=ModelSupport::getComposite(SMap,wIndex,"22 -81 -63 73 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"22 -81 -63 73 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,wIndex,"22 -81 64 -74 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"22 -81 64 -74 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // End block on left
-  Out=ModelSupport::getComposite(SMap,wIndex,"81 -2002 83 -84 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"81 -2002 83 -84 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   // End block on right
-  Out=ModelSupport::getComposite(SMap,wIndex,"81 -2002 93 -94 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"81 -2002 93 -94 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
@@ -576,7 +572,7 @@ WaterDividers::createObjects(Simulation& System)
   // Mid section divider:
   //---------------------
 
-  Out=ModelSupport::getComposite(SMap,wIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "101  (-137:132:133 ) "
 				 "(-102 : -123 : (147 -142 -143)) "
 				 "-122 -103 113 5 -6 ");
@@ -584,7 +580,7 @@ WaterDividers::createObjects(Simulation& System)
   addOuterUnionSurf(Out);
 
   // Mid section divider:
-  Out=ModelSupport::getComposite(SMap,wIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "101  (-138:132:-134 ) "
 				 "(-102 : 124 : (148 -142 144)) "
 				 "-122 104 -114 5 -6 ");
@@ -592,20 +588,20 @@ WaterDividers::createObjects(Simulation& System)
   addOuterUnionSurf(Out);
   
   // Mid thin dividers:
-  Out=ModelSupport::getComposite(SMap,wIndex,"122 -181 -163 173 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"122 -181 -163 173 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,wIndex,"122 -181 164 -174 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"122 -181 164 -174 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // End block on left
-  Out=ModelSupport::getComposite(SMap,wIndex,"181 -2002 183 -184 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"181 -2002 183 -184 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   // End block on right
-  Out=ModelSupport::getComposite(SMap,wIndex,"181 -2002 193 -194 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"181 -2002 193 -194 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
@@ -613,7 +609,7 @@ WaterDividers::createObjects(Simulation& System)
   // End section divider:
   //---------------------------------------------------------------
 
-   Out=ModelSupport::getComposite(SMap,wIndex,
+   Out=ModelSupport::getComposite(SMap,buildIndex,
   				 "201  (-237:232:233 ) "
   				 "(-202 : -223 : (247 -242 -243)) "
   				 "-222 -203 213 5 -6 ");
@@ -621,7 +617,7 @@ WaterDividers::createObjects(Simulation& System)
    addOuterUnionSurf(Out);
 
   // Back section divider:
-   Out=ModelSupport::getComposite(SMap,wIndex,
+   Out=ModelSupport::getComposite(SMap,buildIndex,
   				 "201  (-238:232:-234 ) "
     			 "(-202 : 224 : (248 -242 244)) "
   				 "-222 204 -214 5 -6 ");
@@ -629,31 +625,31 @@ WaterDividers::createObjects(Simulation& System)
    addOuterUnionSurf(Out);
   
   // End block on left
-  Out=ModelSupport::getComposite(SMap,wIndex,"222 -2002 283 -284 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"222 -2002 283 -284 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   // End block on right
-  Out=ModelSupport::getComposite(SMap,wIndex,"222 -2002 293 -294 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"222 -2002 293 -294 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Insert
  
-  Out=ModelSupport::getComposite(SMap,wIndex,"301 -2002 303 -304 305 -306");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"301 -2002 303 -304 305 -306");
   addOuterUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,wIndex,"(-401:2002:407) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-401:2002:407) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));  
   
-  Out=ModelSupport::getComposite(SMap,wIndex,"401 -2002 -407");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"401 -2002 -407");
   System.addCell(MonteCarlo::Qhull(cellIndex++,insMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Corners
-  Out=ModelSupport::getComposite(SMap,wIndex,"501 -2002 -503 284 2005 -2006");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"501 -2002 -503 284 2005 -2006");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,wIndex,"501 -2002 504 -293 2005 -2006");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"501 -2002 504 -293 2005 -2006");
   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   

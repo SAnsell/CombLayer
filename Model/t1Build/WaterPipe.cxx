@@ -79,8 +79,6 @@ namespace ts1System
 
 WaterPipe::WaterPipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),
   Inlet(Key+"Inlet"),Outlet(Key+"Outlet")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -90,7 +88,6 @@ WaterPipe::WaterPipe(const std::string& Key)  :
   
 WaterPipe::WaterPipe(const WaterPipe& A) : 
   attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   Inlet(A.Inlet),Outlet(A.Outlet),iXStep(A.iXStep),
   iYStep(A.iYStep),oXStep(A.oXStep),oYStep(A.oYStep),
   watRadius(A.watRadius),outRadius(A.outRadius),
@@ -114,7 +111,6 @@ WaterPipe::operator=(const WaterPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       Inlet=A.Inlet;
       Outlet=A.Outlet;
       iXStep=A.iXStep;

@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,10 +82,9 @@ namespace ts1System
 {
 
 ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
-  rodIndex(ModelSupport::objectRegister::Instance().cell
-	   (Key+StrFunc::makeString(index))),
-  baseName(Key),cellIndex(rodIndex+1),populated(0),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key+std::to_string(index),0),
+  baseName(Key),populated(0),
   topSurf(0),baseSurf(0),RefObj(0)  
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -96,8 +95,8 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
 
 ReflectRods::ReflectRods(const ReflectRods& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  rodIndex(A.rodIndex),baseName(A.baseName),
-  cellIndex(A.cellIndex),populated(A.populated),
+  baseName(A.baseName),
+  populated(A.populated),
   zAngle(A.zAngle),xyAngle(A.xyAngle),outerMat(A.outerMat),
   innerMat(A.innerMat),linerMat(A.linerMat),HexHA(A.HexHA),
   HexHB(A.HexHB),HexHC(A.HexHC),topCentre(A.topCentre),
@@ -554,7 +553,7 @@ ReflectRods::createLinkSurf()
 
   MTYPE::iterator ac;
   MTYPE::iterator bc;
-  int planeIndex(rodIndex+5001);
+  int planeIndex(buildIndex+5001);
 
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
@@ -608,7 +607,7 @@ ReflectRods::createSurfaces()
   // Create actual holes :
   Geometry::Vec3D Pt,Axis;
 
-  int index(rodIndex);
+  int index(buildIndex);
   MTYPE::const_iterator mc;
   for(MTYPE::value_type& mc : HVec)
     {
@@ -657,7 +656,7 @@ ReflectRods::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ReflectRods","createObjects");
-  int cylIndex(rodIndex);
+  int cylIndex(buildIndex);
 
   const std::string plates=plateString();
 

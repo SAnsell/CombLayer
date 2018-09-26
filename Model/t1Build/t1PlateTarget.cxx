@@ -79,7 +79,6 @@ namespace ts1System
 
 t1PlateTarget::t1PlateTarget(const std::string& Key)  :
   TargetBase(Key,12),
-  tIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   PressVObj(new PressVessel("PVessel")),
   PlateTarObj(new PlateTarget("TPlate")),
   DivObj(new WaterDividers("WDivide"))
@@ -97,7 +96,7 @@ t1PlateTarget::t1PlateTarget(const std::string& Key)  :
 }
 
 t1PlateTarget::t1PlateTarget(const t1PlateTarget& A) : 
-  TargetBase(A),tIndex(A.tIndex),PressVObj(new PressVessel(*A.PressVObj)),
+  TargetBase(A),PressVObj(new PressVessel(*A.PressVObj)),
   PlateTarObj(new PlateTarget(*A.PlateTarObj)),
   DivObj(new WaterDividers(*A.DivObj))
   /*!

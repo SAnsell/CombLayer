@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/InnerTarget.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,6 @@ class InnerTarget : public constructSystem::TargetBase
 {
  private:
   
-  const int tarIndex;           ///< Index of surface offset
-
-  int cellIndex;                ///< Cell index
-
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
   
@@ -101,7 +97,7 @@ class InnerTarget : public constructSystem::TargetBase
   virtual ~InnerTarget();
 
   /// Main cell body
-  int getMainBody() const { return tarIndex+1; }
+  int getMainBody() const { return buildIndex+1; }
   void addInnerBoundary(attachSystem::ContainedComp&) const;
   /// Set the extext of the reflector
   void setRefPlates(const int A,const int B) 

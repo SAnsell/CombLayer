@@ -85,9 +85,7 @@ namespace zoomSystem
 {
 
 ZoomMonitor::ZoomMonitor(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
-  monIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(monIndex+1)
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -96,7 +94,7 @@ ZoomMonitor::ZoomMonitor(const std::string& Key) :
 
 ZoomMonitor::ZoomMonitor(const ZoomMonitor& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  monIndex(A.monIndex),cellIndex(A.cellIndex),viewThick(A.viewThick),
+  viewThick(A.viewThick),
   wallThick(A.wallThick),length(A.length),radius(A.radius),
   mat(A.mat),wallMat(A.wallMat)
   /*!
@@ -117,7 +115,6 @@ ZoomMonitor::operator=(const ZoomMonitor& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       viewThick=A.viewThick;
       wallThick=A.wallThick;
       length=A.length;
@@ -165,19 +162,19 @@ ZoomMonitor::createLinks()
   */
 {
   FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(monIndex+11));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
   FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(monIndex+12));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
   FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
   FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
   FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
   FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(monIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(monIndex+17));
-  FixedComp::setLinkSurf(4,SMap.realSurf(monIndex+17));
-  FixedComp::setLinkSurf(5,SMap.realSurf(monIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
   return;
 }
 
@@ -206,15 +203,15 @@ ZoomMonitor::createSurfaces()
 {
   ELog::RegMethod RegA("ZoomMonitor","createSurface");
   
-  ModelSupport::buildPlane(SMap,monIndex+1,Origin-Y*(length/2.0),Y); 
-  ModelSupport::buildPlane(SMap,monIndex+2,Origin+Y*(length/2.0),Y); 
-  ModelSupport::buildCylinder(SMap,monIndex+7,Origin,Y,radius); 
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y); 
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius); 
 
-  ModelSupport::buildPlane(SMap,monIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(length/2.0+wallThick),Y); 
-  ModelSupport::buildPlane(SMap,monIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(length/2.0+wallThick),Y); 
-  ModelSupport::buildCylinder(SMap,monIndex+17,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,
 			      radius+wallThick); 
 
 
@@ -232,13 +229,13 @@ ZoomMonitor::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,monIndex,"11 -12 -17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17");
   addOuterSurf(Out);      
 
-  Out=ModelSupport::getComposite(SMap,monIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,monIndex,"11 -12 -17 (-1 : 2 : 7)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17 (-1 : 2 : 7)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   return;
 }

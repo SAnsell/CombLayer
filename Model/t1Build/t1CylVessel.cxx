@@ -82,8 +82,7 @@ namespace shutterSystem
 
 t1CylVessel::t1CylVessel(const std::string& Key)  : 
   attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
-  voidIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(voidIndex+1),populated(0),steelCell(0),voidCell(0)
+  populated(0),steelCell(0),voidCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -92,7 +91,6 @@ t1CylVessel::t1CylVessel(const std::string& Key)  :
 
 t1CylVessel::t1CylVessel(const t1CylVessel& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  voidIndex(A.voidIndex),cellIndex(A.cellIndex),
   populated(A.populated),voidYoffset(A.voidYoffset),
   radius(A.radius),clearance(A.clearance),baseRadius(A.baseRadius),
   topRadius(A.topRadius),wallThick(A.wallThick),
@@ -116,7 +114,6 @@ t1CylVessel::operator=(const t1CylVessel& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       voidYoffset=A.voidYoffset;
       radius=A.radius;
@@ -195,22 +192,22 @@ t1CylVessel::createSurfaces()
   FixedComp::setConnect(1,Origin-Z*(baseH+baseRadius+wallThick),-Z);
   FixedComp::setConnect(2,Origin+Z*(topH+topRadius+wallThick),Z);
   
-  ModelSupport::buildCylinder(SMap,voidIndex+7,Origin,Z,radius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);  
   // Top/base cut plane:
-  ModelSupport::buildPlane(SMap,voidIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,voidIndex+6,Origin+Z*height/2.0,Z);
-  ModelSupport::buildSphere(SMap,voidIndex+8,Origin-Z*baseH,baseRadius);
-  ModelSupport::buildSphere(SMap,voidIndex+9,Origin+Z*topH,topRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildSphere(SMap,buildIndex+8,Origin-Z*baseH,baseRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+9,Origin+Z*topH,topRadius);
 
   // Inner wall layer
-  ModelSupport::buildCylinder(SMap,voidIndex+17,Origin,Z,radius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius+wallThick);
   // Top/base cut plane:
-  ModelSupport::buildSphere(SMap,voidIndex+18,Origin-Z*baseH,
+  ModelSupport::buildSphere(SMap,buildIndex+18,Origin-Z*baseH,
 			    baseRadius+wallThick);
-  ModelSupport::buildSphere(SMap,voidIndex+19,Origin+Z*topH,
+  ModelSupport::buildSphere(SMap,buildIndex+19,Origin+Z*topH,
 			    topRadius+wallThick);
 
-  ModelSupport::buildCylinder(SMap,voidIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Z,radius+wallThick+clearance);
 
   return;
@@ -227,28 +224,28 @@ t1CylVessel::createObjects(Simulation& System)
   
   std::string Out;
   // Inner voids
-  Out=ModelSupport::getComposite(SMap,voidIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-7 ((-8 -5) : (-9 6) : (5 -6)) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   voidCell=cellIndex-1;
   
   // Steel layers [in components]
-  Out=ModelSupport::getComposite(SMap,voidIndex, "5 -6 -17 7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, "5 -6 -17 7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   steelCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,voidIndex, " -19 9 6 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -19 9 6 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,voidIndex, " -18 8 -5 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -18 8 -5 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // clearance layer
-  Out=ModelSupport::getComposite(SMap,voidIndex, "(5:-18) (-6:-19) -27 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, "(5:-18) (-6:-19) -27 17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   // Outer Boundary : 
-  Out=ModelSupport::getComposite(SMap,voidIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-27 ((-18 -5) : (-19 6) : (5 -6)) ");
   addOuterSurf(Out);
   
@@ -322,11 +319,11 @@ t1CylVessel::createLinks()
 
   FixedComp::setConnect(0,Origin,-X);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(voidIndex+27));
-  FixedComp::setLinkSurf(1,SMap.realSurf(voidIndex+18));  // base
-  FixedComp::addLinkSurf(1,-SMap.realSurf(voidIndex+5));
-  FixedComp::setLinkSurf(2,SMap.realSurf(voidIndex+19));  // top
-  FixedComp::addLinkSurf(2,SMap.realSurf(voidIndex+6));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+27));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+18));  // base
+  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+19));  // top
+  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+6));
 
   return;
 }

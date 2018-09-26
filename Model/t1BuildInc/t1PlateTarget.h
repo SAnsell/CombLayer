@@ -44,7 +44,6 @@ class t1PlateTarget :
 {
  private:
 
-  const int tIndex;                                  ///< Base number
   std::shared_ptr<PressVessel> PressVObj;            ///< Pressure vessel
   std::shared_ptr<PlateTarget> PlateTarObj;          ///< Plate Target
   std::shared_ptr<WaterDividers> DivObj;             ///< Internal divider

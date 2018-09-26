@@ -40,8 +40,6 @@ class PressVessel : public attachSystem::ContainedComp,
 {
  private:
   
-  const int pvIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int outerWallCell;            ///< outer wall cell
   int IVoidCell;                ///< Inner void cell
 

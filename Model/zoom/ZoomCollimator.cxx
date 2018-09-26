@@ -93,8 +93,7 @@ namespace zoomSystem
 
 ZoomCollimator::ZoomCollimator(const std::string& Key) : 
   attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),cStack("zoomColStack"),nLayers(0)
+  cStack("zoomColStack"),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -103,7 +102,6 @@ ZoomCollimator::ZoomCollimator(const std::string& Key) :
 
 ZoomCollimator::ZoomCollimator(const ZoomCollimator& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),
   cStack(A.cStack),xStep(A.xStep),zStep(A.zStep),
   length(A.length),height(A.height),depth(A.depth),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
@@ -129,7 +127,6 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
     {
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       cStack=A.cStack;
       xStep=A.xStep;
       zStep=A.zStep;
@@ -227,47 +224,47 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
 {
   ELog::RegMethod RegA("ZoomCollimator","createSurface");
 
-  SMap.addMatch(colIndex+1,LC.getLinkSurf(2));   // back plane
-  //  SMap.addMatch(colIndex+14,LC.getLinkSurf(4));   // right plane
+  SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
+  //  SMap.addMatch(buildIndex+14,LC.getLinkSurf(4));   // right plane
 
-  ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,colIndex+3,Origin-X*leftWidth,X);
-  ModelSupport::buildPlane(SMap,colIndex+4,Origin+X*rightWidth,X);
-  ModelSupport::buildPlane(SMap,colIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,colIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*leftWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*rightWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
 
-  ModelSupport::buildPlane(SMap,colIndex+203,
+  ModelSupport::buildPlane(SMap,buildIndex+203,
 			   Origin-X*(leftWidth+leftWaxSkin),X);
-  ModelSupport::buildPlane(SMap,colIndex+204,
+  ModelSupport::buildPlane(SMap,buildIndex+204,
 			   Origin+X*(rightWidth+rightWaxSkin),X);
 
-  ModelSupport::buildPlaneRotAxis(SMap,colIndex+113,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+113,
 				  Origin-X*leftInnerWidth,X,
 				  Z,-leftInnerAngle);     
-  ModelSupport::buildPlaneRotAxis(SMap,colIndex+114,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+114,
 				  Origin+X*rightInnerWidth,X,
 				  Z,rightInnerAngle);     
 
-  ModelSupport::buildPlaneRotAxis(SMap,colIndex+213,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+213,
 				  Origin-X*(leftInnerWidth+leftWaxSkin),
 				  X,Z,-leftInnerAngle);     
-  ModelSupport::buildPlaneRotAxis(SMap,colIndex+214,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+214,
 				  Origin+X*(rightInnerWidth+rightWaxSkin),
 				  X,Z,rightInnerAngle);     
 
   
   const Geometry::Vec3D StackCent=Origin+X*stackXShift+Z*stackZShift;
-  ModelSupport::buildPlane(SMap,colIndex+13,StackCent-X*(stackWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,colIndex+14,StackCent+X*(stackWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,colIndex+15,StackCent-Z*(stackHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,colIndex+16,StackCent+Z*(stackHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,StackCent-X*(stackWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,StackCent+X*(stackWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,StackCent-Z*(stackHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,StackCent+Z*(stackHeight/2.0),Z);
 
     
   // inner void
-  ModelSupport::buildPlane(SMap,colIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   bEnter-X*stackWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,colIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   bEnter+X*stackWidth/2.0,X);
     
   return;
@@ -283,25 +280,25 @@ ZoomCollimator::createObjects(Simulation& System)
   ELog::RegMethod RegA("ZoomCollimator","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,colIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 213 203 -214 -204 5 -6 ");
   addOuterSurf(Out);
 
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 113 3 -114 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 113 3 -114 "
 				 " -4 5 -6  (-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
 
   // Outer Wax
-  Out=ModelSupport::getComposite(SMap,colIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 (-113:-3) 213 203  5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,colIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 (114:4) -214 -204  5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
 
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
 
@@ -325,9 +322,9 @@ ZoomCollimator::createLinks()
   
   for(size_t i=0;i<6;i++)
     FixedComp::setLinkSurf
-      (i,SMap.realSurf(colIndex+static_cast<int>(i)+1));
+      (i,SMap.realSurf(buildIndex+static_cast<int>(i)+1));
 
-  setBeamExit(colIndex+2,bEnter,bY);
+  setBeamExit(buildIndex+2,bEnter,bY);
 
   return;
 }
@@ -358,12 +355,12 @@ ZoomCollimator::layerProcess(Simulation& System)
       DA.init(); 
       // Cell Specific:
       DA.setCellN(CDivideList[i]);
-      DA.setOutNum(cellIndex,colIndex+201+100*static_cast<int>(i));
+      DA.setOutNum(cellIndex,buildIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+23),
-				   -SMap.realSurf(colIndex+3));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+24),
-       				   SMap.realSurf(colIndex+4));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+23),
+				   -SMap.realSurf(buildIndex+3));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+24),
+       				   SMap.realSurf(buildIndex+4));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }

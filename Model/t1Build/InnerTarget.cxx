@@ -85,8 +85,7 @@ namespace ts1System
 
 InnerTarget::InnerTarget(const std::string& Key) :
   constructSystem::TargetBase(Key,3),
-  tarIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tarIndex+1),frontPlate(0),backPlate(0)
+  frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,7 +94,6 @@ InnerTarget::InnerTarget(const std::string& Key) :
 
 InnerTarget::InnerTarget(const InnerTarget& A) : 
   constructSystem::TargetBase(A),
-  tarIndex(A.tarIndex),cellIndex(A.cellIndex),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   cladThick(A.cladThick),waterThick(A.waterThick),
@@ -125,7 +123,6 @@ InnerTarget::operator=(const InnerTarget& A)
   if (this!=&A)
     {
       constructSystem::TargetBase::operator=(A);
-      cellIndex=A.cellIndex;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;
@@ -250,59 +247,59 @@ InnerTarget::createSurfaces()
 {
   ELog::RegMethod RegA("InnerTarget","createSurface");
 
-  SMap.addMatch(tarIndex+1001,frontPlate);
-  SMap.addMatch(tarIndex+1002,backPlate);
+  SMap.addMatch(buildIndex+1001,frontPlate);
+  SMap.addMatch(buildIndex+1002,backPlate);
 
   // Inner W
-  ModelSupport::buildCylinder(SMap,tarIndex+7,Origin,Y,coreRadius);
-  ModelSupport::buildPlane(SMap,tarIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,tarIndex+2,Origin+Y*mainLength,Y);
-  ModelSupport::buildSphere(SMap,tarIndex+8,Origin+Y*sphYStep,sphRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coreRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
+  ModelSupport::buildSphere(SMap,buildIndex+8,Origin+Y*sphYStep,sphRadius);
 
   double TThick(cladThick);
   // Ta 
-  ModelSupport::buildCylinder(SMap,tarIndex+17,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,
 			      coreRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(mainLength+TThick),Y);
-  ModelSupport::buildSphere(SMap,tarIndex+18,Origin+Y*sphYStep,
+  ModelSupport::buildSphere(SMap,buildIndex+18,Origin+Y*sphYStep,
 			    sphRadius+TThick);
 
   // Water
   TThick+=waterThick;
-  ModelSupport::buildCylinder(SMap,tarIndex+27,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,
 			      coreRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(mainLength+TThick),Y);
-  ModelSupport::buildSphere(SMap,tarIndex+28,Origin+Y*sphYStep,
+  ModelSupport::buildSphere(SMap,buildIndex+28,Origin+Y*sphYStep,
 			    sphRadius+TThick);
 
 
   // Pressure
   TThick+=pressThick;
-  ModelSupport::buildCylinder(SMap,tarIndex+37,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,
 		      coreRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 		   Origin+Y*(mainLength+TThick),Y);
-  ModelSupport::buildSphere(SMap,tarIndex+38,Origin+Y*sphYStep,
+  ModelSupport::buildSphere(SMap,buildIndex+38,Origin+Y*sphYStep,
 			    sphRadius+TThick);
 
   // void
   TThick+=voidThick;
-  ModelSupport::buildCylinder(SMap,tarIndex+47,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Y,
 		      coreRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+42,
+  ModelSupport::buildPlane(SMap,buildIndex+42,
 	   Origin+Y*(mainLength+TThick),Y);
-  ModelSupport::buildSphere(SMap,tarIndex+48,Origin+Y*sphYStep,
+  ModelSupport::buildSphere(SMap,buildIndex+48,Origin+Y*sphYStep,
 			    sphRadius+TThick);
   
 
   // Inner surfaces
-  ModelSupport::buildCylinder(SMap,tarIndex+107,Origin,Y,frontWater);
-  ModelSupport::buildCylinder(SMap,tarIndex+117,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontWater);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,
 			      frontWater+innerClad);
 
-  int TI(tarIndex+200);
+  int TI(buildIndex+200);
   for(size_t i=0;i<nSphere;i++)
     {
       ELog::EM<<"Cent == "<<sCent[i]<<ELog::endDebug;
@@ -337,9 +334,9 @@ InnerTarget::createSurfaces()
     }
   else
     {
-      ModelSupport::buildPlane(SMap,tarIndex+201,
+      ModelSupport::buildPlane(SMap,buildIndex+201,
 			       Origin+Y*(frontWater*2),Y);   // divider plane
-      ModelSupport::buildPlane(SMap,tarIndex+228,
+      ModelSupport::buildPlane(SMap,buildIndex+228,
 			       Origin+Y*(frontWater*2),-Y);   // divider plane
     }
   return;
@@ -357,52 +354,52 @@ InnerTarget::createObjects(Simulation& System)
   // Tungsten inner core
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-8 : (1 -2 -7)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-8 : (1 -2 -7)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
 
   // Cladding [with front water divider]
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-18 -1 8 117");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -1 8 117");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"1 -17 -12 (7:2) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -17 -12 (7:2) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
   // Water
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-28 -1 18");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-28 -1 18");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"1 -27 -22 (17:12) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -27 -22 (17:12) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
   // TA outer [pressure]
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-38 -1 28");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-38 -1 28");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"1 -37 -32 (27:22) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -37 -32 (27:22) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
   // void 
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-48 -1 38");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 -1 38");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"1 -47 -42 (37:32) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -47 -42 (37:32) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   // Inner objects:
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-18 -107 -201 228");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -107 -201 228");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-18 -117 107 -201 228");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -117 107 -201 228");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
   // First half sphere
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-208 -201");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-208 -201");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-218 208 -201");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-218 208 -201");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-228 218 -201");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-228 218 -201");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-238 228 -201 117 ");  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-238 228 -201 117 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
   // Second  sphere
-  int TI(tarIndex+200);
+  int TI(buildIndex+200);
   for(size_t i=1;i<nSphere;i++)
     {
       Out=ModelSupport::getComposite(SMap,TI,"(-8:-108) 1 -101");
@@ -416,17 +413,17 @@ InnerTarget::createObjects(Simulation& System)
       TI+=100;
     }
   // Cone:
-  Out=ModelSupport::getComposite(SMap,TI,tarIndex,"1 -109 -2M -7M");
+  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -109 -2M -7M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,TI,tarIndex,"1 -2M 109 -119 -7M");
+  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 109 -119 -7M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,TI,tarIndex,"1 -2M 119 -129 -7M");
+  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 119 -129 -7M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,TI,tarIndex,"1 -2M 129 -139 -7M");
+  Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 129 -139 -7M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,tarIndex," (117 : 201) ");
-  TI=tarIndex+200;
+  Out=ModelSupport::getComposite(SMap,buildIndex," (117 : 201) ");
+  TI=buildIndex+200;
   for(size_t i=1;i<nSphere;i++)
     {
       Out+=ModelSupport::getComposite(SMap,TI," 38 ");
@@ -439,14 +436,14 @@ InnerTarget::createObjects(Simulation& System)
       Out+=ModelSupport::getComposite(SMap,TI," (38:1) ");
       Out+=ModelSupport::getComposite(SMap,TI," (139 : -1) ");
     }
-  MonteCarlo::Qhull* IPtr=System.findQhull(tarIndex+1); 
+  MonteCarlo::Qhull* IPtr=System.findQhull(buildIndex+1); 
   IPtr->addSurfString(Out);
 
   
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-48 : (1 -42 -47)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-48 : (1 -42 -47)");
   addOuterSurf(Out);
-  addBoundarySurf(SMap.realSurf(tarIndex+48));    
+  addBoundarySurf(SMap.realSurf(buildIndex+48));    
   return;
 }
 
@@ -460,10 +457,10 @@ InnerTarget::createLinks()
   ELog::RegMethod RegA("InnerTarget","createLinks");
 
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(tarIndex+48));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(tarIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(tarIndex+42));
-  FixedComp::setLinkSurf(2,SMap.realSurf(tarIndex+47));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+48));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+47));
 
   const double TThick(cladThick+waterThick+pressThick+
 		      voidThick);

@@ -3,7 +3,7 @@
  
  * File:   t1Build/MonoPlug.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -79,9 +78,7 @@ namespace shutterSystem
 {
 
 MonoPlug::MonoPlug(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
-  plugIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(plugIndex+1)
+  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -90,7 +87,6 @@ MonoPlug::MonoPlug(const std::string& Key)  :
 
 MonoPlug::MonoPlug(const MonoPlug& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  plugIndex(A.plugIndex),cellIndex(A.cellIndex),
   nPlugs(A.nPlugs),plugRadii(A.plugRadii),
   plugZLen(A.plugZLen),plugClearance(A.plugClearance),
   dividerZLen(A.dividerZLen),steelMat(A.steelMat),
@@ -113,7 +109,6 @@ MonoPlug::operator=(const MonoPlug& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       nPlugs=A.nPlugs;
       plugRadii=A.plugRadii;
       plugZLen=A.plugZLen;
@@ -148,9 +143,9 @@ MonoPlug::populate(const Simulation& System)
   for(size_t i=0;i<nPlugs;i++)
     {
       plugRadii.push_back
-	(Control.EvalVar<double>(StrFunc::makeString(PRad,i+1)));
+	(Control.EvalVar<double>(PRad+std::to_string(i+1)));
       plugZLen.push_back
-	(Control.EvalVar<double>(StrFunc::makeString(PLen,i+1)));
+	(Control.EvalVar<double>(PLen+std::to_string(i+1)));
     }
   plugClearance=Control.EvalVar<double>(keyName+"PlugClearance");   
   dividerZLen=Control.EvalVar<double>(keyName+"DivideLen");   
@@ -189,7 +184,7 @@ MonoPlug::createSurfaces()
   // OUTER VOID
   //
 
-  int pI(plugIndex+7);
+  int pI(buildIndex+7);
   for(size_t i=0;i<nPlugs;i++)
     {
       ModelSupport::buildCylinder(SMap,pI,Origin,Z,plugRadii[i]);
@@ -198,7 +193,7 @@ MonoPlug::createSurfaces()
       pI+=100;
     }
   // Separations
-  pI=plugIndex+6;
+  pI=buildIndex+6;
   for(size_t i=0;i<nPlugs;i++)
     {
       ModelSupport::buildPlane(SMap,pI,
@@ -208,7 +203,7 @@ MonoPlug::createSurfaces()
       pI+=100;
     }
   // External stuff
-  ModelSupport::buildPlane(SMap,plugIndex+5006,
+  ModelSupport::buildPlane(SMap,buildIndex+5006,
 			   Origin+Z*dividerZLen,Z);
   
   return;
@@ -245,38 +240,38 @@ MonoPlug::createObjects(Simulation& System,
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)
     {
-      Out=ModelSupport::getComposite(SMap,plugIndex," -7 ")+
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+
 	voidSurf+" "+bulkSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,plugIndex,"7 -17 ")+
+      Out=ModelSupport::getComposite(SMap,buildIndex,"7 -17 ")+
 	voidSurf+" "+bulkSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,plugIndex," 17 ")+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 ")+
 	voidSurf+" "+bulkSurf+" "+outSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
       return;
     }
 
   // First Layer
-  Out=ModelSupport::getComposite(SMap,plugIndex,"-6 -7 ")+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 -7 ")+
     voidSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,plugIndex,"-6 7 -17 ")+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 7 -17 ")+
     voidSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,plugIndex,"-6 16 17 -117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-6 16 17 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,plugIndex,"-16 17 ")+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-16 17 ")+
     voidSurf+outSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
   
   // MAIN LOOP
-  int pI=plugIndex;
+  int pI=buildIndex;
   for(size_t i=1;i<nPlugs-1;i++)
     {
       // Steel inner:
