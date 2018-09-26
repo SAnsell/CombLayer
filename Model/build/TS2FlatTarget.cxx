@@ -86,8 +86,7 @@ namespace TMRSystem
 
 TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
   constructSystem::TargetBase(Key,3),
-  protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1),frontPlate(0),backPlate(0)
+  frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,7 +95,6 @@ TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
 
 TS2FlatTarget::TS2FlatTarget(const TS2FlatTarget& A) : 
   constructSystem::TargetBase(A),
-  protonIndex(A.protonIndex),cellIndex(A.cellIndex),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),cladThick(A.cladThick),
@@ -128,7 +126,6 @@ TS2FlatTarget::operator=(const TS2FlatTarget& A)
   if (this!=&A)
     {
       constructSystem::TargetBase::operator=(A);
-      cellIndex=A.cellIndex;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;
@@ -250,65 +247,65 @@ TS2FlatTarget::createSurfaces()
   
   // INNER PLANES
 
-  SMap.addMatch(protonIndex+186,frontPlate);
-  SMap.addMatch(protonIndex+190,backPlate);
+  SMap.addMatch(buildIndex+186,frontPlate);
+  SMap.addMatch(buildIndex+190,backPlate);
 
   // OUTER VOID [Should be a copy of 11 ?]
-  ModelSupport::buildCylinder(SMap,protonIndex+101,Origin,Y,voidRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+101,Origin,Y,voidRadius);
 
   // front face [plane]
-  ModelSupport::buildPlane(SMap,protonIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   // back face [plane]
-  ModelSupport::buildPlane(SMap,protonIndex+2,Origin+Y*mainLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
   // Basis cylinder
   
-  ModelSupport::buildCylinder(SMap,protonIndex+7,Origin,Y,coreRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coreRadius);
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
-      ModelSupport::buildCylinder(SMap,protonIndex+17,Origin,Y,coreRadius-
+      ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,coreRadius-
 				  surfThick);
     }
 
   // Top Edge Cylinder [used sphere radius!!]
   
   // FLANGE [Not moved with target]:
-  ModelSupport::buildPlane(SMap,protonIndex+201,
+  ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin+Y*(mainLength-flangeLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,protonIndex+202,
+  ModelSupport::buildPlane(SMap,buildIndex+202,
 			   Origin+Y*(mainLength+flangeLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,protonIndex+211,
+  ModelSupport::buildPlane(SMap,buildIndex+211,
 			   Origin+Y*(mainLength-flangeYStep),Y);
-  ModelSupport::buildPlane(SMap,protonIndex+212,
+  ModelSupport::buildPlane(SMap,buildIndex+212,
 			   Origin+Y*(mainLength+
 				     flangeThick+flangeYStep),Y);
-  ModelSupport::buildCylinder(SMap,protonIndex+207,
+  ModelSupport::buildCylinder(SMap,buildIndex+207,
 			      Origin,Y,flangeRadius);
-  ModelSupport::buildCylinder(SMap,protonIndex+217,
+  ModelSupport::buildCylinder(SMap,buildIndex+217,
 			      Origin,Y,flangeRadius-flangeClear);
 
 
   // Ta cladding [Inner]
   // Basic Cylinder
-  ModelSupport::buildCylinder(SMap,protonIndex+27,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,
 			      coreRadius+cladThick);
   
   // --  WATER LAYER:  [40-60] -- 
   // cylinder water
-  ModelSupport::buildCylinder(SMap,protonIndex+47,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Y,
 			      coreRadius+cladThick+waterThick);
 
   // pressure cylinder
-  ModelSupport::buildCylinder(SMap,protonIndex+57,
+  ModelSupport::buildCylinder(SMap,buildIndex+57,
 			      Origin,Y,
 			      coreRadius+cladThick+waterThick+pressureThick);
 
   // FRONT CAP
-  ModelSupport::buildPlane(SMap,protonIndex+301,Origin-Y*cladFront,Y);
-  ModelSupport::buildPlane(SMap,protonIndex+311,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*cladFront,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+311,Origin-
 			   Y*(cladFront+waterFront),Y);
-  ModelSupport::buildPlane(SMap,protonIndex+321,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+321,Origin-
 			   Y*(cladFront+waterFront+pressureFront),Y);
-  ModelSupport::buildPlane(SMap,protonIndex+331,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+331,Origin-
 			   Y*(cladFront+waterFront+pressureFront+voidFront),Y);
 
   return;
@@ -328,65 +325,65 @@ TS2FlatTarget::createObjects(Simulation& System)
   // Main cylinder:
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
-      Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 -17");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 -7 17");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 17");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 -7");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
     }
 
 
   // ----------------- FLANGE ----------------
-  Out=ModelSupport::getComposite(SMap,protonIndex,"201 -202 -207 101");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -207 101");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
     
   // -- WATER -- [Main Cylinder]
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 27 -47");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 27 -47");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
   // -----------------------------------------------------------
   // Main Cylinder
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 7 -27");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -27");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
   skinCell=cellIndex-1;
 
   // Ta Press: [Cylinder]
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 47 -57");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 47 -57");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
   
 
   // Spacer Void around target:
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 57 -101");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 57 -101");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Space for water manifold
-  Out=ModelSupport::getComposite(SMap,protonIndex,"2 -101 190");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 190");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   ELog::EM<<"Cell == "<<Out<<" ::: "<<cellIndex-1<<ELog::endDiag;
   // FRONT Plate:
-  Out=ModelSupport::getComposite(SMap,protonIndex,"-1 -27 301");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -27 301");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,protonIndex,"-1 -47 311 (27 : -301)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -47 311 (27 : -301)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,protonIndex,"-1 -57 321 (47 : -311)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -57 321 (47 : -311)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,protonIndex,"-1 -101 331 (57 : -321)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -101 331 (57 : -321)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
 
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,protonIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "331 -207 (-101 : (201 -202))");
   addOuterSurf(Out);
-  addBoundarySurf(-SMap.realSurf(protonIndex+101));    
+  addBoundarySurf(-SMap.realSurf(buildIndex+101));    
   return;
 }
 
@@ -398,10 +395,10 @@ TS2FlatTarget::createLinks()
   */
 {
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(protonIndex+101));
-  FixedComp::setLinkSurf(1,SMap.realSurf(protonIndex+2));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+101));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   // If not nose cone then change 2
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(protonIndex+331));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+331));
 
   FixedComp::setConnect(0,Origin+Z*voidRadius,Z);
   FixedComp::setConnect(1,Origin+Y*mainLength,Y);
@@ -435,9 +432,9 @@ TS2FlatTarget::layerProcess(Simulation& System)
       
       // Cell Specific:
       DA.setCellN(mainCell);
-      DA.setOutNum(cellIndex,protonIndex+801);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(protonIndex+1),
-				   SMap.realSurf(protonIndex+2));
+      DA.setOutNum(cellIndex,buildIndex+801);
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
@@ -453,7 +450,7 @@ TS2FlatTarget::addInnerBoundary(attachSystem::ContainedComp& CC) const
    */
 {
   ELog::RegMethod RegA("TS2FlatTarget","addInnerBoundary");
-  CC.addBoundarySurf(-SMap.realSurf(protonIndex+27));
+  CC.addBoundarySurf(-SMap.realSurf(buildIndex+27));
   return;
 }
 

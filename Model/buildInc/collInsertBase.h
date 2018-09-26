@@ -42,10 +42,8 @@ class collInsertBase  : public attachSystem::ContainedComp,
 {
  protected:
 
-  const int blockIndex;         ///< Index of block
-
-  const int surfIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  const int blockIndex;         ///< Block number
+  const int collIndex;          ///< Collimator index [
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
 
   Geometry::Vec3D beamOrigin;   ///< beam mid point

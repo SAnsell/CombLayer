@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/collInsertCyl.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -248,19 +248,19 @@ collInsertCyl::createSurfaces(const int startSurf)
   ELog::RegMethod RegA("collInsertCyl","createSurface");
 
   if (startSurf)
-    SMap.addMatch(surfIndex+1,startSurf);
+    SMap.addMatch(collIndex+1,startSurf);
   else
-    ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+    ModelSupport::buildPlane(SMap,collIndex+1,Origin,Y);
   
   // Outer Surface 
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,collIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,collIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,collIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,collIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,collIndex+6,Origin+Z*height,Z);
   
   // Inner surface
-  ModelSupport::buildCylinder(SMap,surfIndex+17,
+  ModelSupport::buildCylinder(SMap,collIndex+17,
 			      beamOrigin+beamX*centX+
 			      beamZ*centZ,beamY,radGap);
   return;
@@ -280,21 +280,21 @@ collInsertCyl::createObjects(Simulation& System,
   ELog::RegMethod RegA("collInsertCyl","createObjects");
 
   std::string frontBack=fSurf.empty() ? 
-    ModelSupport::getComposite(SMap,surfIndex,"1 ") : fSurf;
+    ModelSupport::getComposite(SMap,collIndex,"1 ") : fSurf;
   frontBack+=bSurf.empty() ? 
-    ModelSupport::getComposite(SMap,surfIndex,"-2 ") : bSurf;
+    ModelSupport::getComposite(SMap,collIndex,"-2 ") : bSurf;
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,collIndex,"3 -4 5 -6 ");
   addOuterSurf(Out);
 
   // Centre void
-  Out=ModelSupport::getComposite(SMap,surfIndex," -17 ")+
+  Out=ModelSupport::getComposite(SMap,collIndex," -17 ")+
     frontBack;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Outer metal
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,collIndex,
 				 "3 -4 5 -6 17 ")+
     frontBack;
   System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
@@ -317,13 +317,13 @@ collInsertCyl::exitWindow(const double Dist,
   ELog::RegMethod RegA("collInsertCyl","exitWindow");
 
   window.clear();
-  window.push_back(SMap.realSurf(surfIndex+3));
-  window.push_back(SMap.realSurf(surfIndex+4));
-  window.push_back(SMap.realSurf(surfIndex+5));
-  window.push_back(SMap.realSurf(surfIndex+6));
+  window.push_back(SMap.realSurf(collIndex+3));
+  window.push_back(SMap.realSurf(collIndex+4));
+  window.push_back(SMap.realSurf(collIndex+5));
+  window.push_back(SMap.realSurf(collIndex+6));
 
   Pt=Origin+Y*Dist;
-  return SMap.realSurf(surfIndex+1);
+  return SMap.realSurf(collIndex+1);
 }
 
 std::vector<Geometry::Vec3D> 

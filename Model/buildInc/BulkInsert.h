@@ -37,15 +37,14 @@ namespace shutterSystem
 */
 
 
-class BulkInsert : public attachSystem::TwinComp,
-    public attachSystem::ContainedGroup
+class BulkInsert :
+  public attachSystem::TwinComp,
+  public attachSystem::ContainedGroup
 {
  protected:
 
   const std::string baseName;         ///< Base name
   const size_t shutterNumber;         ///< number of the shutter
-  const int surfIndex;                ///< Index of the surface
-  int cellIndex;                      ///< Index of the cells
 
   int populated;                      ///< populated / not
 

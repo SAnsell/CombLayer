@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomShutter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,36 +183,36 @@ ZoomShutter::createSurfaces()
 
   // Inner cut [on flightline]
   ModelSupport::buildPlane
-    (SMap,surfIndex+325,
+    (SMap,buildIndex+325,
      frontPt+Z*(-colletVGap+voidHeightInner/2.0+centZOffset),zSlope);
   
   // Inner cut [on flightline]
   ModelSupport::buildPlane
-    (SMap,surfIndex+326,
+    (SMap,buildIndex+326,
      frontPt-Z*(-colletVGap+voidHeightInner/2.0+centZOffset),zSlope);
 
   // Outer cut [on flightline]
   ModelSupport::buildPlane
-    (SMap,surfIndex+425,
+    (SMap,buildIndex+425,
      frontPt+Z*(-colletVGap+voidHeightOuter/2.0+centZOffset),zSlope);
   
   // Outer cut [on flightline]
-  ModelSupport::buildPlane(SMap,surfIndex+426,
+  ModelSupport::buildPlane(SMap,buildIndex+426,
       frontPt-Z*(-colletVGap+voidHeightOuter/2.0-centZOffset),zSlope);
 
   // HORRIZONTAL
-  ModelSupport::buildPlane(SMap,surfIndex+313,
+  ModelSupport::buildPlane(SMap,buildIndex+313,
 	  Origin-X*(-colletHGap+voidWidthInner/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+314,
+  ModelSupport::buildPlane(SMap,buildIndex+314,
 		   Origin+X*(-colletHGap+voidWidthInner/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+413,
+  ModelSupport::buildPlane(SMap,buildIndex+413,
          Origin-X*(-colletHGap+voidWidthOuter/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+414,
+  ModelSupport::buildPlane(SMap,buildIndex+414,
 	    Origin+X*(-colletHGap+voidWidthOuter/2.0),X);
   
   // Forward gap
-  ModelSupport::buildPlane(SMap,surfIndex+401,
+  ModelSupport::buildPlane(SMap,buildIndex+401,
 	   frontPt+Y*(voidDivide+colletFGap),Y);
 
   return;
@@ -235,8 +235,8 @@ ZoomShutter::createInsert(Simulation& System)
   // Create First Object:
   if (nBlock>1)
     {
-      collInsertBlock ItemZB(0,surfIndex+500,"zoomShutterBlock");
-      Out=ModelSupport::getComposite(SMap,surfIndex,"7 ")+divideStr();
+      collInsertBlock ItemZB(0,buildIndex+500,"zoomShutterBlock");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"7 ")+divideStr();
       ItemZB.initialize(System,*this);
       ItemZB.setOrigin(frontPt+Y*colletFGap,xStart,xAngle,zStart,zAngle);
       ItemZB.createAll(System,0,Out,"");
@@ -244,7 +244,7 @@ ZoomShutter::createInsert(Simulation& System)
     }
   for(int i=1;i<nBlock-1;i++)
     {
-      collInsertBlock ItemZB(i,surfIndex+1000+i*100,"zoomShutterBlock");
+      collInsertBlock ItemZB(i,buildIndex+1000+i*100,"zoomShutterBlock");
       ItemZB.createAll(System,iBlock.back());
       iBlock.push_back(ItemZB);
        // Nasty code to force using the system:
@@ -261,11 +261,11 @@ ZoomShutter::createInsert(Simulation& System)
   // Outer Cell
   if (nBlock>2)
     {
-      collInsertBlock ItemZB(nBlock-1,surfIndex+1000+(nBlock-1)*100,
+      collInsertBlock ItemZB(nBlock-1,buildIndex+1000+(nBlock-1)*100,
 			     "zoomShutterBlock");
       const collInsertBlock& ZB=iBlock.back();
       ItemZB.initialize(System,ZB);
-      Out=ModelSupport::getComposite(SMap,surfIndex,"-17 ")+divideStr();
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-17 ")+divideStr();
       ItemZB.createAll(System,ZB.getLinkSurf(2),"",Out);
       iBlock.push_back(ItemZB);
     }
@@ -329,9 +329,9 @@ ZoomShutter::createObjects(Simulation& System)
     {
       // exclude from flight line
       Out=ModelSupport::getComposite
-	(SMap,surfIndex," (-313:314:325:-326) ");
+	(SMap,buildIndex," (-313:314:325:-326) ");
       OutB=ModelSupport::getComposite
-	(SMap,surfIndex," (-413:414:425:-426) ");
+	(SMap,buildIndex," (-413:414:425:-426) ");
       MonteCarlo::Qhull* VObjA=System.findQhull(innerVoidCell);
       MonteCarlo::Qhull* VObjB=System.findQhull(innerVoidCell+1);
 
@@ -347,16 +347,16 @@ ZoomShutter::createObjects(Simulation& System)
       // Inner Collet
       colletInnerCell=cellIndex;
       Out=ModelSupport::getComposite
-	(SMap,surfIndex,"313 -314 -325 326 7 -401")+dSurf;
+	(SMap,buildIndex,"313 -314 -325 326 7 -401")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
       // OuterCollet
       colletOuterCell=cellIndex;
       Out=ModelSupport::getComposite
-	(SMap,surfIndex,"413 -414 -425 426 -17 401");
+	(SMap,buildIndex,"413 -414 -425 426 -17 401");
       System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
       // SPACER:
       Out=ModelSupport::getComposite
-	(SMap,surfIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
+	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       
     }

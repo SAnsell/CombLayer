@@ -93,8 +93,6 @@ BulkInsert::BulkInsert(const size_t ID,const std::string& Key) :
   attachSystem::ContainedGroup("inner","outer"),
   baseName(Key),
   shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1), 
   populated(0),divideSurf(0),DPlane(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -105,8 +103,8 @@ BulkInsert::BulkInsert(const size_t ID,const std::string& Key) :
 
 BulkInsert::BulkInsert(const BulkInsert& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
-  shutterNumber(A.shutterNumber),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  shutterNumber(A.shutterNumber),
+  populated(A.populated),
   divideSurf(A.divideSurf),DPlane(A.DPlane),
   xyAngle(A.xyAngle),
   innerRadius(A.innerRadius),midRadius(A.midRadius),
@@ -135,7 +133,6 @@ BulkInsert::operator=(const BulkInsert& A)
     {
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       divideSurf=A.divideSurf;
       xyAngle=A.xyAngle;
@@ -262,11 +259,11 @@ BulkInsert::setExternal(const int rInner,const int rMid,
 {
   ELog::RegMethod RegA("BulkInsert","setExternal");
 
-  SMap.addMatch(surfIndex+7,rInner);
-  SMap.addMatch(surfIndex+17,rMid);
-  SMap.addMatch(surfIndex+27,rOuter);
+  SMap.addMatch(buildIndex+7,rInner);
+  SMap.addMatch(buildIndex+17,rMid);
+  SMap.addMatch(buildIndex+27,rOuter);
   
-  //  setExitSurf(SMap.realSurf(surfIndex+27));
+  //  setExitSurf(SMap.realSurf(buildIndex+27));
 
   return;
 }
@@ -279,23 +276,23 @@ BulkInsert::createSurfaces()
 {
   ELog::RegMethod RegA("BulkInsert","createSurfaces");
   // Inner Section
-  ModelSupport::buildPlane(SMap,surfIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin+Z*(innerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin-Z*(innerHeight/2.0),Z);
 
   // Outer Section
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin+Z*(outerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin-Z*(outerHeight/2.0),Z);
   return;
 }
@@ -330,12 +327,12 @@ BulkInsert::createObjects(Simulation& System)
   
   const std::string dSurf=divideStr();
   // inner
-  Out=ModelSupport::getComposite(SMap,surfIndex,"-5 6 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-5 6 3 -4 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
   innerVoid=cellIndex-1;
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,surfIndex,"-15 16 13 -14 17 -27 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-15 16 13 -14 17 -27 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
   outerVoid=cellIndex-1;
 
@@ -347,7 +344,7 @@ BulkInsert::createObjects(Simulation& System)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
   if (impZero) shutterObj->setImp(0);
-  innerInclude=ModelSupport::getComposite(SMap,surfIndex,"3 -4 -5 6 ")+dSurf;
+  innerInclude=ModelSupport::getComposite(SMap,buildIndex,"3 -4 -5 6 ")+dSurf;
   HeadRule ExLiner(innerInclude);
   ExLiner.makeComplement();
   shutterObj->addSurfString(ExLiner.display());
@@ -357,7 +354,7 @@ BulkInsert::createObjects(Simulation& System)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
   if (impZero) shutterObj->setImp(0);
   outerInclude=
-    ModelSupport::getComposite(SMap,surfIndex,"13 -14 -15 16 ")+dSurf;
+    ModelSupport::getComposite(SMap,buildIndex,"13 -14 -15 16 ")+dSurf;
 
   ExLiner.procString(outerInclude);
   ExLiner.makeComplement();
@@ -378,16 +375,16 @@ BulkInsert::createLinks()
   // Inner link
   
   const int angleFlag((xyAngle>0) ? -1 : 1);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+7));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));
   FixedComp::addLinkSurf(0,-angleFlag*divideSurf);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+27));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+27));
   FixedComp::addLinkSurf(1,angleFlag*divideSurf);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,bExit,Y);
@@ -399,7 +396,7 @@ BulkInsert::createLinks()
   // Exit processed by calculating centre line to exit curve
 
   MonteCarlo::LineIntersectVisit BeamLine(bEnter,bY);
-  bExit=BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(surfIndex+27),
+  bExit=BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+27),
 			  bEnter);
   return;
 }

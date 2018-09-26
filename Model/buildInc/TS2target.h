@@ -46,9 +46,7 @@ class TS2target : public constructSystem::TargetBase
 {
  private:
   
-  const int protonIndex;        ///< Index of surface offset
 
-  int cellIndex;                ///< Cell index
 
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate

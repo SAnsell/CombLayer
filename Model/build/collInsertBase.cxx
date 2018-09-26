@@ -92,7 +92,7 @@ operator<<(std::ostream& OX,
 collInsertBase::collInsertBase(const int N,const int SN,
 			       const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,4),
-  blockIndex(N),surfIndex(SN),cellIndex(SN+1),
+  blockIndex(N),collIndex(SN),
   populated(0),insertCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -104,8 +104,8 @@ collInsertBase::collInsertBase(const int N,const int SN,
 
 collInsertBase::collInsertBase(const collInsertBase& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  blockIndex(A.blockIndex),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  blockIndex(A.blockIndex),collIndex(A.collIndex),
+  populated(A.populated),
   beamOrigin(A.beamOrigin),beamX(A.beamX),beamY(A.beamY),
   beamZ(A.beamZ),insertCell(A.insertCell),fStep(A.fStep),
   centX(A.centX),centZ(A.centZ),length(A.length),
@@ -128,7 +128,6 @@ collInsertBase::operator=(const collInsertBase& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       beamOrigin=A.beamOrigin;
       beamX=A.beamX;
@@ -208,14 +207,14 @@ collInsertBase::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
  
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(collIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(collIndex+2));
 
   FixedComp::setConnect(2,beamOrigin,-beamY);
   FixedComp::setConnect(3,beamOrigin+beamY*length,beamY);
  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+1));
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(collIndex+1));
+  FixedComp::setLinkSurf(3,SMap.realSurf(collIndex+2));
 
   return;
 }

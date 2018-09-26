@@ -45,9 +45,7 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -260,27 +258,27 @@ collInsertBlock::createSurfaces(const int startSurf)
   ELog::RegMethod RegA("collInsertBlock","createSurface");
 
   if (startSurf)
-    SMap.addMatch(surfIndex+1,startSurf);
+    SMap.addMatch(collIndex+1,startSurf);
   else
-    ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+    ModelSupport::buildPlane(SMap,collIndex+1,Origin,Y);
   
   // Outer Surface 
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,collIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,collIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,collIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,collIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,collIndex+6,Origin+Z*height,Z);
   
   // Inner surface
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,collIndex+13,
 			   beamOrigin-beamX*(hGap/2.0-centX),beamX);
 
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,collIndex+14,
 			   beamOrigin+beamX*(hGap/2.0+centX),beamX);
 
-  ModelSupport::buildPlane(SMap,surfIndex+15,
+  ModelSupport::buildPlane(SMap,collIndex+15,
 			   beamOrigin-beamZ*(vGap/2.0-centZ),beamZ);
-  ModelSupport::buildPlane(SMap,surfIndex+16,
+  ModelSupport::buildPlane(SMap,collIndex+16,
 			   beamOrigin+beamZ*(vGap/2.0+centZ),beamZ);
   
   return;
@@ -300,21 +298,21 @@ collInsertBlock::createObjects(Simulation& System,
   ELog::RegMethod RegA("collInsertBlock","createObjects");
 
   std::string frontBack=fSurf.empty() ? 
-    ModelSupport::getComposite(SMap,surfIndex,"1 ") : fSurf;
+    ModelSupport::getComposite(SMap,collIndex,"1 ") : fSurf;
   frontBack+=bSurf.empty() ? 
-    ModelSupport::getComposite(SMap,surfIndex,"-2 ") : bSurf;
+    ModelSupport::getComposite(SMap,collIndex,"-2 ") : bSurf;
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,collIndex,"3 -4 5 -6 ");
   addOuterSurf(Out);
 
   // Centre void
-  Out=ModelSupport::getComposite(SMap,surfIndex,"13 -14 15 -16 ")+
+  Out=ModelSupport::getComposite(SMap,collIndex,"13 -14 15 -16 ")+
     frontBack;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Outer metal
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,collIndex,
 				 "3 -4 5 -6 (-13:14:-15:16) ")+
     frontBack;
   System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
@@ -337,13 +335,13 @@ collInsertBlock::exitWindow(const double Dist,
   ELog::RegMethod RegA("collInsertBlock","exitWindow");
 
   window.clear();
-  window.push_back(SMap.realSurf(surfIndex+3));
-  window.push_back(SMap.realSurf(surfIndex+4));
-  window.push_back(SMap.realSurf(surfIndex+5));
-  window.push_back(SMap.realSurf(surfIndex+6));
+  window.push_back(SMap.realSurf(collIndex+3));
+  window.push_back(SMap.realSurf(collIndex+4));
+  window.push_back(SMap.realSurf(collIndex+5));
+  window.push_back(SMap.realSurf(collIndex+6));
 
   Pt=Origin+Y*Dist;
-  return SMap.realSurf(surfIndex+1);
+  return SMap.realSurf(collIndex+1);
 }
 
 std::vector<Geometry::Vec3D> 

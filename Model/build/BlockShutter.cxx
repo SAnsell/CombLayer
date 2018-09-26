@@ -3,7 +3,7 @@
  
  * File:   build/BlockShutter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,36 +182,36 @@ BlockShutter::createSurfaces()
 
   // Inner cut [on flightline]
   ModelSupport::buildPlane
-    (SMap,surfIndex+325,
+    (SMap,buildIndex+325,
      frontPt+Z*(-colletVGap+voidHeightInner/2.0+centZOffset),zSlope);
   
   // Inner cut [on flightline]
   ModelSupport::buildPlane
-    (SMap,surfIndex+326,
+    (SMap,buildIndex+326,
      frontPt-Z*(-colletVGap+voidHeightInner/2.0+centZOffset),zSlope);
 
   // Outer cut [on flightline]
   ModelSupport::buildPlane
-    (SMap,surfIndex+425,
+    (SMap,buildIndex+425,
      frontPt+Z*(-colletVGap+voidHeightOuter/2.0+centZOffset),zSlope);
   
   // Outer cut [on flightline]
-  ModelSupport::buildPlane(SMap,surfIndex+426,
+  ModelSupport::buildPlane(SMap,buildIndex+426,
       frontPt-Z*(-colletVGap+voidHeightOuter/2.0-centZOffset),zSlope);
 
   // HORRIZONTAL
-  ModelSupport::buildPlane(SMap,surfIndex+313,
+  ModelSupport::buildPlane(SMap,buildIndex+313,
 	  Origin-X*(-colletHGap+voidWidthInner/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+314,
+  ModelSupport::buildPlane(SMap,buildIndex+314,
 		   Origin+X*(-colletHGap+voidWidthInner/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+413,
+  ModelSupport::buildPlane(SMap,buildIndex+413,
          Origin-X*(-colletHGap+voidWidthOuter/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+414,
+  ModelSupport::buildPlane(SMap,buildIndex+414,
 	    Origin+X*(-colletHGap+voidWidthOuter/2.0),X);
   
   // Forward gap
-  ModelSupport::buildPlane(SMap,surfIndex+401,
+  ModelSupport::buildPlane(SMap,buildIndex+401,
 	   frontPt+Y*(voidDivide+colletFGap),Y);
 
   return;
@@ -233,7 +233,7 @@ BlockShutter::makeBlockUnit(const FuncDataBase& Control,
     StrFunc::makeString(blockKey+"Block",index+1)+"TYPE";
   const int cylFlag=Control.EvalDefVar<int>(tKey,0);
 
-  const int SI(surfIndex+1000+100*index);
+  const int SI(buildIndex+1000+100*index);
   return (!cylFlag) ?
     zbTYPE(new collInsertBlock(index,SI,blockKey+"Block")) 
     :  zbTYPE(new collInsertCyl(index,SI,blockKey+"Block"));
@@ -260,7 +260,7 @@ BlockShutter::createInsert(Simulation& System)
    if (nBlock>1)
     {
       zbTYPE ItemZB=makeBlockUnit(Control,0);
-      Out=ModelSupport::getComposite(SMap,surfIndex,"7 ")+divideStr();
+      Out=ModelSupport::getComposite(SMap,buildIndex,"7 ")+divideStr();
       ItemZB->initialize(System,*this);
       ItemZB->setOrigin(frontPt+Y*0.01,xStep,xAngle,zStart,zAngle);
       ItemZB->createAll(System,0,Out,"");
@@ -288,7 +288,7 @@ BlockShutter::createInsert(Simulation& System)
       zbTYPE ItemZB=makeBlockUnit(Control,nBlock-1);
       const zbTYPE ZB= iBlock.back();  // previous block
       ItemZB->initialize(System,*ZB);
-      Out=ModelSupport::getComposite(SMap,surfIndex,"-17 ")+divideStr();
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-17 ")+divideStr();
       ItemZB->createAll(System,ZB->getLinkSurf(2),"",Out);
       iBlock.push_back(ItemZB);
     }
@@ -353,9 +353,9 @@ BlockShutter::createObjects(Simulation& System)
     {
       // exclude from flight line
       Out=ModelSupport::getComposite
-	(SMap,surfIndex," (-313:314:325:-326) ");
+	(SMap,buildIndex," (-313:314:325:-326) ");
       OutB=ModelSupport::getComposite
-	(SMap,surfIndex," (-413:414:425:-426) ");
+	(SMap,buildIndex," (-413:414:425:-426) ");
       MonteCarlo::Qhull* VObjA=System.findQhull(innerVoidCell);
       MonteCarlo::Qhull* VObjB=System.findQhull(innerVoidCell+1);
 
@@ -371,16 +371,16 @@ BlockShutter::createObjects(Simulation& System)
       // Inner Collet
       colletInnerCell=cellIndex;
       Out=ModelSupport::getComposite
-	(SMap,surfIndex,"313 -314 -325 326 7 -401")+dSurf;
+	(SMap,buildIndex,"313 -314 -325 326 7 -401")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
       // OuterCollet
       colletOuterCell=cellIndex;
       Out=ModelSupport::getComposite
-	(SMap,surfIndex,"413 -414 -425 426 -17 401");
+	(SMap,buildIndex,"413 -414 -425 426 -17 401");
       System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
       // SPACER:
       Out=ModelSupport::getComposite
-	(SMap,surfIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
+	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       
     }
