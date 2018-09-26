@@ -73,7 +73,7 @@ class GratingMonoGenerator
 
 
   void generateGrating(FuncDataBase&,const std::string&,
-		       const double) const;
+		       const double,const double) const;
 
 };
 

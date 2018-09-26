@@ -414,7 +414,8 @@ createPointSource(const mainSystem::MITYPE& inputMap,
 
   GX.createAll(inputMap,FC,linkIndex);
   
-  SDB.registerSource(GX.getKeyName(),GX);  
+  SDB.registerSource(GX.getKeyName(),GX);
+
   return GX.getKeyName();      
 }
   

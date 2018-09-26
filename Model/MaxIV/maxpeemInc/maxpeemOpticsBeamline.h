@@ -103,12 +103,16 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
+  /// M1 - Mirror
+  std::shared_ptr<xraySystem::Mirror> M1Mirror;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Gate valve
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// Large Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// Shield between pipes
+  std::shared_ptr<xraySystem::PipeShield> screenA;
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// Small Pipe to slit section
@@ -141,10 +145,14 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeC;
   /// M3 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
+  /// M3 - Mirror
+  std::shared_ptr<xraySystem::Mirror> M3Mirror;
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
   /// Splitter
   std::shared_ptr<xraySystem::TwinPipe> splitter;
+  /// Shield between pipes
+  std::shared_ptr<xraySystem::PipeShield> screenB;
 
   // PIPE A :: LEFT SIDE
   // bellowA on left split
@@ -204,6 +212,8 @@ class maxpeemOpticsBeamline :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
+  void buildM1Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
+		     const attachSystem::FixedComp&,const long int);
   void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
   void buildMono(Simulation&,HeadRule&,MonteCarlo::Object*,

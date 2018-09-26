@@ -119,7 +119,6 @@ processExitChecks(Simulation& System,
 	    IParam.getValueError<std::string>("validFC",0,0,"No FC-object");
 	  const std::string linkPos=
 	    IParam.getValueError<std::string>("validFC",0,1,"No FC-link Pos");
-
 	  
 	  const attachSystem::FixedComp* FC=
 	    OR.getObjectThrow<attachSystem::FixedComp>(FCObject,"FixedComp");
@@ -130,6 +129,20 @@ processExitChecks(Simulation& System,
 	  if (!SValidCheck.runPoint(System,CPoint,
 				    IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
+	}
+      else if (IParam.flag("validAll"))
+	{
+	  // This should work BUT never does
+	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  typedef ModelSupport::objectRegister::cMapTYPE CM;
+	  const CM& mapFC=OR.getComponents();
+	  for(const CM::value_type& mc : mapFC)
+	    {
+	      const attachSystem::FixedComp& FC = *(mc.second);
+	      const Geometry::Vec3D& CP=FC.getCentre();
+	      if (SValidCheck.runPoint(System,CP,NPts))
+		  errFlag += -1;
+	    }
 	}
       else 
 	{

@@ -234,7 +234,7 @@ void
 flukaImpConstructor::processCUT(flukaPhysics& PC,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
-/*!
+  /*!
     Set individual IMP based on Iparam
     \param PC :: PhysicsCards
     \param IParam :: input stream
@@ -455,11 +455,14 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
     ({
       { "cut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
       { "emfcut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "elecnucl",emfTYPE(1,1,"elecnucl") },     // mat
+      { "mupair",emfTYPE(1,1,"mupair") },        // mat
       { "prodcut",emfTYPE(2,1,"prodcut") }, 
       { "elpothr",emfTYPE(3,1,"elpothr") },  //
       { "photthr",emfTYPE(3,1,"photthr") },  // comp/photoeelec/gamma-pair
       { "pho2thr",emfTYPE(2,1,"pho2thr") },  // photo-nuclear
       { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
+
       { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
       { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
       { "emffluo",emfTYPE(0,1,"emffluo") },      // mat

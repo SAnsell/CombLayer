@@ -1345,11 +1345,8 @@ Object::writeFLUKAmat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writeFLUKAmat");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   if (!placehold)
     {
-      std::string objName=OR.inRenumberRange(ObjName);
       std::ostringstream cx;
       cx<<"ASSIGNMAT ";
 

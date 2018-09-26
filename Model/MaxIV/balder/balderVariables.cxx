@@ -575,7 +575,7 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.generateBox(Control,preName+"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,preName+"Mirror",0.0, 0.0, -0.5, 00.0,0.0);
+  MirrGen.generateMirror(Control,preName+"Mirror",0.0, 0.0, -0.5, 0.0,0.0);
 
   // y/z/theta/phi/radius
   MirrGen.generateMirror(Control,preName+"MirrorB",0.0, 0.0, 0.5, 0.0,0.0);

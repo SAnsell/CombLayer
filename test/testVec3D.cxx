@@ -167,8 +167,8 @@ testVec3D::testRead()
   ELog::RegMethod RegA("testVec3D","testReadVec3D");
 
   typedef std::tuple<std::string,Vec3D> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests={
+  const std::vector<TTYPE> 
+    Tests={
     TTYPE("3,4 8",Vec3D(3,4,8)),
     TTYPE("Vec3D(3,4 8)",Vec3D(3,4,8))
   };

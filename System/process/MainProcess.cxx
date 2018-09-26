@@ -558,11 +558,8 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimPHITS");
 
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
 
-  //  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
+  ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
   SimPHITSPtr->prepareWrite();
   
   // tallySystem::tallySelection(*SimPHITSPtr,IParam);
@@ -573,6 +570,9 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
 
   SDef::sourceSelection(*SimPHITSPtr,IParam);
   // Ensure we done loop
+  
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
   do
     {
       SimProcess::writeIndexSimPHITS(*SimPHITSPtr,OName,MCIndex);
@@ -706,23 +706,6 @@ buildFullSimulation(Simulation* SimPtr,
       buildFullSimPHITS(SimPHITSPtr,IParam,OName);
       return;
     }
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
-  // 
-  SimProcess::importanceSim(*SimPtr,IParam);
-  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-
-  SDef::sourceSelection(*SimPtr,IParam);
-  SimPtr->masterSourceRotation();
-  // Ensure we done loop
-  do
-    {
-      //SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
-      MCIndex++;
-    }
-  while(MCIndex<multi);
 
   return;
 }

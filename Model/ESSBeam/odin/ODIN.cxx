@@ -388,8 +388,7 @@ ODIN::buildOutGuide(Simulation& System,
 
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->insertObjects(System);
-  
-  
+
   OutACut->addInsertCell(OutPitA->getCells("MidLayerFront"));
   OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(1),
                     OutPitA->getKey("Mid").getFullRule(-1));

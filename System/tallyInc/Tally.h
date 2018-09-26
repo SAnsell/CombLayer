@@ -3,7 +3,7 @@
  
  * File:   tallyInc/Tally.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,8 +96,7 @@ class Tally
   virtual int setSDField(const double);
   virtual int setSDField(const std::string&);
   /// Combine two tallies if possible [no-op default]
-  virtual int mergeTally(const Tally&)
-  { return 0; }
+  virtual int mergeTally(const Tally&) { return 0; }
   
   /// set tally ID
   void setKey(const int K) { IDnum=K; }

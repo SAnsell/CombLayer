@@ -128,7 +128,7 @@ ContainedSpace::insertObjects(Simulation& System,
     Then constructs the outer boundary as if that object is 
     the outer boundary!
     \param System :: simulation system
-    \param FC :: Fixed Comp for cell information
+    \param FC :: FixedComp for cell information
   */
 {
   ELog::RegMethod RegA("ContainedSpace","insertObjects(FC)");
@@ -140,8 +140,6 @@ ContainedSpace::insertObjects(Simulation& System,
 
   if (buildCell)
     ContainedComp::addInsertCell(buildCell);
-  if (FCName=="BalderOpticsHutChicane0")
-    ELog::EM<<"FC= "<<FCName<<" "<<buildCell<<ELog::endDiag;
   if (SpaceCut::insertValid())
     {
       StrFunc::removeItem(insertCells,SpaceCut::getPrimaryCell());

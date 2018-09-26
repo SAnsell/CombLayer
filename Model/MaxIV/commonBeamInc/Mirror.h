@@ -37,7 +37,7 @@ namespace xraySystem
 
 class Mirror :
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {

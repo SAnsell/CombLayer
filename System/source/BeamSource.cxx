@@ -62,6 +62,7 @@
 #include "WorkData.h"
 #include "World.h"
 #include "particleConv.h"
+#include "flukaGenParticle.h"
 
 #include "SourceBase.h"
 #include "BeamSource.h"
@@ -269,16 +270,17 @@ BeamSource::writePHITS(std::ostream& OX) const
   const double phi=180.0*acos(Y[0])/M_PI;
   
   OX<<"  s-type =  1        # axial source \n";
-  OX<<"  r0 =   "<<(fFMT % radius)   <<"   # radius [cm]\n";
-  OX<<"  x0 =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
-  OX<<"  y0 =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
-  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
-  OX<<"  z1 =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
-  OX<<" dir =   "<<(fFMT % Y[2])     <<" dir cosine direction of Z\n";
-  OX<<" phi =   "<<(fFMT % phi)      <<" phi angle to X axis [deg]\n";
+  OX<<"  r0  =   "<<(fFMT % radius)   <<"  # radius [cm]\n";
+  OX<<"  x0  =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
+  OX<<"  y0  =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
+  OX<<"  z0  =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
+  OX<<"  z1  =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
+  OX<<" dir  =   "<<(fFMT % Y[2])     <<"  # dir cosine direction of Z\n";
+  OX<<" phi  =   "<<(fFMT % phi)      <<"  # phi angle to X axis [deg]\n";
   if (angleSpread>Geometry::zeroTol)
-    OX<<" dom =   "<<(fFMT % angleSpread)<<" solid angle to X axis [deg]\n";
+    OX<<" dom =    "<<(fFMT % angleSpread)<<"  # solid angle to X axis [deg]\n";
 
+  writePHITS(OX);
   OX<<std::endl;
   return;
 }
@@ -292,7 +294,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("BeamSource","writeFLUKA");
 
-  const particleConv& PC=particleConv::Instance();
+  const flukaGenParticle& PC=flukaGenParticle::Instance();
 
   // can be two for an energy range
   if (Energy.size()!=1)
@@ -304,7 +306,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // radius : innerRadius : -1 t o means radius
   cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
     <<" "<<radius<<" 0.0 -1.0 ";
-  cx<<StrFunc::toUpperString(particleType);
+  cx<<StrFunc::toUpperString(PC.nameToFLUKA(particleType));
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
 

@@ -169,6 +169,7 @@ VESPA::VESPA(const std::string& keyName) :
   
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
+  
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
   ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
@@ -448,6 +449,7 @@ VESPA::buildOutGuide(Simulation& System,
 
   // Elliptic 6m section
   VPipeOutA->addInsertCell(ShieldA->getCells("Void"));
+  VPipeOutA->setFront(OutPitT0->getKey("Mid"),2);
   VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
   VPipeOutA->addInsertCell(OutPitA->getCells("MidLayer"));
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
