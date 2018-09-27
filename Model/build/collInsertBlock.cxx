@@ -73,9 +73,9 @@ namespace shutterSystem
 {
 
 
-collInsertBlock::collInsertBlock(const int N,const int SN,
-				 const std::string& Key) :
-  collInsertBase(N,SN,Key)
+collInsertBlock::collInsertBlock(const std::string& Key,
+				   const int ID) :
+  collInsertBase(Key,ID)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param N :: Index value of block
@@ -141,11 +141,10 @@ collInsertBlock::populate(const Simulation& System,
   const collInsertBlock* blkPtr=
     dynamic_cast<const collInsertBlock*>(sndBase);
 
-
   for(size_t i=0;i<Size;i++)
     {
       const std::string KN=keyName+
-	std::to_string(blockIndex+1)+sndKey[i];
+	std::to_string(blockID+1)+sndKey[i];
       if (Control.hasVariable(KN))
 	setVar(Control,i,KN);
       else if (blkPtr)
@@ -258,27 +257,27 @@ collInsertBlock::createSurfaces(const int startSurf)
   ELog::RegMethod RegA("collInsertBlock","createSurface");
 
   if (startSurf)
-    SMap.addMatch(collIndex+1,startSurf);
+    SMap.addMatch(buildIndex+1,startSurf);
   else
-    ModelSupport::buildPlane(SMap,collIndex+1,Origin,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   
   // Outer Surface 
-  ModelSupport::buildPlane(SMap,collIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,collIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,collIndex+4,Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,collIndex+5,Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,collIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
   
   // Inner surface
-  ModelSupport::buildPlane(SMap,collIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   beamOrigin-beamX*(hGap/2.0-centX),beamX);
 
-  ModelSupport::buildPlane(SMap,collIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   beamOrigin+beamX*(hGap/2.0+centX),beamX);
 
-  ModelSupport::buildPlane(SMap,collIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   beamOrigin-beamZ*(vGap/2.0-centZ),beamZ);
-  ModelSupport::buildPlane(SMap,collIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   beamOrigin+beamZ*(vGap/2.0+centZ),beamZ);
   
   return;
@@ -298,21 +297,21 @@ collInsertBlock::createObjects(Simulation& System,
   ELog::RegMethod RegA("collInsertBlock","createObjects");
 
   std::string frontBack=fSurf.empty() ? 
-    ModelSupport::getComposite(SMap,collIndex,"1 ") : fSurf;
+    ModelSupport::getComposite(SMap,buildIndex,"1 ") : fSurf;
   frontBack+=bSurf.empty() ? 
-    ModelSupport::getComposite(SMap,collIndex,"-2 ") : bSurf;
+    ModelSupport::getComposite(SMap,buildIndex,"-2 ") : bSurf;
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,collIndex,"3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ");
   addOuterSurf(Out);
 
   // Centre void
-  Out=ModelSupport::getComposite(SMap,collIndex,"13 -14 15 -16 ")+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 ")+
     frontBack;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Outer metal
-  Out=ModelSupport::getComposite(SMap,collIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "3 -4 5 -6 (-13:14:-15:16) ")+
     frontBack;
   System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
@@ -335,13 +334,13 @@ collInsertBlock::exitWindow(const double Dist,
   ELog::RegMethod RegA("collInsertBlock","exitWindow");
 
   window.clear();
-  window.push_back(SMap.realSurf(collIndex+3));
-  window.push_back(SMap.realSurf(collIndex+4));
-  window.push_back(SMap.realSurf(collIndex+5));
-  window.push_back(SMap.realSurf(collIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
 
   Pt=Origin+Y*Dist;
-  return SMap.realSurf(collIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
 std::vector<Geometry::Vec3D> 

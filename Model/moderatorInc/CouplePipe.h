@@ -39,8 +39,6 @@ class CouplePipe : public attachSystem::FixedComp
 {
  private:
   
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   ModelSupport::PipeLine GOuter; ///< Global outer

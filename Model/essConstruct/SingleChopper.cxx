@@ -94,8 +94,6 @@ SingleChopper::SingleChopper(const std::string& Key) :
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(houseIndex+1),
   motor(new constructSystem::Motor(Key+"Motor")),
   frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
   backFlange(new constructSystem::boltRing(Key,"BackFlange")),
@@ -121,7 +119,6 @@ SingleChopper::SingleChopper(const std::string& Key) :
 SingleChopper::SingleChopper(const SingleChopper& A) : 
   attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  houseIndex(A.houseIndex),cellIndex(A.cellIndex),
   height(A.height),
   width(A.width),depth(A.depth),length(A.length),
   shortHeight(A.shortHeight),shortWidth(A.shortWidth),
@@ -149,7 +146,6 @@ SingleChopper::operator=(const SingleChopper& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       height=A.height;
       width=A.width;
       depth=A.depth;
@@ -240,31 +236,31 @@ SingleChopper::createSurfaces()
   const Geometry::Vec3D XShort=X*(shortWidth/2.0);
   const Geometry::Vec3D ZShort=Z*(shortHeight/2.0);
 
-  ModelSupport::buildPlane(SMap,houseIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+3,Origin-XLong,X);
-  ModelSupport::buildPlane(SMap,houseIndex+4,Origin+XLong,X);
-  ModelSupport::buildPlane(SMap,houseIndex+5,Origin-ZLong,Z);
-  ModelSupport::buildPlane(SMap,houseIndex+6,Origin+ZLong,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-XLong,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+XLong,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-ZLong,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+ZLong,Z);
       // triangular corners
 
       // All triangle edges point to centre:
-  ModelSupport::buildPlane(SMap,houseIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+7,
                            Origin-XLong-ZShort,
                            Origin-XShort-ZLong,
                            Origin-XShort-ZLong+Y,
                            Z);
-  ModelSupport::buildPlane(SMap,houseIndex+8,
+  ModelSupport::buildPlane(SMap,buildIndex+8,
                            Origin-XLong+ZShort,
                            Origin-XShort+ZLong,
                            Origin-XShort+ZLong+Y,
                            -Z);
-  ModelSupport::buildPlane(SMap,houseIndex+9,
+  ModelSupport::buildPlane(SMap,buildIndex+9,
                            Origin+XLong+ZShort,
                            Origin+XShort+ZLong,
                            Origin+XShort+ZLong+Y,
                            -Z);
-  ModelSupport::buildPlane(SMap,houseIndex+10,
+  ModelSupport::buildPlane(SMap,buildIndex+10,
                            Origin+XLong-ZShort,
                            Origin+XShort-ZLong,
                            Origin+XShort-ZLong+Y,
@@ -272,9 +268,9 @@ SingleChopper::createSurfaces()
 
 
   // CREATE INNER VOID:
-  ModelSupport::buildPlane(SMap,houseIndex+11,Origin-Y*(mainThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+12,Origin+Y*(mainThick/2.0),Y);
-  ModelSupport::buildCylinder(SMap,houseIndex+17,Origin,Y,mainRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(mainThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(mainThick/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,mainRadius);
   
   return;
 }
@@ -293,12 +289,12 @@ SingleChopper::createObjects(Simulation& System)
   std::string Out,FBStr,EdgeStr,SealStr;
 
     // Main void
-  Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 -17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Main block
-  Out=ModelSupport::getComposite(SMap,houseIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
                 "1 -2 3 -4 5 -6 7 8 9 10 (-11:12:17)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Wall",cellIndex-1);
@@ -308,14 +304,14 @@ SingleChopper::createObjects(Simulation& System)
   // Front ring seal
   frontFlange->setInnerExclude();
   frontFlange->addInsertCell(getCell("MainBlock"));
-  frontFlange->setFront(SMap.realSurf(houseIndex+1));
-  frontFlange->setBack(-SMap.realSurf(houseIndex+11));
+  frontFlange->setFront(SMap.realSurf(buildIndex+1));
+  frontFlange->setBack(-SMap.realSurf(buildIndex+11));
   frontFlange->createAll(System,BuildBeam,0);
 
   backFlange->setInnerExclude();
   backFlange->addInsertCell(getCell("MainBlock"));
-  backFlange->setFront(SMap.realSurf(houseIndex+12));
-  backFlange->setBack(-SMap.realSurf(houseIndex+2));
+  backFlange->setFront(SMap.realSurf(buildIndex+12));
+  backFlange->setBack(-SMap.realSurf(buildIndex+2));
   backFlange->createAll(System,BuildBeam,0);
 
   // Port [Front/back]
@@ -323,7 +319,7 @@ SingleChopper::createObjects(Simulation& System)
     std::to_string(-frontFlange->getSurf("innerRing"));
   const std::string innerBSurf=
     std::to_string(-backFlange->getSurf("innerRing"));
-  Out=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
   addCell("PortVoid",cellIndex-1);
 
@@ -331,7 +327,7 @@ SingleChopper::createObjects(Simulation& System)
   IPA->createAll(System,BuildBeam,0,Out+innerFSurf);
 
   
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
   addCell("PortVoid",cellIndex-1);
 
@@ -340,7 +336,7 @@ SingleChopper::createObjects(Simulation& System)
 
   
   // Outer
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6 7 8 9 10");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 7 8 9 10");
   addOuterSurf(Out);  
   
   return;
@@ -367,12 +363,12 @@ SingleChopper::createLinks()
   mainFC.setConnect(4,Origin-Z*(height/2.0),-Z);
   mainFC.setConnect(5,Origin-Z*(height/2.0),Z);
 
-  mainFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-  mainFC.setLinkSurf(2,-SMap.realSurf(houseIndex+3));
-  mainFC.setLinkSurf(3,SMap.realSurf(houseIndex+4));
-  mainFC.setLinkSurf(4,-SMap.realSurf(houseIndex+5));
-  mainFC.setLinkSurf(5,SMap.realSurf(houseIndex+6));
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D BC(beamFC.getCentre());
@@ -381,8 +377,8 @@ SingleChopper::createLinks()
   beamFC.setConnect(0,BC-BY*(length/2.0),-BY);
   beamFC.setConnect(1,BC+BY*(length/2.0),BY);
 
-  beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
   return;
 }
 
@@ -419,8 +415,8 @@ SingleChopper::createMotor(Simulation& System)
   motor->addInsertCell("Plate",getCell("MainBlock"));
   motor->addInsertCell("Axle",getCell("Void"));
 
-  motor->setInnerPlanes(SMap.realSurf(houseIndex+11),
-			-SMap.realSurf(houseIndex+12));
+  motor->setInnerPlanes(SMap.realSurf(buildIndex+11),
+			-SMap.realSurf(buildIndex+12));
   motor->setYSteps(mainThick/2.0,mainThick/2.0);
   motor->createAll(System,FixedGroup::getKey("Main"),0);
 

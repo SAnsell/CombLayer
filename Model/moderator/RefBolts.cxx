@@ -3,7 +3,7 @@
  
  * File:   moderator/RefBolts.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,8 +82,7 @@ namespace moderatorSystem
 {
 
 RefBolts::RefBolts(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
-  boltIndex(ModelSupport::objectRegister::Instance().cell(Key))
+  attachSystem::FixedComp(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,8 +90,7 @@ RefBolts::RefBolts(const std::string& Key)  :
 {}
 
 RefBolts::RefBolts(const RefBolts& A) : 
-  attachSystem::FixedComp(A),
-  boltIndex(A.boltIndex)
+  attachSystem::FixedComp(A)
   /*!
     Copy constructor
     \param A :: RefBolts to copy

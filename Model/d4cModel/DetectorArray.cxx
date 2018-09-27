@@ -87,8 +87,7 @@ namespace d4cSystem
 
 DetectorArray::DetectorArray(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  detIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(detIndex+1),nDet(0)
+  nDet(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -98,7 +97,6 @@ DetectorArray::DetectorArray(const std::string& Key) :
 
 DetectorArray::DetectorArray(const DetectorArray& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  detIndex(A.detIndex),cellIndex(A.cellIndex),
   centRadius(A.centRadius),tubeRadius(A.tubeRadius),
   wallThick(A.wallThick),height(A.height),wallMat(A.wallMat),
   detMat(A.detMat),nDet(A.nDet),initAngle(A.initAngle),
@@ -121,7 +119,6 @@ DetectorArray::operator=(const DetectorArray& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       centRadius=A.centRadius;
       tubeRadius=A.tubeRadius;
       wallThick=A.wallThick;
@@ -199,13 +196,13 @@ DetectorArray::createSurfaces()
   const double angleStep= (nDet==1) ? 0.0 : 
     (finalAngle-initAngle)/static_cast<double>(nDet-1);
 
-  ModelSupport::buildPlane(SMap,detIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(height/2.0),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(height/2.0),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);    
 
   // MASTER BORDER
@@ -214,22 +211,22 @@ DetectorArray::createSurfaces()
       const double A=initAngle;
       const Geometry::Vec3D CPt=Origin+(X*sin(A)+Y*cos(A))*centRadius;
       const Geometry::Vec3D IDir=X*cos(A)+Y*sin(-A);
-      ModelSupport::buildPlane(SMap,detIndex+3,
+      ModelSupport::buildPlane(SMap,buildIndex+3,
 		  CPt-IDir*(tubeRadius+wallThick+Geometry::zeroTol),IDir);
 
       const double B=finalAngle;
       const Geometry::Vec3D DPt=Origin+(X*sin(B)+Y*cos(B))*centRadius;
       const Geometry::Vec3D FDir=X*cos(B)+Y*sin(-B);
-      ModelSupport::buildPlane(SMap,detIndex+4,
+      ModelSupport::buildPlane(SMap,buildIndex+4,
 		  DPt+FDir*(tubeRadius+wallThick+Geometry::zeroTol),FDir);
 
-      ModelSupport::buildCylinder(SMap,detIndex+7,
+      ModelSupport::buildCylinder(SMap,buildIndex+7,
 	 Origin,Z,centRadius-(tubeRadius+wallThick+Geometry::zeroTol));
-      ModelSupport::buildCylinder(SMap,detIndex+17,
+      ModelSupport::buildCylinder(SMap,buildIndex+17,
 	 Origin,Z,centRadius+(tubeRadius+wallThick+Geometry::zeroTol));
     }
 
-  int SI(detIndex+20);
+  int SI(buildIndex+20);
   for(size_t i=0;i<nDet;i++)
     {
       const double A=initAngle+static_cast<double>(i)*angleStep;
@@ -256,14 +253,14 @@ DetectorArray::createObjects(Simulation& System)
   // First make inner/outer void/wall and top/base
 
   std::string Bound=
-    ModelSupport::getComposite(SMap,detIndex,"3 -4 15 -16 7 -17 ");
+    ModelSupport::getComposite(SMap,buildIndex,"3 -4 15 -16 7 -17 ");
   addOuterSurf(Bound);  
-  int SI(detIndex+20);
+  int SI(buildIndex+20);
   for(size_t i=0;i<nDet;i++)
     {
-      Out=ModelSupport::getComposite(SMap,detIndex,SI,"-7M 5 -6");
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI,"-7M 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,detIndex,SI,"-17M 15 -16 (7M:-5:6)");
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI,"-17M 15 -16 (7M:-5:6)");
       Bound+=ModelSupport::getComposite(SMap,SI," 17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       SI+=20;

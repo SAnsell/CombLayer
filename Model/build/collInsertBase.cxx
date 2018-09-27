@@ -89,10 +89,11 @@ operator<<(std::ostream& OX,
 }
 
 
-collInsertBase::collInsertBase(const int N,const int SN,
-			       const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,4),
-  blockIndex(N),collIndex(SN),
+collInsertBase::collInsertBase(const std::string& Key,
+			       const int ID) :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key+std::to_string(ID),4),
+  blockID(ID),
   populated(0),insertCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -104,7 +105,7 @@ collInsertBase::collInsertBase(const int N,const int SN,
 
 collInsertBase::collInsertBase(const collInsertBase& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  blockIndex(A.blockIndex),collIndex(A.collIndex),
+  blockID(A.blockID),
   populated(A.populated),
   beamOrigin(A.beamOrigin),beamX(A.beamX),beamY(A.beamY),
   beamZ(A.beamZ),insertCell(A.insertCell),fStep(A.fStep),
@@ -207,14 +208,14 @@ collInsertBase::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
  
-  FixedComp::setLinkSurf(0,-SMap.realSurf(collIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(collIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,beamOrigin,-beamY);
   FixedComp::setConnect(3,beamOrigin+beamY*length,beamY);
  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(collIndex+1));
-  FixedComp::setLinkSurf(3,SMap.realSurf(collIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
 
   return;
 }
@@ -342,9 +343,9 @@ collInsertBase::createAll(Simulation& System,
 
 void
 collInsertBase::createAll(Simulation& System,
-			   const int startSurf,
-			   const std::string& fSurf,
-			   const std::string& bSurf)
+			  const int startSurf,
+			  const std::string& fSurf,
+			  const std::string& bSurf)
    /*!
      Create all assuming that population has been done
      \param System :: Simulation to use
@@ -356,7 +357,7 @@ collInsertBase::createAll(Simulation& System,
   ELog::RegMethod RegA("collInsertBase","createAll(int,string)");
   if (!populated)
     {
-      ELog::EM<<"Failed to initialize item "<<blockIndex<<ELog::endErr;
+      ELog::EM<<"Failed to initialize item "<<blockID<<ELog::endErr;
       return;
     }
   

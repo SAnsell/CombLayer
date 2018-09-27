@@ -84,8 +84,7 @@ namespace moderatorSystem
 
 DecouplePipe::DecouplePipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),populated(0),
+  populated(0),
   Outer("dOuter"),HeIn("HeIn"),HeOut("HeOut"),CH4In("CH4In"),
   CH4Out("CH4Out")
   /*!
@@ -96,7 +95,6 @@ DecouplePipe::DecouplePipe(const std::string& Key)  :
 
 DecouplePipe::DecouplePipe(const DecouplePipe& A) : 
   attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   populated(A.populated),Outer(A.Outer),HeIn(A.HeIn),HeOut(A.HeOut),
   CH4In(A.CH4In),CH4Out(A.CH4Out),Xoffset(A.Xoffset),Yoffset(A.Yoffset),
   HeInXStep(A.HeInXStep),HeInYStep(A.HeInYStep),HeOutXStep(A.HeOutXStep),
@@ -123,7 +121,6 @@ DecouplePipe::operator=(const DecouplePipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       Outer=A.Outer;
       HeIn=A.HeIn;

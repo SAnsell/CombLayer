@@ -95,8 +95,6 @@ TwinBase::TwinBase(const std::string& Key) :
 				 "MotorTop",3,"MotorBase",3),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(houseIndex+1),
   motorA(new constructSystem::Motor(Key+"MotorA")),
   motorB(new constructSystem::Motor(Key+"MotorB"))
   /*!
@@ -198,34 +196,34 @@ TwinBase::createSurfaces()
   const attachSystem::FixedComp& MotorA=getKey("MotorBase");
   const attachSystem::FixedComp& MotorB=getKey("MotorTop");
 
-  ModelSupport::buildPlane(SMap,houseIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+3,Origin-X*mainRadius,X);
-  ModelSupport::buildPlane(SMap,houseIndex+4,Origin+X*mainRadius,X);
-  ModelSupport::buildPlane(SMap,houseIndex+5,Origin-Z*(stepHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,houseIndex+6,Origin+Z*(stepHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*mainRadius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*mainRadius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(stepHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(stepHeight/2.0),Z);
 
-  ModelSupport::buildCylinder(SMap,houseIndex+7,lowOutCent,Y,mainRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+8,topOutCent,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,lowOutCent,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+8,topOutCent,Y,mainRadius);
 
   // Bolt layer
   const double boltOffset(2.0*(outerBoltStep+outerBoltRadius));
-  ModelSupport::buildPlane(SMap,houseIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
                            Origin-X*(mainRadius-boltOffset),X);
-  ModelSupport::buildPlane(SMap,houseIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
                            Origin+X*(mainRadius-boltOffset),X);
-  ModelSupport::buildCylinder(SMap,houseIndex+27,lowOutCent,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,lowOutCent,Y,
                               mainRadius-boltOffset);
-  ModelSupport::buildCylinder(SMap,houseIndex+28,topOutCent,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+28,topOutCent,Y,
 			mainRadius-boltOffset);
 
   // Inner space
-  ModelSupport::buildPlane(SMap,houseIndex+11,Origin-Y*(innerVoid/2.0),Y);
-  ModelSupport::buildPlane(SMap,houseIndex+12,Origin+Y*(innerVoid/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(innerVoid/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(innerVoid/2.0),Y);
 
-  ModelSupport::buildCylinder(SMap,houseIndex+17,MotorA.getCentre(),
+  ModelSupport::buildCylinder(SMap,buildIndex+17,MotorA.getCentre(),
 			      Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+18,MotorB.getCentre(),
+  ModelSupport::buildCylinder(SMap,buildIndex+18,MotorB.getCentre(),
 			      Y,innerRadius);
 
   return;
@@ -421,53 +419,53 @@ TwinBase::createObjects(Simulation& System)
   std::string Out,FBStr,EdgeStr,SealStr;
 
   // Main void
-  Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 (-17:-18)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 (-17:-18)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
   
   // Main casing [inside bolt layer]
   Out=ModelSupport::getComposite
-    (SMap,houseIndex,"1 -11 23 -24 (5:-27) (-6:-28) ");
+    (SMap,buildIndex,"1 -11 23 -24 (5:-27) (-6:-28) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("FrontCase",cellIndex-1);
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite
-    (SMap,houseIndex,"12 -2 23 -24 (5:-27) (-6:-28)");
+    (SMap,buildIndex,"12 -2 23 -24 (5:-27) (-6:-28)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("BackCase",cellIndex-1);
   addCell("Case",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,houseIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
                                  "11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("EdgeCase",cellIndex-1);
 
   // OUTER RING :
   // NECESSARY because segment cut
-  EdgeStr=ModelSupport::getComposite(SMap,houseIndex," -7 27 ");  
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -2 ");
-  int divideSurf(SMap.realSurf(houseIndex+5));
-  createOuterBolts(System,houseIndex+5000,lowOutCent,FBStr,EdgeStr,
+  EdgeStr=ModelSupport::getComposite(SMap,buildIndex," -7 27 ");  
+  FBStr=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
+  int divideSurf(SMap.realSurf(buildIndex+5));
+  createOuterBolts(System,buildIndex+5000,lowOutCent,FBStr,EdgeStr,
                    mainRadius-(outerBoltStep+outerBoltRadius),
                    outerRingNBolt,outerBoltRadius,
                    90.0,180.0,divideSurf,divideSurf);
 
-  EdgeStr=ModelSupport::getComposite(SMap,houseIndex," -8 28 ");
-  divideSurf=SMap.realSurf(houseIndex+6);
-  createOuterBolts(System,houseIndex+5500,topOutCent,FBStr,EdgeStr,
+  EdgeStr=ModelSupport::getComposite(SMap,buildIndex," -8 28 ");
+  divideSurf=SMap.realSurf(buildIndex+6);
+  createOuterBolts(System,buildIndex+5500,topOutCent,FBStr,EdgeStr,
                    mainRadius-(outerBoltStep+outerBoltRadius),
                    outerRingNBolt,outerBoltRadius,
                    -90.0,180.0,-divideSurf,-divideSurf);
 
-  const int lowCutSurf=SMap.realSurf(houseIndex+5);
-  const int topCutSurf=SMap.realSurf(houseIndex+6);
+  const int lowCutSurf=SMap.realSurf(buildIndex+5);
+  const int topCutSurf=SMap.realSurf(buildIndex+6);
 
   std::string leftEdgeStr=
-    ModelSupport::getComposite(SMap,houseIndex," 3 -23 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -23 ");
   std::string rightEdgeStr=
-    ModelSupport::getComposite(SMap,houseIndex," 24 -4 ");
-  createLineBolts(System,houseIndex+6000,
+    ModelSupport::getComposite(SMap,buildIndex," 24 -4 ");
+  createLineBolts(System,buildIndex+6000,
                   FBStr,leftEdgeStr,rightEdgeStr,
                   stepHeight,outerLineNBolt,
                   outerBoltRadius,
@@ -475,7 +473,7 @@ TwinBase::createObjects(Simulation& System)
 
   
   // Outer
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
   addOuterSurf(Out);  
    
   return;
@@ -502,12 +500,12 @@ TwinBase::createLinks()
   mainFC.setConnect(4,Origin-Z*(mainRadius+stepHeight/2.0),-Z);
   mainFC.setConnect(4,Origin+Z*(mainRadius+stepHeight/2.0),Z);
 
-  mainFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-  mainFC.setLinkSurf(2,-SMap.realSurf(houseIndex+3));
-  mainFC.setLinkSurf(3,SMap.realSurf(houseIndex+4));
-  mainFC.setLinkSurf(4,SMap.realSurf(houseIndex+7));
-  mainFC.setLinkSurf(5,SMap.realSurf(houseIndex+8));
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D BC(beamFC.getCentre());
@@ -516,26 +514,26 @@ TwinBase::createLinks()
   beamFC.setConnect(0,BC-BY*(length/2.0),-BY);
   beamFC.setConnect(1,BC+BY*(length/2.0),BY);
 
-  beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   const Geometry::Vec3D& LC=motorAFC.getCentre();
   motorAFC.setConnect(0,LC-Y*(length/2.0),-Y);
   motorAFC.setConnect(1,LC+Y*(length/2.0),Y);
   motorAFC.setConnect(2,LC,Y);
   
-  motorAFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  motorAFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-  motorAFC.setLinkSurf(2,SMap.realSurf(houseIndex+2));
+  motorAFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  motorAFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  motorAFC.setLinkSurf(2,SMap.realSurf(buildIndex+2));
 
   const Geometry::Vec3D& TC=motorAFC.getCentre();
   motorBFC.setConnect(0,TC-Y*(length/2.0),-Y);
   motorBFC.setConnect(1,TC+Y*(length/2.0),Y);
   motorBFC.setConnect(2,TC,Y);
   
-  motorBFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  motorBFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-  motorBFC.setLinkSurf(2,SMap.realSurf(houseIndex+2));
+  motorBFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  motorBFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  motorBFC.setLinkSurf(2,SMap.realSurf(buildIndex+2));
 
 
 
@@ -584,8 +582,8 @@ TwinBase::createMotor(Simulation& System,
   motor->addInsertCell("Plate",getCells("Case"));
   motor->addInsertCell("Axle",getCell("Void"));
 
-  motor->setInnerPlanes(SMap.realSurf(houseIndex+11),
-			-SMap.realSurf(houseIndex+12));
+  motor->setInnerPlanes(SMap.realSurf(buildIndex+11),
+			-SMap.realSurf(buildIndex+12));
   motor->setYSteps(length/2.0,length/2.0);
   motor->createAll(System,FixedGroup::getKey(posName),0);
 

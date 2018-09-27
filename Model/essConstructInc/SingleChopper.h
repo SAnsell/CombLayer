@@ -50,8 +50,6 @@ class SingleChopper :
 {
  private:
   
-  const int houseIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   Geometry::Vec3D BY;       ///< Old reorientation
   

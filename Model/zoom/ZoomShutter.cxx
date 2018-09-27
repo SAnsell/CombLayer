@@ -235,7 +235,7 @@ ZoomShutter::createInsert(Simulation& System)
   // Create First Object:
   if (nBlock>1)
     {
-      collInsertBlock ItemZB(0,buildIndex+500,"zoomShutterBlock");
+      collInsertBlock ItemZB("zoomShutterBlock",0);
       Out=ModelSupport::getComposite(SMap,buildIndex,"7 ")+divideStr();
       ItemZB.initialize(System,*this);
       ItemZB.setOrigin(frontPt+Y*colletFGap,xStart,xAngle,zStart,zAngle);
@@ -244,7 +244,7 @@ ZoomShutter::createInsert(Simulation& System)
     }
   for(int i=1;i<nBlock-1;i++)
     {
-      collInsertBlock ItemZB(i,buildIndex+1000+i*100,"zoomShutterBlock");
+      collInsertBlock ItemZB("zoomShutterBlock",i);
       ItemZB.createAll(System,iBlock.back());
       iBlock.push_back(ItemZB);
        // Nasty code to force using the system:
@@ -261,8 +261,8 @@ ZoomShutter::createInsert(Simulation& System)
   // Outer Cell
   if (nBlock>2)
     {
-      collInsertBlock ItemZB(nBlock-1,buildIndex+1000+(nBlock-1)*100,
-			     "zoomShutterBlock");
+      collInsertBlock ItemZB("zoomShutterBlock",nBlock-1);
+			     
       const collInsertBlock& ZB=iBlock.back();
       ItemZB.initialize(System,ZB);
       Out=ModelSupport::getComposite(SMap,buildIndex,"-17 ")+divideStr();

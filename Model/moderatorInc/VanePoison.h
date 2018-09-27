@@ -40,8 +40,6 @@ class VanePoison : public attachSystem::ContainedComp,
 {
   private:
   
-  const int vaneIndex;      ///< Index of surface offset
-  int cellIndex;            ///< Cell index
 
   size_t nBlades;           ///< number of blades
   double bWidth;            ///< Width of a blade

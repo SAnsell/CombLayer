@@ -3,7 +3,7 @@
  
  * File:   moderator/Groove.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,9 +77,7 @@ namespace moderatorSystem
 {
 
 Groove::Groove(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7),
-  gveIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(gveIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,7 +86,6 @@ Groove::Groove(const std::string& Key)  :
 
 Groove::Groove(const Groove& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  gveIndex(A.gveIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),depth(A.depth),
   GCentre(A.GCentre),innerRadius(A.innerRadius),
   innerXShift(A.innerXShift),innerZShift(A.innerZShift),
@@ -116,7 +113,6 @@ Groove::operator=(const Groove& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -223,22 +219,22 @@ Groove::createSurfaces()
   ELog::RegMethod RegA("Groove","createSurface");
 
   // INNER DIVIDE PLANE
-  ModelSupport::buildPlane(SMap,gveIndex+1,Origin,Y);
-  FixedComp::addLinkSurf(0,-SMap.realSurf(gveIndex+1));
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
   // Simple box planes
 
   // Inner Methane levels:
-  ModelSupport::buildPlane(SMap,gveIndex+2,Origin+Y*depth,Y);
-  ModelSupport::buildPlane(SMap,gveIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,gveIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,gveIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,gveIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
 
   // Inner groove part:
-  ModelSupport::buildCylinder(SMap,gveIndex+11,GCentre,Z,innerRadius);
-  ModelSupport::buildPlane(SMap,gveIndex+15,GCentre-Z*innerHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,gveIndex+16,GCentre+Z*innerHeight/2.0,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+11,GCentre,Z,innerRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+15,GCentre-Z*innerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,GCentre+Z*innerHeight/2.0,Z);
 
   // Calc intercep point at corner of curve + diagonal sides:
   const double yfStep(sqrt(innerRadius*innerRadius-
@@ -252,30 +248,30 @@ Groove::createSurfaces()
   Geometry::Quaternion::calcQRotDeg(innerSideAngleE1,Z).rotate(BDirc);
 
   // E1 side [left]
-  ModelSupport::buildPlane(SMap,gveIndex+13,IPtA,ADirc);
-  ModelSupport::buildPlane(SMap,gveIndex+14,IPtB,BDirc);
+  ModelSupport::buildPlane(SMap,buildIndex+13,IPtA,ADirc);
+  ModelSupport::buildPlane(SMap,buildIndex+14,IPtB,BDirc);
 
 
   // Aluminium Coating: [cold layer]  
   // Outer Al Skin
-  ModelSupport::buildPlane(SMap,gveIndex+22,Origin+Y*(depth+alFront),Y);
-  ModelSupport::buildPlane(SMap,gveIndex+23,Origin-X*(width/2.0+alSide),X);
-  ModelSupport::buildPlane(SMap,gveIndex+24,Origin+X*(width/2.0+alSide),X);
-  ModelSupport::buildPlane(SMap,gveIndex+25,Origin-Z*(height/2.0+alTop),Z);
-  ModelSupport::buildPlane(SMap,gveIndex+26,Origin+Z*(height/2.0+alTop),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(depth+alFront),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(width/2.0+alSide),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(width/2.0+alSide),X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(height/2.0+alTop),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(height/2.0+alTop),Z);
 
 
   // Inner groove part:
-  ModelSupport::buildCylinder(SMap,gveIndex+31,
+  ModelSupport::buildCylinder(SMap,buildIndex+31,
 			      GCentre+Y*alInnerCurve,Z,innerRadius);
-  ModelSupport::buildPlane(SMap,gveIndex+35,
+  ModelSupport::buildPlane(SMap,buildIndex+35,
 			   GCentre-Z*(innerHeight/2.0-alInnerUpDown),Z);
-  ModelSupport::buildPlane(SMap,gveIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 			   GCentre+Z*(innerHeight/2.0-alInnerUpDown),Z);
 
   // E1 side [left]
-  ModelSupport::buildPlane(SMap,gveIndex+33,IPtA-ADirc*alInnerSides,ADirc);
-  ModelSupport::buildPlane(SMap,gveIndex+34,IPtB+BDirc*alInnerSides,BDirc);
+  ModelSupport::buildPlane(SMap,buildIndex+33,IPtA-ADirc*alInnerSides,ADirc);
+  ModelSupport::buildPlane(SMap,buildIndex+34,IPtB+BDirc*alInnerSides,BDirc);
 
   return;
 }
@@ -290,26 +286,26 @@ Groove::createObjects(Simulation& System)
   ELog::RegMethod RegA("Groove","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,gveIndex,"1 -22 23 -24 25 -26");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 23 -24 25 -26");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,gveIndex,"1 -2 3 -4 5 -6 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 "(13 : -14 : -11 : -15 : 16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // void in groove
-  Out=ModelSupport::getComposite(SMap,gveIndex,"1 -22 -33 34 31 35 -36");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 -33 34 31 35 -36");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Al layers :
   // - Outer skin
-  Out=ModelSupport::getComposite(SMap,gveIndex,"1 -22 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 23 -24 25 -26 "
 				 " (2 : -3 : 4 : -5 : 6 ) "
                                  " (33 : -34 : -35 : 36 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
   
   // - Inner skin
-  Out=ModelSupport::getComposite(SMap,gveIndex,"1 -2 -13 14 11 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -13 14 11 15 -16 "
 				 "( 33 : -34 : -31 : -35 : 36 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
@@ -332,15 +328,15 @@ Groove::createLinks()
   // Centre of groove
   FixedComp::setConnect(6,GCentre+Y*(alInnerCurve+innerRadius),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(gveIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   int signVal(1);
   for(int i=1;i<6;i++)
     {
       FixedComp::setLinkSurf(static_cast<size_t>(i),
-			     signVal*SMap.realSurf(gveIndex+i+21));
+			     signVal*SMap.realSurf(buildIndex+i+21));
       signVal*=-1;
     }
-  FixedComp::setLinkSurf(6,SMap.realSurf(gveIndex+31));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+31));
   return;
 }
 
@@ -351,7 +347,7 @@ Groove::getDividePlane() const
     \return Dividing plane [pointing out]
   */
 {
-  return SMap.realSurf(gveIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
 int
@@ -361,7 +357,7 @@ Groove::viewSurf() const
     \return view surface [pointing out]
    */
 {
-  return SMap.realSurf(gveIndex+11);
+  return SMap.realSurf(buildIndex+11);
 }
   
 Geometry::Vec3D

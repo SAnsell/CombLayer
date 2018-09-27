@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -135,7 +134,7 @@ makeD4C::build(Simulation* SimPtr,
   ELog::RegMethod RControl("makeD4C","build");
 
   BellObj->setInsertCell(74123);
-  BellObj->createAll(*SimPtr,World::masterOrigin());
+  BellObj->createAll(*SimPtr,World::masterOrigin(),0);
   CellObj->setInsertCell(BellObj->innerCell());
   CellObj->createAll(*SimPtr,*BellObj,0);
 

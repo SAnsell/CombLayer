@@ -45,7 +45,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -230,13 +229,12 @@ BlockShutter::makeBlockUnit(const FuncDataBase& Control,
   ELog::RegMethod RegA("BlockShutter","makeBlockUnit");
 
   const std::string tKey=
-    StrFunc::makeString(blockKey+"Block",index+1)+"TYPE";
+    blockKey+"Block"+std::to_string(index+1)+"TYPE";
   const int cylFlag=Control.EvalDefVar<int>(tKey,0);
 
-  const int SI(buildIndex+1000+100*index);
   return (!cylFlag) ?
-    zbTYPE(new collInsertBlock(index,SI,blockKey+"Block")) 
-    :  zbTYPE(new collInsertCyl(index,SI,blockKey+"Block"));
+    zbTYPE(new collInsertBlock(blockKey+"Block",index)) 
+    :  zbTYPE(new collInsertCyl(blockKey+"Block",index));
 
 }
 

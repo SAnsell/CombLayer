@@ -42,8 +42,7 @@ class collInsertBase  : public attachSystem::ContainedComp,
 {
  protected:
 
-  const int blockIndex;         ///< Block number
-  const int collIndex;          ///< Collimator index [
+  const int blockID;            ///< Block number
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
 
   Geometry::Vec3D beamOrigin;   ///< beam mid point
@@ -75,7 +74,7 @@ class collInsertBase  : public attachSystem::ContainedComp,
   
  public:
 
-  collInsertBase(const int,const int,const std::string&);
+  collInsertBase(const std::string&,const int);
   collInsertBase(const collInsertBase&);
   collInsertBase& operator=(const collInsertBase&);
   virtual collInsertBase* clone() const =0;

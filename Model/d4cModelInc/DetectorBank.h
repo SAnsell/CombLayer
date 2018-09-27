@@ -47,8 +47,6 @@ class DetectorBank : public attachSystem::ContainedComp,
   
   const size_t bankNumber;        ///< Bank number
   const std::string baseName;     ///< Base name       
-  const int detIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double centreOffset;            ///< Main origin centre distance [Z Rot Axis]
   double centreAngle;             ///< Main origin Y Axis Rotatoin

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TwinChopper.cxx
+ * File:   essConstruct/TwinChopper.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -135,15 +134,15 @@ TwinChopper::buildPorts(Simulation& System)
 
   frontFlange->setInnerExclude();
   frontFlange->addInsertCell(getCell("FrontCase"));
-  frontFlange->setFront(SMap.realSurf(houseIndex+1));
-  frontFlange->setBack(-SMap.realSurf(houseIndex+11));
+  frontFlange->setFront(SMap.realSurf(buildIndex+1));
+  frontFlange->setBack(-SMap.realSurf(buildIndex+11));
   frontFlange->createAll(System,Main,0);
 
   // Back ring seal
   backFlange->setInnerExclude();
   backFlange->addInsertCell(getCell("BackCase"));
-  backFlange->setFront(SMap.realSurf(houseIndex+12));
-  backFlange->setBack(-SMap.realSurf(houseIndex+2));
+  backFlange->setFront(SMap.realSurf(buildIndex+12));
+  backFlange->setBack(-SMap.realSurf(buildIndex+2));
   backFlange->createAll(System,Main,0);
 
   // Ports in front/back seal void
@@ -153,14 +152,14 @@ TwinChopper::buildPorts(Simulation& System)
   const std::string innerBSurf=
     std::to_string(-backFlange->getSurf("innerRing"));
   
-  Out=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
   addCell("PortVoid",cellIndex-1);
   IPA->addInnerCell(getCell("PortVoid",0));
   IPA->createAll(System,Beam,0,Out+innerFSurf);
 
   
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
   addCell("PortVoid",cellIndex-1);
 
