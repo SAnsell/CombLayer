@@ -101,7 +101,7 @@ masterTS2Origin()
     \return Fixed Unit
   */
 {
-  static attachSystem::FixedComp MO("World",0,
+  static attachSystem::FixedComp MO("WorldTS2",0,
 				    Geometry::Vec3D(0,0,0),
 				    Geometry::Vec3D(0,1,0),
 				    Geometry::Vec3D(0,0,-1),

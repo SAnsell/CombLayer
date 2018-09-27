@@ -137,14 +137,14 @@ IMatPrimGuide::createSurfaces()
   // Inner void layers
   double xside(width/2.0+feSide+voidSide);
   // Corners:
-  ModelSupport::buildPlane(SMap,guideIndex+47,
+  ModelSupport::buildPlane(SMap,buildIndex+47,
 			   Origin-bX*(xside-feCut),
 			   Origin-bX*(xside-feCut)+bZ,
 			   Origin-bX*xside+bY*feCutLen,
 			   bX);
 
   xside+=wallSide;
-  ModelSupport::buildPlane(SMap,guideIndex+57,
+  ModelSupport::buildPlane(SMap,buildIndex+57,
 			   Origin-bX*(xside-wallCut),
 			   Origin-bX*(xside-wallCut)+bZ,
 			   Origin-bX*xside+bY*wallCutLen,
@@ -166,36 +166,36 @@ IMatPrimGuide::createObjects(Simulation& System,
   
   const std::string insertEdge=FC.getLinkString(2);
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 33 -34 35 -36 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 33 -34 35 -36 ");
   addOuterSurf("Inner",Out);
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 57 53 -54 55 -56 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 57 53 -54 55 -56 ");
   addOuterSurf("Wall",Out+insertEdge);
 
   // Inner void cell:
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ")+insertEdge;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ")+insertEdge;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Glass layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-2 13 -14 15 -16 (-3:4:-5:6) ")+insertEdge;
   System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
   // Box layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 23 -24 25 -26 "
 				 "(-13:14:-15:16) ")+insertEdge;
   System.addCell(MonteCarlo::Qhull(cellIndex++,boxMat,0.0,Out));
 
   // Void layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 33 -34 35 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 33 -34 35 -36 "
 				 "(-23:24:-25:26) ")+insertEdge;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Fe layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 47 43 -44 45 -46 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 47 43 -44 45 -46 "
 				 "(-33:34:-35:36) ")+insertEdge;
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 57 53 -54 55 -56 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 57 53 -54 55 -56 "
 				 "(-43:44:-45:46:-47) ")+insertEdge;
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   

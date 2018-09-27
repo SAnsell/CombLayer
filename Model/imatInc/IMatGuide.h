@@ -43,8 +43,6 @@ class IMatGuide : public attachSystem::ContainedGroup,
 {
  protected:
   
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on X to Target

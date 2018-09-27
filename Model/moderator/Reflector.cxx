@@ -132,6 +132,21 @@ Reflector::Reflector(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.addObject(TarObj);
+  OR.addObject(GrooveObj);
+  OR.addObject(HydObj);
+  OR.addObject(VacObj);
+  OR.addObject(FLgroove);
+  OR.addObject(FLhydro);
+  OR.addObject(PMgroove);
+  OR.addObject(PMhydro);
+  OR.addObject(DVacObj);
+  OR.addObject(FLwish);
+  OR.addObject(FLnarrow);
+  OR.addObject(PMdec);
+  OR.addObject(CdBucket);
 }
 
 
@@ -368,6 +383,8 @@ Reflector::processDecoupled(Simulation& System,
    */
 {
   ELog::RegMethod RegA("Reflector","processDecoupled");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
 
   if (IParam.flag("decFile"))
@@ -377,7 +394,6 @@ Reflector::processDecoupled(Simulation& System,
       DFPtr->createAllFromFile(System,*this,0,
           IParam.getValue<std::string>("decFile"));
       DMod=std::shared_ptr<Decoupled>(DFPtr);  
-      //      OR.addObject(DMod);
       return;
     }
 
@@ -410,6 +426,8 @@ Reflector::processDecoupled(Simulation& System,
 	      <<DT<<ELog::endErr;
       throw ColErr::InContainerError<std::string>(DT,"DT value");
     }
+  OR.addObject(DMod);
+
   return;
 }
 
@@ -653,12 +671,13 @@ Reflector::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createAll");
+
   populate(System.getDataBase());
 
   createUnitVector(World::masterTS2Origin(),0);
-
   createSurfaces();
   createObjects(System);
+	
   createInternalObjects(System,IParam);
   insertObjects(System);              
 
