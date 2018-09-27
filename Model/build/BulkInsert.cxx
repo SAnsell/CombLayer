@@ -371,7 +371,6 @@ BulkInsert::createLinks()
 {
   ELog::RegMethod RegA("BulkInsert","createLinks");
 
-  
   // Inner link
   
   const int angleFlag((xyAngle>0) ? -1 : 1);

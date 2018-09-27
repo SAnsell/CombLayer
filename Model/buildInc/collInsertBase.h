@@ -42,6 +42,7 @@ class collInsertBase  : public attachSystem::ContainedComp,
 {
  protected:
 
+  const std::string baseName;   ///< basenaem
   const int blockID;            ///< Block number
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
 

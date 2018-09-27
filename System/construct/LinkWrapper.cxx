@@ -77,7 +77,6 @@
 #include "surfExpand.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ExcludedComp.h"
 #include "LinkWrapper.h"
@@ -221,7 +220,6 @@ LinkWrapper::addSurface(const objectGroups& OGrp,
   
   const attachSystem::FixedComp* FCptr=
     OGrp.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
-
   addSurface(*FCptr,linkIndex);
   return;
 }
@@ -379,7 +377,7 @@ LinkWrapper::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("LinkWrapper","createAll");
-  
+
   populate(System.getDataBase());
   processMask();
 
@@ -388,6 +386,7 @@ LinkWrapper::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);       
 
+  
   return;
 }
 

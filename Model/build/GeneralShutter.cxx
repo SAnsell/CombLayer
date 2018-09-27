@@ -364,7 +364,6 @@ GeneralShutter::applyRotations(const double ZOffset)
   bX=XYAxis*Z;
   bY=XYAxis;
   bZ=Z;
-
   bEnter=frontPt+Z*ZOffset;
   bExit=frontPt+bY*(outerRadius-innerRadius)+Z*ZOffset;
   // Now shift : frontPt:  

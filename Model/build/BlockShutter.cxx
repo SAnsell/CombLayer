@@ -479,7 +479,8 @@ BlockShutter::setTwinComp()
   */
 {
   ELog::RegMethod RegA("BlockShutter","setTwinComp");
-    
+
+
   std::vector<zbTYPE>::const_iterator ac=
     find_if(iBlock.begin(),iBlock.end(),
 	    std::bind(std::equal_to<int>(),
@@ -492,6 +493,7 @@ BlockShutter::setTwinComp()
 			std::bind<int>(&collInsertBase::getMat,
 				       std::placeholders::_1),b4cMat));
 
+  
   if (ac==iBlock.end() || bc==iBlock.rend())
     {
       ELog::EM<<"Problem finding B4C blocks"<<ELog::endCrit;
@@ -507,7 +509,7 @@ BlockShutter::setTwinComp()
   bY.makeUnit();
   bZ=Z;
 
-  ELog::EM<<"Axis == "<<bY<<ELog::endDebug;
+
 
   Geometry::Quaternion::calcQRot(zAngle,X).rotate(bZ);
   bX=bZ*bY;
@@ -543,7 +545,6 @@ BlockShutter::createFrontViewPoints() const
 				   std::placeholders::_1),b4cMat));
       if (bb!=iBlock.end())
 	Opts=(*ba)->viewWindow(bb->get());
-      ELog::EM<<"Front window "<<ELog::endDebug;
       return Opts;
     }
 
@@ -576,7 +577,6 @@ BlockShutter::createBackViewPoints() const
 				   std::placeholders::_1),b4cMat));
       if (bb!=iBlock.rend())
 	Opts=(*ba)->viewWindow(bb->get());
-      ELog::EM<<"Back window "<<ELog::endDebug;
       return Opts;
     }
 
@@ -599,11 +599,12 @@ BlockShutter::createAll(Simulation& System,const double,
   populate(System);  
   GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
 
+
   createSurfaces();
   createObjects(System);  
   createInsert(System);
-  setTwinComp();
 
+  BlockShutter::setTwinComp();
   return;
 }
   

@@ -74,7 +74,7 @@ namespace shutterSystem
 
 
 collInsertBlock::collInsertBlock(const std::string& Key,
-				   const int ID) :
+				 const int ID) :
   collInsertBase(Key,ID)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -132,7 +132,6 @@ collInsertBlock::populate(const Simulation& System,
 {
   ELog::RegMethod RegA("collInsertBlock","populate");
   const FuncDataBase& Control=System.getDataBase();
-
   const size_t Size(9);
   const size_t commonSize(7);
   const char* sndKey[Size]=
@@ -141,12 +140,13 @@ collInsertBlock::populate(const Simulation& System,
   const collInsertBlock* blkPtr=
     dynamic_cast<const collInsertBlock*>(sndBase);
 
+
   for(size_t i=0;i<Size;i++)
     {
-      const std::string KN=keyName+
+      const std::string BN=baseName+
 	std::to_string(blockID+1)+sndKey[i];
-      if (Control.hasVariable(KN))
-	setVar(Control,i,KN);
+      if (Control.hasVariable(BN))
+	setVar(Control,i,BN);
       else if (blkPtr)
 	setVar(i,blkPtr->getVar(i));
       else if (sndBase && i<=commonSize)
@@ -157,7 +157,7 @@ collInsertBlock::populate(const Simulation& System,
 	    ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
 	  ELog::EM<<"i == "<<i<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
-		  <<KN<<ELog::endErr;
+		  <<BN<<ELog::endErr;
 	}
     }
   populated|=1;

@@ -265,8 +265,8 @@ t1BulkShield::createShutters(Simulation& System,
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i+1,"shutter")));
       else if (i==sandalsShutter)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new BlockShutter(i,"shutter","sandalsShutter")));
+	GData.push_back(std::make_shared<BlockShutter>
+			(i,"shutter","sandalsShutter"));
       else if (i==prismaShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","prismaShutter")));
@@ -322,7 +322,7 @@ t1BulkShield::createShutters(Simulation& System,
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
       // Not registered under KeyName 
-      OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
+      OR.addObject(GData.back());
     }
 
   MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
@@ -340,7 +340,6 @@ t1BulkShield::createShutters(Simulation& System,
 				   totalDepth,totalHeight);
       GData[i]->setDivide(50000);     /// ARRRHHH....
       GData[i]->createAll(System,0.0,this);    
-      
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 

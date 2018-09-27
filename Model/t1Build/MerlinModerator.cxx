@@ -349,7 +349,6 @@ MerlinModerator::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
-
   // -- Inner surface for vanes 
   // As inner surface needs to be reversed
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1));

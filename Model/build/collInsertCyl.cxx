@@ -141,7 +141,9 @@ collInsertCyl::populate(const Simulation& System,
 
   for(size_t i=0;i<Size;i++)
     {
-      const std::string KN=keyName+std::to_string(blockID)+sndKey[i];
+      const std::string KN=baseName+
+	std::to_string(blockID)+sndKey[i];
+
       if (Control.hasVariable(KN))
 	setVar(Control,i,KN);
       else if (cylPtr)

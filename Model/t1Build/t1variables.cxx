@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1variables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,7 +309,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinModXStep",0.0);      // guess
   Control.addVariable("MerlinModYStep",18.9-9.2);  //  relative to VoidVessel    
   Control.addVariable("MerlinModZStep",14.6);      // guess
-  Control.addVariable("MerlinModXYangle",80.0);      // guess
+  Control.addVariable("MerlinModXYAngle",80.0);      // guess
 
   Control.addVariable("MerlinModWidth",12.5);    // guess
   Control.addVariable("MerlinModDepth",4.5);    // guess
@@ -331,7 +331,7 @@ TS1real(FuncDataBase& Control)
 //  Control.addVariable("WaterModYStep",0.9);        // guess
   Control.addVariable("WaterModYStep",0.9-9.2);       //  relative to VoidVessel  
   Control.addVariable("WaterModZStep",14.6);      // guess
-  Control.addVariable("WaterModXYangle",-90.0+32.0);      // guess
+  Control.addVariable("WaterModXYAngle",-90.0+32.0);      // guess
 
   Control.addVariable("WaterModWidth",12.5);    // guess
   Control.addVariable("WaterModDepth",4.5);    // guess

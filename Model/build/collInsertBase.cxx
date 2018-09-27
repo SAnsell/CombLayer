@@ -93,7 +93,7 @@ collInsertBase::collInsertBase(const std::string& Key,
 			       const int ID) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key+std::to_string(ID),4),
-  blockID(ID),
+  baseName(Key),blockID(ID),
   populated(0),insertCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
