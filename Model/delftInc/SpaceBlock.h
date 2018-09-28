@@ -44,8 +44,6 @@ class SpaceBlock :  public attachSystem::FixedOffset,
  private:
   
   const std::string baseName;   ///< Base name
-  const int boxIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int activeFlag;               ///< Active block
   double length;                ///< Total length

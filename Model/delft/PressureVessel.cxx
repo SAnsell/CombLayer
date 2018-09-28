@@ -3,7 +3,7 @@
  
  * File:   delft/PressureVessel.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -82,9 +81,7 @@ namespace delftSystem
 
 PressureVessel::PressureVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  attachSystem::CellMap(),
-  pressIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pressIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,9 +89,8 @@ PressureVessel::PressureVessel(const std::string& Key)  :
 {}
 
 PressureVessel::PressureVessel(const PressureVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),attachSystem::CellMap(A),
-  
-  pressIndex(A.pressIndex),cellIndex(A.cellIndex),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   frontLength(A.frontLength),frontRadius(A.frontRadius),
   frontWall(A.frontWall),backLength(A.backLength),
   backRadius(A.backRadius),backWall(A.backWall),
@@ -119,7 +115,6 @@ PressureVessel::operator=(const PressureVessel& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       frontLength=A.frontLength;
       frontRadius=A.frontRadius;
       frontWall=A.frontWall;
@@ -202,19 +197,19 @@ PressureVessel::createSurfaces()
 
   //  front:
   //[arbitary divider plane]
-  ModelSupport::buildPlane(SMap,pressIndex+1,Origin-Y*frontLength,Y);  
-  ModelSupport::buildSphere(SMap,pressIndex+8,Origin-Y*frontLength,frontRadius);
-  ModelSupport::buildSphere(SMap,pressIndex+18,Origin-Y*frontLength,frontRadius+frontWall);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*frontLength,Y);  
+  ModelSupport::buildSphere(SMap,buildIndex+8,Origin-Y*frontLength,frontRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+18,Origin-Y*frontLength,frontRadius+frontWall);
   
   // back:
   // [arbitary divider plane]
-  ModelSupport::buildPlane(SMap,pressIndex+2,Origin+Y*backLength,Y);
-  ModelSupport::buildSphere(SMap,pressIndex+108,Origin+Y*backLength,backRadius);
-  ModelSupport::buildSphere(SMap,pressIndex+118,Origin+Y*backLength,backRadius+backWall);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*backLength,Y);
+  ModelSupport::buildSphere(SMap,buildIndex+108,Origin+Y*backLength,backRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+118,Origin+Y*backLength,backRadius+backWall);
   
   // Main
-  ModelSupport::buildCylinder(SMap,pressIndex+7,Origin,Y,sideRadius);
-  ModelSupport::buildCylinder(SMap,pressIndex+17,Origin,Y,sideRadius+sideWall);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,sideRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,sideRadius+sideWall);
   return;
 }
 
@@ -229,16 +224,16 @@ PressureVessel::createObjects(Simulation& System)
   ELog::RegMethod RegA("PressureVessel","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,pressIndex," (-18:1) (-118:-2) -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-18:1) (-118:-2) -17 ");
   addOuterSurf(Out);
 
   // Main void
-  Out=ModelSupport::getComposite(SMap,pressIndex," (-8:1) (-108:-2) -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-8:1) (-108:-2) -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
   
   // Main Wall
-  Out=ModelSupport::getComposite(SMap,pressIndex," (-18:1) (-118:-2) -17 "
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-18:1) (-118:-2) -17 "
 				 " (7 : (-1 8) : (2 108)) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
  
@@ -256,13 +251,13 @@ PressureVessel::createLinks()
 {
   ELog::RegMethod RegA("PressureVessel","createLinks");
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(pressIndex+18));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(pressIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+18));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(pressIndex+118));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(pressIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+118));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(pressIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
 
   FixedComp::setLineConnect(0,Origin,-Y);
   FixedComp::setLineConnect(1,Origin,Y);

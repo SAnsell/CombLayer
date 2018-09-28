@@ -231,7 +231,7 @@ ReactorGrid::getElementName(const std::string& Name,const size_t I,
   
   std::string Out(Name);
   Out+=StrFunc::indexToAlpha(I);
-  Out+=StrFunc::makeString(J);
+  Out+=std::to_string(J);
   return Out;
 }
 

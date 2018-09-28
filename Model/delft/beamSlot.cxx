@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "beamSlot.h"
 
@@ -81,10 +82,8 @@ namespace delftSystem
 
 beamSlot::beamSlot(const std::string& Key,const int SN)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(SN),6),
-  baseName(Key),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
+  attachSystem::FixedOffset(Key+std::to_string(SN),6),
+  baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,10 +92,8 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
 {}
 
 beamSlot::beamSlot(const beamSlot& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  baseName(A.baseName),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  xStep(A.xStep),zStep(A.zStep),xSize(A.xSize),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  baseName(A.baseName),xSize(A.xSize),
   zSize(A.zSize)
   /*!
     Copy constructor
@@ -115,12 +112,7 @@ beamSlot::operator=(const beamSlot& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      xStep=A.xStep;
-      zStep=A.zStep;
+      attachSystem::FixedOffset::operator=(A);
       xSize=A.xSize;
       zSize=A.zSize;
     }
@@ -142,6 +134,7 @@ beamSlot::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("beamSlot","populate");
+  FixedOffset::populate(Control);
   
   // First get inner widths:
   axisAngle=Control.EvalPair<double>(keyName+"AxisAngle",keyName+"AxisAngle");
@@ -216,24 +209,24 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("beamSlot","createSurfaces");
 
-  SMap.addMatch(surfIndex+1,FC.getLinkSurf(1));
-  SMap.addMatch(surfIndex+2,FC.getLinkSurf(2));
+  SMap.addMatch(buildIndex+1,FC.getLinkSurf(1));
+  SMap.addMatch(buildIndex+2,FC.getLinkSurf(2));
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(xSize/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(xSize/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*zSize/2.0,Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*zSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(xSize/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(xSize/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize/2.0,Z);
 
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(xSize/2.0-endThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
   			   Origin+X*(xSize/2.0-endThick),X);
 
   const double gap=(zSize-static_cast<double>(NChannels+1)*divideThick)/
     static_cast<double>(NChannels);
   double zPoint(-zSize/2.0);
-  int surfOffset(surfIndex+10);
+  int surfOffset(buildIndex+10);
   for(size_t i=0;i<NChannels;i++)
     {
       // Glass: Air
@@ -259,20 +252,20 @@ beamSlot::createObjects(Simulation& System)
   ELog::RegMethod RegA("beamSlot","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   
   // End plates
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -13 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -13 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 14 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 14 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
 
-  int surfOffset(surfIndex);
+  int surfOffset(buildIndex);
   const std::string baseOut=
-    ModelSupport::getComposite(SMap,surfIndex," 1 -2 13 -14 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 ");
   
   for(size_t i=0;i<NChannels;i++)
     {
@@ -282,7 +275,7 @@ beamSlot::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       surfOffset+=20;
     }
-  Out=baseOut+ModelSupport::getComposite(SMap,surfIndex,
+  Out=baseOut+ModelSupport::getComposite(SMap,buildIndex,
 					 surfOffset," 5M -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
   
@@ -307,11 +300,11 @@ beamSlot::createLinks()
   FixedComp::setConnect(4,Origin-Z*zSize/2.0,-Z); 
   FixedComp::setConnect(5,Origin+Z*zSize/2.0,Z); 
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   for(size_t i=2;i<6;i++)
     {
-      const int sN(surfIndex+static_cast<int>(i+1));
+      const int sN(buildIndex+static_cast<int>(i+1));
       FixedComp::setLinkSurf(i,SMap.realSurf(sN));
     }
 

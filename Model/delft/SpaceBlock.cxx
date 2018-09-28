@@ -3,7 +3,7 @@
  
  * File:   delft/SpaceBlock.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -84,10 +83,8 @@ namespace delftSystem
 {
 
 SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
-  attachSystem::FixedOffset(StrFunc::makeString(Key,Index),6),
-  attachSystem::ContainedComp(),baseName(Key),
-  boxIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(boxIndex+1)
+  attachSystem::FixedOffset(Key+std::to_string(Index),6),
+  attachSystem::ContainedComp(),baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +94,7 @@ SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
 
 SpaceBlock::SpaceBlock(const SpaceBlock& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  baseName(A.baseName),boxIndex(A.boxIndex),cellIndex(A.cellIndex),
+  baseName(A.baseName),
   activeFlag(A.activeFlag),length(A.length),width(A.width),
   height(A.height),mat(A.mat)
   /*!
@@ -118,7 +115,6 @@ SpaceBlock::operator=(const SpaceBlock& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       activeFlag=A.activeFlag;
       length=A.length;
       width=A.width;
@@ -184,12 +180,12 @@ SpaceBlock::createSurfaces()
 {
   ELog::RegMethod RegA("SpaceBlock","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,boxIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,boxIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,boxIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,boxIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,boxIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,boxIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   return;
 }
@@ -204,7 +200,7 @@ SpaceBlock::createObjects(Simulation& System)
   ELog::RegMethod RegA("SpaceBlock","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,boxIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
   addOuterSurf(Out);
@@ -228,12 +224,12 @@ SpaceBlock::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
 
   
-  FixedComp::setLinkSurf(0,-SMap.realSurf(boxIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(boxIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(boxIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(boxIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(boxIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(boxIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

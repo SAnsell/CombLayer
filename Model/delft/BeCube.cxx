@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeCube.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,21 +43,14 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -85,8 +78,7 @@ namespace delftSystem
 
 BeCube::BeCube(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  active(1),insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(insertIndex+1)
+  active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,7 +87,7 @@ BeCube::BeCube(const std::string& Key)  :
 
 BeCube::BeCube(const BeCube& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  active(A.active),insertIndex(A.insertIndex),cellIndex(A.cellIndex),
+  active(A.active),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   innerRadius(A.innerRadius),
   outerWidth(A.outerWidth),outerHeight(A.outerHeight),
@@ -119,7 +111,6 @@ BeCube::operator=(const BeCube& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       active=A.active;
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -194,16 +185,16 @@ BeCube::createSurfaces()
   ELog::RegMethod RegA("BeCube","createSurfaces");
 
   // Outer layers
-  ModelSupport::buildPlane(SMap,insertIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
 
-  ModelSupport::buildPlane(SMap,insertIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   if (innerRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,insertIndex+7,Origin,Y,innerRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
 
-  ModelSupport::buildPlane(SMap,insertIndex+13,Origin-X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,insertIndex+14,Origin+X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,insertIndex+15,Origin-Z*(outerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,insertIndex+16,Origin+Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(outerHeight/2.0),Z);
 
   return;
 }
@@ -220,9 +211,9 @@ BeCube::createObjects(Simulation& System,
   
   std::string Out;
   if (innerRadius>Geometry::zeroTol)
-    Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 13 -14 15 -16 7 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 7 ");
   else
-    Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 13 -14 15 -16 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
   addOuterSurf(Out);
   Out+=ExcludeString;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
@@ -246,12 +237,12 @@ BeCube::createLinks()
   FixedComp::setConnect(4,Origin-Z*(outerHeight/2.0)+Y*(length/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(outerHeight/2.0)+Y*(length/2.0),Z);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(insertIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(insertIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(insertIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(insertIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(insertIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(insertIndex+16));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   return;
 }

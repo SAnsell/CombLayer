@@ -85,9 +85,7 @@ namespace delftSystem
 {
 
 BeFullBlock::BeFullBlock(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(insertIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,7 +94,6 @@ BeFullBlock::BeFullBlock(const std::string& Key)  :
 
 BeFullBlock::BeFullBlock(const BeFullBlock& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  insertIndex(A.insertIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),length(A.length),mat(A.mat)
   /*!
     Copy constructor
@@ -116,7 +113,6 @@ BeFullBlock::operator=(const BeFullBlock& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -179,14 +175,14 @@ BeFullBlock::createSurfaces()
   ELog::RegMethod RegA("BeFullBlock","createSurfaces");
 
   // Outer layers
-  ModelSupport::buildPlane(SMap,insertIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,insertIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
 
-  ModelSupport::buildPlane(SMap,insertIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,insertIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,insertIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,insertIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   return;
 }
@@ -201,7 +197,7 @@ BeFullBlock::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeFullBlock","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   
@@ -223,9 +219,9 @@ BeFullBlock::createLinks()
   // FixedComp::setConnect(1,Origin+Y*length,Y);
   // FixedComp::setConnect(2,Origin+X*outerRadius+Y*length/2.0,X);
 
-  // FixedComp::setLinkSurf(0,SMap.realSurf(insertIndex+1));
-  // FixedComp::setLinkSurf(1,SMap.realSurf(insertIndex+2));
-  // FixedComp::setLinkSurf(2,SMap.realSurf(insertIndex+17));
+  // FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  // FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   delft/RElement.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,13 +80,9 @@ namespace delftSystem
 
 RElement::RElement(const size_t XI,const size_t YI,
 		   const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
-  attachSystem::CellMap(),
-  XIndex(XI),YIndex(YI),
-  surfIndex(ModelSupport::objectRegister::Instance().
-	    cell(ReactorGrid::getElementName(Key,XI,YI))),
-  cellIndex(surfIndex+1)
+  attachSystem::FixedOffset(ReactorGrid::getElementName(Key,XI,YI),6),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  baseName(Key),XIndex(XI),YIndex(YI)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: Grid element index
@@ -97,9 +93,9 @@ RElement::RElement(const size_t XI,const size_t YI,
 
 RElement::RElement(const RElement& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),
-  XIndex(A.XIndex),YIndex(A.YIndex),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),insertCell(A.insertCell)
+  attachSystem::CellMap(A),baseName(A.baseName),
+  XIndex(A.XIndex),YIndex(A.YIndex),
+  insertCell(A.insertCell)
   /*!
     Copy constructor
     \param A :: RElement to copy
@@ -134,16 +130,16 @@ RElement::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("RElement","populate");
 
-  xStep=ReactorGrid::getElement<double>(Control,keyName+"XStep",
+  xStep=ReactorGrid::getElement<double>(Control,baseName+"XStep",
 					XIndex,YIndex);
-  yStep=ReactorGrid::getElement<double>(Control,keyName+"YStep",
+  yStep=ReactorGrid::getElement<double>(Control,baseName+"YStep",
 					XIndex,YIndex);
-  zStep=ReactorGrid::getElement<double>(Control,keyName+"ZStep",
+  zStep=ReactorGrid::getElement<double>(Control,baseName+"ZStep",
 					XIndex,YIndex);
 
-  xyAngle=ReactorGrid::getElement<double>(Control,keyName+"XYAngle",
+  xyAngle=ReactorGrid::getElement<double>(Control,baseName+"XYAngle",
 					  XIndex,YIndex);
-  zAngle=ReactorGrid::getElement<double>(Control,keyName+"ZAngle",
+  zAngle=ReactorGrid::getElement<double>(Control,baseName+"ZAngle",
 					 XIndex,YIndex);
 
   return;

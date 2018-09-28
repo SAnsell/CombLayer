@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -85,9 +84,7 @@ namespace delftSystem
 BeamTubeJoiner::BeamTubeJoiner(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,3),
-  attachSystem::CellMap(),
-  flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flightIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +94,6 @@ BeamTubeJoiner::BeamTubeJoiner(const std::string& Key)  :
 BeamTubeJoiner::BeamTubeJoiner(const BeamTubeJoiner& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  flightIndex(A.flightIndex),cellIndex(A.cellIndex),
   innerStep(A.innerStep),
   length(A.length),innerRadius(A.innerRadius),innerWall(A.innerWall),
   outerRadius(A.outerRadius),outerWall(A.outerWall),
@@ -123,7 +119,6 @@ BeamTubeJoiner::operator=(const BeamTubeJoiner& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       innerStep=A.innerStep;
       length=A.length;
       innerRadius=A.innerRadius;
@@ -202,36 +197,36 @@ BeamTubeJoiner::createSurfaces()
 {
   ELog::RegMethod RegA("BeamTubeJoiner","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,flightIndex+7,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,outerRadius+outerWall);
-  ModelSupport::buildPlane(SMap,flightIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
 
 
   // Outer Wall
 
-  ModelSupport::buildCylinder(SMap,flightIndex+17,Origin,Y,outerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
 
   // Gap layer
-  ModelSupport::buildCylinder(SMap,flightIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Y,innerRadius+innerWall);
 
   // Gap layer
-  ModelSupport::buildCylinder(SMap,flightIndex+37,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,
 			      Origin,Y,innerRadius);
 
-  ModelSupport::buildPlane(SMap,flightIndex+41,
+  ModelSupport::buildPlane(SMap,buildIndex+41,
 			   Origin+Y*interYOffset,Y);
-  ModelSupport::buildPlane(SMap,flightIndex+51,
+  ModelSupport::buildPlane(SMap,buildIndex+51,
 			   Origin+Y*(interYOffset+interFrontWall),Y);
 
   // Inter layer
   // Layers [wall : Mid : Outer ]
   ModelSupport::buildCylinder
-    (SMap,flightIndex+47,Origin,Y,outerRadius-interWallThick);
+    (SMap,buildIndex+47,Origin,Y,outerRadius-interWallThick);
   ModelSupport::buildCylinder
-    (SMap,flightIndex+57,Origin,Y,outerRadius-(interWallThick+interThick));
+    (SMap,buildIndex+57,Origin,Y,outerRadius-(interWallThick+interThick));
   ModelSupport::buildCylinder
-    (SMap,flightIndex+67,Origin,Y,outerRadius-(2.0*interWallThick+interThick));
+    (SMap,buildIndex+67,Origin,Y,outerRadius-(2.0*interWallThick+interThick));
 
   return;
 }
@@ -252,30 +247,30 @@ BeamTubeJoiner::createObjects(Simulation& System,
 
   const std::string frontLayer=FC.getLinkString(sideIndex);
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,flightIndex," -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
   addOuterSurf(Out+frontLayer);
 
-  Out=ModelSupport::getComposite(SMap,flightIndex," -2 -7 17");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontLayer));
 
   // Void (exclude inter wall)
-  Out=ModelSupport::getComposite(SMap,flightIndex," -2 -17 27 (-41:-67)");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -17 27 (-41:-67)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out+frontLayer));
   addCell("FrontVoid",cellIndex-1);
   
   // Inner wall
-  Out=ModelSupport::getComposite(SMap,flightIndex," -2 -27 37");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -27 37");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontLayer));
   
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,flightIndex," -2 -37 ");  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -37 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontLayer));
   addCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,flightIndex," -47 57 51 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,interMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,flightIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "41 -17 67 (47:-57:-51) -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   
@@ -298,7 +293,7 @@ BeamTubeJoiner::createLinks(const attachSystem::FixedComp& FC,
 
   FixedComp::setLinkSignedCopy(0,FC,sideIndex);
   setConnect(1,Origin+Y*length,Y);
-  setLinkSurf(1,SMap.realSurf(flightIndex+2));
+  setLinkSurf(1,SMap.realSurf(buildIndex+2));
   return;
 }
 

@@ -39,8 +39,6 @@ class SphereModerator : public virtualMod
 {
  private:
   
-  const int hydIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double innerRadius;       ///< Inner Radius
   double innerAl;           ///< Inner Al

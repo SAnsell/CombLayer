@@ -3,7 +3,7 @@
  
  * File:   delft/BeElement.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,13 +178,13 @@ BeElement::createSurfaces(const attachSystem::FixedComp& RG)
 
   // Planes [OUTER]:
   
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*Depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*Depth/2.0,Y); 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Z*TopHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*Depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*Depth/2.0,Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Z*TopHeight,Z);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
+  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
 
   return;
 }
@@ -200,7 +200,7 @@ BeElement::createObjects(Simulation& System)
 
   std::string Out;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
   System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
   addCell("Main",cellIndex-1);
@@ -253,7 +253,7 @@ BeElement::layerProcess(Simulation& System,
 
   ModelSupport::LayerDivide1D LD1(keyName+"Main");
 
-  LD1.setSurfPair(SMap.realSurf(surfIndex+5),-SMap.realSurf(surfIndex+6));
+  LD1.setSurfPair(SMap.realSurf(buildIndex+5),-SMap.realSurf(buildIndex+6));
   LD1.setFractions(nLayer);  
 
   std::vector<int> DefMat;

@@ -84,12 +84,11 @@ namespace delftSystem
 
 
 HfElement::HfElement(const size_t XI,const size_t YI,
-			       const std::string& Key,
-			       const std::string& CKey) :
+		     const std::string& Key,
+		     const std::string& CKey) :
   FuelElement(XI,YI,Key),
   attachSystem::ContainedGroup("Track","Rod"),cntlKey(CKey),
-  controlIndex(ModelSupport::objectRegister::Instance().
-	       cell(ReactorGrid::getElementName(CKey,XI,YI)))
+  controlIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: Grid position
@@ -150,11 +149,11 @@ HfElement::populate(const FuncDataBase& Control)
   FuelElement::populate(Control);
   
   cladDepth=ReactorGrid::getDefElement<double>
-    (Control,keyName+"CladDepth",XIndex,YIndex,cntlKey+"CladDepth");
+    (Control,baseName+"CladDepth",XIndex,YIndex,cntlKey+"CladDepth");
   fuelDepth=ReactorGrid::getDefElement<double>
-    (Control,keyName+"FuelDepth",XIndex,YIndex,cntlKey+"FuelDepth");
+    (Control,baseName+"FuelDepth",XIndex,YIndex,cntlKey+"FuelDepth");
   waterDepth=ReactorGrid::getDefElement<double>
-    (Control,keyName+"WaterDepth",XIndex,YIndex,cntlKey+"WaterDepth");
+    (Control,baseName+"WaterDepth",XIndex,YIndex,cntlKey+"WaterDepth");
 
   // Create the exclude items
   cutSize=ReactorGrid::getElement<size_t>
@@ -265,7 +264,7 @@ HfElement::createObjects(Simulation& System)
 
   for(size_t i=0;i<2;i++)  // front / back
     {
-      Out=ModelSupport::getComposite(SMap,cIndex,surfIndex,
+      Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
 				     " 1 -2 23M -24M 25M -26M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out));
       
@@ -274,7 +273,7 @@ HfElement::createObjects(Simulation& System)
       ContainedGroup::addOuterUnionSurf("Rod",Out);      
       System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,cIndex,surfIndex,
+      Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
 				     " 21 -22 23M -24M 25M -26M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out));
 

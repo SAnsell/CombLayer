@@ -96,9 +96,7 @@ delftH2Moderator::calcDir(const double R)
 }
 
 delftH2Moderator::delftH2Moderator(const std::string& Key)  :
-  virtualMod(Key),
-  hydIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hydIndex+1)
+  virtualMod(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -106,8 +104,7 @@ delftH2Moderator::delftH2Moderator(const std::string& Key)  :
 {}
 
 delftH2Moderator::delftH2Moderator(const delftH2Moderator& A) : 
-  virtualMod(A),
-  hydIndex(A.hydIndex),cellIndex(A.cellIndex),depth(A.depth),
+  virtualMod(A),depth(A.depth),
   sideRadius(A.sideRadius),innerXShift(A.innerXShift),
   frontDir(A.frontDir),frontRadius(A.frontRadius),
   backDir(A.backDir),backRadius(A.backRadius),alBack(A.alBack),
@@ -132,7 +129,6 @@ delftH2Moderator::operator=(const delftH2Moderator& A)
   if (this!=&A)
     {
       virtualMod::operator=(A);
-      cellIndex=A.cellIndex;
       depth=A.depth;
       sideRadius=A.sideRadius;
       innerXShift=A.innerXShift;
@@ -262,37 +258,37 @@ delftH2Moderator::createSurfaces()
   // BACK PLANES:
   if (backDir)
     {
-      ModelSupport::buildPlane(SMap,hydIndex+1,BCentre,Y);
-      ModelSupport::buildCylinder(SMap,hydIndex+11,BCentre,Z,
+      ModelSupport::buildPlane(SMap,buildIndex+1,BCentre,Y);
+      ModelSupport::buildCylinder(SMap,buildIndex+11,BCentre,Z,
 				  backDir*backRadius);
-      ModelSupport::buildCylinder(SMap,hydIndex+21,
+      ModelSupport::buildCylinder(SMap,buildIndex+21,
 				  BCentre-Y*alBack,Z,
 				  backDir*backRadius);
     }
   else // flat:
     {
-      ModelSupport::buildPlane(SMap,hydIndex+11,BCentre,Y);
-      ModelSupport::buildPlane(SMap,hydIndex+21,BCentre-Y*alBack,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+11,BCentre,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+21,BCentre-Y*alBack,Y);
     }
   // FRONT SURFACES:
   if (frontDir)
     {
-      ModelSupport::buildPlane(SMap,hydIndex+2,FCentre,Y);
-      ModelSupport::buildCylinder(SMap,hydIndex+12,FCentre,Z,
+      ModelSupport::buildPlane(SMap,buildIndex+2,FCentre,Y);
+      ModelSupport::buildCylinder(SMap,buildIndex+12,FCentre,Z,
 				  frontDir*frontRadius);
-      ModelSupport::buildCylinder(SMap,hydIndex+22,
+      ModelSupport::buildCylinder(SMap,buildIndex+22,
 				  FCentre+Y*alFront,Z,
 				  frontDir*frontRadius);
     }
   else // flat:
     {
-      ModelSupport::buildPlane(SMap,hydIndex+12,FCentre,Y);
-      ModelSupport::buildPlane(SMap,hydIndex+22,FCentre+Y*alFront,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,FCentre,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+22,FCentre+Y*alFront,Y);
     }
 
   // delftH2Moderator Layers
-  ModelSupport::buildCylinder(SMap,hydIndex+3,Origin,Y,sideRadius);
-  ModelSupport::buildCylinder(SMap,hydIndex+13,Origin,Y,sideRadius+alSide);
+  ModelSupport::buildCylinder(SMap,buildIndex+3,Origin,Y,sideRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+13,Origin,Y,sideRadius+alSide);
   
   return;
 }
@@ -307,12 +303,12 @@ delftH2Moderator::createLinks()
 
   const int surfDirB=(backDir) ? backDir : 1;
   const int surfDirF=(frontDir) ? frontDir : 1;
-  FixedComp::addLinkSurf(0,surfDirB*SMap.realSurf(hydIndex+21));
-  FixedComp::addLinkSurf(1,surfDirF*SMap.realSurf(hydIndex+22));
-  FixedComp::addLinkSurf(2,SMap.realSurf(hydIndex+13));
-  FixedComp::addLinkSurf(3,SMap.realSurf(hydIndex+13));
-  FixedComp::addLinkSurf(4,SMap.realSurf(hydIndex+13));
-  FixedComp::addLinkSurf(5,SMap.realSurf(hydIndex+13));
+  FixedComp::addLinkSurf(0,surfDirB*SMap.realSurf(buildIndex+21));
+  FixedComp::addLinkSurf(1,surfDirF*SMap.realSurf(buildIndex+22));
+  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf(4,SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+13));
 
   // set Links: BACK POINT
   if (backDir>0)   // outgoing:
@@ -352,42 +348,42 @@ delftH2Moderator::createObjects(Simulation& System)
 
   if (backDir>0)
     {
-      BOuter=ModelSupport::getComposite(SMap,hydIndex," -21 ");
-      BInner=ModelSupport::getComposite(SMap,hydIndex," -11 ");
+      BOuter=ModelSupport::getComposite(SMap,buildIndex," -21 ");
+      BInner=ModelSupport::getComposite(SMap,buildIndex," -11 ");
     }
   else if (backDir<0)
     {
-      BOuter=ModelSupport::getComposite(SMap,hydIndex," 1 21 ");
-      BInner=ModelSupport::getComposite(SMap,hydIndex," 1 11 ");
+      BOuter=ModelSupport::getComposite(SMap,buildIndex," 1 21 ");
+      BInner=ModelSupport::getComposite(SMap,buildIndex," 1 11 ");
     }
   else
     {
-      BOuter=ModelSupport::getComposite(SMap,hydIndex," 21 ");
-      BInner=ModelSupport::getComposite(SMap,hydIndex," 11 ");
+      BOuter=ModelSupport::getComposite(SMap,buildIndex," 21 ");
+      BInner=ModelSupport::getComposite(SMap,buildIndex," 11 ");
     }
   ELog::EM<<"Bouter == "<<BOuter<<ELog::endTrace;
 
   if (frontDir>0)
     {
-      FOuter=ModelSupport::getComposite(SMap,hydIndex," -22 ");
-      FInner=ModelSupport::getComposite(SMap,hydIndex," -12 ");
+      FOuter=ModelSupport::getComposite(SMap,buildIndex," -22 ");
+      FInner=ModelSupport::getComposite(SMap,buildIndex," -12 ");
     }
   else if (frontDir<0)
     {
-      FOuter=ModelSupport::getComposite(SMap,hydIndex," -2 22 ");
-      FInner=ModelSupport::getComposite(SMap,hydIndex," -2 12 ");
+      FOuter=ModelSupport::getComposite(SMap,buildIndex," -2 22 ");
+      FInner=ModelSupport::getComposite(SMap,buildIndex," -2 12 ");
     }
   else
     {
-      FOuter=ModelSupport::getComposite(SMap,hydIndex," -22 ");
-      FInner=ModelSupport::getComposite(SMap,hydIndex," -12 ");
+      FOuter=ModelSupport::getComposite(SMap,buildIndex," -22 ");
+      FInner=ModelSupport::getComposite(SMap,buildIndex," -12 ");
     }
       // PLANE:
-  Out=ModelSupport::getComposite(SMap,hydIndex," -13 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -13 ");
   addOuterSurf(Out+FOuter+BOuter);
 
   // Hydrogen:
-  Out=ModelSupport::getComposite(SMap,hydIndex," -3 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -3 ");
   Out+=FInner+BInner;
   addBoundarySurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
@@ -398,9 +394,9 @@ delftH2Moderator::createObjects(Simulation& System)
   Out=" ( 3 :";
   Out+=(frontDir>=0) ? " 12 : " : " -12 : ";
   Out+=(backDir>=0) ? " 11 )" : " -11 )";
-  Out=ModelSupport::getComposite(SMap,hydIndex,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,Out);
 
-  Out+=ModelSupport::getComposite(SMap,hydIndex," -13 ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," -13 ");
   Out+=FOuter+BOuter;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
   return;
@@ -413,7 +409,7 @@ delftH2Moderator::getDividePlane() const
     \return Dividing plane [pointing out]
   */
 {
-  return SMap.realSurf(hydIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
 int
@@ -423,7 +419,7 @@ delftH2Moderator::viewSurf() const
     \return view surface [pointing out]
    */
 {
-  return SMap.realSurf(hydIndex+12);
+  return SMap.realSurf(buildIndex+12);
 }
 
 void
