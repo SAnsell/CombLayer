@@ -171,8 +171,8 @@ TriangleMod::populate(const FuncDataBase& Control)
   absXStep=Control.EvalDefVar<double>(keyName+"AbsXStep",0.0);
   absYStep=Control.EvalDefVar<double>(keyName+"AbsYStep",0.0);
   absZStep=Control.EvalDefVar<double>(keyName+"AbsZStep",0.0);
-  absXYAngle=Control.EvalDefVar<double>(keyName+"AbsXYangle",0.0);
-  absZAngle=Control.EvalDefVar<double>(keyName+"AbsZangle",0.0);
+  absXYAngle=Control.EvalDefVar<double>(keyName+"AbsXYAngle",0.0);
+  absZAngle=Control.EvalDefVar<double>(keyName+"AbsZAngle",0.0);
 
 
   Outer.clear();

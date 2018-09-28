@@ -287,7 +287,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 				     keyName+"InnerHoleSize is the fraction of"
 				     " hole angular length with respect to"
 				     " hole+steel length.");
-  innerHoleXYangle=Control.EvalVar<double>(keyName+"InnerHoleXYangle");
+  innerHoleXYangle=Control.EvalVar<double>(keyName+"InnerHoleXYAngle");
 
   coolantRadiusIn=Control.EvalVar<double>(keyName+"CoolantRadiusIn");
   coolantRadiusOut=Control.EvalVar<double>(keyName+"CoolantRadiusOut");
@@ -353,7 +353,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 				     keyName+"ShaftHoleSize is the fraction of"
 				     " hole angular length with respect to"
 				     " hole+steel length.");
-  shaftHoleXYangle=Control.EvalVar<double>(keyName+"ShaftHoleXYangle");
+  shaftHoleXYangle=Control.EvalVar<double>(keyName+"ShaftHoleXYAngle");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
 

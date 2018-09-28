@@ -146,7 +146,7 @@ t1WaterModerator::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
 
   xOutSize=Control.EvalVar<double>(keyName+"XOutSize");
   yOutSize=Control.EvalVar<double>(keyName+"YOutSize");

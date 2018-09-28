@@ -67,8 +67,8 @@ gammaVariables(FuncDataBase& Control)
   Control.addVariable("BrickXStep",0.0);       
   Control.addVariable("BrickYStep",0.0);       
   Control.addVariable("BrickZStep",0.0);       
-  Control.addVariable("BrickXYangle",0.0);       
-  Control.addVariable("BrickZangle",0.0);       
+  Control.addVariable("BrickXYAngle",0.0);       
+  Control.addVariable("BrickZAngle",0.0);       
 
   Control.addVariable("BrickNLayers",1);       
   Control.addVariable("BrickWidth",12.0);       
@@ -102,69 +102,69 @@ gammaVariables(FuncDataBase& Control)
   const double zStep(16.0);
   Control.addVariable("Nord0XStep",-xStep);     
   Control.addVariable("Nord0ZStep",0.0*zStep);     
-  Control.addVariable("Nord0XYangle",0.0);     
+  Control.addVariable("Nord0XYAngle",0.0);     
 
   Control.addVariable("Nord1XStep",-xStep);     
   Control.addVariable("Nord1ZStep",-zStep);     
-  Control.addVariable("Nord1XYangle",-30.0);     
+  Control.addVariable("Nord1XYAngle",-30.0);     
 
   Control.addVariable("Nord2XStep",xStep);     
   Control.addVariable("Nord2ZStep",-zStep);     
-  Control.addVariable("Nord2XYangle",-30.0);     
+  Control.addVariable("Nord2XYAngle",-30.0);     
 
   Control.addVariable("Nord3XStep",xStep);     
   Control.addVariable("Nord3ZStep",zStep);     
-  Control.addVariable("Nord3XYangle",-30.0);     
+  Control.addVariable("Nord3XYAngle",-30.0);     
 
   Control.addVariable("Nord4XStep",-xStep);     
   Control.addVariable("Nord4ZStep",zStep);     
-  Control.addVariable("Nord4XYangle",-60.0);     
+  Control.addVariable("Nord4XYAngle",-60.0);     
 
   Control.addVariable("Nord5XStep",-xStep);     
   Control.addVariable("Nord5ZStep",-zStep);     
-  Control.addVariable("Nord5XYangle",-60.0);     
+  Control.addVariable("Nord5XYAngle",-60.0);     
 
   Control.addVariable("Nord6XStep",xStep);     
   Control.addVariable("Nord6ZStep",-zStep);     
-  Control.addVariable("Nord6XYangle",-60.0);     
+  Control.addVariable("Nord6XYAngle",-60.0);     
 
   Control.addVariable("Nord7XStep",xStep);     
   Control.addVariable("Nord7ZStep",zStep);     
-  Control.addVariable("Nord7XYangle",-60.0);    
+  Control.addVariable("Nord7XYAngle",-60.0);    
 
   Control.addVariable("Nord8XStep",-xStep);     
   Control.addVariable("Nord8ZStep",zStep);     
-  Control.addVariable("Nord8XYangle",-90.0);     
+  Control.addVariable("Nord8XYAngle",-90.0);     
 
   Control.addVariable("Nord9XStep",-xStep);     
   Control.addVariable("Nord9ZStep",-zStep);     
-  Control.addVariable("Nord9XYangle",-90.0);     
+  Control.addVariable("Nord9XYAngle",-90.0);     
 
   Control.addVariable("Nord10XStep",xStep);     
   Control.addVariable("Nord10ZStep",-zStep);     
-  Control.addVariable("Nord10XYangle",-90.0);     
+  Control.addVariable("Nord10XYAngle",-90.0);     
 
   Control.addVariable("Nord11XStep",xStep);     
   Control.addVariable("Nord11ZStep",zStep);     
-  Control.addVariable("Nord11XYangle",-90.0);     
+  Control.addVariable("Nord11XYAngle",-90.0);     
 
   Control.addVariable("Nord12XStep",-xStep);     
   Control.addVariable("Nord12ZStep",zStep);     
-  Control.addVariable("Nord12XYangle",-120.0);     
+  Control.addVariable("Nord12XYAngle",-120.0);     
 
   Control.addVariable("Nord13XStep",-xStep);     
   Control.addVariable("Nord13ZStep",-zStep);     
-  Control.addVariable("Nord13XYangle",-120.0);     
+  Control.addVariable("Nord13XYAngle",-120.0);     
 
   Control.addVariable("Nord14XStep",xStep);     
   Control.addVariable("Nord14ZStep",-zStep);     
-  Control.addVariable("Nord14XYangle",-120.0);     
+  Control.addVariable("Nord14XYAngle",-120.0);     
 
   Control.addVariable("Nord15XStep",xStep);     
   Control.addVariable("Nord15ZStep",zStep);     
-  Control.addVariable("Nord15XYangle",-120.0);     
+  Control.addVariable("Nord15XYAngle",-120.0);     
 
-  Control.addVariable("NordZangle",0.0);     
+  Control.addVariable("NordZAngle",0.0);     
   Control.addVariable("NordYStep",150.0);     
   Control.addVariable("NordFrontLength",6.0);     
   Control.addVariable("NordBackLength",10.0);     

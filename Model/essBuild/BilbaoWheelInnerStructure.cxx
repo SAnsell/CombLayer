@@ -162,7 +162,7 @@ BilbaoWheelInnerStructure::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","populate");
   
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
   
   brickLen=Control.EvalVar<double>(keyName+"BrickLength");
   brickWidth=Control.EvalVar<double>(keyName+"BrickWidth");

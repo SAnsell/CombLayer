@@ -160,7 +160,7 @@ t1Reflector::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
 
   xSize=Control.EvalVar<double>(keyName+"XSize");
   ySize=Control.EvalVar<double>(keyName+"YSize");

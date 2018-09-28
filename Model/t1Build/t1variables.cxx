@@ -79,7 +79,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("t1ReflectYSizeColdCut",5.0);      // guess  
 //  Control.addVariable("t1ReflectZSize",76.0);      // guess
   Control.addVariable("t1ReflectZSize",83.0);      // guess
-  Control.addVariable("t1ReflectXYangle",0.0);      // guess
+  Control.addVariable("t1ReflectXYAngle",0.0);      // guess
 //  Control.addVariable("t1ReflectCutLen",8.0);      // guess
   Control.addVariable("t1ReflectCutLen",12.00);      // guess
 
