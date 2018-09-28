@@ -79,7 +79,7 @@ namespace delftSystem
 {
 
 BeOElement::BeOElement(const size_t XI,const size_t YI,
-			 const std::string& Key) :
+		       const std::string& Key) :
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -100,23 +100,23 @@ BeOElement::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeOElement","populate");
 
   Width=ReactorGrid::getElement<double>
-    (Control,keyName+"Width",XIndex,YIndex);
+    (Control,baseName+"Width",XIndex,YIndex);
   Depth=ReactorGrid::getElement<double>
-    (Control,keyName+"Depth",XIndex,YIndex);
+    (Control,baseName+"Depth",XIndex,YIndex);
   TopHeight=ReactorGrid::getElement<double>
-    (Control,keyName+"TopHeight",XIndex,YIndex);
+    (Control,baseName+"TopHeight",XIndex,YIndex);
 
   wallThick=ReactorGrid::getElement<double>
-    (Control,keyName+"WallThick",XIndex,YIndex);
+    (Control,baseName+"WallThick",XIndex,YIndex);
   coolThick=ReactorGrid::getElement<double>
-    (Control,keyName+"CoolThick",XIndex,YIndex);
+    (Control,baseName+"CoolThick",XIndex,YIndex);
 
   beMat=ReactorGrid::getMatElement
-    (Control,keyName+"Mat",XIndex,YIndex);
+    (Control,baseName+"Mat",XIndex,YIndex);
   coolMat=ReactorGrid::getMatElement
-    (Control,keyName+"CoolMat",XIndex,YIndex);
+    (Control,baseName+"CoolMat",XIndex,YIndex);
   wallMat=ReactorGrid::getMatElement
-    (Control,keyName+"WallMat",XIndex,YIndex);
+    (Control,baseName+"WallMat",XIndex,YIndex);
   
   return;
 }

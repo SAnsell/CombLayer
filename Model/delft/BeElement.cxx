@@ -135,17 +135,17 @@ BeElement::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeElement","populate");
 
   Width=ReactorGrid::getElement<double>
-    (Control,keyName+"Width",XIndex,YIndex);
+    (Control,baseName+"Width",XIndex,YIndex);
   Depth=ReactorGrid::getElement<double>
-    (Control,keyName+"Depth",XIndex,YIndex);
+    (Control,baseName+"Depth",XIndex,YIndex);
   TopHeight=ReactorGrid::getElement<double>
-    (Control,keyName+"TopHeight",XIndex,YIndex);
+    (Control,baseName+"TopHeight",XIndex,YIndex);
 
   beMat=ReactorGrid::getMatElement
-    (Control,keyName+"Mat",XIndex,YIndex);
+    (Control,baseName+"Mat",XIndex,YIndex);
 
   nLayer=ReactorGrid::getElement<size_t>
-    (Control,keyName+"NLayer",XIndex,YIndex);
+    (Control,baseName+"NLayer",XIndex,YIndex);
 
   return;
 }
