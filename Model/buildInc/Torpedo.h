@@ -44,8 +44,6 @@ class Torpedo : public attachSystem::FixedComp,
   const std::string baseName;         ///< Base Keyname 
   const size_t shutterNumber;         ///< number of the shutter
 
-  const int surfIndex;                ///< Index of the surface
-  int cellIndex;                      ///< Index of the cells
   Geometry::Convex vBox;              ///< Convex box of torpedo
 
   double voidXoffset;                 ///< Main void vessel offset 

@@ -41,9 +41,6 @@ class PreModWing : public attachSystem::ContainedComp,
 {
  private:
   
-  const int modIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   double innerHeight;             ///< Mid step [up]
   double outerHeight;             ///< outer step [up]
   double innerDepth;              ///< Mid set [down]

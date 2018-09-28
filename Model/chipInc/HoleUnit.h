@@ -3,7 +3,7 @@
  
  * File:   chipInc/HoleUnit.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,6 @@ class HoleUnit : public attachSystem::ContainedComp,
 {
  private:
 
-  ModelSupport::surfRegister& HMap;   ///< Surface register
-  const int holeIndex;                ///< Hole index
-  
   int shapeType;                ///< Shape index
   double AngleOffset;           ///< Angle round the hole
   double radialOffset;          ///< Centre radial position
@@ -70,8 +67,7 @@ class HoleUnit : public attachSystem::ContainedComp,
 
  public:
   
-  HoleUnit(ModelSupport::surfRegister&,const std::string&,
-	   const int);
+  HoleUnit(const std::string&);
   HoleUnit(const HoleUnit&);
   HoleUnit& operator=(const HoleUnit&);
   virtual ~HoleUnit() {}

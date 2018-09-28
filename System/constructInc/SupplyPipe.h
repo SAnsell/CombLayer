@@ -39,9 +39,7 @@ class SupplyPipe : public attachSystem::FixedComp
 {
  private:
   
-  std::string optName;          ///< Option value
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  std::string optName;               ///< Option value
    
   size_t NSegIn;                      ///< Number of segments  
   size_t wallOffset;                  ///< Segments for inital wall

@@ -72,6 +72,8 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -221,9 +223,6 @@ pointConstruct::processPointWindow(SimMCNP& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointWindow");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   std::vector<int> Planes;
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint;
@@ -231,7 +230,7 @@ pointConstruct::processPointWindow(SimMCNP& System,
   Geometry::Vec3D BAxis;
   int masterPlane(0);
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
   const long int linkPt=TPtr->getSideIndex(linkIndex);
   if (linkPt!=0)
@@ -284,11 +283,8 @@ pointConstruct::processPointFree(SimMCNP& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   const long int linkPt=TPtr->getSideIndex(linkName);
   
   const int tNum=System.nextTallyNum(5);
@@ -316,11 +312,8 @@ pointConstruct::processPointFree(SimMCNP& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(Vec)");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   
   const long int linkPt=TPtr->getSideIndex(linkName);
   const int tNum=System.nextTallyNum(5);

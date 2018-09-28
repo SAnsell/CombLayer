@@ -46,9 +46,6 @@ class Reflector : public attachSystem::ContainedComp,
 {
  private:
   
-  const int refIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   double cornerAngle;           ///< Angle of corners
   double xySize;                ///< Left/Right size
   double zSize;                 ///< Vertical size

@@ -3,7 +3,7 @@
  
  * File:   instrumentInc/CylSample.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,6 @@ class CylSample : public attachSystem::ContainedComp,
 {
  private:
   
-  const int samIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights

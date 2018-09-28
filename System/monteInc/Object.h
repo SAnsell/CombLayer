@@ -43,6 +43,8 @@ class Object
 {
  private:
 
+  std::string FCUnit; ///< FixedComp name
+  
   int ObjName;       ///< Number for the object
   int listNum;       ///< Creation number
   double Tmp;        ///< Starting temperature (if given)
@@ -80,6 +82,8 @@ class Object
   static int startLine(const std::string& Line);
 
   Object();
+  Object(const std::string&,const int,const int,
+	 const double,const std::string&);
   Object(const int,const int,const double,const std::string&);
   Object(const Object&);
   Object& operator=(const Object&);
@@ -95,6 +99,8 @@ class Object
   virtual void acceptVisitor(Global::BaseModVisit& A)
     { A.Accept(*this); }
 
+  /// set the name
+  void setFCUnit(const std::string& FC) { FCUnit=FC; }
   void setName(const int nx) { ObjName=nx; }           ///< Set Name 
   void setCreate(const int lx) { listNum=lx; }         ///< Set Creation point
   void setTemp(const double A) { Tmp=A; }              ///< Set temperature [Kelvin]
@@ -111,7 +117,9 @@ class Object
   int complementaryObject(const int,std::string&);
   int hasComplement() const;                           
   int isPopulated() const { return populated; }        ///< Is populated   
-  
+
+  /// accessor to FCName
+  std::string getFCUnit() const  { return FCUnit; }
   int getName() const  { return ObjName; }             ///< Get Name
   int getCreate() const  { return listNum; }           ///< Get Creation point
   int getMat() const { return MatN; }                  ///< Get Material ID

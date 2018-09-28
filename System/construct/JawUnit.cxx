@@ -61,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +81,7 @@ namespace constructSystem
 
 JawUnit::JawUnit(const std::string& Key) : 
   attachSystem::FixedOffset(Key,10),attachSystem::ContainedComp(),
-  attachSystem::CellMap(),
-  jawIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(jawIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -91,7 +91,7 @@ JawUnit::JawUnit(const std::string& Key) :
 JawUnit::JawUnit(const JawUnit& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  jawIndex(A.jawIndex),cellIndex(A.cellIndex),zOpen(A.zOpen),
+  zOpen(A.zOpen),
   zOffset(A.zOffset),zThick(A.zThick),zHeight(A.zHeight),
   zWidth(A.zWidth),xOpen(A.xOpen),xOffset(A.xOffset),
   xThick(A.xThick),xHeight(A.xHeight),xWidth(A.xWidth),
@@ -199,33 +199,33 @@ JawUnit::createSurfaces()
 {
   ELog::RegMethod RegA("JawUnit","createSurfaces");
   
-  ModelSupport::buildPlane(SMap,jawIndex+101,Origin+Y*(jawGap/2.0),Y);
-  ModelSupport::buildPlane(SMap,jawIndex+102,Origin+Y*(xThick+jawGap/2.0),Y);
-  ModelSupport::buildPlane(SMap,jawIndex+103,Origin-X*
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(jawGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(xThick+jawGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*
 			   (xWidth+xOpen/2.0-xOffset),X);
-  ModelSupport::buildPlane(SMap,jawIndex+104,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin-
 			   X*(xOpen/2.0-xOffset),X);
 
-  ModelSupport::buildPlane(SMap,jawIndex+153,Origin+X*(xOpen/2.0+xOffset),X);
-  ModelSupport::buildPlane(SMap,jawIndex+154,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+153,Origin+X*(xOpen/2.0+xOffset),X);
+  ModelSupport::buildPlane(SMap,buildIndex+154,Origin+
 			   X*(xWidth+xOpen/2.0+xOffset),X);
 
-  ModelSupport::buildPlane(SMap,jawIndex+105,Origin-Z*(xHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,jawIndex+106,Origin+Z*(xHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(xHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(xHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,jawIndex+201,Origin-Y*(zThick+jawGap/2.0),Y);
-  ModelSupport::buildPlane(SMap,jawIndex+202,Origin-Y*(jawGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(zThick+jawGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin-Y*(jawGap/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,jawIndex+203,Origin-X*(zWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,jawIndex+204,Origin+X*(zWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(zWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(zWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,jawIndex+205,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-
 			   Z*(zHeight+zOpen/2.0-zOffset),Z);
-  ModelSupport::buildPlane(SMap,jawIndex+206,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin-
 			   Z*(zOpen/2.0-zOffset),Z);
 
-  ModelSupport::buildPlane(SMap,jawIndex+255,Origin+Z*(zOpen/2.0+zOffset),Z);
-  ModelSupport::buildPlane(SMap,jawIndex+256,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+255,Origin+Z*(zOpen/2.0+zOffset),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+256,Origin+
 			   Z*(zHeight+zOpen/2.0+zOffset),Z);
 
   return;
@@ -241,27 +241,27 @@ JawUnit::createObjects(Simulation& System)
   ELog::RegMethod RegA("JawUnit","createObjects");
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 103 -104 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("xJaw",System,cellIndex++,xJawMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 153 -154 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 153 -154 105 -106 ");
   makeCell("xJaw",System,cellIndex++,xJawMat,0.0,Out);
   // gap
-  Out=ModelSupport::getComposite(SMap,jawIndex,"101 -102 104 -153 105 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -153 105 -106");
   makeCell("xGap",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 203 -204 205 -206 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
   makeCell("zJaw",System,cellIndex++,zJawMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 203 -204 255 -256 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 255 -256 ");
   makeCell("zJaw",System,cellIndex++,zJawMat,0.0,Out);
   // gap
-  Out=ModelSupport::getComposite(SMap,jawIndex,"201 -202 203 -204 206 -255 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 203 -204 206 -255 ");
   makeCell("zGap",System,cellIndex++,0,0.0,Out);
 
    
-  Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 103 -154 105 -106 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -154 105 -106 ");
   addOuterSurf(Out);      
 
-  Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 203 -204 205 -256 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -256 ");
   addOuterUnionSurf(Out);      
 
   return;
@@ -277,36 +277,36 @@ JawUnit::createLinks()
   ELog::RegMethod RegA("JawUnit","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(zThick+jawGap/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(jawIndex+201));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
   
   FixedComp::setConnect(1,Origin+Y*(xThick+jawGap/2.0),-Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(jawIndex+102));
+  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+102));
 
   // x values (4):
   FixedComp::setConnect(2,Origin-X*(xOpen/2.0-xOffset),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(jawIndex+103));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+103));
 
   FixedComp::setConnect(3,Origin+X*(xOpen/2.0+xOffset),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(jawIndex+154));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+154));
 
   FixedComp::setConnect(4,Origin-Z*(xHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(jawIndex+105));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+105));
 
   FixedComp::setConnect(5,Origin+Z*(xHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(jawIndex+106));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+106));
 
   // z values (4):
   FixedComp::setConnect(6,Origin-X*(xWidth/2.0),-X);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(jawIndex+203));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+203));
 
   FixedComp::setConnect(7,Origin+X*(xWidth/2.0),X);
-  FixedComp::setLinkSurf(7,SMap.realSurf(jawIndex+204));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+204));
 
   FixedComp::setConnect(8,Origin-Z*(zOpen/2.0-zOffset),-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(jawIndex+205));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+205));
 
   FixedComp::setConnect(9,Origin+Z*(zOpen/2.0+zOffset),Z);
-  FixedComp::setLinkSurf(9,SMap.realSurf(jawIndex+256));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+256));
 
   return;
 }

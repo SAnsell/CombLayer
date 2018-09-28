@@ -54,6 +54,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -174,8 +176,6 @@ getCellSelection(const Simulation& System,
 {
   ELog::RegMethod RegA("objectSupport[F]","getCellSelection");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::vector<int> cells;
   // NOTE that getting all the cells from OR is insane
@@ -184,7 +184,7 @@ getCellSelection(const Simulation& System,
   else if (keyName=="All" || keyName=="all")
     cells=System.getCellVector();
   else
-    cells=OR.getObjectRange(keyName);
+    cells=System.getObjectRange(keyName);
 
   // PROCESS mat:
   std::vector<int> Out;

@@ -3,7 +3,7 @@
  
  * File:   t1Build/OpenBlockTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,6 +62,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,9 +81,7 @@ namespace ts1System
 {
 
 OpenBlockTarget::OpenBlockTarget(const std::string& Key)  :
-  TargetBase(Key,6),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1)
+  TargetBase(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +90,7 @@ OpenBlockTarget::OpenBlockTarget(const std::string& Key)  :
 
 OpenBlockTarget::OpenBlockTarget(const OpenBlockTarget& A) : 
   constructSystem::TargetBase(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),frontPlate(A.frontPlate),
+  frontPlate(A.frontPlate),
   backPlate(A.backPlate),
   height(A.height),width(A.width),
   nBlock(A.nBlock),tBlock(A.tBlock),tVoid(A.tVoid),
@@ -116,7 +115,6 @@ OpenBlockTarget::operator=(const OpenBlockTarget& A)
   if (this!=&A)
     {
       constructSystem::TargetBase::operator=(A);
-      cellIndex=A.cellIndex;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       height=A.height;
@@ -176,7 +174,7 @@ OpenBlockTarget::populate(const FuncDataBase& Control)
   double T,V;
   for(size_t i=0;i<nBlock;i++)
     {
-      const std::string numStr=StrFunc::makeString(i);
+      const std::string numStr=std::to_string(i);
       T=Control.EvalVar<double>(keyName+"Thick"+numStr);
       V=Control.EvalDefVar<double>(keyName+"Void"+numStr,0.0);
       tBlock.push_back(T);
@@ -232,46 +230,46 @@ OpenBlockTarget::createSurfaces()
 
   // Create Outer box:
   
-  ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   // Pressure layer
-  ModelSupport::buildPlane(SMap,ptIndex+13,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-
 			   X*(width/2.0+pressThick),X);
-  ModelSupport::buildPlane(SMap,ptIndex+14,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+
 			   X*(width/2.0+pressThick),X);
-  ModelSupport::buildPlane(SMap,ptIndex+15,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-
 			   Z*(height/2.0+pressThick),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+16,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+
 			   Z*(height/2.0+pressThick),Z);
   
   // This could be a front window thickness?
-  ModelSupport::buildPlane(SMap,ptIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,ptIndex+11,Origin-Y*pressThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*pressThick,Y);
 
 
   // Cuts for W Outer Plates
-  ModelSupport::buildPlane(SMap,ptIndex+103,Origin-X*(WWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+104,Origin+X*(WWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+105,Origin-Z*(WHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+106,Origin+Z*(WHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(WWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(WWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(WHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(WHeight/2.0),Z);
 
   // Cuts for Ta Outer Plates
-  ModelSupport::buildPlane(SMap,ptIndex+203,Origin-X*(WWidth/2.0+taThick),X);
-  ModelSupport::buildPlane(SMap,ptIndex+204,Origin+X*(WWidth/2.0+taThick),X);
-  ModelSupport::buildPlane(SMap,ptIndex+205,Origin-Z*(WHeight/2.0+taThick),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+206,Origin+Z*(WHeight/2.0+taThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(WWidth/2.0+taThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(WWidth/2.0+taThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(WHeight/2.0+taThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(WHeight/2.0+taThick),Z);
 
   // Cuts for voids:
-  ModelSupport::buildPlane(SMap,ptIndex+303,Origin-X*(WVoidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+304,Origin+X*(WVoidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+305,Origin-Z*(WVoidHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+306,Origin+Z*(WVoidHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*(WVoidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*(WVoidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*(WVoidHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(WVoidHeight/2.0),Z);
     
   double tStep(waterThick);
-  int PT(ptIndex+1000);
+  int PT(buildIndex+1000);
   for(size_t i=0;i<nBlock;i++)
     {
       ModelSupport::buildPlane(SMap,PT+1,Origin+Y*tStep,Y);  // water : Ta
@@ -296,10 +294,10 @@ OpenBlockTarget::createSurfaces()
     }      
 
   // Close target at back
-  ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*tStep,Y);
-  ModelSupport::buildPlane(SMap,ptIndex+12,Origin+Y*(tStep+pressThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*tStep,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(tStep+pressThick),Y);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+12));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
   FixedComp::setConnect(1,Origin+Y*(tStep+pressThick),Y);
 
   return;
@@ -317,22 +315,22 @@ OpenBlockTarget::createObjects(Simulation& System)
   std::string Out;
   
   // Create the pressure vessel:
-  Out=ModelSupport::getComposite(SMap,ptIndex,"11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 " ( -1 : 2 : -3 : 4 : -5 : 6 ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,pressMat,0.0, Out));
   // create surround water
-  Out=ModelSupport::getComposite(SMap,ptIndex,"1 -2 3 -4 5 -6 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 " ( -203 : 204 : -205 : 206 ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0, Out));
 
 
   const std::string H2OEdge=
-    ModelSupport::getComposite(SMap,ptIndex," 203 -204 205 -206 ");
+    ModelSupport::getComposite(SMap,buildIndex," 203 -204 205 -206 ");
 
   // Make plates:
-  int PT(ptIndex+1000);
+  int PT(buildIndex+1000);
   std::string preLayer=
-    ModelSupport::getComposite(SMap,ptIndex," 1 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 ");
   for(size_t i=0;i<nBlock;i++)
     {
       // Front water
@@ -340,7 +338,7 @@ OpenBlockTarget::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
       // Ta surround
       Out=ModelSupport::getComposite
-	(SMap,ptIndex,PT,"1M -2M ( -11M:12M:-103:104:-105:106) ")+H2OEdge;
+	(SMap,buildIndex,PT,"1M -2M ( -11M:12M:-103:104:-105:106) ")+H2OEdge;
       System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
 
       // Void case
@@ -348,12 +346,12 @@ OpenBlockTarget::createObjects(Simulation& System)
 	{
 	  // inner void
 	  Out=ModelSupport::getComposite
-	    (SMap,ptIndex,PT,"21M -22M 303 -304 305 -306");
+	    (SMap,buildIndex,PT,"21M -22M 303 -304 305 -306");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
 	  // W with void hole
 	  Out=ModelSupport::getComposite
-	    (SMap,ptIndex,PT," 11M -12M 103 -104 105 -106 "
+	    (SMap,buildIndex,PT," 11M -12M 103 -104 105 -106 "
 	     " (-21M : 22M : -303 : 304 : -305 : 306)");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
 	}
@@ -361,18 +359,18 @@ OpenBlockTarget::createObjects(Simulation& System)
 	{
 	  // W with no hole 	
 	  Out=ModelSupport::getComposite
-	    (SMap,ptIndex,PT,"11M -12M 103 -104 105 -106 ");
+	    (SMap,buildIndex,PT,"11M -12M 103 -104 105 -106 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
 	}
       preLayer=ModelSupport::getComposite(SMap,PT," 2 ");
       PT+=100;
     }
   // Last water plate
-  Out=ModelSupport::getComposite(SMap,ptIndex," -2 ")+H2OEdge+preLayer;
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 ")+H2OEdge+preLayer;
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,ptIndex,"11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
 
 
@@ -424,12 +422,12 @@ OpenBlockTarget::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+pressThick),Z);
 
   // Set Connect surfaces:
-  FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   return;
 }

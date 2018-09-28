@@ -47,8 +47,6 @@ class ZoomBend : public attachSystem::ContainedGroup,
 {
  private:
   
-  const int bendIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< populated or not
 
   Geometry::Vec3D BCentre;      ///< Rotation centre [centerline]

@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -162,32 +164,32 @@ insertPlate::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*(depth/2.0),Y);
-      setSurf("Front",ptIndex+1);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(depth/2.0),Y);
+      setSurf("Front",buildIndex+1);
     }
   else
     setSurf("Front",getFrontRule().getPrimarySurface());
   
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*(depth/2.0),Y);
-      setSurf("Back",SMap.realSurf(ptIndex+2));
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(depth/2.0),Y);
+      setSurf("Back",SMap.realSurf(buildIndex+2));
     }
   else
     setSurf("Back",getBackRule().getPrimarySurface());
 
 
-  ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   
 
-  setSurf("Left",SMap.realSurf(ptIndex+3));
-  setSurf("Right",SMap.realSurf(ptIndex+4));
-  setSurf("Base",SMap.realSurf(ptIndex+5));
-  setSurf("Top",SMap.realSurf(ptIndex+6));
+  setSurf("Left",SMap.realSurf(buildIndex+3));
+  setSurf("Right",SMap.realSurf(buildIndex+4));
+  setSurf("Base",SMap.realSurf(buildIndex+5));
+  setSurf("Top",SMap.realSurf(buildIndex+6));
   return;
 }
 
@@ -211,7 +213,7 @@ insertPlate::createLinks()
   else
     {
       FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
     }
 
   if (backActive())
@@ -225,7 +227,7 @@ insertPlate::createLinks()
   else
     {
       FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
   
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
@@ -233,10 +235,10 @@ insertPlate::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // corners
   const Geometry::Vec3D frontPt=getLinkPt(1);
@@ -252,25 +254,25 @@ insertPlate::createLinks()
   FixedComp::setConnect(12,backPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
   FixedComp::setConnect(13,backPt+X*(width/2.0)+Z*(height/2.0),X+Z);
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
 
-  FixedComp::addLinkSurf(6,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(7,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+6));
-  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+6));
+  FixedComp::addLinkSurf(6,-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf(7,-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf(8,SMap.realSurf(buildIndex+6));
+  FixedComp::addLinkSurf(9,SMap.realSurf(buildIndex+6));
 
-  FixedComp::setLinkSurf(10,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(11,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(12,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(13,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(12,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+4));
 
-  FixedComp::addLinkSurf(10,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(11,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(12,SMap.realSurf(ptIndex+6));
-  FixedComp::addLinkSurf(13,SMap.realSurf(ptIndex+6));
+  FixedComp::addLinkSurf(10,-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf(11,-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf(12,SMap.realSurf(buildIndex+6));
+  FixedComp::addLinkSurf(13,SMap.realSurf(buildIndex+6));
 
   return;
 }
@@ -285,7 +287,7 @@ insertPlate::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertPlate","createObjects");
   
   std::string Out=
-    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 3 -4 5 -6 ");
+    ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   Out+=frontRule();
   Out+=backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
@@ -357,8 +359,8 @@ insertPlate::createDivision(Simulation& System)
     {
       // Front/back??
       LD3.setSurfPair(0,getSurf("Front"),getSurf("Back"));
-      LD3.setSurfPair(1,SMap.realSurf(ptIndex+3),SMap.realSurf(ptIndex+4));
-      LD3.setSurfPair(2,SMap.realSurf(ptIndex+5),SMap.realSurf(ptIndex+6));
+      LD3.setSurfPair(1,SMap.realSurf(buildIndex+3),SMap.realSurf(buildIndex+4));
+      LD3.setSurfPair(2,SMap.realSurf(buildIndex+5),SMap.realSurf(buildIndex+6));
 
       LD3.setFractions(0,1);
       LD3.setFractions(1,nGrid);	    

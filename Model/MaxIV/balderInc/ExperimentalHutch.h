@@ -44,9 +44,6 @@ class ExperimentalHutch :
 {
  private:
   
-  const int hutIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double depth;                 ///< void height 
   double height;                ///< void depth
   double length;                ///< void out side width

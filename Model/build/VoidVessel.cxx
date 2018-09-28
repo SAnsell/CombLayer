@@ -72,6 +72,8 @@
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "chipDataStore.h"
 #include "insertInfo.h"

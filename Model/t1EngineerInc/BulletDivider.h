@@ -42,8 +42,6 @@ class BulletDivider : public attachSystem::ContainedComp,
 
   const int ID;                 ///< ID number
   const std::string baseName;   ///< Base name [no id]
-  const int divIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   const int divDirection;             ///< Divide direction
   double YStep;                 ///< Distance +/- from link point

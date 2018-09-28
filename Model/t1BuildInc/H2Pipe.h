@@ -39,8 +39,6 @@ class H2Pipe : public attachSystem::FixedComp
 {
  private:
   
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   ModelSupport::PipeLine Central; ///< Global outer
 

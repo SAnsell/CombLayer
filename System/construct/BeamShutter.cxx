@@ -61,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,9 +85,7 @@ namespace constructSystem
 BeamShutter::BeamShutter(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Void",2,"Beam",2),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  collIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(collIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -172,28 +172,28 @@ BeamShutter::createSurfaces()
 {
   ELog::RegMethod RegA("BeamShutter","createSurface");
 
-  ModelSupport::buildPlane(SMap,collIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,collIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,collIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,collIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,collIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(surroundThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,collIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(surroundThick+width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,collIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(surroundThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,collIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(surroundThick+height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,collIndex+105,
+  ModelSupport::buildPlane(SMap,buildIndex+105,
 		 Origin-Z*(liftZStep+surroundThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,collIndex+106,
+  ModelSupport::buildPlane(SMap,buildIndex+106,
 		 Origin+Z*(-liftZStep+topVoid+surroundThick+height/2.0),Z);
 
-  int CN(collIndex);
+  int CN(buildIndex);
   Geometry::Vec3D POrg(Origin);
   for(size_t i=0;i<nLayers;i++)
     {
@@ -218,18 +218,18 @@ BeamShutter::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeamShutter","createObjects");
   std::string Out;
 
-  int CN(collIndex);
+  int CN(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite
-	(SMap,collIndex,CN,"1M -11M 3 -4 5 -6 ");
+	(SMap,buildIndex,CN,"1M -11M 3 -4 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
       addCell("Main",cellIndex-1);
       CN+=10;
     }
   CN-=10;
   // Surround
-  Out=ModelSupport::getComposite(SMap,collIndex,CN,
+  Out=ModelSupport::getComposite(SMap,buildIndex,CN,
 				 "1 -11M 13 -14 15 -16 (-3:4:-5:6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,surroundMat,0.0,Out));
   addCell("Surround",cellIndex-1);
@@ -237,7 +237,7 @@ BeamShutter::createObjects(Simulation& System)
   // lower void if present
   if (liftZStep>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,collIndex,CN,
+      Out=ModelSupport::getComposite(SMap,buildIndex,CN,
                                      " 1 -11M 13 -14 105 -15 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addCell("Void",cellIndex-1);
@@ -246,7 +246,7 @@ BeamShutter::createObjects(Simulation& System)
   // top void if present
   if (liftZStep-topVoid < Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,collIndex,CN,
+      Out=ModelSupport::getComposite(SMap,buildIndex,CN,
                                      " 1 -11M 13 -14 16 -106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addCell("Void",cellIndex-1);
@@ -254,10 +254,10 @@ BeamShutter::createObjects(Simulation& System)
     }
 
   if (liftZStep>=0.0)
-    Out=ModelSupport::getComposite(SMap,collIndex,CN,
+    Out=ModelSupport::getComposite(SMap,buildIndex,CN,
 				   " 1 -11M 13 -14 105 -106  ");
   else
-    Out=ModelSupport::getComposite(SMap,collIndex,CN,
+    Out=ModelSupport::getComposite(SMap,buildIndex,CN,
 				   " 1 -11M 13 -14 15 -106  ");
   addOuterSurf(Out);
   return;
@@ -282,20 +282,20 @@ BeamShutter::createLinks()
   mainFC.setConnect(4,Origin-Z*(surroundThick+height/2.0),-Z);
   mainFC.setConnect(5,Origin-Z*(surroundThick+height/2.0),Z);
 
-  const int CN(static_cast<int>(nLayers)*10+collIndex);
-  mainFC.setLinkSurf(0,-SMap.realSurf(collIndex+1));
+  const int CN(static_cast<int>(nLayers)*10+buildIndex);
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   mainFC.setLinkSurf(1,SMap.realSurf(CN+1));
-  mainFC.setLinkSurf(2,-SMap.realSurf(collIndex+13));
-  mainFC.setLinkSurf(3,SMap.realSurf(collIndex+14));
-  mainFC.setLinkSurf(4,-SMap.realSurf(collIndex+15));
-  mainFC.setLinkSurf(5,SMap.realSurf(collIndex+16));
+  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D& BC(beamFC.getCentre());
   
   beamFC.setConnect(0,BC,-Y);
   beamFC.setConnect(1,BC+Y*length,Y);
-  beamFC.setLinkSurf(0,-SMap.realSurf(collIndex+1));
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(CN+1));
 
   // These are protected from ZVertial re-orientation
@@ -303,7 +303,7 @@ BeamShutter::createLinks()
   
   voidFC.setConnect(0,VC,-Y);
   voidFC.setConnect(1,VC+Y*length,Y);
-  voidFC.setLinkSurf(0,-SMap.realSurf(collIndex+1));
+  voidFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   voidFC.setLinkSurf(1,SMap.realSurf(CN+1));
 
   return;

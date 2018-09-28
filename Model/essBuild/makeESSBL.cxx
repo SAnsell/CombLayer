@@ -59,6 +59,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -193,11 +195,9 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   ELog::RegMethod RegA("makeESSBL","build");
 
   const int voidCell(74123);
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* mainFCPtr=
-    OR.getObject<attachSystem::FixedComp>(shutterName);
+    System.getObject<attachSystem::FixedComp>(shutterName);
   const GuideItem* mainGIPtr=dynamic_cast<const GuideItem*>(mainFCPtr);
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
@@ -339,7 +339,6 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
       ///< Guide line [refl]
       std::shared_ptr<beamlineSystem::GuideLine>
 	RefA(new beamlineSystem::GuideLine(beamName));
-      OR.addObject(RefA);
       RefA->addInsertCell(voidCell);
       RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
     }

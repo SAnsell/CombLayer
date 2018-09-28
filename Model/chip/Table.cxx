@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/Table.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,8 +85,7 @@ namespace hutchSystem
 
 Table::Table(const int T,const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  shapeType(T),tableIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tableIndex+1),populated(0)
+  shapeType(T),populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param T :: Shape type [0 : Rectangle / 1 Triangle]
@@ -94,8 +95,8 @@ Table::Table(const int T,const std::string& Key)  :
 
 Table::Table(const Table& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  shapeType(A.shapeType),tableIndex(A.tableIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  shapeType(A.shapeType),
+  populated(A.populated),
   xyAngle(A.xyAngle),zAngle(A.zAngle),
   fStep(A.fStep),xStep(A.xStep),Centre(A.Centre),
   height(A.height),width(A.width),length(A.length),surThick(A.surThick),
@@ -119,7 +120,6 @@ Table::operator=(const Table& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
@@ -224,46 +224,46 @@ Table::createSurfaces()
 {
   ELog::RegMethod RegA("Table","createTriangleSurface");
   // REGISTER FLOOR:
-  SMap.addMatch(tableIndex+5,floorSurf);
+  SMap.addMatch(buildIndex+5,floorSurf);
   //
   // OUTER PLANES
   // 
   Geometry::Plane* PX;
   // Front
-  ModelSupport::buildPlane(SMap,tableIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Centre-Y*length/2.0,Y);
 
   // Back
-  ModelSupport::buildPlane(SMap,tableIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Centre+Y*length/2.0,Y);
 
   // sides
   switch (shapeType) 
     {
     case 0:    // Triangle
-      ModelSupport::buildPlane(SMap,tableIndex+3,
+      ModelSupport::buildPlane(SMap,buildIndex+3,
 			       Centre-Y*length/2.0,
 			       Centre+Y*length/2.0-X*width/2.0+Z,
 			       Centre+Y*length/2.0-X*width/2.0,X);
-      ModelSupport::buildPlane(SMap,tableIndex+4,
+      ModelSupport::buildPlane(SMap,buildIndex+4,
 			       Centre-Y*length/2.0,
 			       Centre+Y*length/2.0+X*width/2.0+Z,
 			       Centre+Y*length/2.0+X*width/2.0,X);
-      PX=SMap.realPtr<Geometry::Plane>(tableIndex+3);
-      ModelSupport::buildPlane(SMap,tableIndex+13,
+      PX=SMap.realPtr<Geometry::Plane>(buildIndex+3);
+      ModelSupport::buildPlane(SMap,buildIndex+13,
 			       PX->getNormal(),
 			       PX->getDistance()+sideThick);
-      PX=SMap.realPtr<Geometry::Plane>(tableIndex+4);
-      ModelSupport::buildPlane(SMap,tableIndex+14,
+      PX=SMap.realPtr<Geometry::Plane>(buildIndex+4);
+      ModelSupport::buildPlane(SMap,buildIndex+14,
 			       PX->getNormal(),
 			       PX->getDistance()-sideThick);
       break;
     case 1:
-      ModelSupport::buildPlane(SMap,tableIndex+3,Centre-X*width/2.0,X);
-      ModelSupport::buildPlane(SMap,tableIndex+4,Centre+X*width/2.0,X);
-      ModelSupport::buildPlane(SMap,tableIndex+13,
+      ModelSupport::buildPlane(SMap,buildIndex+3,Centre-X*width/2.0,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Centre+X*width/2.0,X);
+      ModelSupport::buildPlane(SMap,buildIndex+13,
 			       Centre-X*(width/2.0-sideThick),X);
-      ModelSupport::buildPlane(SMap,tableIndex+14,
+      ModelSupport::buildPlane(SMap,buildIndex+14,
 			       Centre-X*(width/2.0-sideThick),X);
       break;
     default:
@@ -271,19 +271,19 @@ Table::createSurfaces()
     }
 
   // top
-  ModelSupport::buildPlane(SMap,tableIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Centre+Z*height,Z);
   
   //
   // INNER SURFACES
   // 
-  ModelSupport::buildPlane(SMap,tableIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Centre-Y*(length/2.0-sideThick),Y);
   // Back
-  ModelSupport::buildPlane(SMap,tableIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Centre+Y*(length/2.0-sideThick),Y);
   // top
-  ModelSupport::buildPlane(SMap,tableIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Centre+Z*(height-surThick),Z);
 
   return;
@@ -299,19 +299,19 @@ Table::createObjects(Simulation& System)
   ELog::RegMethod RegA("Table","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tableIndex,"1 -2 3 -4 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 ");
   addOuterSurf(Out);
 
   // Base Object
-  Out=ModelSupport::getComposite(SMap,tableIndex,"1 -2 3 -4 5 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -16 "
 				 "(-11 : 12 : -13 : 14)" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   // Inner void
-  Out=ModelSupport::getComposite(SMap,tableIndex,"11 -12 13 -14 5 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Table top
-  Out=ModelSupport::getComposite(SMap,tableIndex,"1 -2 3 -4 -6 16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,topMat,0.0,Out));
 
   return;
@@ -330,12 +330,12 @@ Table::exitWindow(const double Dist,
   */
 {
   window.clear();
-  window.push_back(SMap.realSurf(tableIndex+3));
-  window.push_back(SMap.realSurf(tableIndex+4));
-  window.push_back(SMap.realSurf(tableIndex+5));
-  window.push_back(SMap.realSurf(tableIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+Y*(length+Dist);  
-  return SMap.realSurf(tableIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
   
 void

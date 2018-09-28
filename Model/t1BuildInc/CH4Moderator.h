@@ -42,8 +42,6 @@ class CH4Moderator : public attachSystem::ContainedComp,
 {
  private:
   
-  const int ch4Index;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double width;                 ///< width
   double height;                ///< height

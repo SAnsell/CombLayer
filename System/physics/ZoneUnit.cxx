@@ -45,8 +45,9 @@
 #include "Vec3D.h"
 #include "MapRange.h"
 #include "support.h"
-#include "objectRegister.h"
 #include "permSort.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "ZoneUnit.h" 
 
 
@@ -135,7 +136,8 @@ ZoneUnit<T>::createMapRange(std::vector<int>& CellList)
   
 template<typename T>
 bool
-ZoneUnit<T>::procZone(std::vector<std::string>& StrItem)
+ZoneUnit<T>::procZone(const objectGroups& OGrp,
+		      std::vector<std::string>& StrItem)
   /*!
     Process the zone information
     \param StrItem :: List of item from the input [Used items erased]
@@ -154,9 +156,7 @@ ZoneUnit<T>::procZone(std::vector<std::string>& StrItem)
     }
   else if (NS>=2 && (StrItem[0]=="Object" || StrItem[0]=="object"))
     {
-      const ModelSupport::objectRegister& OR= 
-	ModelSupport::objectRegister::Instance();
-      std::vector<int> cellN=OR.getObjectRange(StrItem[1]);
+      std::vector<int> cellN=OGrp.getObjectRange(StrItem[1]);
       while(!cellN.empty())
 	{
 	  Zones.push_back(createMapRange(cellN));

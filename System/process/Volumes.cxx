@@ -51,6 +51,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -111,8 +113,6 @@ populateCells(const Simulation& System,
 {
   ELog::RegMethod RegA("Volumes[F]","populateCells");
 
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
 
   for(size_t i=0;i<IParam.setCnt("volCells");i++)
     {
@@ -128,13 +128,12 @@ populateCells(const Simulation& System,
 	  std::vector<int> CNumbers;
 	  for(size_t j=1;j<NItems;j++)
 	    {
-	      const int cellBegin=OR.getCell(CStr[j]);
-	      const int cellRange=OR.getRange(CStr[j]);
-	      if (!cellBegin)
+	      const std::vector<int> CNumPlus=
+		System.getObjectRange(CStr[j]);
+	      if (CNumPlus.empty())
 		throw ColErr::InContainerError<std::string>
 		  (CStr[j]," Cell object not known");
-	      const std::vector<int> CNumPlus=
-		System.getCellVectorRange(cellBegin,cellRange);
+
 	      ELog::EM<<"CNum == "<<CNumPlus.size()<<ELog::endDiag;
 	      CNumbers.insert(CNumbers.end(),CNumPlus.begin(),CNumPlus.end());
 	    }

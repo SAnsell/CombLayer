@@ -53,6 +53,8 @@
 #include "masterWrite.h"
 #include "objectRegister.h"
 #include "surfIndex.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
@@ -80,6 +82,7 @@
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
+#include "World.h"
 
 #include "MainProcess.h"
 
@@ -242,9 +245,6 @@ renumberCells(Simulation& System,const inputParam& IParam)
   if (!IParam.flag("renum") && !IParam.flag("cellRange"))
     return;
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   if (IParam.flag("renum"))
     {
       std::vector<int> rOffset;
@@ -267,8 +267,8 @@ renumberCells(Simulation& System,const inputParam& IParam)
 	  if (!StrFunc::convert(Name,xOffset) || 
 	      !StrFunc::convert(Range,xRange))
 	    {
-	      xOffset=OR.getCell(Name);
-	      xRange=OR.getRange(Name);			
+	      xOffset=System.getFirstCell(Name);
+	      xRange=System.getLastCell(Name)-xOffset;			
 	      i--;              // using names
 	    }
 	  
@@ -377,6 +377,9 @@ createSimulation(inputParam& IParam,
    */
 {
   ELog::RegMethod RegA("MainProcess","createSimulation");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
   // Get a copy of the command used to run the program
   std::stringstream cmdLine;
 
@@ -393,7 +396,6 @@ createSimulation(inputParam& IParam,
   // DEBUG
   if (IParam.flag("debug"))
     ELog::EM.setActive(IParam.getValue<size_t>("debug"));
-
 
 
   IParam.processMainInput(Names);
@@ -413,16 +415,29 @@ createSimulation(inputParam& IParam,
       SMCPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
       SimPtr=SMCPtr;
     }
-
+  OR.setObjectGroup(*SimPtr);
+  buildWorld(*SimPtr);
+  
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
-  // DNF split the cells
+  // CNF split the cells
   SimPtr->setCellCNF(IParam.getDefValue<size_t>(0,"cellCNF"));
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
-
+  
   return SimPtr;
 }
+
+void
+buildWorld(objectGroups& OGrp)
+{
+  std::shared_ptr<attachSystem::FixedComp> worldPtr=
+    std::make_shared<attachSystem::FixedComp>(World::masterOrigin());
+
+  OGrp.addObject(worldPtr);
+  return;
+}
+
 
 void
 InputModifications(Simulation* SimPtr,inputParam& IParam,
@@ -494,7 +509,6 @@ exitDelete(Simulation* SimPtr)
  */
 {
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return;
 }
@@ -669,7 +683,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
   
-  ModelSupport::setDefRotation(IParam);
+  ModelSupport::setDefRotation(*SimPtr,IParam);
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);

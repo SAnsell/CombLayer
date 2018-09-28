@@ -45,8 +45,6 @@ class InnerPort :
 {
  private:
   
-  const int portIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double width;        ///< width of void
   double height;       ///< height of void

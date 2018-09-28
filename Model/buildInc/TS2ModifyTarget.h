@@ -119,8 +119,6 @@ class TS2ModifyTarget : public attachSystem::FixedComp,
 {
  private:
   
-  const int molyIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   // PLATES:
   std::vector<plateCut> PCut;  

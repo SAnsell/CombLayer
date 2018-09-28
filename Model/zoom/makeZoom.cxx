@@ -58,6 +58,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -211,48 +213,41 @@ makeZoom::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makeZoom","build");
   
-  int isoFlag(0);
+
   // Exit if no work to do:
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("Zoom")))
       return;
   
-  if (IParam.flag("isolate") && IParam.compValue("I",std::string("zoom")))
-    isoFlag=1;
-
   const size_t zsNumber(shutterSystem::BulkShield::zoomShutter);
-
   const shutterSystem::ZoomShutter* ZS=
     dynamic_cast<const shutterSystem::ZoomShutter*>
     (BulkObj.getShutter(zsNumber));
   if (!ZS)
-    ELog::EM<<"NO SHUTTER "<<ELog::endErr;
-
-  if (ZS)
-    {
-      const shutterSystem::BulkInsert* BOPtr=BulkObj.getInsert(zsNumber);
-      ZBend->addInsertCell("A",BOPtr->getInnerVoid());
-      ZBend->addInsertCell("B",BOPtr->getInnerVoid());
-      ZBend->addInsertCell("A",BOPtr->getOuterVoid());
-      ZBend->addInsertCell("B",BOPtr->getOuterVoid());
-      ZBend->addInsertCell("C",BOPtr->getOuterVoid());
-      ZBend->createAll(System,*ZS); 
-
-      ZChopper->addInsertCell(74123);
-      ZChopper->setMonoSurface(BulkObj.getMonoSurf());
-      ZChopper->createAll(System,*ZBend,*ZS);
-
-      ZDisk->addInsertCell(ZChopper->getVoidCell());
-      ZDisk->createAll(System,*ZChopper,0);
-      
-      ZCollimator->addInsertCell(74123);
-      ZCollimator->createAll(System,*ZChopper);
-
-      ZColInsert->createAll(System,ZCollimator->getVoidCell(),
-			    *ZCollimator);
-      
-      ZPrim->addInsertCell(74123);
-      ZPrim->createAll(System,*ZCollimator);
-    }
+    throw ColErr::InContainerError<size_t>(zsNumber,"Shutter number");
+  
+  const shutterSystem::BulkInsert* BOPtr=BulkObj.getInsert(zsNumber);
+  ZBend->addInsertCell("A",BOPtr->getInnerVoid());
+  ZBend->addInsertCell("B",BOPtr->getInnerVoid());
+  ZBend->addInsertCell("A",BOPtr->getOuterVoid());
+  ZBend->addInsertCell("B",BOPtr->getOuterVoid());
+  ZBend->addInsertCell("C",BOPtr->getOuterVoid());
+  ZBend->createAll(System,*ZS);
+  
+  ZChopper->addInsertCell(74123);
+  ZChopper->setMonoSurface(BulkObj.getMonoSurf());
+  ZChopper->createAll(System,*ZBend,*ZS);
+  
+  ZDisk->addInsertCell(ZChopper->getVoidCell());
+  ZDisk->createAll(System,*ZChopper,0);
+  
+  ZCollimator->addInsertCell(74123);
+  ZCollimator->createAll(System,*ZChopper);
+  
+  ZColInsert->createAll(System,ZCollimator->getVoidCell(),
+			*ZCollimator);
+  
+  ZPrim->addInsertCell(74123);
+  ZPrim->createAll(System,*ZCollimator);
   
   ZHut->addInsertCell(74123);
   ZHut->createAll(System,*ZPrim); 

@@ -63,6 +63,8 @@
 #include "PhysImp.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimPHITS.h"
@@ -141,14 +143,14 @@ importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
   ELog::RegMethod RegA("SimImportance[F]","importanceSim(MCNP)");
 
   physicsSystem::PhysicsCards& PC=System.getPC();      
-  WeightSystem::simulationImp(PC,System,IParam);
+  WeightSystem::simulationImp(System,IParam);
 
-  WeightSystem::ExtField(PC,IParam);
-  WeightSystem::FCL(PC,System,IParam);
-  WeightSystem::IMP(PC,System,IParam);
-  WeightSystem::DXT(PC,IParam);
-  WeightSystem::PWT(PC,IParam);
-  WeightSystem::EnergyCellCut(PC,System,IParam);
+  WeightSystem::ExtField(System,PC,IParam);
+  WeightSystem::FCL(System,PC,IParam);
+  WeightSystem::IMP(System,IParam);
+  WeightSystem::DXT(System,PC,IParam);
+  WeightSystem::PWT(System,PC,IParam);
+  WeightSystem::EnergyCellCut(System,IParam);
 
   mainSystem::renumberCells(System,IParam);
 

@@ -41,8 +41,6 @@ class BeamShutter : public attachSystem::ContainedComp,
 {
  private:
 
-  const int collIndex;          ///< Hole index
-  int cellIndex;                ///< Cell index
 
   double liftZStep;             ///< Lift value
 

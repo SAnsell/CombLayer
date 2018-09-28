@@ -60,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -90,8 +92,7 @@ ControlElement::ControlElement(const size_t XI,const size_t YI,
 			       const std::string& CKey) :
   FuelElement(XI,YI,Key),
   attachSystem::ContainedGroup("Track","Rod","Cap"),cntlKey(CKey),
-  controlIndex(ModelSupport::objectRegister::Instance().
-	       cell(ReactorGrid::getElementName(CKey,XI,YI)))
+  controlIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: Grid position
@@ -298,20 +299,20 @@ ControlElement::createObjects(Simulation& System)
   std::string Out;
 
   // First create the outer Al layers:
-  Out=ModelSupport::getComposite(SMap,controlIndex,surfIndex,
+  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
 				 " 23M -24M 25M 41 -31 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
   ContainedGroup::addOuterUnionSurf("Track",Out);      
-  Out=ModelSupport::getComposite(SMap,controlIndex,surfIndex,
+  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
 				 " 23M -24M 25M 32 -42 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
   ContainedGroup::addOuterUnionSurf("Track",Out);      
   // Top Cap
-  Out=ModelSupport::getComposite(SMap,controlIndex,surfIndex,
+  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
 				 " 23M -24M  32 -2M 16 -46");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
   ContainedGroup::addOuterUnionSurf("Cap",Out);      
-  Out=ModelSupport::getComposite(SMap,controlIndex,surfIndex,
+  Out=ModelSupport::getComposite(SMap,controlIndex,buildIndex,
 				 " 23M -24M 1M -31 16 -46");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
   ContainedGroup::addOuterUnionSurf("Cap",Out);      

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/SplitInner.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,9 +83,7 @@ namespace ts1System
 {
 
 SplitInner::SplitInner(const std::string& Key,const std::string& LKey) :
-  ts1System::CH4Layer(LKey),IKeyName(Key),
-  innerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(innerIndex+1)
+  ts1System::CH4Layer(LKey),IKeyName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,8 +95,8 @@ SplitInner::SplitInner(const std::string& Key,const std::string& LKey) :
 
 SplitInner::SplitInner(const SplitInner& A) : 
   ts1System::CH4Layer(A),
-  IKeyName(A.IKeyName),innerIndex(A.innerIndex),
-  cellIndex(A.cellIndex),innerNLayer(A.innerNLayer),
+  IKeyName(A.IKeyName),
+  innerNLayer(A.innerNLayer),
   thick(A.thick),mat(A.mat),temp(A.temp)
   /*!
     Copy constructor
@@ -116,7 +115,6 @@ SplitInner::operator=(const SplitInner& A)
   if (this!=&A)
     {
       ts1System::CH4Layer::operator=(A);
-      cellIndex=A.cellIndex;
       innerNLayer=A.innerNLayer;
       thick=A.thick;
       mat=A.mat;
@@ -170,14 +168,14 @@ SplitInner::populate(const FuncDataBase& Control)
 	}
       else 
 	{
-	  T=Control.EvalVar<double>
-	    (IKeyName+StrFunc::makeString("Thick",i+1));
+	  T=Control.EvalVar<double>(IKeyName+"Thick"+std::to_string(i+1));
 	}
       
       tval=Control.EvalVar<double>
-	(IKeyName+StrFunc::makeString("Temp",i+1));
-      matN=ModelSupport::EvalMat<int>(Control,
-	    IKeyName+StrFunc::makeString("Mat",i+1));
+	(IKeyName+"Temp"+std::to_string(i+1));
+      matN=ModelSupport::EvalMat<int>
+	(Control,IKeyName+"Mat"+std::to_string(i+1));
+
       TFront+=T;
       thick.push_back(TFront);
       temp.push_back(tval);
@@ -194,7 +192,7 @@ SplitInner::createSurfaces()
 {
   ELog::RegMethod RegA("SplitInner","createSurface");
   
-  int iLayer(innerIndex);
+  int iLayer(buildIndex);
 
   for(size_t i=0;i<innerNLayer;i++)
     {
@@ -216,14 +214,14 @@ SplitInner::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("SplitInner","createObjects");
 
-  int iLayer(innerIndex);
+  int iLayer(buildIndex);
 
   std::string Edge=
-    ModelSupport::getComposite(SMap,modIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   // front / back:
   HeadRule frontX,backX;
-  createFrontRule(LVec[0],modIndex,0,frontX);
-  createBackRule(LVec[0],modIndex,0,backX);
+  createFrontRule(LVec[0],buildIndex,0,frontX);
+  createBackRule(LVec[0],buildIndex,0,backX);
   std::string prevLayer=frontX.display();
   std::string Out;
   for(size_t i=0;i<innerNLayer;i++)

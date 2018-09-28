@@ -62,6 +62,8 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
@@ -74,11 +76,13 @@ namespace physicsSystem
 
   
 void
-FCLConstructor::processUnit(PhysicsCards& PC,
+FCLConstructor::processUnit(const objectGroups& OGrp,
+			    PhysicsCards& PC,
                             const mainSystem::inputParam& IParam,
                             const size_t index)
   /*!
     Set individual FCL based on Iparam
+    \param OGrp :: Object group						
     \param PC :: Simulation
     \param IParam :: input stream
     \param index :: wFCL set card
@@ -86,8 +90,6 @@ FCLConstructor::processUnit(PhysicsCards& PC,
 {
   ELog::RegMethod RegA("FCLConstructor","processUnit");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
     
   const double value=IParam.getValueError<double>
     ("wFCL",index,0,"No fractional for wFCL");
@@ -107,7 +109,7 @@ FCLConstructor::processUnit(PhysicsCards& PC,
         ("wFCL",index,3,"No objName for wFCL");
       
       const std::vector<int> Cells=
-        OR.getObjectRange(objName);
+        OGrp.getObjectRange(objName);
       
       if (Cells.empty())
         throw ColErr::InContainerError<std::string>

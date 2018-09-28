@@ -3,7 +3,7 @@
  
  * File:   delft/SwimingPool.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,9 +84,7 @@ namespace delftSystem
 
 SwimingPool::SwimingPool(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1),
-  attachSystem::CellMap(),
-  poolIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(poolIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,7 +94,6 @@ SwimingPool::SwimingPool(const std::string& Key)  :
 SwimingPool::SwimingPool(const SwimingPool& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  poolIndex(A.poolIndex),cellIndex(A.cellIndex),
   base(A.base),surface(A.surface),
   waterMat(A.waterMat)
   /*!
@@ -116,7 +115,6 @@ SwimingPool::operator=(const SwimingPool& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       base=A.base;
       surface=A.surface;
       waterMat=A.waterMat;
@@ -191,45 +189,45 @@ SwimingPool::createSurfaces()
   ELog::RegMethod RegA("SwimingPool","createSurfaces");
 
   // Pool layer
-  ModelSupport::buildPlane(SMap,poolIndex+1,Origin-Y*frontWidth,Y);
-  ModelSupport::buildPlane(SMap,poolIndex+2,Origin+Y*backWidth,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*frontWidth,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*backWidth,Y);
 
 
-  ModelSupport::buildPlane(SMap,poolIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(backWidth+doorWidth),Y);
   
-  ModelSupport::buildPlane(SMap,poolIndex+3,Origin-X*beamSide/2.0,X);
-  ModelSupport::buildPlane(SMap,poolIndex+13,Origin-X*extendBeamSide/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*beamSide/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*extendBeamSide/2.0,X);
 
-  ModelSupport::buildPlane(SMap,poolIndex+4,Origin+X*beamSide/2.00,X);
-  ModelSupport::buildPlane(SMap,poolIndex+14,Origin+X*extendBeamSide/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*beamSide/2.00,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*extendBeamSide/2.0,X);
 
   // door
-  ModelSupport::buildPlane(SMap,poolIndex+23,Origin-X*doorLength/2.0,X);
-  ModelSupport::buildPlane(SMap,poolIndex+24,Origin+X*doorLength/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*doorLength/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*doorLength/2.0,X);
 
 
-  ModelSupport::buildPlane(SMap,poolIndex+5,Origin-Z*base,Z);
-  ModelSupport::buildPlane(SMap,poolIndex+6,Origin+Z*surface,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*base,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*surface,Z);
 
   // Front angles
-  ModelSupport::buildPlane(SMap,poolIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+7,
 			   Origin-X*beamSide/2.0-Y*beamSideFrontLen,
 			   Origin-X*beamSide/2.0-Y*beamSideFrontLen+Z,
 			   Origin-X*frontLength/2.0-Y*frontWidth,
 			   X);
-  ModelSupport::buildPlane(SMap,poolIndex+8,
+  ModelSupport::buildPlane(SMap,buildIndex+8,
 			   Origin+X*beamSide/2.0-Y*beamSideFrontLen,
 			   Origin+X*beamSide/2.0-Y*beamSideFrontLen+Z,
 			   Origin+X*frontLength/2.0-Y*frontWidth,
 			   X);
   // Back angles
-  ModelSupport::buildPlane(SMap,poolIndex+17,
+  ModelSupport::buildPlane(SMap,buildIndex+17,
 			   Origin-X*beamSide/2.0+Y*beamSideBackLen,
 			   Origin-X*beamSide/2.0+Y*beamSideBackLen+Z,
 			   Origin-X*extendBeamSide/2.0+Y*beamSideExtendLen,
 			   X);
-  ModelSupport::buildPlane(SMap,poolIndex+18,
+  ModelSupport::buildPlane(SMap,buildIndex+18,
    			   Origin+X*beamSide/2.0+Y*beamSideBackLen,
    			   Origin+X*beamSide/2.0+Y*beamSideBackLen+Z,
    			   Origin+X*extendBeamSide/2.0+Y*beamSideExtendLen,
@@ -253,7 +251,7 @@ SwimingPool::createObjects(Simulation& System)
   ELog::RegMethod RegA("SwimingPool","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,poolIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 (-2 : (23 -24 -12)) 7 -8 13 -14 "
 				 " (17:3) (-18:-4) 5 -6 ");
 

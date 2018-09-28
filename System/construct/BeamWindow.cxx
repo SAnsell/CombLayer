@@ -3,7 +3,7 @@
  
  * File:   construct/BeamWindow.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +83,7 @@ namespace ts1System
 {
 
 BeamWindow::BeamWindow(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
-  bwIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bwIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +92,6 @@ BeamWindow::BeamWindow(const std::string& Key)  :
 
 BeamWindow::BeamWindow(const BeamWindow& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  bwIndex(A.bwIndex),cellIndex(A.cellIndex),
   incThick1(A.incThick1),waterThick(A.waterThick),
   incThick2(A.incThick2),heMat(A.heMat),
   inconelMat(A.inconelMat),waterMat(A.waterMat)
@@ -114,7 +113,6 @@ BeamWindow::operator=(const BeamWindow& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       incThick1=A.incThick1;
       waterThick=A.waterThick;
       incThick2=A.incThick2;
@@ -185,11 +183,11 @@ BeamWindow::createSurfaces()
   ELog::RegMethod RegA("BeamWindow","createSurface");
 
   // Thick
-  ModelSupport::buildPlane(SMap,bwIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,bwIndex+2,Origin+Y*incThick1,Y);
-  ModelSupport::buildPlane(SMap,bwIndex+3,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*incThick1,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin+
 			   Y*(incThick1+waterThick),Y);
-  ModelSupport::buildPlane(SMap,bwIndex+4,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+
 			   Y*(incThick1+waterThick+incThick2),Y);
 
   return;
@@ -206,18 +204,18 @@ BeamWindow::createObjects(Simulation& System)
 
   // Master box: 
   std::string Out= 
-    ModelSupport::getComposite(SMap,bwIndex,"1 -4 ");
+    ModelSupport::getComposite(SMap,buildIndex,"1 -4 ");
   addOuterSurf(Out);
 
   const std::string Boundary=getCompContainer();
   // Inconel1 
-  Out=ModelSupport::getComposite(SMap,bwIndex,"1 -2  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2  ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,inconelMat,0.0,Out+Boundary));
   // Water 
-  Out=ModelSupport::getComposite(SMap,bwIndex,"2 -3 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -3 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+Boundary));
   // Inconel2 
-  Out=ModelSupport::getComposite(SMap,bwIndex,"3 -4 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,inconelMat,0.0,Out+Boundary));
 
   return;
@@ -230,8 +228,8 @@ BeamWindow::createLinks()
   */
 {
   // set Links:
-  FixedComp::setLinkSurf(0,-SMap.realSurf(bwIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(bwIndex+4));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*(incThick1+waterThick+incThick2),Y);

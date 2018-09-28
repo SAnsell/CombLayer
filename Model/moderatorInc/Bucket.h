@@ -41,8 +41,6 @@ class Bucket :
 {
  private:
   
-  const int cdIndex;           ///< Index of surface offset
-  int cellIndex;               ///< Cell index
  
   double radius;               ///< radius of hole
   double thickness;            ///< Thickness

@@ -59,7 +59,7 @@ class ELPTConstructor
   ELPTConstructor& operator=(const ELPTConstructor&);
   ~ELPTConstructor() {}  ///< Destructor
 
-  void processUnit(PhysicsCards&,const Simulation&,
+  void processUnit(SimMCNP&,
 		   const mainSystem::inputParam&,
 		   const size_t);
 };

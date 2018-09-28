@@ -58,6 +58,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -121,9 +123,6 @@ makeSingleItem::build(Simulation& System,
   ELog::RegMethod RegA("makeSingleItem","build");
 
   int voidCell(74123);
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::shared_ptr<insertSystem::insertSphere> 
     Target(new insertSystem::insertSphere("Target"));
@@ -133,9 +132,9 @@ makeSingleItem::build(Simulation& System,
     Tube(new insertSystem::insertPlate("Tube"));
 
 	    
-  OR.addObject(Target);
-  OR.addObject(Tube);
-  OR.addObject(Surround);
+  // OR.addObject(Target);
+  // OR.addObject(Tube);
+  // OR.addObject(Surround);
 	  
   Target->addInsertCell(voidCell);
   Target->createAll(System,World::masterOrigin(),0);

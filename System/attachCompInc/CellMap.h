@@ -99,6 +99,8 @@ class CellMap  : public BaseMap
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
 
+  void renumberCell(const int,const int);
+
   // Insert the cellMap object into the cell
   void insertCellMapInCell(Simulation&,const std::string&,
 			   const int) const;
@@ -126,6 +128,7 @@ class CellMap  : public BaseMap
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
 
+  
   void makeCell(const std::string&,
 		Simulation&,const int,const int,const double,
 		const std::string&);

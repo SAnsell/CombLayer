@@ -45,8 +45,6 @@ class ChopperHousing :
 {
  private:
   
-  const int houseIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double voidHeight;            ///< void height from chopper rot centre
   double voidWidth;             ///< void width [across]

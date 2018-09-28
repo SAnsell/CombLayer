@@ -61,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -85,8 +87,6 @@ PinHole::PinHole(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
-  pinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pinIndex+1),
   CollA(new constructSystem::RotaryCollimator(Key+"CollA")),
   CollB(new constructSystem::RotaryCollimator(Key+"CollB")),
   JawX(new constructSystem::Jaws(Key+"JawVert")),
@@ -110,7 +110,7 @@ PinHole::PinHole(const PinHole& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  pinIndex(A.pinIndex),cellIndex(A.cellIndex),CollA(A.CollA),
+  CollA(A.CollA),
   CollB(A.CollB),JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
   length(A.length)
   /*!
@@ -132,7 +132,6 @@ PinHole::operator=(const PinHole& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       CollA=A.CollA;
       CollB=A.CollB;
       JawX=A.JawX;
@@ -192,9 +191,9 @@ PinHole::createSurfaces()
   ELog::RegMethod RegA("PinHole","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,pinIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,pinIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildCylinder(SMap,pinIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   return;
 }
@@ -210,7 +209,7 @@ PinHole::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,pinIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
@@ -235,12 +234,12 @@ PinHole::createLinks()
   FixedComp::setConnect(4,Origin-Z*radius,-Z);
   FixedComp::setConnect(5,Origin+Z*radius,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(pinIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(pinIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(pinIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(pinIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(pinIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(pinIndex+7));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
   
   return;
 }

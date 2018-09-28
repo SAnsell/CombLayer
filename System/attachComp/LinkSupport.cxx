@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,8 @@
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "objectRegister.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "LinkSupport.h"
 
 namespace attachSystem
@@ -66,7 +67,8 @@ namespace attachSystem
 
   
 int
-getAttachPoint(const std::string& FCName,
+getAttachPoint(const objectGroups& OGrp,
+	       const std::string& FCName,
 	       const std::string& linkName,
 	       Geometry::Vec3D& Pt,
 	       Geometry::Vec3D& YAxis)
@@ -74,6 +76,7 @@ getAttachPoint(const std::string& FCName,
     Takes the linkName and the fixed object and converts
     this into the direction and point.
     - Note that link points are +1 offset and 
+    \param OGrp :: Object groups
     \param FCName :: Name for the fixed object
     \param linkName :: Name/number for the link point
     \param Pt :: Link point [out]
@@ -83,11 +86,9 @@ getAttachPoint(const std::string& FCName,
 {
   ELog::RegMethod RegA("LinkSupport","getAttachPoint");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* FC=
-    OR.getObject<attachSystem::FixedComp>(FCName);
+    OGrp.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
   const long int index=FC->getSideIndex(linkName);
@@ -97,7 +98,8 @@ getAttachPoint(const std::string& FCName,
 }
 
 int
-getAttachPointWithXYZ(const std::string& FCName,
+getAttachPointWithXYZ(const objectGroups& OGrp,
+		      const std::string& FCName,
                       const std::string& linkName,
                       Geometry::Vec3D& Pt,
                       Geometry::Vec3D& XAxis,
@@ -118,11 +120,9 @@ getAttachPointWithXYZ(const std::string& FCName,
 {
   ELog::RegMethod RegA("LinkSupport","getAttachPointWithXYZ");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const FixedComp* FC=
-    OR.getObject<attachSystem::FixedComp>(FCName);
+    OGrp.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
   const long int index=FC->getSideIndex(linkName);
@@ -138,16 +138,20 @@ getAttachPointWithXYZ(const std::string& FCName,
 }
 
 size_t 
-getPoint(const std::vector<std::string>& StrItem,
+getPoint(const objectGroups& OGrp,
+	 const std::vector<std::string>& StrItem,
 	 const size_t index,
 	 Geometry::Vec3D& Pt)
-/*!
-    Get a vector based on a StrItem  ether using a
+  /*!
+    Get a vector based on a StrItem either using a
     a name unit or a value.
     \param StrItem :: List of strings
     \param index :: Place to start in list
     \param Pt :: Point found
-    \return 1 on success / 0 on failure
+    \retval  0 on failure
+    \retval  1 basic point
+    \retval  2 FixedComp+ axis
+    \retval  3 itemed evector
    */
 {
   ELog::RegMethod RegA("LinkSupport[F]","getPoint");
@@ -162,7 +166,7 @@ getPoint(const std::vector<std::string>& StrItem,
     {
       Geometry::Vec3D YAxis;  
       if (attachSystem::getAttachPoint
-	  (StrItem[index],StrItem[index+1],Pt,YAxis))
+	  (OGrp,StrItem[index],StrItem[index+1],Pt,YAxis))
 	return 2;
     }
   

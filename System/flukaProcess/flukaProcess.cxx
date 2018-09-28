@@ -69,6 +69,8 @@
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -88,9 +90,12 @@ namespace flukaSystem
 {
 
 std::set<int>
-getActiveUnit(const int typeFlag,const std::string& cellM)
+getActiveUnit(const objectGroups& OGrp,
+	      const int typeFlag,
+	      const std::string& cellM)
   /*!
-    Based on the typeFlag get teh cell/material/particle set
+    Based on the typeFlag get the cell/material/particle set
+    \param OGrp :: Active Group
     \param typeFlag :: -1 : partilce / cell /material 
     \param cellM :: string to use as id
     \return set of index(s0
@@ -103,7 +108,7 @@ getActiveUnit(const int typeFlag,const std::string& cellM)
     case -1:
       return getActiveParticle(cellM);
     case 0:
-      return getActiveCell(cellM);
+      return getActiveCell(OGrp,cellM);
     }
   return getActiveMaterial(cellM);
 }
@@ -168,21 +173,18 @@ getActiveMaterial(std::string material)
 }
 
 std::set<int>
-getActiveCell(const std::string& cell)
+getActiveCell(const objectGroups& OGrp,
+	      const std::string& cell)
   /*!
     Given a cell find the active cells
+    \param OGrp :: Active group						
     \param cell : cell0 name to use
     \return set of active components
   */
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveCell");
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
-  const std::vector<int> Cells=OR.getObjectRange(cell);
-  if (Cells.empty())
-    throw ColErr::InContainerError<std::string>(cell,"Empty cell");
+  const std::vector<int> Cells=OGrp.getObjectRange(cell);
   std::set<int> activeCell(Cells.begin(),Cells.end());
 
   activeCell.erase(1);

@@ -44,9 +44,6 @@ class DiskPreMod : public attachSystem::ContainedComp,
 {
  private:
 
-  const int modIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   double outerRadius;             ///< Outer radius of Be Zone
 
   std::vector<double> radius;         ///< cylinder radii [additive]

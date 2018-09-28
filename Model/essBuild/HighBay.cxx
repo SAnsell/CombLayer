@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -85,14 +87,47 @@ namespace essSystem
 
 HighBay::HighBay(const std::string& key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  highIndex(ModelSupport::objectRegister::Instance().cell(key)),
-  cellIndex(highIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param key :: Name of component
   */
 {}
+
+HighBay::HighBay(const HighBay& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  baseName(A.baseName),length(A.length),height(A.height),roofThick(A.roofThick),
+  wallMat(A.wallMat),roofMat(A.roofMat),curtainCut(A.curtainCut)
+  /*!
+    Copy constructor
+    \param A :: HighBay to copy
+  */
+{}
+
+HighBay&
+HighBay::operator=(const HighBay& A)
+  /*!
+    Assignment operator
+    \param A :: HighBay to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      length=A.length;
+      height=A.height;
+      roofThick=A.roofThick;
+      wallMat=A.wallMat;
+      roofMat=A.roofMat;
+      curtainCut=A.curtainCut;
+    }
+  return *this;
+}
 
 HighBay::~HighBay() 
   /*!
@@ -148,10 +183,10 @@ HighBay::createSurfaces(const Bunker& leftBunker,
 
   const int leftSurfRoof=leftBunker.getSurf("roofOuter");
   
-  ModelSupport::buildShiftedPlane(SMap,highIndex+6,
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+6,
 				  SMap.realPtr<Geometry::Plane>(leftSurfRoof),
 				  height);
-  ModelSupport::buildShiftedPlane(SMap,highIndex+16,
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+16,
 				  SMap.realPtr<Geometry::Plane>(leftSurfRoof),
 				  height+roofThick);
   
@@ -159,15 +194,15 @@ HighBay::createSurfaces(const Bunker& leftBunker,
   if (rightSurfRoof!=leftSurfRoof)
     {
       ModelSupport::buildShiftedPlane
-	(SMap,highIndex+106,SMap.realPtr<Geometry::Plane>(rightSurfRoof),
+	(SMap,buildIndex+106,SMap.realPtr<Geometry::Plane>(rightSurfRoof),
 	 height);
       
       ModelSupport::buildShiftedPlane
-	(SMap,highIndex+116,SMap.realPtr<Geometry::Plane>(rightSurfRoof),
+	(SMap,buildIndex+116,SMap.realPtr<Geometry::Plane>(rightSurfRoof),
 	 height+roofThick);
     }
 
-  ModelSupport::buildPlane(SMap,highIndex+2,Origin+Y*length,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);  
   return;
 }
 
@@ -195,7 +230,7 @@ HighBay::createObjects(Simulation& System,
   const HeadRule bunkerTop=leftBunker.getSurfRules("roofOuter");
 
   // void area
-  Out=ModelSupport::getComposite(SMap,highIndex," -2 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -6 ");
   Out+=leftWallInner.display()+rightWallInner.display();
   Out+=frontCut;
   Out+=bunkerTop.display();
@@ -203,24 +238,24 @@ HighBay::createObjects(Simulation& System,
 				   Out+curtainCut.complement().display()));
 
   // Roof area
-  Out=ModelSupport::getComposite(SMap,highIndex," -2 6 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 6 -16 ");
   Out+=leftWallInner.display()+rightWallInner.display();
   Out+=frontCut;
   System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
 
   // Left wall
-  Out=ModelSupport::getComposite(SMap,highIndex," -2 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
   Out+=leftWallOuter.display()+leftWallInner.complement().display();
   Out+=bunkerTop.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontCut));
   // Right wall
-  Out=ModelSupport::getComposite(SMap,highIndex," -2 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
   Out+=rightWallOuter.display()+rightWallInner.complement().display();
   Out+=bunkerTop.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontCut));
 		 
   
-  Out=ModelSupport::getComposite(SMap,highIndex," -2 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
   Out+=leftWallOuter.display()+rightWallOuter.display();
   Out+=frontCut;
   Out+=bunkerTop.display();

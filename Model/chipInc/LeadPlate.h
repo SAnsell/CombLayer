@@ -45,8 +45,6 @@ class LeadPlate : public attachSystem::ContainedComp,
 {
  private:
   
-  const int leadIndex;      ///< Index of surface offset
-  int cellIndex;            ///< Cell index
   int activeFlag;           ///< Variables populated
 
   double thick;             ///< Full Thickness

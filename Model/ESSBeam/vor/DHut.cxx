@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/DHut.cxx
+ * File:   vor/DHut.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +82,7 @@ namespace essSystem
 
 DHut::DHut(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -161,12 +160,12 @@ DHut::createSurfaces()
   ELog::RegMethod RegA("DHut","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
   
   // DCut:
@@ -175,52 +174,52 @@ DHut::createSurfaces()
   Geometry::Vec3D BPt(Origin+Y*voidLength/2.0+X*voidBackCut);
   Geometry::Vec3D BSidePt(Origin+X*(voidWidth/2.0)+Y*voidBackStep);
 
-  ModelSupport::buildPlane(SMap,hutIndex+11,APt,ASidePt,APt+Z,X);
-  ModelSupport::buildPlane(SMap,hutIndex+12,BPt,BSidePt,BPt+Z,X);
+  ModelSupport::buildPlane(SMap,buildIndex+11,APt,ASidePt,APt+Z,X);
+  ModelSupport::buildPlane(SMap,buildIndex+12,BPt,BSidePt,BPt+Z,X);
 
 
   // FE WALLS
-  ModelSupport::buildPlane(SMap,hutIndex+101,
+  ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin-Y*(voidLength/2.0+feThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+102,
+  ModelSupport::buildPlane(SMap,buildIndex+102,
 			   Origin+Y*(voidLength/2.0+feThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+103,
+  ModelSupport::buildPlane(SMap,buildIndex+103,
 			   Origin-X*(voidWidth/2.0+feThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+104,
+  ModelSupport::buildPlane(SMap,buildIndex+104,
 			   Origin+X*(voidWidth/2.0+feThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+105,
+  ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-Z*(voidDepth+feThick),Z);
-  ModelSupport::buildPlane(SMap,hutIndex+106,
+  ModelSupport::buildPlane(SMap,buildIndex+106,
 			   Origin+Z*(voidHeight+feThick),Z);  
 
   
 
   const Geometry::Plane* PA=
-    SMap.realPtr<Geometry::Plane>(hutIndex+11);
+    SMap.realPtr<Geometry::Plane>(buildIndex+11);
   const Geometry::Plane* PB=
-    SMap.realPtr<Geometry::Plane>(hutIndex+12);
-  ModelSupport::buildShiftedPlane(SMap,hutIndex+111,PA,feThick);
-  ModelSupport::buildShiftedPlane(SMap,hutIndex+112,PB,feThick);
+    SMap.realPtr<Geometry::Plane>(buildIndex+12);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+111,PA,feThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+112,PB,feThick);
 
   
   // CONC WALLS
-  ModelSupport::buildPlane(SMap,hutIndex+201,
+  ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin-Y*(voidLength/2.0+feThick+concThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+202,
+  ModelSupport::buildPlane(SMap,buildIndex+202,
 			   Origin+Y*(voidLength/2.0+feThick+concThick),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+203,
+  ModelSupport::buildPlane(SMap,buildIndex+203,
 			   Origin-X*(voidWidth/2.0+feThick+concThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+204,
+  ModelSupport::buildPlane(SMap,buildIndex+204,
 			   Origin+X*(voidWidth/2.0+feThick+concThick),X);
-  ModelSupport::buildPlane(SMap,hutIndex+205,
+  ModelSupport::buildPlane(SMap,buildIndex+205,
 			   Origin-Z*(voidDepth+feThick+concThick),Z);
-  ModelSupport::buildPlane(SMap,hutIndex+206,
+  ModelSupport::buildPlane(SMap,buildIndex+206,
 			   Origin+Z*(voidHeight+feThick+concThick),Z);  
 
   
 
-  ModelSupport::buildShiftedPlane(SMap,hutIndex+211,PA,concThick+feThick);
-  ModelSupport::buildShiftedPlane(SMap,hutIndex+212,PB,concThick+feThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+211,PA,concThick+feThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+212,PB,concThick+feThick);
   
   return;
 }
@@ -236,18 +235,18 @@ DHut::createObjects(Simulation& System)
 
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,hutIndex,"1 -2 3 -4 5 -6 -11 -12 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 -11 -12 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "101 -102 103 -104 105 -106  -111 -112 "
   				 "(-1:2:-3:4:-5: 6 :11 : 12)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
 
   setCell("Steel",cellIndex-1);
     
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				   "201 -202 203 -204 205 -206 -211 -212 "
 				 "(-101:102:-103:104:-105: 106 :111 :112)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
@@ -255,7 +254,7 @@ DHut::createObjects(Simulation& System)
   
   
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -202 203 -204 205 -206 -211 -212 ");
   addOuterSurf(Out);      
 
@@ -283,12 +282,12 @@ DHut::createLinks()
   innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
   innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(hutIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(hutIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
+  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   
     // OUTER VOID
@@ -300,12 +299,12 @@ DHut::createLinks()
   midFC.setConnect(4,Origin-Z*(TThick+voidDepth),-Z);
   midFC.setConnect(5,Origin+Z*(TThick+voidHeight),Z);  
 
-  midFC.setLinkSurf(0,-SMap.realSurf(hutIndex+101));
-  midFC.setLinkSurf(1,SMap.realSurf(hutIndex+102));
-  midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+103));
-  midFC.setLinkSurf(3,SMap.realSurf(hutIndex+104));
-  midFC.setLinkSurf(4,-SMap.realSurf(hutIndex+105));
-  midFC.setLinkSurf(5,SMap.realSurf(hutIndex+106));
+  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+101));
+  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+102));
+  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+103));
+  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+104));
+  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+105));
+  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+106));
 
   // OUTER VOID
   TThick+=concThick;
@@ -316,12 +315,12 @@ DHut::createLinks()
   outerFC.setConnect(4,Origin-Z*(TThick+voidDepth),-Z);
   outerFC.setConnect(5,Origin+Z*(TThick+voidHeight),Z);  
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+201));
-  outerFC.setLinkSurf(1,SMap.realSurf(hutIndex+202));
-  outerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+203));
-  outerFC.setLinkSurf(3,SMap.realSurf(hutIndex+204));
-  outerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+205));
-  outerFC.setLinkSurf(5,SMap.realSurf(hutIndex+206));
+  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+201));
+  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+202));
+  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+203));
+  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+204));
+  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+205));
+  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+206));
 
   
   return;

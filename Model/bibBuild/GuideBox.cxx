@@ -3,7 +3,7 @@
  
  * File:   bibBuild/GuideBox.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,13 @@
 #include "FuncDataBase.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -75,9 +76,7 @@ namespace bibSystem
 {
 
 GuideBox::GuideBox(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -86,7 +85,6 @@ GuideBox::GuideBox(const std::string& Key) :
 
 GuideBox::GuideBox(const GuideBox& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  guideIndex(A.guideIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),length(A.length),
   NiRadius(A.NiRadius),NiThickness(A.NiThickness),mat(A.mat)
   /*!
@@ -107,7 +105,6 @@ GuideBox::operator=(const GuideBox& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -178,22 +175,22 @@ GuideBox::createSurfaces()
   // Match cannot be used since multi-component system [To be fixed]
 
   // divider surface
-  ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);     
-  ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);    
-  ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*width/2.0,Z);
-  ModelSupport::buildPlane(SMap,guideIndex+6,Origin+Z*width/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);     
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);    
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*width/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*width/2.0,Z);
 
-  ModelSupport::buildCylinder(SMap,guideIndex+7,Origin,Z,NiRadius);    
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,NiRadius);    
 
-  ModelSupport::buildPlane(SMap,guideIndex+13,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-
 			   X*(width/2.0-NiThickness),X);
-  ModelSupport::buildPlane(SMap,guideIndex+14,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+
 			   X*(width/2.0-NiThickness),X);
-  ModelSupport::buildPlane(SMap,guideIndex+15,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-
 			   Z*(width/2.0-NiThickness),Z);
-  ModelSupport::buildPlane(SMap,guideIndex+16,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+
 			   Z*(width/2.0-NiThickness),Z);
 
   return; 
@@ -216,24 +213,24 @@ GuideBox::createObjects(Simulation& System,
 
   const std::string boundSurf=FC.getLinkString(sideIndex);
   
-  Out=ModelSupport::getComposite(SMap,guideIndex," -7 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 3 -4 5 -6 ");
   Out+=boundSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addBoundarySurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,guideIndex,"1 -2 7 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addBoundaryUnionSurf(Out);
 
   // Inner boundary surface [For insert devices]
 
 
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-2 7 3 -4 5 -6 (-13:14:-15:16)");
   Out+=boundSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ");
   Out+=boundSurf;
   addOuterSurf(Out);
 
@@ -252,22 +249,22 @@ GuideBox::createLinks()
   // Wrapper layer
   // Index : Point :: Normal
   FixedComp::setConnect(0,Origin,-Y); 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(guideIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*width/2.0+Y*10.0,-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin+X*width/2.0+Y*10.0,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(guideIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*height/2.0,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*height/2.0,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   
   return;

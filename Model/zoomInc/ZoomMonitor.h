@@ -47,8 +47,6 @@ class ZoomMonitor : public attachSystem::FixedOffset,
 {
  private:
   
-  const int monIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double viewThick;             ///< Thickness of wall
   double wallThick;             ///< Thickness of wall

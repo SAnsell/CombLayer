@@ -3,7 +3,7 @@
  
  * File:   photonInc/B4CCollimator.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,6 @@ class B4CCollimator : public attachSystem::ContainedComp,
    public attachSystem::FixedOffset
 {
  private:
-
-  const int colIndex;         ///< Index of surface offset
-  int cellIndex;              ///< Cell index
 
   double radius;              ///< Outer volume
   double length;              ///< Length of object

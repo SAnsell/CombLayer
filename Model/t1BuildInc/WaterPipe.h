@@ -39,8 +39,6 @@ class WaterPipe : public attachSystem::FixedComp
 {
  private:
   
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   ModelSupport::PipeLine Inlet;   ///< Inlet water pipe
   ModelSupport::PipeLine Outlet;  ///< Outlet water pipe

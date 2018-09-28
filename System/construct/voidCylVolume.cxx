@@ -58,6 +58,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -75,8 +77,7 @@ namespace constructSystem
 
 voidCylVolume::voidCylVolume(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0),
-  voidIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(voidIndex+1),nSegment(0)
+  nSegment(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,7 +86,6 @@ voidCylVolume::voidCylVolume(const std::string& Key) :
 
 voidCylVolume::voidCylVolume(const voidCylVolume& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  voidIndex(A.voidIndex),cellIndex(A.cellIndex),
   nSegment(A.nSegment),radius(A.radius),thick(A.thick),
   height(A.height)
   /*!
@@ -106,7 +106,6 @@ voidCylVolume::operator=(const voidCylVolume& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       nSegment=A.nSegment;
       radius=A.radius;
       thick=A.thick;
@@ -167,12 +166,12 @@ voidCylVolume::createSurfaces()
   ELog::RegMethod RegA("voidCylVolume","createSurfaces");
 
 
-  ModelSupport::buildPlane(SMap,voidIndex+5,Origin-Z*(height/2.0),Z);  
-  ModelSupport::buildPlane(SMap,voidIndex+6,Origin+Z*(height/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
 
   const double angleStep(2.0*M_PI/static_cast<double>(nSegment));  
-  int SI(voidIndex+11);
-  int PI(voidIndex+111);
+  int SI(buildIndex+11);
+  int PI(buildIndex+111);
   double angle(0.0);
   double plateAngle(angleStep/2.0);
 
@@ -202,17 +201,17 @@ voidCylVolume::createObjects(Simulation& System)
 
   std::string Out;
   
-  int SI(voidIndex+10);
+  int SI(buildIndex+10);
   for(size_t i=1;i<nSegment;i++)
     {
-      Out=ModelSupport::getComposite(SMap,voidIndex,SI,
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				     "5 -6  1M -2M 101M -201M");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addOuterUnionSurf(Out);
       SI++;
     }
   // Join
-  Out=ModelSupport::getComposite(SMap,voidIndex,SI,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "5 -6  1M -11 101M -201M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addOuterUnionSurf(Out);
@@ -229,8 +228,8 @@ voidCylVolume::createLinks()
   ELog::RegMethod RegA("voidCylVolume","createLinks");
   setNConnect(nSegment+2);
 
-  const double angleStep(2.0*M_PI/voidIndex);  
-  int PI(voidIndex+111);
+  const double angleStep(2.0*M_PI/buildIndex);  
+  int PI(buildIndex+111);
   double plateAngle(angleStep/2.0);
 
   for(size_t i=0;i<nSegment;i++)

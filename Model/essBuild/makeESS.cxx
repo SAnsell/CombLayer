@@ -59,6 +59,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -418,9 +420,6 @@ makeESS::buildIradComponent(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","buildIradComponent");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const size_t NSet=IParam.setCnt("iradObject");
   for(size_t j=0;j<NSet;j++)
     {
@@ -443,13 +442,12 @@ makeESS::buildIradComponent(Simulation& System,
           std::shared_ptr<IradCylinder>
             IRadComp(new IradCylinder(objectName));
           const attachSystem::FixedComp* FC=
-            OR.getObject<attachSystem::FixedComp>(compName);
+            System.getObject<attachSystem::FixedComp>(compName);
           if (!FC)
             throw ColErr::InContainerError<std::string>
               (compName,"Component not found");
           const long int linkPt=attachSystem::getLinkNumber(linkName);
           
-          OR.addObject(IRadComp);
           IRadComp->createAll(System,*FC,linkPt);
           attachSystem::addToInsertLineCtrl(System,*FC,*IRadComp);
         }
@@ -482,8 +480,6 @@ makeESS::buildLowButterfly(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("LowFly"));
@@ -491,7 +487,6 @@ makeESS::buildLowButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
   
   LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
   LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
   
   return;
@@ -506,15 +501,12 @@ makeESS::buildTopButterfly(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
   BM->setRadiusX(Reflector->getRadius());
 
   TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
 
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
@@ -529,15 +521,12 @@ makeESS::buildLowPancake(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildLowPancake");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::shared_ptr<PancakeModerator> BM
     (new essSystem::PancakeModerator("LowCake"));
   BM->setRadiusX(Reflector->getRadius());
 
   LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
   LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
   return;
 }
@@ -552,14 +541,11 @@ makeESS::buildTopPancake(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildTopPancake");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::shared_ptr<PancakeModerator> BM
     (new essSystem::PancakeModerator("TopCake"));
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
   
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
@@ -574,14 +560,11 @@ makeESS::buildLowBox(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildLowBox");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::shared_ptr<BoxModerator> BM
     (new essSystem::BoxModerator("LowBox"));
   BM->setRadiusX(Reflector->getRadius());
   LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
   LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
   return;
 }
@@ -596,14 +579,11 @@ makeESS::buildTopBox(Simulation& System)
 {
   ELog::RegMethod RegA("makeESS","buildTopBox");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   std::shared_ptr<BoxModerator> BM
     (new essSystem::BoxModerator("TopBox"));
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
   
   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
   return;
@@ -618,13 +598,11 @@ makeESS::buildF5Collimator(Simulation& System,const size_t nF5)
  */
 {
   ELog::RegMethod RegA("makeESS", "buildF5Collimator");
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
   for (size_t i=0; i<nF5; i++)
     {
       std::shared_ptr<F5Collimator>
         F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-      OR.addObject(F5);
       F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
       F5->createAll(System,World::masterOrigin());
       attachSystem::addToInsertSurfCtrl(System,*ABunker,*F5);
@@ -646,8 +624,6 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","buildBunkerFeedThrough");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const size_t NSet=IParam.setCnt("bunkerFeed");
 
@@ -680,7 +656,6 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           
           std::shared_ptr<BunkerFeed> BF
             (new BunkerFeed("BunkerFeed",j));
-          OR.addObject(BF);
           BF->createAll(System,*BPtr,segNumber,feedName);  
           
           bFeedArray.push_back(BF);
@@ -702,8 +677,6 @@ makeESS::buildBunkerChicane(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","buildBunkerChicane");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const size_t NSet=IParam.setCnt("bunkerChicane");
 
@@ -731,7 +704,6 @@ makeESS::buildBunkerChicane(Simulation& System,
 
       std::shared_ptr<Chicane> CF
         (new Chicane("BunkerChicane"+StrFunc::makeString(j)));
-      OR.addObject(CF);
       CF->addInsertCell(74123);
 
       // Positioned relative to segment:
@@ -746,7 +718,7 @@ makeESS::buildBunkerChicane(Simulation& System,
 	    IParam.getValueError<std::string>
 	    ("bunkerChicane",j,2,"SegmentNumber "+errMess);
 	  const attachSystem::FixedComp* FCPtr=
-	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
+	    System.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
 
 	  const long int linkIndex=FCPtr->getSideIndex(linkName);
           CF->createAll(System,*FCPtr,linkIndex);

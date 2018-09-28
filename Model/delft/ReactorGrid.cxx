@@ -69,6 +69,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -229,7 +231,7 @@ ReactorGrid::getElementName(const std::string& Name,const size_t I,
   
   std::string Out(Name);
   Out+=StrFunc::indexToAlpha(I);
-  Out+=StrFunc::makeString(J);
+  Out+=std::to_string(J);
   return Out;
 }
 
@@ -334,7 +336,7 @@ ReactorGrid::populate(const FuncDataBase& Control)
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   
-  if (!(NX*NY) || (NX*NY)>4000)
+  if ( (NX*NY)==0 || (NX*NY)>4000)
     throw ColErr::IndexError<size_t>(NX*NY,4000,
 				     "NXYZ array size");
 
@@ -516,6 +518,7 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getCellOrigin");
+  
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
 
@@ -644,8 +647,6 @@ ReactorGrid::getFuelCells(const Simulation& System,
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getFuelCells");
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
   const ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   
   std::vector<int> cellOut;
@@ -653,9 +654,9 @@ ReactorGrid::getFuelCells(const Simulation& System,
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
-	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
-	  for(int index=cellBegin;index<=cellEnd;index++)
+	  const std::vector<int> cellVec=
+	    System.getObjectRange(Grid[i][j]->getItemKeyName());
+	  for(const int index : cellVec)
 	    {
 	      const MonteCarlo::Object* OPtr=
 		System.findQhull(index);
@@ -681,17 +682,15 @@ ReactorGrid::getAllCells(const Simulation& System) const
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getAllCells");
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
 
   std::vector<int> cellOut;
   for(long int i=0;i<static_cast<long int>(NX);i++)
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
-	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
-	  for(int index=cellBegin;index<=cellEnd;index++)
+	  const std::vector<int> cellVec=
+	    System.getObjectRange(Grid[i][j]->getItemKeyName());
+	  for(const int index : cellVec)
 	    {
 	      if (System.existCell(index))
 		cellOut.push_back(index);

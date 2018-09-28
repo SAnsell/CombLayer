@@ -3,7 +3,7 @@
 
  * File:   essBuild/PancakeModerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,8 +85,6 @@ namespace essSystem
 
 PancakeModerator::PancakeModerator(const std::string& Key) :
   EssModBase(Key,12),
-  flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flyIndex+1),
   MidH2(new DiskPreMod(Key+"MidH2")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
@@ -103,7 +103,6 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
 
 PancakeModerator::PancakeModerator(const PancakeModerator& A) : 
   essSystem::EssModBase(A),
-  flyIndex(A.flyIndex),cellIndex(A.cellIndex),
   MidH2(A.MidH2->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
@@ -125,7 +124,6 @@ PancakeModerator::operator=(const PancakeModerator& A)
   if (this!=&A)
     {
       essSystem::EssModBase::operator=(A);
-      cellIndex= A.cellIndex;
       *MidH2= *A.MidH2;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
@@ -198,9 +196,9 @@ PancakeModerator::createSurfaces()
 {
   ELog::RegMethod RegA("PancakeModerator","createSurface");
 
-  ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
-  ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,outerRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(totalHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(totalHeight/2.0),Z);
 
   return;
 }
@@ -217,7 +215,7 @@ PancakeModerator::createObjects(Simulation& System)
   const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
   addCell("MainVoid",cellIndex-1);
 
@@ -293,10 +291,10 @@ PancakeModerator::createLinks()
   FixedComp::setConnect(1,Origin+Y*outerRadius,Y);
   FixedComp::setConnect(2,Origin-X*outerRadius,-X);
   FixedComp::setConnect(3,Origin+X*outerRadius,X);
-  FixedComp::setLinkSurf(0,SMap.realSurf(flyIndex+7));
-  FixedComp::setLinkSurf(1,SMap.realSurf(flyIndex+7));
-  FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
 
   // copy surface top/bottom from H2Wing and Origin from center
 
@@ -443,7 +441,7 @@ PancakeModerator::createAll(Simulation& System,
   MidH2->createAll(System,*this,0,false,0.0);
 
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
   LeftWater->createAll(System,*MidH2,4,Exclude);
   RightWater->createAll(System,*MidH2,3,Exclude);
 

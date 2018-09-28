@@ -62,6 +62,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -77,8 +79,7 @@ namespace moderatorSystem
 
 HWrapper::HWrapper(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
-  preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(preIndex+1),populated(0),
+  populated(0),
   divideSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -88,7 +89,6 @@ HWrapper::HWrapper(const std::string& Key)  :
 
 HWrapper::HWrapper(const HWrapper& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex),
   populated(A.populated),divideSurf(A.divideSurf),sideExt(A.sideExt),
   heightExt(A.heightExt),backExt(A.backExt),forwardExt(A.forwardExt),
   wingLen(A.wingLen),vacInner(A.vacInner),alInner(A.alInner),
@@ -112,7 +112,6 @@ HWrapper::operator=(const HWrapper& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       divideSurf=A.divideSurf;
       sideExt=A.sideExt;
@@ -187,8 +186,8 @@ HWrapper::createSurfMesh(const int NSurf,const int GPlus,
   for(int i=0;i<NSurf;i++)
     {
       SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(preIndex+baseSurf[i]),Offset[i]);
-      SX->setName(preIndex+GPlus+baseSurf[i]);
+	(SMap.realSurfPtr(buildIndex+baseSurf[i]),Offset[i]);
+      SX->setName(buildIndex+GPlus+baseSurf[i]);
       if (signDir[i]<0)
 	{
 	  Geometry::Plane* PPtr=dynamic_cast<Geometry::Plane*>(SX);
@@ -197,7 +196,7 @@ HWrapper::createSurfMesh(const int NSurf,const int GPlus,
 	  else
 	    ELog::EM<<"Negative surf "<<SX->getName()<<ELog::endErr;
 	}
-      SMap.registerSurf(preIndex+GPlus+baseSurf[i],SX);
+      SMap.registerSurf(buildIndex+GPlus+baseSurf[i],SX);
     }
   return;
 }
@@ -237,18 +236,18 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
   //   5  / 6 / 3,4 /   1   /   2 
 
   // Note can use the divide surface as a real surface.
-  SMap.addMatch(preIndex+1,divideSurf);
-  SMap.addMatch(preIndex+2,VacFC.getLinkSurf(2));  // front
-  SMap.addMatch(preIndex+3,VacFC.getLinkSurf(3));  // side
-  SMap.addMatch(preIndex+4,VacFC.getLinkSurf(4));  // side
-  SMap.addMatch(preIndex+5,VacFC.getLinkSurf(5));  // base
-  SMap.addMatch(preIndex+6,VacFC.getLinkSurf(6));  // top  [target]
+  SMap.addMatch(buildIndex+1,divideSurf);
+  SMap.addMatch(buildIndex+2,VacFC.getLinkSurf(2));  // front
+  SMap.addMatch(buildIndex+3,VacFC.getLinkSurf(3));  // side
+  SMap.addMatch(buildIndex+4,VacFC.getLinkSurf(4));  // side
+  SMap.addMatch(buildIndex+5,VacFC.getLinkSurf(5));  // base
+  SMap.addMatch(buildIndex+6,VacFC.getLinkSurf(6));  // top  [target]
 
   // FLight line
-  SMap.addMatch(preIndex+103,FLine.getLinkSurf(-3));  // side 
-  SMap.addMatch(preIndex+104,FLine.getLinkSurf(4));  // side
-  SMap.addMatch(preIndex+105,FLine.getLinkSurf(-5));  // base [outer]
-  SMap.addMatch(preIndex+106,FLine.getLinkSurf(6));  // top  [target]
+  SMap.addMatch(buildIndex+103,FLine.getLinkSurf(-3));  // side 
+  SMap.addMatch(buildIndex+104,FLine.getLinkSurf(4));  // side
+  SMap.addMatch(buildIndex+105,FLine.getLinkSurf(-5));  // base [outer]
+  SMap.addMatch(buildIndex+106,FLine.getLinkSurf(6));  // top  [target]
 
   const double sideWater=sideExt-(alInner+vacOuter+vacInner);
   const double topWater=heightExt-(alOuter+alInner+vacOuter+vacInner);
@@ -300,19 +299,19 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
   // Full length
   Geometry::Surface* SX;
   SX=ModelSupport::surfaceCreateExpand
-    (SMap.realSurfPtr(preIndex+2),wingLen);
-  SX->setName(preIndex+202);
-  SMap.registerSurf(preIndex+202,SX);
+    (SMap.realSurfPtr(buildIndex+2),wingLen);
+  SX->setName(buildIndex+202);
+  SMap.registerSurf(buildIndex+202,SX);
 
   SX=ModelSupport::surfaceCreateExpand
-    (SMap.realSurfPtr(preIndex+2),wingLen-vacOuter);
-  SX->setName(preIndex+212);
-  SMap.registerSurf(preIndex+212,SX);
+    (SMap.realSurfPtr(buildIndex+2),wingLen-vacOuter);
+  SX->setName(buildIndex+212);
+  SMap.registerSurf(buildIndex+212,SX);
 
   SX=ModelSupport::surfaceCreateExpand
-    (SMap.realSurfPtr(preIndex+2),wingLen-(alOuter+vacOuter));
-  SX->setName(preIndex+222);
-  SMap.registerSurf(preIndex+222,SX);
+    (SMap.realSurfPtr(buildIndex+2),wingLen-(alOuter+vacOuter));
+  SX->setName(buildIndex+222);
+  SMap.registerSurf(buildIndex+222,SX);
   
   return;
 }
@@ -330,46 +329,46 @@ HWrapper::createObjects(Simulation& System,
     
   std::string Out;
   // basic HWrapper
-  Out=ModelSupport::getComposite(SMap,preIndex,"11 -12 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -6 ");
   addOuterSurf(Out);
   // Outer horn object
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 12 163 -164 165 -166 -202");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 12 163 -164 165 -166 -202");
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,preIndex,"11 -12 13 -14 15 -6 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -6 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "(-23 : 24 : 22 : -25 : -21 : 26)"
 				 "( -31 : -153 : 154 : -155 : 156) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Al skin
-  Out=ModelSupport::getComposite(SMap,preIndex,"21 -22 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (52 : -53 : 54 : -55 ) "
 				 "(-33 : 34 : 32 : -35 : -31 : 36)"
 				 "( -1 : -143 : 144 : -145 : 146) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Al EXTRA [26 > 156]
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 2 -22 153 -154 26 -156 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 2 -22 153 -154 26 -156 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Al EXTRA [36 > 146]
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 52 -42 143 -144 36 -146 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 52 -42 143 -144 36 -146 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Water
-  Out=ModelSupport::getComposite(SMap,preIndex,"31 -32 33 -34 35 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "(-43 : 44 : 42 : -45 : -41 )"
 				 "( -1 : -133 : 134 : -135 : 136) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // Water EXTRA [36 > 146]
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 42 -32 143 -144 36 -146 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 42 -32 143 -144 36 -146 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // AL Inner
-  Out=ModelSupport::getComposite(SMap,preIndex,"31 -42 43 -44 45 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -42 43 -44 45 -36 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "(-53 : 54 : 52 : -55 : -51 : 56)"
 				 "( -1 : -103 : 104 : -105 : 106) ");
@@ -377,7 +376,7 @@ HWrapper::createObjects(Simulation& System,
 
 
   // Vac inner
-  Out=ModelSupport::getComposite(SMap,preIndex,"21 -52 53 -54 55 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -52 53 -54 55 -26 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "( -1 : -103 : 104 : -105 : 106) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
@@ -385,23 +384,23 @@ HWrapper::createObjects(Simulation& System,
   // WINGS:
 
   // Al inner
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 42 133 -134 135 -136 -212 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 42 133 -134 135 -136 -212 "
 				 " (-103 : 104 : -105 : 106) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Water inner
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 32 143 -144 145 -146 -222 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 32 143 -144 145 -146 -222 "
 				 " (-133 : 134 : -135 : 136) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // outer Al
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 22 153 -154 155 -156 -212 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 22 153 -154 155 -156 -212 "
 				 " (-143 : 144 : 222 : -145 : 146) "
 				 " (-133 : 134 : -135 : 136) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // outer Vac
-  Out=ModelSupport::getComposite(SMap,preIndex,"1 12 163 -164 165 -166 -202 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 12 163 -164 165 -166 -202 "
 				 " (-153 : 154 : 212 : -155 : 156) "
 				 " (-103 : 104 : -105 : 106) ");
   Out+=CM.getExclude();

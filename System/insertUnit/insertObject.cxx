@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertObject.cxx
+ * File:   insertUnit/insertObject.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -90,8 +92,7 @@ insertObject::insertObject(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1),populated(0),defMat(0),delayInsert(0)
+  populated(0),defMat(0),delayInsert(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -102,7 +103,6 @@ insertObject::insertObject(const insertObject& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),
   populated(A.populated),defMat(A.defMat),
   delayInsert(A.delayInsert)
   /*!

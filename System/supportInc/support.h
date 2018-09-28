@@ -45,6 +45,10 @@ std::string removeSpace(const std::string&);
 std::string stripMultSpc(const std::string&);
 /// find quoted blocks (section for strings)
 int quoteBlock(std::string&,std::string&);
+
+ std::string getDelimUnit(const std::string&,const std::string&,
+			  std::string&);
+
 /// strip pre-spaces
 std::string frontBlock(const std::string&);
 /// strip pre/post spaces

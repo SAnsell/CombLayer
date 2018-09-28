@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/t1BulkShield.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@ class t1BulkShield : public attachSystem::FixedComp,
 {
  private:
   
-  const int bulkIndex;               ///< Index of surface offset
-  int cellIndex;                     ///< Cell index
   const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for shutter
@@ -115,11 +113,11 @@ class t1BulkShield : public attachSystem::FixedComp,
   double getORadius() const { return outerRadius; }
 
   /// Get Mono (outer) Exit surface
-  int getMonoSurf() const { return SMap.realSurf(bulkIndex+37); }
+  int getMonoSurf() const { return SMap.realSurf(buildIndex+37); }
   /// Get Inner Bulk surface
-  int getInnerSurf() const { return SMap.realSurf(bulkIndex+27); }
+  int getInnerSurf() const { return SMap.realSurf(buildIndex+27); }
   /// Get  Bulk surface
-  int getShutterSurf() const { return SMap.realSurf(bulkIndex+17); }
+  int getShutterSurf() const { return SMap.realSurf(buildIndex+17); }
 
   const shutterSystem::GeneralShutter* getShutter(const int) const;
   const shutterSystem::BulkInsert* getInsert(const int) const;

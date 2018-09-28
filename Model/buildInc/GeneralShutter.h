@@ -53,8 +53,6 @@ class GeneralShutter : public attachSystem::TwinComp,
 
   const size_t shutterNumber;         ///< number of the shutter
   const std::string baseName;         ///< Basic name
-  const int surfIndex;                ///< Index of the surface
-  int cellIndex;                      ///< Index of the cells
 
   int populated;                      ///< populated / not
 

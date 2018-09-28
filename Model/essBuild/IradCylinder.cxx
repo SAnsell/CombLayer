@@ -3,7 +3,7 @@
  
  * File:   essBuild/IradCylinder.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,9 +82,7 @@ namespace essSystem
 IradCylinder::IradCylinder(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  iradIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(iradIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -92,7 +92,6 @@ IradCylinder::IradCylinder(const std::string& Key) :
 IradCylinder::IradCylinder(const IradCylinder& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  iradIndex(A.iradIndex),cellIndex(A.cellIndex),
   sampleActive(A.sampleActive),radius(A.radius),
   length(A.length),wallThick(A.wallThick),temp(A.temp),
   mat(A.mat),wallMat(A.wallMat),sampleX(A.sampleX),
@@ -116,7 +115,6 @@ IradCylinder::operator=(const IradCylinder& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       sampleActive=A.sampleActive;
       radius=A.radius;
       length=A.length;
@@ -217,7 +215,7 @@ IradCylinder::createInnerObjects(Simulation& System)
   // CREATE Simple cell if samples are not active:
   if (!sampleActive)
     {
-      std::string Out=ModelSupport::getComposite(SMap,iradIndex," -7 1 -2 ");
+      std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -2 ");
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
       addCell("Samples",cellIndex-1);
@@ -231,7 +229,7 @@ IradCylinder::createInnerObjects(Simulation& System)
   const size_t NY(static_cast<size_t>(length/sampleY));
   const size_t NZ(2*static_cast<size_t>(radius/sampleZ));
 
-  int DI(iradIndex+1003);
+  int DI(buildIndex+1003);
   double posX(-sampleX*(static_cast<double>(NX)/2));
   for(size_t i=0;i<=NX;i++)
     {
@@ -240,7 +238,7 @@ IradCylinder::createInnerObjects(Simulation& System)
       DI+=10;
     }
   double posY(-sampleY*(static_cast<double>(NY)/2));
-  DI=iradIndex+1001;
+  DI=buildIndex+1001;
   for(size_t i=0;i<=NY;i++)
     {
       ModelSupport::buildPlane(SMap,DI,Origin+Y*posY,Y);
@@ -248,7 +246,7 @@ IradCylinder::createInnerObjects(Simulation& System)
       DI+=10;
     }
   double posZ(-sampleZ*(static_cast<double>(NZ)/2));
-  DI=iradIndex+1005;
+  DI=buildIndex+1005;
   for(size_t i=0;i<=NZ;i++)
     {
       ModelSupport::buildPlane(SMap,DI,Origin+Z*posZ,Z);
@@ -260,37 +258,37 @@ IradCylinder::createInnerObjects(Simulation& System)
   std::string YSurfA,YSurfB;
   std::string ZSurfA,ZSurfB;
 
-  DI=iradIndex+1000;
+  DI=buildIndex+1000;
   for(size_t i=0;i<NX;i++)
     {
       XSurfA=(i) ?
         ModelSupport::getComposite(SMap,DI," 3 ") :
-        ModelSupport::getComposite(SMap,iradIndex," -7 ");
+        ModelSupport::getComposite(SMap,buildIndex," -7 ");
       XSurfB=(i!=NX-1) ?
         ModelSupport::getComposite(SMap,DI+10," -3 ") :
-        ModelSupport::getComposite(SMap,iradIndex," -7 ");
+        ModelSupport::getComposite(SMap,buildIndex," -7 ");
       DI+=10;
 
-      int DJ(iradIndex+1000);
+      int DJ(buildIndex+1000);
       for(size_t j=0;j<NY;j++)
         {
 	  YSurfA=(j) ?
 	    ModelSupport::getComposite(SMap,DJ," 1 ") :
-	    ModelSupport::getComposite(SMap,iradIndex," 1 ");
+	    ModelSupport::getComposite(SMap,buildIndex," 1 ");
 	  YSurfB=(j!=NY-1) ?
 	    ModelSupport::getComposite(SMap,DJ+10," -1 ") :
-	    ModelSupport::getComposite(SMap,iradIndex," -2 ");
+	    ModelSupport::getComposite(SMap,buildIndex," -2 ");
 	  DJ+=10;
           
-          int DK(iradIndex+1000);
+          int DK(buildIndex+1000);
           for(size_t k=0;k<NZ;k++)
             {
 	      ZSurfA=(k) ?
 		ModelSupport::getComposite(SMap,DK," 5 ") :
-		ModelSupport::getComposite(SMap,iradIndex," -7 ");
+		ModelSupport::getComposite(SMap,buildIndex," -7 ");
 	      ZSurfB=(k!=NZ-1) ?
 		ModelSupport::getComposite(SMap,DK+10," -5 ") :
-		ModelSupport::getComposite(SMap,iradIndex," -7 ");
+		ModelSupport::getComposite(SMap,buildIndex," -7 ");
 	      DK+=10;
 
               std::string Out=XSurfB+YSurfB+ZSurfB+
@@ -315,16 +313,16 @@ IradCylinder::createSurfaces()
 {
   ELog::RegMethod RegA("IradCylinder","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,iradIndex+1,Origin-Y*length/2.0,Y);
-  ModelSupport::buildPlane(SMap,iradIndex+2,Origin+Y*length/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*length/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length/2.0,Y);
 
-  ModelSupport::buildCylinder(SMap,iradIndex+7,Origin,Y,radius);
-  ModelSupport::buildSphere(SMap,iradIndex+8,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildSphere(SMap,buildIndex+8,
                             Origin-Y*(length/2.0),radius);
-  ModelSupport::buildSphere(SMap,iradIndex+9,
+  ModelSupport::buildSphere(SMap,buildIndex+9,
                             Origin+Y*(length/2.0),radius);
 
-  int IR(iradIndex);
+  int IR(buildIndex);
   double WThick(0.0);
   for(size_t index=0;index<wallThick.size();index++)
     {
@@ -351,38 +349,38 @@ IradCylinder::createObjects(Simulation& System)
 
   std::string Out;
   // Centre
-  // Out=ModelSupport::getComposite(SMap,iradIndex," 1 -2 -7 ");
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
   // addCell("Centre",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,iradIndex," -1 -8 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -8 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
   addCell("End",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,iradIndex," 2 -9 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -9 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
   addCell("End",cellIndex-1);
 
 
-  int IR(iradIndex);
+  int IR(buildIndex);
   for(size_t index=0;index<wallThick.size();index++)
     {
-      Out=ModelSupport::getComposite(SMap,iradIndex,IR," 1 -2 -17M 7M ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,IR," 1 -2 -17M 7M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[index],temp,Out));
       addCell("Wall",cellIndex-1);
       
-      Out=ModelSupport::getComposite(SMap,iradIndex,IR," -1 -18M 8M ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,IR," -1 -18M 8M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[index],temp,Out));
       addCell("Wall",cellIndex-1);
 
-      Out=ModelSupport::getComposite(SMap,iradIndex,IR," 2 -19M 9M ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,IR," 2 -19M 9M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[index],temp,Out));
       addCell("Wall",cellIndex-1);
       IR+=10;
     }
 
   IR-=10;
-  Out=ModelSupport::getComposite(SMap,iradIndex,IR," (1:-18M) (-2:-19M) -17M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,IR," (1:-18M) (-2:-19M) -17M ");
   addOuterSurf(Out);
   
   return; 
@@ -398,15 +396,15 @@ IradCylinder::createLinks()
 
   const double TThick=
     std::accumulate(wallThick.begin(),wallThick.end(),0.0);
-  const int IR(iradIndex+static_cast<int>(wallThick.size())*10);
+  const int IR(buildIndex+static_cast<int>(wallThick.size())*10);
     
   FixedComp::setConnect(0,Origin-Y*(length+radius+TThick),-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(IR+8));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(iradIndex+1));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length+radius+TThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(IR+9));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(iradIndex+2));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(radius+TThick),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(IR+7));

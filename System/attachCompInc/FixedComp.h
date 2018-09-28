@@ -87,7 +87,7 @@ class FixedComp
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
-  FixedComp(const std::string&,const size_t);
+  FixedComp(const std::string&,const size_t,const size_t =10000);
   FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
   FixedComp(const std::string&,const size_t,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&,

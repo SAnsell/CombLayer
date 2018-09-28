@@ -94,6 +94,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkUnit.h"
@@ -160,7 +162,6 @@
 #include "testPoly.h"
 #include "testQuaternion.h"
 #include "testRecTriangle.h"
-#include "testRefPlate.h"
 #include "testRotCounter.h"
 #include "testRules.h"
 #include "testSimpleObj.h"
@@ -260,7 +261,6 @@ main(int argc,char* argv[])
   else
     startTest(0,0,0);
 
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return 0;
 }
@@ -787,17 +787,10 @@ moderatorTest(const int type,const int extra)
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
-      std::cout<<"testRefPlate         (1)"<<std::endl;
-      std::cout<<"testSingleObject     (2)"<<std::endl;
+      std::cout<<"testSingleObject     (1)"<<std::endl;
     }
 
   if(type==1 || type<0)
-    {
-      testRefPlate A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  if(type==2 || type<0)
     {
       testSingleObject A;
       const int X=A.applyTest(extra);

@@ -57,6 +57,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -392,11 +394,11 @@ BilbaoWheel::createShaftSurfaces()
   ELog::RegMethod RegA("BilbaoWheel","createShaftSurfaces");
 
   // divider
-  const Geometry::Plane *px = ModelSupport::buildPlane(SMap,wheelIndex+3,Origin,X);
+  const Geometry::Plane *px = ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
 
-  ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,Origin+Z*shaftHeight,Z);
 
-  int SI(wheelIndex);
+  int SI(buildIndex);
   for (size_t i=0; i<nShaftLayers; i++)
     {
       ModelSupport::buildCylinder(SMap,SI+2007,Origin,Z,shaftRadius[i]);
@@ -407,102 +409,102 @@ BilbaoWheel::createShaftSurfaces()
 
   // 2nd void step
   H = shaft2StepHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2115,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+2126,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2125,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2126,Origin+Z*H,Z);
 
   double H1 = H;
 
   H -= voidThick;
   H -= radius[0]-innerRadius;
-  ModelSupport::buildPlane(SMap,wheelIndex+2135,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+2136,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2135,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2136,Origin+Z*H,Z);
 
   double R = radius[0]+voidThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2118,Origin,Z,R);
 
   // Connection flange ring [ESS-0124024 pages 22-23 (DW-TRGT-ESS-0102)]
   H = H1-voidThick;
   H += shaftUpperBigStiffHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2146,Origin+Z*H,Z);
   H += shaftCFRingHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2156,Origin+Z*H,Z);
   R = shaftCFRingRadius;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2147,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2147,Origin,Z,R);
 
   R = std::max(shaftCFRingRadius,shaft2StepConnectionRadius)+voidThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2157,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2157,Origin,Z,R);
 
   // Connection flange stiffeners
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
   const double stiffTheta(atan(shaftUpperBigStiffHeight/shaftUpperBigStiffLength)*180.0/M_PI);
   const double stiffL(shaftRadius[nShaftLayers-2]+shaftUpperBigStiffLength);
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
-  ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
+  ModelSupport::buildCone(SMap,buildIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
 
   if (engActive) // create surfaces for large upper/lower stiffeners
-    createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftUpperBigStiffThick);
+    createRadialSurfaces(buildIndex+3000, nSectors/2, shaftUpperBigStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
-  ModelSupport::buildCone(SMap,wheelIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
+  ModelSupport::buildCone(SMap,buildIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
 
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
-  ModelSupport::buildPlane(SMap,wheelIndex+2166,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2166,Origin+Z*H,Z);
 
   H += shaft2StepConnectionHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2176,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2176,Origin+Z*H,Z);
 
   H += voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+2186,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2186,Origin+Z*H,Z);
 
   R = shaft2StepConnectionRadius;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2127,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2127,Origin,Z,R);
 
   // shaft base
   H = shaftBaseDepth;
   const Geometry::Plane *p2205 =
-    ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
+    ModelSupport::buildPlane(SMap,buildIndex+2205,Origin-Z*H,Z);
 
   // shaft base - catcher
   H = shaft2StepHeight + shaftLowerBigStiffHeight + catcherNotchBaseThick;
   const Geometry::Plane *p2215 =
-    ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
+    ModelSupport::buildPlane(SMap,buildIndex+2215,Origin-Z*H,Z);
 
   //  H -= catcherNotchBaseThick;
   H = shaft2StepHeight + shaftLowerBigStiffHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2225,Origin-Z*H,Z);
 
   H = shaftBaseDepth-catcherBaseHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2245,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2245,Origin-Z*H,Z);
 
   R = catcherBaseRadius-2*catcherBaseHeight/tan(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2207,Origin,Z,R);
 
   H = shaftBaseDepth-catcherBaseRadius*tan(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCone(SMap, wheelIndex+2208, Origin-Z*(H),
+  ModelSupport::buildCone(SMap, buildIndex+2208, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 
   const double gap(p2215->getDistance()-p2205->getDistance());
   H -= gap/sin(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCone(SMap, wheelIndex+2218, Origin-Z*(H),
+  ModelSupport::buildCone(SMap, buildIndex+2218, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 
   R = catcherNotchRadius;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2217,Origin,Z,R);
 
   const Geometry::Vec3D nearPt(0,0,0);
   R += catcherNotchBaseThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2227,Origin,Z,R);
 
   R = shaftRadius[nShaftLayers-2] + shaftLowerBigStiffShortLength;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2237,Origin,Z,R);
 
-  const Geometry::Vec3D C(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2225),
-					     SMap.realSurfPtr(wheelIndex+2237),
+  const Geometry::Vec3D C(SurInter::getPoint(SMap.realSurfPtr(buildIndex+2225),
+					     SMap.realSurfPtr(buildIndex+2237),
 					     px,nearPt));
 
   const double L(Origin.Y()-C.Y());
@@ -510,23 +512,23 @@ BilbaoWheel::createShaftSurfaces()
       (shaftLowerBigStiffLongLength-shaftLowerBigStiffShortLength))*180/M_PI);
 
   H = L * tan(lowerBigStiffTheta*M_PI/180)-C.Z();
-  ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
+  ModelSupport::buildCone(SMap, buildIndex+2238, Origin-Z*(H),
 			  -Z, 90-lowerBigStiffTheta, -1);
 
   H+= voidThick/cos(lowerBigStiffTheta*M_PI/180);
-  ModelSupport::buildCone(SMap, wheelIndex+2239, Origin-Z*(H),
+  ModelSupport::buildCone(SMap, buildIndex+2239, Origin-Z*(H),
 			  -Z, 90-lowerBigStiffTheta, -1);
 
   R += voidThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2247,Origin,Z,R);
 
   // circle of pipes
   R = circlePipesBigRad-circlePipesRad-circlePipesWallThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2307,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2307,Origin,Z,R);
   R = circlePipesBigRad+circlePipesRad+circlePipesWallThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2317,Origin,Z,R);
+  ModelSupport::buildCylinder(SMap,buildIndex+2317,Origin,Z,R);
 
-  int SJ(wheelIndex+2300);
+  int SJ(buildIndex+2300);
   double theta(0.0), x0, y0;
   const double dTheta(360.0/static_cast<double>(nSectors));
   R = circlePipesBigRad;
@@ -544,7 +546,7 @@ BilbaoWheel::createShaftSurfaces()
       SJ+=10;
     }
   // add 1st surface again with reversed normal - to simplify building cells
-  SMap.addMatch(SJ+1,SMap.realSurf(wheelIndex+2301));
+  SMap.addMatch(SJ+1,SMap.realSurf(buildIndex+2301));
 
   return;
 }
@@ -561,60 +563,60 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // layer with circle of pipes
   buildCirclePipes(System,
-		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
+		   ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,
 					      " 2007M -7 "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 115 -105 "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 106 -116 "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 105 -106 "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 115 -116 "));
+		   ModelSupport::getComposite(SMap,buildIndex," 115 -105 "),
+		   ModelSupport::getComposite(SMap,buildIndex," 106 -116 "),
+		   ModelSupport::getComposite(SMap,buildIndex," 105 -106 "),
+		   ModelSupport::getComposite(SMap,buildIndex," 115 -116 "));
 
   // void below
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 35 -115 2127 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,"-7 35 -115 2127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  const int SJ(wheelIndex+(static_cast<int>(nShaftLayers)-1)*10);
+  const int SJ(buildIndex+(static_cast<int>(nShaftLayers)-1)*10);
 
   // steel inside - outer radial part
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,SJ-10,
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,SJ-10,
 				 " 35 -115 -2127 2007M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // steel inside - central part
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,SJ-10,
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,SJ-10,
 				 " 35 -5 -2007M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // lower cell
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2115 -2135" );
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 2115 -2135" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2135 -35" );
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 2135 -35" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 7 -17 2115 -25" );
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 7 -17 2115 -25" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 17 -2118 2115 -45 " );
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 17 -2118 2115 -45 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // 2nd void step
   // upper cell - inner steel - outer side layer
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
 				 " 7 -17 26 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - inner steel - top layer
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ-10," -7 2136 -2116 2007M" );
+  Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10," -7 2136 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // upper cell - inner steel - inner void
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,
 				 " -7 116 -2136 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // upper cell - void around inner steel - vertical part
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 17 46 -2116 " );
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2118 17 46 -2116 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // upper/lower connection
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ-10,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10,
 				 " -2127 2007M 2166 -2176 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
@@ -623,82 +625,82 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // Connection flange:
   //   stiffener
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2146 -2148 ");
   if (engActive)
-    buildStiffeners(System,Out+Rsurf,wheelIndex+3000,nSectors/2,steelMat);
+    buildStiffeners(System,Out+Rsurf,buildIndex+3000,nSectors/2,steelMat);
   else
     System.addCell(MonteCarlo::Qhull(cellIndex++,shaftUpperBigStiffHomoMat,mainTemp,Out+Rsurf));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2126 2148 -2118 2157 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2126 2148 -2118 2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2126 2148 -2149 2157 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2126 2148 -2149 2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 2148 -2157 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2146 2148 -2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   //   ring
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 -2147 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2146 -2156 -2147 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out+Rsurf));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 2147 -2157");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2146 -2156 2147 -2157");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 2156 -2166 -2157 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2156 -2166 -2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out+Rsurf));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 2166 -2186 2127 -2157 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2166 -2186 2127 -2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ-10,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10,
 				 " -2127 2007M 2176 -2186 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // wheel catcher
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2247 2238 -2239 -2125 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2247 2238 -2239 -2125 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2125 -2115  2238 -2118 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2125 -2115  2238 -2118 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2238 2205 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2237 -2247 2238 2205 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   //     floor gap
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2147 2208 2205 -2215 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2147 2208 2205 -2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2205 -2245 -2208 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2205 -2245 -2208 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2205 -2245 2208 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2217 2205 -2245 2208 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2205 2245 -2115 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2217 2205 2245 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2227 2217 2215 -2115 2218 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2227 2217 2215 -2115 2218 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // small cell between base cones
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2217 -2218 2208 2215 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2217 -2218 2208 2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2227 -2237 2215 -2225 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 2227 -2237 2215 -2225 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // notch: big conical cell
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2238 2227 2225 -2115 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
   if (engActive)
-    buildStiffeners(System,Out,wheelIndex+3000,nSectors/2,steelMat);
+    buildStiffeners(System,Out,buildIndex+3000,nSectors/2,steelMat);
   else
     System.addCell(MonteCarlo::Qhull(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
 
 
   // shaft layers
-  int SI(wheelIndex);
-  const std::string roof(ModelSupport::getComposite(SMap,wheelIndex," -2006 "));
+  int SI(buildIndex);
+  const std::string roof(ModelSupport::getComposite(SMap,buildIndex," -2006 "));
   std::string floor;
   for (size_t i=0; i<nShaftLayers; i++)
     {
@@ -713,7 +715,7 @@ BilbaoWheel::createShaftObjects(Simulation& System)
       else
 	floor = " 2136 ";
 
-      floor = ModelSupport::getComposite(SMap,wheelIndex,floor);
+      floor = ModelSupport::getComposite(SMap,buildIndex,floor);
 
       if (i==2)
 	{
@@ -729,7 +731,7 @@ BilbaoWheel::createShaftObjects(Simulation& System)
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI-10,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,
 				 " (-2007M -2006 2125) : " // connection
 				 " (2126 -2149) : " // upper stiffeners
 				 " (2126 -2186 -2157) : "  // above upper stiffeners
@@ -825,7 +827,7 @@ BilbaoWheel::divideRadial(Simulation& System,
     }
 
   std::string Out;
-  int SJ(wheelIndex+3000);
+  int SJ(buildIndex+3000);
   for(size_t j=0;j<nSectors;j++)
     {
       Out=ModelSupport::getComposite(SMap,SJ," 1 -11 ");
@@ -904,7 +906,7 @@ BilbaoWheel::buildHoles(Simulation& System,
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides+top+bot));
       return;
     }
-  const int SI0(wheelIndex+30000+surfOffset);
+  const int SI0(buildIndex+30000+surfOffset);
   const int SIstep(10);
 
   // create surfaces
@@ -990,7 +992,7 @@ BilbaoWheel::buildCirclePipes(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheel","buildCirclePipes");
   std::string Out;
-  int SJ(wheelIndex+2300);
+  int SJ(buildIndex+2300);
   if (nSectors<2)
     {
       Out=sides+inner;
@@ -1047,45 +1049,45 @@ BilbaoWheel::createSurfaces()
   ELog::RegMethod RegA("BilbaoWheel","createSurfaces");
 
   // Dividing surface
-  ModelSupport::buildPlane(SMap,wheelIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,wheelIndex+2,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,X);
 
   double H(targetHeight/2.0);
-  ModelSupport::buildPlane(SMap,wheelIndex+5,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*H,Z);
 
   H+= voidTungstenThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*H,Z);
 
   H+= steelTungstenThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+25,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+26,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*H,Z);
 
   H+=coolantThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*H,Z);
 
   H+=caseThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+245,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+246,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+245,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+246,Origin+Z*H,Z);
 
   H+=voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*H,Z);
 
-  ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerRadius);
 
   H  = targetHeight/2.0;
   H += voidTungstenThick;
   H += steelTungstenThick;
   H += coolantThick;
   H += caseThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+125,Origin-Z*H,Z);  // 22 : 23
-  ModelSupport::buildPlane(SMap,wheelIndex+126,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+125,Origin-Z*H,Z);  // 22 : 23
+  ModelSupport::buildPlane(SMap,buildIndex+126,Origin+Z*H,Z);
 
 
-  int SI(wheelIndex+10);
+  int SI(buildIndex+10);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);
@@ -1095,16 +1097,16 @@ BilbaoWheel::createSurfaces()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
 
-  GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+517);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
   GA->setSurface(getSQSurface(coolantRadiusOut, aspectRatio));
   SMap.registerSurf(GA);
 
-  GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+527);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+527);
   GA->setSurface(getSQSurface(caseRadius, aspectRatio));
   SMap.registerSurf(GA);
 
   Geometry::EllipticCyl* ECPtr=
-    ModelSupport::buildEllipticCyl(SMap,wheelIndex+528,Origin,Z,
+    ModelSupport::buildEllipticCyl(SMap,buildIndex+528,Origin,Z,
 				   X,caseRadius,caseRadius);
 
   GA->normalizeGEQ(0);
@@ -1113,22 +1115,22 @@ BilbaoWheel::createSurfaces()
   ECPtr->normalizeGEQ(0);
   //  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
 
-  ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+537,Origin,Z,voidRadius);
 
-  createRadialSurfaces(wheelIndex+3000, nSectors);
+  createRadialSurfaces(buildIndex+3000, nSectors);
 
 
   // inner vertical layers
   H=targetInnerHeight/2.0;
-  ModelSupport::buildPlane(SMap,wheelIndex+105,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+106,Origin+Z*H,Z);
-  ModelSupport::buildCylinder(SMap,wheelIndex+107,Origin,Z,
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*H,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Z,
 			      targetInnerHeightRadius);
 
   H+=steelTungstenInnerThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+115,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+116,Origin+Z*H,Z);
-  ModelSupport::buildCylinder(SMap,wheelIndex+117,Origin,Z,
+  ModelSupport::buildPlane(SMap,buildIndex+115,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*H,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Z,
 			      targetInnerHeightRadius+steelTungstenInnerThick);
 
   return;
@@ -1149,7 +1151,7 @@ BilbaoWheel::createObjects(Simulation& System)
   // Loop through each item and build inner section
   //
 
-  int SI(wheelIndex);
+  int SI(buildIndex);
   int nInner(0); // number of inner cells (must be 1)
   int mat(0);
   std::string side;
@@ -1158,25 +1160,25 @@ BilbaoWheel::createObjects(Simulation& System)
       mat = matNum[matTYPE[i]];
       side = ModelSupport::getComposite(SMap,SI," 7 -17 ");
 
-      Out=side+ModelSupport::getComposite(SMap,wheelIndex,SI," 5 -6 ");
+      Out=side+ModelSupport::getComposite(SMap,buildIndex,SI," 5 -6 ");
       if (i==0)
 	{
 	  buildHoles(System,side,
-		     ModelSupport::getComposite(SMap,wheelIndex," 116 "),
-		     ModelSupport::getComposite(SMap,wheelIndex," -26 "),
+		     ModelSupport::getComposite(SMap,buildIndex," 116 "),
+		     ModelSupport::getComposite(SMap,buildIndex," -26 "),
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 4000);
 
 	  buildHoles(System,side,
-		     ModelSupport::getComposite(SMap,wheelIndex," 25 "),
-		     ModelSupport::getComposite(SMap,wheelIndex," -115 "),
+		     ModelSupport::getComposite(SMap,buildIndex," 25 "),
+		     ModelSupport::getComposite(SMap,buildIndex," -115 "),
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 5000);
 
 
 	  buildHoles(System,side,
-		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
-		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
+		     ModelSupport::getComposite(SMap,buildIndex," 115 "),
+		     ModelSupport::getComposite(SMap,buildIndex," -116 "),
 		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
 		     0.0, 0);
 	}
@@ -1186,42 +1188,42 @@ BilbaoWheel::createObjects(Simulation& System)
 	  // Do not build it with engActive=1 since the cassette goes there
 	  if (!engActive)
 	    {
-	      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 117 -17M 5 -6 ");
+	      Out=ModelSupport::getComposite(SMap,buildIndex,SI," 117 -17M 5 -6 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	    }
 
-	  side=ModelSupport::getComposite(SMap,wheelIndex," -117 107 ");
+	  side=ModelSupport::getComposite(SMap,buildIndex," -117 107 ");
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -26 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -26 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,"-105 25 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex,"-105 25 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," -25 35 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -25 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," 26 -36 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 26 -36 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  side=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 ");
+	  side=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -107 ");
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -116 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -116 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," -105 115 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -105 115 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," 116 -36 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 116 -36 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex," -115 35 ")+side;
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -115 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
       else if (mat==homoWMat)
@@ -1248,64 +1250,64 @@ BilbaoWheel::createObjects(Simulation& System)
     }
 
   // front coolant:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -517 35 -36");
   if (engActive)
     divideRadial(System, Out, heMat);
   else
     System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
-  side = ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 117" );
+  side = ModelSupport::getComposite(SMap,buildIndex,SI," -7M 117" );
 
   // Void above W
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -16 ")+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -16 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
   // Void below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 15 -5 ")+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -5 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // Steel above W
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 16 -26 ")+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 16 -26 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // Steel below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 25 -15 ")+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 25 -15 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // Coolant above steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 26 -36 ")+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 26 -36 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
   CellMap::setCell("CoolantAboveSteel",cellIndex-1);
 
   // Coolant below steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 35 -25 " )+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 35 -25 " )+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 35 -36");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-527 517 35 -36");
   if (engActive)
     divideRadial(System, Out, steelMat);
   else
     System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
-  side=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 ");
+  side=ModelSupport::getComposite(SMap,buildIndex,"-527 17 ");
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -126 36 ")+side;	 // outer above W
+  Out=ModelSupport::getComposite(SMap,buildIndex," -126 36 ")+side;	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 125 -35 ")+side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 125 -35 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "17 45 -46 -537 (-125:126:527)");
   if (engActive)
     divideRadial(System, Out, 0);
   else
     System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 45 -46");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-537 45 -46");
   addOuterSurf("Wheel",Out);
 
   return;
@@ -1323,42 +1325,42 @@ BilbaoWheel::createLinks()
   // set Links :: Inner links:
 
   FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+537));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+537));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(wheelIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+537));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+537));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(wheelIndex+1));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
 
   const double H=wheelHeight()/2.0;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+45));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+45));
 
   FixedComp::setConnect(5,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+46));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
 
   // inner links (normally) point towards
   // top/bottom of the spallation material (innet cell)
   const double TH=targetHeight/2.0;
   FixedComp::setConnect(6,Origin-Z*TH,Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(wheelIndex+5));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(7,Origin+Z*TH,-Z);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(wheelIndex+6));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(12, Origin-Y*(radius[0]+voidThick),-Y);
-  FixedComp::setLinkSurf(12, SMap.realSurf(wheelIndex+2118));
-  FixedComp::setBridgeSurf(12,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setLinkSurf(12, SMap.realSurf(buildIndex+2118));
+  FixedComp::setBridgeSurf(12,-SMap.realSurf(buildIndex+1));
 
-  int SI(wheelIndex);
+  int SI(buildIndex);
   for (size_t i=0; i<nLayers; i++)
     {
       if (matTYPE[i]==3) // Tungsten layer
@@ -1366,7 +1368,7 @@ BilbaoWheel::createLinks()
   	  // 8 and 9 - the layer before Tungsten (He)
   	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
   					     steelTungstenInnerThick), -Y);
-  	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
+  	  FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+117));
 
   	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
   	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));

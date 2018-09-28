@@ -38,16 +38,16 @@ namespace insertSystem
 */
 
 class insertObject : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::SurfMap,public attachSystem::FrontBackCut
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap,
+  public attachSystem::FrontBackCut
 {
  protected:
   
-  const int ptIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-  int populated;                 ///< externally set values
+  int populated;          //< externally set values
   
-  int defMat;               ///< Material
+  int defMat;             ///< Material
   bool delayInsert;       ///< Delay insertion         
   
   virtual void populate(const FuncDataBase&);

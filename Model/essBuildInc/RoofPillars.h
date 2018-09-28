@@ -45,8 +45,6 @@ class RoofPillars : public attachSystem::FixedComp,
 
   /// Link storage type
   typedef std::set< std::pair<std::string,std::string> > BeamTYPE;
-  const int rodIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   /// Information for each centre
   std::map<std::string,pillarInfo> PInfo;

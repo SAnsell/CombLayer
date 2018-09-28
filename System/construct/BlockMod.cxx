@@ -58,12 +58,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -163,16 +164,14 @@ BlockMod::populate(const FuncDataBase& Control)
     {
       if (i)
 	{
-	  H+=2.0*Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"HGap",i));   
-	  W+=Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"WGap",i));   
-	  D+=Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"DGap",i));   
+	  const std::string IStr(std::to_string(i));
+	  H+=2.0*Control.EvalVar<double>(keyName+"HGap"+IStr);   
+	  W+=Control.EvalVar<double>(keyName+"WGap"+IStr);   
+	  D+=Control.EvalVar<double>(keyName+"DGap"+IStr);   
 	  M=ModelSupport::EvalMat<int>
-	    (Control,StrFunc::makeString(keyName+"Mat",i));   
+	    (Control,keyName+"Mat"+IStr);   
 	  T=(!M) ? 0.0 : 
-	    Control.EvalVar<double>(StrFunc::makeString(keyName+"Temp",i)); 
+	    Control.EvalVar<double>(keyName+"Temp"+IStr); 
 	}
       else
 	{
@@ -192,7 +191,7 @@ BlockMod::populate(const FuncDataBase& Control)
   nConic=Control.EvalVar<size_t>(keyName+"NConic");
   for(size_t i=0;i<nConic;i++)
     {
-      const std::string KN=keyName+StrFunc::makeString("Conic",i+1);
+      const std::string KN=keyName+"Conic"+std::to_string(i+1);
       const Geometry::Vec3D C=
 	Control.EvalVar<Geometry::Vec3D>(KN+"Cent");
       const Geometry::Vec3D A=
@@ -220,7 +219,7 @@ BlockMod::createSurfaces()
 {
   ELog::RegMethod RegA("BlockMod","createSurfaces");
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(depth[i]/2.0),Y);  
@@ -232,7 +231,7 @@ BlockMod::createSurfaces()
       SI+=10;
     }
   // CONICS
-  SI=modIndex+500;
+  SI=buildIndex+500;
   for(size_t i=0;i<nConic;i++)
     {
       const Geometry::Vec3D Pt=Conics[i].getCent(X,Y,Z);
@@ -282,22 +281,22 @@ BlockMod::createObjects(Simulation& System)
 
   std::string Out;
   // First make conics:
-  int CI(modIndex+500);
+  int CI(buildIndex+500);
   HeadRule OutUnit;
 
   for(size_t i=0;i<nConic;i++)
     {
-      Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -7M 1M");
+      Out=ModelSupport::getComposite(SMap,buildIndex,CI," -7 5 -6 -7M 1M");
       System.addCell(MonteCarlo::Qhull(cellIndex++,
 				       Conics[i].getMat(),temp[0],Out));
       if (Conics[i].getWall()>Geometry::zeroTol)
 	{
-	  Out=ModelSupport::getComposite(SMap,modIndex,CI,
+	  Out=ModelSupport::getComposite(SMap,buildIndex,CI,
 					 " -7 5 -6 (7M:-1M) -17M 11M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,
 					   Conics[i].getWallMat(),
 					   temp[0],Out));
-	  Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -17M 11M ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex,CI," -7 5 -6 -17M 11M ");
 	}
       OutUnit.addUnion(Out);
       CI+=100;
@@ -305,7 +304,7 @@ BlockMod::createObjects(Simulation& System)
   OutUnit.makeComplement();
 
   mainCell=cellIndex;
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 5 -6 ");
@@ -331,7 +330,7 @@ BlockMod::createLinks()
 
   if (!nLayers) return;
   const size_t NL(nLayers-1);
-  const int SI(modIndex+static_cast<int>(NL)*10);
+  const int SI(buildIndex+static_cast<int>(NL)*10);
   
   FixedComp::setConnect(0,Origin-Y*(depth[NL]/2.0),-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+1));
@@ -441,7 +440,7 @@ BlockMod::getLayerSurf(const size_t layerIndex,
   if (!sideIndex || sideIndex>6 || sideIndex<-6)
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
-  int SI(modIndex+static_cast<int>(layerIndex)*10);
+  int SI(buildIndex+static_cast<int>(layerIndex)*10);
   SI+=static_cast<int>(std::abs(sideIndex));
   
   int signValue((sideIndex<0) ? -1 : 1);

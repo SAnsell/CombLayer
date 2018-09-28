@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/H2FlowGuide.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +44,6 @@ class H2FlowGuide :
   const std::string baseName; ///< Base name
   const std::string midName; ///< Mid Name
   const std::string endName; ///< End Name
-  const int flowIndex;       ///< Index of surface offset
-  int cellIndex;             ///< Cell index
 
   double baseThick;            ///< Base thickness
   double baseLen;              ///< Base length

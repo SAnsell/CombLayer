@@ -56,7 +56,7 @@ class collInsertBlock  : public collInsertBase
 
  public:
 
-  collInsertBlock(const int,const int,const std::string&);
+  collInsertBlock(const std::string&,const int);
   collInsertBlock(const collInsertBlock&);
   collInsertBlock& operator=(const collInsertBlock&);
   virtual ~collInsertBlock() {}   ///< Destructor

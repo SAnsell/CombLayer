@@ -57,6 +57,8 @@
 #include "FuncDataBase.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -73,9 +75,7 @@ namespace bibSystem
 
 ProtonPipe::ProtonPipe(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,3),
-  protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1)
+  attachSystem::FixedOffset(Key,3)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,7 +84,6 @@ ProtonPipe::ProtonPipe(const std::string& Key) :
 
 ProtonPipe::ProtonPipe(const ProtonPipe& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  protonIndex(A.protonIndex),cellIndex(A.cellIndex),
   radius(A.radius),
   innerWallThick(A.innerWallThick),wallThick(A.wallThick),
   length(A.length),innerLength(A.innerLength),voidMat(A.voidMat),
@@ -107,7 +106,6 @@ ProtonPipe::operator=(const ProtonPipe& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       innerWallThick=A.innerWallThick;
       wallThick=A.wallThick;
@@ -182,17 +180,17 @@ ProtonPipe::createSurfaces(const attachSystem::FixedComp& TarFC,
 {
   ELog::RegMethod RegA("ProtonPipe","createSurfaces");
 
-  SMap.addMatch(protonIndex+1,TarFC.getLinkSurf(targetIndex));
-  ModelSupport::buildPlane(SMap,protonIndex+2,Origin+Y*length,Y);
+  SMap.addMatch(buildIndex+1,TarFC.getLinkSurf(targetIndex));
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
 
-  ModelSupport::buildCylinder(SMap,protonIndex+7,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,protonIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Y,radius+innerWallThick);
-  ModelSupport::buildCylinder(SMap,protonIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Y,radius+wallThick);
 
-  ModelSupport::buildPlane(SMap,protonIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin+Y*innerLength,Y);
 
   return; 
@@ -210,23 +208,23 @@ ProtonPipe::createObjects(Simulation& System)
   std::string Out;
 
   // Part without anthing in middle [separated as very long otherwize]xs
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -11 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,protonIndex,"11 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Inner wall
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -11 7 -17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 7 -17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerWallMat,0.0,Out));
 
   // Outer wall
-  Out=ModelSupport::getComposite(SMap,protonIndex,"11 -2 7 -27");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -2 7 -27");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -11 -17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -17");
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,protonIndex,"11 -27 -2");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -27 -2");
   addOuterUnionSurf(Out);
 
   return; 
@@ -243,13 +241,13 @@ ProtonPipe::createLinks()
   // set Links :: Inner links:
   // Wrapper layer
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(protonIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(protonIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin+X*(radius+innerWallThick),X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(protonIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
 
   return;
 }

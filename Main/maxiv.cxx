@@ -67,6 +67,8 @@
 #include "SimProcess.h"
 #include "SimImportance.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h" 
 #include "SimPHITS.h"
@@ -132,7 +134,7 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
 
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   
   catch (ColErr::ExitAbort& EA)
@@ -154,7 +156,6 @@ main(int argc,char* argv[])
     }
 
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

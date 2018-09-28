@@ -3,7 +3,7 @@
  
  * File:   moderator/DecLayer.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -65,6 +64,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -80,10 +81,9 @@
 namespace moderatorSystem
 {
 
-DecLayer::DecLayer(const std::string& Key,const std::string& LKey)  :
-  Decoupled(Key),lkeyName(LKey),
-  layerIndex(ModelSupport::objectRegister::Instance().cell(LKey)),
-  cellIndex(layerIndex+1)
+DecLayer::DecLayer(const std::string& Key,
+		   const std::string& LKey)  :
+  Decoupled(Key),lkeyName(LKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for base decoupled object
@@ -92,8 +92,7 @@ DecLayer::DecLayer(const std::string& Key,const std::string& LKey)  :
 {}
 
 DecLayer::DecLayer(const DecLayer& A) : 
-  Decoupled(A),
-  layerIndex(A.layerIndex),cellIndex(A.cellIndex)
+  Decoupled(A)
   /*!
     Copy constructor
     \param A :: DecLayer to copy
@@ -111,8 +110,6 @@ DecLayer::operator=(const DecLayer& A)
   if (this!=&A)
     {
       Decoupled::operator=(A);
-      layerIndex=A.layerIndex;
-      cellIndex=A.cellIndex;
     }
   return *this;
 }
@@ -137,7 +134,7 @@ DecLayer::populate(const FuncDataBase& Control)
   ELog::EM<<"Number of layers == "<<nLayers<<ELog::endTrace;
   for(int i=0;i<nLayers;i++)
      {
-       const std::string keyIndex(StrFunc::makeString(lkeyName,i+1));
+       const std::string keyIndex(lkeyName+std::to_string(i+1));
        const double T=Control.EvalPair<double>(keyIndex,lkeyName,"Thick");
        if (T>Geometry::zeroTol)
 	 {
@@ -163,7 +160,7 @@ DecLayer::createSurfaces()
 {
   ELog::RegMethod RegA("DecLayer","createSurfaces");
   
-  int offset(layerIndex);
+  int offset(buildIndex);
   double totalThick(0.0);
   for(size_t i=0;i<lThick.size();i++)
     {
@@ -187,9 +184,9 @@ DecLayer::createObjects(Simulation& System)
   ELog::RegMethod RegA("DecLayer","createObjects");
   // Outer layer is 7, 8 of old system:
   // WEST SIDE:
-  const std::string WWall=ModelSupport::getComposite(SMap,decIndex," 1 3 -4 5 -6 ");
-  std::string OutWall=ModelSupport::getComposite(SMap,decIndex," -7 ");
-  int offset(layerIndex);
+  const std::string WWall=ModelSupport::getComposite(SMap,buildIndex," 1 3 -4 5 -6 ");
+  std::string OutWall=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  int offset(buildIndex);
   for(size_t i=0;i<lThick.size();i++)
     {
       const std::string Out=ModelSupport::getComposite(SMap,offset," 7 ");
@@ -203,9 +200,9 @@ DecLayer::createObjects(Simulation& System)
 				   OutWall+WWall));      
 
   // EAST SIDE:
-  const std::string EWall=ModelSupport::getComposite(SMap,decIndex," -1 3 -4 5 -6 ");
-  OutWall=ModelSupport::getComposite(SMap,decIndex," -8 ");
-  offset=layerIndex;
+  const std::string EWall=ModelSupport::getComposite(SMap,buildIndex," -1 3 -4 5 -6 ");
+  OutWall=ModelSupport::getComposite(SMap,buildIndex," -8 ");
+  offset=buildIndex;
   for(size_t i=0;i<lThick.size();i++)
     {
       const std::string Out=ModelSupport::getComposite(SMap,offset," 8 ");

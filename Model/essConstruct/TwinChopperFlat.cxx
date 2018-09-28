@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TwinChopperFlat.cxx
+ * File:   essConstruct/TwinChopperFlat.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -127,15 +128,15 @@ TwinChopperFlat::createObjects(Simulation& System)
 
   frontBoxPort->setInnerExclude();
   frontBoxPort->addInsertCell(getCell("FrontCase"));
-  frontBoxPort->setFront(SMap.realSurf(houseIndex+1));
-  frontBoxPort->setBack(-SMap.realSurf(houseIndex+11));
+  frontBoxPort->setFront(SMap.realSurf(buildIndex+1));
+  frontBoxPort->setBack(-SMap.realSurf(buildIndex+11));
   frontBoxPort->createAll(System,Main,0);
 
   // Back ring seal
   backBoxPort->setInnerExclude();
   backBoxPort->addInsertCell(getCell("BackCase"));
-  backBoxPort->setFront(SMap.realSurf(houseIndex+12));
-  backBoxPort->setBack(-SMap.realSurf(houseIndex+2));
+  backBoxPort->setFront(SMap.realSurf(buildIndex+12));
+  backBoxPort->setBack(-SMap.realSurf(buildIndex+2));
   backBoxPort->createAll(System,Main,0);
 
   return;

@@ -42,8 +42,6 @@ class LayerDivide1D  : public attachSystem::FixedComp,
 
   Geometry::Vec3D Centre;        ///< Centre point
   
-  const int divIndex;            ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
 
   std::vector<double> AFrac;     ///< Fractions in A direction
   std::vector<int> AMat;         ///< Materials  

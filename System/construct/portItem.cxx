@@ -65,6 +65,8 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -503,12 +505,14 @@ portItem::constructOuterFlange(Simulation& System,
 }
 
 void
-portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
+portItem::calcBoundaryCrossing(const objectGroups& OGrp,
+			       const ModelSupport::LineTrack& LT,
 			       size_t& AIndex,size_t& BIndex) const
   /*!
     Creates the inner and outer objects of the track in the 
     current ref cell. Base on the idea that the pipe will only
     have to cut solid system [ie. not inner voids]
+    \param OGrp :: Object map
     \param LT :: Line track
     \param AIndex :: start index
     \param BIndex :: end index
@@ -516,8 +520,6 @@ portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   AIndex=0;
   BIndex=0;
@@ -528,7 +530,7 @@ portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
     {
       const MonteCarlo::Object* oPtr=OVec[i];
       const int ONum=oPtr->getName();
-      if (OR.hasCell(refComp,ONum))
+      if (OGrp.hasCell(refComp,ONum))
 	{
 	  if (oPtr->getDensity()>0.01)
 	    {
@@ -585,7 +587,7 @@ portItem::constructTrack(Simulation& System)
   
   size_t AIndex,BIndex;
 
-  calcBoundaryCrossing(LT,AIndex,BIndex);
+  calcBoundaryCrossing(System,LT,AIndex,BIndex);
   constructOuterFlange(System,LT,AIndex,BIndex);
   createLinks(LT,AIndex,BIndex);
   return;

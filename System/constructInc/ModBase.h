@@ -42,8 +42,6 @@ class ModBase : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int modIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   std::vector<long int> flightSides;  ///< Sides for flight inde
 

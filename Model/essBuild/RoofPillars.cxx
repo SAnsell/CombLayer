@@ -3,7 +3,7 @@
  
  * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -66,6 +65,8 @@
 #include "SurInter.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -91,11 +92,9 @@ namespace essSystem
 {
 
 RoofPillars::RoofPillars(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedComp(Key,0,30000),
   attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),
-  rodIndex(ModelSupport::objectRegister::Instance().cell(Key,30000)),
-  cellIndex(rodIndex+1)
+  attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -307,7 +306,7 @@ RoofPillars::populate(const FuncDataBase& Control)
   int index(0);
   for(size_t i=0;i<nRadius;i++)
     {
-      const std::string Num=StrFunc::makeString(i);
+      const std::string Num=std::to_string(i);
       const size_t nSector=Control.EvalPair<size_t>
         (keyName+"NSector"+Num,keyName+"NSector");
       const double rotRadius=Control.EvalPair<double>
@@ -435,7 +434,7 @@ RoofPillars::createSurfaces()
 
   if (topFootHeight>Geometry::zeroTol)
     {
-      int RI(rodIndex);
+      int RI(buildIndex);
       const std::set<int> FS= FrontBackCut::getBackRule().getSurfSet();
       int footIndex(RI);  // in case multiple surfaces
       for(const int& SNum : FS)
@@ -480,7 +479,7 @@ RoofPillars::createSurfaces()
 
   for(const std::map<std::string,pillarInfo>::value_type& PItem : PInfo)
     {
-      const int RI(rodIndex+50*PItem.second.RI);
+      const int RI(buildIndex+50*PItem.second.RI);
       const Geometry::Vec3D& CP(PItem.second.centPoint);
       const Geometry::Vec3D& YAxis(PItem.second.YAxis);
       const Geometry::Vec3D& XAxis=Z*YAxis;
@@ -535,7 +534,7 @@ RoofPillars::createObjects(Simulation& System)
     
   for(const std::map<std::string,pillarInfo>::value_type& PItem : PInfo)
     {
-      const int RI(rodIndex+50*PItem.second.RI);
+      const int RI(buildIndex+50*PItem.second.RI);
       if (PItem.second.active)
 	{
 	  Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
@@ -637,7 +636,7 @@ RoofPillars::getInterPillarBoundary(const int aSurf,const int bSurf,
 {
   ELog::RegMethod RegA("RoofPillar","getInterPillarBoundary");
 
-  const int RIvec[2] {rodIndex+aIR*50,rodIndex+bIR*50};
+  const int RIvec[2] {buildIndex+aIR*50,buildIndex+bIR*50};
   const Geometry::Plane* FB[2];
   HeadRule Out;
   for(size_t i=0;i<2;i++)
@@ -813,7 +812,7 @@ RoofPillars::createCrossBeams(Simulation& System)
 
   typedef std::pair<std::string,std::string> SPAIR;
   ELog::EM<<"Cross BEAM:"<<beamLinks.size()<<ELog::endDiag;
-  int RI(rodIndex+10000);
+  int RI(buildIndex+10000);
   for(const SPAIR& BItem : beamLinks)
     {
       Geometry::Vec3D midPoint;
@@ -855,7 +854,7 @@ RoofPillars::createLongBeams(Simulation& System)
 
   typedef std::pair<std::string,std::string> SPAIR;
   ELog::EM<<"Long BEAM:"<<longLinks.size()<<ELog::endDiag;
-  int RI(rodIndex+20000);
+  int RI(buildIndex+20000);
   for(const SPAIR& BItem : longLinks)
     {
       Geometry::Vec3D midPoint;
@@ -902,7 +901,7 @@ RoofPillars::insertPillars(Simulation& System,
     {
       if (PItem.second.active)
 	{
-	  const int RI(rodIndex+50*PItem.second.RI);
+	  const int RI(buildIndex+50*PItem.second.RI);
 	  Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 ");
 	  HeadRule HR(Out);
 	  HR.makeComplement();

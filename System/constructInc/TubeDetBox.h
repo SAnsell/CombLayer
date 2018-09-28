@@ -45,8 +45,6 @@ class TubeDetBox : public attachSystem::ContainedComp,
   const std::string baseName;  ///< Base name
   const size_t ID;             ///< ID Number
 
-  const int detIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int active;                   ///< Build / no build flag
   double centRadius;            ///< Radius of from centre

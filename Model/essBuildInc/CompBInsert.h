@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CompBInsert.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,6 @@ class CompBInsert : public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut
 {
  private:
-  
-  const int insIndex;            ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
 
   size_t NBox;                   ///< number of boxes
   std::vector<double> width;     ///< inner width of each box

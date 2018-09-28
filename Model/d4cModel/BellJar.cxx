@@ -3,7 +3,7 @@
  
  * File:   d4cModel/BellJar.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,14 +57,16 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BellJar.h"
 
@@ -72,9 +74,7 @@ namespace d4cSystem
 {
 
 BellJar::BellJar(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
-  bellIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bellIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -82,10 +82,8 @@ BellJar::BellJar(const std::string& Key) :
 {}
 
 BellJar::BellJar(const BellJar& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  bellIndex(A.bellIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),radius(A.radius),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  radius(A.radius),
   wallThick(A.wallThick),height(A.height),wallMat(A.wallMat),
   colRadius(A.colRadius),colWidth(A.colWidth),
   colFront(A.colFront),colBack(A.colBack),colMat(A.colMat),
@@ -108,13 +106,7 @@ BellJar::operator=(const BellJar& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      attachSystem::FixedOffset::operator=(A);
       radius=A.radius;
       wallThick=A.wallThick;
       height=A.height;
@@ -147,13 +139,8 @@ BellJar::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BellJar","populate");
 
-
+  FixedOffset::populate(Control);
     // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -171,28 +158,28 @@ BellJar::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   int NL(1);
-  std::string KN=keyName+StrFunc::makeString("ColAngle",NL);
+  std::string KN=keyName+"ColAngle"+std::to_string(NL);
   while(Control.hasVariable(KN))
     {
       colAngle.push_back(Control.EvalVar<double>(KN)*M_PI/180.0);
-      KN=keyName+StrFunc::makeString("ColAngle",++NL);
+      KN=keyName+"ColAngle"+std::to_string(++NL);
     }
 
   return;
 }
 
 void
-BellJar::createUnitVector(const attachSystem::FixedComp& FC)
+BellJar::createUnitVector(const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp for origin
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("BellJar","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -205,21 +192,21 @@ BellJar::createSurfaces()
 {
   ELog::RegMethod RegA("BellJar","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,bellIndex+7,Origin,Z,radius);  
-  ModelSupport::buildCylinder(SMap,bellIndex+17,Origin,Z,radius+wallThick);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius+wallThick);  
   // Inner void
   if (!colAngle.empty())
-    ModelSupport::buildCylinder(SMap,bellIndex+27,Origin,Z,colRadius-1.0);  
+    ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,colRadius-1.0);  
   
-  ModelSupport::buildPlane(SMap,bellIndex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,bellIndex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);  
 
-  ModelSupport::buildPlane(SMap,bellIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,bellIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);  
 
-  int SI(bellIndex+100);
+  int SI(buildIndex+100);
 
   for(size_t i=0;i<colAngle.size();i++)
     {
@@ -270,21 +257,21 @@ BellJar::createObjects(Simulation& System)
   // First make inner/outer void/wall and top/base
   
   // Make general 
-  Out=ModelSupport::getComposite(SMap,bellIndex," 15 -16 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -16 -17 ");
   addOuterSurf(Out);
 
   // Outer Wall
-  Out=ModelSupport::getSetComposite(SMap,bellIndex," 15 -16 -17 (7:-5:6)");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 15 -16 -17 (7:-5:6)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // Assuming a mid void boundary:
   if (!colAngle.empty())
     {
-      Out=ModelSupport::getSetComposite(SMap,bellIndex," 5 -6 -27");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -27");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
       innerVoid=cellIndex-1;
 
-      Out=ModelSupport::getSetComposite(SMap,bellIndex," 5 -6 -7 27");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -7 27");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
       midVoid=cellIndex-1;
 
@@ -294,13 +281,13 @@ BellJar::createObjects(Simulation& System)
       if (!voidObj)
 	throw ColErr::InContainerError<int>(midVoid,
 					    "midVoid in System:Objects");
-      int SI(bellIndex+100);
+      int SI(buildIndex+100);
       for(size_t i=0;i<colAngle.size();i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,bellIndex,
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 " 3 -4 8 -9 5M -6M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
-	  Out=ModelSupport::getComposite(SMap,SI,bellIndex,
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 " 13 -14 18 -19 5M -6M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
 	  if (colMat)
@@ -317,7 +304,7 @@ BellJar::createObjects(Simulation& System)
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,bellIndex," 5 -6 -7");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -7");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
       innerVoid=cellIndex-1;
       midVoid=0;
@@ -338,17 +325,19 @@ BellJar::createLinks()
 
 
 void
-BellJar::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+BellJar::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+		   const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComp to add
+    \param sideIndex :: Link point
    */
 {
   ELog::RegMethod RegA("BellJar","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/vor/DetectorTank.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +83,7 @@ namespace essSystem
 
 DetectorTank::DetectorTank(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),attachSystem::CellMap(),
-  tankIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tankIndex+1)
+  attachSystem::FixedOffset(Key,6),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,7 +93,6 @@ DetectorTank::DetectorTank(const std::string& Key)  :
 DetectorTank::DetectorTank(const DetectorTank& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  tankIndex(A.tankIndex),cellIndex(A.cellIndex),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   midAngle(A.midAngle),height(A.height),innerThick(A.innerThick),
   frontThick(A.frontThick),backThick(A.backThick),
@@ -117,7 +116,6 @@ DetectorTank::operator=(const DetectorTank& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
       midAngle=A.midAngle;
@@ -193,29 +191,29 @@ DetectorTank::createSurfaces()
 {
   ELog::RegMethod RegA("DetectorTank","createSurface");
 
-  ModelSupport::buildPlaneRotAxis(SMap,tankIndex+1,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+1,
 				  Origin,Y,Z,midAngle);
-  const Geometry::Plane* PX=SMap.realPtr<Geometry::Plane>(tankIndex+1);
-  ModelSupport::buildShiftedPlane(SMap,tankIndex+11,PX,-frontThick);
+  const Geometry::Plane* PX=SMap.realPtr<Geometry::Plane>(buildIndex+1);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,PX,-frontThick);
   
 
-  ModelSupport::buildPlane(SMap,tankIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,tankIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,tankIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+roofThick),Z);
-  ModelSupport::buildPlane(SMap,tankIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+roofThick),Z);
 
 
-  ModelSupport::buildCylinder(SMap,tankIndex+7,Origin,Z,innerRadius);
-  ModelSupport::buildCylinder(SMap,tankIndex+8,Origin,Z,outerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Z,outerRadius);
 
-  ModelSupport::buildCylinder(SMap,tankIndex+17,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,
 			      Z,innerRadius+innerThick);
-  ModelSupport::buildCylinder(SMap,tankIndex+18,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,
 			      Z,outerRadius+backThick);
 
   
@@ -234,44 +232,44 @@ DetectorTank::createObjects(Simulation& System)
   std::string Out;
 
   // Main voids
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-7 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("SampleVoid",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"1 5 -6 7 -8");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 5 -6 7 -8");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("DetVoid",cellIndex-1);
 
   // WALLS:
   // sample
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 7 5 -6 -1");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 7 5 -6 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
   // front wall
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-8 17 5 -6 -1 11");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-8 17 5 -6 -1 11");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
   // Detector wall
-  Out=ModelSupport::getComposite(SMap,tankIndex,"5 -6 11 8 -18");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 11 8 -18");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   // Roof wall
-  Out=ModelSupport::getComposite(SMap,tankIndex,"6 -16 11 -18 17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"6 -16 11 -18 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat+1,0.0,Out));
   addCell("RoofSteel",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"6 -16 -17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"6 -16 -17");
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   //  addCell("RoofSteel",cellIndex-1);
 
     // Detector wall
-  Out=ModelSupport::getComposite(SMap,tankIndex,"5 -6 11 8 -18");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 11 8 -18");
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   //  addCell("Steel",cellIndex-1);
   
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"5 -16 ((11 -18) : -17)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -16 ((11 -18) : -17)");
   addOuterSurf(Out);
   
   return;

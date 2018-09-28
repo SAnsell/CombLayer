@@ -50,8 +50,6 @@ class TwinBase :
 {
  protected:
   
-  const int houseIndex;          ///< Index of surface offset
-  int cellIndex;                 ///< Cell index  
 
   Geometry::Vec3D lowOutCent;    ///< Low centre of outer metal
   Geometry::Vec3D topOutCent;    ///< Top centre of outer metal

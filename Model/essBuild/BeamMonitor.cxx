@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,9 +85,7 @@ namespace essSystem
 {
 
 BeamMonitor::BeamMonitor(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  monIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(monIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
   /*!
     Constructor
     \param Key :: Keyname for system
@@ -94,8 +94,8 @@ BeamMonitor::BeamMonitor(const std::string& Key) :
 
 BeamMonitor::BeamMonitor(const BeamMonitor& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  monIndex(A.monIndex),cellIndex(A.cellIndex),nSec(A.nSec),
-  radius(A.radius),thick(A.thick),mat(A.mat),halfThick(A.halfThick)
+  nSec(A.nSec),radius(A.radius),thick(A.thick),
+  mat(A.mat),halfThick(A.halfThick)
   /*!
     Copy constructor
     \param A :: BeamMonitor to copy
@@ -114,7 +114,6 @@ BeamMonitor::operator=(const BeamMonitor& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       nSec=A.nSec;
       radius=A.radius;
       thick=A.thick;
@@ -198,7 +197,7 @@ BeamMonitor::createSurfaces()
   halfThick=std::accumulate(thick.begin(),thick.end(),
 			    0.0,std::plus<double>())/2.0;
 
-  int BM(monIndex);
+  int BM(buildIndex);
   double T(-halfThick);
   for(size_t i=0;i<nSec;i++)
     {
@@ -273,7 +272,7 @@ BeamMonitor::createObjects(Simulation& System,
   ELog::RegMethod RegA("BeamMonitor","createObjects");
     
   std::string Out;
-  int BM(monIndex);
+  int BM(buildIndex);
   for(size_t i=0;i<nSec;i++)
     {
       Out=ModelSupport::getComposite(SMap,BM,"1 -11 -7 ");      

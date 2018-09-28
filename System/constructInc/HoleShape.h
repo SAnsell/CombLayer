@@ -40,8 +40,6 @@ class HoleShape : public attachSystem::ContainedComp,
 {
  private:
 
-  const int holeIndex;          ///< Hole index
-  int cellIndex;                ///< Cell index
   
   size_t shapeType;             ///< Shape index
 
