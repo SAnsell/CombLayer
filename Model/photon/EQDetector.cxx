@@ -3,7 +3,7 @@
  
  * File:   photon/EQDetector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
@@ -75,9 +74,7 @@ namespace photonSystem
 {
       
 EQDetector::EQDetector(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  detIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(detIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -86,7 +83,7 @@ EQDetector::EQDetector(const std::string& Key) :
 
 EQDetector::EQDetector(const EQDetector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  detIndex(A.detIndex),cellIndex(A.cellIndex),yOffset(A.yOffset),
+  yOffset(A.yOffset),
   radius(A.radius),length(A.length),boxLength(A.boxLength),
   boxHeight(A.boxHeight),boxWidth(A.boxWidth),boxLead(A.boxLead),
   boxPlastic(A.boxPlastic),viewRadius(A.viewRadius),
@@ -109,7 +106,6 @@ EQDetector::operator=(const EQDetector& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       yOffset=A.yOffset;
       radius=A.radius;
       length=A.length;
@@ -197,46 +193,46 @@ EQDetector::createSurfaces()
   ELog::RegMethod RegA("EQDetector","createSurfaces");
 
   // Outer surfaces:
-  ModelSupport::buildPlane(SMap,detIndex+1,Origin+Y*yOffset,Y);  
-  ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*(yOffset+length),Y);  
-  ModelSupport::buildCylinder(SMap,detIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*yOffset,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(yOffset+length),Y);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   // Inner void
-  ModelSupport::buildPlane(SMap,detIndex+101,Origin,Y);
-  ModelSupport::buildPlane(SMap,detIndex+102,Origin+Y*boxLength,Y);
-  ModelSupport::buildPlane(SMap,detIndex+103,Origin-X*(boxWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,detIndex+104,Origin+X*(boxWidth/2.0),X);  
-  ModelSupport::buildPlane(SMap,detIndex+105,Origin-Z*(boxHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,detIndex+106,Origin+Z*(boxHeight/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*boxLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(boxWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(boxWidth/2.0),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(boxHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(boxHeight/2.0),Z);  
 
   // Lead Wall [Inner]
-  ModelSupport::buildPlane(SMap,detIndex+201,Origin-Y*boxLead,Y);
-  ModelSupport::buildPlane(SMap,detIndex+202,Origin+Y*(boxLength+boxLead),Y);
-  ModelSupport::buildPlane(SMap,detIndex+203,
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*boxLead,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(boxLength+boxLead),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+203,
 			   Origin-X*(boxLead+boxWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,detIndex+204,
+  ModelSupport::buildPlane(SMap,buildIndex+204,
 			   Origin+X*(boxLead+boxWidth/2.0),X);  
-  ModelSupport::buildPlane(SMap,detIndex+205,
+  ModelSupport::buildPlane(SMap,buildIndex+205,
 			   Origin-Z*(boxLead+boxHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,detIndex+206,
+  ModelSupport::buildPlane(SMap,buildIndex+206,
 			   Origin+Z*(boxLead+boxHeight/2.0),Z);  
 
   // Plastic Wall [Outer]
 
-  ModelSupport::buildPlane(SMap,detIndex+302,
+  ModelSupport::buildPlane(SMap,buildIndex+302,
 			   Origin+Y*(boxLength+boxPlastic+boxLead),Y);
-  ModelSupport::buildPlane(SMap,detIndex+303,
+  ModelSupport::buildPlane(SMap,buildIndex+303,
 			   Origin-X*(boxPlastic+boxLead+boxWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,detIndex+304,
+  ModelSupport::buildPlane(SMap,buildIndex+304,
 			   Origin+X*(boxPlastic+boxLead+boxWidth/2.0),X);  
-  ModelSupport::buildPlane(SMap,detIndex+305,
+  ModelSupport::buildPlane(SMap,buildIndex+305,
 			   Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,detIndex+306,
+  ModelSupport::buildPlane(SMap,buildIndex+306,
 			   Origin+Z*(boxPlastic+boxLead+boxHeight/2.0),Z);  
 
 
   // Cut out in front
-  ModelSupport::buildCylinder(SMap,detIndex+107,Origin,Y,viewRadius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,viewRadius);  
   return; 
 }
 
@@ -251,35 +247,35 @@ EQDetector::createObjects(Simulation& System)
 
   std::string Out;
   // Detector
-  Out=ModelSupport::getComposite(SMap,detIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
 
   // void
-  Out=ModelSupport::getComposite(SMap,detIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "101 -102 103 -104 105 -106 (-1:2:7) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // lead liner
-  Out=ModelSupport::getComposite(SMap,detIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -202 203 -204 205 -206 "
 				 "(102:-103:104:-105:106)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,leadMat,0.0,Out));
 
   // plastic liner
-  Out=ModelSupport::getComposite(SMap,detIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -302 303 -304 305 -306 "
 				 "(202:-203:204:-205:206)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plasticMat,0.0,Out));
 
 
   // Front wall 
-  Out=ModelSupport::getComposite(SMap,detIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -101 103 -104 105 -106 107");
   System.addCell(MonteCarlo::Qhull(cellIndex++,leadMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,detIndex,"201 -101 -107");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -101 -107");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,detIndex,"201 -302 303 -304 305 -306");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"201 -302 303 -304 305 -306");
   addOuterSurf(Out);
   return; 
 }
@@ -293,22 +289,22 @@ EQDetector::createLinks()
   ELog::RegMethod RegA("EQDetector","createLinks");
   
   FixedComp::setConnect(0,Origin-Y*boxLead,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(detIndex+201));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
 
   FixedComp::setConnect(1,Origin-Y*(boxLength+boxPlastic+boxLead),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(detIndex+302));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+302));
 
   FixedComp::setConnect(2,Origin-X*(boxPlastic+boxLead+boxWidth/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(detIndex+303));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+303));
 
   FixedComp::setConnect(3,Origin+X*(boxPlastic+boxLead+boxWidth/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(detIndex+304));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+304));
 
   FixedComp::setConnect(4,Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(detIndex+305));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+305));
 
   FixedComp::setConnect(5,Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(detIndex+306));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+306));
 
   return;
 }

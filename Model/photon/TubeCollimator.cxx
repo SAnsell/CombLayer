@@ -3,7 +3,7 @@
  
  * File:   photon/TubeCollimator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +42,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -84,14 +82,61 @@ namespace photonSystem
 
 TubeCollimator::TubeCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  rodIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(rodIndex+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+TubeCollimator::TubeCollimator(const TubeCollimator& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  layoutType(A.layoutType),boundaryType(A.boundaryType),
+  nLinks(A.nLinks),nTubeLayers(A.nTubeLayers),GGrid(A.GGrid),
+  length(A.length),radius(A.radius),wallThick(A.wallThick),
+  centSpc(A.centSpc),wallMat(A.wallMat),boundaryRotAngle(A.boundaryRotAngle),
+  layoutRotAngle(A.layoutRotAngle),gridExclude(A.gridExclude),
+  AAxis(A.AAxis),BAxis(A.BAxis),CAxis(A.CAxis),
+  boundary(A.boundary),voidBoundary(A.voidBoundary)
+  /*!
+    Copy constructor
+    \param A :: TubeCollimator to copy
+  */
+{}
+
+TubeCollimator&
+TubeCollimator::operator=(const TubeCollimator& A)
+  /*!
+    Assignment operator
+    \param A :: TubeCollimator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      layoutType=A.layoutType;
+      boundaryType=A.boundaryType;
+      nLinks=A.nLinks;
+      nTubeLayers=A.nTubeLayers;
+      GGrid=A.GGrid;
+      length=A.length;
+      radius=A.radius;
+      wallThick=A.wallThick;
+      centSpc=A.centSpc;
+      wallMat=A.wallMat;
+      boundaryRotAngle=A.boundaryRotAngle;
+      layoutRotAngle=A.layoutRotAngle;
+      gridExclude=A.gridExclude;
+      AAxis=A.AAxis;
+      BAxis=A.BAxis;
+      CAxis=A.CAxis;
+      boundary=A.boundary;
+      voidBoundary=A.voidBoundary;
+    }
+  return *this;
+}
 
 TubeCollimator::~TubeCollimator() 
   /*!
@@ -242,22 +287,22 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
        Qab.rotate(AX);
        Qab.rotate(BZ);
 
-       ModelSupport::buildPlane(SMap,rodIndex+5003,Origin-AX*(width/2.0),AX);
-       ModelSupport::buildPlane(SMap,rodIndex+5004,Origin+AX*(width/2.0),AX);
-       ModelSupport::buildPlane(SMap,rodIndex+5005,Origin-BZ*(height/2.0),BZ);
-       ModelSupport::buildPlane(SMap,rodIndex+5006,Origin+BZ*(height/2.0),BZ);
+       ModelSupport::buildPlane(SMap,buildIndex+5003,Origin-AX*(width/2.0),AX);
+       ModelSupport::buildPlane(SMap,buildIndex+5004,Origin+AX*(width/2.0),AX);
+       ModelSupport::buildPlane(SMap,buildIndex+5005,Origin-BZ*(height/2.0),BZ);
+       ModelSupport::buildPlane(SMap,buildIndex+5006,Origin+BZ*(height/2.0),BZ);
 
        // created for outer boundary
-       ModelSupport::buildPlane(SMap,rodIndex+6003,Origin-AX*((width+centSpc)/2.0),AX);
-       ModelSupport::buildPlane(SMap,rodIndex+6004,Origin+AX*((width+centSpc)/2.0),AX);
-       ModelSupport::buildPlane(SMap,rodIndex+6005,Origin-BZ*((height+centSpc)/2.0),BZ);
-       ModelSupport::buildPlane(SMap,rodIndex+6006,Origin+BZ*((height+centSpc)/2.0),BZ);
+       ModelSupport::buildPlane(SMap,buildIndex+6003,Origin-AX*((width+centSpc)/2.0),AX);
+       ModelSupport::buildPlane(SMap,buildIndex+6004,Origin+AX*((width+centSpc)/2.0),AX);
+       ModelSupport::buildPlane(SMap,buildIndex+6005,Origin-BZ*((height+centSpc)/2.0),BZ);
+       ModelSupport::buildPlane(SMap,buildIndex+6006,Origin+BZ*((height+centSpc)/2.0),BZ);
 
        
-       Out=ModelSupport::getComposite(SMap,rodIndex," 5003 -5004 5005 -5006 ");
+       Out=ModelSupport::getComposite(SMap,buildIndex," 5003 -5004 5005 -5006 ");
        boundary.procString(Out);
        boundary.populateSurf();
-       Out=ModelSupport::getComposite(SMap,rodIndex," 6003 -6004 6005 -6006 ");
+       Out=ModelSupport::getComposite(SMap,buildIndex," 6003 -6004 6005 -6006 ");
        voidBoundary.procString(Out);
        voidBoundary.populateSurf();
     }
@@ -265,14 +310,14 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
     {
       const double radius=
 	Control.EvalVar<double>(keyName+"Radius");
-      ModelSupport::buildCylinder(SMap,rodIndex+5007,Origin,Y,radius);
+      ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,radius);
       // Outer boundary
-      ModelSupport::buildCylinder(SMap,rodIndex+5007,Origin,Y,radius+centSpc/2.0);
+      ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,radius+centSpc/2.0);
       
-      Out=ModelSupport::getComposite(SMap,rodIndex," -5007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -5007 ");
       boundary.procString(Out);
       boundary.populateSurf();
-      Out=ModelSupport::getComposite(SMap,rodIndex," -6007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -6007 ");
       voidBoundary.procString(Out);
       voidBoundary.populateSurf();
     }
@@ -383,7 +428,7 @@ TubeCollimator::createJoinSurf()
   ELog::RegMethod RegA("TubeCollimator","createLinkSurf");
 
   const size_t nLinksHalf(nLinks/2);
-  int planeIndex(rodIndex+1001);
+  int planeIndex(buildIndex+1001);
 
   for(MTYPE::value_type& AG : GGrid)
     {
@@ -495,14 +540,14 @@ TubeCollimator::createCells(Simulation& System)
 {
   ELog::RegMethod RegA("TubeCollimator","createTubes");
   
-  ModelSupport::buildPlane(SMap,rodIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,rodIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   const std::string FBStr=
-    ModelSupport::getComposite(SMap,rodIndex," 1 -2 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
   const std::string OutBoundary=boundaryString();
   
-  int RI(rodIndex);
+  int RI(buildIndex);
   for(MTYPE::value_type& MU : GGrid)
     {
       constructSystem::gridUnit* APtr= MU.second;
@@ -558,7 +603,7 @@ TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
 	  int extraSurfN=LPtr->clearBoundary((i+3) % nLinks);
 	  if (extraSurfN)
 	    {
-	      Out+=StrFunc::makeString(extraSurfN)+" ";
+	      Out+=std::to_string(extraSurfN)+" ";
 	      extraSurfN=0;
 	    }
 	  if (!extraSurfN)
@@ -584,7 +629,7 @@ TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
 		  for(size_t j=0;j<SNum.size();j++)
 		    {
 		      if (InnerControl.isValid(Pts[j],SNum[j]))
-			Out+=StrFunc::makeString(-SNum[j])+" ";
+			Out+=std::to_string(-SNum[j])+" ";
 		    }
 		}
 	    }
@@ -604,15 +649,15 @@ TubeCollimator::createTubes(Simulation& System)
 {
   ELog::RegMethod RegA("TubeCollimator","createTubes");
 
-  ModelSupport::buildPlane(SMap,rodIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,rodIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   const std::string FBStr=
-    ModelSupport::getComposite(SMap,rodIndex," 1 -2 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
   
   std::string Out;
-  int RI(rodIndex);
+  int RI(buildIndex);
 
   // Outer boundary:
   const std::string OutBoundary=boundaryString();
@@ -669,10 +714,10 @@ TubeCollimator::boundaryString() const
   ELog::RegMethod RegA("TubeCollimator","createBoundary");
 
   if (boundaryType=="Rectangle" || boundaryType=="rectangle")
-    return ModelSupport::getComposite(SMap,rodIndex," 6003 -6004 6005 -6006");
+    return ModelSupport::getComposite(SMap,buildIndex," 6003 -6004 6005 -6006");
   
   if (boundaryType=="Circle" || boundaryType=="circle")
-    return ModelSupport::getComposite(SMap,rodIndex," -6007");
+    return ModelSupport::getComposite(SMap,buildIndex," -6007");
 
   return "";
 }
@@ -687,10 +732,10 @@ TubeCollimator::createLinks()
   ELog::RegMethod RegA("VacuumVessel","createLinks");
   
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(rodIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(rodIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   return;
 }
 

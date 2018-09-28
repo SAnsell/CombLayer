@@ -3,7 +3,7 @@
  
  * File:   epbBuildInc/EPBline.h
 *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,19 +36,10 @@ namespace epbSystem
 */
 
 class EPBline : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
-  const int epbIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< X step
-  double yStep;                 ///< Y step
-  double zStep;                 ///< Z Step
-  double xyAngle;
-  double zAngle;
-
   double innerRad;             ///< Inner radius 
   double wallThick;            ///< Wall thick
   int wallMat;                 ///< Wall Mat

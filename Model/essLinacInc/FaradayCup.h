@@ -40,8 +40,6 @@ class FaradayCup : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int active; ///< On/Off switch
   int engActive;                ///< Engineering active flag

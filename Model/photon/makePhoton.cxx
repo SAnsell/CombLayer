@@ -160,7 +160,7 @@ makePhoton::build(Simulation* SimPtr,
 
   
   OuterObj->addInsertCell(voidCell);
-  OuterObj->createAll(*SimPtr,World::masterOrigin());
+  OuterObj->createAll(*SimPtr,World::masterOrigin(),0);
   return;
   CatcherObj->addInsertCell(voidCell);
   CatcherObj->createAll(*SimPtr,*OuterObj,-1);

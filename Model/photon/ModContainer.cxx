@@ -82,8 +82,6 @@ namespace photonSystem
 ModContainer::ModContainer(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(modIndex+1),
   FrontFlange(new constructSystem::RingFlange(keyName+"FFlange")),
   BackFlange(new constructSystem::RingFlange(keyName+"BFlange"))
   /*!
@@ -102,7 +100,7 @@ ModContainer::ModContainer(const std::string& Key) :
 ModContainer::ModContainer(const ModContainer& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),  
-  modIndex(A.modIndex),cellIndex(A.cellIndex),length(A.length),
+  length(A.length),
   radius(A.radius),thick(A.thick),mat(A.mat),temp(A.temp),
   FrontFlange(new constructSystem::RingFlange(*A.FrontFlange))
   
@@ -125,7 +123,6 @@ ModContainer::operator=(const ModContainer& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       radius=A.radius;
       thick=A.thick;
@@ -198,11 +195,11 @@ ModContainer::createSurfaces()
   ELog::RegMethod RegA("ModContainer","createSurfaces");
 
   // Outer surfaces:
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin+Y*(length/2.0),Y);  
-  ModelSupport::buildCylinder(SMap,modIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,modIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Y,radius+thick);
 
   return; 
@@ -219,16 +216,16 @@ ModContainer::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 1 -2 7 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
   addCell("Skin",cellIndex-1);
   
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 1 -2 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 ");
   addOuterSurf(Out);
 
   return; 
@@ -243,25 +240,25 @@ ModContainer::createLinks()
   ELog::RegMethod RegA("ModContainer","createLinks");
   
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(modIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(modIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(radius+thick),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(modIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
   
   FixedComp::setConnect(3,Origin+X*(radius+thick),-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(modIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
 
   FixedComp::setConnect(4,Origin-Z*(radius+thick),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(modIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
 
   FixedComp::setConnect(5,Origin+Z*(radius+thick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(modIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
 
   FixedComp::setConnect(8,Origin-X*radius,X);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+7));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+7));
 
   return;
 }

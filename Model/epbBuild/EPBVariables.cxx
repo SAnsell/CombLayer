@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   epbBuild/EPBVariables.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -71,8 +70,8 @@ EPBVariables(FuncDataBase& Control)
   Control.addVariable("LineVoidXStep",0.0);  
   Control.addVariable("LineVoidYStep",0.0);  
   Control.addVariable("LineVoidZStep",0.0);  
-  Control.addVariable("LineVoidXYangle",0.0);  
-  Control.addVariable("LineVoidZangle",0.0);  
+  Control.addVariable("LineVoidXYAngle",0.0);  
+  Control.addVariable("LineVoidZAngle",0.0);  
   Control.addVariable("LineVoidInnerRad",4.0); 
   Control.addVariable("LineVoidWallThick",1.0); 
   Control.addVariable("LineVoidWallMat",3); 
@@ -95,8 +94,8 @@ EPBVariables(FuncDataBase& Control)
   Control.addVariable("MagnetXStep",0.0); 
   Control.addVariable("MagnetYStep",0.0); 
   Control.addVariable("MagnetZStep",0.0); 
-  Control.addVariable("MagnetXYangle",0.0); 
-  Control.addVariable("MagnetZangle",0.0); 
+  Control.addVariable("MagnetXYAngle",0.0); 
+  Control.addVariable("MagnetZAngle",0.0); 
   Control.addVariable("MagnetWidth",90.0); 
   Control.addVariable("MagnetHeight",90.0); 
   Control.addVariable("MagnetLength",180.0); 
@@ -116,8 +115,8 @@ EPBVariables(FuncDataBase& Control)
   Control.addVariable("FocusXStep",0.0); 
   Control.addVariable("FocusYStep",0.0); 
   Control.addVariable("FocusZStep",0.0); 
-  Control.addVariable("FocusXYangle",0.0); 
-  Control.addVariable("FocusZangle",0.0); 
+  Control.addVariable("FocusXYAngle",0.0); 
+  Control.addVariable("FocusZAngle",0.0); 
   Control.addVariable("FocusWidth",50.0); 
   Control.addVariable("FocusHeight",50.0); 
   Control.addVariable("FocusLength",100.0); 
@@ -136,8 +135,8 @@ EPBVariables(FuncDataBase& Control)
   Control.addVariable("HallXStep",0.0); 
   Control.addVariable("HallYStep",0.0); 
   Control.addVariable("HallZStep",0.0); 
-  Control.addVariable("HallXYangle",0.0); 
-  Control.addVariable("HallZangle",0.0); 
+  Control.addVariable("HallXYAngle",0.0); 
+  Control.addVariable("HallZAngle",0.0); 
   Control.addVariable("HallLength",2000.0); 
   Control.addVariable("HallWidth",400.0); 
   Control.addVariable("HallDepth",100.0); 

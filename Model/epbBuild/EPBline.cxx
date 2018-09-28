@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   epbBuild/EPBline.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -73,7 +72,7 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "channel.h"
 #include "boxValues.h"
@@ -86,9 +85,7 @@ namespace epbSystem
 
 EPBline::EPBline(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,10),
-  epbIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(epbIndex+1)
+  attachSystem::FixedOffset(Key,10)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,10 +93,8 @@ EPBline::EPBline(const std::string& Key)  :
 {}
 
 EPBline::EPBline(const EPBline& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  epbIndex(A.epbIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),innerRad(A.innerRad),wallThick(A.wallThick),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  innerRad(A.innerRad),wallThick(A.wallThick),
   wallMat(A.wallMat),nSeg(A.nSeg),Pts(A.Pts),YVec(A.YVec),
   Cent(A.Cent)
   /*!
@@ -120,12 +115,6 @@ EPBline::operator=(const EPBline& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       innerRad=A.innerRad;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
@@ -153,13 +142,7 @@ EPBline::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("EPBline","populate");  
   const FuncDataBase& Control=System.getDataBase();
-
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   innerRad=Control.EvalVar<double>(keyName+"InnerRad");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -191,8 +174,7 @@ EPBline::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("EPBline","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   for(size_t i=0;i<nSeg;i++)
     {
@@ -215,20 +197,20 @@ EPBline::createSurfaces()
 {
   ELog::RegMethod RegA("EPBline","createSurface");
 
-  int PI(epbIndex);
+  int PI(buildIndex);
   for(size_t i=0;i<nSeg;i++)
     {
       ModelSupport::buildPlane(SMap,PI+1,Pts[i],YVec[i]);        
       PI+=100;
     }
-  ModelSupport::buildPlane(SMap,epbIndex+3,Pts[0]-X*innerRad,X);        
-  ModelSupport::buildPlane(SMap,epbIndex+4,Pts[0]+X*innerRad,X);        
-  ModelSupport::buildPlane(SMap,epbIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+3,Pts[0]-X*innerRad,X);        
+  ModelSupport::buildPlane(SMap,buildIndex+4,Pts[0]+X*innerRad,X);        
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Pts[0]-X*(innerRad+wallThick),X);        
-  ModelSupport::buildPlane(SMap,epbIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Pts[0]+X*(innerRad+wallThick),X);        
 
-  PI=epbIndex;
+  PI=buildIndex;
   for(size_t i=1;i<nSeg;i++)
     {
       const Geometry::Vec3D ZV=X*YVec[i];
@@ -257,15 +239,15 @@ EPBline::createObjects(Simulation& System)
   
   std::string Out;
 
-  int PI(epbIndex);
+  int PI(buildIndex);
   for(size_t i=1;i<nSeg;i++)
     {
-      Out=ModelSupport::getComposite(SMap,PI,epbIndex, "1 -101 3M -4M 5 -6");
+      Out=ModelSupport::getComposite(SMap,PI,buildIndex, "1 -101 3M -4M 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,PI,epbIndex, 
+      Out=ModelSupport::getComposite(SMap,PI,buildIndex, 
 				     "1 -101 13M -14M 15 -16 (-3M:4M:-5:6)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,PI,epbIndex, "1 -101 13M -14M 15 -16");
+      Out=ModelSupport::getComposite(SMap,PI,buildIndex, "1 -101 13M -14M 15 -16");
       addOuterUnionSurf(Out);
       PI+=100;
     }
@@ -281,18 +263,18 @@ EPBline::createLinks()
 {
 
   FixedComp::setConnect(0,Origin,-Y);     
-  FixedComp::setLinkSurf(0,-SMap.realSurf(epbIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   std::string Out;
-  int PI(epbIndex);
+  int PI(buildIndex);
   for(size_t i=1;i<nSeg;i++)
     {
       FixedComp::setConnect(1+i,Pts[i],YVec[i]);     
-      Out=ModelSupport::getComposite(SMap,PI,epbIndex,
+      Out=ModelSupport::getComposite(SMap,PI,buildIndex,
 				     "(-13M:14M:-15:16:-1:101)");
       FixedComp::addLinkSurf(1+i,Out);
-      // FixedComp::setLinkSurf(1+i,-SMap.realSurf(epbIndex+13));
-      // FixedComp::addLinkSurf(1+i,SMap.realSurf(epbIndex+14));
+      // FixedComp::setLinkSurf(1+i,-SMap.realSurf(buildIndex+13));
+      // FixedComp::addLinkSurf(1+i,SMap.realSurf(buildIndex+14));
       // FixedComp::addLinkSurf(1+i,-SMap.realSurf(PI+5));
       // FixedComp::addLinkSurf(1+i,SMap.realSurf(PI+6));
       // FixedComp::addLinkSurf(1+i,-SMap.realSurf(PI+1));

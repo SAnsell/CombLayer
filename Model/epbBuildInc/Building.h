@@ -3,7 +3,7 @@
  
  * File:   epbBuildInc/Building.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,20 +35,11 @@ namespace epbSystem
   \brief Building for EPB Hall
 */
 
-class Building : public attachSystem::FixedComp,
+class Building : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
   
-  const int hallIndex;         ///< Index of surface offset
-  int cellIndex;               ///< Cell index
-
-  double xStep;                ///< Master offset 
-  double yStep;                ///< Master offset 
-  double zStep;                ///< Master offset 
-  double xyAngle;              ///< Xy rotation
-  double zAngle;               ///< Rotation
-
   double height;               ///< Base of roof
   double depth;                ///< Top of floor level
   double width;                ///< Full width

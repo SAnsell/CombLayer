@@ -40,8 +40,6 @@ class DiscTarget : public attachSystem::FixedOffset,
 {
  private:
   
-  const int discIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   size_t NLayers;                  ///< Number of layers
   std::vector<double> depth;      ///< Depth
