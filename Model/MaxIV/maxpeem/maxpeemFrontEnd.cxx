@@ -92,7 +92,8 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "CrossPipe.h"
-#include "Wiggler.h"
+#include "UTubePipe.h"
+#include "Undulator.h"
 #include "SquareFMask.h"
 #include "FlangeMount.h"
 #include "HeatDump.h"
@@ -113,8 +114,9 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
 
-  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
-  wiggler(new Wiggler(newName+"Wiggler")),
+  //  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
+  undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
+  undulator(new xraySystem::Undulator(newName+"Undulator")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
@@ -161,8 +163,8 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(wigglerBox);
-  OR.addObject(wiggler);
+  OR.addObject(undulatorPipe);
+  OR.addObject(undulator);
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
   OR.addObject(bellowA);
@@ -600,18 +602,26 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
 
   int outerCell;
   MonteCarlo::Object& masterCell=constructMasterCell(System);
+
+  undulatorPipe->createAll(System,*this,0);
+  outerCell=createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  undulatorPipe->insertInCell(System,outerCell);
+
+  undulator->addInsertCell(outerCell);
+  undulator->createAll(System,*undulatorPipe,0);
+  // replace with undulator->insertComponent(string,CellMap,stirng);
+  undulatorPipe->insertInCell(System,undulator->getCell("Void"));
   
-  wigglerBox->createAll(System,*this,0);
-  outerCell=createOuterVoidUnit(System,masterCell,*wigglerBox,2);
-  wigglerBox->insertInCell(System,outerCell);
 
-  wiggler->addInsertCell(wigglerBox->getCell("Void"));
-  wiggler->createAll(System,*wigglerBox,0);
 
-  dipolePipe->setFront(*wigglerBox,2);
-  dipolePipe->createAll(System,*wigglerBox,2);
+
+
+  
+  dipolePipe->setFront(*undulatorPipe,2);
+  dipolePipe->createAll(System,*undulatorPipe,2);
   outerCell=createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
+
 
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
@@ -657,7 +667,7 @@ maxpeemFrontEnd::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*wiggler,1);
+  setLinkSignedCopy(0,*undulatorPipe,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
 }

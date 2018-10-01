@@ -58,7 +58,8 @@ namespace xraySystem
   class HeatDump;
   class LCollimator;
   class SquareFMask;
-  class Wiggler;
+  class UTubePipe;
+  class Undulator;
 
     
   /*!
@@ -83,9 +84,9 @@ class maxpeemFrontEnd :
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Wiggler in vacuum box
-  std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
+  std::shared_ptr<xraySystem::UTubePipe> undulatorPipe;
   /// Wiggler in vacuum box
-  std::shared_ptr<Wiggler> wiggler;
+  std::shared_ptr<xraySystem::Undulator> undulator;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
   /// electron cut cell

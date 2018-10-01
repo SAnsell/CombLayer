@@ -42,8 +42,6 @@ class NordBall : public attachSystem::ContainedComp,
 
   const size_t detNumber;         ///< Detector number
   const std::string baseName;     ///< Base name
-  const int detIndex;             ///< Index
-  int cellIndex;                  ///< Cell index
 
   size_t nFace;                   ///< Number of layers
   double faceWidth;               ///< Face short distance

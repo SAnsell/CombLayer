@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   pipeInc/pipeTube.h
+ * File:   commonBeamInc/Undulator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,59 +19,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef pipeSystem_pipeTube_h
-#define pipeSystem_pipeTube_h
+#ifndef xraySystem_Undulator_h
+#define xraySystem_Undulator_h
 
 class Simulation;
 
-namespace pipeSystem
+namespace xraySystem
 {
+  
 /*!
-  \class pipeTube
-  \author S. Ansell
+  \class Undulator
   \version 1.0
-  \date May 2015
-  \brief Simple pipe with layers [rectangular xsec]
+  \author S. Ansell
+  \date February 2018
+  \brief Undulator magnetic chicane
 
-  Constructed from the front point
+  Built around the central beam axis
 */
 
-class pipeTube : public attachSystem::ContainedComp,
+class Undulator :
   public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
+
+  double vGap;                    ///< Vertical gap
   
-  double length;            ///< Total length
-  double height;            ///< Total height 
-  double width;             ///< Total width
+  double length;                  ///< Main length
+  double magnetWidth;              ///< Block [quad unit] width
+  double magnetDepth;              ///< Depth of unit
 
-  double innerHeight;       ///< innerHeight of rectangule void
-  double innerWidth;        ///< innerWidth of rectangle void
+  double sVOffset;                  ///< suppor offset in z
+  double supportThick;              ///< support thick [z axis]
+  double supportWidth;              ///< support width [x axis]
+  double supportLength;             ///< Support length [y axis]
 
-  int wallMat;              ///< wall material
-
-  size_t nWallLayers;       ///< Layers in wall
-  std::vector<double> wallFracList;
-  std::vector<int> wallMatList; 
+  int voidMat;                    ///< Void material
+  int magnetMat;                   ///< Block material
+  int supportMat;                 ///< support material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void layerProcess(Simulation&);
 
  public:
 
-  pipeTube(const std::string&);
-  pipeTube(const pipeTube&);
-  pipeTube& operator=(const pipeTube&);
-  ~pipeTube();
+  Undulator(const std::string&);
+  Undulator(const Undulator&);
+  Undulator& operator=(const Undulator&);
+  virtual ~Undulator();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
 		 const long int);
-    
+
 };
 
 }
