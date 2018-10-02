@@ -53,8 +53,14 @@ class RFQ : public attachSystem::ContainedComp,
   double vaneThick;             ///< Vane thickness
   double vaneLength; ///< Length of vane thick section
 
+  double coolantOuterRadius; ///< Radius of outer coolant pipes
+  double coolantOuterDist; ///< Distance from origin of outer coolant pipes
+  double coolantInnerRadius; ///< Radius of inner coolant pipes
+  double coolantInnerDist; ///< Distance from origin of inner coolant pipes
+
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
+  int coolantMat; ///< Coolant material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

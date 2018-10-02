@@ -105,7 +105,12 @@ RFQ::RFQ(const RFQ& A) :
   wallThick(A.wallThick),
   vaneThick(A.vaneThick),
   vaneLength(A.vaneLength),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  coolantOuterRadius(A.coolantOuterRadius),
+  coolantOuterDist(A.coolantOuterDist),
+  coolantInnerRadius(A.coolantInnerRadius),
+  coolantInnerDist(A.coolantInnerDist),
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  coolantMat(A.coolantMat)
   /*!
     Copy constructor
     \param A :: RFQ to copy
@@ -132,8 +137,13 @@ RFQ::operator=(const RFQ& A)
       wallThick=A.wallThick;
       vaneThick=A.vaneThick;
       vaneLength=A.vaneLength;
+      coolantOuterRadius=A.coolantOuterRadius;
+      coolantOuterDist=A.coolantOuterDist;
+      coolantInnerRadius=A.coolantInnerRadius;
+      coolantInnerDist=A.coolantInnerDist;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      coolantMat=A.coolantMat;
     }
   return *this;
 }
@@ -172,9 +182,14 @@ RFQ::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   vaneThick=Control.EvalVar<double>(keyName+"VaneThick");
   vaneLength=Control.EvalVar<double>(keyName+"VaneLength");
+  coolantOuterRadius=Control.EvalVar<double>(keyName+"CoolantOuterRadius");
+  coolantOuterDist=Control.EvalVar<double>(keyName+"CoolantOuterDist");
+  coolantInnerRadius=Control.EvalVar<double>(keyName+"CoolantInnerRadius");
+  coolantInnerDist=Control.EvalVar<double>(keyName+"CoolantInnerDist");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  coolantMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolantMat");
 
   return;
 }
@@ -229,6 +244,7 @@ RFQ::createSurfaces()
 
   // outer surfaces
   const double VL(vaneLength*cos(theta*M_PI/180));
+  const std::vector<Geometry::Vec3D> coolantDir = {-X,X,-Z,Z};
   for (int i=0; i<4; i++)
     {
       ModelSupport::buildShiftedPlane(SMap,surfIndex+23+i,
@@ -243,6 +259,11 @@ RFQ::createSurfaces()
       const Geometry::Plane *p =
 	ModelSupport::buildPlane(SMap,surfIndex+33+i, A, i<2 ? dirZ : dirX);
       ModelSupport::buildShiftedPlane(SMap,surfIndex+i+133,p, (i%2) ? VL : -VL);
+
+      ModelSupport::buildCylinder(SMap,surfIndex+i*10+7,
+				  Origin+coolantDir[i]*coolantOuterDist,
+				  Y,
+				  coolantOuterRadius);
     }
 
   // Vanes
@@ -308,18 +329,33 @@ RFQ::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 16 -26 36 -35 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 33 -36 ");
+  // -X
+  Out=ModelSupport::getComposite(SMap,surfIndex," 3 33 -36 7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 5 -34 -36 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," -7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
+
+  // -Z
+  Out=ModelSupport::getComposite(SMap,surfIndex," 5 -34 -36 27 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," -4 35 -34 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," -27 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
+
+  // +X
+  Out=ModelSupport::getComposite(SMap,surfIndex," -4 35 -34 17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," -6 33 35 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
+
+  // +Z
+  Out=ModelSupport::getComposite(SMap,surfIndex," -6 33 35 37 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," -37 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
 
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 23 -24 25 -26 3 -4 5 -6 ");

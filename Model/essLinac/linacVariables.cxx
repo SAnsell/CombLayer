@@ -453,6 +453,12 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("RFQVaneThick", 2.0);
   Control.addVariable("RFQVaneLength", 6.8); // measured from tip to tip of triangles
 
+  Control.addVariable("RFQCoolantMat", "H2O");
+  Control.addVariable("RFQCoolantInnerRadius", 0.5);
+  Control.addVariable("RFQCoolantInnerDist", 3.3);
+  Control.addVariable("RFQCoolantOuterRadius", 1.0);
+  Control.addVariable("RFQCoolantOuterDist", 11.75);
+
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");
   Control.addParse<double>("BermLengthFront", "LinacLengthFront+100");
