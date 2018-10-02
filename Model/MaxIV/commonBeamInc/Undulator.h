@@ -55,9 +55,14 @@ class Undulator :
   double supportWidth;              ///< support width [x axis]
   double supportLength;             ///< Support length [y axis]
 
+  double standHeight;                ///< stand depth [z] 
+  double standWidth;                ///< support thick [z axis]
+
   int voidMat;                    ///< Void material
   int magnetMat;                   ///< Block material
   int supportMat;                 ///< support material
+  int standMat;                   ///< stand material
+  
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/Undulator.cxx
+ * File:   commonBeam/Undulator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -119,8 +119,13 @@ Undulator::populate(const FuncDataBase& Control)
     supportLength+=length;
   sVOffset=Control.EvalVar<double>(keyName+"SupportVOffset");
 
+  standHeight=Control.EvalVar<double>(keyName+"StandHeight");
+  standWidth=Control.EvalVar<double>(keyName+"StandWidth");
+
+
   magnetMat=ModelSupport::EvalMat<int>(Control,keyName+"MagnetMat");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
+  standMat=ModelSupport::EvalMat<int>(Control,keyName+"StandMat");
 
   return;
 }
@@ -175,6 +180,17 @@ Undulator::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+116,Origin
 			   +Z*(supportThick+sVOffset+vGap/2.0),Z);
 
+
+  // Build stands
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(standWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(standWidth/2.0),X);
+    
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin
+			   -Z*(standHeight+supportThick+sVOffset+vGap/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin
+			   +Z*(standHeight+supportThick+sVOffset+vGap/2.0),Z);
+
+  
   return;
 }
 
@@ -224,9 +240,32 @@ Undulator::createObjects(Simulation& System)
     (SMap,buildIndex,"101 -102 103 -104 106 -116 (-1:2:-3:4:16) ");
   makeCell("TopSupport",System,cellIndex++,supportMat,0.0,Out);
 
+  // Stand
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"101 -102 203 -204 -115 205 ");
+  makeCell("BaseStand",System,cellIndex++,standMat,0.0,Out);
 
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 103 -104 115 -116 ");
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"101 -102 203 -204 116 -206 ");
+  makeCell("TopStand",System,cellIndex++,standMat,0.0,Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"101 -102 103 -203 116 -206 ");
+  makeCell("TopStandVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"101 -102 204 -104 116 -206 ");
+  makeCell("TopStandVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"101 -102 103 -203 -115 205 ");
+  makeCell("BaseStandVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex,"101 -102 204 -104 -115 205 ");
+  makeCell("BaseStandVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 103 -104 205 -206 ");
   addOuterSurf(Out);      
 
   return;

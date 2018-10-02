@@ -170,9 +170,12 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UndulatorSupportThick",8.0);
   Control.addVariable(undKey+"UndulatorSupportLength",4.0);  // extra
   Control.addVariable(undKey+"UndulatorSupportVOffset",2.0);
+  Control.addVariable(undKey+"UndulatorStandWidth",6.0);
+  Control.addVariable(undKey+"UndulatorStandHeight",8.0);
   Control.addVariable(undKey+"UndulatorVoidMat","Void");
-  Control.addVariable(undKey+"UndulatorMagnetMat","Iron");
+  Control.addVariable(undKey+"UndulatorMagnetMat","NbFeB");
   Control.addVariable(undKey+"UndulatorSupportMat","Copper");
+  Control.addVariable(undKey+"UndulatorStandMat","Aluminium");
 
     
   return;
