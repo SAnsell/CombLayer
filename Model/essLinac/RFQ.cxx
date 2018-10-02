@@ -262,8 +262,11 @@ RFQ::createSurfaces()
 
       ModelSupport::buildCylinder(SMap,surfIndex+i*10+7,
 				  Origin+coolantDir[i]*coolantOuterDist,
-				  Y,
-				  coolantOuterRadius);
+				  Y,coolantOuterRadius);
+
+      ModelSupport::buildCylinder(SMap,surfIndex+i*10+107,
+				  Origin+coolantDir[i]*coolantInnerDist,
+				  Y,coolantInnerRadius);
     }
 
   // Vanes
@@ -289,25 +292,39 @@ RFQ::createObjects(Simulation& System)
   std::string Out;
 
   // Vanes
+  // -X
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " (36:-33) 105 -106 -103 -136 133 ");
+				 " (36:-33) 105 -106 -103 -136 133 107 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," -107 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 34 -33 13 -105 -103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," (34:36) 103 -104 -136 -134 ");
+  // -Z
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " (34:36) 103 -104 -136 -134 127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," -127 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 36 -35 15 104 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
+  // +X
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " (-35:34) 105 -106 103 135 -134 ");
+				 " (-35:34) 105 -106 103 135 -134 117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," -117 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 34 -33 -14 106 104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," (-33:-35) 103 -104 135 133 ");
+  // +Z
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " (-33:-35) 103 -104 135 133 137 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+  Out=ModelSupport::getComposite(SMap,surfIndex," -137 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolantMat,0.0,Out+Side));
   Out=ModelSupport::getComposite(SMap,surfIndex," 36 -35 -16 106 -103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
