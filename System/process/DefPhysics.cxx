@@ -211,7 +211,7 @@ procAngle(const objectGroups& OGrp,
         OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
-
+      
       const long int sideIndex=GIPtr->getSideIndex(CItem);
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;

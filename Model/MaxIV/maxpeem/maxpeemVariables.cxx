@@ -153,7 +153,7 @@ undulatorVariables(FuncDataBase& Control,
   const double L(280.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setWindow(-2.0,0.0);   // no window
-  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
@@ -1008,6 +1008,7 @@ frontEndVariables(FuncDataBase& Control,
 
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();
+  PipeGen.setAFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,291.1+7.5);
 
   BellowGen.setCF<setVariable::CF40>();

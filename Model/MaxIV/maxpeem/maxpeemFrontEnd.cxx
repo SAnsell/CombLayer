@@ -605,17 +605,13 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
 
   undulatorPipe->createAll(System,*this,0);
   outerCell=createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
-  undulatorPipe->insertInCell(System,outerCell);
+  undulatorPipe->insertInCell("FFlange",System,outerCell);
+  undulatorPipe->insertInCell("BFlange",System,outerCell);
+  undulatorPipe->insertInCell("Pipe",System,outerCell);
 
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
-  // replace with undulator->insertComponent(string,CellMap,stirng);
-  undulatorPipe->insertInCell(System,undulator->getCell("Void"));
-  
-
-
-
-
+  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
   
   dipolePipe->setFront(*undulatorPipe,2);
   dipolePipe->createAll(System,*undulatorPipe,2);

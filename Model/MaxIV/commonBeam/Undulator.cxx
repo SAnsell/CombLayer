@@ -220,10 +220,15 @@ Undulator::createObjects(Simulation& System)
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 4 -104 6 -106");
   makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1 103 -104 105 -106");
-  makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 105 -106");
-  makeCell("VoidCut",System,cellIndex++,0,0.0,Out);
+  // front /back void
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1 103 -104 -106 6 ");
+  makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"101 -1 103 -104 -5 105 ");
+  makeCell("FVoidCut",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 -106 6 ");
+  makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 -5 105 ");
+  makeCell("BVoidCut",System,cellIndex++,0,0.0,Out);
 
   // MAGNET
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 -5 15");

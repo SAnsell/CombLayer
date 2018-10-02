@@ -78,9 +78,10 @@ flukaNum(const double D)
 {
   static boost::format FMTnum("%1$10.5f");
   static boost::format FMTlnum("%1$10.5g");
-  static boost::format FMTnegLnum("%1$10.4g");
+  //  static boost::format FMTnegLnum("%1$10.4g");
+  static boost::format FMTnegLnum("%1$10.4f");
 
-  if (D < 1e5 && D > -1e4 &&
+  if (D < 1e5 && D > 1e-15 &&
       (std::abs(D)>1e-5 || std::abs(D)<1e-15))
     {
       // test if 1 dp sufficiently accurate

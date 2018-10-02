@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -74,13 +73,12 @@
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
-#include "SurInter.h"
-#include "surfDivide.h"
 
 #include "UTubePipe.h"
 
@@ -89,7 +87,8 @@ namespace xraySystem
 
 UTubePipe::UTubePipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedGroup("Pipe","FFlange","BFlange"),
+  attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   frontJoin(0),backJoin(0)
   /*!
@@ -289,14 +288,14 @@ UTubePipe::createObjects(Simulation& System)
 
   // outer boundary [flange front/back]
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
-  addOuterSurf(Out+frontStr);
+  addOuterSurf("FFlange",Out+frontStr);
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 12 -207 ");
-  addOuterUnionSurf(Out+backStr);
+  addOuterUnionSurf("BFlange",Out+backStr);
   // outer boundary mid tube
   //  (3:-7) (-4:8) 5 -6 ");
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				    " 11 -12 15 -16 (3:-17) (-4:-18)");
-  addOuterUnionSurf(Out);
+  addOuterUnionSurf("Pipe",Out);
   return;
 }
   
