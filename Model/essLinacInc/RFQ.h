@@ -52,11 +52,13 @@ class RFQ : public attachSystem::ContainedComp,
   double wallThick;             ///< Thickness of wall
   double vaneThick;             ///< Vane thickness
   double vaneLength; ///< Length of vane thick section
+  double vaneTipThick; ///< Vane tip thickness
+  double vaneTipDist; ///< Distance from origin to vane tip cylinder center
 
   double coolantOuterRadius; ///< Radius of outer coolant pipes
-  double coolantOuterDist; ///< Distance from origin of outer coolant pipes
+  double coolantOuterDist; ///< Distance from origin to outer coolant pipes
   double coolantInnerRadius; ///< Radius of inner coolant pipes
-  double coolantInnerDist; ///< Distance from origin of inner coolant pipes
+  double coolantInnerDist; ///< Distance from origin to inner coolant pipes
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material

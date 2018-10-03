@@ -452,6 +452,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("RFQWallMat", "Copper");
   Control.addVariable("RFQVaneThick", 2.0);
   Control.addVariable("RFQVaneLength", 6.8); // measured from tip to tip of triangles
+  Control.addVariable("RFQVaneTipThick", 0.6);
+  Control.addVariable("RFQVaneTipDist", 0.6);
 
   Control.addVariable("RFQCoolantMat", "H2O");
   Control.addVariable("RFQCoolantInnerRadius", 0.5);
