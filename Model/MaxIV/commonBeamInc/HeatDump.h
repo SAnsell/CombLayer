@@ -43,6 +43,7 @@ class HeatDump :
 {
  private:
 
+  double radius;           ///< Radius 
   double height;           ///< width accross beam
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection

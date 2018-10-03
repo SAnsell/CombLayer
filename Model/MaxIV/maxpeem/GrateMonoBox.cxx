@@ -323,7 +323,10 @@ GrateMonoBox::createObjects(Simulation& System)
   const std::string BPortStr(backRule());
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 (-7 : 5)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  // Base Void 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 -5");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // main tank skins
@@ -366,13 +369,6 @@ GrateMonoBox::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 17 -1007 -5");
   CellMap::makeCell("RoundScreen",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 1003 -1004 -16 (-1007 : 5)");
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
-  addOuterUnionSurf(Out);
 
   // PortVoids
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
@@ -400,6 +396,18 @@ GrateMonoBox::createObjects(Simulation& System)
   CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,Out);
 
 
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"1001 -1002 1003 -1004 5 -16 ");
+  addOuterSurf(Out);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"1001 -1002 -1007 -5 ");
+  addOuterUnionSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
+  addOuterUnionSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
+  addOuterUnionSurf(Out);
 
   return;
 }
