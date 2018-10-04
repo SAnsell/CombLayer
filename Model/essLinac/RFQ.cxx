@@ -298,11 +298,18 @@ RFQ::createSurfaces()
 
   // aux cylinder to simplify central void cell
   const Geometry::Vec3D A =
-	SurInter::getPoint(SMap.realSurfPtr(surfIndex+203),
-			   SMap.realSurfPtr(surfIndex+228),
-			   SMap.realSurfPtr(surfIndex+1));
+    SurInter::getPoint(SMap.realSurfPtr(surfIndex+203),
+		       SMap.realSurfPtr(surfIndex+228),
+		       SMap.realSurfPtr(surfIndex+1));
   const double Rin(sqrt(pow(A.X(), 2) + pow(A.Z(), 2)));
   ModelSupport::buildCylinder(SMap,surfIndex+209,Origin,Y,Rin);
+
+  const Geometry::Vec3D B =
+    SurInter::getPoint(SMap.realSurfPtr(surfIndex+103),
+		       SMap.realSurfPtr(surfIndex+105),
+		       SMap.realSurfPtr(surfIndex+1));
+  const double Rout(sqrt(pow(B.X(), 2) + pow(B.Z(), 2)));
+  ModelSupport::buildCylinder(SMap,surfIndex+219,Origin,Y,Rout);
 
   return;
 }
@@ -362,10 +369,10 @@ RFQ::createObjects(Simulation& System)
 				 " ((136:-133) 205 -206 207 208 : -207) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 105 -205 -133 -103 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 105 -205 -133 219 -135 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 206 -106 136 -103 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 206 -106 136 134 219 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
   // vane tip +x
@@ -373,22 +380,16 @@ RFQ::createObjects(Simulation& System)
 				 " ((-135:134) 205 -206 217 218 : -217) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 105 -205 -135 104 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 206 -106 134 104 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
-
   
   // vane tip -z
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " ((136:134) 203 -204 227 228 : -227) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 103 -203 134 -105 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 103 -203 134 219 -135 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 204 -104 136 -105 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 204 -104 136 219 -133 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
   // vane tip +z
@@ -396,24 +397,17 @@ RFQ::createObjects(Simulation& System)
 				 " ((-135:-133) 203 -204 237 238 : -237) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 103 -203 -135 106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 204 -104 -133 106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
-
-
   // void in the corners
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 103 -203  105 -205 209 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -219 -203 -205 209 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 204 -104  105 -205 209 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -219 204 -205 209 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 204 -104  206 -106 209 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -219 204 206 209 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 103 -203  206 -106 209 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -219 -203 206 209 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
   // very central void
