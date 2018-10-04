@@ -75,6 +75,8 @@ EssLinacVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
+  Control.addVariable("EngineeringActive",0);
+
   Control.addVariable("LinacEngineeringActive",1);
   const double dtl1Start(1103.6973); // email from Carl-Johan 5 Jun 2018
   Control.addVariable("LinacLengthBack",-dtl1Start);
@@ -438,6 +440,26 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("FEBDropHatchLength", 1100.0);
   Control.addVariable("FEBDropHatchWidth",   377.0);
   Control.addVariable("FEBDropHatchWallThick", 70.0);
+
+  // RFQ
+  // dimensions as in rbfrend2-9102
+  Control.addVariable("RFQYStep", 233.697); // so the distance b/w start of RFQ and DTL1 as in rbfrend2-9102
+  Control.addVariable("RFQLength", 640.0);
+  Control.addVariable("RFQOuterWidth", 29.0);
+  Control.addVariable("RFQInnerWidth", 18.0);
+  Control.addVariable("RFQWallThick", 5.6);
+  Control.addVariable("RFQMainMat", "Void");
+  Control.addVariable("RFQWallMat", "Copper");
+  Control.addVariable("RFQVaneThick", 2.0);
+  Control.addVariable("RFQVaneLength", 6.8); // measured from tip to tip of triangles
+  Control.addVariable("RFQVaneTipThick", 0.6);
+  Control.addVariable("RFQVaneTipDist", 0.6);
+
+  Control.addVariable("RFQCoolantMat", "H2O");
+  Control.addVariable("RFQCoolantInnerRadius", 0.5);
+  Control.addVariable("RFQCoolantInnerDist", 3.3);
+  Control.addVariable("RFQCoolantOuterRadius", 1.0);
+  Control.addVariable("RFQCoolantOuterDist", 11.75);
 
   // Berm
   Control.addParse<double>("BermLengthBack", "LinacLengthBack+100+FEBLength");

@@ -3,7 +3,7 @@
 
  * File:   essLinacInc/makeLinac.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,11 @@
 
 namespace essSystem
 {
+  class FrontEndBuilding;
   class Linac;
   class KlystronGallery;
   class Berm;
-  class FrontEndBuilding;
+  class RFQ;
 
   /*!
     \class makeLinac
@@ -43,9 +44,10 @@ class makeLinac
  private:
 
   std::shared_ptr<FrontEndBuilding> feb; ///< Front end building
-  std::shared_ptr<Linac> LinacTunnel;   ///< Linac tunnel
-  std::shared_ptr<KlystronGallery> KG;  ///< Klystron gallery
-  std::shared_ptr<Berm> berm;           ///< Berm
+  std::shared_ptr<Linac> LinacTunnel;    ///< Linac tunnel
+  std::shared_ptr<KlystronGallery> KG;   ///< Klystron gallery
+  std::shared_ptr<Berm> berm;            ///< Berm
+  std::shared_ptr<RFQ> rfq;              ///< Radio-frequency quadrupole
 
  public:
 

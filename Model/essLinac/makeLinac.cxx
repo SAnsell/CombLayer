@@ -3,7 +3,7 @@
 
  * File:   essBuild/makeLinac.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@
 #include "KlystronGallery.h"
 #include "Stub.h"
 #include "Berm.h"
+#include "RFQ.h"
 #include "makeLinac.h"
 
 namespace essSystem
@@ -90,7 +91,8 @@ makeLinac::makeLinac() :
   feb(new FrontEndBuilding("FEB")),
   LinacTunnel(new Linac("Linac")),
   KG(new KlystronGallery("KG")),
-  berm(new Berm("Berm"))
+  berm(new Berm("Berm")),
+  rfq(new RFQ("RFQ"))
  /*!
     Constructor
  */
@@ -102,6 +104,7 @@ makeLinac::makeLinac() :
   OR.addObject(LinacTunnel);
   OR.addObject(KG);
   OR.addObject(berm);
+  OR.addObject(rfq);
 }
 
 
@@ -139,9 +142,12 @@ makeLinac::build(Simulation& System,
   berm->addInsertCell(voidCell);
   berm->createAll(System,*LinacTunnel,0,*KG,3,5);
 
+  rfq->createAll(System,World::masterOrigin(),0);
+
   attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
   attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
   attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
+  attachSystem::addToInsertSurfCtrl(System,*feb,*rfq);
 
   const size_t nStubs(LinacTunnel->getNStubs());
   for (size_t i=0; i<nStubs; i++)
