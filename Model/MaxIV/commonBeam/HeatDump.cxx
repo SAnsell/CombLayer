@@ -109,11 +109,13 @@ HeatDump::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   
-  height=Control.EvalVar<double>(keyName+"Height");
+  radius=Control.EvalVar<double>(keyName+"Radius");
   width=Control.EvalVar<double>(keyName+"Width");
+  height=Control.EvalVar<double>(keyName+"Height");
   thick=Control.EvalVar<double>(keyName+"Thick");
 
   cutHeight=Control.EvalVar<double>(keyName+"CutHeight");
+  cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
   cutDepth=Control.EvalVar<double>(keyName+"CutDepth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
@@ -145,24 +147,27 @@ HeatDump::createSurfaces()
 {
   ELog::RegMethod RegA("HeatDump","createSurfaces");
   
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
+  
   if (!isActive("mountSurf"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
       setCutSurf("mountSurf",-SMap.realSurf(buildIndex+6));
     }
 
-  // cut surf
+  // cut surfaces
 
-  ModelSupport::buildPlane(SMap,buildIndex+11,
-			   Origin+Y*cutDepth-Z*(height/2.0),
-			   Origin-Y*(thick/2.0)-Z*(height/2.0-cutHeight),
-			   Origin+Y*cutDepth-Z*(height/2.0)+X,
-			   Z);  
+  // base durface
+  const Geometry::Vec3D ZCut
+    (Origin-Z*(height/2-cutHeight)+Y*cutDepth);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,Z);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,Z,X,cutAngle);
+			   
   return; 
 }
 
@@ -178,9 +183,13 @@ HeatDump::createObjects(Simulation& System)
   const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 11 " );
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 (-15:16) " );
   makeCell("Dump",System,cellIndex++,mat,0.0,Out+mountSurf);
-  
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 15 -16 " );
+  makeCell("Cut",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 " );
   addOuterSurf(Out+mountSurf);
   return; 
 }
