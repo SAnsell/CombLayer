@@ -54,7 +54,6 @@ class R1Ring :
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
 
-
   size_t NPoints;                 ///< number of points in track
   size_t concaveNPoints;          ///< number of concave points in track
   std::vector<size_t> concavePts;    ///< number of points in track
@@ -66,7 +65,10 @@ class R1Ring :
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
-  
+
+  void createRoof(Simulation&);
+  void createFloor(Simulation&);
+    
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

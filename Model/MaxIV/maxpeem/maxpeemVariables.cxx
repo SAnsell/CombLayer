@@ -94,7 +94,7 @@ shieldVariables(FuncDataBase& Control,
 		const std::string& shieldKey,
 		const double YStep)
   /*!
-    Build the shield unit variables
+h    Build the shield unit variables
     \param Control :: Database
     \param shieldKey :: prename
     \param shieldKey :: distance of step
@@ -769,7 +769,7 @@ heatDumpTable(FuncDataBase& Control,
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPB",0.0,26.6,26.6);
-  
+
   return;
 }
 
@@ -806,15 +806,18 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
 
   FlangeGen.setCF<setVariable::CF150>();
+  FlangeGen.setThread(3.0,14.0,"Nickel");
   FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
-  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",0);  // in beam
+  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",1);  // in beam
   
   const std::string hDump(frontKey+"HeatDump");
-  Control.addVariable(hDump+"Height",10.0);
+  Control.addVariable(hDump+"Radius",4.0);
+  Control.addVariable(hDump+"Height",7.0);
   Control.addVariable(hDump+"Width",3.0);
   Control.addVariable(hDump+"Thick",8.0);
-  Control.addVariable(hDump+"CutHeight",10.0);
-  Control.addVariable(hDump+"CutDepth",0.0);
+  Control.addVariable(hDump+"CutHeight",2.0);
+  Control.addVariable(hDump+"CutDepth",1.0);
+  Control.addVariable(hDump+"CutAngle",30.0);
   Control.addVariable(hDump+"Mat","Tungsten");
 
   return;

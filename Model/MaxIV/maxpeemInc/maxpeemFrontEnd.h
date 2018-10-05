@@ -78,7 +78,6 @@ class maxpeemFrontEnd :
   public attachSystem::CellMap  
 {
  private:
-
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -107,6 +106,8 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Flange for heat shield
   std::shared_ptr<xraySystem::FlangeMount> heatTopFlange;
+  /// Heat dump container
+  std::shared_ptr<xraySystem::HeatDump> heatDump;
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box

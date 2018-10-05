@@ -220,8 +220,8 @@ FlangeMountGenerator::setMaterial(const std::string& PMat,
 				  
 void
 FlangeMountGenerator::generateMount(FuncDataBase& Control,
-				  const std::string& keyName,
-				  const int inBeam) const
+				    const std::string& keyName,
+				    const int inBeam) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 

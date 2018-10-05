@@ -118,9 +118,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","makeR1Ring");
+  ELog::EM<<"ASFDAF"<<ELog::endDiag;
 
   const int voidCell(74123);
-  
+
+
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
 
