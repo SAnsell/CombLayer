@@ -365,8 +365,10 @@ RFQ::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
   // vane tip -x
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " ((136:-133) 205 -206 207 208 : -207) ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," ((136:-133) 205 -206 208 ) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -208 -207) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 105 -205 -133 219 -135 ");
@@ -376,14 +378,18 @@ RFQ::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
   // vane tip +x
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " ((-135:134) 205 -206 217 218 : -217) ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," ((-135:134) 205 -206 218 ) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," -218 -217 ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
   
   // vane tip -z
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " ((136:134) 203 -204 227 228 : -227) ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," ((136:134) 203 -204 228 ) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," -228 -227) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 103 -203 134 219 -135 ");
@@ -393,8 +399,10 @@ RFQ::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+Side));
 
   // vane tip +z
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " ((-135:-133) 203 -204 237 238 : -237) ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," ((-135:-133) 203 -204 238) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," -238 -237 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Side));
 
   // void in the corners
