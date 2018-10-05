@@ -62,15 +62,17 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "objectRegister.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SurInter.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "AttachSupport.h"
 
 #include "Debug.h"
@@ -249,16 +251,15 @@ addToInsertControl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC,string)");
   
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const std::string outerName=OuterFC.getKeyName();
-  const int cellN=OR.getCell(outerName);
-  const int cellL=OR.getLast(outerName);
+  const std::vector<int> cellVec=System.getObjectRange(outerName);
+
   attachSystem::ContainedGroup* CGPtr=
-    OR.getObjectThrow<attachSystem::ContainedGroup>
+    System.getObjectThrow<attachSystem::ContainedGroup>
     (InsertFC.getKeyName(),"ContainedGroup");
-  addToInsertControl(System,cellN,cellL,InsertFC,
+
+  addToInsertControl(System,cellVec,InsertFC,
 		     CGPtr->getCC(groupName));
 
   return;
@@ -278,17 +279,15 @@ addToInsertControl(Simulation& System,
   \param InsertFC :: FixedComp with the points
 */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertControl");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+  ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC)");
 
   const std::string outerName=OuterFC.getKeyName();
-  const int cellN=OR.getCell(outerName);
-  const int cellL=OR.getLast(outerName);
+
+  const std::vector<int> cellVec=System.getObjectRange(outerName);
   attachSystem::ContainedComp* CCPtr=
-    OR.getObjectThrow<attachSystem::ContainedComp>
+    System.getObjectThrow<attachSystem::ContainedComp>
     (InsertFC.getKeyName(),"ContainedComp");
-  addToInsertControl(System,cellN,cellL,InsertFC,*CCPtr);
+  addToInsertControl(System,cellVec,InsertFC,*CCPtr);
 
   return;
 }
@@ -310,11 +309,9 @@ addToInsertControl(Simulation& System,
 */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertControl(string,FC,CC)");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  const int cellN=OR.getCell(OName);
-  const int cellL=OR.getLast(OName);
-  addToInsertControl(System,cellN,cellL,FC,CC);
+
+  const std::vector<int> cellVec=System.getObjectRange(OName);
+  addToInsertControl(System,cellVec,FC,CC);
 
   return;
 }
@@ -363,7 +360,7 @@ addToInsertControl(Simulation& System,
   
 void
 addToInsertControl(Simulation& System,
-		   const int cellA,const int cellB,
+		   const std::vector<int>& cellVec,
 		   const attachSystem::FixedComp& FC,
 		   const attachSystem::ContainedComp& CC)
   /*!
@@ -372,8 +369,7 @@ addToInsertControl(Simulation& System,
     must be set. It is tested against all the ojbect with
     this object .
     \param System :: Simulation to use
-    \param cellA :: First cell number [to test]
-    \param cellB :: Last cell number  [to test]
+    \param cellVec :: Vector of cells to test
     \param FC :: FixedComp with the points
     \param CC :: ContainedComp object to add to this
   */
@@ -383,9 +379,9 @@ addToInsertControl(Simulation& System,
   const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
   const std::string excludeStr=CC.getExclude();
 
-  for(int i=cellA+1;i<=cellB;i++)
+  for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
+      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
@@ -419,11 +415,9 @@ addToInsertSurfCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
   
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellL=OR.getLast(BaseFC.getKeyName());
-  addToInsertSurfCtrl(System,cellN,cellL,CC);
+  const std::vector<int> cellVec=
+    System.getObjectRange(BaseFC.getKeyName());
+  addToInsertSurfCtrl(System,cellVec,CC);
 
   return;
 }
@@ -446,10 +440,10 @@ addToInsertSurfCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(cellmap,CC)");
   
+  const std::vector<int> cellVec=
+    BaseCell.getCells(cellName);
 
-  std::vector<int> cellN=BaseCell.getCells(cellName);
-  for(const int cn : cellN)
-    addToInsertSurfCtrl(System,cn,CC);
+  addToInsertSurfCtrl(System,cellVec,CC);
   return;
 }
 
@@ -469,15 +463,13 @@ addToInsertOuterSurfCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertOuterSurfCtrl(FC,CC)");
   
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   const attachSystem::ContainedComp* BaseCC=
-    OR.getObjectThrow<attachSystem::ContainedComp>
+    System.getObjectThrow<attachSystem::ContainedComp>
     (BaseFC.getKeyName(),"ContainedComp");
-  
-  const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellL=OR.getLast(BaseFC.getKeyName());
-  addToInsertOuterSurfCtrl(System,cellN,cellL,*BaseCC,CC);
+  const std::vector<int> cellVec=
+    System.getObjectRange(BaseFC.getKeyName());
+
+  addToInsertOuterSurfCtrl(System,cellVec,*BaseCC,CC);
 
   return;
 }
@@ -517,7 +509,7 @@ addToInsertSurfCtrl(Simulation& System,
 
 void
 addToInsertSurfCtrl(Simulation& System,
-		    const int cellA,const int cellB,
+		    const std::vector<int>& cellVec,
 		    attachSystem::ContainedComp& CC)
  /*!
    Adds this object to the containedComp to be inserted.
@@ -525,8 +517,7 @@ addToInsertSurfCtrl(Simulation& System,
    must be set. It is tested against all the ojbect with
    this object .
    \param System :: Simulation to use
-   \param cellA :: First cell number [to test]
-   \param cellB :: Last cell number  [to test]
+   \param cellVec :: CellVector
    \param CC :: ContainedComp object to add to this
   */
 {
@@ -534,9 +525,9 @@ addToInsertSurfCtrl(Simulation& System,
 
   const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
-  for(int i=cellA+1;i<=cellB;i++)
+  for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
+      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
@@ -545,7 +536,7 @@ addToInsertSurfCtrl(Simulation& System,
 	    CellSVec=CRPtr->getSurList();
 	  
 	  if (checkIntersect(CC,*CRPtr,CellSVec))
-	    CC.addInsertCell(i);
+	    CC.addInsertCell(CN);
 	}
     }
   CC.insertObjects(System);
@@ -554,7 +545,7 @@ addToInsertSurfCtrl(Simulation& System,
 
 void
 addToInsertOuterSurfCtrl(Simulation& System,
-			 const int cellA,const int cellB,
+			 const std::vector<int>& cellVec,
 			 const attachSystem::ContainedComp& BaseCC,
 			 attachSystem::ContainedComp& CC)
  /*!
@@ -564,13 +555,12 @@ addToInsertOuterSurfCtrl(Simulation& System,
    this object .
    \param System :: Simulation to use
    \param BaseCC :: Only search using the base Contained Comp
-   \param cellA :: First cell number [to test]
-   \param cellB :: Last cell number  [to test]
+   \param cellVec :: Range of cells [to test]
    \param BaseCC :: ContainedComp object use as the dermination cell
    \param CC :: ContainedComp object to add to this
   */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,int,CC)");
+  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(vec,CC)");
 
   const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
@@ -579,11 +569,11 @@ addToInsertOuterSurfCtrl(Simulation& System,
   const std::vector<const Geometry::Surface*>
     CellSVec=BaseCC.getConstSurfaces();
 
-  for(int i=cellA+1;i<=cellB;i++)
+  for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
+      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
       if (CRPtr && checkIntersect(CC,*CRPtr,CellSVec))
-	CC.addInsertCell(i);
+	CC.addInsertCell(CN);
     }
 
   CC.insertObjects(System);
@@ -743,7 +733,7 @@ findPlaneIntersect(const Geometry::Plane& BPlane,
 
 void
 addToInsertForced(Simulation& System,
-		  const int cellA,const int cellB,
+		  const std::vector<int>& cellVec,
 		  attachSystem::ContainedComp& CC)
  /*!
    Force CC into the BaseFC objects
@@ -755,14 +745,14 @@ addToInsertForced(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertForce(int,int,CC)");
 
-  for(int i=cellA+1;i<=cellB;i++)
+  for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
+      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
 	  CRPtr->createSurfaceList();
-	  CC.addInsertCell(i);
+	  CC.addInsertCell(CN);
 	}
     }
 
@@ -784,11 +774,10 @@ addToInsertForced(Simulation& System,
  */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertForced(FC,CC)");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellL=OR.getLast(BaseFC.getKeyName());
-  addToInsertForced(System,cellN,cellL,CC);
+
+  const std::vector<int> cellVec=
+    System.getObjectRange(BaseFC.getKeyName());
+  addToInsertForced(System,cellVec,CC);
   return;
 }  
 

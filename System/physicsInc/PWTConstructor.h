@@ -49,12 +49,14 @@ class PWTConstructor
  private:
 
   /// Ranges to build
-  std::vector<MapSupport::Range<int>> Zones;
+  groupRange Zones;
+  //  std::vector<MapSupport::Range<int>> Zones;
 
-  static bool getVector(const std::vector<std::string>&,
+  static bool getVector(const objectGroups&,
+			const std::vector<std::string>&,
 			const size_t,Geometry::Vec3D&);
-  void sortZone();
-  bool procZone(std::vector<std::string>&);
+
+  bool procZone(const objectGroups&,std::vector<std::string>&);
   bool procType(std::vector<std::string>&,PWTControl&);
   
   void writeHelp(std::ostream&) const;
@@ -66,7 +68,8 @@ class PWTConstructor
   PWTConstructor& operator=(const PWTConstructor&);
   ~PWTConstructor() {}  ///< Destructor
 
-  void processUnit(PhysicsCards&,const mainSystem::inputParam&,
+  void processUnit(const objectGroups&,
+		   PhysicsCards&,const mainSystem::inputParam&,
 		   const size_t);
 };
 

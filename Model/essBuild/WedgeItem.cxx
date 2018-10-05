@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -65,6 +66,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimProcess.h"
 #include "ModelSupport.h"
@@ -83,9 +86,7 @@ namespace essSystem
 
 WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
-  wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(wedgeIndex+1)
+  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,8 +96,6 @@ WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
 
 WedgeItem::WedgeItem(const WedgeItem& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  wedgeIndex(A.wedgeIndex),
-  cellIndex(A.cellIndex),
   length(A.length),baseWidth(A.baseWidth),
   mat(A.mat)
   /*!
@@ -117,7 +116,6 @@ WedgeItem::operator=(const WedgeItem& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       baseWidth=A.baseWidth;
       mat=A.mat;
@@ -206,27 +204,27 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
 
   // divider:
   const Geometry::Plane *pZ =
-    ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
+    ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
 
   // aux planes:
   const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
-  const Geometry::Plane *p103 = ModelSupport::buildPlane(SMap,wedgeIndex+103,
+  const Geometry::Plane *p103 = ModelSupport::buildPlane(SMap,buildIndex+103,
 							 Origin-X*baseWidth/2.0,X);
-  const Geometry::Plane *p104 = ModelSupport::buildPlane(SMap,wedgeIndex+104,
+  const Geometry::Plane *p104 = ModelSupport::buildPlane(SMap,buildIndex+104,
 							 Origin+X*baseWidth/2.0,X);
 
   // points on the outerCyl surface
   const Geometry::Vec3D A = SurInter::getPoint(p103,outerCyl,pZ,nearPt);
   const Geometry::Vec3D B = SurInter::getPoint(p104,outerCyl,pZ,nearPt);
 
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3,A,X,Z,tipAngle/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4,B,X,Z,-tipAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,A,X,Z,tipAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,B,X,Z,-tipAngle/2.0);
 
   // aux plane between points AB
   const Geometry::Plane *pAB=
-    ModelSupport::buildPlane(SMap,wedgeIndex+101,(A+B)/2,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+101,(A+B)/2,Y);
 
-  ModelSupport::buildShiftedPlane(SMap,wedgeIndex+1,pAB,-length);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+1,pAB,-length);
 
   return;
 }
@@ -252,7 +250,7 @@ WedgeItem::createObjects(Simulation& System,
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ")+
+  Out=ModelSupport::getComposite(SMap, buildIndex, " 1 3 -4 ")+
     FC.getLinkString(baseLinkPt)+
     FL.getLinkString(topLinkPt)+
     FL.getLinkString(bottomLinkPt);
@@ -271,13 +269,13 @@ WedgeItem::createLinks()
   ELog::RegMethod RegA("WedgeItem","createLinks");
 
   const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
-  const Geometry::Plane *pX = ModelSupport::buildPlane(SMap, wedgeIndex+1003,
+  const Geometry::Plane *pX = ModelSupport::buildPlane(SMap, buildIndex+1003,
 						       Origin, X);
-  const Geometry::Plane *pZ = SMap.realPtr<Geometry::Plane>(wedgeIndex+5);
-  const Geometry::Plane *pBC = SMap.realPtr<Geometry::Plane>(wedgeIndex+1);
+  const Geometry::Plane *pZ = SMap.realPtr<Geometry::Plane>(buildIndex+5);
+  const Geometry::Plane *pBC = SMap.realPtr<Geometry::Plane>(buildIndex+1);
 
-  const Geometry::Plane *p3 = SMap.realPtr<Geometry::Plane>(wedgeIndex+3);
-  const Geometry::Plane *p4 = SMap.realPtr<Geometry::Plane>(wedgeIndex+4);
+  const Geometry::Plane *p3 = SMap.realPtr<Geometry::Plane>(buildIndex+3);
+  const Geometry::Plane *p4 = SMap.realPtr<Geometry::Plane>(buildIndex+4);
 
   const Geometry::Vec3D pt0 = SurInter::getPoint(pX, pZ, outerCyl, nearPt);
 

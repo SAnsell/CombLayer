@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attach/FrontBackCut.cxx
+ * File:   attachComp/FrontBackCut.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -61,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -124,7 +126,7 @@ FrontBackCut::setFront(const FrontBackCut& FSurf)
     \param FSurf :: Front object
   */
 {
-  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+  ELog::RegMethod RegA("FrontBackCut","setFront(FrontBackCut)");
 
   frontCut=FSurf.frontCut;
   frontDivider=FSurf.frontDivider;
@@ -139,7 +141,7 @@ FrontBackCut::setBack(const FrontBackCut& BSurf)
     \param BSurf :: back object
   */
 {
-  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+  ELog::RegMethod RegA("FrontBackCut","setBack(FrontBackCut)");
 
   backCut=BSurf.backCut;
   backDivider=BSurf.backDivider;
@@ -261,6 +263,8 @@ FrontBackCut::setFrontDivider(const std::string& FDRule)
     \param FDRule :: Front divider rule
   */
 {
+  ELog::RegMethod RegA("FrontBackCut","setFrontDivider");
+
   if (!frontDivider.procString(FDRule))
     throw ColErr::InvalidLine(FDRule,"FDRule failed");
   frontDivider.populateSurf();
@@ -286,6 +290,7 @@ FrontBackCut::setBackDivider(const std::string& BDRule)
     \param BDRule :: Back divider rule
   */
 {
+  ELog::RegMethod RegA("FrontBackCut","setBackDivider");
   if (!backDivider.procString(BDRule))
     throw ColErr::InvalidLine(BDRule,"BDRule failed");
   backDivider.populateSurf();
@@ -443,13 +448,14 @@ FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface fo the front
     \param SMap :: Surface register
-    \param index :: offset index
+    \param surfIndex :: offset index [new]
     \param dFlag :: direction flag
-    \param YAxis :: Axid for shift of sphere/cylinder
+    \param YAxis :: Axis for shift of sphere/cylinder
     \param length :: length to shift by
   */
 {
-  ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
+  ELog::RegMethod RegA("FrontBackCut","getShiftedFront");
+  
   getShiftedSurf(SMap,frontCut,surfIndex,dFlag,YAxis,length);
   return;
 }
@@ -463,7 +469,7 @@ FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface fo the back
     \param SMap :: Surface register
-    \param surfIndex :: offset index
+    \param surfIndex :: offset index [new]
     \param dFlag :: direction flag
     \param YAxis :: Axid for shift of sphere/cylinder
     \param length :: length to shift by

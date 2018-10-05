@@ -40,8 +40,6 @@ class WaterMod : public attachSystem::ContainedComp,
 {
  private:
   
-  const int watIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double width;                   ///< width of moderator
   double height;                 

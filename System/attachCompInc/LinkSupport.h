@@ -22,20 +22,25 @@
 #ifndef attachSystem_LinkSupport_h
 #define attachSystem_LinkSupport_h
 
+class objectGroups;
 
 namespace attachSystem
 {
 
 class FixedComp;
 
-long int getLinkIndex(const std::string&);
-int getAttachPoint(const std::string&,const std::string&,
-		    Geometry::Vec3D&,Geometry::Vec3D&);
-int getAttachPointWithXYZ(const std::string&,const std::string&,
-		   Geometry::Vec3D&,Geometry::Vec3D&,
+int getAttachPoint(const objectGroups&,
+		   const std::string&,const std::string&,
 		   Geometry::Vec3D&,Geometry::Vec3D&);
 
-size_t getPoint(const std::vector<std::string>&,
+int getAttachPointWithXYZ
+  (const objectGroups&,
+   const std::string&,const std::string&,
+   Geometry::Vec3D&,Geometry::Vec3D&,
+   Geometry::Vec3D&,Geometry::Vec3D&);
+
+size_t getPoint(const objectGroups&,
+		 const std::vector<std::string>&,
 		const size_t,Geometry::Vec3D&);
  
 void

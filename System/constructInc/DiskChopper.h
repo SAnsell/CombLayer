@@ -46,8 +46,6 @@ class DiskChopper : public attachSystem::FixedOffsetGroup,
 {
  private:
   
-  const int chpIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int centreFlag;               ///< Centre origin / edge origin
   int offsetFlag;               ///< Move disk into choper-void
     

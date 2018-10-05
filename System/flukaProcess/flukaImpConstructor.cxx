@@ -43,9 +43,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
+// #include "Triple.h"
+// #include "NList.h"
+// #include "NRange.h"
 #include "support.h"
 #include "Rules.h"
 #include "varList.h"
@@ -56,11 +56,14 @@
 #include "CellMap.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
+#include "SimFLUKA.h"
 #include "objectRegister.h"
 #include "inputParam.h"
-#include "strValueSet.h"
 #include "cellValueSet.h"
+#include "pairValueSet.h"
 #include "flukaGenParticle.h"
 #include "flukaPhysics.h"
 #include "flukaProcess.h"
@@ -69,6 +72,42 @@
 namespace flukaSystem
 {
 
+
+void
+flukaImpConstructor::insertPair(flukaPhysics& PC,
+				const size_t cellSize,
+				const std::string& pName,
+				const int cellName,
+				const std::string& keyName,
+				const std::string* VV) const
+ /*!
+   Process the actual insert 
+   \param PC :: Physcis to insert to
+   \param pName :: particle name
+   \param cellName :: cell name
+   \param keyName :: component keyname
+   \param VV :: variables
+ */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","insertPair");
+
+  switch (cellSize)
+    {
+    case 0:
+      //      PC.setFlag(keyName,pName);
+      break;
+    case 1:
+      PC.setLAMPair(keyName,pName,cellName,VV[0],"");
+      break;
+    case 2:
+      PC.setLAMPair(keyName,pName,cellName,VV[0],VV[1]);
+      break;
+    case 3:
+      //      PC.setTHR(keyName,pName,VV[0],VV[1],VV[2]);
+      break;
+    }
+  return;
+}
 
 void
 flukaImpConstructor::insertParticle(flukaPhysics& PC,
@@ -93,7 +132,7 @@ flukaImpConstructor::insertParticle(flukaPhysics& PC,
       PC.setFlag(keyName,pName);
       break;
     case 1:
-      PC.setImp(keyName,pName,VV[0]);
+      PC.setIMP(keyName,pName,VV[0]);
       break;
     case 2:
       PC.setEMF(keyName,pName,VV[0],VV[1]);
@@ -131,13 +170,14 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
       break;
     case 1:
       for(const int MN : activeCell)
-	PC.setImp(keyName,MN,VV[0]);
+	PC.setIMP(keyName,MN,VV[0]);
       break;
     case 2:
       for(const int MN : activeCell)
 	PC.setEMF(keyName,MN,VV[0],VV[1]);
       break;
     case 3:
+      ELog::EM<<"Key "<<keyName<<ELog::endDiag;
       for(const int MN : activeCell)
 	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
       break;
@@ -147,14 +187,14 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
 
 
 void
-flukaImpConstructor::processGeneral(flukaPhysics& PC,
+flukaImpConstructor::processGeneral(SimFLUKA& System,
 				    const mainSystem::inputParam& IParam,
 				    const size_t setIndex,
 				    const std::string& keyName,
 				    const impTYPE& cutTuple) const
   /*!
     Handler for constructor of physics cards
-    \param PC :: Physics cards
+    \param System :: Fluke Phays
     \param IParam :: input stream
     \param setIndex :: index value for item
     \param keyName :: wTYPE card
@@ -163,6 +203,7 @@ flukaImpConstructor::processGeneral(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processGeneral");
 
+  flukaPhysics& PC = *System.getPhysics();
   const std::string cellM=IParam.getValueError<std::string>
     (keyName,setIndex,1,"No cell/material for "+keyName);
 
@@ -179,7 +220,8 @@ flukaImpConstructor::processGeneral(flukaPhysics& PC,
 
   if (materialFlag>=0)
     {
-      const std::set<int> activeCell=getActiveUnit(materialFlag,cellM);
+      const std::set<int> activeCell=
+	getActiveUnit(System,materialFlag,cellM);
       if (activeCell.empty())
 	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
       insertCell(PC,cellSize,activeCell,cardName,VV);
@@ -194,10 +236,10 @@ flukaImpConstructor::processGeneral(flukaPhysics& PC,
 }
 
 void
-flukaImpConstructor::processCUT(flukaPhysics& PC,
+flukaImpConstructor::processCUT(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
-/*!
+  /*!
     Set individual IMP based on Iparam
     \param PC :: PhysicsCards
     \param IParam :: input stream
@@ -205,7 +247,6 @@ flukaImpConstructor::processCUT(flukaPhysics& PC,
   */
 {
   ELog::RegMethod RegA("flukaImpConstructor","processCUT");
-
 
   // cell/mat : tag name 
   typedef std::tuple<size_t,int,std::string> cutTYPE;
@@ -224,12 +265,12 @@ flukaImpConstructor::processCUT(flukaPhysics& PC,
   if (mc==ICut.end())
     throw ColErr::InContainerError<std::string>(type,"imp type unknown");
 
-  processGeneral(PC,IParam,setIndex,"wCUT",mc->second);
+  processGeneral(System,IParam,setIndex,"wCUT",mc->second);
   return;
 }
  
 void
-flukaImpConstructor::processMAT(flukaPhysics& PC,
+flukaImpConstructor::processMAT(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
  /*!
@@ -238,7 +279,7 @@ flukaImpConstructor::processMAT(flukaPhysics& PC,
     so that we correctly loose the correct amount of dE/dx 
     but can enhance the bremstauhlung collision etc.
 
-    \param PC :: PhysicsCards
+    \param System :: Fluka Simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
@@ -263,17 +304,17 @@ flukaImpConstructor::processMAT(flukaPhysics& PC,
   if (mc==IMap.end())
     throw ColErr::InContainerError<std::string>(type,"wMat imp type unknown");
 
-  processGeneral(PC,IParam,setIndex,"wMAT",mc->second);
+  processGeneral(System,IParam,setIndex,"wMAT",mc->second);
   return;
 }
 
 void
-flukaImpConstructor::processUnit(flukaPhysics& PC,
+flukaImpConstructor::processUnit(SimFLUKA& System,
 				 const mainSystem::inputParam& IParam,
 				 const size_t setIndex)
-/*!
+  /*!
     Set individual IMP based on Iparam
-    \param PC :: PhysicsCards
+    \param System :: Simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
@@ -300,17 +341,17 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
   if (mc==IMap.end())
     throw ColErr::InContainerError<std::string>(type,"wIIMP imp type unknown");
 
-  processGeneral(PC,IParam,setIndex,"wIMP",mc->second);
+  processGeneral(System,IParam,setIndex,"wIMP",mc->second);
   return;
 }
 
 void
-flukaImpConstructor::processEXP(flukaPhysics& PC,
+flukaImpConstructor::processEXP(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
   /*!
     Set individual EXP based on Iparam
-    \param PC :: PhysicsCards
+    \param System :: Fluka simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
@@ -335,30 +376,31 @@ flukaImpConstructor::processEXP(flukaPhysics& PC,
   if (mc==IMap.end())
     throw ColErr::InContainerError<std::string>(type,"exp type unknown");
 
-  processGeneral(PC,IParam,setIndex,"wEXT",mc->second);
+  processGeneral(System,IParam,setIndex,"wEXT",mc->second);
   return;
 }
 
 
 void
-flukaImpConstructor::processLAM(flukaPhysics& PC,
+flukaImpConstructor::processLAM(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
 /*!
     Set individual LAM based on IParam
-    \param PC :: PhysicsCards
+    \param System :: Simulation Fluka
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
 {
   ELog::RegMethod RegA("flukaImpConstructor","processLAM");
-  
-  const flukaGenParticle& FG=flukaGenParticle::Instance();
+
+  flukaPhysics& PC= *System.getPhysics();
   // cell/mat : tag name 
   typedef std::tuple<size_t,int,std::string> lamTYPE;
   static const std::map<std::string,lamTYPE> IMap
     ({
-      { "length",lamTYPE(1,-1,"lamlength") }   // material 
+      { "length",lamTYPE(1,-1,"lamlength") },   // particle
+      { "primlen",lamTYPE(1,-1,"lamprimary") }   // particle
     });
 
   const std::string type=IParam.getValueError<std::string>
@@ -378,36 +420,34 @@ flukaImpConstructor::processLAM(flukaPhysics& PC,
     ("wLAM",setIndex,2,"No material for wLAM:cellM");
 
   const size_t cellSize(std::get<0>(mc->second));
-  const int materialFlag(std::get<1>(mc->second));
+  //  const int materialFlag(std::get<1>(mc->second));
   const std::string cardName(std::get<2>(mc->second));
 
   std::string VV[4];
   for(size_t i=0;i<cellSize;i++)
-    VV[i+1]=IParam.getValueError<std::string>
+    VV[i]=IParam.getValueError<std::string>
       ("wLAM",setIndex,3+i,
        "No value["+std::to_string(i+3)+"] for wLAM");      
 
-  const std::set<int> activeMat=getActiveUnit(1,cellM);
+  const std::set<int> activeMat=getActiveUnit(System,1,cellM);
   if (activeMat.empty())
     throw ColErr::InContainerError<std::string>(cellM,"Empty Materials:");
   
   //  VV[0]=FG.nameToFLUKA(partName);
   for(const int CN : activeMat)
-    {
-      ELog::EM<<"Part name == "<<partName<<ELog::endDiag;
-      VV[0]=std::to_string(CN);
-      insertParticle(PC,cellSize+1,partName,cardName,VV);
-    }
+    if (CN)
+      insertPair(PC,cellSize,partName,CN,cardName,VV);
+
   return;
 }
 
 void
-flukaImpConstructor::processEMF(flukaPhysics& PC,
+flukaImpConstructor::processEMF(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
 /*!
     Set individual EMFCUT based on IParam
-    \param PC :: PhysicsCards
+    \param System :: Simulation for fluka
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
@@ -421,20 +461,21 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
     ({
       { "cut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
       { "emfcut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "elecnucl",emfTYPE(1,1,"elecnucl") },     // mat
+      { "mupair",emfTYPE(1,1,"mupair") },        // mat
       { "prodcut",emfTYPE(2,1,"prodcut") }, 
       { "elpothr",emfTYPE(3,1,"elpothr") },  //
       { "photthr",emfTYPE(3,1,"photthr") },  // comp/photoeelec/gamma-pair
       { "pho2thr",emfTYPE(2,1,"pho2thr") },  // photo-nuclear
       { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
+
       { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
       { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
       { "emffluo",emfTYPE(0,1,"emffluo") },      // mat
       { "mulsopt",emfTYPE(3,1,"mulsopt") },       // mat
       { "lpb",emfTYPE(2,0,"lpb") },        // regions
       { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
-      { "lambemf",emfTYPE(2,1,"lambemf") },      // mat
-      { "plambias",emfTYPE(1,1,"plambias") },    // primary lam-bias
-      { "lambias",emfTYPE(1,1,"lambias") }      // mat
+      { "lambemf",emfTYPE(2,1,"lambemf") }      // mat
 
     });
   
@@ -449,7 +490,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
   if (mc==EMap.end())
     throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 
-  processGeneral(PC,IParam,setIndex,"wEMF",mc->second);
+  processGeneral(System,IParam,setIndex,"wEMF",mc->second);
   return;
 }
 

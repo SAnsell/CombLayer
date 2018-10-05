@@ -3,7 +3,7 @@
  
  * File:   build/Torpedo.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -68,6 +67,8 @@
 #include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -85,10 +86,8 @@ namespace shutterSystem
 {
 
 Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
-  FixedComp(Key+StrFunc::makeString(ID),6),
-  baseName(Key),shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
+  FixedComp(Key+std::to_string(ID),6),
+  baseName(Key),shutterNumber(ID)
   /*!\
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -99,7 +98,7 @@ Torpedo::Torpedo(const size_t ID,const std::string& Key) :
 Torpedo::Torpedo(const Torpedo& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   baseName(A.baseName),shutterNumber(A.shutterNumber),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),vBox(A.vBox),
+  vBox(A.vBox),
   voidXoffset(A.voidXoffset),
   xyAngle(A.xyAngle),innerRadius(A.innerRadius),zOffset(A.zOffset),
   Height(A.Height),Width(A.Width),innerSurf(A.innerSurf),
@@ -122,7 +121,6 @@ Torpedo::operator=(const Torpedo& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       vBox=A.vBox;
       voidXoffset=A.voidXoffset;
       xyAngle=A.xyAngle;
@@ -224,8 +222,8 @@ Torpedo::setExternal(const int rInner)
     \param rInner :: inner cylinder surface
   */
 {
-  SMap.addMatch(surfIndex+7,rInner);
-  // FixedComp::setExitSurf(SMap.realSurf(surfIndex+7));
+  SMap.addMatch(buildIndex+7,rInner);
+  // FixedComp::setExitSurf(SMap.realSurf(buildIndex+7));
   return;
 }
 
@@ -258,10 +256,10 @@ Torpedo::createSurfaces()
 {
   ELog::RegMethod RegA("Torpedo","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(Width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(Width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin+Z*(zOffset-Height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(Width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(Width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*(zOffset-Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(zOffset+Height/2.0),Z);
 
   return;
@@ -298,12 +296,12 @@ Torpedo::createObjects(Simulation& System)
 
   // Calculate Cut WITHOUT inner cylinder:
   dSurf=getInnerSurf();
-  Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 ");
   // ADD INNER SURF HERE:
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+dSurf));
   voidCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 ")+dSurf;  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ")+dSurf;  
   addOuterSurf(Out);
 
   return;
@@ -317,7 +315,7 @@ Torpedo::getSurfString(const std::string& SList) const
     \return surface string
   */
 {
-  return ModelSupport::getComposite(SMap,surfIndex,SList);
+  return ModelSupport::getComposite(SMap,buildIndex,SList);
 }
 
 void
@@ -329,7 +327,7 @@ Torpedo::createLinks()
   ELog::RegMethod RegA("Torpedo","createLinks");
 
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+7));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
   std::set<int>::const_iterator vc;
   for(vc=innerSurf.begin();vc!=innerSurf.end();vc++)
     {
@@ -338,10 +336,10 @@ Torpedo::createLinks()
 	FixedComp::addLinkSurf(1,-*vc);
     }
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+3));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+5));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
 
   // set Links
   // First point is center line intersect
@@ -351,7 +349,7 @@ Torpedo::createLinks()
   //  ELog::EM<<"Inner Surf "<<getInnerSurf()<<ELog::endDiag;
   //  ELog::EM<<"INNER POINT == "<<to<<LI.getPoint(getInnerSurf(),OP)<<ELog::endDiag;
   FixedComp::setConnect(0,LI.getPoint(getInnerSurf(),OP),-Y);
-  FixedComp::setConnect(1,LI.getPoint(SMap.realSurfPtr(surfIndex+7),OP),Y);
+  FixedComp::setConnect(1,LI.getPoint(SMap.realSurfPtr(buildIndex+7),OP),Y);
   FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(Width/2.0),X);
   FixedComp::setConnect(4,Origin+Z*(zOffset-Height/2.0),-Z);

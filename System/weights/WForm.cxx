@@ -3,7 +3,7 @@
  
  * File:   weights/WForm.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ WForm::WForm(const std::string& P)  :  pType(P),
   mwhere(0),mtime(0)
   /*!
     Constructor
-    \param c :: Particle type
+    \param P :: Particle type
   */
 {}
 
@@ -131,7 +131,6 @@ WForm::setParam(const double WP,const double WS,
     \param MS :: Max number of splits
     \param WC :: Where to check
     \param MT :: Time / Energy
-    \return 0 on succes and 
   */
 {
   ELog::RegMethod RegA("WForm","setParam");

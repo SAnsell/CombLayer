@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/flukaPhysics.h
+ * File:   flukaPhysicsInc/flukaPhysics.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -43,24 +43,18 @@ class flukaPhysics
   std::vector<int> cellVec;                     ///< Cell numbers in order
   std::vector<int> matVec;                      ///< Material numbers in order
 
-  // FLAG string
-  std::map<std::string,strValueSet<0>> flagSVal;   ///< cut values
-  // ONE VALUE string
-  std::map<std::string,strValueSet<1>> impSVal;   ///< cut values
-  // ONE VALUE string
-  std::map<std::string,strValueSet<2>> emfSVal;   ///< cut values
-  // ONE VALUE string
-  std::map<std::string,strValueSet<3>> threeSVal;   ///< cut values
-
   // ZERO VALUE
-  std::map<std::string,cellValueSet<0>> flagValue;   ///< flag values
+  std::map<std::string,cellValueSet<0>> flagValue;    ///< flag values
   // ONE VALUE
-  std::map<std::string,cellValueSet<1>> impValue;   ///< Importance values
+  std::map<std::string,cellValueSet<1>> impValue;     ///< Importance values
   // TWO VALUE
-  std::map<std::string,cellValueSet<2>> emfFlag;    ///< EMF flag
+  std::map<std::string,cellValueSet<2>> emfFlag;      ///< EMF flag
   // THREE VALUE
   std::map<std::string,cellValueSet<3>> threeFlag;    ///< EMF flag
 
+  // PAIR SYSTEM
+  std::map<std::string,pairValueSet<6>> lamPair;      ///< LAM pair
+  
   std::map<std::string,unitTYPE> formatMap;     ///< Layout and cell/mat
 
  public:
@@ -78,18 +72,23 @@ class flukaPhysics
   void setMatNumbers(const std::set<int>&);
   
   void setFlag(const std::string&,const std::string&);
-  void setImp(const std::string&,const std::string&,const std::string&);
+  void setIMP(const std::string&,const std::string&,const std::string&);
   void setEMF(const std::string&,const std::string&,const std::string&,
 	      const std::string&);
   void setTHR(const std::string&,const std::string&,const std::string&,
 	      const std::string&,const std::string&);
 
   void setFlag(const std::string&,const int);
-  void setImp(const std::string&,const int,const std::string&);
+  void setIMP(const std::string&,const int,const std::string&);
   void setEMF(const std::string&,const int,const std::string&,
 	      const std::string&);
   void setTHR(const std::string&,const int,const std::string&,
 	      const std::string&,const std::string&);
+
+  void setLAMPair(const std::string&,const std::string&,
+		  const int,const std::string&,const std::string&);
+
+
   void writeFLUKA(std::ostream&) const;
 };
 

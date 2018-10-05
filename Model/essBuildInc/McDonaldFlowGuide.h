@@ -44,8 +44,6 @@ class McDonaldFlowGuide :
   const std::string baseName; ///< Base name
   const std::string midName; ///< Mid Name
   const std::string endName; ///< End Name
-  const int flowIndex;       ///< Index of surface offset
-  int cellIndex;             ///< Cell index
 
   double wallThick;            ///< Wal thickness
   double baseLen;              ///< Base length

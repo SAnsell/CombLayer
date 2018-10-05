@@ -63,12 +63,16 @@
 #include "PhysImp.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
 #include "MainProcess.h"
 #include "flukaProcess.h"
+#include "flukaDefPhysics.h"
+#include "phitsDefPhysics.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -79,7 +83,8 @@ namespace SimProcess
 {
 
 void
-importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
+importanceSim(Simulation& System,
+	      const mainSystem::inputParam& IParam)
   /*!
     Apply importances/renumber and weights
     \param System :: Simuation object 
@@ -101,11 +106,27 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   SimFLUKA* flukaPtr=dynamic_cast<SimFLUKA*>(&System);
   if (flukaPtr)
     {
+      WeightSystem::WCellControl WCell;
+      WeightSystem::WWGControl WWGC;
+      WCell.processWeights(System,IParam);
+      WWGC.processWeights(System,IParam);
+      
       mainSystem::renumberCells(*flukaPtr,IParam);
-      flukaSystem::setDefaultPhysics(*flukaPtr,IParam);
+      flukaSystem::setModelPhysics(*flukaPtr,IParam);
       return;
     }
-
+  SimPHITS* phitsPtr=dynamic_cast<SimPHITS*>(&System);
+  if (phitsPtr)
+    {
+      WeightSystem::WCellControl WCell;
+      WCell.processWeights(System,IParam);
+      
+      mainSystem::renumberCells(*phitsPtr,IParam);
+      phitsSystem::setModelPhysics(*phitsPtr,IParam);
+      return;
+    }
+  
+  
   ELog::EM<<"Unknown Sim for importance sampling"<<ELog::endDiag;
   return;
   
@@ -122,14 +143,14 @@ importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
   ELog::RegMethod RegA("SimImportance[F]","importanceSim(MCNP)");
 
   physicsSystem::PhysicsCards& PC=System.getPC();      
-  WeightSystem::simulationImp(PC,System,IParam);
+  WeightSystem::simulationImp(System,IParam);
 
-  WeightSystem::ExtField(PC,IParam);
-  WeightSystem::FCL(PC,System,IParam);
-  WeightSystem::IMP(PC,System,IParam);
-  WeightSystem::DXT(PC,IParam);
-  WeightSystem::PWT(PC,IParam);
-  WeightSystem::EnergyCellCut(PC,System,IParam);
+  WeightSystem::ExtField(System,PC,IParam);
+  WeightSystem::FCL(System,PC,IParam);
+  WeightSystem::IMP(System,IParam);
+  WeightSystem::DXT(System,PC,IParam);
+  WeightSystem::PWT(System,PC,IParam);
+  WeightSystem::EnergyCellCut(System,IParam);
 
   mainSystem::renumberCells(System,IParam);
 

@@ -67,6 +67,8 @@
 #include "DBMaterial.h"
 #include "ObjTrackItem.h"
 #include "neutron.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 
@@ -241,9 +243,11 @@ LineTrack::calculateError(const Simulation& ASim)
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
+	  ELog::EM<<"AA Dist == "<<aDist<<ELog::endDiag;
+		  
 	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
-	  
+	  ELog::EM<<"AA NEUT == "<<nOut<<ELog::endDiag;
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 
 	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
@@ -380,6 +384,43 @@ LineTrack::getPoint(const size_t Index) const
     Len+=Track[i];
 
   return InitPt+(EndPt-InitPt).unit()*Len;
+}
+
+void
+LineTrack::createMatPath(std::vector<int>& mVec,
+			 std::vector<double>& aVec) const
+  /*!
+    Calculate track components
+    \param mVec :: Material vector
+    \param aVec :: Attenuation  distance
+  */
+{
+  ELog::RegMethod RegA("LineTrack ","createMatPath");
+  
+  for(size_t i=0;i<Cells.size();i++)
+    {
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      mVec.push_back(matN);
+      aVec.push_back(Track[i]);
+    }
+  return;
+}
+
+void
+LineTrack::createCellPath(std::vector<MonteCarlo::Object*>& cellVec,
+			 std::vector<double>& aVec) const
+  /*!
+    Calculate track components
+    \param cellVec :: Object Ptr vector
+    \param aVec :: Track distance
+  */
+{
+  for(size_t i=0;i<Cells.size();i++)
+    {
+      cellVec.push_back(ObjVec[i]);
+      aVec.push_back(Track[i]);
+    }
+  return;
 }
 
 void

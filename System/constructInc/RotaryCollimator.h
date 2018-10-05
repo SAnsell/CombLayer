@@ -40,8 +40,6 @@ class RotaryCollimator : public attachSystem::ContainedComp,
 {
  private:
   
-  const int colIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double xyAngle;           ///< Angle relative to LC 
   double zAngle;            ///< Angle relative LC 

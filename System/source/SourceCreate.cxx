@@ -52,6 +52,10 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "SrcData.h"
 #include "SrcItem.h"
 #include "DSTerm.h"
@@ -61,6 +65,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "World.h"
 #include "particleConv.h"
 #include "inputSupport.h"
@@ -74,6 +80,7 @@
 #include "PointSource.h"
 #include "SurfNormSource.h"
 #include "LensSource.h"
+#include "KCodeSource.h"
 #include "doubleErr.h"
 #include "WorkData.h"
 #include "activeUnit.h"
@@ -87,6 +94,8 @@
 namespace SDef
 {
 
+
+  
 std::shared_ptr<SDef::SourceBase>
 makeActivationSource(const std::string& ASName)
   /*!
@@ -95,7 +104,7 @@ makeActivationSource(const std::string& ASName)
     \return Pointer to activation source.
   */
 {
-  ELog::RegMethod RegA("SourceSelector","makeActivationSelection");
+  ELog::RegMethod RegA("SourceCreate[F]","makeActivationSelection");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
 
@@ -107,7 +116,26 @@ makeActivationSource(const std::string& ASName)
 }
   
   
+std::string
+createKCodeSource(const std::string& kCodeStr,
+		  const std::vector<Geometry::Vec3D>& fuelVec)
+  /*!
+    Build a KCode source based on input from kcoe
+    \param kcodeStr :: Items from the kcode line
+    \param fuelVec :: Centre of fuel elements
+  */
+{
+  ELog::RegMethod RegA("SourceCreate[F]","createKCodeSource");
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
+  SDef::KCodeSource KCard("kcode");
 
+  KCard.setLine(kCodeStr);
+  KCard.setKSRC(fuelVec);
+  SDB.registerSource("kcode",KCard);
+  return KCard.getKeyName();
+}
+  
 std::string
 createBilbaoSource(const mainSystem::MITYPE& inputMap,
 		   const attachSystem::FixedComp& FC,
@@ -121,7 +149,7 @@ createBilbaoSource(const mainSystem::MITYPE& inputMap,
     \return keyName of source
   */
 {
-  ELog::RegMethod RegA("SourceCreate","createBilbauSource");
+  ELog::RegMethod RegA("SourceCreate[F]","createBilbauSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
 
@@ -382,7 +410,8 @@ createPointSource(const mainSystem::MITYPE& inputMap,
 
   GX.createAll(inputMap,FC,linkIndex);
   
-  SDB.registerSource(GX.getKeyName(),GX);  
+  SDB.registerSource(GX.getKeyName(),GX);
+
   return GX.getKeyName();      
 }
   
@@ -406,10 +435,11 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
   BeamSource GX(keyName);
 
   GX.createAll(inputMap,FC,sideIndex);
-
   SDB.registerSource(GX.getKeyName(),GX);  
   return GX.getKeyName();      
 }
+
+
 
 std::string
 createFlukaSource(const mainSystem::MITYPE& inputMap,
@@ -418,7 +448,7 @@ createFlukaSource(const mainSystem::MITYPE& inputMap,
 		  const long int sideIndex)
 /*!
     Create the fluka source driven by the source.f routine
-     Note this still can use both BEAM and BEAMAXIS
+    Note this still can use both BEAM and BEAMAXIS
     \param inputMap :: Variables data base
     \param keyName :: keyname for FlukaSource
     \param FC :: link surface for origin
@@ -432,8 +462,9 @@ createFlukaSource(const mainSystem::MITYPE& inputMap,
   FlukaSource GX(keyName);
 
   GX.createAll(inputMap,FC,sideIndex);
+  SDB.registerSource(GX.getKeyName(),GX);
+  ELog::EM<<"Axis = "<<FC.getLinkAxis(sideIndex)<<ELog::endDiag;
 
-  SDB.registerSource(GX.getKeyName(),GX);  
   return GX.getKeyName();      
 }
 
@@ -458,7 +489,7 @@ createRectSource(const mainSystem::MITYPE& inputMap,
 
   GX.createAll(inputMap,FC,sideIndex);
 
-  SDB.registerSource(GX.getKeyName(),GX);  
+  SDB.registerSource(GX.getKeyName(),GX);
   return GX.getKeyName();      
 }
 

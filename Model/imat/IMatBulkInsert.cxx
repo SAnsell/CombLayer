@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   imat/IMatBulkInsert.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,8 @@
 #include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,6 +76,8 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BulkInsert.h"
 #include "IMatBulkInsert.h"
@@ -84,9 +88,7 @@ namespace shutterSystem
 
 IMatBulkInsert::IMatBulkInsert(const size_t ID,const std::string& BKey,
 			       const std::string& IKey)  : 
-  BulkInsert(ID,BKey),keyName(IKey),
-  insIndex(ModelSupport::objectRegister::Instance().cell(IKey)),
-  cellIndex(insIndex+1)
+  BulkInsert(ID,BKey),compName(IKey),insIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -97,8 +99,8 @@ IMatBulkInsert::IMatBulkInsert(const size_t ID,const std::string& BKey,
 
 IMatBulkInsert::IMatBulkInsert(const IMatBulkInsert& A) : 
   BulkInsert(A),
-  keyName(A.keyName),insIndex(A.insIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),
+  compName(A.compName),insIndex(A.insIndex),
+  xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   frontGap(A.frontGap),width(A.width),height(A.height),
   defMat(A.defMat)
@@ -119,7 +121,6 @@ IMatBulkInsert::operator=(const IMatBulkInsert& A)
   if (this!=&A)
     {
       BulkInsert::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -215,7 +216,7 @@ IMatBulkInsert::createSurfaces()
 void 
 IMatBulkInsert::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the IMAT guide components
     \param System :: Simulation to create objects in
    */
 {
@@ -227,20 +228,20 @@ IMatBulkInsert::createObjects(Simulation& System)
   System.removeCell(innerVoid);
   System.removeCell(outerVoid);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -17 3M -4M 5M -6M ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -17 3 -4 -5 6 "
                                  " (-3M : 4M : -5M : 6M) ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
 
   // Outer void
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "17 -27 3M -4M 5M -6M ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "17 -27 13 -14 -15 16 "
                                  " (-3M : 4M : -5M : 6M) ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));

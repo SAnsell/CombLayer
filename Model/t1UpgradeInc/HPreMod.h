@@ -40,8 +40,6 @@ class HPreMod : public attachSystem::ContainedComp,
 {
  private:
   
-  const int preIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   int centOrgFlag;              ///< Origin centred / at a point
 

@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertSphere.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -151,9 +153,9 @@ insertSphere::createSurfaces()
 {
   ELog::RegMethod RegA("insertSphere","createSurface");
 
-  ModelSupport::buildSphere(SMap,ptIndex+7,Origin,radius);
+  ModelSupport::buildSphere(SMap,buildIndex+7,Origin,radius);
 
-  setSurf("Surf",ptIndex+1);
+  setSurf("Surf",SMap.realSurf(buildIndex+7));
   return;
 }
 
@@ -172,7 +174,7 @@ insertSphere::createLinks()
     {
       const double SN((i%2) ? 1.0 : -1.0);
       FixedComp::setConnect(i,Origin+Dir[i/2]*radius,Dir[i/2]*SN);
-      FixedComp::setLinkSurf(i,SMap.realSurf(ptIndex+7));
+      FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+7));
     }
   return;
 }
@@ -187,7 +189,7 @@ insertSphere::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertSphere","createObjects");
   
   std::string Out=
-    ModelSupport::getComposite(SMap,ptIndex," -7 ");
+    ModelSupport::getComposite(SMap,buildIndex," -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   addCell("Main",cellIndex-1);
   addOuterSurf(Out);

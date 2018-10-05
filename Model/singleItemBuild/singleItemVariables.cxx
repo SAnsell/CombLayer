@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -77,6 +77,22 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
+  // photon test
+  Control.addVariable("TargetZStep",0.0);
+  Control.addVariable("TargetRadius",5.0);
+  Control.addVariable("TargetMat","Stainless304");
+
+  Control.addVariable("ShieldInnerRadius",50.0);
+  Control.addVariable("ShieldOuterRadius",100.0);
+  Control.addVariable("ShieldMat","Stainless304");
+
+  Control.addVariable("TubeYStep",10.0);
+  Control.addVariable("TubeDepth",10.0);
+  Control.addVariable("TubeWidth",20.0);
+  Control.addVariable("TubeHeight",20.0);
+  Control.addVariable("TubeMat","Void");
+  
+  
 
   Control.addVariable("CryoBOuterRadius",20.0);
   
@@ -135,6 +151,8 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
+
+  
   
   return;
 }

@@ -68,6 +68,22 @@
 namespace SDef
 {
 
+std::ostream&
+operator<<(std::ostream& OX,const SDef::unitTYPE& unit)
+  /*!
+    Write out the unit type
+    \param OX :: Output stream
+    \param Unit :: Unit values
+  */
+{
+  if (unit.first==1 || unit.first==-1)
+    OX<<unit.second;
+  else
+    OX<<"-";
+  return OX;
+}
+  
+  
 FlukaSource::FlukaSource(const std::string& keyName) : 
   FixedOffset(keyName,0),SourceBase()
   /*!
@@ -122,8 +138,7 @@ FlukaSource::clone() const
   return new FlukaSource(*this);
 }
   
-  
-  
+ 
 void
 FlukaSource::populate(const ITYPE& inputMap)
   /*!
@@ -136,25 +151,23 @@ FlukaSource::populate(const ITYPE& inputMap)
   attachSystem::FixedOffset::populate(inputMap);
   SourceBase::populate(inputMap);
 
-
-  const size_t NPts=mainSystem::sizeInput(inputMap,"sourceVar");
+  const size_t NPts=mainSystem::sizeInput(inputMap,"source");
   for(size_t index=0;index<NPts && index<12;index++)
     {
       double D;
       const std::string IStr=
-	mainSystem::getInput<std::string>(inputMap,"sourceVar",index);
-      
+	mainSystem::getInput<std::string>(inputMap,"source",index);
       if (StrFunc::convert(IStr,D))
 	sValues[index]=unitTYPE(1,IStr);
       else if (!IStr.empty() &&
 	       IStr!="-" &&
 	       StrFunc::toUpperString(IStr)!="DEF")
 	sValues[index]=unitTYPE(-1,IStr);
-    }
-  
-  sourceName=mainSystem::getDefInput<std::string>
-			   (inputMap,"sourceName",0,"");
-  
+    }      
+  if (mainSystem::hasInput(inputMap,"logWeight"))
+    sourceName="LOG";
+
+  ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
   
   return;
 }
@@ -188,7 +201,7 @@ FlukaSource::rotate(const localRotate& LR)
 }
   
 void
-FlukaSource::createSource(SDef::Source& sourceCard) const
+FlukaSource::createSource(SDef::Source&) const
   /*!
     Creates a simple beam sampled uniformly in a
     circle
@@ -196,14 +209,6 @@ FlukaSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("FlukaSource","createSource");
-
-  sourceCard.setComp("vec",Y);
-  sourceCard.setComp("axs",Y);
-    
-  sourceCard.setComp("pos",Origin);
-  
-  SourceBase::createEnergySource(sourceCard);
-
   return;
 }  
 
@@ -277,30 +282,25 @@ FlukaSource::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("FlukaSource","writeFLUKA");
 
-  const particleConv& PC=particleConv::Instance();
-
   // can be two for an energy range
   if (Energy.size()!=1)
     throw ColErr::SizeError<size_t>
       (Energy.size(),1,"Energy only single point supported");
 
   std::ostringstream cx;
-  // energy : energy divirgence : angle spread [mrad]
-  // radius : innerRadius : -1 t o means radius
-  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<" - "
-    <<" "<<" - "<<" - - ";
-  cx<<StrFunc::toUpperString(particleType);
-  StrFunc::writeFLUKA(cx.str(),OX);
-  cx.str("");
 
-  // Y Axis is Z in fluka, X is X
-  cx<<"BEAMAXES "<<X<<" "<<Y;
-  StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
-  cx<<"BEAMPOS "<<Origin;
+  cx<<"SOURCE ";
+  for(size_t i=0;i<6;i++)
+    cx<<" "<<sValues[i];
+  cx<<" "<<sourceName;
   StrFunc::writeFLUKA(cx.str(),OX);
+
   cx.str("");
-  OX<<"SOURCE"<<std::endl;
+  cx<<"SOURCE ";  
+  cx<<X<<" "<<Y;
+  cx<<" &";
+  StrFunc::writeFLUKA(cx.str(),OX);
   
   return;
 }

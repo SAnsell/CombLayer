@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
-  * File:   essBuild/DiskPreSimple.cxx
+  * File:   essBuild/BeRefInnerStructure.cxx
   *
-  * Copyright (c) 2004-2015 by Stuart Ansell
+  * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +83,7 @@ namespace essSystem
 
   BeRefInnerStructure::BeRefInnerStructure(const std::string& Key) :
     attachSystem::ContainedComp(),
-    attachSystem::FixedComp(Key,6), attachSystem::CellMap(),
-    insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-    cellIndex(insIndex+1)
+    attachSystem::FixedComp(Key,6), attachSystem::CellMap()
     /*!
       Constructor
       \param Key :: Name of construction key
@@ -93,8 +93,6 @@ namespace essSystem
   BeRefInnerStructure::BeRefInnerStructure(const BeRefInnerStructure& A) : 
     attachSystem::ContainedComp(A),
     attachSystem::FixedComp(A),
-    insIndex(A.insIndex),
-    cellIndex(A.cellIndex),
     nLayers(A.nLayers),
     baseFrac(A.baseFrac),
     mat(A.mat),
@@ -244,7 +242,7 @@ namespace essSystem
 	DA.addMaterial(mat.back());
 
 	DA.setCellN(beCell);
-	DA.setOutNum(cellIndex, insIndex+10000);
+	DA.setOutNum(cellIndex, buildIndex+10000);
 
 	ModelSupport::mergeTemplate<Geometry::Plane,
 				    Geometry::Plane> surroundRule;

@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -89,8 +91,7 @@ namespace ModelSupport
 
 LayerDivide1D::LayerDivide1D(const std::string& Key)  :
   FixedComp(Key,0),
-  divIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
-  cellIndex(divIndex+1),WallID("Split")
+  WallID("Split")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -146,7 +147,7 @@ LayerDivide1D::processSurface(const std::pair<int,int>& WallSurf,
     }
   // -------------------------------------------------------------
   
-  int surfN(divIndex+1);
+  int surfN(buildIndex+1);
   SMap.addMatch(surfN,WallSurf.first);
   attachSystem::SurfMap::addSurf(surGroup,surfN);
   surfN++;
@@ -361,7 +362,7 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
   ALen=processSurface(AWall,AFrac);
 
   std::string Out;
-  int aIndex(divIndex);
+  int aIndex(buildIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
       const std::string layerNum(StrFunc::makeString(i));

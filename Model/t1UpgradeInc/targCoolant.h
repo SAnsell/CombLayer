@@ -118,8 +118,6 @@ class targCoolant :  public attachSystem::FixedComp
 {
  private:
   
-  const int coolIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   /// PLATES:
   std::vector<plateCut> PCut;  

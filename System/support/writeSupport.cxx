@@ -78,16 +78,23 @@ flukaNum(const double D)
 {
   static boost::format FMTnum("%1$10.5f");
   static boost::format FMTlnum("%1$10.5g");
+  //  static boost::format FMTnegLnum("%1$10.4g");
+  static boost::format FMTnegLnum("%1$10.4f");
 
-  if (D < 1e5 && D > -1e4)
+  if (D < 1e5 && D > 1e-15 &&
+      (std::abs(D)>1e-5 || std::abs(D)<1e-15))
     {
       // test if 1 dp sufficiently accurate
-      if ( std::abs(std::round(D*10000.0)-D*10000.0)
-	   <Geometry::zeroTol*1000)
+      if (std::abs(std::round(D*10000.0)-D*10000.0)
+	  <Geometry::zeroTol) 
 	return (FMTnum % D).str();
     }
-  
+
+  if (D<0.0)
+    return (FMTnegLnum % D).str();
+
   return (FMTlnum % D).str();
+  
 }
 
 void
@@ -107,6 +114,7 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
   size_t i(1);
   long int I;
   double D;
+
   for (std::string& w : whats)
     {
       if (w=="-") w=" ";
@@ -117,7 +125,9 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 	  if (StrFunc::convert(w,I))
 	    OX<<flukaNum(I);
 	  else if (StrFunc::convert(w,D))
-	    OX<<flukaNum(D);
+	    {
+	      OX<<flukaNum(D);
+	    }
 	  else if (w.size()>10)
 	    throw ColErr::InvalidLine(w,"String to long for FLUKA");
 	  else
@@ -251,7 +261,8 @@ writeControl(const std::string& Line,std::ostream& OX,
 }
 
 void
-writeMCNPXcomment(const std::string& Line,std::ostream& OX)
+writeMCNPXcomment(const std::string& Line,std::ostream& OX,
+		  const std::string commentString)
 /*!
   Write out the line in the limited form for MCNPX
   ie initial line from 0->72 after that 8 to 72
@@ -259,6 +270,7 @@ writeMCNPXcomment(const std::string& Line,std::ostream& OX)
   so lines are cut by 2
   \param Line :: full MCNPX line
   \param OX :: ostream to write to
+  \param commentString :: standard comment pre-string
 */
 {
   const size_t MaxLine(72);
@@ -276,7 +288,7 @@ writeMCNPXcomment(const std::string& Line,std::ostream& OX)
       const std::string Out=X.substr(0,posB);
       if (!isEmpty(Out))
         {
-	  OX<<"c ";
+	  OX<<commentString;
 	  if (spc)
 	    OX<<std::string(spc,' ');
 	  OX<<X.substr(0,posB)<<std::endl;
@@ -287,12 +299,42 @@ writeMCNPXcomment(const std::string& Line,std::ostream& OX)
     }
   if (!isEmpty(X))
     {
-      OX<<"c ";
+      OX<<commentString;
       if (spc)
 	OX<<std::string(spc,' ');
       OX<<X<<std::endl;
     }
   return;
+}
+
+std::vector<std::string>
+splitComandLine(std::string Line)
+/*!
+  Split the line based on "-Not a number" commands
+  \param Line :: full MCNPX line
+  \return vector of components
+*/
+{
+  std::vector<std::string> outVec;
+  std::string unit;
+  std::string part;
+  size_t offset(0);
+  while(StrFunc::section(Line,part))
+    {
+      if (part.size()>=2 && part[0]=='-' &&
+	  !std::isdigit(part[1]))
+	{
+	  if (offset)
+	    {
+	      outVec.push_back(unit);
+	      unit=std::string(offset,' ');
+	    }
+	  offset=3;
+	}
+      unit+=" "+part;
+    }
+  outVec.push_back(unit);
+  return outVec;
 }
 
 }  // NAMESPACE StrFunc

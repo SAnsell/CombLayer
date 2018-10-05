@@ -104,12 +104,17 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "phitsPhysics.h"
+#include "phitsTally.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
 
 SimPHITS::SimPHITS() :
-  Simulation(),nps(10000),rndSeed(1234567871)
+  Simulation(),icntl(0),nps(10000),rndSeed(1234567871),
+  PhysPtr(new phitsSystem::phitsPhysics())
   /*!
     Constructor
   */
@@ -117,7 +122,8 @@ SimPHITS::SimPHITS() :
 
 
 SimPHITS::SimPHITS(const SimPHITS& A) :
-  Simulation(A),nps(A.nps),rndSeed(A.rndSeed)
+  Simulation(A),nps(A.nps),rndSeed(A.rndSeed),
+  PhysPtr(new phitsSystem::phitsPhysics(*PhysPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -137,10 +143,35 @@ SimPHITS::operator=(const SimPHITS& A)
       Simulation::operator=(A);
       nps=A.nps;
       rndSeed=A.rndSeed;
+      *PhysPtr=*PhysPtr;
     }
   return *this;
 }
 
+void
+SimPHITS::setICNTL(const std::string& ICName)
+  /*!
+    Given the icntl name find the correct icntl number
+    \param ICName :: Name to convert to number
+   */
+{
+  ELog::RegMethod RegA("SimPHITS","setICNTL");
+
+  int icn(0);
+  if (StrFunc::convert(ICName,icn))
+    {
+      icntl=icn;
+      return;
+    }
+  else if (ICName=="plot")
+    {
+      icntl=8;
+      return;
+    }
+    
+  throw ColErr::InContainerError<std::string>(ICName,"ICName");
+  return;
+}
 
 void
 SimPHITS::writeSource(std::ostream& OX) const
@@ -158,10 +189,8 @@ SimPHITS::writeSource(std::ostream& OX) const
 
   const SDef::SourceBase* SBPtr=
     SDB.getSource<SDef::SourceBase>(sourceName);
-  SBPtr->writePHITS(OX);
-  //  sdefCard.writePHITS(OX);
-  
-
+  if (SBPtr)
+    SBPtr->writePHITS(OX);
   return;
 }
 
@@ -245,15 +274,15 @@ SimPHITS::writeSurfaces(std::ostream& OX) const
   */
 
 {
-  OX<<"  [surface] " <<std::endl;
+  OX<<"[surface] " <<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap=
     ModelSupport::surfIndex::Instance().surMap();
-  std::map<int,Geometry::Surface*>::const_iterator mp;
-  for(mp=SurMap.begin();mp!=SurMap.end();mp++)
-    {
-      (mp->second)->write(OX);
-    }
+
+  for(const std::map<int,Geometry::Surface*>
+	::value_type& mp : SurMap)
+    mp.second->write(OX);
+
   return;
 } 
 
@@ -319,11 +348,11 @@ SimPHITS::writePhysics(std::ostream& OX) const
   boost::format FMT("%1$8.0d ");
   OX<<"[Parameters]"<<std::endl;
 
-  OX<<" icntl       =        "<<(FMT % 0)<<std::endl;
+  OX<<" icntl       =        "<<(FMT % icntl)<<std::endl;
   OX<<" maxcas      =        "<<(FMT % (nps/10))<<std::endl;
   OX<<" maxbch      =        "<<(FMT % 10)<<std::endl;
   OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
-  OX<<" file(1)     = /home/stuartansell/phits"<<std::endl;  
+  OX<<" file(1)     = /home/ansell/phits"<<std::endl;  
   OX<<" file(6)     = phits.out"<<std::endl;
   OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
 
@@ -333,14 +362,14 @@ SimPHITS::writePhysics(std::ostream& OX) const
 
   if (WM.hasParticle("n"))
     {
+      ELog::EM<<"WEIGHT"<<ELog::endErr;
       const WeightSystem::WForm* NWForm=WM.getParticle("n");
       NWForm->writePHITSHead(OX);
     }
-  
   OX<<"$ ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
 
   
-  OX<<std::endl;  // MCNPX requires a blank line to terminate
+  OX<<std::endl;
   return;
 }
 
@@ -364,7 +393,8 @@ SimPHITS::write(const std::string& Fname) const
   writeTransform(OX);
   writeTally(OX);
   writeSource(OX);
-  
+
+  OX<<"[end]"<<std::endl;
   OX.close();
   return;
 }

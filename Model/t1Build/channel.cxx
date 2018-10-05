@@ -3,7 +3,7 @@
  
  * File:   t1Build/channel.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +44,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -61,6 +59,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "shutterBlock.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,15 +74,16 @@
 namespace ts1System
 {
 
-channel::channel(const int N,const int SN,
-		 const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
-  blockIndex(N),cIndex(SN),surfOffset(SN+100*(N+1)),
-  cellIndex(surfOffset+1)
+channel::channel(const std::string& Key,const int ID,
+		 const int baseSurfN) : 
+		
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key+std::to_string(ID),0),
+  blockIndex(ID),cIndex(baseSurfN)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param N :: Index value of block
-    \param SN :: surface Index value
+    \param ID :: Index value of block
+    \param baseSurfN :: surface Index of outer component
     \param Key :: Name for item in search
   */
 {}
@@ -90,8 +91,7 @@ channel::channel(const int N,const int SN,
 channel::channel(const channel& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   blockIndex(A.blockIndex),cIndex(A.cIndex),
-  surfOffset(A.surfOffset),
-  cellIndex(A.cellIndex),centX(A.centX),centZ(A.centZ),
+  centX(A.centX),centZ(A.centZ),
   width(A.width),height(A.height),midGap(A.midGap),
   inStep(A.inStep),inDepth(A.inDepth),matN(A.matN)
   /*!
@@ -112,7 +112,7 @@ channel::operator=(const channel& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
+
       centX=A.centX;
       centZ=A.centZ;
       width=A.width;
@@ -266,13 +266,13 @@ channel::createSurfaces()
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
   const double signV((centZ<0) ? -1.0 : 1.0);
  
-  ModelSupport::buildPlane(SMap,surfOffset+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin+X*(centX-width),X);
-  ModelSupport::buildPlane(SMap,surfOffset+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*(centX+width),X);
-  ModelSupport::buildPlane(SMap,surfOffset+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin+Z*(centZ-signV*height),Z*signV);
-  ModelSupport::buildPlane(SMap,surfOffset+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(centZ+signV*height),Z*signV);
 
   // get front plate surface for offset
@@ -285,19 +285,19 @@ channel::createSurfaces()
 
   // Ugly movement of the cut surface: 
   Geometry::Plane* PX=
-    SurI.createUniqSurf<Geometry::Plane>(surfOffset+1); 
+    SurI.createUniqSurf<Geometry::Plane>(buildIndex+1); 
   PX->setPlane(NormA,DA-inStep);      
-  SMap.registerSurf(surfOffset+1,PX);
+  SMap.registerSurf(buildIndex+1,PX);
 
   // the L part section:
   // From centre of target.
-  ModelSupport::buildPlane(SMap,surfOffset+15,Origin+Z*signV*midGap,Z*signV);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin+Z*signV*midGap,Z*signV);
 
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(surfOffset+11); 
+  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+11); 
   PX->setPlane(NormA,DA-(inStep+inDepth));     
 //  PX->setPlane(NormA,DA-(inStep+3.0*height));       
-  SMap.registerSurf(surfOffset+11,PX);
+  SMap.registerSurf(buildIndex+11,PX);
   
   return;
 }
@@ -312,14 +312,14 @@ channel::createObjects(Simulation& System)
   ELog::RegMethod RegA("channel","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfOffset,"-1 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 3 -4 5 -6 ");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,surfOffset,"-1 11 3 -4 -5 15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 11 3 -4 -5 15 ");
   addOuterUnionSurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfOffset,cIndex,"-1 -2M 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,cIndex,"-1 -2M 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
   
   return;

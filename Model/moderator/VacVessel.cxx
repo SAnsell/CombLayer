@@ -60,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -77,8 +79,7 @@ namespace moderatorSystem
 
 VacVessel::VacVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,8),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,8 +88,8 @@ VacVessel::VacVessel(const std::string& Key)  :
 
 VacVessel::VacVessel(const VacVessel& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  vacIndex(A.vacIndex),grooveKeyName(A.grooveKeyName),
-  hydKeyName(A.hydKeyName),cellIndex(A.cellIndex),populated(A.populated),
+  grooveKeyName(A.grooveKeyName),
+  hydKeyName(A.hydKeyName),populated(A.populated),
   BVec(A.BVec),vacPosGap(A.vacPosGap),vacNegGap(A.vacNegGap),
   vacPosRadius(A.vacPosRadius),vacNegRadius(A.vacNegRadius),
   vacLSide(A.vacLSide),vacRSide(A.vacRSide),vacTop(A.vacTop),vacBase(A.vacBase),
@@ -115,7 +116,6 @@ VacVessel::operator=(const VacVessel& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       BVec=A.BVec;
       vacPosGap=A.vacPosGap;
@@ -295,67 +295,67 @@ VacVessel::createSurfaces()
   ELog::RegMethod RegA("VacVessel","createSurface");
 
   // Inner Layers:
-  ModelSupport::buildCylinder(SMap,vacIndex+1,
+  ModelSupport::buildCylinder(SMap,buildIndex+1,
 			      getSurfacePoint(0,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+2,
+  ModelSupport::buildCylinder(SMap,buildIndex+2,
 			      getSurfacePoint(0,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+3,getSurfacePoint(0,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+4,getSurfacePoint(0,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+5,getSurfacePoint(0,5),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+6,getSurfacePoint(0,6),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,getSurfacePoint(0,3),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,getSurfacePoint(0,4),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,getSurfacePoint(0,5),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,getSurfacePoint(0,6),Z);
 
 
   // SECOND LAYER:
-  ModelSupport::buildCylinder(SMap,vacIndex+11,
+  ModelSupport::buildCylinder(SMap,buildIndex+11,
 			      getSurfacePoint(1,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+12,
+  ModelSupport::buildCylinder(SMap,buildIndex+12,
 			      getSurfacePoint(1,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+13,getSurfacePoint(1,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+14,getSurfacePoint(1,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+15,getSurfacePoint(1,5),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+16,getSurfacePoint(1,6),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,getSurfacePoint(1,3),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,getSurfacePoint(1,4),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,getSurfacePoint(1,5),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,getSurfacePoint(1,6),Z);
 
   // TERTIARY LAYER:
-  ModelSupport::buildCylinder(SMap,vacIndex+21,
+  ModelSupport::buildCylinder(SMap,buildIndex+21,
 			      getSurfacePoint(2,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+22,
+  ModelSupport::buildCylinder(SMap,buildIndex+22,
 			      getSurfacePoint(2,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+23,getSurfacePoint(2,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+24,getSurfacePoint(2,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+25,getSurfacePoint(2,5),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+26,getSurfacePoint(2,6),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+23,getSurfacePoint(2,3),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,getSurfacePoint(2,4),X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,getSurfacePoint(2,5),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,getSurfacePoint(2,6),Z);
 
   // Outer AL LAYER:
   
-  ModelSupport::buildCylinder(SMap,vacIndex+31,
+  ModelSupport::buildCylinder(SMap,buildIndex+31,
 			      getSurfacePoint(3,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+32,
+  ModelSupport::buildCylinder(SMap,buildIndex+32,
 			      getSurfacePoint(3,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+33,getSurfacePoint(3,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+34,getSurfacePoint(3,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+35,getSurfacePoint(3,5),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+36,getSurfacePoint(3,6),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+33,getSurfacePoint(3,3),X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,getSurfacePoint(3,4),X);
+  ModelSupport::buildPlane(SMap,buildIndex+35,getSurfacePoint(3,5),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,getSurfacePoint(3,6),Z);
 
   // Outer Clearance
-  ModelSupport::buildCylinder(SMap,vacIndex+41,
+  ModelSupport::buildCylinder(SMap,buildIndex+41,
 			      getSurfacePoint(4,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+42,
+  ModelSupport::buildCylinder(SMap,buildIndex+42,
 			      getSurfacePoint(4,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
 
-  ModelSupport::buildPlane(SMap,vacIndex+43,getSurfacePoint(4,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+44,getSurfacePoint(4,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+45,getSurfacePoint(4,5),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+46,getSurfacePoint(4,6),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+43,getSurfacePoint(4,3),X);
+  ModelSupport::buildPlane(SMap,buildIndex+44,getSurfacePoint(4,4),X);
+  ModelSupport::buildPlane(SMap,buildIndex+45,getSurfacePoint(4,5),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,getSurfacePoint(4,6),Z);
 
   return;
 }
@@ -371,31 +371,31 @@ VacVessel::createObjects(Simulation& System,const std::string& Exclude)
   ELog::RegMethod RegA("VacVessel","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-41 -42 43 -44 45 -46");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 43 -44 45 -46");
   addOuterSurf(Out);
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -2 3 -4 5 -6");
   Out+=" "+Exclude;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // First Al layer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -12 13 -14 15 -16 "
 				 " (1:2:-3:4:-5:6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-21 -22 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 -22 23 -24 25 -26 "
 				 " (11:12:-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-31 -32 33 -34 35 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 -32 33 -34 35 -36 "
 				 " (21:22:-23:24:-25:26) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,outMat,0.0,Out));
 
   // Outer clearance
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-41 -42 43 -44 45 -46 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 43 -44 45 -46 "
 				 " (31:32:-33:34:-35:36) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
@@ -424,14 +424,14 @@ VacVessel::createLinks()
   // Set Connect surfaces:
   for(int i=2;i<6;i++)
     FixedComp::setLinkSurf(static_cast<size_t>(i),
-			   SMap.realSurf(vacIndex+41+i));
+			   SMap.realSurf(buildIndex+41+i));
 
   // For Cylindrical surface must also have a divider:
   // -- Groove:
-  FixedComp::setLinkSurf(0,SMap.realSurf(vacIndex+41));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+41));
   FixedComp::setBridgeSurf(0,-SMap.realSurf(divideSurf));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+42));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
   FixedComp::setBridgeSurf(1,-SMap.realSurf(divideSurf));
 
   return;
@@ -524,7 +524,7 @@ VacVessel::createAllPair(Simulation& System,const Groove& GMod,
 
   
   // Mid of grood
-  FixedComp::setLinkSurf(6,-SMap.realSurf(vacIndex+41));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+41));
   FixedComp::setBridgeSurf(6,SMap.realSurf(divideSurf));
 
   Geometry::Vec3D AimPt=GMod.getLinkPt(7);
@@ -533,7 +533,7 @@ VacVessel::createAllPair(Simulation& System,const Groove& GMod,
   LP+= Z * Z.dotProd(AimPt);
   FixedComp::setConnect(6,LP,Y);
 
-  FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+42));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+42));
   FixedComp::setBridgeSurf(7,SMap.realSurf(divideSurf));
   FixedComp::setConnect(7,HMod.getLinkPt(2),Y);  
   return;

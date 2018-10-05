@@ -45,7 +45,13 @@ class PortItemGenerator
   
   double flangeLen;          ///< Flange length
   double flangeRadius;       ///< Flange radius
-    
+  double plateThick;         ///< Plate thickness
+
+  std::string wallMat;       ///< tube wall material
+  std::string plateMat;      ///< cover plate material
+  
+  bool outerVoid;            ///< Construct outer void
+  
  public:
 
   PortItemGenerator();
@@ -59,7 +65,12 @@ class PortItemGenerator
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad
   void setFlange(const double,const double);
+  // set 
+  void setPlate(const double,const std::string&);
 
+  /// accessor to outerVoid
+  void setOuterVoid(const bool F) { outerVoid=F; }
+  
   void generatePort(FuncDataBase&,const std::string&,
 		    const Geometry::Vec3D&,
 		    const Geometry::Vec3D&) const;

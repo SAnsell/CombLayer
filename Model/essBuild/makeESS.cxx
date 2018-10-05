@@ -58,15 +58,20 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "LayerComp.h"
+#include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -79,7 +84,6 @@
 #include "LinkSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
-#include "CopiedComp.h"
 
 #include "FocusPoints.h"
 #include "beamlineConstructor.h"
@@ -293,7 +297,7 @@ makeESS::makeTargetClearance(Simulation& System, const int engActive)
       attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
 
-      std::vector<std::shared_ptr<GuideItem> > GUnit = GB->GetGuideItems();
+      std::vector<std::shared_ptr<GuideItem> > GUnit = GB->getGuideItems();
       for (const std::shared_ptr<GuideItem> GA : GUnit)
 	{
 	  if (GA->isActive())
@@ -391,7 +395,7 @@ makeESS::buildIradComponent(Simulation& System,
           std::shared_ptr<IradCylinder>
             IRadComp(new IradCylinder(objectName));
           const attachSystem::FixedComp* FC=
-            OR.getObject<attachSystem::FixedComp>(compName);
+	    System.getObject<attachSystem::FixedComp>(compName);
           if (!FC)
             throw ColErr::InContainerError<std::string>
               (compName,"Component not found");
@@ -451,7 +455,7 @@ makeESS::buildTopButterfly(Simulation& System)
     \param System :: Stardard simulation
   */
 {
-  ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
+  ELog::RegMethod RegA("makeESS","buildTopButtefly");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -629,13 +633,13 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      // get focal points
 	      midWaterName = moderator + "MidWater";
-	      const attachSystem::FixedComp* midWater = OR.getObject<attachSystem::FixedComp>(midWaterName);
+	      const attachSystem::FixedComp* midWater = System.getObject<attachSystem::FixedComp>(midWaterName);
 	      if (!midWater)
 		throw ColErr::InContainerError<std::string>
 		  (midWaterName,"Component not found");
 
 	      lobeName = moderator + "LeftLobe";
-	      const attachSystem::FixedComp* lobe = OR.getObject<attachSystem::FixedComp>(lobeName);
+	      const attachSystem::FixedComp* lobe = System.getObject<attachSystem::FixedComp>(lobeName);
 	      if (!lobe)
 		throw ColErr::InContainerError<std::string>
 		  (lobeName,"Component not found");
@@ -691,7 +695,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      // set up the focal points
 	      const std::string midH2Name = moderator+"MidH2";
-	      const attachSystem::FixedComp *midH2 = OR.getObject<attachSystem::FixedComp>(midH2Name);
+	      const attachSystem::FixedComp *midH2 = System.getObject<attachSystem::FixedComp>(midH2Name);
 	      if (!midH2)
 		throw ColErr::InContainerError<std::string>
 		  (midH2Name,"Component not found");
@@ -829,9 +833,9 @@ makeESS::buildBunkerChicane(Simulation& System,
 	    IParam.getValueError<std::string>
 	    ("bunkerChicane",j,2,"SegmentNumber "+errMess);
 	  const attachSystem::FixedComp* FCPtr=
-	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
+	    System.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
 
-	  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+	  const long int linkIndex=FCPtr->getSideIndex(linkName);
           CF->createAll(System,*FCPtr,linkIndex);
 	}
       else
@@ -1184,7 +1188,6 @@ makeESS::build(Simulation& System,
       throw ColErr::ExitAbort("Help system exit");
     }
 
-  
   buildFocusPoints(System);
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);

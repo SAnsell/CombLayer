@@ -47,8 +47,6 @@ class ZoomChopper : public attachSystem::TwinComp,
 {
  private:
   
-  const int chpIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double xStep;                 ///< Origin step
   double yStep;                 ///< Origin step

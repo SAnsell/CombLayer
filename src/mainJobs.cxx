@@ -56,6 +56,8 @@
 #include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "TallyCreate.h"
@@ -63,10 +65,12 @@
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"
+#include "meshConstruct.h"
 #include "tmeshTally.h"
 #include "MatMD5.h"
 #include "MD5sum.h"
 #include "Visit.h"
+
 #include "mainJobs.h"
 
 
@@ -134,20 +138,27 @@ createVTK(const mainSystem::inputParam& IParam,
   const SimMCNP* SimMCPtr=dynamic_cast<const SimMCNP*>(SimPtr);
   if (IParam.flag("vtk"))
     {
+      const std::string vForm=
+	IParam.getDefValue<std::string>("","vtk",0);
+
       std::array<size_t,3> MPts;
       Geometry::Vec3D MeshA;
       Geometry::Vec3D MeshB;
       
       if (IParam.flag("vtkMesh"))
 	{
-	  size_t cntIndex(0);
-	  MeshA=IParam.getCntVec3D("vtkMesh",0,cntIndex,"MeshA point failed");
-	  MeshB=IParam.getCntVec3D("vtkMesh",0,cntIndex,"MeshB point failed");
-	  for(size_t i=0;i<3;i++)
+	  const std::string PType=
+	    IParam.getValueError<std::string>("vtkMesh",0,0,"object/free");
+	  if (PType=="object")
+	      tallySystem::meshConstruct::getObjectMesh
+		(*SimMCPtr,IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
+	  else if (PType=="free")
+	      tallySystem::meshConstruct::getFreeMesh
+		(IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
+	  else
 	    {
-	      ELog::EM<<"i == "<<i<<ELog::endDiag;
-	      MPts[i]=IParam.getValueError<size_t>
-		("vtkMesh",0,cntIndex++,"MPts[] point failed");
+	      tallySystem::meshConstruct::getFreeMesh
+	      (IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
 	    }
 	}
       else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))
@@ -158,11 +169,16 @@ createVTK(const mainSystem::inputParam& IParam,
 
       ELog::EM<<"Processing VTK:"<<ELog::endBasic;
       Visit VTK;
-      
-      if (IParam.flag("vcell"))
+
+      const std::string vType=
+	IParam.getDefValue<std::string>("","vtkType",0);
+      if (vType=="cell")
 	VTK.setType(Visit::VISITenum::cellID);
       else
 	VTK.setType(Visit::VISITenum::material);
+
+      if (vForm=="line")
+	VTK.setLineForm();
       
       std::set<std::string> Active;
       for(size_t i=0;i<15;i++)
@@ -175,32 +191,11 @@ createVTK(const mainSystem::inputParam& IParam,
       // PROCESS VTK:
       VTK.setBox(MeshA,MeshB);
       VTK.setIndex(MPts[0],MPts[1],MPts[2]);
-      VTK.populate(SimPtr,Active);
+      VTK.populate(*SimPtr,Active);
       
       VTK.writeVTK(Oname);
       return 2;
     }
 
-  /*
-  if (IParam.flag("md5"))
-  
-    }
-
-
-    }
-
-  
-  if (IParam.flag("md5"))
-    {
-      ELog::EM<<"Processing MD5:"<<ELog::endBasic;
-      MD5sum MM(60);
-      MM.setBox(MeshA,MeshB);
-      MM.setIndex(MPts[0],MPts[1],MPts[2]);
-      MM.populate(SimPtr);
-      return 1;
-    }
-  
-    }
-  */
   return 0;
 }

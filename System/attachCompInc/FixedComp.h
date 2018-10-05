@@ -87,7 +87,7 @@ class FixedComp
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
-  FixedComp(const std::string&,const size_t);
+  FixedComp(const std::string&,const size_t,const size_t =10000);
   FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
   FixedComp(const std::string&,const size_t,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&,
@@ -120,6 +120,7 @@ class FixedComp
 		       const Geometry::Vec3D&);
 
   void linkAngleRotate(const size_t,const double,const double);
+  void linkAngleRotate(const size_t,const double,const double,const double);
   void linkShift(const size_t,const double,const double,const double);
 
   void reverseZ();
@@ -167,7 +168,6 @@ class FixedComp
 
   virtual int getExitWindow(const long int,std::vector<int>&) const;
 
-
   void nameSideIndex(const size_t,const std::string&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
@@ -180,7 +180,6 @@ class FixedComp
   
   LinkUnit getSignedLU(const long int) const;
   long int getSideIndex(const std::string&) const;
-
   
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
 
@@ -192,11 +191,17 @@ class FixedComp
   virtual Geometry::Vec3D getLinkAxis(const long int) const;
   virtual std::string getLinkString(const long int) const;
   virtual double getLinkDistance(const long int,const long int) const;
+  virtual double getLinkDistance(const long int,const FixedComp&,
+				 const long int) const;
   virtual int getLinkSurf(const long int) const;
-  
+
+  HeadRule getFullRule(const std::string&) const;
   HeadRule getFullRule(const long int) const;
 
   HeadRule getMainRule(const long int) const;
+  HeadRule getMainRule(const std::string&) const;
+
+  HeadRule getCommonRule(const std::string&) const;
   HeadRule getCommonRule(const long int) const;
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;
@@ -221,11 +226,20 @@ class FixedComp
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   std::vector<int> splitObject(Simulation&,const int,const int);
+
   std::vector<int> splitObject(Simulation&,const int,const int,
 			       const Geometry::Vec3D&,const Geometry::Vec3D&);
   std::vector<int> splitObject(Simulation&,const int,const int,
 			       const std::vector<Geometry::Vec3D>&,
 			       const std::vector<Geometry::Vec3D>&);
+
+  std::vector<int> splitObjectAbsolute
+    (Simulation&,const int,const int,
+     const Geometry::Vec3D&,const Geometry::Vec3D&);
+  
+  std::vector<int> splitObjectAbsolute
+    (Simulation&,const int,const int, const std::vector<Geometry::Vec3D>&,
+     const std::vector<Geometry::Vec3D>&);
 };
 
 }

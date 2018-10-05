@@ -214,8 +214,8 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("PrimModXStep",0.0);
   Control.addVariable("PrimModYStep",0.0);
   Control.addVariable("PrimModZStep",0.0);
-  Control.addVariable("PrimModXYangle",0.0);
-  Control.addVariable("PrimModZangle",0.0);
+  Control.addVariable("PrimModXYAngle",0.0);
+  Control.addVariable("PrimModZAngle",0.0);
   Control.addVariable("PrimModNLayers",1);
   Control.addVariable("PrimModOuterRadius",2.05);
 
@@ -306,8 +306,8 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("OuterXStep",0.0);
   Control.addVariable("OuterYStep",0.0);
   Control.addVariable("OuterZStep",0.0);
-  Control.addVariable("OuterXYangle",0.0);
-  Control.addVariable("OuterZangle",0.0);
+  Control.addVariable("OuterXYAngle",0.0);
+  Control.addVariable("OuterZAngle",0.0);
   Control.addVariable("OuterNLayers",2);
 
   Control.addVariable("Outer0Radius",2.5);
@@ -320,8 +320,8 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("PrimModXStep",0.0);
   Control.addVariable("PrimModYStep",0.0);
   Control.addVariable("PrimModZStep",0.0);
-  Control.addVariable("PrimModXYangle",0.0);
-  Control.addVariable("PrimModZangle",0.0);
+  Control.addVariable("PrimModXYAngle",0.0);
+  Control.addVariable("PrimModZAngle",0.0);
   Control.addVariable("PrimModNLayers",6);
   Control.addVariable("PrimModOuterRadius",2.05);
 
@@ -384,8 +384,8 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("CarbonXStep",0.0);
   Control.addVariable("CarbonYStep",0.0);
   Control.addVariable("CarbonZStep",0.0);
-  Control.addVariable("CarbonXYangle",0.0);
-  Control.addVariable("CarbonZangle",0.0);
+  Control.addVariable("CarbonXYAngle",0.0);
+  Control.addVariable("CarbonZAngle",0.0);
   Control.addVariable("CarbonNLayers",3);
   Control.addVariable("CarbonOuterRadius",5.05);
   
@@ -406,8 +406,8 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("D2OModXStep",0.0);
   Control.addVariable("D2OModYStep",0.0);
   Control.addVariable("D2OModZStep",0.0);
-  Control.addVariable("D2OModXYangle",0.0);
-  Control.addVariable("D2OModZangle",0.0);
+  Control.addVariable("D2OModXYAngle",0.0);
+  Control.addVariable("D2OModZAngle",0.0);
   Control.addVariable("D2OModOuterRadius",5.05);
   Control.addVariable("D2OModOuterHeight",21.275);
   Control.addVariable("D2OModOuterMat","Void");

@@ -40,8 +40,6 @@ class profileMon : public attachSystem::FixedOffset,
 {
  private:
   
-  const int profMonIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double height;                ///< Height
   double depth;                 ///< Depth

@@ -3,7 +3,7 @@
  
  * File:   photon/TableSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
@@ -57,12 +56,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -77,9 +77,7 @@ namespace photonSystem
       
 TableSupport::TableSupport(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  tabIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(tabIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -137,12 +135,12 @@ TableSupport::createSurfaces()
   ELog::RegMethod RegA("TableSupport","createSurfaces");
 
   // inner surfaces: 
-  ModelSupport::buildPlane(SMap,tabIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,tabIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,tabIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,tabIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,tabIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,tabIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   
   return; 
@@ -159,7 +157,7 @@ TableSupport::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,tabIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   addCell("TableSupport",cellIndex-1);
 
@@ -177,22 +175,22 @@ TableSupport::createLinks()
   ELog::RegMethod RegA("TableSupport","createLinks");
   
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(tabIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(tabIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(tabIndex+3));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(tabIndex+4));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(tabIndex+5));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(tabIndex+6));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
   
   return;
 }

@@ -43,8 +43,6 @@ class WedgeInsert : public attachSystem::FixedOffset,
  private:
   
   const std::string baseName;   ///< Base name 
-  const int wedgeIndex;         ///< Surface offset
-  int cellIndex;                ///< Cell index
 
   double viewWidth;         ///< View height [inner]
   double viewHeight;        ///< View Width  [inner]

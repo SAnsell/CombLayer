@@ -197,7 +197,8 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: y-offset 
-    \param closedFlag :: true if valve closed
+    \parma xOpen :: Gap of x-jaws
+    \parma zOpen :: Gap of z-jaws
   */
 {
   ELog::RegMethod RegA("JawValveGenerator","generatorValve");
@@ -222,7 +223,6 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
   // stuff for jaws:
   const std::string jawName=keyName+"Jaw";
   Control.addVariable(jawName+"Gap",jawGap);
-  Control.addVariable(jawName+"XOpen",xOpen);
   Control.addVariable(jawName+"XOpen",xOpen);
   Control.addVariable(jawName+"XOffset",0.0);
   Control.addVariable(jawName+"XThick",jawThick);

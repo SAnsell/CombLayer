@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTally.h
+ * File:   flukaTallyInc/flukaTally.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -31,8 +31,8 @@ namespace flukaSystem
   \class flukaTally
   \version 1.0
   \author S. Ansell
-  \date Febryar 2018
-  \brief Holds a tally object as a base class
+  \date February 2018
+  \brief Holds a fluka tally object as a base class
   
 */
 
@@ -57,6 +57,7 @@ class flukaTally
   virtual ~flukaTally();
   
   void setKeyName(const std::string&);
+  void setBinary();
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);
   virtual void setDoseType(const std::string&,const std::string&);

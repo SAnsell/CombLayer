@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   bnct/DiscTarget.cxx
+ * File:   bnctBuild/DiscTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -65,6 +64,8 @@
 #include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace bnctSystem
 {
 
 DiscTarget::DiscTarget(const std::string& Key)  : 
-  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
-  discIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(discIndex+1)
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -90,7 +89,6 @@ DiscTarget::DiscTarget(const std::string& Key)  :
 
 DiscTarget::DiscTarget(const DiscTarget& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  discIndex(A.discIndex),cellIndex(A.cellIndex),
   NLayers(A.NLayers),depth(A.depth),radius(A.radius),
   mat(A.mat),maxRad(A.maxRad),maxIndex(A.maxIndex)
   /*!
@@ -111,7 +109,6 @@ DiscTarget::operator=(const DiscTarget& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       NLayers=A.NLayers;
       depth=A.depth;
       radius=A.radius;
@@ -144,7 +141,7 @@ DiscTarget::populate(const FuncDataBase& Control)
   int M;
   for(size_t i=0;i<NLayers;i++)
     {
-      const std::string NStr=StrFunc::makeString(i);
+      const std::string NStr=std::to_string(i);
       D=Control.EvalVar<double>(keyName+"Depth"+NStr);
       R=Control.EvalPair<double>(keyName+"Radius"+NStr,keyName+"Radius");
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);
@@ -180,8 +177,8 @@ DiscTarget::createSurfaces()
 {
   ELog::RegMethod RegA("DiscTarget","createSurface");
 
-  ModelSupport::buildPlane(SMap,discIndex+1,Origin,Y);
-  int DI(discIndex+10);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  int DI(buildIndex+10);
   maxRad=0.0;
   for(size_t i=0;i<NLayers;i++)
     {
@@ -207,7 +204,7 @@ DiscTarget::createObjects(Simulation& System)
   ELog::RegMethod RegA("DiscTarget","createObjects");
   
   std::string Out;
-  int DI(discIndex+10);
+  int DI(buildIndex+10);
   for(size_t i=0;i<NLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,DI-10,DI,"1 -1M -7M ");
@@ -245,8 +242,8 @@ DiscTarget::createObjects(Simulation& System)
       DI+=10;
     }
   
-  Out=ModelSupport::getComposite(SMap,discIndex,DI-10,"1 -1M  ");      
-  DI=static_cast<int>(maxIndex)*10+discIndex;
+  Out=ModelSupport::getComposite(SMap,buildIndex,DI-10,"1 -1M  ");      
+  DI=static_cast<int>(maxIndex)*10+buildIndex;
 
   Out+=ModelSupport::getComposite(SMap,DI," -17 ");      
 
@@ -266,12 +263,12 @@ DiscTarget::createLinks()
 {
   ELog::RegMethod RegA("DiscTarget","createLinks");
 
-  // FixedComp::setLinkSurf(0,-SMap.realSurf(discIndex+1));
-  // FixedComp::setLinkSurf(1,SMap.realSurf(discIndex+2));
-  // FixedComp::setLinkSurf(2,-SMap.realSurf(discIndex+3));
-  // FixedComp::setLinkSurf(3,SMap.realSurf(discIndex+4));
-  // FixedComp::setLinkSurf(4,-SMap.realSurf(discIndex+5));
-  // FixedComp::setLinkSurf(5,SMap.realSurf(discIndex+6));
+  // FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  // FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  // FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  // FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

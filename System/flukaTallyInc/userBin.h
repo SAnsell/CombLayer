@@ -36,6 +36,7 @@ class userBin : public flukaTally
 {
  private:
 
+  bool binaryOut;                   ///< Make file binary output
   int meshType;                     ///< type / 10 / 0 for mesh
   std::string particle;             ///< particle/type
     

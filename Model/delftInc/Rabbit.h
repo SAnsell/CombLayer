@@ -42,8 +42,6 @@ class Rabbit : public attachSystem::ContainedComp,
  private:
 
   const std::string& baseName;  ///< Base name
-  const int rabbitIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   std::string objName;          ///< FC object
 

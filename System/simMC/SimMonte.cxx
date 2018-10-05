@@ -23,7 +23,8 @@
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
+#include <memory>
 #include <vector>
 #include <map> 
 #include <list> 
@@ -74,6 +75,8 @@
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 #include "SimMonte.h"

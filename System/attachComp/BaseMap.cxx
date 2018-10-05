@@ -319,6 +319,27 @@ BaseMap::getNames() const
   return Out;
 }
   
+size_t
+BaseMap::getNItems(const std::string& Key) const
+  /*!
+    Returns the number of of cells: 
+    Note a bit of care is needed over the case on a single value
+    \param Key :: keyname to search
+    \return size of items
+   */
+{
+  ELog::RegMethod RegA("BaseMap","getItems(Key)");
+
+  if (Key=="All" || Key=="all")
+    return getItems().size();
+  
+  std::vector<int> Out;  
+  LCTYPE::const_iterator mc=Items.find(Key);
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key");
+  return mc->second.size();
+}
+
 std::vector<int>
 BaseMap::getItems(const std::string& Key) const
   /*!
@@ -372,7 +393,6 @@ BaseMap::removeVecUnit(const std::string& kName,
   */
 {
   ELog::RegMethod RegA("BaseMap","removeVecUnit");
-
 
   LCTYPE::iterator mc=Items.find(kName);
 
@@ -555,6 +575,30 @@ BaseMap::removeItem(const std::string& Key,
   return outN;
 }
 
+bool
+BaseMap::changeCell(const int oldCell,const int newCell)
+  /*!
+    Change a cell number
+    \param oldCell :: old number
+    \param newCell :: new number
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("BaseMap","changeCell");
+  
+  for(LCTYPE::value_type& IUnit : Items)
+    {
+      std::vector<int>& SRef(IUnit.second);
+      std::vector<int>::iterator vc=
+	std::find(SRef.begin(),SRef.end(),oldCell);
+      if (vc != SRef.end())
+	{
+	  *vc=newCell;
+	  return 1;
+	}
+    }
+  return 0;
+}
 
  
 }  // NAMESPACE attachSystem

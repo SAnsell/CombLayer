@@ -3,7 +3,7 @@
  
  * File:   process/ObjSurfMap.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,19 +272,18 @@ ObjSurfMap::findNextObject(const int SN,
   
   // DEBUG CODE FOR FAILURE:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  const masterRotate& MR=masterRotate::Instance();
 
   ELog::EM<<"Failure to find surface on "<<SN<<" :: "
-	  <<MR.calcRotate(Pos)<<ELog::endCrit;
+	  <<Pos<<ELog::endCrit;
 
   ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<MR.calcRotate(Pos)<<" :: "<<SN<<ELog::endDiag;
+	  <<Pos<<" :: "<<SN<<ELog::endDiag;
   if (SurI.getSurf(abs(SN)))
     {
       Geometry::Surface* SPtr=SurI.getSurf(abs(SN));
       ELog::EM<<"Surface == "<<*SPtr<<ELog::endWarn;
-      ELog::EM<<"Distance == "<<SPtr->distance(Pos)<<ELog::endDiag;
-      Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
+      ELog::EM<<"Distance [should be 0 ]== "<<SPtr->distance(Pos)<<ELog::endDiag;
+      const Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
       ELog::EM<<"SurfaceNormal == "<<N<<ELog::endDiag;
     }
   else
@@ -325,6 +324,42 @@ ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
 	  SMap.erase(ac);
           removeObjectSurface(sign_index*revSurf);
 	}
+    }
+  return;
+}
+
+
+void
+ObjSurfMap::removeObject(const MonteCarlo::Object* OPtr)
+  /*!
+    Remove a specific object.
+    Expensive call to remove all instances of the cell nubmer
+    from the OSM.
+    \param cellNumber :: Cell to remove
+  */
+{
+  ELog::RegMethod Rega("ObjSurfMap","removeObject");
+
+  const int cellNumber(OPtr->getName());
+  
+  OSTYPE::iterator mc=OSurfMap.find(cellNumber);
+  if (mc!=OSurfMap.end())
+    {
+      const std::set<int>& surfIndex=mc->second;
+      for(const int SN : surfIndex)
+	{
+	  OMTYPE::iterator sm=SMap.find(SN);
+	  if (sm!=SMap.end())
+	    {
+	      STYPE& ObjVec=sm->second;
+	      STYPE::iterator objITER=find(ObjVec.begin(),ObjVec.end(),OPtr);
+	      if (objITER!=ObjVec.end())
+		ObjVec.erase(objITER);
+	      if (ObjVec.empty())
+		SMap.erase(sm);
+	    }
+	}
+      OSurfMap.erase(mc);
     }
   return;
 }

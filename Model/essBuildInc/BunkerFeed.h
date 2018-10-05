@@ -48,8 +48,6 @@ class BunkerFeed :
   
   const size_t ID;              ///< Identity number
   const std::string baseName;   ///< Base name
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   ModelSupport::BoxLine* voidTrack;   ///< Collimator track
   

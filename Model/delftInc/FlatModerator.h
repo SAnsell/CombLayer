@@ -39,8 +39,6 @@ class FlatModerator : public virtualMod
 {
  private:
   
-  const int flatIndex;           ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
 
   double frontRadius;       ///< inner(front) radius
   double backRadius;        ///< Back(outer) radius

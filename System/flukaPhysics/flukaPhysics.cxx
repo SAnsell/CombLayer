@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physics/flukaPhysics.cxx
+ * File:   flukaPhysics/flukaPhysics.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -44,32 +44,30 @@
 #include "support.h"
 #include "writeSupport.h"
 #include "MapRange.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 
 #include "particleConv.h"
-#include "strValueSet.h"
 #include "cellValueSet.h"
+#include "pairValueSet.h"
 #include "flukaPhysics.h"
 
 namespace flukaSystem
 {
 		       
 flukaPhysics::flukaPhysics() :
-  // note flag: -1 particle / 0 cell / 1 material
-  impSVal({
-      { "partthr",  strValueSet<1>("partthr","PART-THR","",{-1e-3}) }
-    }),
-  
+  // note flag: -1 particle / 0 cell / 1 material  
   flagValue({
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
+      { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
+      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECNUC") },
       { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
     }),
 
   impValue({
+      { "partthr",  cellValueSet<1>("partthr","PART-THR","",{-1e-3}) },
       { "gas",      cellValueSet<1>("gas","MAT-PROP","") },
       { "rho",      cellValueSet<1>("rho","MAT-PROP","") },
       { "all",      cellValueSet<1>("all","BIAS","") },
@@ -91,7 +89,6 @@ flukaPhysics::flukaPhysics() :
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
       { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
       { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
-      { "lamlength",cellValueSet<2>("lamlength","LAM-BIAS","") }
     }),
 
   threeFlag({
@@ -106,33 +103,42 @@ flukaPhysics::flukaPhysics() :
 
     }),
 
+  lamPair({
+      { "lamlength",pairValueSet<6>("lamlength","LAM-BIAS","",
+				    {1.0,1.0,1.0,1.0,1.0,1.0}) },
+      { "lamprimary",pairValueSet<6>("lamprimary","LAM-BIAS","INEPRI",
+				    {1.0,1.0,1.0,1.0,1.0,1.0}) }
+
+    }),
+  
   formatMap({
       { "all", unitTYPE(0," 0.0 1.0 %2 R0 R1 1.0 ") },
       { "hadron", unitTYPE(0," 1.0 1.0 %2 R0 R1 1.0 ") },
       { "electron", unitTYPE(0," 2.0 1.0 %2 R0 R1 1.0 ") },
       { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
+      { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
-      { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
-      { "lambias", unitTYPE(1," 0.0 %2 M0 M1 1.0") },
-      { "plambias", unitTYPE(1," 0.0 %2 M1 M1 1.0") },
+      { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
-	
-      { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
+      { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
       { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },	
-      { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
-      { "photthr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
-      { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },
-      { "elpothr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
+      { "prodcut", unitTYPE(1,"%2 %3 1.0 M0 M1 1.0") },
+      { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
+      { "pho2thr", unitTYPE(1,"%2 %3 -  M0 M1 1.0") },
+      { "elpothr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
       { "pairbrem", unitTYPE(1,"3.0 %2 %3 M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+      { "mupair", unitTYPE(1,"1111.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
       { "lpb", unitTYPE(0,"1022 %2 %3 R0 R1 1.0 ") },
       { "lambbrem", unitTYPE(1,"%2 0.0 %3 M0 M1 1.0 ") },
       { "lambemf", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
 
-      { "lamlength", unitTYPE(-1,"0.0 %3 M2 P0 P1 1.0 ") },
+      { "lamlength", unitTYPE(-1,"0.0 %2 M1 P0 P0 1.0 ") },
+      { "lamprimary", unitTYPE(-1,"0.0 %2 M1 P0 P0 1.0 ") },
 
       { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
       { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
@@ -148,7 +154,7 @@ flukaPhysics::flukaPhysics(const flukaPhysics& A) :
   cellVec(A.cellVec),matVec(A.matVec),
   flagValue(A.flagValue),impValue(A.impValue),
   emfFlag(A.emfFlag),threeFlag(A.threeFlag),
-  formatMap(A.formatMap)
+  lamPair(A.lamPair),formatMap(A.formatMap)
   
   /*!
     Copy constructor
@@ -172,19 +178,17 @@ flukaPhysics::operator=(const flukaPhysics& A)
       impValue=A.impValue;
       emfFlag=A.emfFlag;
       threeFlag=A.threeFlag;
+      lamPair=A.lamPair;
       formatMap=A.formatMap;
     }
   return *this;
 }
-
-
 
 flukaPhysics::~flukaPhysics()
   /*!
     Destructor
   */
 {}
-
   
 void
 flukaPhysics::clearAll()
@@ -241,20 +245,48 @@ flukaPhysics::setMatNumbers(const std::set<int>& matInfo)
 }
 
 void
+flukaPhysics::setLAMPair(const std::string& keyName,
+			 const std::string& pName,
+			 const int cellNumber,
+			 const std::string& V1,
+			 const std::string& V2)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param pName :: particle number
+    \param cellNumber :: Cell number
+    \param V1 :: Electron cut values
+    \param V2 :: Cur of energy 
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setLAMPair(int)");
+
+  std::map<std::string,pairValueSet<6>>::iterator mc=
+    lamPair.find(keyName);
+
+  if (mc==lamPair.end())
+    throw ColErr::InContainerError<std::string>(keyName,"keyName in lamPair");
+
+  mc->second.setValues(pName,std::to_string(cellNumber),V1,V2,"","");
+  return;
+}
+
+  
+void
 flukaPhysics::setFlag(const std::string& keyName,
 		      const std::string& nameID)
   /*!
     Set the importance list
     \param keyName :: typename 
-    \param cellID :: Cell number
+    \param nameID :: Name of particle/object
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setFlag(string)");
   
-  std::map<std::string,strValueSet<0>>::iterator mc=
-    flagSVal.find(keyName);
-  if (mc==flagSVal.end())
-    throw ColErr::InContainerError<std::string>(keyName,"flagSVal");
+  std::map<std::string,cellValueSet<0>>::iterator mc=
+    flagValue.find(keyName);
+  if (mc==flagValue.end())
+    throw ColErr::InContainerError<std::string>(keyName,"flagValue");
   
   mc->second.setValues(nameID);
   return;
@@ -262,23 +294,23 @@ flukaPhysics::setFlag(const std::string& keyName,
   
 
 void
-flukaPhysics::setImp(const std::string& keyName,
+flukaPhysics::setIMP(const std::string& keyName,
 		     const std::string& nameID,
 		     const std::string& value)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param nameID :: Name of particle/object
     \param value :: Value to use
   */
 {
-  ELog::RegMethod RegA("flukaPhysics","setImp(string)");
+  ELog::RegMethod RegA("flukaPhysics","setIMP(string)");
   
-  std::map<std::string,strValueSet<1>>::iterator mc=
-    impSVal.find(keyName);
+  std::map<std::string,cellValueSet<1>>::iterator mc=
+    impValue.find(keyName);
   
-  if (mc==impSVal.end())
-    throw ColErr::InContainerError<std::string>(keyName,"impSVal");
+  if (mc==impValue.end())
+    throw ColErr::InContainerError<std::string>(keyName,"impValue");
 
   mc->second.setValues(nameID,value);
   return;
@@ -291,29 +323,21 @@ flukaPhysics::setEMF(const std::string& keyName,
 		     const std::string& photonCut)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellNumber :: Cell number
     \param electronCut :: Electron cut values
     \param photonCut :: Electron cut values
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setEMF(string)");
-  ELog::EM<<"Call here "<<ELog::endDiag;
 
   std::map<std::string,cellValueSet<2>>::iterator mc=
     emfFlag.find(keyName);
 
   if (mc==emfFlag.end())
     throw ColErr::InContainerError<std::string>(keyName,"keyName");
-  ELog::EM<<"KEY == "<<keyName<<ELog::endDiag;
+
   mc->second.setValues(cellNumber,electronCut,photonCut);
-
-  // std::map<std::string,strValueSet<2>>::iterator mc=
-  //   emfSVal.find(keyName);
-
-  // if (mc==emfSVal.end())
-  //   throw ColErr::InContainerError<std::string>(keyName,"keyName");
-  // mc->second.setValues(cellNumber,electronCut,photonCut);
   return;
 }
 
@@ -326,7 +350,7 @@ flukaPhysics::setTHR(const std::string& keyName,
 		     const std::string& V3)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellName :: Cell number
     \param V1 :: Electron cut values
     \param V2 :: photon cut values
@@ -335,11 +359,11 @@ flukaPhysics::setTHR(const std::string& keyName,
 {
   ELog::RegMethod RegA("flukaPhysics","setTHR(str)");
   
-  std::map<std::string,strValueSet<3>>::iterator mc=
-    threeSVal.find(keyName);
+  std::map<std::string,cellValueSet<3>>::iterator mc=
+    threeFlag.find(keyName);
 
-  if (mc==threeSVal.end())
-    throw ColErr::InContainerError<std::string>(keyName,"keyName");
+  if (mc==threeFlag.end())
+    throw ColErr::InContainerError<std::string>(keyName,"threeFlag");
   mc->second.setValues(cellName,V1,V2,V3);
   return;
 }
@@ -350,7 +374,7 @@ flukaPhysics::setFlag(const std::string& keyName,
 		      const int cellID)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellID :: Cell number
   */
 {
@@ -366,17 +390,17 @@ flukaPhysics::setFlag(const std::string& keyName,
 }
   
 void
-flukaPhysics::setImp(const std::string& keyName,
+flukaPhysics::setIMP(const std::string& keyName,
 		     const int cellID,
 		     const std::string& value)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellID :: Cell number
     \param value :: Value to use
   */
 {
-  ELog::RegMethod RegA("flukaPhysics","setImp");
+  ELog::RegMethod RegA("flukaPhysics","setIMP");
   
   std::map<std::string,cellValueSet<1>>::iterator mc=
     impValue.find(keyName);
@@ -394,7 +418,7 @@ flukaPhysics::setEMF(const std::string& keyName,
 		     const std::string& photonCut)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellNumber :: Cell number
     \param electronCut :: Electron cut values
     \param photonCut :: Electron cut values
@@ -420,7 +444,7 @@ flukaPhysics::setTHR(const std::string& keyName,
 		     const std::string& V3)
   /*!
     Set the importance list
-    \param keyName :: all/hadron/electron/low
+    \param keyName :: cellValue Keyname
     \param cellNumber :: Cell number
     \param V1 :: Electron cut values
     \param V2 :: photon cut values
@@ -447,39 +471,9 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
  */
 {
+  ELog::RegMethod RegA("flukaPhysics","writeFLUKA");
+
   typedef std::map<std::string,unitTYPE> FMAP;
-
-
-  for(const std::map<std::string,strValueSet<0>>::value_type& flagV :
-	flagSVal)
-    {
-      FMAP::const_iterator mc=formatMap.find(flagV.first);      
-      const std::string& fmtSTR(std::get<1>(mc->second));
-      flagV.second.writeFLUKA(OX,fmtSTR);
-    }
-
-  for(const std::map<std::string,strValueSet<1>>::value_type& impV :
-	impSVal)
-    {
-      FMAP::const_iterator mc=formatMap.find(impV.first);
-      const std::string& fmtSTR(std::get<1>(mc->second));
-      impV.second.writeFLUKA(OX,fmtSTR);
-    }
-
-  for(const std::map<std::string,strValueSet<2>>::value_type& emfV :
-	emfSVal)
-    {
-      FMAP::const_iterator mc=formatMap.find(emfV.first);      
-      const std::string& fmtSTR(std::get<1>(mc->second));
-      emfV.second.writeFLUKA(OX,fmtSTR);
-    }
-  for(const std::map<std::string,strValueSet<3>>::value_type& threeV :
-	threeSVal)
-    {
-      FMAP::const_iterator mc=formatMap.find(threeV.first);      
-      const std::string& fmtSTR(std::get<1>(mc->second));
-      threeV.second.writeFLUKA(OX,fmtSTR);
-    }
 
   for(const std::map<std::string,cellValueSet<0>>::value_type& flagV :
 	flagValue)
@@ -489,8 +483,11 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       const std::string& fmtSTR(std::get<1>(mc->second));
       if (!materialFlag)  // cell
 	flagV.second.writeFLUKA(OX,cellVec,fmtSTR);
-      else
+      else if (materialFlag>0)
 	flagV.second.writeFLUKA(OX,matVec,fmtSTR);
+      else 
+	flagV.second.writeFLUKA(OX,fmtSTR);
+      
     }
 
   for(const std::map<std::string,cellValueSet<1>>::value_type& impV : impValue)
@@ -511,7 +508,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       FMAP::const_iterator mc=formatMap.find(empV.first);
       const int materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
-
+      
       if (!materialFlag)  // cell
 	empV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else if (materialFlag>0)       // mat
@@ -529,11 +526,20 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 
       if (!flag)  // cell
 	thrV.second.writeFLUKA(OX,cellVec,fmtSTR);
-      else       // mat
+      else if (flag>0)      // mat
 	thrV.second.writeFLUKA(OX,matVec,fmtSTR);
+      else                 // particle
+	thrV.second.writeFLUKA(OX,fmtSTR);
+    }
+
+  for(const std::map<std::string,pairValueSet<6>>::value_type& lamV :
+	lamPair)
+    {
+      FMAP::const_iterator mc=formatMap.find(lamV.first);
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      lamV.second.writeFLUKA(OX,fmtSTR);
     }
   
-  ELog::EM<<"Finish "<<ELog::endDiag;
   return;
 }
 

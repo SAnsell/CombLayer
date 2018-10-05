@@ -65,6 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,9 +82,7 @@ namespace delftSystem
 {
 
 H2Vac::H2Vac(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +91,7 @@ H2Vac::H2Vac(const std::string& Key)  :
 
 H2Vac::H2Vac(const H2Vac& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),vacPosGap(A.vacPosGap),
+  vacPosGap(A.vacPosGap),
   vacNegGap(A.vacNegGap),vacPosRadius(A.vacPosRadius),
   vacNegRadius(A.vacNegRadius),vacSide(A.vacSide),
   alPos(A.alPos),alNeg(A.alNeg),alSide(A.alSide),
@@ -117,7 +117,6 @@ H2Vac::operator=(const H2Vac& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       vacPosGap=A.vacPosGap;
       vacNegGap=A.vacNegGap;
       vacPosRadius=A.vacPosRadius;
@@ -281,54 +280,54 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
 
   // Inner Layers:
 
-  ModelSupport::buildCylinder(SMap,vacIndex+1,
+  ModelSupport::buildCylinder(SMap,buildIndex+1,
 			      getSurfacePoint(FC,0,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+2,
+  ModelSupport::buildCylinder(SMap,buildIndex+2,
 			      getSurfacePoint(FC,0,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+3,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+3,Origin,
 			      Y,sideRadius+vacSide);
 
   // SECOND LAYER:
-  ModelSupport::buildCylinder(SMap,vacIndex+11,
+  ModelSupport::buildCylinder(SMap,buildIndex+11,
 			      getSurfacePoint(FC,1,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+12,
+  ModelSupport::buildCylinder(SMap,buildIndex+12,
 			      getSurfacePoint(FC,1,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+13,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+13,Origin,Y,
 			      sideRadius+vacSide+alSide);
 
   // TERTIARY LAYER:
-  ModelSupport::buildCylinder(SMap,vacIndex+21,
+  ModelSupport::buildCylinder(SMap,buildIndex+21,
 			      getSurfacePoint(FC,2,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+22,
+  ModelSupport::buildCylinder(SMap,buildIndex+22,
 			      getSurfacePoint(FC,2,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+23,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+23,Origin,Y,
 			      sideRadius+vacSide+alSide+terSide);
 
 
   // Outer AL LAYER:
-  ModelSupport::buildCylinder(SMap,vacIndex+31,
+  ModelSupport::buildCylinder(SMap,buildIndex+31,
 			      getSurfacePoint(FC,3,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+32,
+  ModelSupport::buildCylinder(SMap,buildIndex+32,
 			      getSurfacePoint(FC,3,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+33,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+33,Origin,Y,
 			      sideRadius+vacSide+alSide+terSide+outSide);
   
   // Outer Clearance
-  ModelSupport::buildCylinder(SMap,vacIndex+41,
+  ModelSupport::buildCylinder(SMap,buildIndex+41,
 			      getSurfacePoint(FC,4,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+42,
+  ModelSupport::buildCylinder(SMap,buildIndex+42,
 			      getSurfacePoint(FC,4,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+43,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+43,Origin,Y,
 			      sideRadius+vacSide+alSide
 			      +terSide+outSide+clearSide);
 
@@ -346,28 +345,28 @@ H2Vac::createObjects(Simulation& System,const std::string& Exclude)
   ELog::RegMethod RegA("H2Vac","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-41 -42 -43 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 -43 ");
   addOuterSurf(Out);
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-1 -2 -3 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -2 -3 ");
   Out+=" "+Exclude;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // First Al layer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-11 -12 -13 ( 1:2:3) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -12 -13 ( 1:2:3) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-21 -22 -23 (11:12:13) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 -22 -23 (11:12:13) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Tertiay layer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-31 -32 -33 (21:22:23)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 -32 -33 (21:22:23)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,outMat,0.0,Out));
 
   // Outer clearance
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-41 -42 -43 (31:32:33)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 -43 (31:32:33)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   return;

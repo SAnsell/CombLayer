@@ -47,12 +47,13 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -112,15 +113,12 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
 {
   ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* FCPtr=
-    OR.getObject<attachSystem::FixedComp>(FCname);
+    System.getObject<attachSystem::FixedComp>(FCname);
 
   if (!FCPtr) return 0;
   // throws -- because if we have FC and no link number is that bad?
-  const long int FCI=attachSystem::getLinkIndex(FCindex);
+  const long int FCI=FCPtr->getSideIndex(FCindex);
 
   const int surfN=FCPtr->getLinkSurf(FCI);
   if (!surfN) return 0;

@@ -3,7 +3,7 @@
  
  * File:   support/Exception.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1434,6 +1434,7 @@ ExitAbort::what() const throw()
 
 ///\cond TEMPLATE
 
+class objectGroups;
 namespace Geometry { 
   class Surface;
   class Face;
@@ -1458,6 +1459,7 @@ template class ColErr::EmptyValue<MonteCarlo::Object*>;
 template class ColErr::EmptyValue<Geometry::Surface*>;
 template class ColErr::EmptyValue<Geometry::Face*>;
 template class ColErr::EmptyValue<Geometry::Edge*>;
+template class ColErr::EmptyValue<objectGroups*>;
 template class ColErr::EmptyValue<void>;
 template class ColErr::EmptyValue<int>;
 template class ColErr::EmptyValue<long int>;

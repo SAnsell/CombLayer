@@ -88,9 +88,8 @@ class inputParam
   void regDefItem(const std::string&,const std::string&,
 		  const size_t,const T&,const T&,const T&);
   
-  size_t dataCnt(const std::string&) const;
   size_t setCnt(const std::string&) const;
-  size_t itemCnt(const std::string&,const size_t) const;
+  size_t itemCnt(const std::string&,const size_t =0) const;
 
   bool hasKey(const std::string&) const;
 

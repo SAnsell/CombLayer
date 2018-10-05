@@ -66,6 +66,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -83,8 +85,7 @@ namespace hutchSystem
 
 BeamStop::BeamStop(const std::string& Key)  :
   attachSystem::FixedComp(Key,2),
-  stopIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(stopIndex+1),nLayers(0)
+  nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,7 +94,6 @@ BeamStop::BeamStop(const std::string& Key)  :
 
 BeamStop::BeamStop(const BeamStop& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  stopIndex(A.stopIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   innerLength(A.innerLength),steelWidth(A.steelWidth),
@@ -123,7 +123,6 @@ BeamStop::operator=(const BeamStop& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -249,47 +248,47 @@ BeamStop::createSurfaces()
 
   // INNER BOX:
   // OUTSIDE Front Face:  
-  ModelSupport::buildPlane(SMap,stopIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,stopIndex+2,Origin+Y*innerLength,Y);
-  ModelSupport::buildPlane(SMap,stopIndex+3,Origin-X*innerWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,stopIndex+4,Origin+X*innerWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,stopIndex+5,Origin-Z*innerHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,stopIndex+6,Origin+Z*innerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*innerLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*innerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*innerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*innerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*innerHeight/2.0,Z);
 
   // STEEL BOX:
-  ModelSupport::buildPlane(SMap,stopIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(innerLength+steelLength),Y);
-  ModelSupport::buildPlane(SMap,stopIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(innerWidth/2.0+steelWidth),X);
-  ModelSupport::buildPlane(SMap,stopIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(innerWidth/2.0+steelWidth),X);
-  ModelSupport::buildPlane(SMap,stopIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(innerHeight/2.0+steelHeight),Z);
-  ModelSupport::buildPlane(SMap,stopIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(innerHeight/2.0+steelDepth),Z);
 
   // Void BOX:
-  ModelSupport::buildPlane(SMap,stopIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(innerLength+steelLength+voidLength),Y);
-  ModelSupport::buildPlane(SMap,stopIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(innerWidth/2.0+steelWidth+voidWidth),X);
-  ModelSupport::buildPlane(SMap,stopIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(innerWidth/2.0+steelWidth+voidWidth),X);
-  ModelSupport::buildPlane(SMap,stopIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(innerHeight/2.0+steelHeight+voidHeight),Z);
-  ModelSupport::buildPlane(SMap,stopIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(innerHeight/2.0+steelDepth+voidDepth),Z);
 
   // Concrete BOX:
-  ModelSupport::buildPlane(SMap,stopIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 	   Origin+Y*(innerLength+steelLength+voidLength+concLength),Y);
-  ModelSupport::buildPlane(SMap,stopIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 	   Origin-X*(innerWidth/2.0+steelWidth+voidWidth+concWidth),X);
-  ModelSupport::buildPlane(SMap,stopIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 	   Origin+X*(innerWidth/2.0+steelWidth+voidWidth+concWidth),X);
-  ModelSupport::buildPlane(SMap,stopIndex+35,
+  ModelSupport::buildPlane(SMap,buildIndex+35,
 	   Origin-Z*(innerHeight/2.0+steelHeight+voidHeight+concHeight),Z);
-  ModelSupport::buildPlane(SMap,stopIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 	   Origin+Z*(innerHeight/2.0+steelDepth+voidDepth+concDepth),Z);
 
   return;
@@ -313,17 +312,17 @@ BeamStop::createDefSurfaces()
 	{
 	  RAxis= Y;
 	  Geometry::Quaternion::calcQRotDeg(BB.angle,Z).rotate(RAxis);
-	  ModelSupport::buildPlane(SMap,stopIndex+10*i+101,
+	  ModelSupport::buildPlane(SMap,buildIndex+10*i+101,
 				   Origin+Y*totalThick,RAxis);
 
 	  RAxis= Y;
 	  Geometry::Quaternion::calcQRotDeg(-BB.angle,Z).rotate(RAxis);
-	  ModelSupport::buildPlane(SMap,stopIndex+10*i+102,
+	  ModelSupport::buildPlane(SMap,buildIndex+10*i+102,
 				   Origin+Y*totalThick,RAxis);
 	}
       else
 	{
-	  ModelSupport::buildPlane(SMap,stopIndex+10*i+101,
+	  ModelSupport::buildPlane(SMap,buildIndex+10*i+101,
 				   Origin+Y*totalThick,Y);
 	}
     }
@@ -343,14 +342,14 @@ BeamStop::createObjects(Simulation& System)
 
   std::string frontSurf=" 1 ";
   // Full OUTER EXclude
-  Out=ModelSupport::getComposite(SMap,stopIndex,"1 -32 33 -34 35 -36");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -32 33 -34 35 -36");
   addOuterSurf(Out);
 
   // Create Inner:
   
   // CREATE INNER [Note need 1 and 2 to cope with angled items]
   std::string Base=
-    ModelSupport::getComposite(SMap,stopIndex,"1 -2 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   std::string Next;
   std::string Prev;
 
@@ -363,14 +362,14 @@ BeamStop::createObjects(Simulation& System)
       if (std::abs(BB.angle)<1e-3)
 	{
 	  Out=Base+Prev+
-	    ModelSupport::getComposite(SMap,stopIndex+i*10," -101 ");
-	  Prev=ModelSupport::getComposite(SMap,stopIndex+i*10," 101 ");
+	    ModelSupport::getComposite(SMap,buildIndex+i*10," -101 ");
+	  Prev=ModelSupport::getComposite(SMap,buildIndex+i*10," 101 ");
 	}
       else
 	{
 	  Out=Base+Prev+
-	    ModelSupport::getComposite(SMap,stopIndex+i*10," -101 -102 ");
-	  Prev=ModelSupport::getComposite(SMap,stopIndex+i*10," (101:102) ");
+	    ModelSupport::getComposite(SMap,buildIndex+i*10," -101 -102 ");
+	  Prev=ModelSupport::getComposite(SMap,buildIndex+i*10," (101:102) ");
 	}
       System.addCell(MonteCarlo::Qhull(cellIndex++,BB.matN,0.0,Out));
     }
@@ -383,15 +382,15 @@ BeamStop::createObjects(Simulation& System)
     }
   
   // STEEL LAYER
-  Out=ModelSupport::getComposite(SMap,stopIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		  "1 -12 13 -14 15 -16 (2:-3:4:-5:6)" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
   // VOID LAYER
-  Out=ModelSupport::getComposite(SMap,stopIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		  "1 -22 23 -24 25 -26 (12:-13:14:-15:16)" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // Concrete LAYER
-  Out=ModelSupport::getComposite(SMap,stopIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		  "1 -32 33 -34 35 -36 (22:-23:24:-25:26)" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
 

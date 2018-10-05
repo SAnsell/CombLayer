@@ -5,6 +5,7 @@
 #include <set>
 #include <fstream>
 #include <complex>
+#include <memory>
 
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -15,6 +16,8 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 
 #include "Triple.h"

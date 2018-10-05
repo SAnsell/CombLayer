@@ -3,7 +3,7 @@
  
  * File:   delft/BeSurround.cxx
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,21 +43,15 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -69,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,8 +80,7 @@ namespace delftSystem
 
 BeSurround::BeSurround(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  active(1),insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(insertIndex+1)
+  active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,7 +89,7 @@ BeSurround::BeSurround(const std::string& Key)  :
 
 BeSurround::BeSurround(const BeSurround& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  active(A.active),insertIndex(A.insertIndex),cellIndex(A.cellIndex),
+  active(A.active),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   length(A.length),mat(A.mat)
   /*!
@@ -116,7 +111,6 @@ BeSurround::operator=(const BeSurround& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       active=A.active;
-      cellIndex=A.cellIndex;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
       length=A.length;
@@ -183,15 +177,15 @@ BeSurround::createSurfaces()
   ELog::RegMethod RegA("BeSurround","createSurfaces");
 
   // Outer layers
-  ModelSupport::buildPlane(SMap,insertIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,insertIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildCylinder(SMap,insertIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,insertIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Y,outerRadius);
 
   // front surface
-  ModelSupport::buildPlane(SMap,insertIndex+11,Origin+Y*frontThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*frontThick,Y);
     
   return;
 }
@@ -208,13 +202,13 @@ BeSurround::createObjects(Simulation& System,
   ELog::RegMethod RegA("BeSurround","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,insertIndex," 11 -2 -17 7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 -17 7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+ExcludeString));
   
-  Out=ModelSupport::getComposite(SMap,insertIndex,"1 -11 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,frontMat,0.0,Out+ExcludeString));
 
-  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 -17 (7:-11) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 (7:-11) ");
   addOuterSurf(Out);
     
   return;
@@ -233,9 +227,9 @@ BeSurround::createLinks()
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setConnect(2,Origin+X*outerRadius+Y*length/2.0,X);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(insertIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(insertIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(insertIndex+17));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
 
   return;
 }

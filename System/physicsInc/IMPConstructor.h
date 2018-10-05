@@ -25,6 +25,7 @@
 ///\file 
 
 class Simulation;
+class SimMCNP;
 namespace Geometry
 {
   class Plane;
@@ -59,7 +60,7 @@ class IMPConstructor
   IMPConstructor& operator=(const IMPConstructor&) { return *this; }
   ~IMPConstructor() {}  ///< Destructor
 
-  void processUnit(PhysicsCards&,Simulation&,
+  void processUnit(SimMCNP&,
 		   const mainSystem::inputParam&,
 		   const size_t);
 };

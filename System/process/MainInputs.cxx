@@ -50,6 +50,21 @@ namespace mainSystem
 {
 
 void
+createPHITSInputs(inputParam& IParam)
+  /*!
+    Create inputs specifically for PHITS
+    \param IParam :: Input Parameters
+   */
+{
+  ELog::RegMethod RegA("MainProcess[F]","createPHITSInputs");
+
+  IParam.regItem("icntl","icntl");
+
+  IParam.setDesc("icntl","Control parameter for output");
+  return;
+}
+  
+void
 createInputs(inputParam& IParam)
   /*!
     Sets all the input paramter flags
@@ -59,6 +74,8 @@ createInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainProcess[F]","createInputs");
 
   std::vector<std::string> RItems(10,"");
+
+  createPHITSInputs(IParam);
   
   IParam.regMulti("activation","activation",10000,1);
 
@@ -114,12 +131,14 @@ createInputs(inputParam& IParam)
   IParam.regItem("PTRAC","ptrac");
 
   IParam.regItem("r","renum");
-  IParam.regMulti("R","report",1000,0);
+  IParam.regMulti("report","report",1000,0);
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
 
   IParam.regFlag("sdefVoid","sdefVoid");
-  IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
+  IParam.regMulti("sdefType","sdefType",10,0);
   IParam.regItem("sdefFile","sdefFile");
+  IParam.regMulti("sdefSource","sdefSource",1000,0);
+  IParam.regMulti("sdefSourceName","sdefSourceName",1000,0);
   IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regMulti("sdefObj","sdefObj",1000,0);
   
@@ -136,6 +155,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regItem("validAll","validAll",0);
   IParam.regItem("validFC","validFC",1);
   IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
@@ -147,8 +167,8 @@ createInputs(inputParam& IParam)
     
   IParam.regFlag("void","void");
   IParam.regItem("vtkMesh","vtkMesh",1);
-  IParam.regFlag("vtk","vtk");
-  IParam.regFlag("vcell","vcell");
+  IParam.regItem("vtk","vtk",0);
+  IParam.regItem("vtkType","vtkType",1);
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
 
@@ -242,6 +262,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
+  IParam.setDesc("sdefSource","Extra data for source.F");
   
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
@@ -261,7 +282,6 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
   IParam.setDesc("vtkMesh","Define mesh for MD5/VTK");
-  IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");
@@ -299,7 +319,7 @@ createSiliconInputs(inputParam& IParam)
     \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess[F]","createSiliconInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createSiliconInputs");
 
   IParam.regItem("b","bias");
   IParam.regDefItem<double>("d","detSize",1,50.0);
@@ -308,7 +328,6 @@ createSiliconInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("si","silicon",1,"Silicon");
   IParam.regDefItem<int>("n","nps",1,20);
   IParam.regItem("o","output");
-  IParam.regDefItem<long int>("s","random",1,37564232L);
 
   IParam.setDesc("bias","");
   IParam.setDesc("detSize","Width/Height of the area-detector");
@@ -317,7 +336,6 @@ createSiliconInputs(inputParam& IParam)
   IParam.setDesc("silicon","Silicon vane material");
   IParam.setDesc("nps","Number of simulated points");
   IParam.setDesc("output","Output file");
-  IParam.setDesc("random","");
 
   return;
 }
@@ -329,7 +347,7 @@ createSinbadInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createSinbadInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createSinbadInputs");
 
   createInputs(IParam);
   IParam.setValue("sdefType",std::string("sinbad"));    
@@ -347,7 +365,7 @@ createDelftInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createDelftInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createDelftInputs");
 
   createInputs(IParam);
 
@@ -355,6 +373,7 @@ createDelftInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
   IParam.regDefItem<std::string>("buildType","buildType",1,"Full");
+
   IParam.regMulti("kcode","kcode",1000);
   IParam.regMulti("ksrcMat","ksrcMat",1000);
   IParam.regMulti("ksrcVec","ksrcVec",1000);
@@ -372,6 +391,11 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
   IParam.setDesc("fuelXML","Read the Fuel config from an XMLfile");
 
+  IParam.setValue("sdefType",std::string("kcode"));
+  IParam.setValue("sdefType",std::string("kcode"),1);
+  IParam.setValue("sdefType",std::string("kcode"),2);
+  IParam.setValue("sdefType",std::string("kcode"),3);
+  
   return;
 }
 
@@ -381,7 +405,7 @@ void createFullInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createFullInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createFullInputs");
   createInputs(IParam);
 
   IParam.regDefItem<std::string>("b","beamstop",1,"");
@@ -416,7 +440,7 @@ createFilterInputs(inputParam& IParam)
     \param IParam :: Initial input
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createFilterInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createFilterInputs");
   createInputs(IParam);
   
 
@@ -432,7 +456,7 @@ createGammaInputs(inputParam& IParam)
     \param IParam :: Initial input
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createGammaInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createGammaInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("Gamma"));  
@@ -446,7 +470,7 @@ createPhotonInputs(inputParam& IParam)
     \param IParam :: Initial input
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createPhotonInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createPhotonInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("Laser"));
@@ -461,7 +485,7 @@ createTS1Inputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createTS1Inputs");
+  ELog::RegMethod RegA("MainInputs[F]","createTS1Inputs");
   createInputs(IParam);
 
   IParam.regDefItem<std::string>("CH4PreType","CH4PreType",1,"Wrapper");  
@@ -489,7 +513,7 @@ createBilbauInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createBilbauInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createBilbauInputs");
   createInputs(IParam);
 
   //  IParam.setValue("sdefEnergy",50.0);    
@@ -506,7 +530,7 @@ createBNCTInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createSNSInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createSNSInputs");
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("ess"));  
@@ -520,7 +544,8 @@ createD4CInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createD4CInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createD4CInputs");
+
   createInputs(IParam);
 
   IParam.regDefItem<std::string>("df","detFile",1,"test");
@@ -540,7 +565,7 @@ createTS3ExptInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createD4CInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createD4CInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("TS3Expt"));
@@ -554,7 +579,7 @@ createCuInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createCutInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createCutInputs");
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("TS1"));    
@@ -568,7 +593,7 @@ createPipeInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createPipeInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createPipeInputs");
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("Point"));    
@@ -582,13 +607,14 @@ createLinacInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createLinacInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createLinacInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("essLinac"));
   
   return;
 }
+  
 
 void
 createSingleItemInputs(inputParam& IParam)
@@ -597,7 +623,7 @@ createSingleItemInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createSingleItemInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createSingleItemInputs");
   createInputs(IParam);
   return;
 }
@@ -610,7 +636,7 @@ createEPBInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createEPBInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createEPBInputs");
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("ess"));  
@@ -624,7 +650,7 @@ createSNSInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createSNSInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createSNSInputs");
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("ess"));  
@@ -638,7 +664,7 @@ createMuonInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createMuonInputs");
+  ELog::RegMethod RegA("MainInputs[F]","createMuonInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("TS1EpbColl")); 
@@ -652,6 +678,8 @@ createLensInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
+  ELog::RegMethod RegA("MainInputs[F]","createLensInputs");
+  
   createInputs(IParam);
   IParam.regMulti("TS","surfTally",1000,2,2);
   IParam.regMulti("TE","tallyEnergy",1000,1,1);

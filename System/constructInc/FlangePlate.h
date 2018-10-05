@@ -44,8 +44,6 @@ class FlangePlate :
 {
  private:
   
-  const int plateIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double radius;                ///< void radius [inner] 
   double thick;                 ///< Flange thickness

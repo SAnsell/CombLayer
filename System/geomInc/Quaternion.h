@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quaternion.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,9 @@ class Quaternion
   Quaternion operator*(const Vec3D&) const;
   Quaternion& operator*=(const Quaternion&);
   Quaternion operator*(const Quaternion&) const;
-  
+
+  /// Access Q0 value
+  double getQ0() const { return q0; }
   /// Access the vector
   const Vec3D& getVec() const { return Qvec; }
   Vec3D getAxis() const;

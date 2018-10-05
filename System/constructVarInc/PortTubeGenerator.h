@@ -57,7 +57,7 @@ class PortTubeGenerator
   double flangeARadius;       ///< Flange radius
   double flangeBLen;          ///< Flange length
   double flangeBRadius;       ///< Flange radius
-    
+  
   std::string voidMat;          ///< Primary default mat
   std::string wallMat;          ///< Primary default mat
 
@@ -72,6 +72,8 @@ class PortTubeGenerator
   template<typename CF> void setCF();
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();
+  template<typename CF> void setAFlangeCF();
+  template<typename CF> void setBFlangeCF();
 
   /// set wall thickness  
   void setWallThick(const double T) { wallThick=T; }
@@ -90,6 +92,10 @@ class PortTubeGenerator
   void setMat(const std::string& M) { wallMat=M; }
 
   
+  double getTotalLength(const double) const;
+  template<typename CF>
+    void generateCFTube(FuncDataBase&,const std::string&,
+			const double,const double) const;
   void generateTube(FuncDataBase&,const std::string&,
 		   const double,const double,const double) const;
 

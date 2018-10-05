@@ -3,7 +3,7 @@
  
  * File:   essModel/VespaInner.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,9 +85,7 @@ namespace essSystem
 VespaInner::VespaInner(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::FrontBackCut(),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -170,60 +169,60 @@ VespaInner::createSurfaces()
   // Inner void
   if (!FrontBackCut::frontActive())
     {
-      ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
-      setFront(SMap.realSurf(hutIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
+      setFront(SMap.realSurf(buildIndex+1));
     }
 
-  ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
   Geometry::Vec3D APt=
     Origin-X*(voidWidth/2.0)+Y*(voidLength/2.0-backCutStep);
   Geometry::Vec3D BPt=
     Origin+X*(voidWidth/2.0)+Y*(voidLength/2.0-backCutStep);
 
-  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+7,APt,-X,-Z,backAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+8,BPt,X,Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+7,APt,-X,-Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+8,BPt,X,Z,backAngle);
 
   // FE Layer
-  ModelSupport::buildPlane(SMap,hutIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(feFront+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(feLeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(feRightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(voidDepth+feFloor),Z);
-  ModelSupport::buildPlane(SMap,hutIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(feRoof+voidHeight),Z);  
 
   APt-=X*feLeftWall;
   BPt+=X*feRightWall;
   
-  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+17,APt,-X,-Z,backAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+18,BPt,X,Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+17,APt,-X,-Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+18,BPt,X,Z,backAngle);
 
 
   // Outer Layer
-  ModelSupport::buildPlane(SMap,hutIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(concFront+feFront+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 		   Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 		   Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 		   Origin-Z*(concFloor+feFloor+voidDepth),Z);
-  ModelSupport::buildPlane(SMap,hutIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
   APt-=X*concLeftWall;
   BPt+=X*concRightWall;
   
-  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+27,APt,-X,-Z,backAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+28,BPt,X,Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+27,APt,-X,-Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+28,BPt,X,Z,backAngle);
 
   
   return;
@@ -241,24 +240,24 @@ VespaInner::createObjects(Simulation& System)
   const std::string frontStr=FrontBackCut::frontRule();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,hutIndex," -2 3 -4 5 -6 -7 -8 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 -7 -8 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontStr));
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -12 13 -14 15 -16 -17 -18 "
 				 " ( 2 : -3 : 4 : -5 : 6 : 7 : 8 ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
   setCell("FeLayer",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -22 23 -24 25 -26 -27 -28 "
 				 " ( 12 : -13 : 14 : -15 : 16 : 17 : 18 ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out+frontStr));
   setCell("ConcLayer",cellIndex-1);
 
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,hutIndex," -22 23 -24 25 -26 -27 -28 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -22 23 -24 25 -26 -27 -28 ");
   addOuterSurf(Out);      
 
   return;
@@ -286,11 +285,11 @@ VespaInner::createLinks()
   innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
 
 
-  innerFC.setLinkSurf(1,SMap.realSurf(hutIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(hutIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
+  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   
   // INNER VOID
@@ -301,11 +300,11 @@ VespaInner::createLinks()
   midFC.setConnect(4,Origin-Z*(feFloor+voidDepth),-Z);
   midFC.setConnect(5,Origin+Z*(feRoof+voidHeight),Z);  
 
-  midFC.setLinkSurf(1,SMap.realSurf(hutIndex+12));
-  midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+13));
-  midFC.setLinkSurf(3,SMap.realSurf(hutIndex+14));
-  midFC.setLinkSurf(4,-SMap.realSurf(hutIndex+15));
-  midFC.setLinkSurf(5,SMap.realSurf(hutIndex+16));
+  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   
     // OUTER VOID
@@ -316,11 +315,11 @@ VespaInner::createLinks()
   outerFC.setConnect(4,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
   outerFC.setConnect(5,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
-  outerFC.setLinkSurf(1,SMap.realSurf(hutIndex+22));
-  outerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+23));
-  outerFC.setLinkSurf(3,SMap.realSurf(hutIndex+24));
-  outerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+25));
-  outerFC.setLinkSurf(5,SMap.realSurf(hutIndex+26));
+  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+26));
 
   
   return;

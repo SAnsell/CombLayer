@@ -3,7 +3,7 @@
  
  * File:   essBuild/ZMonitorInsert.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,6 +76,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -85,9 +89,7 @@ namespace essSystem
 ZMonitorInsert::ZMonitorInsert(const std::string& Key)  :
   attachSystem::ContainedGroup("Full"),
   attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  monIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(monIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -161,7 +163,7 @@ ZMonitorInsert::createSurfaces()
 {
   ELog::RegMethod RegA("ZMonitorInsert","createSurface");
 
-  int GI(monIndex);
+  int GI(buildIndex);
   double THeight(0.0);
   for(size_t i=0;i<nSegments;i++)
     {
@@ -189,10 +191,10 @@ ZMonitorInsert::createObjects(Simulation& System)
   ELog::RegMethod RegA("ZMonitorInsert","createObjects");
 
   std::string Out;
-  int GI(monIndex);
+  int GI(buildIndex);
   for(size_t i=0;i<nSegments;i++)
     {
-      Out=ModelSupport::getComposite(SMap,monIndex,GI," 7 -17 3 -4 5 -25 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,GI," 7 -17 3 -4 5 -25 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0,Out));
       addOuterUnionSurf("Full",Out);
       GI+=20;

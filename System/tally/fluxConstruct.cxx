@@ -66,6 +66,8 @@
 #include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 

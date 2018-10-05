@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideItem.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,6 @@ class GuideItem : public attachSystem::ContainedGroup,
  private:
   
   const std::string baseName;   ///< Base keyname
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int active;                   ///< Build/don't build flag
   
   double beamXStep;             ///< Beam port X-offset
@@ -83,13 +81,14 @@ class GuideItem : public attachSystem::ContainedGroup,
   const Geometry::Plane* getPlane(const int) const;
 
  public:
-  int isActive() const {return active;}
-
   GuideItem(const std::string&,const size_t);
   GuideItem(const GuideItem&);
   GuideItem& operator=(const GuideItem&);
   virtual ~GuideItem();
 
+  /// accessor to active status
+  int isActive() const { return active; }
+  
   void setCylBoundary(const int,const int,const int);
 
     

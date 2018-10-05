@@ -42,8 +42,6 @@ class WallCut : public attachSystem::FixedOffset,
 {
  private:
   
-  const int cutIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   const std::string baseName;   ///< Base name
 
   std::string insertKey;        ///< Insert cell name

@@ -52,6 +52,8 @@
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
@@ -88,17 +90,24 @@ tallyModification(SimFLUKA& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
-	    "  -- particle {tallyNameNumber} [newtype] \n"
-	    "  -- auxParticle {tallyNameNumber} [newtype] \n"
-	    "  -- doseType {tallyNameNumber} [newtype] \n"
-	    "  -- energy {tallyNameNumber} Emin Emax NPts LinearFlag  \n"
-	    "  -- angle {tallyNameNumber} Amin Amax NPts LogFlag  \n"
+	    "  -- binary :: tallyName/Number \n"
+	    "  -- particle ::tallyName/Number particle \n"
+	    "  -- auxParticle tallyName/Number particle \n"
+	    "  -- doseType : tallyName/Number {particle} [newtype] \n"
+	    "  -- energy : tallyName/Number Emin Emax NPts LinearFlag  \n"
+	    "  -- angle : tallyName/Number Amin Amax NPts LogFlag  \n"
 		  <<ELog::endBasic
 		  <<ELog::endErr;
           return;
 	}
       
-      if(key=="doseType")
+      if(key=="binary")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for doseType");
+	  flukaSystem::setBinaryOutput(System,tName);
+        }
+      else if(key=="doseType")
         {
 	  const std::string tName=IParam.getValueError<std::string>
 	    ("TMod",i,1,"No tally name for doseType");
@@ -126,8 +135,10 @@ tallyModification(SimFLUKA& System,
 	    ("TMod",i,3,"Emax for "+key);
 	  const size_t NE=IParam.getValueError<size_t>
 	    ("TMod",i,4,"NPTS for "+key);
-	  const int EFlag=IParam.getDefValue<int>(0,"TMod",i,5);
-          flukaSystem::setEnergy(System,tName,EA,EB,NE,EFlag);
+	  const std::string EFlag=
+	    IParam.getDefValue<std::string>("log","TMod",i,5);
+	  const bool lFlag=(StrFunc::toLowerString(EFlag)=="log" ? 1 : 0);
+          flukaSystem::setEnergy(System,tName,EA,EB,NE,lFlag);
         }
       else if(key=="angle")
         {

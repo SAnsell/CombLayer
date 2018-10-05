@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESSPipes.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -169,17 +171,14 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   ELog::RegMethod RegA("makeESS", "buildH2Pipe");
 
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   PipeTYPE& pipeAl=getPipe(pipeAlName);
   ///  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
   ///  PipeTYPE& pipeInvar=getPipe(pipeInvarName);
   const attachSystem::FixedComp* lobe=
-    OR.getObjectThrow<attachSystem::FixedComp>(lobeName,"FixedComp::Lobe");
+    System.getObjectThrow<attachSystem::FixedComp>(lobeName,"FixedComp::Lobe");
 
   const attachSystem::CellMap* waterCM=
-    OR.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");
+    System.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");
 
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeSpecialization); 

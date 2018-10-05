@@ -3,7 +3,7 @@
  
  * File:   support/MatrixBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ MatrixBase<T>::MatrixBase(const MatrixBase<T>& A)
 {
   // Note:: nx,ny zeroed so setMem always works
   setMem(A.nx,A.ny);
-  if (nx*ny)
+  if (nx*ny!=0)
     {
       for(size_t i=0;i<nx;i++)
 	for(size_t j=0;j<ny;j++)
@@ -172,7 +172,7 @@ MatrixBase<T>::operator=(const MatrixBase<T>& A)
   if (&A!=this)
     {
       setMem(A.nx,A.ny);
-      if (nx*ny)
+      if (nx*ny!=0)
 	for(size_t i=0;i<nx;i++)
 	  for(size_t j=0;j<ny;j++)
 	    V[i][j]=A.V[i][j];
@@ -436,7 +436,7 @@ MatrixBase<T>::setMem(const size_t a,const size_t b)
 
   nx=a;
   ny=b;  
-  if (nx*ny)
+  if (nx*ny!=0)
     {
       T* tmpX=new T[nx*ny];
       V=new T*[nx];
@@ -488,7 +488,7 @@ MatrixBase<T>::swapRows(const size_t RowI,const size_t RowJ)
     \param RowJ :: row J to swap
   */
 {
-  if (nx*ny && RowI<nx && RowJ<nx &&
+  if (nx*ny!=0 && RowI<nx && RowJ<nx &&
       RowI!=RowJ) 
     {
       for(size_t k=0;k<ny;k++)
@@ -510,7 +510,7 @@ MatrixBase<T>::swapCols(const size_t colI,const size_t colJ)
     \param colJ :: col J to swap
   */
 {
-  if (nx*ny && colI<ny && colJ<ny &&
+  if (nx*ny!=0 && colI<ny && colJ<ny &&
       colI!=colJ) 
     {
       for(size_t k=0;k<nx;k++)
@@ -530,7 +530,7 @@ MatrixBase<T>::zeroMatrix()
     Zeros all elements of the matrix 
   */
 {
-  if (nx*ny)
+  if (nx*ny!=0)
     for(size_t i=0;i<nx;i++)
       for(size_t j=0;j<ny;j++)
 	V[i][j]=static_cast<T>(0);
@@ -550,7 +550,7 @@ MatrixBase<T>::laplaceDeterminate() const
     \return Determinate 
   */
 {
-  if (nx*ny<=0 || nx!=ny) 
+  if (nx*ny==0 || nx!=ny) 
     return T(0);
   if (nx==1)
     return V[0][0];
@@ -581,7 +581,7 @@ MatrixBase<T>::identityMatrix()
     Zeros all the terms outside of the square
   */
 {
-  if (nx*ny)
+  if (nx*ny!=0)
     for(size_t i=0;i<nx;i++)
       for(size_t j=0;j<ny;j++)
 	V[i][j]=(j==i) ? 1 : 0;
@@ -643,7 +643,7 @@ MatrixBase<T>::Tprime() const
   \return M^T
 */
 {
-  if (!(nx*ny))
+  if (nx*ny==0)
     return *this;
   
   if (nx==ny)   // inplace transpose
@@ -671,7 +671,7 @@ MatrixBase<T>::Transpose()
     \return this
   */
 {
-  if (!(nx*ny))
+  if (nx*ny==0)
     return *this;
   if (nx==ny)   // inplace transpose
     {
@@ -808,7 +808,7 @@ MatrixBase<T>::writeGrid(std::ostream& FX) const
     \param FX :: file stream for output
   */
 {
-  if (nx*ny<1) return;
+  if (nx*ny==0) return;
   // need a list of longest strings [for each column]:
   std::vector<size_t> LStr(ny);
   fill(LStr.begin(),LStr.end(),0);

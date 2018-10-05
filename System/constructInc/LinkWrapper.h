@@ -3,7 +3,7 @@
  
  * File:   constructInc/LinkWrapper.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,6 @@ class LinkWrapper : public attachSystem::ContainedComp,
  
   const size_t InOutLinkB;      ///< Boundary between inside/outside links.
 
-  const int refIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   std::vector<int> surfNum;                 ///< Signed surface numbers
   std::vector<Geometry::Vec3D> surfCent;    ///< Relative to origin
   std::vector<Geometry::Vec3D> surfAxis;    ///< Axis in X:Y:Z
@@ -61,7 +58,7 @@ class LinkWrapper : public attachSystem::ContainedComp,
  
   std::map<size_t,size_t> mask;       ///< Mask to be applied 
   
-  virtual void populate(const Simulation&);
+  virtual void populate(const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&);
 
   ///\cond ABSTRACT
@@ -82,8 +79,10 @@ class LinkWrapper : public attachSystem::ContainedComp,
   void addSurface(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void addSurface(const attachSystem::FixedComp&,const long int);
   void addSurface(const attachSystem::FixedComp&,std::string);
-  void addSurface(const std::string&,const std::string&);
-  void addSurface(const std::string&,const long int);
+  void addSurface(const objectGroups& OGrp,const std::string&,
+		  const std::string&);
+  void addSurface(const objectGroups& OGrp,const std::string&,
+		  const long int);
  
   /// Get Central cell [last built]
   int centralCell() const { return cellIndex-1; }

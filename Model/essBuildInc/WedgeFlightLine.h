@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/WedgeFlightLine.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,6 @@ class WedgeFlightLine : public moderatorSystem::BasicFlightLine
 {
  private:
   
-  const int wedgeIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   size_t nWedges;                  ///< number of wedges to build
   std::vector<std::shared_ptr<WedgeItem> > wedges; ///< array of wedges
 

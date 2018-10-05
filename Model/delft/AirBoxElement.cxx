@@ -3,7 +3,7 @@
  
  * File:   delft/AirBoxElement.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -198,40 +200,40 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
 
   // Planes [OUTER]:
   
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*Depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*Depth/2.0,Y); 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*Height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*Depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*Depth/2.0,Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*Width/2.0,X);
+  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*Height,Z);
 
 
-  ModelSupport::buildPlane(SMap,surfIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(Depth/2.0-edgeGap),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(Depth/2.0-edgeGap),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(Width/2.0-edgeGap),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(Width/2.0-edgeGap),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*(Depth/2.0-edgeGap-wallThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(Depth/2.0-edgeGap-wallThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(Width/2.0-edgeGap-wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(Width/2.0-edgeGap-wallThick),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   RG.getLinkPt(5)+Z*wallThick,Z);
 
-  ModelSupport::buildPlane(SMap,surfIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(Height-wallThick),Z);
 
 
-  ModelSupport::buildPlane(SMap,surfIndex+6,Z*Height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Z*Height,Z);
 
 
   return;
@@ -248,19 +250,19 @@ AirBoxElement::createObjects(Simulation& System)
 
   std::string Out;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
   
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 (-11:12:-13:14)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
   // walls
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 13 -14 5 -6 (-21:22:-23:24:-25:26)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 23 -24 25 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
 
 

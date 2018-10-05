@@ -40,8 +40,6 @@ class ZoomTank : public attachSystem::ContainedComp,
 {
  private:
   
-  const int tankIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var
   
   double xStep;                 ///< Offset on X to Target

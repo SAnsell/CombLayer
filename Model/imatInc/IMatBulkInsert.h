@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   imatInc/IMatBulkInsert.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,14 +40,14 @@ namespace shutterSystem
 class IMatBulkInsert : public BulkInsert
 {
  private:
-  
-  const std::string keyName;  ///< KeyName
-  const int insIndex;         ///< Insert element
-  int cellIndex;              ///< Cell index
 
+    
+  const std::string compName;  ///< component name
+  const int insIndex;          ///< Local range
+  
   double xStep;              ///< X-Step
-  double yStep;              ///< X-Step
-  double zStep;              ///< X-Step
+  double yStep;              ///< Y-Step
+  double zStep;              ///< Z-Step
   double xyAngle;            ///< XY angle rotation
   double zAngle;             ///< Z angle rotation
 

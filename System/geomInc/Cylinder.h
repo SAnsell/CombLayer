@@ -53,6 +53,8 @@ class Cylinder : public Quadratic
 
   Cylinder();
   Cylinder(const int,const int);
+  Cylinder(const int,const Geometry::Vec3D&,
+	   const Geometry::Vec3D&,const double);
   Cylinder(const Cylinder&);
   Cylinder* clone() const;
   Cylinder& operator=(const Cylinder&);

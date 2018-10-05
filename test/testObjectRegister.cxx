@@ -149,7 +149,7 @@ testObjectRegister::testGetObject()
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  OR.reset();
+  //  OR.reset();
 
   std::shared_ptr<attachSystem::FixedComp> 
     A(new attachSystem::FixedComp("A",3));

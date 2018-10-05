@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -88,9 +90,7 @@ namespace essSystem
 TSMainBuilding::TSMainBuilding(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,7),
-  attachSystem::CellMap(),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -100,7 +100,6 @@ TSMainBuilding::TSMainBuilding(const std::string& Key)  :
 TSMainBuilding::TSMainBuilding(const TSMainBuilding& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),
@@ -126,7 +125,6 @@ TSMainBuilding::operator=(const TSMainBuilding& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       engActive=A.engActive;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -203,12 +201,12 @@ TSMainBuilding::createSurfaces()
 {
   ELog::RegMethod RegA("TSMainBuilding","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
   
   return;
 }
@@ -223,7 +221,7 @@ TSMainBuilding::createObjects(Simulation& System)
   ELog::RegMethod RegA("TSMainBuilding","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
   //  setCell("main",cellIndex-1);
 
@@ -242,22 +240,22 @@ TSMainBuilding::createLinks()
   ELog::RegMethod RegA("TSMainBuilding","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(1,Origin+Y*(length/2),Y);
-  FixedComp::setLinkSurf(1, SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(1, SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width/2),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   
   FixedComp::setConnect(3,Origin+X*(width/2),X);
-  FixedComp::setLinkSurf(3, SMap.realSurf(surfIndex+4));
+  FixedComp::setLinkSurf(3, SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(depth),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   
   FixedComp::setConnect(5,Origin+X*(height),Z);
-  FixedComp::setLinkSurf(6, SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(6, SMap.realSurf(buildIndex+6));
 
   return;
 }

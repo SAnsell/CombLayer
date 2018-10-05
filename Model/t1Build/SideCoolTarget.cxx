@@ -3,7 +3,7 @@
  
  * File:   t1Build/SideCoolTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,9 +86,7 @@ namespace ts1System
 {
 
 SideCoolTarget::SideCoolTarget(const std::string& Key) :
-  constructSystem::TargetBase(Key,6),
-  tarIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tarIndex+1)
+  constructSystem::TargetBase(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,7 +95,6 @@ SideCoolTarget::SideCoolTarget(const std::string& Key) :
 
 SideCoolTarget::SideCoolTarget(const SideCoolTarget& A) : 
   constructSystem::TargetBase(A),
-  tarIndex(A.tarIndex),cellIndex(A.cellIndex),
   mainLength(A.mainLength),
   xRadius(A.xRadius),zRadius(A.zRadius),
   cladThick(A.cladThick),waterThick(A.waterThick),
@@ -122,7 +121,6 @@ SideCoolTarget::operator=(const SideCoolTarget& A)
   if (this!=&A)
     {
       constructSystem::TargetBase::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -232,60 +230,60 @@ SideCoolTarget::createSurfaces()
   QX.rotate(ZRotA);
   QX.invRotate(ZRotB);
   // divider plane
-  ModelSupport::buildPlane(SMap,tarIndex+101,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin,X);
 
   // Inner W
-  ModelSupport::buildEllipticCyl(SMap,tarIndex+7,Origin,Y,X,
+  ModelSupport::buildEllipticCyl(SMap,buildIndex+7,Origin,Y,X,
 				 xRadius,zRadius);
-  ModelSupport::buildPlane(SMap,tarIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,tarIndex+2,Origin+Y*mainLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
 
   double TThick(cladThick);  // main thickness
   double LThick(0.0);   // layer thick
-  ModelSupport::buildEllipticCyl(SMap,tarIndex+17,Origin,Y,X,
+  ModelSupport::buildEllipticCyl(SMap,buildIndex+17,Origin,Y,X,
 				 xRadius+TThick,zRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+11,Origin-Y*(TThick),Y);
-  ModelSupport::buildPlane(SMap,tarIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(TThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(mainLength+TThick),Y);
 
   // Water
   TThick+=waterThick;
-  ModelSupport::buildEllipticCyl(SMap,tarIndex+27,Origin,Y,X,
+  ModelSupport::buildEllipticCyl(SMap,buildIndex+27,Origin,Y,X,
 				 xRadius+TThick,zRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+21,Origin-Y*(TThick),Y);
-  ModelSupport::buildPlane(SMap,tarIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*(TThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(mainLength+TThick),Y);
 
-  ModelSupport::buildPlane(SMap,tarIndex+23,Origin,ZRotA);
-  ModelSupport::buildPlane(SMap,tarIndex+24,Origin,ZRotB);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin,ZRotA);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin,ZRotB);
 
   // Pressure
   TThick+=pressThick;
   LThick+=pressThick;
-  ModelSupport::buildEllipticCyl(SMap,tarIndex+37,Origin,Y,X,
+  ModelSupport::buildEllipticCyl(SMap,buildIndex+37,Origin,Y,X,
 				 xRadius+TThick,zRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+31,Origin-Y*(TThick),Y);
-  ModelSupport::buildPlane(SMap,tarIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+31,Origin-Y*(TThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 		   Origin+Y*(mainLength+TThick),Y);
 
-  ModelSupport::buildPlane(SMap,tarIndex+33,Origin-ZRotA*LThick,ZRotA);
-  ModelSupport::buildPlane(SMap,tarIndex+34,Origin+ZRotB*LThick,ZRotB);
-  ModelSupport::buildPlane(SMap,tarIndex+35,Origin+ZRotA*LThick,ZRotA);
-  ModelSupport::buildPlane(SMap,tarIndex+36,Origin-ZRotB*LThick,ZRotB);
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin-ZRotA*LThick,ZRotA);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+ZRotB*LThick,ZRotB);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin+ZRotA*LThick,ZRotA);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin-ZRotB*LThick,ZRotB);
 
   // Clearance
   TThick+=voidThick;
   LThick+=voidThick;
-  ModelSupport::buildEllipticCyl(SMap,tarIndex+47,Origin,Y,X,
+  ModelSupport::buildEllipticCyl(SMap,buildIndex+47,Origin,Y,X,
 				 xRadius+TThick,zRadius+TThick);
-  ModelSupport::buildPlane(SMap,tarIndex+41,Origin-Y*(TThick),Y);
-  ModelSupport::buildPlane(SMap,tarIndex+42,
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin-Y*(TThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+42,
 		   Origin+Y*(mainLength+TThick),Y);
 
-  ModelSupport::buildPlane(SMap,tarIndex+43,Origin-ZRotA*LThick,ZRotA);
-  ModelSupport::buildPlane(SMap,tarIndex+44,Origin+ZRotB*LThick,ZRotB);
-  ModelSupport::buildPlane(SMap,tarIndex+45,Origin+ZRotA*LThick,ZRotA);
-  ModelSupport::buildPlane(SMap,tarIndex+46,Origin-ZRotB*LThick,ZRotB);
+  ModelSupport::buildPlane(SMap,buildIndex+43,Origin-ZRotA*LThick,ZRotA);
+  ModelSupport::buildPlane(SMap,buildIndex+44,Origin+ZRotB*LThick,ZRotB);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin+ZRotA*LThick,ZRotA);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin-ZRotB*LThick,ZRotB);
 
 
 
@@ -304,48 +302,48 @@ SideCoolTarget::createObjects(Simulation& System)
   // Tungsten inner core
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tarIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,targetTemp,Out));
-  addBoundarySurf(-SMap.realSurf(tarIndex+17));
+  addBoundarySurf(-SMap.realSurf(buildIndex+17));
 
   // Cladding
-  Out=ModelSupport::getComposite(SMap,tarIndex,"11 -12 -17 (-1:2:7)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17 (-1:2:7)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,waterTemp,Out));
 
   // Water : Stops at the Tungsten edge
-  Out=ModelSupport::getComposite(SMap,tarIndex,"11 -12 -27 23 -24 101 17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -27 23 -24 101 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"11 -12 -27 -23 24 -101 17");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -27 -23 24 -101 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
   // front face
-  Out=ModelSupport::getComposite(SMap,tarIndex,"21 -11 -27 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 -27 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
   
   // Pressure
-  Out=ModelSupport::getComposite(SMap,tarIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -37 33 -34 101 17 (27:-23:24)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,externTemp,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -37 -35 36 -101 17 (27:23:-24)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,externTemp,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"31 -11 -37 (-21 : 27) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -11 -37 (-21 : 27) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,externTemp,Out));
 
   // clearance void
-  Out=ModelSupport::getComposite(SMap,tarIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -47 101 17 (37:-33:34)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -47 -101 17 (37:35:-36)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,tarIndex,"41 -11 -47 (-31 : 37) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -11 -47 (-31 : 37) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // Tail to be replaced with something
-  Out=ModelSupport::getComposite(SMap,tarIndex,"12 -42 -47 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -42 -47 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,tarIndex,"41 -42 -47");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 -47");
   addOuterSurf(Out);
   return;
 }
@@ -359,10 +357,10 @@ SideCoolTarget::createLinks()
   ELog::RegMethod RegA("SideCoolTarget","createLinks");
 
   // all point out
-  FixedComp::setLinkSurf(0,-SMap.realSurf(tarIndex+41));
-  FixedComp::setLinkSurf(1,SMap.realSurf(tarIndex+42));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
   for(size_t i=2;i<6;i++)
-    FixedComp::setLinkSurf(i,SMap.realSurf(tarIndex+47));
+    FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+47));
 
   const double TThick(cladThick+waterThick+pressThick+
 		      voidThick);
@@ -409,7 +407,7 @@ SideCoolTarget::getInnerCells() const
 {
   std::vector<int> Out;
   Out.push_back(getMainBody());
-  Out.push_back(tarIndex+2);
+  Out.push_back(buildIndex+2);
   return Out;
 }
 

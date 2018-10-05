@@ -68,6 +68,8 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "CellWeight.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"

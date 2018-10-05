@@ -40,7 +40,6 @@ class DecFileMod : public Decoupled
  private:
 
   int incIndex;                     ///< Include index;
-  int cellIndex;                    ///< Cell index;
 
   Geometry::Matrix<double> RBase;  ///< ReBase matrix
   

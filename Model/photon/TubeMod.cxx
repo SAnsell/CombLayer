@@ -3,7 +3,7 @@
  
  * File:   photon/TubeMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
@@ -57,12 +56,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -74,9 +74,7 @@ namespace photonSystem
 {
       
 TubeMod::TubeMod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(modIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,7 +83,6 @@ TubeMod::TubeMod(const std::string& Key) :
 
 TubeMod::TubeMod(const TubeMod& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),
   outerRadius(A.outerRadius),outerHeight(A.outerHeight),
   outerMat(A.outerMat),Tubes(A.Tubes)
   /*!
@@ -106,7 +103,6 @@ TubeMod::operator=(const TubeMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       outerRadius=A.outerRadius;
       outerHeight=A.outerHeight;
       outerMat=A.outerMat;
@@ -149,7 +145,7 @@ TubeMod::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nTubes;i++)
     {
-      const std::string KN=keyName+StrFunc::makeString(i);
+      const std::string KN=keyName+std::to_string(i);
       TUnit TI;
       TI.Offset=Control.EvalPair<Geometry::Vec3D>
 	(KN+"Offset",keyName+"Offset");
@@ -187,12 +183,12 @@ TubeMod::createSurfaces()
   ELog::RegMethod RegA("TubeMod","createSurfaces");
 
   // Outer surfaces:
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,Y);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin+Y*outerHeight,Y);  
-  ModelSupport::buildCylinder(SMap,modIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*outerHeight,Y);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,outerRadius);
 
-  int tIndex(modIndex+100);
+  int tIndex(buildIndex+100);
   for(const TUnit& TI : Tubes)
     {
       const Geometry::Vec3D OR=Origin+X*TI.Offset.X()+
@@ -216,7 +212,7 @@ TubeMod::createObjects(Simulation& System)
 
   std::string Out;
   HeadRule TubeCollection;
-  int tIndex(modIndex+100);
+  int tIndex(buildIndex+100);
 
   for(const TUnit& TI : Tubes)
     {
@@ -225,7 +221,7 @@ TubeMod::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,TI.mat,0.0,Out));
       tIndex+=100;
     }
-  Out=ModelSupport::getComposite(SMap,modIndex,modIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex," 1 -2 -7 ");
   addOuterSurf(Out);
   // Now exclude tubes
   TubeCollection.makeComplement();
@@ -243,22 +239,22 @@ TubeMod::createLinks()
   ELog::RegMethod RegA("TubeMod","createLinks");
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(modIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*outerHeight,Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(modIndex+2));
+  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin+Y*(outerHeight/2.0)-X*outerRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(modIndex+18));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+18));
   
   FixedComp::setConnect(3,Origin+Y*(outerHeight/2.0)-Z*outerRadius,-Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(modIndex+18));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+18));
 
   FixedComp::setConnect(4,Origin+Y*(outerHeight/2.0)+X*outerRadius,X);
-  FixedComp::setLinkSurf(4,SMap.realSurf(modIndex+18));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+18));
 
   FixedComp::setConnect(5,Origin+Y*(outerHeight/2.0)+Z*outerRadius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(modIndex+18));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+18));
 
   return;
 }

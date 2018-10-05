@@ -43,8 +43,6 @@ class PinHole : public attachSystem::ContainedComp,
 {
  private:
 
-  const int pinIndex;             ///< SurfIndex offset
-  int cellIndex;                  ///< cell index
 
   /// First collimator
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;

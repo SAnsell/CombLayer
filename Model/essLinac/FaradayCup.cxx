@@ -3,7 +3,7 @@
 
  * File:   essBuild/FaradayCup.cxx
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2004-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -88,9 +89,7 @@ namespace essSystem
 
 FaradayCup::FaradayCup(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -100,7 +99,6 @@ FaradayCup::FaradayCup(const std::string& Key)  :
 FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   active(A.active),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
@@ -135,7 +133,6 @@ FaradayCup::operator=(const FaradayCup& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       active=A.active;
       engActive=A.engActive;
       length=A.length;
@@ -237,26 +234,26 @@ FaradayCup::createSurfaces()
   ELog::RegMethod RegA("FaradayCup","createSurfaces");
 
   double dy(0.0);
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*dy,Y);
   dy += faceLength;
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*dy,Y);
   dy += absLength;
-  ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*dy,Y);
   dy += baseLength;
-  ModelSupport::buildPlane(SMap,surfIndex+31,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+31,Origin+Y*dy,Y);
   dy += colLength;
-  ModelSupport::buildPlane(SMap,surfIndex+41,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+Y*dy,Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
 
-  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,faceRadius);
 
-  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldInnerLength),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(shieldLength),Y);
-  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,shieldInnerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,shieldRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(shieldInnerLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+112,Origin+Y*(shieldLength),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,shieldInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,shieldRadius);
 
   return;
 }
@@ -275,39 +272,39 @@ FaradayCup::createObjects(Simulation& System)
 
       std::string Out;
       // collimator
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 -27 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
       
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 27 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       
       // absorber
-      Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
       
       // base
-      Out=ModelSupport::getComposite(SMap,surfIndex," 21 -31 -7 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       
-      Out=ModelSupport::getComposite(SMap,surfIndex," 21 -41 7 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       
       // collector
-      Out=ModelSupport::getComposite(SMap,surfIndex," 31 -41 -7 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
       
       // back plane
-      Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       
       // shielding
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 (-1:2:17) ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -102 -107 (-1:2:17) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
       
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -112 -117 (-1:102:107) ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 (-1:102:107) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
       
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -112 -117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 ");
       addOuterSurf(Out);
     }
   return;
@@ -323,7 +320,7 @@ FaradayCup::createLinks()
   ELog::RegMethod RegA("FaradayCup","createLinks");
 
   //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  //  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   return;
 }

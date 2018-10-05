@@ -40,8 +40,6 @@ class WaterDividers : public attachSystem::ContainedComp,
 {
  private:
   
-  const int wIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double conHeight;             ///< Height of the connect
 

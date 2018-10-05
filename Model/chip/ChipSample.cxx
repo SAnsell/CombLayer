@@ -3,7 +3,7 @@
  
  * File:   chip/ChipSample.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +42,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -59,6 +57,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -75,10 +75,8 @@ namespace hutchSystem
 
 ChipSample::ChipSample(const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),2),
-  ID(Index),baseName(Key),
-  csIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(csIndex+1)
+  attachSystem::FixedOffset(Key+std::to_string(Index),2),
+  ID(Index),baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,8 +86,8 @@ ChipSample::ChipSample(const std::string& Key,const size_t Index) :
 
 ChipSample::ChipSample(const ChipSample& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  ID(A.ID),baseName(A.baseName),csIndex(A.csIndex),
-  cellIndex(A.cellIndex),tableNum(A.tableNum),width(A.width),
+  ID(A.ID),baseName(A.baseName),
+  tableNum(A.tableNum),width(A.width),
   height(A.height),length(A.length),defMat(A.defMat)
   /*!
     Copy constructor
@@ -109,7 +107,6 @@ ChipSample::operator=(const ChipSample& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       tableNum=A.tableNum;
       zAngle=A.zAngle;
       width=A.width;
@@ -174,12 +171,12 @@ ChipSample::createSurfaces()
 {
   ELog::RegMethod RegA("ChipSample","createSurface");
   // Sides
-  ModelSupport::buildPlane(SMap,csIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,csIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,csIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,csIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,csIndex+5,Origin,Z);
-  ModelSupport::buildPlane(SMap,csIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
   
   return;
 }
@@ -195,7 +192,7 @@ ChipSample::createObjects(Simulation& System)
   
   std::string Out;
   // Master box: 
-  Out=ModelSupport::getComposite(SMap,csIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
 
   addOuterSurf(Out);
@@ -214,8 +211,8 @@ ChipSample::createLinks()
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(csIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(csIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
 }

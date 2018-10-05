@@ -67,6 +67,8 @@
 #include "RuleSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
@@ -91,9 +93,7 @@ McDonaldFlowGuide::McDonaldFlowGuide(const std::string& baseKey,
 			 const std::string& extraKey,
 			 const std::string& finalKey ) :
   attachSystem::FixedComp(baseKey+extraKey+finalKey,6),
-  baseName(baseKey),midName(extraKey),endName(finalKey),
-  flowIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(flowIndex+1)
+  baseName(baseKey),midName(extraKey),endName(finalKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Butterfly main key
@@ -105,8 +105,6 @@ McDonaldFlowGuide::McDonaldFlowGuide(const std::string& baseKey,
 McDonaldFlowGuide::McDonaldFlowGuide(const McDonaldFlowGuide& A) :
   attachSystem::FixedComp(A),
   baseName(A.baseName),midName(A.midName),endName(A.endName),
-  flowIndex(A.flowIndex),
-  cellIndex(A.cellIndex),
   wallThick(A.wallThick),baseLen(A.baseLen),
   baseOffset(A.baseOffset),
   angle(A.angle),
@@ -261,40 +259,40 @@ McDonaldFlowGuide::createSurfaces()
   Geometry::General *GA;
 
   // left part
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+501);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+501);
   GA->setSurface(getSQSurface(sqOffsetY, sqSideA, sqSideE, sqSideF));
   GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
 
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+502);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+502);
   GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.1*sqSideA, sqSideE, sqSideF));
   GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
 
   // right part
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+503);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+503);
   GA->setSurface(getSQSurface(sqOffsetY, sqSideA, sqSideE, sqSideF));
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+504);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+504);
   GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.1*sqSideA, sqSideE, sqSideF));
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
   // central part
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+505);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+505);
   GA->setSurface(getSQSurface(sqOffsetY, sqCenterA, sqCenterE, sqCenterF));
   SMap.registerSurf(GA);
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+506);
   GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.2*sqCenterA, sqCenterE, sqCenterF));
   SMap.registerSurf(GA);
 
-  ModelSupport::buildPlane(SMap,flowIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin+Y*(baseOffset),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*(baseOffset+baseLen),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+10,
+  ModelSupport::buildPlane(SMap,buildIndex+10,
 			   Origin+Y*(baseOffset-1.0),Y);
 
   return;
@@ -329,15 +327,15 @@ McDonaldFlowGuide::createObjects(Simulation& System,
     HW.getLinkString(14);
   HeadRule wallExclude;
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -501 502 503 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -501 502 503 ");
   wallExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -503 504 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -503 504 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 10 -505 506 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 10 -505 506 -2 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 

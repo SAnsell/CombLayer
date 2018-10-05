@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@ class SurfMap : public BaseMap
   SurfMap& operator=(const SurfMap&);
   virtual ~SurfMap() {}     ///< Destructor
 
-
   //@{
   /*!
     Rename transform functions to BaseMap
@@ -66,22 +65,28 @@ class SurfMap : public BaseMap
 
   void addSurf(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
+
   void addSurfs(const std::string& K,const std::vector<int>& CN)
     { BaseMap::addItems(K,CN); }
   
   int getSurf(const std::string& K) const
     { return BaseMap::getItem(K); }
+
   int getSurf(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
   std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
+
   std::vector<int> getSurfs() const
     { return BaseMap::getItems(); }
   //@}
 
   int getSignedSurf(const std::string&,const long int) const;
 
+  Geometry::Surface*
+    getSurfPtr(const std::string&,const size_t =0) const;
+  
   HeadRule getSurfRules(const std::string&) const;
   HeadRule getSurfRule(const std::string&,const size_t =0) const;
   HeadRule combine(const std::set<std::string>&) const;

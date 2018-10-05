@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -86,9 +88,7 @@ namespace essSystem
 PreModWing::PreModWing(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,3),
-  attachSystem::CellMap(),  
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -99,7 +99,6 @@ PreModWing::PreModWing(const PreModWing& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),
   innerHeight(A.innerHeight),outerHeight(A.outerHeight),
   innerDepth(A.innerDepth),outerDepth(A.outerDepth),
   wallThick(A.wallThick),innerRadius(A.innerRadius),
@@ -125,7 +124,6 @@ PreModWing::operator=(const PreModWing& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       innerHeight=A.innerHeight;
       outerHeight=A.outerHeight;
       innerDepth=A.innerDepth;
@@ -234,11 +232,11 @@ PreModWing::createSurfaces()
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
 
-  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,innerRadius);
   if (!outerSurf.hasRule())
     {
-      ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
-      outerSurf.procSurfNum(-SMap.realSurf(modIndex+17));
+      ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,outerRadius);
+      outerSurf.procSurfNum(-SMap.realSurf(buildIndex+17));
     }
 
   // make height cone if given:
@@ -250,16 +248,16 @@ PreModWing::createSurfaces()
       const double tanHTheta=(outerRadius-IR)/(outerHeight-innerHeight);
       const double thetaH=atan(tanHTheta)*180.0/M_PI;
 
-      ModelSupport::buildCone(SMap,modIndex+9,Origin+Z*effHeight,-Z,thetaH);
-      ModelSupport::buildCone(SMap,modIndex+19,
+      ModelSupport::buildCone(SMap,buildIndex+9,Origin+Z*effHeight,-Z,thetaH);
+      ModelSupport::buildCone(SMap,buildIndex+19,
                               Origin+Z*(effHeight-wallThick),-Z,thetaH);
-      ModelSupport::buildPlane(SMap,modIndex+1006,Origin+Z*effHeight,Z);
-      ModelSupport::buildPlane(SMap,modIndex+1016,Origin+Z*(effHeight-wallThick),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*effHeight,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1016,Origin+Z*(effHeight-wallThick),Z);
 
     }
         
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*innerHeight,Z);
-  ModelSupport::buildPlane(SMap,modIndex+16,Origin+Z*(innerHeight-wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*innerHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(innerHeight-wallThick),Z);
 
   // make height cone if given:
   // calculate relative to outer zero [and correct to centre]
@@ -271,19 +269,19 @@ PreModWing::createSurfaces()
       const double tanDTheta=(outerRadius-IR)/(outerDepth-innerDepth);
       const double thetaD=atan(tanDTheta)*180.0/M_PI;
 
-      ModelSupport::buildCone(SMap,modIndex+8,Origin-Z*effDepth,Z,thetaD);
-      ModelSupport::buildCone(SMap,modIndex+18,Origin-Z*(effDepth-wallThick),Z,thetaD);
+      ModelSupport::buildCone(SMap,buildIndex+8,Origin-Z*effDepth,Z,thetaD);
+      ModelSupport::buildCone(SMap,buildIndex+18,Origin-Z*(effDepth-wallThick),Z,thetaD);
       // cutters for cone
       // not at lifted positoin
-      ModelSupport::buildPlane(SMap,modIndex+1005,Origin-Z*effDepth,Z);
-      ModelSupport::buildPlane(SMap,modIndex+1015,Origin-Z*(effDepth-wallThick),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*effDepth,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1015,Origin-Z*(effDepth-wallThick),Z);
     }
   // flat section
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*innerDepth,Z);
-  ModelSupport::buildPlane(SMap,modIndex+15,Origin-Z*(innerDepth-wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*innerDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(innerDepth-wallThick),Z);
 
   // Build layres for different material structure
-  int CL(modIndex+100);
+  int CL(buildIndex+100);
   for(size_t i=1;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,CL+7,Origin,Z,layerRadii[i-1]);
@@ -304,7 +302,7 @@ PreModWing::getLayerZone(const size_t layerIndex) const
   ELog::RegMethod RegA("PreModWing","getLayerZone");
 
   std::string Out;
-  const int CL(modIndex+static_cast<int>(layerIndex)*100);
+  const int CL(buildIndex+static_cast<int>(layerIndex)*100);
   if (!layerIndex)
     Out=innerSurf.display();
   else
@@ -335,12 +333,12 @@ PreModWing::createObjects(Simulation& System)
 
   // BASE
   // inner first
-  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -5 -7 ");
   Out+=innerSurf.display();
   Out+=baseSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -15 5 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -15 5 -7 ");
   Out+=innerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
@@ -349,20 +347,20 @@ PreModWing::createObjects(Simulation& System)
     {
       const std::string Zone=getLayerZone(i);
       // base layer
-      Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -8 -1005 ");
       Out+=baseSurf.display();
       Out+=midSurf.display();
       Out+=Zone;
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 (8:1005) ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -18 -1015 (8:1005) ");
       Out+=midSurf.display();
       Out+=Zone;
       Out+=baseSurf.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
       
       // Top layer
-      Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -9 1006 ");
       Out+=midSurf.display();
       Out+=Zone;
 	    
@@ -371,7 +369,7 @@ PreModWing::createObjects(Simulation& System)
       Out+=getLayerZone(i);
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 (9:-1006) ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -19 1016 (9:-1006) ");
       Out+=midSurf.display();
       Out+=topSurf.display();
       Out+=Zone;
@@ -380,16 +378,16 @@ PreModWing::createObjects(Simulation& System)
   
   // TOP
   // inner first
-  Out=ModelSupport::getComposite(SMap,modIndex," 6 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -7 ");
   Out+=innerSurf.display();
   Out+=topSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 16 -6 -7 ");
   Out+=innerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," ((-19 16 ) : (-18 -15)) ");
   Out+=outerSurf.display();
   Out+=mainDivider.display();
   addOuterSurf(Out);

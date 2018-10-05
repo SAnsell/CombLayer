@@ -19,9 +19,7 @@ class LayerPlate  : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int slabIndex;        ///< Index of surface offset
 
-  int cellIndex;                ///< Cell index
 
   bool frontShared;           ///< Front surface shared
 

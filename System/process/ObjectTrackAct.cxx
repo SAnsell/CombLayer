@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ObjSurfMap.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -241,12 +243,29 @@ ObjectTrackAct::createAttenPath(std::vector<long int>& cellN,
 				std::vector<double>& attnD) const
   /*!
     Calculate the sum of the distance
-    \
+    \param cellN :: cell numbers [why long int?]
+    \param attnD :: distances in cell
   */
 {
   ELog::RegMethod RegA("ObjectTrackAct","createAttenPath");
   for(const std::map<long int,LineTrack>::value_type& mc : Items)
     mc.second.createAttenPath(cellN,attnD);
+  return;
+}
+
+void
+ObjectTrackAct::createMatPath(std::vector<int>& matN,
+			      std::vector<double>& attnD) const
+  /*!
+    Calculate the sum of the distance
+    \param matN :: material number
+    \param attnD :: distances in cell
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","createMatPath");
+  
+  for(const std::map<long int,LineTrack>::value_type& mc : Items)
+    mc.second.createMatPath(matN,attnD);
   return;
 }
 

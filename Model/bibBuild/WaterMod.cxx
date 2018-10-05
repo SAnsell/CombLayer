@@ -3,7 +3,7 @@
  
  * File:   bibBuild/WaterMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,8 @@
 #include "FuncDataBase.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -67,7 +69,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 
 #include "WaterMod.h"
 
@@ -76,9 +77,7 @@ namespace bibSystem
 {
 
 WaterMod::WaterMod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  watIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(watIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -87,7 +86,6 @@ WaterMod::WaterMod(const std::string& Key) :
 
 WaterMod::WaterMod(const WaterMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  watIndex(A.watIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),
   depth(A.depth),wallThick(A.wallThick),waterMat(A.waterMat),
   wallMat(A.wallMat)
@@ -109,7 +107,6 @@ WaterMod::operator=(const WaterMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -181,31 +178,31 @@ WaterMod::createSurfaces()
 {
   ELog::RegMethod RegA("WaterMod","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,watIndex+1,Origin-Y*depth/2.0,Y);  
-  ModelSupport::buildPlane(SMap,watIndex+2,Origin+Y*depth/2.0,Y);  
-  ModelSupport::buildPlane(SMap,watIndex+3,Origin-X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,watIndex+4,Origin+X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,watIndex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,watIndex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);  
 
-  ModelSupport::buildPlane(SMap,watIndex+11,Origin-Y*(depth/2.0+wallThick),Y);  
-  ModelSupport::buildPlane(SMap,watIndex+12,Origin+Y*(depth/2.0+wallThick),Y);  
-  ModelSupport::buildPlane(SMap,watIndex+13,Origin-X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,watIndex+14,Origin+X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,watIndex+15,Origin-Z*(height/2.0+wallThick),Z); 
-  ModelSupport::buildPlane(SMap,watIndex+16,Origin+Z*(height/2.0+wallThick),Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(depth/2.0+wallThick),Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth/2.0+wallThick),Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z); 
 
-  ModelSupport::buildPlane(SMap,watIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*(depth/2.0+wallThick+frontGap),Y);  
-  ModelSupport::buildPlane(SMap,watIndex+22,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+
 			   Y*(depth/2.0+wallThick+backGap),Y);  
-  ModelSupport::buildPlane(SMap,watIndex+23,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-
 			   X*(width/2.0+wallThick+sideGap),X);  
-  ModelSupport::buildPlane(SMap,watIndex+24,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+
 			   X*(width/2.0+wallThick+sideGap),X);  
-  ModelSupport::buildPlane(SMap,watIndex+25,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-
 			   Z*(height/2.0+wallThick+vertGap),Z); 
-  ModelSupport::buildPlane(SMap,watIndex+26,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+
 			   Z*(height/2.0+wallThick+vertGap),Z); 
 
   return; 
@@ -224,21 +221,21 @@ WaterMod::createObjects(Simulation& System,
   std::string Out;
 
   // Water
-  Out=ModelSupport::getComposite(SMap,watIndex,"1 -2 3 -4 5 -6");	
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
 
   // Wall of water moderator
-  Out=ModelSupport::getComposite(SMap,watIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,waterTemp,Out));
 
   // Wall of water moderator
-  Out=ModelSupport::getComposite(SMap,watIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	     	 "21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
   Out+=CC.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,watIndex,"21 -22 23 -24 25 -26" );
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26" );
   addOuterSurf(Out);
 
   return; 
@@ -263,12 +260,12 @@ WaterMod::createLinks()
   FixedComp::setConnect(5,Origin+Y*(height/2.0+wallThick+vertGap),Z);  
 
   // WHY HAVENT I WRITTEN AutoLinkSurf()
-  FixedComp::setLinkSurf(0,-SMap.realSurf(watIndex+21));
-  FixedComp::setLinkSurf(1,SMap.realSurf(watIndex+22));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(watIndex+23));
-  FixedComp::setLinkSurf(3,SMap.realSurf(watIndex+24));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(watIndex+25));
-  FixedComp::setLinkSurf(5,SMap.realSurf(watIndex+26));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
   
   return;
 }

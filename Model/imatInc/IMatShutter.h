@@ -3,7 +3,7 @@
  
  * File:   imatInc/IMatShutter.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ class IMatShutter : public GeneralShutter
 
   std::string imatKey;              ///< Key Name
   int insIndex;                     ///< Insert number
-  int cellIndex;                    ///< Cell index [masks generalshutter]
   
   double xStep;                     ///< Displacement of centre line
   double zStep;                     ///< Displacement of centre line

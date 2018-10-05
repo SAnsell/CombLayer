@@ -171,6 +171,26 @@ cellValueSet<N>::makeStrIndex(const std::string& CName)
   strRegister.emplace(-index,CName);
   return -index;
 }
+
+template<size_t N>    
+const std::string&
+cellValueSet<N>::getStrIndex(const int CN) const
+  /*!
+    Add a new strRegister entry and return a unique 
+    negative index
+    \param CN :: Cell number
+    \return index name
+   */
+{
+  ELog::RegMethod RegA("cellValueSet","getStrIndex");
+  
+  std::map<int,std::string>::const_iterator mc=
+    strRegister.find(CN);
+  if (mc==strRegister.end())
+    throw ColErr::InContainerError<int>(CN,"Cell number not in register");
+
+  return mc->second;
+}
   
 template<size_t N>  
 bool
@@ -197,17 +217,16 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
   if (dataMap.empty()) return 0;
   const int lastCN=dataMap.rbegin()->first+1;       //ordered map
 
-
-  size_t prev(0);
+  int prev(0);
   valTYPE V;
   for(int CN=dataMap.begin()->first;CN<=lastCN;CN++)
     {
-      typename dataTYPE::const_iterator mc=dataMap.find(CN);
+      typename dataTYPE::const_iterator mc=dataMap.find(CN);	  
       if (mc==dataMap.end())
 	{
 	  if (prev)
 	    {
-	      initCell.push_back(TITEM(prev-1,CN-1));
+	      initCell.push_back(TITEM(prev,CN-1));
 	      outData.push_back(V);
 	      prev=0;
 	    }
@@ -232,7 +251,7 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
 		       ((sumFlag!=2 && AS!=VS) ||
 			(sumFlag==2 && (std::abs(VV-AV)>Geometry::zeroTol))) ))
 		    {
-		      initCell.push_back(TITEM(prev-1,CN-1));
+		      initCell.push_back(TITEM(prev,CN-1));
 		      outData.push_back(V);
 		      prev=CN;
 		      V=mc->second;
@@ -247,8 +266,6 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
 	    }
 	}
     }
-  ELog::EM<<"END == "<<keyName<<" "<<initCell.size()<<ELog::endDiag;
-	
   return (initCell.empty()) ? 0 : 1;
 }
   
@@ -265,7 +282,7 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
     be expressed in FLUKA as a single importance/bias card with a range 
     of cells.
 
-    \param cellN :: Cell vlaues
+    \param cellN :: Cell values [normally excluding 0]
     \param initCell :: initialization range
     \param dataValue :: initialization range
     \return true if output required
@@ -337,7 +354,7 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 }
 
 
-template<size_t N>
+template<size_t N> 
 void
 cellValueSet<N>::setValues(const int cN)
   /*!
@@ -493,6 +510,19 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
 
 template<size_t N>
 void
+cellValueSet<N>::setValues(const std::string& cStr)
+  /*!
+    Set a value in the map
+    \param cStr :: Cell number   
+  */
+{  
+  const int cN=makeStrIndex(cStr);
+  setValues(cN);
+  return;
+}
+
+template<size_t N>
+void
 cellValueSet<N>::setValues(const std::string& cStr,
 			   const std::string& V)
   /*!
@@ -503,6 +533,7 @@ cellValueSet<N>::setValues(const std::string& cStr,
 {
   const int cN=makeStrIndex(cStr);
   setValues(cN,V);
+  return;
 }
   
 template<size_t N>
@@ -559,10 +590,8 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
 
-  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
   if (simpleSplit(Bgroup,Bdata))
     {
-      ELog::EM<<"XKey == "<<keyName<<ELog::endDiag;
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 
@@ -571,8 +600,11 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  const TITEM& tc(Bgroup[index]);
 	  const valTYPE& dArray(Bdata[index]);
 
-	  SArray[0]=std::to_string(std::get<0>(tc));
-	  SArray[1]=std::to_string(std::get<1>(tc));
+	  const int AA=std::get<0>(tc);
+	  const int AB=std::get<1>(tc);
+	  SArray[0]=(AA<0) ? getStrIndex(AA) : std::to_string(AA);
+	  SArray[1]=(AB<0) ? getStrIndex(AB) : std::to_string(AB);
+
 	  for(size_t i=0;i<N;i++)
 	    {
 	      if (dArray[i].first==1)
@@ -607,7 +639,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 		cx<<UC<<" ";
 	    }
 	  cx<<tag;
-		      
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
     }
@@ -633,14 +664,9 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::ostringstream cx;
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
-
-  if (keyName=="lamlength")
-    ELog::EM<<"S == "<<keyName<<ELog::endDiag;
+	
   if (cellSplit(cellN,Bgroup,Bdata))
-    {
-      if (keyName=="lamlength")
-	ELog::EM<<"T == "<<keyName<<ELog::endDiag;
-
+    {	
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 
@@ -649,8 +675,10 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  const TITEM& tc(Bgroup[index]);
 	  const valTYPE& dArray(Bdata[index]);
 
-	  SArray[0]=std::to_string(std::get<0>(tc));
-	  SArray[1]=std::to_string(std::get<1>(tc));
+	  const int AA=std::get<0>(tc);
+	  const int AB=std::get<1>(tc);
+	  SArray[0]=(AA<0) ? getStrIndex(AA) : std::to_string(AA);
+	  SArray[1]=(AB<0) ? getStrIndex(AB) : std::to_string(AB);
 	  for(size_t i=0;i<N;i++)
 	    {
 	      if (dArray[i].first==1)

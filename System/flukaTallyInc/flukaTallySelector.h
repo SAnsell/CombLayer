@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTallySelector.h
+ * File:   flukaTallyInc/flukaTallySelector.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -23,7 +23,6 @@
 #define flukaTallySelector_h
 
 class SimFLUKA;
-
 
 
 void tallyModification(SimFLUKA&,const mainSystem::inputParam&);

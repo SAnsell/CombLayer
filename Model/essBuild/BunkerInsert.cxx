@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -64,6 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -85,9 +88,7 @@ namespace essSystem
 
 BunkerInsert::BunkerInsert(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,15),
-  attachSystem::CellMap(),attachSystem::FrontBackCut(),
-  insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(insIndex+1)
+  attachSystem::CellMap(),attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +98,7 @@ BunkerInsert::BunkerInsert(const std::string& Key)  :
 BunkerInsert::BunkerInsert(const BunkerInsert& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
-  insIndex(A.insIndex),cellIndex(A.cellIndex),backStep(A.backStep),
+  backStep(A.backStep),
   height(A.height),width(A.width),topWall(A.topWall),
   lowWall(A.lowWall),leftWall(A.leftWall),rightWall(A.rightWall),
   wallMat(A.wallMat),voidMat(A.voidMat),outCut(A.outCut)
@@ -121,7 +122,6 @@ BunkerInsert::operator=(const BunkerInsert& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       backStep=A.backStep;
       height=A.height;
       width=A.width;
@@ -192,19 +192,19 @@ BunkerInsert::createSurfaces()
   ELog::RegMethod RegA("BunkerInsert","createSurface");
 
   /// Dividing plane
-  ModelSupport::buildPlane(SMap,insIndex+1,Origin-Y*backStep,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*backStep,Y);
     
-  ModelSupport::buildPlane(SMap,insIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,insIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
 
-  ModelSupport::buildPlane(SMap,insIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,insIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,insIndex+13,Origin-X*(width/2.0+leftWall),X);
-  ModelSupport::buildPlane(SMap,insIndex+14,Origin+X*(width/2.0+rightWall),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+leftWall),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+rightWall),X);
 
-  ModelSupport::buildPlane(SMap,insIndex+15,Origin-Z*(height/2.0+lowWall),Z);
-  ModelSupport::buildPlane(SMap,insIndex+16,Origin+Z*(height/2.0+topWall),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+lowWall),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+topWall),Z);
 
   return;
 }
@@ -262,19 +262,19 @@ BunkerInsert::createObjects(Simulation& System,
   ELog::RegMethod RegA("BunkerInsert","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+BCell));
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 13 -14 15 -16 (-3 : 4: -5: 6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+BCell));
   
-  Out=ModelSupport::getComposite(SMap,insIndex," 1 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 13 -14 15 -16 ");
   addOuterSurf(Out);
 
   // Create cut unit:
-  Out=ModelSupport::getComposite(SMap,insIndex," 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
   outCut.procString(Out+BCell);
   outCut.populateSurf();
   
@@ -326,10 +326,10 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   FixedComp::setConnect(4,Origin-Z*(height/2.0),Z);
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
   
-  FixedComp::setLinkSurf(2,SMap.realSurf(insIndex+3));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(insIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(insIndex+5));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(insIndex+6));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
   
   // add endpoint [not mid line]
 
@@ -341,10 +341,10 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
       FixedComp::setConnect(index+4,EP-Z*(height/2.0),Z);
       FixedComp::setConnect(index+5,EP+Z*(height/2.0),Z);
       
-      FixedComp::setLinkSurf(index+2,SMap.realSurf(insIndex+3));
-      FixedComp::setLinkSurf(index+3,-SMap.realSurf(insIndex+4));
-      FixedComp::setLinkSurf(index+4,SMap.realSurf(insIndex+5));
-      FixedComp::setLinkSurf(index+5,-SMap.realSurf(insIndex+6));
+      FixedComp::setLinkSurf(index+2,SMap.realSurf(buildIndex+3));
+      FixedComp::setLinkSurf(index+3,-SMap.realSurf(buildIndex+4));
+      FixedComp::setLinkSurf(index+4,SMap.realSurf(buildIndex+5));
+      FixedComp::setLinkSurf(index+5,-SMap.realSurf(buildIndex+6));
       index+=4;
     }
 

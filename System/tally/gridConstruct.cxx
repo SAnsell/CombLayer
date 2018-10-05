@@ -74,7 +74,10 @@
 #include "TwinComp.h"
 #include "PositionSupport.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
@@ -116,7 +119,7 @@ gridConstruct::processGrid(SimMCNP& System,
   ELog::EM<<"NItems = "<<NItems<<ELog::endDiag;
   ELog::EM<<"T = "<<NItemsT<<":"
 	  <<IParam.flag("TGrid")<<":"
-	  <<IParam.dataCnt("TGrid")<<ELog::endDiag;
+	  <<IParam.itemCnt("TGrid")<<ELog::endDiag;
 
   //    NItems<<ELog::endDiag;
 
@@ -150,7 +153,7 @@ gridConstruct::processGrid(SimMCNP& System,
 	IParam.getValueError<std::string>
 	("tally",Index,2,"object name not given");
       
-      const std::string snd=
+      const std::string linkName=
 	IParam.getValueError<std::string>
 	("tally",Index,3,"front/back/side not give");
 
@@ -165,8 +168,7 @@ gridConstruct::processGrid(SimMCNP& System,
       ELog::EM<<"OI == "<<offsetIndex<<ELog::endDiag;
 
 
-      const long int linkNumber=attachSystem::getLinkIndex(snd);
-      if (!calcGlobalCXY(place,linkNumber,TOrigin,XVec,YVec))
+      if (!calcGlobalCXY(System,place,linkName,TOrigin,XVec,YVec))
 	applyMultiGrid(System,initNPD,NPD,TOrigin,XVec,YVec);
     }
 
@@ -178,8 +180,9 @@ gridConstruct::processGrid(SimMCNP& System,
 }
 
 int
-gridConstruct::calcGlobalCXY(const std::string& Place,
-			     const long int linkNumber,
+gridConstruct::calcGlobalCXY(const objectGroups& OGrp,
+			     const std::string& Place,
+			     const std::string& linkName,
 			     Geometry::Vec3D& Centre,
 			     Geometry::Vec3D& XVec,
 			     Geometry::Vec3D& YVec) 
@@ -197,13 +200,10 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
 {
   ELog::RegMethod RegA("gridConstruct","calcGlobalCXY");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* FC=
-    OR.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
+    OGrp.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
   
-
+  const long int linkNumber=FC->getSideIndex(linkName);
   const Geometry::Vec3D O=FC->getLinkPt(linkNumber);
 
   Geometry::Vec3D X,Y,Z;
@@ -261,8 +261,8 @@ gridConstruct::applyMultiGrid(SimMCNP& System,
       tallySystem::setF5Position(System,tNum,TPos);
       tallySystem::setTallyTime(System,tNum,"1.0 8log 1e8");
 	  
-      ELog::FM<<"GRID TALLY POSITION "<<NI<<" : "
-	      <<MR.calcRotate(TPos)<<ELog::endDiag;
+      // ELog::EM<<"GRID TALLY POSITION "<<NI<<" : "
+      // 	      <<MR.calcRotate(TPos)<<ELog::endDiag;
 	  
       ELog::EM<<"F"<<tNum<<" ["<<NI+initNPD<<"] Pos == "
 	      <<MR.calcRotate(TPos)<<ELog::endDiag;

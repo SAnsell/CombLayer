@@ -48,12 +48,13 @@
 #include "support.h"
 #include "stringCombine.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -61,7 +62,7 @@
 #include "inputParam.h"
 
 #include "SimFLUKA.h"
-#include "particleConv.h"
+#include "flukaGenParticle.h"
 #include "TallySelector.h"
 #include "meshConstruct.h"
 #include "flukaTally.h"
@@ -111,41 +112,24 @@ userBinConstruct::convertTallyType(const std::string& TType)
   */
 {
   ELog::RegMethod RegA("userBinConstruct","convertTallyType");
-  const particleConv& pConv=particleConv::Instance();
+  const flukaGenParticle& pConv=flukaGenParticle::Instance();
   
-  static const std::set<std::string> tMap
-    ( {{ "energy",       },           // energy 
-       { "em-energy",    },           // electro magnetic energy
-       { "dose"     ,    },
-       { "unb-energy",   },           // ????
-       { "dose-eq",      } }         // Dose equivilent [needs auxscore]
-      );
-
   if (TType=="help")
     {
       ELog::EM<<"Tally Type:"<<ELog::endDiag;
-      for(const std::set<std::string>::value_type& TC : tMap)
-	ELog::EM<<" -- "<<TC<<ELog::endDiag;
-
       ELog::EM<<" -- Particle"<<ELog::endDiag;
       throw ColErr::ExitAbort("Help termianted");
     }
       
   
-  std::set<std::string>::const_iterator tc=tMap.find(TType);
   std::ostringstream cx;
   
-  if (tc!=tMap.end())
-    return StrFunc::toUpperString(TType);
-
   if (pConv.hasName(TType))
     return StrFunc::toUpperString(pConv.nameToFLUKA(TType));
-
 
   throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
 }
 
-  
 void
 userBinConstruct::processMesh(SimFLUKA& System,
 			      const mainSystem::inputParam& IParam,
@@ -173,9 +157,10 @@ userBinConstruct::processMesh(SimFLUKA& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    tallySystem::meshConstruct::getObjectMesh(IParam,Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getObjectMesh
+      (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
-    tallySystem::meshConstruct::getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 
   userBinConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
   

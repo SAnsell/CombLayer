@@ -45,8 +45,6 @@ class RoofPillars : public attachSystem::FixedComp,
 
   /// Link storage type
   typedef std::set< std::pair<std::string,std::string> > BeamTYPE;
-  const int rodIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   /// Information for each centre
   std::map<std::string,pillarInfo> PInfo;
@@ -77,6 +75,9 @@ class RoofPillars : public attachSystem::FixedComp,
   BeamTYPE beamLinks;          ///< link of each X-beamline
   size_t nLongBeam;            ///< Number of long beam
   BeamTYPE longLinks;          ///< link of each long-beamline
+
+  ///< roof object
+  std::shared_ptr<attachSystem::CellMap> roofCells; 
   
   HeadRule topFoot;            ///< Full headrule
   HeadRule topFootPlate;       ///< Plate headrule
@@ -84,7 +85,8 @@ class RoofPillars : public attachSystem::FixedComp,
   HeadRule baseBeam;           ///< Base beam inner
   HeadRule topLong;            ///< Top long  inner
   HeadRule baseLong;           ///< Base long inner
-    
+
+  
   void populate(const FuncDataBase&);
   void populateBeamSet(const FuncDataBase&,const std::string&,
 		       const long int,const long int,BeamTYPE&) const;
@@ -99,14 +101,20 @@ class RoofPillars : public attachSystem::FixedComp,
   void createLongBeams(Simulation&);
   
   void insertPillars(Simulation&,const attachSystem::CellMap&);
-  void insertBeamCells(Simulation&,const double,
+  
+  void insertBeamCells(Simulation&,
+		       const double,
 		       const Geometry::Vec3D&,
 		       const std::array<Geometry::Vec3D,2>&,
 		       const std::string&);
-  void insertPillarCells(Simulation&,const pillarInfo&,const std::string&);
-  void insertRoofCells(Simulation&,const std::array<Geometry::Vec3D,4>&,
-		       const std::string&);
   
+  void insertPillarCells(Simulation&,const pillarInfo&,const std::string&);
+
+  void insertRoofCells(Simulation&,
+		       const std::array<Geometry::Vec3D,4>&,
+		       const double,
+		       const std::string&);
+
   
   void getPillarPair(const std::string&,const std::string&,
 		     Geometry::Vec3D&,Geometry::Vec3D&,
@@ -114,7 +122,8 @@ class RoofPillars : public attachSystem::FixedComp,
   void createBeamSurfaces(const int,const Geometry::Vec3D&,
 			  const Geometry::Vec3D&,const double,
 			  const double,const double);
-  void createBeamObjects(Simulation&,const int,const std::string&,
+  void createBeamObjects(Simulation&,
+			 const int,const std::string&,
 			 const HeadRule&,const HeadRule&,
 			 const double,const Geometry::Vec3D&,
 			 const std::array<Geometry::Vec3D,2>&);

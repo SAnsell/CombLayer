@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Moderator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -76,9 +78,7 @@ namespace ts1System
 
 CH4Moderator::CH4Moderator(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(4),
-  attachSystem::FixedOffset(Key,6),
-  ch4Index(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ch4Index+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,8 +87,7 @@ CH4Moderator::CH4Moderator(const std::string& Key)  :
 
 CH4Moderator::CH4Moderator(const CH4Moderator& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedOffset(A),ch4Index(A.ch4Index),
-  cellIndex(A.cellIndex),
+  attachSystem::FixedOffset(A),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),outerThick(A.outerThick),
@@ -119,7 +118,6 @@ CH4Moderator::operator=(const CH4Moderator& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
 
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -219,17 +217,17 @@ CH4Moderator::createSurfaces()
   ELog::RegMethod RegA("CH4Moderator","createSurface");
 
   // Inner surfaces
-  ModelSupport::buildPlane(SMap,ch4Index+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,ch4Index+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,ch4Index+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,ch4Index+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,ch4Index+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,ch4Index+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildSphere(SMap,ch4Index+7,
+  ModelSupport::buildSphere(SMap,buildIndex+7,
    			    Origin-Y*(depth/2.0-viewSphere),
    			    viewSphere);
-  ModelSupport::buildSphere(SMap,ch4Index+8,
+  ModelSupport::buildSphere(SMap,buildIndex+8,
    			    Origin+Y*(depth/2.0-viewSphere),
    			    viewSphere);
 
@@ -240,7 +238,7 @@ CH4Moderator::createSurfaces()
 
 
   std::vector<double> T(6);  // Zero size
-  int HI(ch4Index+10);
+  int HI(buildIndex+10);
   for(size_t i=0;i<nLayers;i++)
     {
       // Add the new layer +/- the modification
@@ -267,37 +265,37 @@ CH4Moderator::createSurfaces()
 //       ELog::EM<<"T = "<<T[2]<<ELog::endDebug;	    
     
   // Special 
-  ModelSupport::buildSphere(SMap,ch4Index+17,
+  ModelSupport::buildSphere(SMap,buildIndex+17,
    			    Origin-Y*(innerThick+depth/2.0-viewSphere),
    			    viewSphere);
-  ModelSupport::buildSphere(SMap,ch4Index+18,
+  ModelSupport::buildSphere(SMap,buildIndex+18,
    			    Origin+Y*(innerThick+depth/2.0-viewSphere),
    			    viewSphere);
    			    
   // Special 2 
-  ModelSupport::buildSphere(SMap,ch4Index+27,
+  ModelSupport::buildSphere(SMap,buildIndex+27,
    			    Origin-Y*(innerThick+vacThick+depth/2.0-viewSphere),
    			    viewSphere);
-  ModelSupport::buildSphere(SMap,ch4Index+28,
+  ModelSupport::buildSphere(SMap,buildIndex+28,
    			    Origin+Y*(innerThick+vacThick+depth/2.0-viewSphere),
    			    viewSphere); 
    			    
    // Special 3 
-  ModelSupport::buildSphere(SMap,ch4Index+37,
+  ModelSupport::buildSphere(SMap,buildIndex+37,
    			    Origin-Y*(innerThick+vacThick+outerThick+depth/2.0-viewSphere),
    			    viewSphere);
-  ModelSupport::buildSphere(SMap,ch4Index+38,
+  ModelSupport::buildSphere(SMap,buildIndex+38,
    			    Origin+Y*(innerThick+vacThick+outerThick+depth/2.0-viewSphere),
    			    viewSphere);   			      			      			    
 
   // Poison layers (Gd+Al):
-  ModelSupport::buildPlane(SMap,ch4Index+101,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+
                       Y*(poisonYStep-poisonGdThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,ch4Index+102,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+
                       Y*(poisonYStep+poisonGdThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,ch4Index+111,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+
                       Y*(poisonYStep-(poisonGdThick+poisonAlThick)/2.0),Y);
-  ModelSupport::buildPlane(SMap,ch4Index+112,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+112,Origin+
                       Y*(poisonYStep+(poisonGdThick+poisonAlThick)/2.0),Y);                      
                       
   return;
@@ -315,48 +313,48 @@ CH4Moderator::createObjects(Simulation& System)
   std::string Out;
   
     // CH4 + Poison
-  Out=ModelSupport::getComposite(SMap,ch4Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	"101 -102 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,ch4Temp,Out));
   
-  Out=ModelSupport::getComposite(SMap,ch4Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	"111 -101 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,ch4Temp,Out));
   
-  Out=ModelSupport::getComposite(SMap,ch4Index,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	"-112 102 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,ch4Temp,Out));
   
-  Out=ModelSupport::getComposite(SMap,ch4Index,"-7 -111 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -111 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,ch4Temp,Out));
   
-    Out=ModelSupport::getComposite(SMap,ch4Index,"-8 112 3 -4 5 -6 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex,"-8 112 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,ch4Temp,Out));
 
   // Inner al
-  Out=ModelSupport::getComposite(SMap,ch4Index,"-17 -18 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
 				 " (7:8:-3:4:-5:6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,ch4Temp,Out));
 
   // Vac layer
-  Out=ModelSupport::getComposite(SMap,ch4Index,"23 -24 -27 -28 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"23 -24 -27 -28 25 -26 "
 				 " (17:18:-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,ch4Index,"33 -34 -37 -38 35 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"33 -34 -37 -38 35 -36 "
 				 " (-23:24:27:28:-25:26) ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,ch4Index,"41 -42 43 -44 45 -46 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);  
-  Out+=ModelSupport::getComposite(SMap,ch4Index, " (-33:34:37:38:-35:36) ");  
+  Out+=ModelSupport::getComposite(SMap,buildIndex, " (-33:34:37:38:-35:36) ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
 
-//  Out=ModelSupport::getComposite(SMap,ch4Index," 41 -42 43 -44 45 -46 ");
+//  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 45 -46 ");
 //  addOuterSurf(Out);
 //  addBoundarySurf(Out);
 
@@ -381,12 +379,12 @@ CH4Moderator::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0+T),-Z);
   FixedComp::setConnect(5,Origin+Z*(height/2.0+T),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(ch4Index+41));
-  FixedComp::setLinkSurf(1,SMap.realSurf(ch4Index+42));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ch4Index+43));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ch4Index+44));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ch4Index+45));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ch4Index+46));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+43));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+44));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+45));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
 
   return;
 }
@@ -469,12 +467,12 @@ CH4Moderator::getLayerSurf(const size_t layerIndex,
   
   if (uSIndex>3 || layerIndex>2)
     {
-      const int surfN(ch4Index+
+      const int surfN(buildIndex+
 		      static_cast<int>(10*layerIndex)+uSIndex);
       return dirValue*signValue*SMap.realSurf(surfN);
     }
   
-  const int surfN(ch4Index+
+  const int surfN(buildIndex+
 		  static_cast<int>(10*layerIndex)+uSIndex+6);
   return dirValue*SMap.realSurf(surfN);
 }
@@ -504,12 +502,12 @@ CH4Moderator::getLayerString(const size_t layerIndex,
   
   if (uSIndex>3 || layerIndex>2)
     {
-      const int surfN(ch4Index+static_cast<int>(10*layerIndex)+uSIndex);
+      const int surfN(buildIndex+static_cast<int>(10*layerIndex)+uSIndex);
       HR.addIntersection(signValue*SMap.realSurf(surfN));
     }
   else
     {
-      const int surfN(ch4Index+static_cast<int>(10*layerIndex)+uSIndex+6);
+      const int surfN(buildIndex+static_cast<int>(10*layerIndex)+uSIndex+6);
       HR.addIntersection(SMap.realSurf(surfN));
     }
   if (sideIndex<0)
@@ -525,7 +523,7 @@ CH4Moderator::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,ch4Index,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void

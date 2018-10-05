@@ -3,7 +3,7 @@
  
  * File:   src/SimPOVRay.cxx
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov/Stuart Ansell
+ * Copyright (c) 2004-2018 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -68,6 +67,8 @@
 #include "Object.h"
 #include "Qhull.h"
 
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPOVRay.h"
 
@@ -129,6 +130,7 @@ SimPOVRay::writeSurfaces(std::ostream& OX) const
 
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->writePOVRay(OX);
+
   OX<<std::endl;
   return;
 } 

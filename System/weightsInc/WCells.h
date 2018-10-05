@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WCells.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class WCells : public WForm
 
   typedef std::map<int,WItem> ItemTYPE;  ///< cellNumber : Weight
 
-  ItemTYPE WVal;       ///< Weight values         
+  ItemTYPE WVal;                         ///< Weight values         
 
   void writeHead(std::ostream&) const;
   void writeTable(std::ostream&) const;
@@ -75,6 +75,7 @@ class WCells : public WForm
 
   const std::vector<double>& getWeights(const int) const;
 
+  void writeFLUKA(std::ostream&) const;
   void writePHITSHead(std::ostream&) const;
   void writePHITS(std::ostream&) const;
   void write(std::ostream&) const;

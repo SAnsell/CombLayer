@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,9 +89,7 @@ namespace essSystem
 
 BulkModule::BulkModule(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
-  attachSystem::SurfMap(),attachSystem::CellMap(),
-  bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bulkIndex+1)
+  attachSystem::SurfMap(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,7 +99,6 @@ BulkModule::BulkModule(const std::string& Key)  :
 BulkModule::BulkModule(const BulkModule& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::SurfMap(A),attachSystem::CellMap(A),
-  bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
   /*!
@@ -122,7 +121,6 @@ BulkModule::operator=(const BulkModule& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       nLayer=A.nLayer;
       radius=A.radius;
       height=A.height;
@@ -206,9 +204,9 @@ BulkModule::createSurfaces()
   // rotation of axis:
 
   // divider
-  ModelSupport::buildPlane(SMap,bulkIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
 
-  int RI(bulkIndex);    
+  int RI(buildIndex);    
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*depth[i],Z);
@@ -234,7 +232,7 @@ BulkModule::createObjects(Simulation& System,
   ELog::RegMethod RegA("BulkModule","createObjects");
 
   std::string Out,OutX;
-  int RI(bulkIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
@@ -262,7 +260,7 @@ BulkModule::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,bulkIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void
@@ -289,18 +287,18 @@ BulkModule::createLinks()
 	  FixedComp::setConnect
 	    (index+3,Origin+COffset[i]-Y*radius[i],-Y);   // outer point
 	  
-	  const int RI(static_cast<int>(i)*10+bulkIndex);
+	  const int RI(static_cast<int>(i)*10+buildIndex);
 	  FixedComp::setLinkSurf(index,-SMap.realSurf(RI+5));
 	  FixedComp::setLinkSurf(index+1,SMap.realSurf(RI+6));
 	  FixedComp::setLinkSurf(index+2,SMap.realSurf(RI+7));
 	  FixedComp::setLinkSurf(index+3,SMap.realSurf(RI+7));
-	  FixedComp::setBridgeSurf(index+3,-SMap.realSurf(bulkIndex+1));
+	  FixedComp::setBridgeSurf(index+3,-SMap.realSurf(buildIndex+1));
 
 	  index+=4;
 	}
 
       FixedComp::setConnect(8,Origin+COffset[0]+Y*radius[0],-Y);
-      FixedComp::setLinkSurf(8,-SMap.realSurf(bulkIndex+7));
+      FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+7));
     }
   return;
 }
@@ -329,9 +327,9 @@ BulkModule::addFlightUnit(Simulation& System,
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
     {
-      MonteCarlo::Qhull* OPtr=System.findQhull(bulkIndex+i+1);
+      MonteCarlo::Qhull* OPtr=System.findQhull(buildIndex+i+1);
       if (!OPtr)
-	throw ColErr::InContainerError<int>(bulkIndex+i+1,"layerCells");
+	throw ColErr::InContainerError<int>(buildIndex+i+1,"layerCells");
       OPtr->addSurfString(cx.str());
     }
   // Now make internal surface
@@ -339,8 +337,8 @@ BulkModule::addFlightUnit(Simulation& System,
   for(long int index=3;index<7;index++)
     cx<<FC.getLinkString(-index)<<" ";
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,
-				 bulkIndex+10*static_cast<int>(nLayer-1),
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 buildIndex+10*static_cast<int>(nLayer-1),
 				 " 7 -7M ");
   // Dividing surface ?
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+cx.str()));

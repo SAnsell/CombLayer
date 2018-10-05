@@ -40,8 +40,6 @@ class HWrapper : public attachSystem::ContainedComp,
 {
  private:
   
-  const int preIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var
   
   int divideSurf;               ///< Divider surface for cylinders

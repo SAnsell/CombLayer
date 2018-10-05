@@ -3,7 +3,7 @@
  
  * File:   photon/B4CCollimator.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -73,9 +74,7 @@ namespace photonSystem
 {
       
 B4CCollimator::B4CCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(colIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,9 +83,8 @@ B4CCollimator::B4CCollimator(const std::string& Key) :
 
 B4CCollimator::B4CCollimator(const B4CCollimator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),radius(A.radius),
-  length(A.length),viewWidth(A.viewWidth),viewHeight(A.viewHeight),
-  outerMat(A.outerMat)
+  radius(A.radius),length(A.length),viewWidth(A.viewWidth),
+  viewHeight(A.viewHeight),outerMat(A.outerMat)
   /*!
     Copy constructor
     \param A :: B4CCollimator to copy
@@ -105,7 +103,6 @@ B4CCollimator::operator=(const B4CCollimator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       length=A.length;
       viewWidth=A.viewWidth;
@@ -179,17 +176,15 @@ B4CCollimator::createSurfaces()
   ELog::RegMethod RegA("B4CCollimator","createSurfaces");
 
   // Outer surfaces:
-  ModelSupport::buildPlane(SMap,colIndex+1,Origin,Y);  
-  ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*length,Y);  
-  ModelSupport::buildCylinder(SMap,colIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
 
-  ModelSupport::buildPlane(SMap,colIndex+103,Origin-X*(viewWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,colIndex+104,Origin+X*(viewWidth/2.0),X);  
-  ModelSupport::buildPlane(SMap,colIndex+105,Origin-Z*(viewHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,colIndex+106,Origin+Z*(viewHeight/2.0),Z);  
-
-
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(viewWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(viewWidth/2.0),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(viewHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(viewHeight/2.0),Z);  
 
   return; 
 }
@@ -205,14 +200,14 @@ B4CCollimator::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 103 -104 105 -106");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 103 -104 105 -106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,colIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 -7 (-103:104:-105:106)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,colIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   addOuterSurf(Out);
   return; 
 }
@@ -226,22 +221,22 @@ B4CCollimator::createLinks()
   ELog::RegMethod RegA("B4CCollimator","createLinks");
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(colIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(colIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(colIndex-7));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex-7));
 
   FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(colIndex-7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex-7));
 
   FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(colIndex-7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex-7));
 
   FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(colIndex-7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex-7));
 
   return;
 }
@@ -258,6 +253,7 @@ B4CCollimator::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("B4CCollimator","createAll");
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();

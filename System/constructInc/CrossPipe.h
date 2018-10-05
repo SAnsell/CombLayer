@@ -60,6 +60,7 @@ class CrossPipe :
     
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
+  int plateMat;                 ///< Plate material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

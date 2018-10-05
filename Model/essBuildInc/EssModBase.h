@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essInc/EssModBase.h
+ * File:   essBuildInc/EssModBase.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/K. Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/K. Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,9 +42,6 @@ class EssModBase : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int modIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,

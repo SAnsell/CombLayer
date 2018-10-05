@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ namespace essSystem
   \author S. Ansell
   \version 1.0
   \date April 2013
-  \brief Addition to ESS block addiotn
+  \brief Additional waterblock to ESS moderator
 */
 
 class BlockAddition :  public attachSystem::ContainedComp,
@@ -41,8 +41,6 @@ class BlockAddition :  public attachSystem::ContainedComp,
 {
  private:
   
-  const int blockIndex;          ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
   int active;                    ///< Box active
 
   double length;                 ///< Length

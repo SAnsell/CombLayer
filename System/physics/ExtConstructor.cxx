@@ -72,6 +72,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "ModeCard.h"
@@ -98,7 +100,8 @@ ExtConstructor::ExtConstructor()
   
   
 bool
-ExtConstructor::procType(std::vector<std::string>& StrItem,
+ExtConstructor::procType(const objectGroups& OGrp,
+			 std::vector<std::string>& StrItem,
 			 ExtControl& EX)
   /*!
     Process the Type information
@@ -129,7 +132,7 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
       return 1;
     }
   else if (NS>=2 && StrItem[0]=="simpleVec" &&
-	   attachSystem::getPoint(StrItem,1,Pt))
+	   attachSystem::getPoint(OGrp,StrItem,1,Pt))
     {
       const size_t VNum=EX.addVect(Pt);
       const std::string EStr=minus+"SV"+StrFunc::makeString(VNum);
@@ -148,7 +151,7 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
     }
   else if (NS>=3 && StrItem[0]=="scaleVec" &&
 	    StrFunc::convert(StrItem[1],scalar) &&
-	   attachSystem::getPoint(StrItem,2,Pt))
+	   attachSystem::getPoint(OGrp,StrItem,2,Pt))
      {
        if (scalar<0.0) minus="-";
        const size_t VNum=EX.addVect(Pt);
@@ -163,7 +166,8 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
 
 
 void
-ExtConstructor::processUnit(PhysicsCards& PC,
+ExtConstructor::processUnit(const objectGroups& OGrp,
+			    PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
@@ -192,14 +196,14 @@ ExtConstructor::processUnit(PhysicsCards& PC,
       return;
     }
   
-  if (!ZUnits.procZone(StrItem))
+  if (!ZUnits.procZone(OGrp,StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 
   ZUnits.sortZone();
   ExtControl& EC=PC.getExtCard();
     
-  if (!procType(StrItem,EC))
+  if (!procType(OGrp,StrItem,EC))
     throw ColErr::InvalidLine
       ("procType ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 

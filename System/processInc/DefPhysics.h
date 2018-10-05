@@ -22,8 +22,11 @@
 #ifndef ModelSupport_DefPhysics_h
 #define ModelSupport_DefPhysics_h
 
+class objectGroups;
 class Simulation;
 class SimMCNP;
+class SimFLUKA;
+class SimPHITS;
 class FuncDataBase;
 
 namespace mainSystem
@@ -42,8 +45,10 @@ namespace ModelSupport
   void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
   void setGenericPhysics(SimMCNP&,const std::string&);
   
-  void procOffset(const mainSystem::inputParam&,const size_t);
-  void procAngle(const mainSystem::inputParam&,const size_t);
+  void procOffset(const objectGroups&,const mainSystem::inputParam&,
+		  const size_t);
+  void procAngle(const objectGroups&,const mainSystem::inputParam&,
+		 const size_t);
 
 
 
@@ -51,11 +56,12 @@ namespace ModelSupport
 			 const double); 
   void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
 			 const mainSystem::inputParam&); 
-  void setDefRotation(const mainSystem::inputParam&);
+  void setDefRotation(const objectGroups&,const mainSystem::inputParam&);
 
   
   void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
-  //  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
+  void setDefaultPhysics(SimPHITS&,const mainSystem::inputParam&);
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
 }
 

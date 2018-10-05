@@ -67,6 +67,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -78,6 +80,7 @@
 #include "NList.h"
 #include "NRange.h"
 
+#include "particleConv.h"
 #include "PhysicsCards.h"
 
 #include "DXTControl.h"
@@ -120,11 +123,13 @@ DXTConstructor::processDD(PhysicsCards& PC,
 }
  
 void
-DXTConstructor::processUnit(PhysicsCards& PC,
+DXTConstructor::processUnit(const objectGroups& OGrp,
+			    PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
  /*!
    Add dxtran component 
+   \param OGrp :: Current object group
    \param PC :: Physics/fixed points
    \param IParam :: Main input parameters
    \param Index :: index of the -wDXT card
@@ -132,6 +137,8 @@ DXTConstructor::processUnit(PhysicsCards& PC,
 {
   ELog::RegMethod RegA("DXTConstructor","processPoint");
 
+  const particleConv& pConv=particleConv::Instance();
+  
   const size_t NParam=IParam.itemCnt("wDXT",Index);
 
   if (NParam<1)
@@ -145,45 +152,63 @@ DXTConstructor::processUnit(PhysicsCards& PC,
       ELog::EM<<ELog::endBasic;
       return;
     }
+  // set particle 
+  std::string particle("n");
+  size_t offsetIndex(1);
+  if (pConv.hasName(dxtName))
+    {
+      particle=pConv.nameToMCNP(dxtName);
+      offsetIndex++;
+      dxtName=IParam.getValue<std::string>("wDXT",Index,1);
+      dxtName[0]=static_cast<char>(std::tolower(dxtName[0]));
+    }
+
   
   DXTControl& DXT=PC.getDXTCard();
   double RI,RO;
   if (dxtName=="object" || dxtName=="objOffset")
     {
       const std::string place=
-	IParam.outputItem<std::string>("wDXT",Index,1,"position not given");
+	IParam.outputItem<std::string>
+	("wDXT",Index,offsetIndex++,"position not given");
+
       const std::string linkPt=
-	IParam.outputItem<std::string>("wDXT",Index,2,"position not given");
+	IParam.outputItem<std::string>
+	("wDXT",Index,offsetIndex++,"position not given");
+      
       Geometry::Vec3D PPoint,XAxis,YAxis,ZAxis;
       if (!attachSystem::getAttachPointWithXYZ
-             (place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
+	  (OGrp,place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
 
-      size_t itemCnt(3);
+
       if (dxtName=="objOffset")
         {
           const Geometry::Vec3D DVec=
-            IParam.getCntVec3D("wDXT",Index,itemCnt,"Offset");
+            IParam.getCntVec3D("wDXT",Index,offsetIndex,"Offset");
           PPoint+=XAxis*DVec[0]+YAxis*DVec[1]+ZAxis*DVec[2];
-
         }
       
-      RI=IParam.outputItem<double>("wDXT",Index,itemCnt,"radius not given");
-      if (!IParam.checkItem("wDXT",Index,itemCnt+1,RO))
+      RI=IParam.outputItem<double>
+	("wDXT",Index,offsetIndex++,"radius not given");
+      
+      if (!IParam.checkItem("wDXT",Index,offsetIndex,RO))
 	RO=RI;
       ELog::EM<<"DXT Centre Point == "<<PPoint<<ELog::endDiag;
+      DXT.setParticle(particle);
       DXT.setUnit(PPoint,RI,RO,0);
     }
   else if (dxtName=="free")
     {
-      size_t itemIndex(1);
       const Geometry::Vec3D PPoint=
-	IParam.getCntVec3D("wDXT",Index,itemIndex,"Point position not given");
+	IParam.getCntVec3D("wDXT",Index,offsetIndex,"Point position not given");
 
-      RI=IParam.outputItem<double>("wDXT",Index,itemIndex,"radius not given");
-      if (!IParam.checkItem("wDXT",Index,itemIndex+1,RO))
+      RI=IParam.outputItem<double>
+	("wDXT",Index,offsetIndex++,"radius not given");
+      if (!IParam.checkItem("wDXT",Index,offsetIndex,RO))
 	RO=RI;
+      DXT.setParticle(particle);
       DXT.setUnit(PPoint,RI,RO,0);
     }
   

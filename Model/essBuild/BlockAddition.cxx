@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -76,9 +78,7 @@ namespace essSystem
 BlockAddition::BlockAddition(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
   attachSystem::FixedOffset(Key,6),
-  blockIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(blockIndex+1),active(0),nLayers(0),
-  edgeSurf(0)
+  active(0),nLayers(0),edgeSurf(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,7 +88,6 @@ BlockAddition::BlockAddition(const std::string& Key) :
 BlockAddition::BlockAddition(const BlockAddition& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedOffset(A),
-  blockIndex(A.blockIndex),cellIndex(A.cellIndex),
   active(A.active),length(A.length),
   height(A.height),width(A.width),nLayers(A.nLayers),
   wallThick(A.wallThick),waterMat(A.waterMat),
@@ -112,7 +111,6 @@ BlockAddition::operator=(const BlockAddition& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       active=A.active;
       length=A.length;
       height=A.height;
@@ -212,15 +210,15 @@ BlockAddition::createSurfaces()
   // Inner planes
 
   if (fabs(xyAngle)<Geometry::zeroTol)
-    SMap.addMatch(blockIndex+1,edgeSurf);
+    SMap.addMatch(buildIndex+1,edgeSurf);
   else
     {
-      ModelSupport::buildRotatedPlane(SMap,blockIndex+1,
+      ModelSupport::buildRotatedPlane(SMap,buildIndex+1,
 				      SMap.realPtr<Geometry::Plane>(edgeSurf),
 				      xyAngle,Z,rotCent);
     }
 
-  int BI(blockIndex);
+  int BI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildPlane(SMap,BI+2,
@@ -259,7 +257,7 @@ BlockAddition::rotateItem(std::string LString)
   const Geometry::Quaternion QrotXY=
     Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
 
-  int BI(blockIndex+1000);
+  int BI(buildIndex+1000);
   while(StrFunc::section(LString,S))
     {
       int N;
@@ -309,15 +307,15 @@ BlockAddition::createObjects(Simulation& System,
       Out=PMod.getLayerString(layerIndex+2,sideIndex);
       preModOuter=rotateItem(Out);
 
-      Out=ModelSupport::getComposite(SMap,blockIndex,"1 -2 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
       Out+=preModInner;
       System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
   
 
-      int SI(blockIndex);
+      int SI(buildIndex);
       for(size_t i=1;i<nLayers;i++)
 	{ 
-	  Out=ModelSupport::getComposite(SMap,SI,blockIndex,
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 "1M -12 13 -14 15 -16 (2:-3:4:-5:6)");
 	  if(i==1)
 	    Out+=preModInner;
@@ -327,7 +325,7 @@ BlockAddition::createObjects(Simulation& System,
 	  SI+=10;
 	}
 
-      Out=ModelSupport::getComposite(SMap,SI,blockIndex,"1M -2 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex,"1M -2 3 -4 5 -6 ");
       addOuterSurf(Out);
     }
 
@@ -349,8 +347,8 @@ BlockAddition::createCut(const size_t layerIndex) const
   std::string Out;
   if (active)
     {
-      const int SI(10*static_cast<int>(layerIndex)+blockIndex);
-      Out=ModelSupport::getComposite(SMap,SI,blockIndex,
+      const int SI(10*static_cast<int>(layerIndex)+buildIndex);
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				   " (-1M:-3:4:-5:6) ");
     }
   return Out;
@@ -365,11 +363,11 @@ BlockAddition::createLinks()
   ELog::RegMethod RegA("BlockAddition","createLinks");
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(blockIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   if (nLayers)
     {
-      const int BI(blockIndex+10*static_cast<int>(nLayers-1));
+      const int BI(buildIndex+10*static_cast<int>(nLayers-1));
       
       FixedComp::setConnect(1,Origin+Y*(length+wallThick.back()),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(BI+2));
@@ -449,7 +447,7 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
   if (sideIndex>6 || sideIndex<-6 || !sideIndex)
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
-  const int SI(blockIndex+10*static_cast<int>(layerIndex));
+  const int SI(buildIndex+10*static_cast<int>(layerIndex));
   const int dirValue=(sideIndex<0) ? -1 : 1;
   const int uSIndex(static_cast<int>(std::abs(sideIndex)));
 
@@ -457,7 +455,7 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
     return (sideIndex % 2) ? -dirValue*SMap.realSurf(SI+uSIndex) :
       dirValue*SMap.realSurf(SI+uSIndex);
   
-  return -dirValue*SMap.realSurf(blockIndex+1);
+  return -dirValue*SMap.realSurf(buildIndex+1);
 }
 
 std::string
@@ -480,7 +478,7 @@ BlockAddition::getLayerString(const size_t layerIndex,
 
   // NEED To get conditional surface [IFF sideIndex==0]
 
-  const int SI(blockIndex+10*static_cast<int>(layerIndex));
+  const int SI(buildIndex+10*static_cast<int>(layerIndex));
   const int uSIndex(static_cast<int>(std::abs(sideIndex)));
   if (uSIndex>1)
     {
@@ -490,7 +488,7 @@ BlockAddition::getLayerString(const size_t layerIndex,
       return " "+StrFunc::makeString(SurfN)+" ";
     }
   const std::string Out=preModInner+" "+
-    StrFunc::makeString(-SMap.realSurf(blockIndex+1));
+    StrFunc::makeString(-SMap.realSurf(buildIndex+1));
   if (sideIndex<0)
     {
       HeadRule HR(Out);

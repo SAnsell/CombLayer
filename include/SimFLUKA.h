@@ -51,6 +51,8 @@ class SimFLUKA : public Simulation
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
+
+  std::string sourceExtraName;    ///< Extra name if using combined sources
   
   FTallyTYPE FTItem;              ///< Fluka tally map
 
@@ -79,17 +81,22 @@ class SimFLUKA : public Simulation
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
 
+  flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
+    
   // TALLY Processing 
   void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
-  flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
-
   /// Access tally items
   FTallyTYPE& getTallyMap() { return FTItem; }
+
 
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
   int getNextFTape() const;
+
+  virtual void setExtraSourceName(const std::string&);
+  /// get RND seed
+  long int getRNDseed() const { return rndSeed; }
 
   /// set nps [move to physics]
   void setNPS(const size_t N) { nps=N; }

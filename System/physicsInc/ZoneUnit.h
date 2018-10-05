@@ -27,7 +27,7 @@ namespace attachSystem
   class FixedComp;
 }
 
-
+class objectGroups;
 class Simulation;
 
 namespace physicsSystem
@@ -39,7 +39,7 @@ namespace physicsSystem
   \version 1.0
   \author S. Ansell
   \date February 2016
-  \brief Adds zone (ranged int) support 
+  \brief Adds zone (ranged) support 
   \tparam T :: Data type
 
   Provides a range of intergers groups an associated data with
@@ -60,7 +60,7 @@ class ZoneUnit
     createMapRange(std::vector<int>&);
 
   void sortZone();
-  bool procZone(std::vector<std::string>&);
+  bool procZone(const objectGroups&,std::vector<std::string>&);
   void addData(const T&);
     
   ZoneUnit();

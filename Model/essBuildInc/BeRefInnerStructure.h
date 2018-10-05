@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/BeRefInnerStructure.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,6 @@ class BeRefInnerStructure : public attachSystem::ContainedComp,
     public attachSystem::FixedComp, public attachSystem::CellMap
 {
  private:
-  
-  const int insIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   size_t nLayers;
   std::vector<double> baseFrac;   ///< Fractions

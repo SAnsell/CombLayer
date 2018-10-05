@@ -1,3 +1,4 @@
+
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
@@ -67,6 +68,8 @@
 #include "RuleSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
@@ -99,8 +102,6 @@ H2Wing::H2Wing(const std::string& baseKey,
   attachSystem::CellMap(),
   baseName(baseKey),
   extraName(extraKey),
-  wingIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(wingIndex+1),
   xyOffset(XYAngle)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -116,7 +117,6 @@ H2Wing::H2Wing(const H2Wing& A) :
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   baseName(A.baseName),
   extraName(A.extraName),
-  wingIndex(A.wingIndex),cellIndex(A.cellIndex),
   bfType(A.bfType),
   Pts(A.Pts),radius(A.radius),height(A.height),
   modMat(A.modMat),modTemp(A.modTemp),
@@ -141,7 +141,6 @@ H2Wing::operator=(const H2Wing& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       bfType=A.bfType;
       Pts=A.Pts;
       radius=A.radius;
@@ -288,7 +287,7 @@ H2Wing::createLinks()
   cornerSet(PDepth,CPts,NPts);
 
   // mid plane points:
-  const int triOffset(wingIndex+static_cast<int>(nLayers)*100);
+  const int triOffset(buildIndex+static_cast<int>(nLayers)*100);
   int ii(triOffset);
   for(size_t i=0;i<3;i++)
     {
@@ -312,7 +311,7 @@ H2Wing::createLinks()
 
   cornerSet(0.0,CPts,NPts);
   // mid plane points
-  ii=wingIndex+100;
+  ii=buildIndex+100;
   for(size_t i=0;i<3;i++)
     {
       ii++;
@@ -321,8 +320,8 @@ H2Wing::createLinks()
     }
   FixedComp::setConnect(12,Origin-Z*(height/2.0),Z);
   FixedComp::setConnect(13,Origin+Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(12,SMap.realSurf(wingIndex+105));
-  FixedComp::setLinkSurf(13,-SMap.realSurf(wingIndex+106));
+  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+105));
+  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+106));
 
 
 
@@ -423,9 +422,9 @@ H2Wing::createSurfaces(const attachSystem::FixedComp& FC)
 
   // Divider for BF1
   if (bfType==1)
-    ModelSupport::buildPlane(SMap,wingIndex+3,FC.getCentre(),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+3,FC.getCentre(),Y);
 
-  int triOffset(wingIndex+100);
+  int triOffset(buildIndex+100);
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
@@ -475,7 +474,7 @@ H2Wing::createSurfaces(const attachSystem::FixedComp& FC)
   const Geometry::Vec3D midPoint((CPts[0]+CPts[1]+CPts[2])/3.0);
   for(size_t i=0;i<3;i++)
     {
-      const int ii(wingIndex+1001+static_cast<int>(i));
+      const int ii(buildIndex+1001+static_cast<int>(i));
       const Geometry::Vec3D sidePt((CPts[(i+1)%3]+CPts[i])/2.0);
 
       ModelSupport::buildPlane(SMap,ii,midPoint,midPoint+Z,
@@ -495,15 +494,15 @@ H2Wing::createObjects(Simulation& System)
 
   std::string Out,OutA,OutB,OutC;
 
-  int triOffset(wingIndex+100);
+  int triOffset(buildIndex+100);
   HeadRule InnerA,InnerB,InnerC;
 
   const std::string CutA=
-    ModelSupport::getComposite(SMap,wingIndex," -1001 1003 ");
+    ModelSupport::getComposite(SMap,buildIndex," -1001 1003 ");
   const std::string CutB=
-    ModelSupport::getComposite(SMap,wingIndex," 1001 -1002 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 ");
   const std::string CutC=
-    ModelSupport::getComposite(SMap,wingIndex," 1002 -1003 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1002 -1003 ");
 
   for(size_t i=0;i<nLayers;i++)
     {
@@ -512,7 +511,7 @@ H2Wing::createObjects(Simulation& System)
       InnerC.makeComplement();
 
       OutA=ModelSupport::getComposite(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
-      if (bfType==1) OutA += ModelSupport::getComposite(SMap,wingIndex," -3 ");
+      if (bfType==1) OutA += ModelSupport::getComposite(SMap,buildIndex," -3 ");
       OutB=ModelSupport::getComposite(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
       OutC=ModelSupport::getComposite(SMap,triOffset,"-2 -3 5 -6 (23:-9) ");
 
@@ -520,7 +519,7 @@ H2Wing::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
-          if (bfType==1) Out += ModelSupport::getComposite(SMap,wingIndex," -3 ");
+          if (bfType==1) Out += ModelSupport::getComposite(SMap,buildIndex," -3 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
 	  CellMap::setCell("Inner",cellIndex-1);
 	}
@@ -613,7 +612,7 @@ H2Wing::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
-  const int triIndex(wingIndex+static_cast<int>((layerIndex+1)*100));
+  const int triIndex(buildIndex+static_cast<int>((layerIndex+1)*100));
   const long int uSIndex(std::abs(sideIndex));
   const int signValue((sideIndex>0) ? 1 : -1);
   switch(uSIndex)
@@ -653,7 +652,7 @@ H2Wing::getLayerString(const size_t layerIndex,
   if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
-  const int triOffset(wingIndex+static_cast<int>((layerIndex+1)*100));
+  const int triOffset(buildIndex+static_cast<int>((layerIndex+1)*100));
   std::string Out;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
@@ -675,7 +674,7 @@ H2Wing::getLayerString(const size_t layerIndex,
       break;
     case 7:
       Out=ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
-      if (bfType==1) Out += ModelSupport::getComposite(SMap,wingIndex," -3 ");
+      if (bfType==1) Out += ModelSupport::getComposite(SMap,buildIndex," -3 ");
       break;
     case 8:
       Out=ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");

@@ -93,6 +93,8 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "ReadFunctions.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "variableSetup.h"

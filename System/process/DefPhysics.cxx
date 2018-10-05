@@ -74,8 +74,12 @@
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "SimFLUKA.h"
+#include "SimPHITS.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
@@ -84,15 +88,23 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "cellValueSet.h"
+#include "pairValueSet.h"
+#include "flukaProcess.h"
+#include "flukaPhysics.h"
+#include "flukaImpConstructor.h"
+#include "flukaDefPhysics.h"
 #include "DefPhysics.h"
 
 namespace ModelSupport
 {
 
 void
-setDefRotation(const mainSystem::inputParam& IParam)
+setDefRotation(const objectGroups& OGrp,
+	       const mainSystem::inputParam& IParam)
   /*!
     Apply a standard rotation to the simulation
+    \param OGrp :: Object group
     \param IParam :: Parameter set
    */
 {
@@ -118,30 +130,30 @@ setDefRotation(const mainSystem::inputParam& IParam)
     {
       const size_t nP=IParam.setCnt("offset");
       for(size_t i=0;i<nP;i++)
-        procOffset(IParam,i);
+        procOffset(OGrp,IParam,i);
     }
   if (IParam.flag("angle"))
     {
       const size_t nP=IParam.setCnt("angle");
       for(size_t i=0;i<nP;i++)
-        procAngle(IParam,i);
+        procAngle(OGrp,IParam,i);
     }
   return;
 }
 
 void
-procAngle(const mainSystem::inputParam& IParam,
+procAngle(const objectGroups& OGrp,
+	  const mainSystem::inputParam& IParam,
           const size_t index)
   /*!
     Process an angle unit
+    \param OGrp :: Object group
     \param IParam :: Input param
     \param index :: set index
   */
 {
   ELog::RegMethod RegA("DefPhysics[F]","procAngle");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   masterRotate& MR = masterRotate::Instance();
 
   const std::string AItem=
@@ -152,11 +164,11 @@ procAngle(const mainSystem::inputParam& IParam,
   if (AItem=="object" || AItem=="Object")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
       const int ZFlag=IParam.getDefValue<int>(1,"angle",index,3);
-      const long int axisIndex=attachSystem::getLinkIndex(CItem);
+      const long int axisIndex=GIPtr->getSideIndex(CItem);
 
       const Geometry::Vec3D AxisVec=
         GIPtr->getLinkAxis(axisIndex);
@@ -177,11 +189,11 @@ procAngle(const mainSystem::inputParam& IParam,
   else  if (AItem=="objPoint" || AItem=="ObjPoint")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
 
-      const long int sideIndex=attachSystem::getLinkIndex(CItem);
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
           
       Geometry::Vec3D LP=GIPtr->getLinkPt(sideIndex);
       LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
@@ -192,23 +204,36 @@ procAngle(const mainSystem::inputParam& IParam,
       MR.addRotation(Geometry::Vec3D(0,0,1),
                      Geometry::Vec3D(0,0,0),angleZ);
     }
-  else  if (AItem=="objAxis" || AItem=="ObjAxis")
+  else  if (AItem=="objAxis" || AItem=="ObjAxis" ||
+	    AItem=="objYAxis" || AItem=="ObjYAxis")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
       
-      const long int sideIndex=attachSystem::getLinkIndex(CItem);
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
-      
-      const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
-	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
-      
-      MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
-		     -180.0*QR.getTheta()/M_PI);
+
+      if (AItem=="objYAxis" || AItem=="ObjYAxis")
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(0,1,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+      else
+	{
+	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	    (Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
+	  
+	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+			 -180.0*QR.getTheta()/M_PI);
+	}
+
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -246,17 +271,17 @@ procAngle(const mainSystem::inputParam& IParam,
 
 
 void
-procOffset(const mainSystem::inputParam& IParam,
+procOffset(const objectGroups& OGrp,
+	   const mainSystem::inputParam& IParam,
            const size_t index)
   /*!
     Process an offset unit
+    \param OGrp :: Object group
     \param IParam :: Input param
     \param index :: set index
   */
 {
   ELog::RegMethod RegA("DefPhysics[F]","procOffset");
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   masterRotate& MR = masterRotate::Instance();  
 
   const std::string AItem=
@@ -267,13 +292,13 @@ procOffset(const mainSystem::inputParam& IParam,
   if (AItem=="object" || AItem=="Object")
     {
       const attachSystem::FixedComp* GIPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("0","offset",index,2);
-      const long int linkIndex=attachSystem::getLinkIndex(CItem);
-      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(linkIndex)
+      const long int sideIndex=GIPtr->getSideIndex(CItem);
+      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(sideIndex)
               <<ELog::endDiag;
-      MR.addDisplace(-GIPtr->getLinkPt(linkIndex));
+      MR.addDisplace(-GIPtr->getLinkPt(sideIndex));
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -340,7 +365,7 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
 
 void 
 setNeutronPhysics(physicsSystem::PhysicsCards& PC,
-		  const FuncDataBase& Control,
+		  const FuncDataBase&,
 		  const double maxEnergy)
   /*!
     Set the neutron Physics for MCNP run
@@ -389,7 +414,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   const double phtModel=IParam.getValue<double>("photonModel");
 
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
-
+  ELog::EM<<"ECL == "<<elcAdd<<ELog::endDiag;
   PC.setMode("n p "+PList+elcAdd);
   PC.setPrintNum("10 110");
   
@@ -450,7 +475,7 @@ setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
     Catch all for non-specialized Simulation units
    */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(default)");
   ELog::EM<<"NO OP in base call"<<ELog::endErr;
   return;
 }
@@ -498,7 +523,7 @@ setDefaultPhysics(SimMCNP& System,
   
   const std::string PModel=IParam.getValue<std::string>("physModel");
   const double maxEnergy=IParam.getDefValue<double>
-    (2000.0,"maxEnergy");
+    (3000.0,"maxEnergy");
 
   setGenericPhysics(System,PModel);
   
@@ -509,7 +534,7 @@ setDefaultPhysics(SimMCNP& System,
   PC.setPrintNum(IParam.getValue<std::string>("printTable"));
 
   // If Reactor stuff set and void
-  if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
+  if (IParam.hasKey("kcode") && IParam.itemCnt("kcode"))
     {
       setReactorPhysics(PC,Control,IParam);
       return;
@@ -600,12 +625,42 @@ setDefaultPhysics(SimMCNP& System,
       physicsSystem::PStandard* pe=
 	PC.addPhysCard<physicsSystem::PStandard>("phys","e");
       pe->setValues(1,maxEnergy);
-
     }
-
-  
   return; 
 }
 
+void 
+setDefaultPhysics(SimFLUKA& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(fluka)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
+
+void 
+setDefaultPhysics(SimPHITS& System,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the default Physics for phits
+    \param System :: Simulation
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics(phits)");
+
+  // trick to allow 1e8 entries etc.
+  System.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
+  System.setRND(IParam.getValue<long int>("random"));
+  return;
+}
 
 } // NAMESPACE ModelSupport

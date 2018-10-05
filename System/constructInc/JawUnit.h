@@ -3,7 +3,7 @@
  
  * File:   constructInc/JawUnit.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,7 @@ class JawUnit : public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
-  
-  const int jawIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-  
+    
   double zOpen;                 ///< Z-opening
   double zOffset;                 ///< Z-opening
   double zThick;                ///< Blade thickness [beam]

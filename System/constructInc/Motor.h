@@ -47,9 +47,6 @@ class Motor :
 {
  private:
   
-  const int motorIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   int frontInner;                  ///< Front inner surf
   int backInner;                   ///< Back inner surf
 

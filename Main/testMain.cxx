@@ -94,6 +94,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkUnit.h"
@@ -126,6 +128,7 @@
 #include "testFunc.h"
 #include "testFunction.h"
 #include "testGeomSupport.h"
+#include "testGroupRange.h"
 #include "testHeadRule.h"
 #include "testInputParam.h"
 #include "testInsertComp.h"
@@ -159,7 +162,6 @@
 #include "testPoly.h"
 #include "testQuaternion.h"
 #include "testRecTriangle.h"
-#include "testRefPlate.h"
 #include "testRotCounter.h"
 #include "testRules.h"
 #include "testSimpleObj.h"
@@ -259,7 +261,6 @@ main(int argc,char* argv[])
   else
     startTest(0,0,0);
 
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return 0;
 }
@@ -786,17 +787,10 @@ moderatorTest(const int type,const int extra)
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
-      std::cout<<"testRefPlate         (1)"<<std::endl;
-      std::cout<<"testSingleObject     (2)"<<std::endl;
+      std::cout<<"testSingleObject     (1)"<<std::endl;
     }
 
   if(type==1 || type<0)
-    {
-      testRefPlate A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  if(type==2 || type<0)
     {
       testSingleObject A;
       const int X=A.applyTest(extra);
@@ -1168,12 +1162,13 @@ supportTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDoubleErr           (1)"<<std::endl;
       std::cout<<"testFortranWrite        (2)"<<std::endl;
-      std::cout<<"testMathSupport         (3)"<<std::endl;
-      std::cout<<"testMatrix              (4)"<<std::endl;
-      std::cout<<"testModelSupport        (5)"<<std::endl;
-      std::cout<<"testSimpson             (6)"<<std::endl;
-      std::cout<<"testSupport             (7)"<<std::endl;
-      std::cout<<"testWriteSupport        (8)"<<std::endl;
+      std::cout<<"testGroupRange          (3)"<<std::endl;
+      std::cout<<"testMathSupport         (4)"<<std::endl;
+      std::cout<<"testMatrix              (5)"<<std::endl;
+      std::cout<<"testModelSupport        (6)"<<std::endl;
+      std::cout<<"testSimpson             (7)"<<std::endl;
+      std::cout<<"testSupport             (8)"<<std::endl;
+      std::cout<<"testWriteSupport        (9)"<<std::endl;
       return 0;
     }
 
@@ -1193,36 +1188,43 @@ supportTest(const int type,const int extra)
 
   if(type==3 || type<0)
     {
-      testMathSupport A;
+      testGroupRange A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
 
   if(type==4 || type<0)
     {
-      testMatrix A;
+      testMathSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
+
   if(type==5 || type<0)
     {
-      testModelSupport A;
+      testMatrix A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
   if(type==6 || type<0)
     {
-      testSimpson A;
+      testModelSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
   if(type==7 || type<0)
     {
-      testSupport A;
+      testSimpson A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
   if(type==8 || type<0)
+    {
+      testSupport A;
+      int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==9 || type<0)
     {
       testWriteSupport A;
       int X=A.applyTest(extra);

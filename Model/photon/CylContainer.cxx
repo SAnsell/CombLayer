@@ -3,7 +3,7 @@
  
  * File:   photon/CylContainer.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <memory>
 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -58,12 +57,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -77,8 +77,7 @@ namespace photonSystem
 CylContainer::CylContainer(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
   attachSystem::FixedOffset(Key,6),
-  cylIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(cylIndex+1),mainCell(0)
+  mainCell(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,7 +87,6 @@ CylContainer::CylContainer(const std::string& Key) :
 CylContainer::CylContainer(const CylContainer& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedOffset(A),
-  cylIndex(A.cylIndex),cellIndex(A.cellIndex),
   radius(A.radius),height(A.height),
   mat(A.mat),temp(A.temp),mainCell(A.mainCell)
   /*!
@@ -110,7 +108,6 @@ CylContainer::operator=(const CylContainer& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
       mat=A.mat;
@@ -155,7 +152,7 @@ CylContainer::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string kN=keyName+StrFunc::makeString(i);
+      const std::string kN=keyName+std::to_string(i);
       H=Control.EvalPair<double>(kN,keyName,"Height");   
       R=Control.EvalPair<double>(kN,keyName,"Radius");   
       M=ModelSupport::EvalMat<int>(Control,kN+"Mat",keyName+"Mat");
@@ -172,14 +169,16 @@ CylContainer::populate(const FuncDataBase& Control)
 }
 
 void
-CylContainer::createUnitVector(const attachSystem::FixedComp& FC)
+CylContainer::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \parma sideIndex :: link index
   */
 {
   ELog::RegMethod RegA("CylContainer","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
   return;
@@ -194,10 +193,10 @@ CylContainer::createSurfaces()
   ELog::RegMethod RegA("CylContainer","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,cylIndex+103,Origin,X);  
-  ModelSupport::buildPlane(SMap,cylIndex+105,Origin,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin,Z);  
 
-  int SI(cylIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Y,radius[i]);  
@@ -220,7 +219,7 @@ CylContainer::createObjects(Simulation& System)
 
   std::string Out;
   mainCell=cellIndex;
-  int SI(cylIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
      Out=ModelSupport::getComposite(SMap,SI," -7 1 -2 ");
@@ -244,7 +243,7 @@ CylContainer::createLinks()
 
   if (!nLayers) return;
   const size_t NL(nLayers-1);
-  const int SI(cylIndex+static_cast<int>(NL)*10);
+  const int SI(buildIndex+static_cast<int>(NL)*10);
 
   FixedComp::setConnect(0,Origin-Y*(height[NL]/2.0),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
@@ -254,19 +253,19 @@ CylContainer::createLinks()
 
   FixedComp::setConnect(2,Origin-X*radius[NL],-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(cylIndex+103));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+103));
   
   FixedComp::setConnect(3,Origin+X*radius[NL],X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(cylIndex+103));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+103));
 
   FixedComp::setConnect(4,Origin-Z*radius[NL],-Z);
   FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(4,-SMap.realSurf(cylIndex+105));
+  FixedComp::setBridgeSurf(4,-SMap.realSurf(buildIndex+105));
   
   FixedComp::setConnect(5,Origin+Z*radius[NL],Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(5,SMap.realSurf(cylIndex+105));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+105));
       
 
   return;
@@ -328,13 +327,13 @@ CylContainer::getCommonSurf(const long int sideIndex) const
     case 2:
       return 0;
     case 3:
-      return -SMap.realSurf(cylIndex+103);
+      return -SMap.realSurf(buildIndex+103);
     case 4:
-      return SMap.realSurf(cylIndex+103);
+      return SMap.realSurf(buildIndex+103);
     case 5:
-      return -SMap.realSurf(cylIndex+105);
+      return -SMap.realSurf(buildIndex+105);
     case 6:
-      return SMap.realSurf(cylIndex+105);
+      return SMap.realSurf(buildIndex+105);
     }
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
@@ -355,7 +354,7 @@ CylContainer::getLayerString(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int NL(static_cast<int>(layerIndex));
-  const int SI(cylIndex+NL*10);
+  const int SI(buildIndex+NL*10);
 
   const long int uSIndex(std::abs(sideIndex));
   std::string Out;
@@ -397,7 +396,7 @@ CylContainer::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
   
-  const int SI(cylIndex+static_cast<int>(layerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
   const long int uSIndex(std::abs(sideIndex));
   const int signValue((sideIndex>0) ? 1 : -1);
 
@@ -419,17 +418,19 @@ CylContainer::getLayerSurf(const size_t layerIndex,
 
 void
 CylContainer::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: Link poitn
    */
 {
   ELog::RegMethod RegA("CylContainer","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

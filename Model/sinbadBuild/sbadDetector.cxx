@@ -37,6 +37,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -56,8 +58,7 @@ sbadDetector::sbadDetector(const std::string& Key,const size_t ID) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key+StrFunc::makeString(ID),0),
   baseName(Key),detID(ID),
-  detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(detIndex+1),active(0)
+  active(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -76,8 +77,8 @@ sbadDetector::clone() const
 
 sbadDetector::sbadDetector(const sbadDetector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  baseName(A.baseName),detID(A.detID),detIndex(A.detIndex),
-  cellIndex(A.cellIndex),active(A.active),xStep(A.xStep),
+  baseName(A.baseName),detID(A.detID),
+  active(A.active),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),length(A.length),
   mat(A.mat)
@@ -99,7 +100,6 @@ sbadDetector::operator=(const sbadDetector& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       active=A.active;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -171,9 +171,9 @@ sbadDetector::createSurfaces()
   ELog::RegMethod RegA("sbadDetector","createSurface");
   
   
-  ModelSupport::buildPlane(SMap,detIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,detIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildCylinder(SMap,detIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   return;
 }
@@ -189,7 +189,7 @@ sbadDetector::createObjects(Simulation& System)
 
   std::string Out;
  
-  Out=ModelSupport::getComposite(SMap,detIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out)); 
   addOuterSurf(Out);
   

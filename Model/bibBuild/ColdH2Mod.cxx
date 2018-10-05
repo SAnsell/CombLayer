@@ -3,7 +3,7 @@
  
  * File:   bibBuild/ColdH2Mod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -67,7 +69,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 
 #include "ColdH2Mod.h"
 
@@ -76,9 +77,7 @@ namespace bibSystem
 {
 
 ColdH2Mod::ColdH2Mod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  coldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(coldIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,7 +87,6 @@ ColdH2Mod::ColdH2Mod(const std::string& Key) :
 
 ColdH2Mod::ColdH2Mod(const ColdH2Mod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  coldIndex(A.coldIndex),cellIndex(A.cellIndex),
   width(A.width),
   height(A.height),depth(A.depth),wallThick(A.wallThick),
   sideGap(A.sideGap),frontGap(A.frontGap),backGap(A.backGap),
@@ -113,7 +111,6 @@ ColdH2Mod::operator=(const ColdH2Mod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -204,83 +201,83 @@ ColdH2Mod::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("ColdH2Mod","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,coldIndex+1,Origin-Y*depth/2.0,Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+2,Origin+Y*depth/2.0,Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+3,Origin-X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,coldIndex+4,Origin+X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,coldIndex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,coldIndex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);  
 
-  ModelSupport::buildPlane(SMap,coldIndex+11,Origin-Y*(depth/2.0+wallThick),Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+12,Origin+Y*(depth/2.0+wallThick),Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+13,Origin-X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+14,Origin+X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+15,Origin-Z*(height/2.0+wallThick),Z); 
-  ModelSupport::buildPlane(SMap,coldIndex+16,Origin+Z*(height/2.0+wallThick),Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(depth/2.0+wallThick),Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth/2.0+wallThick),Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z); 
 
   // This can be done in a loop but left for extension later.
 
   double D(wallThick+premGap);
-  ModelSupport::buildPlane(SMap,coldIndex+201,
+  ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin-Y*(depth/2.0+D),Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+202,
+  ModelSupport::buildPlane(SMap,buildIndex+202,
 			   Origin+Y*(depth/2.0+D),Y);
-  ModelSupport::buildPlane(SMap,coldIndex+203,
+  ModelSupport::buildPlane(SMap,buildIndex+203,
 			   Origin-X*(width/2.0+D),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+204,
+  ModelSupport::buildPlane(SMap,buildIndex+204,
 			   Origin+X*(width/2.0+D),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+205,
+  ModelSupport::buildPlane(SMap,buildIndex+205,
 			   Origin-Z*(height/2.0+D),Z);  
-  ModelSupport::buildPlane(SMap,coldIndex+206,
+  ModelSupport::buildPlane(SMap,buildIndex+206,
 			   Origin+Z*(height/2.0+D),Z);  
 
   D+=wallPremThick;
-  ModelSupport::buildPlane(SMap,coldIndex+211,
+  ModelSupport::buildPlane(SMap,buildIndex+211,
 			   Origin-Y*(depth/2.0+D),Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+213,
+  ModelSupport::buildPlane(SMap,buildIndex+213,
 			   Origin-X*(width/2.0+D),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+214,
+  ModelSupport::buildPlane(SMap,buildIndex+214,
 			   Origin+X*(width/2.0+D),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+215,
+  ModelSupport::buildPlane(SMap,buildIndex+215,
 			   Origin-Z*(height/2.0+D),Z);  
-  ModelSupport::buildPlane(SMap,coldIndex+216,
+  ModelSupport::buildPlane(SMap,buildIndex+216,
 			   Origin+Z*(height/2.0+D),Z);  
 
   D+=premThick;
-  ModelSupport::buildPlane(SMap,coldIndex+221,
+  ModelSupport::buildPlane(SMap,buildIndex+221,
 			   Origin-Y*(depth/2.0+D),Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+223,
+  ModelSupport::buildPlane(SMap,buildIndex+223,
 			   Origin-X*(width/2.0+D),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+224,
+  ModelSupport::buildPlane(SMap,buildIndex+224,
 			   Origin+X*(width/2.0+D),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+225,
+  ModelSupport::buildPlane(SMap,buildIndex+225,
 			   Origin-Z*(height/2.0+D),Z);  
-  ModelSupport::buildPlane(SMap,coldIndex+226,
+  ModelSupport::buildPlane(SMap,buildIndex+226,
 			   Origin+Z*(height/2.0+D),Z);  
   
   D+=wallPremThick;
-  ModelSupport::buildPlane(SMap,coldIndex+231,
+  ModelSupport::buildPlane(SMap,buildIndex+231,
 			   Origin-Y*(depth/2.0+D),Y);
-  ModelSupport::buildPlane(SMap,coldIndex+233,
+  ModelSupport::buildPlane(SMap,buildIndex+233,
 			   Origin-X*(width/2.0+D),X);
-  ModelSupport::buildPlane(SMap,coldIndex+234,
+  ModelSupport::buildPlane(SMap,buildIndex+234,
 			   Origin+X*(width/2.0+D),X);
-  ModelSupport::buildPlane(SMap,coldIndex+235,
+  ModelSupport::buildPlane(SMap,buildIndex+235,
 			   Origin-Z*(height/2.0+D),Z);
-  ModelSupport::buildPlane(SMap,coldIndex+236,
+  ModelSupport::buildPlane(SMap,buildIndex+236,
 			   Origin+Z*(height/2.0+D),Z); 
   
 
-  SMap.addMatch(coldIndex+21,FC.getLinkSurf(sideIndex)); // all links point out
-  ModelSupport::buildPlane(SMap,coldIndex+22,Origin+
+  SMap.addMatch(buildIndex+21,FC.getLinkSurf(sideIndex)); // all links point out
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+
 			   Y*(depth/2.0+wallThick+backGap),Y);  
-  ModelSupport::buildPlane(SMap,coldIndex+23,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-
 			   X*(width/2.0+wallThick+sideGap),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+24,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+
 			   X*(width/2.0+wallThick+sideGap),X);  
-  ModelSupport::buildPlane(SMap,coldIndex+25,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-
 			   Z*(height/2.0+wallThick+vertGap),Z); 
-  ModelSupport::buildPlane(SMap,coldIndex+26,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+
 			   Z*(height/2.0+wallThick+vertGap),Z); 
 
   return; 
@@ -298,40 +295,40 @@ ColdH2Mod::createObjects(Simulation& System)
   std::string Out;
 
   // Water
-  Out=ModelSupport::getComposite(SMap,coldIndex,"1 -2 3 -4 5 -6");	
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // Wall of water moderator
-  Out=ModelSupport::getComposite(SMap,coldIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
   // Gap between mod and premod
-  Out=ModelSupport::getComposite(SMap,coldIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-11:12:-13:14:-15:16) -202 201 203 -204 205 -206 ");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   
   // Water premoderator
-  Out=ModelSupport::getComposite(SMap,coldIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-211:-213:214:-215:216) -202 221 223 -224 225 -226 ");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
   
   // Wall 1 of Water premoderator
-  Out=ModelSupport::getComposite(SMap,coldIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-201:-203:204:-205:206) -202 211 213 -214 215 -216 ");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,waterTemp,Out));
   
   // Wall 2 of Water premoderator
-  Out=ModelSupport::getComposite(SMap,coldIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-221:-223:224:-225:226) -202 231 233 -234 235 -236 ");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,waterTemp,Out));
 
   // Box
-  Out=ModelSupport::getComposite(SMap,coldIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	     	 "21 -22 23 -24 25 -26 (-231:202:234:-233:-235:236)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,coldIndex,"21 -22 23 -24 25 -26" );
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26" );
   addOuterSurf(Out);
 
   return; 
@@ -355,12 +352,12 @@ ColdH2Mod::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick+vertGap),-Z);  
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick+vertGap),Z);  
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(coldIndex+21));
-  FixedComp::setLinkSurf(1,SMap.realSurf(coldIndex+22));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(coldIndex+23));
-  FixedComp::setLinkSurf(3,SMap.realSurf(coldIndex+24));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(coldIndex+25));
-  FixedComp::setLinkSurf(5,SMap.realSurf(coldIndex+26));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
   
   return;
 }

@@ -75,8 +75,11 @@ class flukaImpConstructor
   void insertParticle(flukaPhysics&,const size_t,
 		      const std::string&,const std::string&,
 		      const std::string*) const;
+  void insertPair(flukaPhysics&,const size_t,
+		  const std::string&,const int,
+		  const std::string&,const std::string*) const;
   
-  void processGeneral(flukaPhysics&,
+  void processGeneral(SimFLUKA&,
 		      const mainSystem::inputParam&,
 		      const size_t,const std::string&,
 		      const impTYPE&) const;
@@ -91,22 +94,22 @@ class flukaImpConstructor
   flukaImpConstructor& operator=(const flukaImpConstructor&) { return *this; }
   ~flukaImpConstructor() {}  ///< Destructor
 
-  void processUnit(flukaPhysics&,
+  void processUnit(SimFLUKA&,
 		   const mainSystem::inputParam&,
 		   const size_t);
-  void processCUT(flukaPhysics&,
+  void processCUT(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);
-  void processEXP(flukaPhysics&,
+  void processEXP(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);
-  void processEMF(flukaPhysics&,
+  void processEMF(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);
-  void processLAM(flukaPhysics&,
+  void processLAM(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);
-  void processMAT(flukaPhysics&,
+  void processMAT(SimFLUKA&,
 		  const mainSystem::inputParam&,
 		  const size_t);
 };

@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertGrid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -177,9 +179,9 @@ insertGrid::createSurfaces()
   ELog::RegMethod RegA("insertGrid","createSurface");
 
   if (!frontActive())
-    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*innerDepth/2.0,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*innerDepth/2.0,Y);
   if (!backActive())
-    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*innerDepth/2.0,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*innerDepth/2.0,Y);
 
   const Geometry::Quaternion Qz=
     Geometry::Quaternion::calcQRotDeg(plateAngle,X);
@@ -187,17 +189,17 @@ insertGrid::createSurfaces()
     Geometry::Quaternion::calcQRotDeg(plateAngle,Z);
 
   // build inner plate
-  ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*(innerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(innerHeight/2.0),Z);
 
-  setSurf("InnerLeft",SMap.realSurf(ptIndex+3));
-  setSurf("InnerRight",SMap.realSurf(ptIndex+4));
-  setSurf("InnerBase",SMap.realSurf(ptIndex+5));
-  setSurf("InnerTop",SMap.realSurf(ptIndex+6));
+  setSurf("InnerLeft",SMap.realSurf(buildIndex+3));
+  setSurf("InnerRight",SMap.realSurf(buildIndex+4));
+  setSurf("InnerBase",SMap.realSurf(buildIndex+5));
+  setSurf("InnerTop",SMap.realSurf(buildIndex+6));
 
-  int PI(ptIndex+50);
+  int PI(buildIndex+50);
   double TThick(0.0);
   for(const double T : wallThick)
     {
@@ -210,12 +212,12 @@ insertGrid::createSurfaces()
     }
   
   if (!frontActive())
-    setSurf("Front",ptIndex+1);
+    setSurf("Front",buildIndex+1);
   else
     setSurf("Front",getFrontRule().getPrimarySurface());
 
   if (!backActive())
-    setSurf("Back",SMap.realSurf(ptIndex+2));
+    setSurf("Back",SMap.realSurf(buildIndex+2));
   else
     setSurf("Back",getBackRule().getPrimarySurface());
   return;
@@ -241,7 +243,7 @@ insertGrid::createLinks()
   else
     {
       FixedComp::setConnect(0,Origin-Y*(innerDepth/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
     }
 
   if (backActive())
@@ -255,23 +257,23 @@ insertGrid::createLinks()
   else
     {
       FixedComp::setConnect(1,Origin+Y*(innerDepth/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
 
   const double TT=std::accumulate(wallThick.begin(),wallThick.end(),0.0);
   const double fullW(innerWidth/2.0+TT);
   const double fullH(innerHeight/2.0+TT);
-  const int PI(ptIndex+50*static_cast<int>(nLayer));
+  const int PI(buildIndex+50*static_cast<int>(nLayer));
   
   FixedComp::setConnect(2,Origin-X*fullW,-X);
   FixedComp::setConnect(3,Origin+X*fullW,X);
   FixedComp::setConnect(4,Origin-Z*fullH,-Z);
   FixedComp::setConnect(5,Origin+Z*fullH,Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // corners
   
@@ -324,11 +326,11 @@ insertGrid::createObjects(Simulation& System)
   const std::string FB=frontRule()+backRule();
 
   // Inner space
-  Out=ModelSupport::getSetComposite(SMap,ptIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out+FB));
   addCell("Inner",cellIndex-1);
 
-  int PI(ptIndex+50);
+  int PI(buildIndex+50);
   for(size_t i=0;i<nLayer;i++)
     {
       Out=ModelSupport::getComposite

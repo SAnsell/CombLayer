@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,12 +61,13 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "shutterBlock.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "collInsertBase.h"
 
@@ -88,10 +89,11 @@ operator<<(std::ostream& OX,
 }
 
 
-collInsertBase::collInsertBase(const int N,const int SN,
-				 const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,4),
-  blockIndex(N),surfIndex(SN),cellIndex(SN+1),
+collInsertBase::collInsertBase(const std::string& Key,
+			       const int ID) :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key+std::to_string(ID),4),
+  baseName(Key),blockID(ID),
   populated(0),insertCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -103,8 +105,8 @@ collInsertBase::collInsertBase(const int N,const int SN,
 
 collInsertBase::collInsertBase(const collInsertBase& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  blockIndex(A.blockIndex),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  blockID(A.blockID),
+  populated(A.populated),
   beamOrigin(A.beamOrigin),beamX(A.beamX),beamY(A.beamY),
   beamZ(A.beamZ),insertCell(A.insertCell),fStep(A.fStep),
   centX(A.centX),centZ(A.centZ),length(A.length),
@@ -127,7 +129,6 @@ collInsertBase::operator=(const collInsertBase& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       beamOrigin=A.beamOrigin;
       beamX=A.beamX;
@@ -207,14 +208,14 @@ collInsertBase::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
  
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,beamOrigin,-beamY);
   FixedComp::setConnect(3,beamOrigin+beamY*length,beamY);
  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+1));
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
 
   return;
 }
@@ -274,10 +275,10 @@ collInsertBase::initialize(Simulation& System,
 
 void
 collInsertBase::setOrigin(const Geometry::Vec3D& OG,
-			   const double xStart,
-			   const double xAngle,
-			   const double zStart,
-			   const double zAngle)
+			  const double xStart,
+			  const double xAngle,
+			  const double zStart,
+			  const double zAngle)
   /*!
     Set the origin
     \param OG :: Origin
@@ -342,9 +343,9 @@ collInsertBase::createAll(Simulation& System,
 
 void
 collInsertBase::createAll(Simulation& System,
-			   const int startSurf,
-			   const std::string& fSurf,
-			   const std::string& bSurf)
+			  const int startSurf,
+			  const std::string& fSurf,
+			  const std::string& bSurf)
    /*!
      Create all assuming that population has been done
      \param System :: Simulation to use
@@ -356,7 +357,7 @@ collInsertBase::createAll(Simulation& System,
   ELog::RegMethod RegA("collInsertBase","createAll(int,string)");
   if (!populated)
     {
-      ELog::EM<<"Failed to initialize item "<<blockIndex<<ELog::endErr;
+      ELog::EM<<"Failed to initialize item "<<blockID<<ELog::endErr;
       return;
     }
   

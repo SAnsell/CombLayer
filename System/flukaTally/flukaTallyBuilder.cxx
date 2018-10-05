@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/flukaTallyBuilder.cxx
+ * File:   flukaTally/flukaTallyBuilder.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -53,6 +53,8 @@
 #include "inputParam.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
@@ -74,7 +76,7 @@ tallySelection(SimFLUKA& System,
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("flukaTallyBuilder","tallySelection(basic)");
+  ELog::RegMethod RegA("flukaTallyBuilder[F]","tallySelection(basic)");
   
   System.populateCells();
   System.createObjSurfMap();
@@ -115,7 +117,7 @@ helpTallyType(const std::string& HType)
     \param HType :: specialization if present that help is required for
   */
 {
-  ELog::RegMethod("TallyConstructor","helpTallyType");
+  ELog::RegMethod("flukaTallBuilder[F]","helpTallyType");
 
   if (HType=="mesh")
     {}

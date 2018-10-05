@@ -3,7 +3,7 @@
  
  * File:   endf/SQWtable.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ SQWtable::setNAlpha(const size_t NA)
 {
   nAlpha=NA;
   Alpha.resize(NA);
-  if (nBeta*nAlpha)
+  if ((nBeta*nAlpha)!=0)
     SAB.resize(boost::extents
 	       [static_cast<long int>(nAlpha)]
 	       [static_cast<long int>(nBeta)]);
@@ -119,7 +119,7 @@ SQWtable::setNBeta(const size_t NB)
 {
   nBeta=NB;
   Beta.resize(NB);
-  if (nBeta*nAlpha)
+  if ((nBeta*nAlpha)!=0)
     SAB.resize(boost::extents
        [static_cast<long int>(nAlpha)]
        [static_cast<long int>(nBeta)]);
@@ -239,7 +239,7 @@ SQWtable::isValidRangePt(const double& alphaV,const double& betaV,
   aInt=mathFunc::binSearch(Alpha.begin(),Alpha.end(),alphaV);
   bInt=mathFunc::binSearch(Beta.begin(),Beta.end(),betaV);
   // No extreme cases:
-  if (!(aInt*bInt) || static_cast<size_t>(aInt+1)>=nAlpha
+  if ((aInt*bInt)==0 || static_cast<size_t>(aInt+1)>=nAlpha
       || static_cast<size_t>(bInt+1)>=nBeta)
     return 0;
   aInt--;

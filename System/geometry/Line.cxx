@@ -3,7 +3,7 @@
  
  * File:   geometry/Line.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -371,9 +371,11 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
     \return Number of points found by intersection
   */
 {
+  
   const double OdotN=Origin.dotProd(Pln.getNormal());
   const double DdotN=Direct.dotProd(Pln.getNormal());
-  if (fabs(DdotN)<Geometry::parallelTol)        // Plane and line parallel
+    
+  if (std::abs(DdotN)<Geometry::parallelTol)        // Plane and line parallel
     return 0;
   const double u=(Pln.getDistance()-OdotN)/DdotN;
   PntOut.push_back(getPoint(u));

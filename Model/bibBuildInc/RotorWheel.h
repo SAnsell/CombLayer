@@ -40,8 +40,6 @@ class RotorWheel : public attachSystem::ContainedGroup,
 {
  private:
   
-  const int wheelIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double xStep;                   ///< X step
   double yStep;                   ///< y step

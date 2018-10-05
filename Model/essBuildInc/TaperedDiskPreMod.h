@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/TaperedDiskPreMod.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,6 @@ class TaperedDiskPreMod : public attachSystem::ContainedComp,
     public attachSystem::CellMap
 {
  private:
-  
-  const int modIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
   
   double zStep;                   ///< Step away from target
   double outerRadius;             ///< Outer radius of Be Zone

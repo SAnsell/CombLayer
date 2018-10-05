@@ -53,6 +53,10 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ContainedComp.h"
+#include "LinkUnit.h"
+// #include "FixedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 
 #include "Debug.h"

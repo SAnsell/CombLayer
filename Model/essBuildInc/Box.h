@@ -42,9 +42,6 @@ class Box : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surfIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   int engActive;                  ///< Engineering active flag
 
   size_t nLayers;                ///< Number of layers

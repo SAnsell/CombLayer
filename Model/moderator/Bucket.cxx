@@ -3,7 +3,7 @@
  
  * File:   moderator/Bucket.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,9 +52,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -66,11 +63,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -81,9 +79,7 @@ namespace moderatorSystem
 {
 
 Bucket::Bucket(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1),
-  cdIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(cdIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +88,6 @@ Bucket::Bucket(const std::string& Key)  :
 
 Bucket::Bucket(const Bucket& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  cdIndex(A.cdIndex),cellIndex(A.cellIndex),
   radius(A.radius),thickness(A.thickness),
   openZ(A.openZ),topZ(A.topZ),matN(A.matN)
   /*!
@@ -113,7 +108,6 @@ Bucket::operator=(const Bucket& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       thickness=A.thickness;
       openZ=A.openZ;
@@ -176,12 +170,12 @@ Bucket::createSurfaces()
 {
   ELog::RegMethod RegA("Bucket","createSurface");
 
-  ModelSupport::buildPlane(SMap,cdIndex+1,Origin+Z*openZ,Z);
-  ModelSupport::buildPlane(SMap,cdIndex+2,Origin+Z*topZ,Z);
-  ModelSupport::buildPlane(SMap,cdIndex+12,Origin+Z*(topZ-thickness),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Z*openZ,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Z*topZ,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Z*(topZ-thickness),Z);
 
-  ModelSupport::buildCylinder(SMap,cdIndex+7,Origin,Z,radius);
-  ModelSupport::buildCylinder(SMap,cdIndex+17,Origin,Z,radius-thickness);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius-thickness);
 
   return;
 }
@@ -196,7 +190,7 @@ Bucket::createObjects(Simulation& System)
   ELog::RegMethod RegA("Bucket","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,cdIndex,"1 -2 -7 (17 : 12)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 (17 : 12)");
   addOuterSurf(Out);
 
   // Inner Void

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerQUnit.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -41,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -94,20 +96,17 @@ namespace essSystem
 
 BunkerQUnit::BunkerQUnit(const std::string& key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(key,6),
-  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
-  cellIndex(cutIndex+1)
+  attachSystem::FixedOffset(key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param bunkerName :: Name of the bunker object that is building this roof
+    \param Key :: Name of the bunker object that is building this roof
   */
 {}
 
 BunkerQUnit::BunkerQUnit(const BunkerQUnit& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  cutIndex(A.cutIndex),
-  cellIndex(A.cellIndex),xGap(A.xGap),zGap(A.zGap),
+  xGap(A.xGap),zGap(A.zGap),
   PFlag(A.PFlag),cPts(A.cPts),Radii(A.Radii),yFlag(A.yFlag)
   /*!
     Copy constructor
@@ -129,7 +128,6 @@ BunkerQUnit::operator=(const BunkerQUnit& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       xGap=A.xGap;
       zGap=A.zGap;
       PFlag=A.PFlag;
@@ -169,7 +167,7 @@ BunkerQUnit::populate(const FuncDataBase& Control)
   double R;
   for(size_t index=0;index<NPt;index++)
     {
-      const std::string IStr=StrFunc::makeString(index);
+      const std::string IStr=std::to_string(index);
       flag=Control.EvalDefVar<int>(keyName+"PtFlag"+IStr,flag);
       APt=Control.EvalVar<Geometry::Vec3D>(keyName+"PtA"+IStr);
       yF=Control.EvalDefVar(keyName+"YFlag"+IStr,0);
@@ -236,7 +234,7 @@ BunkerQUnit::createObjects(Simulation& System)
   
   for(size_t index=1;index<cPts.size();index++)
     {
-      const std::string ItemName(keyName+"Cut"+StrFunc::makeString(index));
+      const std::string ItemName(keyName+"Cut"+std::to_string(index));
       const double radius(Radii[index-1]);
       const int yF(yFlag[index-1]);
       if ((radius<Geometry::zeroTol) || !yF)
