@@ -51,9 +51,6 @@ class simpleObj : public attachSystem::ContainedComp,
 {
  private:
   
-  const int simpIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   int refFlag;                  ///< Reverse flag
   Geometry::Vec3D offset;       ///< Central offset
   double xyAngle;               ///< Angle [degrees]

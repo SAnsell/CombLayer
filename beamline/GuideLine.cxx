@@ -99,9 +99,7 @@ GuideLine::GuideLine(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",2),
   attachSystem::CellMap(),attachSystem::FrontBackCut(),
-  SUItem(200),SULayer(20),
-  guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),nShapeLayers(0),
+  SUItem(200),SULayer(20),nShapeLayers(0),
   beamFrontCut(false),beamEndCut(false),
   nShapes(0)
   /*!
@@ -114,7 +112,6 @@ GuideLine::GuideLine(const GuideLine& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   SUItem(A.SUItem),SULayer(A.SULayer),
-  guideIndex(A.guideIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),beamXStep(A.beamXStep),
   beamYStep(A.beamYStep),beamZStep(A.beamZStep),
@@ -149,7 +146,6 @@ GuideLine::operator=(const GuideLine& A)
       attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -366,7 +362,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 
       // Simple rectangle projection:
       // ALL PROJECTIONS IN ROTATED DISTANCE
-      const int GINumber(guideIndex+SUItem*static_cast<int>(index+1));
+      const int GINumber(buildIndex+SUItem*static_cast<int>(index+1));
       if (typeID=="Rectangle")   
 	{
 	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
@@ -536,36 +532,36 @@ GuideLine::createSurfaces()
   // Only need to build if not provided
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);
-      setFront(SMap.realSurf(guideIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setFront(SMap.realSurf(buildIndex+1));
     }
   
   if (beamFrontCut)
     {
-      ModelSupport::buildPlane(SMap,guideIndex+1001,
+      ModelSupport::buildPlane(SMap,buildIndex+1001,
 			       beamFC.getCentre(),beamFC.getY());
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
-      setBack(-SMap.realSurf(guideIndex+2));
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setBack(-SMap.realSurf(buildIndex+2));
     }
   if (beamEndCut)
-    ModelSupport::buildPlane(SMap,guideIndex+1002,
+    ModelSupport::buildPlane(SMap,buildIndex+1002,
                              beamFC.getCentre()+beamFC.getY()*length,
                              beamFC.getY());
 
   if (activeShield)
     {
-      ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);
-      ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*rightWidth,X);
-      ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
-      ModelSupport::buildPlane(SMap,guideIndex+6,Origin+Z*height,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*leftWidth,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*rightWidth,X);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
     }
   // Note we ignore the length component of the last item 
   // and use the guide closer
-  int GI(guideIndex+2001);
+  int GI(buildIndex+2001);
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
@@ -583,7 +579,7 @@ GuideLine::shapeFrontSurf(const bool beamFlag,
                           const size_t index) const
   /*!
     Determine the frontcutting surface. 
-    As guideIndex+1 is set -- activeFront must be set.
+    As buildIndex+1 is set -- activeFront must be set.
     \param beamFlag :: Consider beamoffset if true
     \param index :: index of shape number
     \return cutting surface string
@@ -591,12 +587,12 @@ GuideLine::shapeFrontSurf(const bool beamFlag,
 {
   ELog::RegMethod RegA("GuideLine","shapeFrontSurf");
 
-  const int frontNum(guideIndex+2001+200*static_cast<int>(index));
+  const int frontNum(buildIndex+2001+200*static_cast<int>(index));
   if (index)
     return ModelSupport::getComposite(SMap,frontNum," 1 ");
 
   if (beamFrontCut & beamFlag)
-    return ModelSupport::getComposite(SMap,guideIndex," 1001 ");
+    return ModelSupport::getComposite(SMap,buildIndex," 1001 ");
 
 
   return getFrontRule().display()+getFrontBridgeRule().display();
@@ -607,7 +603,7 @@ GuideLine::shapeBackSurf(const bool beamFlag,
                          const size_t index) const
   /*!
     Determine the backcutting surface
-    As guideIndex+1 is set -- activeBack must be set.
+    As buildIndex+1 is set -- activeBack must be set.
     \param beamFlag :: Consider beamoffset if true
     \param index :: index of shape number
     \return cutting surface string
@@ -615,12 +611,12 @@ GuideLine::shapeBackSurf(const bool beamFlag,
 {
   ELog::RegMethod RegA("GuideLine","shapeBackSurf");
 
-  const int backNum(guideIndex+2001+200*static_cast<int>(index));
+  const int backNum(buildIndex+2001+200*static_cast<int>(index));
   if (index!=nShapes-1)
     return ModelSupport::getComposite(SMap,backNum," -2 ");
   
   if (beamEndCut & beamFlag)
-    return ModelSupport::getComposite(SMap,guideIndex," -1002 ");
+    return ModelSupport::getComposite(SMap,buildIndex," -1002 ");
 
   return getBackRule().display()+getBackBridgeRule().display();
 }
@@ -637,7 +633,7 @@ GuideLine::createObjects(Simulation& System)
   std::string Out;
 
   HeadRule excludeCell;
-  int frontNum(guideIndex+9);
+  int frontNum(buildIndex+9);
   std::string shapeLayer;
   std::string back;
   for(size_t i=0;i<nShapes;i++)
@@ -671,7 +667,7 @@ GuideLine::createObjects(Simulation& System)
 
   if (activeShield)
     {
-      Out=ModelSupport::getComposite(SMap,guideIndex," 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
 
       Out+=shapeFrontSurf(false,0);
       Out+=shapeBackSurf(false,nShapes-1);
@@ -715,7 +711,7 @@ GuideLine::createMainLinks()
       for(int i=2;i<6;i++)
 	{
 	  shieldFC.setLinkSurf(static_cast<size_t>(i),
-			       sign*SMap.realSurf(guideIndex+i+1));
+			       sign*SMap.realSurf(buildIndex+i+1));
 	  sign*=-1;
 	}
     }
@@ -731,7 +727,7 @@ GuideLine::createGuideLinks()
   ELog::RegMethod RegA("GuideLine","createGuideLinks");
 
 
-  int GI(guideIndex+2000);
+  int GI(buildIndex+2000);
   for(size_t i=0;i<nShapes;i++)
     {
       const std::string GKey="Guide"+StrFunc::makeString(i);
@@ -744,7 +740,7 @@ GuideLine::createGuideLinks()
             createFrontLinks(guideFC,shapeUnits[i]->getBegin(),
                              shapeUnits[i]->getBegAxis());
           else
-            guideFC.setLinkSurf(0,-SMap.realSurf(guideIndex+1001));
+            guideFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1001));
         }
       else
         {
@@ -761,7 +757,7 @@ GuideLine::createGuideLinks()
             createBackLinks(guideFC,shapeUnits[i]->getEnd(),
                             shapeUnits[i]->getEndAxis());
           else
-            guideFC.setLinkSurf(1,SMap.realSurf(guideIndex+1002));
+            guideFC.setLinkSurf(1,SMap.realSurf(buildIndex+1002));
 
           
         }

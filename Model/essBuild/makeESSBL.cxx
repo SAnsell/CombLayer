@@ -333,15 +333,6 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
       simpleITEM simpleBL("simple");
       simpleBL.build(System,*mainGIPtr,bunkerObj,voidCell);      
     }
-  else if (beamName=="JSANS" || beamName=="JRef")
-    {
-      
-      ///< Guide line [refl]
-      std::shared_ptr<beamlineSystem::GuideLine>
-	RefA(new beamlineSystem::GuideLine(beamName));
-      RefA->addInsertCell(voidCell);
-      RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
-    }
   else
     {
       ELog::EM<<"NON-UNDERSTOOD BEAMLINE : "<<beamName<<ELog::endErr;
