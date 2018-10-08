@@ -420,6 +420,17 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 
       // Add inner boundary
       Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
+
+      if ( (i>0) && ((height[i]-height[i-1]<topGap) || (depth[i]-depth[i-1]<baseGap)))
+	{
+	  if (i>1)
+	    Out += ModelSupport::getComposite(SMap,GI-50, buildIndex,
+					      " (-3:4:-5:6:57:-57M) ");
+	  else
+	    Out += ModelSupport::getComposite(SMap,GI-50, buildIndex,
+					      " (-3:4:-5:6:57) ");
+	}
+
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addCell("Body",cellIndex-1);
 
