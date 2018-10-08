@@ -561,14 +561,6 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   splitter->insertInCell("Flange",System,cellB);
   splitter->insertInCell("PipeA",System,cellA);
   splitter->insertInCell("PipeB",System,cellB);
-
-  screenB->addInsertCell(cellA);
-  screenB->addInsertCell(cellB);
-  screenB->setCutSurf("inner",*splitter,"pipeAOuterTop");
-  screenB->setCutSurf("innerTwo",*splitter,"pipeBOuterTop");
-  screenB->createAll(System,*splitter,0);
-  screenB->insertInCell(System,splitter->getCell("PipeAOutVoid"));
-  screenB->insertInCell(System,splitter->getCell("PipeBOutVoid"));
   
   // now build left/ right
   // LEFT
@@ -644,8 +636,6 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,
 				CPI,CPI.getSideIndex("OuterPlate"));
   pumpTubeB->insertInCell(System,outerCell);
-  //  pumpTubeB->intersectPorts(System,1,2);
-  ELog::EM<<"Out cell == "<<outerCell<<ELog::endDiag;
   pumpTubeB->splitObjectAbsolute(System,1501,outerCell,
 				 pumpTubeB->getLinkPt(0),
 				 Geometry::Vec3D(0,0,1));
@@ -935,6 +925,8 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
   /*!
     Construct outgoing tracks
     \param System :: Simulation
+    \parma hutCell :: Cells for construction in hut
+    \parma outCell :: Final out cel
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
@@ -948,6 +940,14 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
   outPipeB->addInsertCell(hutCell);
   outPipeB->addInsertCell(outCell);
   outPipeB->createAll(System,*pumpTubeBA,2);
+  
+  screenB->addInsertCell(masterCellA->getName());
+  screenB->addInsertCell(masterCellB->getName());
+
+  screenB->setCutSurf("inner",outPipeA->getSurfRule("OuterRadius"));
+  screenB->setCutSurf("innerTwo",outPipeB->getSurfRule("OuterRadius"));
+
+  screenB->createAll(System,*outPipeA,0);
 
   return;
 }

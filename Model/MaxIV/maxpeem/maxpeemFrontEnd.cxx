@@ -595,10 +595,15 @@ maxpeemFrontEnd::insertFlanges(Simulation& System,
   ELog::RegMethod RegA("maxpeemFrontEnd","insertFlanges");
   
   const size_t voidN=this->getNItems("OuterVoid")-3;
-  this->insertComponent(System,"OuterVoid",voidN,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN,PT,"BackFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"BackFlange",0);
+
+  this->insertComponent(System,"OuterVoid",voidN,
+			PT.getFullRule("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN,
+			PT.getFullRule("FlangeB"));
+  this->insertComponent(System,"OuterVoid",voidN+2,
+			PT.getFullRule("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN+2,
+			PT.getFullRule("FlangeB"));
   return;
 }
   

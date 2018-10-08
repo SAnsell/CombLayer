@@ -415,6 +415,7 @@ createSimulation(inputParam& IParam,
       SMCPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
       SimPtr=SMCPtr;
     }
+
   OR.setObjectGroup(*SimPtr);
   buildWorld(*SimPtr);
   

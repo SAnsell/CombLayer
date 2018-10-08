@@ -117,8 +117,7 @@ makeMaxIV::buildR1Ring(Simulation& System,
     \param IParam :: Input paramters
   */
 {
-  ELog::RegMethod RegA("makeMaxIV","makeR1Ring");
-  ELog::EM<<"ASFDAF"<<ELog::endDiag;
+  ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
 
   const int voidCell(74123);
 

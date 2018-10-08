@@ -52,6 +52,7 @@ class maxpeemOpticsHut :
   double ringShortWidth;        ///< void ring side width [short]
   double ringLongWidth;         ///< void ring side width [long]
 
+  double extension;             ///< void extention length
   double shortLen;              ///< length to end of short len
   double fullLen;               ///< length to full width
 

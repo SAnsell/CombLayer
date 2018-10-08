@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -419,7 +418,9 @@ VacuumPipe::createSurfaces()
     {
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
       ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
-      ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,radius+feThick+claddingThick);
+      ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
+				  Y,radius+feThick+claddingThick);
+      addSurf("OuterRadius",SMap.realSurf(buildIndex+27));	    
     }
   else
     {

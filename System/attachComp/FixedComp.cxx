@@ -808,7 +808,23 @@ FixedComp::addLinkComp(const size_t Index,const HeadRule& HR)
   LU[Index].addLinkComp(HR);
   return;
 }
-  
+
+void
+FixedComp::setLinkSurf(const size_t Index,const int SN) 
+  /*!
+    Set  a surface to output
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setLinkSurf(SN);
+  return;
+}
+
 void
 FixedComp::setLinkSurf(const size_t Index,
 		       const std::string& SList) 
@@ -844,6 +860,58 @@ FixedComp::setLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setLinkComp(const size_t Index,const int SN) 
+  /*!
+    Set a surface to output (in complement)
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkComp");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setLinkSurf(-SN);
+  return;
+}
+
+void
+FixedComp::setLinkComp(const size_t Index,
+		       const std::string& SList) 
+  /*!
+    Set a surface to output inc complement
+    \param Index :: Link number
+    \param SList :: String to process
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkComp(string)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  HeadRule SRule(SList);
+  LU[Index].setLinkSurf(SRule.complement());
+  return;
+}
+
+void
+FixedComp::setLinkComp(const size_t Index,
+		       const HeadRule& HR) 
+  /*!
+    Set a surface to output in complement
+    \param Index :: Link number
+    \param HR :: HeadRule to add
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkComp(HR)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].setLinkSurf(HR.complement());
+  return;
+}
+
+
+void
 FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
 		       const bool compFlag,const HeadRule& BR,
 		       const bool bridgeCompFlag) 
@@ -877,21 +945,6 @@ FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
   return;
 }
 
-void
-FixedComp::setLinkSurf(const size_t Index,const int SN) 
-  /*!
-    Set  a surface to output
-    \param Index :: Link number
-    \param SN :: Surface number [inward looking]
-  */
-{
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
-
-  LU[Index].setLinkSurf(SN);
-  return;
-}
 
 
 void

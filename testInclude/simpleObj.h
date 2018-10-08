@@ -54,7 +54,7 @@ class simpleObj : public attachSystem::ContainedComp,
   int refFlag;                  ///< Reverse flag
   Geometry::Vec3D offset;       ///< Central offset
   double xyAngle;               ///< Angle [degrees]
-  double zAngle;               ///< Angle [degrees]
+  double zAngle;                ///< Angle [degrees]
   double xSize;                 ///< Left/Right size
   double ySize;                 ///< length down target
   double zSize;                 ///< Vertical size

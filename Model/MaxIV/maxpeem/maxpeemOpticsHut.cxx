@@ -121,6 +121,7 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   ringShortWidth=Control.EvalVar<double>(keyName+"RingShortWidth");
   ringLongWidth=Control.EvalVar<double>(keyName+"RingLongWidth");
 
+  extension=Control.EvalDefVar<double>(keyName+"Extension",0.0);
   shortLen=Control.EvalVar<double>(keyName+"ShortLen");
   fullLen=Control.EvalVar<double>(keyName+"FullLen");
 
@@ -252,7 +253,9 @@ maxpeemOpticsHut::createSurfaces()
       ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,beamTubeRadius);
       setSurf("BeamTube",-SMap.realSurf(buildIndex+2007));
     }
-  
+
+  ModelSupport::buildPlane(SMap,buildIndex+3002,
+			     Origin+Y*(length+TB+extension),Y);
   return;
 }
 
@@ -268,23 +271,24 @@ maxpeemOpticsHut::createObjects(Simulation& System)
   const std::string floorStr=getRuleStr("Floor");
   const std::string ringWall=getRuleStr("RingWall");
   std::string Out;
-  
+
+
   if (innerOutVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 2007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 2007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 2007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 2007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
 
   if (beamTubeRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -2007");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -2007");
       makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
     }
     
@@ -313,14 +317,21 @@ maxpeemOpticsHut::createObjects(Simulation& System)
 
       HI+=100;
     }
+
+  if (extension>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,HI,buildIndex," 2 3 -4 -6 -3002M ");
+      makeCell("Extension",System,cellIndex++,0,0.0,Out+floorStr);
+    }
+
   // Front/back hole
   if (inletRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -7 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -1 -7 ");
       makeCell("InletHole",System,cellIndex++,0,0.0,Out+ringWall);
     }
-  
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -302 303 -304 (-314:-324) -306 ");
+
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -3002 303 -304 (-314:-324) -306 ");
   addOuterSurf(Out);  
 
   return;
