@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/t1WaterModerator.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@ class t1WaterModerator : public attachSystem::ContainedComp,
 {
  private:
   
-  const int waterIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on Y to Target [+ve forward]

@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -66,6 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -76,6 +77,8 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -87,11 +90,10 @@ namespace essSystem
 
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffsetGroup(Key+StrFunc::makeString(Index),
+  attachSystem::FixedOffsetGroup(Key+std::to_string(Index),
                                  "Main",6,"Beam",6),
   attachSystem::CellMap(),baseName(Key),
-  guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(guideIndex+1),active(1),innerCyl(0),outerCyl(0)
+  active(1),innerCyl(0),outerCyl(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -103,8 +105,7 @@ GuideItem::GuideItem(const GuideItem& A) :
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffsetGroup(A),
   attachSystem::CellMap(A),
-  baseName(A.baseName),guideIndex(A.guideIndex),
-  cellIndex(A.cellIndex),active(A.active),beamXStep(A.beamXStep),
+  baseName(A.baseName),active(A.active),beamXStep(A.beamXStep),
   beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
   beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
   beamHeight(A.beamHeight),nSegment(A.nSegment),
@@ -130,7 +131,6 @@ GuideItem::operator=(const GuideItem& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       active=A.active;
       beamXStep=A.beamXStep;
       beamZStep=A.beamZStep;
@@ -212,15 +212,15 @@ GuideItem::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nSegment;i++)
     {
       W=Control.EvalPair<double>(keyName,baseName,
-				  StrFunc::makeString("Width",i+1));
+				 "Width"+std::to_string(i+1));
       H=Control.EvalPair<double>(keyName,baseName,
-				 StrFunc::makeString("Height",i+1));
+				 "Height"+std::to_string(i+1));
       D=Control.EvalPair<double>(keyName,baseName,
-				 StrFunc::makeString("Depth",i+1));
+				 "Depth"+std::to_string(i+1));
       if (i!=nSegment-1)
 	{
 	  L+=Control.EvalPair<double>(keyName,baseName,
-				      StrFunc::makeString("Length",i+1));
+				      "Length"+std::to_string(i+1));
 	  length.push_back(L);
 	}
       height.push_back(H);
@@ -280,10 +280,10 @@ GuideItem::createSurfaces()
       const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(dividePlane);
       if (dividePlane * PPtr->getNormal().dotProd(Y)<0.0)
 	dividePlane*=-1;
-      SMap.addMatch(guideIndex+1,dividePlane);
+      SMap.addMatch(buildIndex+1,dividePlane);
     }
   else
-    ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);    // Divider plane
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    // Divider plane
 
   
   const attachSystem::FixedComp& mainFC=
@@ -299,9 +299,9 @@ GuideItem::createSurfaces()
   const Geometry::Vec3D& bZ=beamFC.getZ();
  
 
-  SMap.addMatch(guideIndex+7,innerCyl);
+  SMap.addMatch(buildIndex+7,innerCyl);
 
-  int GI(guideIndex);
+  int GI(buildIndex);
 
   for(size_t i=0;i<nSegment;i++)
     {
@@ -328,13 +328,13 @@ GuideItem::createSurfaces()
   SMap.addMatch(GI+7,outerCyl);
 
   // Beamline :: 
-  ModelSupport::buildPlane(SMap,guideIndex+1103,
+  ModelSupport::buildPlane(SMap,buildIndex+1103,
 			   beamOrigin-bX*(beamWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,guideIndex+1104,
+  ModelSupport::buildPlane(SMap,buildIndex+1104,
 			   beamOrigin+bX*(beamWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,guideIndex+1105,
+  ModelSupport::buildPlane(SMap,buildIndex+1105,
 			   beamOrigin-bZ*(beamHeight/2.0),bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+1106,
+  ModelSupport::buildPlane(SMap,buildIndex+1106,
 			   beamOrigin+bZ*(beamHeight/2.0),bZ);
   
   
@@ -345,12 +345,12 @@ const Geometry::Plane*
 GuideItem::getPlane(const int SN) const
   /*!
     Access to specific plane
-    \param SN :: Surface offset [without guideIndex]
+    \param SN :: Surface offset [without buildIndex]
     \return Plane Number
   */
 {
   ELog::RegMethod RegA("GuideItem","getPlane");
-  return SMap.realPtr<Geometry::Plane>(guideIndex+SN);
+  return SMap.realPtr<Geometry::Plane>(buildIndex+SN);
 }
 
 
@@ -399,17 +399,17 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   const std::string edgeStr=getEdgeStr(GPtr);
   std::string Out;
 
-  int GI(guideIndex);
+  int GI(buildIndex);
   for(size_t i=0;i<nSegment;i++)
     {
       // Outer layer
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,guideIndex,"1 7 3 -4 5 -6 -57");
+	  Out=ModelSupport::getComposite(SMap,buildIndex,"1 7 3 -4 5 -6 -57");
 	  Out+=edgeStr;
 	}
       else 
-	Out=ModelSupport::getComposite(SMap,GI,guideIndex,"1M 8 3 -4 5 -6 -57");
+	Out=ModelSupport::getComposite(SMap,GI,buildIndex,"1M 8 3 -4 5 -6 -57");
 
       if (!i)
 	addOuterSurf("Inner",Out);
@@ -426,24 +426,24 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       if (i==0)
 	{
 	  Out=ModelSupport::getComposite
-	    (SMap,guideIndex,"1 7 13 -14 15 -16 -57");
+	    (SMap,buildIndex,"1 7 13 -14 15 -16 -57");
 	  Out+=edgeStr;
 	}
       else
 	{
 	  // step
-	  Out=ModelSupport::getComposite(SMap,GI,guideIndex,GI-50,
+	  Out=ModelSupport::getComposite(SMap,GI,buildIndex,GI-50,
 					  "1M 8 -7 (-3N:4N:-5N:6N) 13 -14 15 -16 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,GI,guideIndex,
+	  Out=ModelSupport::getComposite(SMap,GI,buildIndex,
 					 "1M 7 13 -14 15 -16 -57");
 	}
 
       // Inner metal:
       if (!filled)
 	Out+=ModelSupport::getComposite
-	  (SMap,guideIndex,"(-1103:1104:-1105:1106) ");
+	  (SMap,buildIndex,"(-1103:1104:-1105:1106) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
       
       if (filled) addCell("Void",cellIndex-1);
@@ -455,7 +455,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   // Inner void
   if (!filled)
     {
-      Out=ModelSupport::getComposite(SMap,guideIndex,GI,
+      Out=ModelSupport::getComposite(SMap,buildIndex,GI,
 				     "1 7 -7M 1103 -1104 1105 -1106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       
@@ -474,9 +474,9 @@ GuideItem::sideExclude(const size_t sideIndex) const
   */
 {
   if (sideIndex==0)
-    return ModelSupport::getComposite(SMap,guideIndex,"(-3 : -5 : 6)");
+    return ModelSupport::getComposite(SMap,buildIndex,"(-3 : -5 : 6)");
   
-  return ModelSupport::getComposite(SMap,guideIndex,"(4 : -5 : 6)");
+  return ModelSupport::getComposite(SMap,buildIndex,"(4 : -5 : 6)");
 }
 
 void
@@ -510,13 +510,13 @@ GuideItem::createLinks()
     LI.getPoint(DPtr,beamOrigin+bY*ROuter);
 
   beamFC.setConnect(0,beamEnter,-bY);
-  beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
-  beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
+  beamFC.addBridgeSurf(0,SMap.realSurf(buildIndex+1));
 
-  const int GI=50*static_cast<int>(nSegment)+guideIndex;
+  const int GI=50*static_cast<int>(nSegment)+buildIndex;
   beamFC.setConnect(1,beamExit,bY);
   beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
-  beamFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+  beamFC.addBridgeSurf(1,SMap.realSurf(buildIndex+1));
   if (!filled)
     {
       const Geometry::Vec3D MidPt((beamOrigin+bY*RInner+beamExit)/2.0);
@@ -525,20 +525,20 @@ GuideItem::createLinks()
       beamFC.setConnect(4,MidPt-bZ*(beamWidth/2.0),-bZ);
       beamFC.setConnect(5,MidPt+bZ*(beamWidth/2.0),bZ);
 
-      beamFC.setLinkSurf(2,-SMap.realSurf(guideIndex+1103));
-      beamFC.setLinkSurf(3,SMap.realSurf(guideIndex+1104));
-      beamFC.setLinkSurf(4,-SMap.realSurf(guideIndex+1105));
-      beamFC.setLinkSurf(5,SMap.realSurf(guideIndex+1106));
+      beamFC.setLinkSurf(2,-SMap.realSurf(buildIndex+1103));
+      beamFC.setLinkSurf(3,SMap.realSurf(buildIndex+1104));
+      beamFC.setLinkSurf(4,-SMap.realSurf(buildIndex+1105));
+      beamFC.setLinkSurf(5,SMap.realSurf(buildIndex+1106));
     }
 
   /// TARGET CENTRE TRACKING:
   mainFC.setConnect(0,beamEnter-Geometry::Vec3D(0,0,beamEnter[2]),-bY);
-  mainFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
-  mainFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
+  mainFC.addBridgeSurf(0,SMap.realSurf(buildIndex+1));
 
   mainFC.setConnect(1,beamExit-Geometry::Vec3D(0,0,beamExit[2]),bY);
   mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
-  mainFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+  mainFC.addBridgeSurf(1,SMap.realSurf(buildIndex+1));
     
 
   return;

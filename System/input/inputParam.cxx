@@ -282,21 +282,6 @@ inputParam::hasKey(const std::string& K) const
 }
 
 size_t
-inputParam::dataCnt(const std::string& K) const
-  /*!
-    Determine number of data object for a given key [assuming set 0]
-    \param K :: Key to seach
-    \return active flag
-   */
-{
-  ELog::RegMethod RegA("inputParam","dataCnt");
-  
-  const IItem* IPtr=getIndex(K);
-  
-  return IPtr->getNItems();
-}
-
-size_t
 inputParam::setCnt(const std::string& K) const
   /*!
     Count number of groups

@@ -3,7 +3,7 @@
  
  * File:   moderator/VanePoison.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -72,9 +74,7 @@ namespace moderatorSystem
 {
 
 VanePoison::VanePoison(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  vaneIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vaneIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -83,7 +83,6 @@ VanePoison::VanePoison(const std::string& Key)  :
   
 VanePoison::VanePoison(const VanePoison& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  vaneIndex(A.vaneIndex),cellIndex(A.cellIndex),
   nBlades(A.nBlades),bWidth(A.bWidth),absThick(A.absThick),
   bGap(A.bGap),yLength(A.yLength),zLength(A.zLength),
   modTemp(A.modTemp),modMat(A.modMat),bladeMat(A.bladeMat),
@@ -106,7 +105,6 @@ VanePoison::operator=(const VanePoison& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       nBlades=A.nBlades;
       bWidth=A.bWidth;
       absThick=A.absThick;
@@ -203,18 +201,18 @@ VanePoison::createSurfaces()
 		      static_cast<double>(nBlades)*bWidth)/2.0;
   
   if (std::abs(yStep)>Geometry::zeroTol)
-    ModelSupport::buildPlane(SMap,vaneIndex+11,Origin,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
 
-  ModelSupport::buildPlane(SMap,vaneIndex+12,Origin+Y*yLength,Y);
-  ModelSupport::buildPlane(SMap,vaneIndex+13,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,vaneIndex+14,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*yLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*width,X);
   if (zLength>0.0)
     {
-      ModelSupport::buildPlane(SMap,vaneIndex+15,Origin-Z*zLength,Z);
-      ModelSupport::buildPlane(SMap,vaneIndex+16,Origin+Z*zLength,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*zLength,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*zLength,Z);
     }
   
-  int surfN(vaneIndex+100);
+  int surfN(buildIndex+100);
   Geometry::Vec3D BCent(Origin-X*(width-bWidth/2.0));
   const Geometry::Vec3D GCent(Origin+X*(width+bGap/2.0));
   for(size_t i=0;i<nBlades;i++)
@@ -247,14 +245,14 @@ VanePoison::createObjects(Simulation& System,
   std::string yFront,yBack,zBase,zTop;
 
   yFront= (std::abs(yStep)>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,vaneIndex," 11 ") :
+    ModelSupport::getComposite(SMap,buildIndex," 11 ") :
     FC.getLinkString(linkPt);
-  yBack=ModelSupport::getComposite(SMap,vaneIndex," -12 ");
+  yBack=ModelSupport::getComposite(SMap,buildIndex," -12 ");
 
   if (zLength>Geometry::zeroTol)
     {
-      zBase=ModelSupport::getComposite(SMap,vaneIndex," 15 ");
-      zTop=ModelSupport::getComposite(SMap,vaneIndex," -16 ");
+      zBase=ModelSupport::getComposite(SMap,buildIndex," 15 ");
+      zTop=ModelSupport::getComposite(SMap,buildIndex," -16 ");
     }
   else
     {
@@ -270,11 +268,11 @@ VanePoison::createObjects(Simulation& System,
     }
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,vaneIndex," 13 -14 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 ");
   Out+=zBase+zTop+yBack+yFront;
   addOuterSurf(Out);
 
-  int surfN(vaneIndex+100);
+  int surfN(buildIndex+100);
   for(size_t i=0;i<nBlades;i++)
     {
       // inner abs:

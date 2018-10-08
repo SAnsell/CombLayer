@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,8 +82,7 @@ namespace constructSystem
 
 SupplyPipe::SupplyPipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,2),optName(""),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),NSegIn(0),wallOffset(2),
+  NSegIn(0),wallOffset(2),
   Coaxial(Key+"CoAx"),nAngle(12)
   /*!
 
@@ -92,7 +93,6 @@ SupplyPipe::SupplyPipe(const std::string& Key)  :
 
 SupplyPipe::SupplyPipe(const SupplyPipe& A) : 
   attachSystem::FixedComp(A),optName(A.optName),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   NSegIn(A.NSegIn),wallOffset(A.wallOffset),
   Radii(A.Radii),Mat(A.Mat),Temp(A.Temp),
   ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),
@@ -115,7 +115,6 @@ SupplyPipe::operator=(const SupplyPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       NSegIn=A.NSegIn;
       Radii=A.Radii;
       Mat=A.Mat;

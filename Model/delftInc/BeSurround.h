@@ -44,8 +44,6 @@ class BeSurround : public attachSystem::ContainedComp,
  private:
 
   int active;                   ///< To be created etc
-  const int insertIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
 
 

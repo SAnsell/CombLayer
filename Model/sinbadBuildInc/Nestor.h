@@ -19,9 +19,7 @@ class Nestor  : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int slabIndex;        ///< Index of surface offset
 
-  int cellIndex;                ///< Cell index
 
   double xStep;               ///< X Step distance 
   double yStep;               ///< Y Step distance

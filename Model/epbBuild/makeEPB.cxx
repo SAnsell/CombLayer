@@ -3,7 +3,7 @@
  
  * File:   epbBuild/makeEPB.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,13 +60,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "LayerComp.h"
 #include "World.h"
 #include "AttachSupport.h"
 

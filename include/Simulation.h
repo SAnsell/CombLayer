@@ -67,10 +67,9 @@ namespace MonteCarlo
 
   Contains the running simulation information 
   Mainly list of maps and process information
-  Is expected to be mainly a singleton class.
 */
 
-class Simulation
+class Simulation : public objectGroups
 {
  protected:
 
@@ -91,8 +90,8 @@ class Simulation
 
   TransTYPE TList;                      ///< Transforms List (key=Transform)
 
-  size_t cellDNF;                       ///< Cells to be converted into DNF
-  size_t cellCNF;                       ///< Cells to be converted into CNF
+  size_t cellDNF;                       ///< max size to convert into DNF
+  size_t cellCNF;                       ///< max size to convert into CNF
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
@@ -134,6 +133,9 @@ class Simulation
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
 			       MonteCarlo::Object*) const;
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+    findCellPair(const Geometry::Vec3D&,const int) const;
+  
   int findCellNumber(const Geometry::Vec3D&,const int) const;  
 
   int existCell(const int) const;              ///< check if cell exist
@@ -147,7 +149,9 @@ class Simulation
   const FuncDataBase& getDataBase() const { return DB; }
 
   /// set Source name
-  void setSourceName(const std::string&);
+  virtual void setSourceName(const std::string&);
+  /// set Extra name [if used]
+  virtual void setExtraSourceName(const std::string&) {}
 
   const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells

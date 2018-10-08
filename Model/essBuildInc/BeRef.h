@@ -42,9 +42,6 @@ class BeRef : public attachSystem::ContainedComp,
 {
  private:
 
-  const int refIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   int engActive;                  ///< Engineering active flag
   /// Inner components inside Reflector (eng detail)
   std::shared_ptr<BeRefInnerStructure> InnerCompTop;

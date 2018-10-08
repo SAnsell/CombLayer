@@ -64,6 +64,8 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "CellWeight.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "objectRegister.h"
@@ -171,11 +173,6 @@ WCellControl::procObject(const Simulation& System,
 
   const double minWeight(1e-16);
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  
-  
   const size_t nSet=IParam.setCnt("weightObject");
   // default values:
   procParam(IParam,"weightControl",0,0);
@@ -202,7 +199,8 @@ WCellControl::procObject(const Simulation& System,
       procParam(IParam,"weightObject",iSet,2);
 
       objectList.insert(objectKey);      
-      const std::vector<int> objCells=OR.getObjectRange(objectKey);
+      const std::vector<int> objCells=
+	System.getObjectRange(objectKey);
     
       if (objCells.empty())
         ELog::EM<<"Cell["<<objectKey<<"] empty on renumber"<<ELog::endWarn;
@@ -260,9 +258,6 @@ WCellControl::scaleObject(const Simulation& System,
 {
   ELog::RegMethod RegA("WCellControl","scaleObject");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
@@ -282,7 +277,7 @@ WCellControl::scaleObject(const Simulation& System,
       else
         EW= (EW<-eCut) ? 1.0/SW : 1.0;
     }
-  std::vector<int> cellVec=OR.getObjectRange(objKey);
+  const std::vector<int> cellVec=System.getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
@@ -326,9 +321,6 @@ WCellControl::findMax(const Simulation& System,
 {
   ELog::RegMethod RegA("WCellControl","findMax");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
@@ -339,7 +331,7 @@ WCellControl::findMax(const Simulation& System,
   const long int eIndex=
     std::lower_bound(WEng.begin(),WEng.end(),std::abs(eCut))-WEng.begin();
 
-  std::vector<int> cellRange=OR.getObjectRange(objKey);
+  const std::vector<int> cellRange=System.getObjectRange(objKey);
   
   
   double maxVal(0.0);

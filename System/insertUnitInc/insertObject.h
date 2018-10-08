@@ -3,7 +3,7 @@
  
  * File:   insertUnitInc/insertObject.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,16 +38,16 @@ namespace insertSystem
 */
 
 class insertObject : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::SurfMap,public attachSystem::FrontBackCut
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap,
+  public attachSystem::FrontBackCut
 {
  protected:
   
-  const int ptIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-  int populated;                 ///< externally set values
+  int populated;          //< externally set values
   
-  int defMat;               ///< Material
+  int defMat;             ///< Material
   bool delayInsert;       ///< Delay insertion         
   
   virtual void populate(const FuncDataBase&);

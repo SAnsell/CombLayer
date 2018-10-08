@@ -246,6 +246,10 @@ template int
 EvalDefMat(const FuncDataBase&,const std::string&,
            const std::string&,const int&);
 
+template std::string
+EvalDefMat(const FuncDataBase&,const std::string&,
+           const std::string&,const std::string&);
+
 /// \endcond TEMPLATE
 
 

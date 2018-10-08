@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/PBW.h
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,24 +26,21 @@ class Simulation;
 
 namespace essSystem
 {
+  class TelescopicPipe;
 
 /*!
   \class PBW
-  \version 1.0
+  \version 1.1
   \author Konstantin Batkov
-  \date 26 Jan 2017
+  \date Apr 2018
   \brief Proton beam window
 */
 
-  class TelescopicPipe;
 
 class PBW : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
 {
  private:
-
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
 
@@ -81,9 +78,9 @@ class PBW : public attachSystem::ContainedComp,
   double foilWaterThick; ///< thickness of water layer inside foil
   double foilWaterLength; ///< length (along z-axis chorda) of water layer inside foil
 
-  double protonTubeRad;             ///< inner radius of proton tube containing the PBW
-  int protonTubeMatBefore; ///< material inside the proton tube before PBW
-  int protonTubeMatAfter; ///< proton tube material after PBW
+  double pipeRad;             ///< inner radius of proton tube containing the PBW
+  int pipeMatBefore; ///< material inside the proton tube before PBW
+  int pipeMatAfter; ///< proton tube material after PBW
 
   int coolingMat;                   ///< cooling material
   int mat;                   ///< PBW material

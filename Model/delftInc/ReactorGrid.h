@@ -42,15 +42,14 @@ namespace delftSystem
 */
 
 class ReactorGrid : public attachSystem::FixedOffset,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
+      
 {
  private:
   
   /// reactor element storeage type
   typedef std::shared_ptr<RElement> RTYPE;
-
-  const int gridIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   size_t NX;                    ///< across size
   size_t NY;                    ///< tube direction size

@@ -58,13 +58,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -82,16 +75,20 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
 SimFLUKA::SimFLUKA() :
   Simulation(),
-  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
+  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
+  defType("PRECISION"),writeVariable(1),lowEnergyNeutron(1),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics())
   /*!
@@ -101,9 +98,10 @@ SimFLUKA::SimFLUKA() :
 
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
-  alignment(A.alignment),
-  writeVariable(A.writeVariable),nps(A.nps),
-  rndSeed(A.rndSeed),
+  alignment(A.alignment),defType(A.defType),
+  writeVariable(A.writeVariable),
+  lowEnergyNeutron(A.lowEnergyNeutron),
+  nps(A.nps),rndSeed(A.rndSeed),sourceExtraName(A.sourceExtraName),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
@@ -122,9 +120,12 @@ SimFLUKA::operator=(const SimFLUKA& A)
   if (this!=&A)
     {
       Simulation::operator=(A);
+      defType=A.defType;
       writeVariable=A.writeVariable;
+      lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
+      sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
 	FTItem.emplace(TM.first,TM.second->clone());
@@ -143,7 +144,44 @@ SimFLUKA::~SimFLUKA()
 }
 
 void
+SimFLUKA::setDefaultPhysics(const std::string& dName)
+  /*!
+    Set the default physics name if valid
+    \param dName :: Name to set [lower/upper case]
+   */
+{
+  // short name / full name
+  const static std::map<std::string,std::string>
+    validItem({{"PRECISIO","PRECISION"},
+	       {"EM-CASCAD","EM-CASCADE"},
+	       {"CALORIME","CALORIMETRY"},
+	       {"SHIELDIN","SHIELDING"},
+	       {"NEW-DEF","NEW-DEFAULTS"},
+	       {"HADROTHE","HADRONTHE"},
+	       {"NEUTRONS","NEUTRONS"}
+      });
+
+  if (dName.empty())
+    {
+      defType="";
+      return;
+    }
+      
+  const std::string item=StrFunc::toUpperString(dName.substr(0,8));
+  std::map<std::string,std::string>::const_iterator mc=
+    validItem.find(item);
+  if (mc==validItem.end())
+    throw ColErr::InContainerError<std::string>(dName,"Default item not known");
+  defType=mc->second;
+  return;
+}
+  
+
+void
 SimFLUKA::clearTally()
+  /*!
+    Remove all the tallies
+  */
 {
   for(FTallyTYPE::value_type& mc : FTItem)
     delete mc.second;
@@ -169,7 +207,6 @@ SimFLUKA::getNextFTape() const
     }
   throw ColErr::InContainerError<int>
     (98,"Tallies have exhaused available ftapes [25-98]");
-
 }
   
 void
@@ -206,18 +243,29 @@ SimFLUKA::getTally(const int TI) const
 }
 
 void
+SimFLUKA::setExtraSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
+  */
+{
+  sourceExtraName=S;
+  return;
+}
+
+void
 SimFLUKA::processActiveMaterials() const
   /*!
-    Set materials as active in DBMaterai Database
+    Set materials as active in DBMaterail Database
   */
 {
   ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
+
+  for(const OTYPE::value_type& mc : OList)
+    DB.setActive(mc.second->getMat());
   return;
 }
 
@@ -236,7 +284,6 @@ SimFLUKA::writeTally(std::ostream& OX) const
   OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;
   OX<<"* ------------------------------------------------------"<<std::endl;
 
-  ELog::EM<<"TALLY Size == :"<<FTItem.size()<<ELog::endDiag;
   for(const FTallyTYPE::value_type& TI : FTItem)
     TI.second->write(OX);
 
@@ -252,7 +299,7 @@ SimFLUKA::writeTransform(std::ostream& OX) const
   */
 
 {
-  OX<<"[transform]"<<std::endl;
+  OX<<"* [transform]"<<std::endl;
 
   TransTYPE::const_iterator vt;
   for(vt=TList.begin();vt!=TList.end();vt++)
@@ -289,6 +336,8 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("SimFLUKA","writeSurfaces");
+  
   OX<<"* SURFACE CARDS "<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =
@@ -336,7 +385,8 @@ SimFLUKA::writeElements(std::ostream& OX) const
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
-  StrFunc::writeFLUKA(lowmat.str(),OX);
+  if (lowEnergyNeutron)
+    StrFunc::writeFLUKA(lowmat.str(),OX);
 
   OX<<alignment<<std::endl;
 
@@ -382,13 +432,15 @@ SimFLUKA::writeWeights(std::ostream& OX) const
     type.
     \param OX :: Output stream
   */
-
 {
+  ELog::RegMethod RegA("SimFLUKA","writeWeights");
+  
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"* [weight]"<<std::endl;
-  WM.write(OX);
+  OX<<"* WEIGHT CARDS "<<std::endl;
+  
+  WM.writeFLUKA(OX);
   return;
 }
 
@@ -405,7 +457,8 @@ SimFLUKA::writePhysics(std::ostream& OX) const
 {  
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
   std::ostringstream cx;
-  cx<<"START "<<nps;
+
+  cx<<"START "<<static_cast<double>(nps);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
   cx<<"RANDOMIZE 1.0 "<<std::to_string(rndSeed % 1000000);
@@ -439,6 +492,14 @@ SimFLUKA::writeSource(std::ostream& OX) const
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
       SPtr->writeFLUKA(OX);
     }
+  if (!sourceExtraName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceExtraName,
+					     "SourceExtra not known");
+      SPtr->writeFLUKA(OX);
+    }
+
   OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
@@ -560,6 +621,13 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
     <<std::endl;
 
+  StrFunc::writeMCNPXcomment("RunCmd:",OX,"* ");
+  const std::vector<std::string> SCL=
+    StrFunc::splitComandLine(cmdLine);
+  for(const std::string& cmd : SCL)
+    StrFunc::writeMCNPXcomment(cmd,OX,"* ");
+  StrFunc::writeMCNPXcomment("",OX,"* ");
+  
   if (writeVariable)
     Simulation::writeVariables(OX,'*');
   
@@ -569,6 +637,7 @@ SimFLUKA::write(const std::string& Fname) const
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
+  writeWeights(OX);
   writeMaterial(OX);
   writeTally(OX);
   writeSource(OX);

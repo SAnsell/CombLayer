@@ -69,20 +69,66 @@
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
 
+#include "flukaGenParticle.h"
 #include "SimFLUKA.h"
 #include "cellValueSet.h"
+#include "pairValueSet.h"
 #include "flukaPhysics.h"
+#include "flukaDefPhysics.h"
 #include "flukaImpConstructor.h"
 #include "flukaProcess.h"
 
 namespace flukaSystem
 {
+
+std::set<int>
+getActiveUnit(const objectGroups& OGrp,
+	      const int typeFlag,
+	      const std::string& cellM)
+  /*!
+    Based on the typeFlag get the cell/material/particle set
+    \param OGrp :: Active Group
+    \param typeFlag :: -1 : partilce / cell /material 
+    \param cellM :: string to use as id
+    \return set of index(s0
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","getActiveUnit");
+  
+  switch (typeFlag)
+    {
+    case -1:
+      return getActiveParticle(cellM);
+    case 0:
+      return getActiveCell(OGrp,cellM);
+    }
+  return getActiveMaterial(cellM);
+}
+  
+std::set<int>
+getActiveParticle(const std::string& particle)
+  /*!
+    Given a material find the active particle
+    \param particle : name of particle to use
+    \return set of active components
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","getActiveParticle");
+
+  const flukaGenParticle& GP=flukaGenParticle::Instance();
+
+  std::set<int> activeOut;
+  activeOut.emplace(GP.flukaITYP(particle));
+  return activeOut;
+}
 
 std::set<int>
 getActiveMaterial(std::string material)
@@ -127,60 +173,24 @@ getActiveMaterial(std::string material)
 }
 
 std::set<int>
-getActiveCell(const std::string& cell)
+getActiveCell(const objectGroups& OGrp,
+	      const std::string& cell)
   /*!
     Given a cell find the active cells
+    \param OGrp :: Active group						
     \param cell : cell0 name to use
     \return set of active components
   */
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveCell");
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
-  const std::vector<int> Cells=OR.getObjectRange(cell);
-  if (Cells.empty())
-    throw ColErr::InContainerError<std::string>(cell,"Empty cell");
+  const std::vector<int> Cells=OGrp.getObjectRange(cell);
   std::set<int> activeCell(Cells.begin(),Cells.end());
 
   activeCell.erase(1);
   return activeCell;
 }
   
-void 
-setDefaultPhysics(SimFLUKA& System,
-		  const mainSystem::inputParam& IParam)
-  /*!
-    Set the default Physics
-    \param System :: Simulation
-    \param IParam :: Input parameter
-  */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
-  
-  System.setNPS(IParam.getValue<size_t>("nps"));
-  System.setRND(IParam.getValue<long int>("random"));
-
-  size_t nSet=IParam.setCnt("wIMP");
-  flukaPhysics* PC=System.getPhysics();
-    
-  if (nSet && PC)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processUnit(*PC,IParam,index);
-    }
-  nSet=IParam.setCnt("wEMF");
-  if (nSet && PC)
-    {
-      flukaSystem::flukaImpConstructor A;
-      for(size_t index=0;index<nSet;index++)
-	A.processEMF(*PC,IParam,index);
-    }
-  
-  return; 
-}
 
 
 } // NAMESPACE flukaSystem

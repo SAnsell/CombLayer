@@ -56,6 +56,8 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -63,6 +65,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "ExcludedComp.h"
 
@@ -237,26 +241,6 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
 }
 
 
-void
-ExcludedComp::addExcludeSurf(const std::string& FCName,
-			     const long int LIndex)
-/*!
-  Add a boundary surface
-  \param FCName :: Fixed object to use
-  \param LIndex :: Link surface index 
-*/
-{
-  ELog::RegMethod RegA("ExcludedComp","addExcludeSurf(string,Index)");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  const attachSystem::FixedComp* FCptr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
-
-  addExcludeSurf(*FCptr,LIndex);
-  return;
-}
 
 void
 ExcludedComp::addExcludeObj(const ContainedComp& CC) 
@@ -274,19 +258,19 @@ ExcludedComp::addExcludeObj(const ContainedComp& CC)
 }
 
 void
-ExcludedComp::addExcludeObj(const std::string& ObjName) 
+ExcludedComp::addExcludeObj(const objectGroups& OGrp,
+			    const std::string& ObjName) 
   /*!
     Add a set of surfaces to the output
+    \param OGrp :: Object group
     \param ObjName ::  Object Name [to use outer cell
   */
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const ContainedComp* CCPtr=
-    OR.getObjectThrow<ContainedComp>(ObjName,"CC-Object Not found");
+    OGrp.getObjectThrow<ContainedComp>(ObjName,"CC-Object Not found");
 
   
   const std::string OutStr=CCPtr->getCompExclude();
@@ -297,7 +281,8 @@ ExcludedComp::addExcludeObj(const std::string& ObjName)
 }
 
 void
-ExcludedComp::addExcludeObj(const std::string& objName,
+ExcludedComp::addExcludeObj(const objectGroups& OGrp,
+			    const std::string& objName,
 			    const std::string& grpName) 
   /*!
     Add a set of surfaces to the output
@@ -307,11 +292,9 @@ ExcludedComp::addExcludeObj(const std::string& objName,
 {
   ELog::RegMethod RegA("ExcludedComp","addExcludeObj(str,str)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const ContainedGroup* CCPtr=
-    OR.getObject<ContainedGroup>(objName);
+    OGrp.getObject<ContainedGroup>(objName);
   
   if (CCPtr)
     {
@@ -349,16 +332,14 @@ ExcludedComp::applyBoundary(Simulation& System)
 
   if (!boundary.hasRule()) return;
 
-  std::vector<int>::const_iterator vc;
-  for(vc=excludeCells.begin();vc!=excludeCells.end();vc++)
+  for(const int CN : excludeCells)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(*vc);
+      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
       if (outerObj)
 	outerObj->addSurfString(getNotExcludeUnit());
       else
-	ELog::EM<<"Failed to find outerObject: "<<*vc<<ELog::endErr;
+	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }
-
   return;
 }
 

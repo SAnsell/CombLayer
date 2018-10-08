@@ -1180,8 +1180,43 @@ DBMaterial::initMaterial()
   
 
   // Material #140: Hydrogen gas for vacuum pipes (Brem production)
-  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
-  MObj.setMaterial(140,"H2Gas","1001.70c 0.001","",MLib);
+  // Total atom density 5.4127e-5 -  300K 0.08988 g/litre
+  MObj.setMaterial(140,"H2Gas","1001.70c 5.4127e-5","",MLib);
+  setMaterial(MObj);
+
+  // Material #141: Hydrogen gas+carbon+O for vacuum pipes (Brem production)
+  // Total atom density 2.4305e-5 Mol/Angstrom -  300K R 100kPa
+  // 80% H2  / 10% C / 10% O2
+  // Mass density  2.4305e-5 Mol/Angstrom -  300K R 100kPa
+  MObj.setMaterial(141,"VacuumResidual",
+		   "1001.70c 3.888e-5 "
+		   "6000.70c 2.43e-6 "
+		   "8016.70c 4.86e-6 ","",MLib);
+  setMaterial(MObj);
+
+  // Material Lead glass:
+  // PbO 24%  SiO2 64% Na2O 12%
+  // density 3.4g/cc [rho=0.056]
+  MObj.setMaterial(142,"LeadGlass",
+		   "82204.70c 6.93965e-05 82206.70c 0.00119461  "
+		   "82207.70c 0.00109547 82208.70c 0.00259741  "
+		   "14028.70c 0.0121913 14029.70c 0.000619043  "
+		   "14030.70c 0.000408078 11023.70c 0.0049569  "
+		   "8016.70c 0.033459 ",
+		   "",MLib);
+  setMaterial(MObj);
+
+  // Material Nb2 Fe24 B : NbFeB magnet
+  // density 7.4g/cc [0.0700 Atom/A^3]
+  MObj.setMaterial(143,"NbFeB",
+		   "26054.24c 0.00337305 26056.24c 0.0529497  "
+		   "26057.24c 0.00122284 26058.24c 0.000162738  "
+		   "5010.70c 0.000820283 5011.70c 0.00330174  "
+		   "60142.70c 0.00224238 60143.70c 0.00100577  "
+		   "60144.70c 0.00196208 60145.70c 0.000684256  "
+		   "60146.70c 0.00141798 60148.70c 0.000469911  "
+		   "60150.70c 0.000461667 "
+		   ,"",MLib);
   setMaterial(MObj);
 
   return;

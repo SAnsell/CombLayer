@@ -44,9 +44,7 @@ class ButterflyModerator :
 {
  private:
 
-  const int flyIndex;        ///< Index of surface offset
-  int cellIndex;             ///< Cell index
-  int bfType; ///< Type (BF1 or BF2)
+  int bfType;                ///< Type (BF1 or BF2)
 
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator

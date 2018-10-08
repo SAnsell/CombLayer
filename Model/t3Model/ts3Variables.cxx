@@ -71,8 +71,8 @@ TS3model(FuncDataBase& Control)
   Control.addVariable("CentH2XStep",0.0);  
   Control.addVariable("CentH2YStep",0.0);  
   Control.addVariable("CentH2ZStep",0.0);
-  Control.addVariable("CentH2XYangle",0.0); 
-  Control.addVariable("CentH2Zangle",0.0);
+  Control.addVariable("CentH2XYAngle",0.0); 
+  Control.addVariable("CentH2ZAngle",0.0);
   Control.addVariable("CentH2Radius",4.0);
   Control.addVariable("CentH2Height",10.0);
   Control.addVariable("CentH2Mat","ParaH2");
@@ -144,8 +144,8 @@ TS3model(FuncDataBase& Control)
   Control.addVariable("CentH2NWedge",1);
 
   Control.addVariable("CentH2Wedge1Cent",Geometry::Vec3D(13,0,0));
-  Control.addVariable("CentH2Wedge1XYangle",-90.0);
-  Control.addVariable("CentH2Wedge1Zangle",0.0);
+  Control.addVariable("CentH2Wedge1XYAngle",-90.0);
+  Control.addVariable("CentH2Wedge1ZAngle",0.0);
   Control.addVariable("CentH2Wedge1ViewWidth",6.0);
   Control.addVariable("CentH2Wedge1ViewHeight",3.0);
   Control.addVariable("CentH2Wedge1ViewXY",30.0);
@@ -157,7 +157,7 @@ TS3model(FuncDataBase& Control)
 
 
   Control.addVariable("WCut0Centre",Geometry::Vec3D(10,0,0));
-  Control.addVariable("WCut0RotXYangle",90.0);
+  Control.addVariable("WCut0RotXYAngle",90.0);
   Control.addVariable("WCut0Length",-1.0);
   Control.addVariable("WCut0Width",3.0);
   Control.addVariable("WCut0Height",3.0);

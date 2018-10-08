@@ -3,7 +3,7 @@
  
  * File:   construct/HoleShape.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -79,8 +81,7 @@ HoleShape::HoleShape(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
   attachSystem::CellMap(),
-  holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(holeIndex+1),shapeType(0),
+  shapeType(0),
   angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0),
   cutFlag(0)
   /*!
@@ -92,7 +93,6 @@ HoleShape::HoleShape(const std::string& Key) :
 HoleShape::HoleShape(const HoleShape& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
-  holeIndex(A.holeIndex),cellIndex(A.cellIndex),
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
   radius(A.radius),xradius(A.xradius),rotCentre(A.rotCentre),
@@ -117,7 +117,6 @@ HoleShape::operator=(const HoleShape& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       shapeType=A.shapeType;
       angleCentre=A.angleCentre;
       angleOffset=A.angleOffset;
@@ -221,11 +220,16 @@ HoleShape::populate(const FuncDataBase& Control)
   setShape(shapeName);
 
   radialStep=Control.EvalDefVar<double>(keyName+"RadialStep",0.0);
+
   angleCentre=Control.EvalDefVar<double>(keyName+"AngleCentre",0.0);
   angleOffset=Control.EvalDefVar<double>(keyName+"AngleOffset",0.0);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   xradius=Control.EvalDefVar<double>(keyName+"XRadius",radius);
+
+  const double masterAngle=
+    Control.EvalDefVar<double>(keyName+"MasterAngle",0.0);
+  setMasterAngle(masterAngle);
   return;
 }
 
@@ -264,7 +268,7 @@ HoleShape::createCircleSurfaces()
 {
   ELog::RegMethod RegA("HoleShape","createCircleSurfaces");  
 
-  ModelSupport::buildCylinder(SMap,holeIndex+31,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+31,Origin,Y,radius);
   return;
 }
 
@@ -308,7 +312,7 @@ HoleShape::createCircleObj()
   ELog::RegMethod RegA("HoleShape","createCircleObj");
 
   const std::string Out=
-    ModelSupport::getComposite(SMap,holeIndex," -31 ");
+    ModelSupport::getComposite(SMap,buildIndex," -31 ");
   return Out;
 }
 
@@ -323,10 +327,10 @@ HoleShape::createSquareSurfaces()
   ELog::RegMethod RegA("HoleShape","createSquareSurfaces");
 
   // inner square
-  ModelSupport::buildPlane(SMap,holeIndex+33,Origin-X*radius,X);
-  ModelSupport::buildPlane(SMap,holeIndex+34,Origin+X*radius,X);
-  ModelSupport::buildPlane(SMap,holeIndex+35,Origin-Z*radius,Z);
-  ModelSupport::buildPlane(SMap,holeIndex+36,Origin+Z*radius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin-X*radius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+X*radius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*radius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*radius,Z);
   return;
 }
 
@@ -341,10 +345,10 @@ HoleShape::createRectangleSurfaces()
   ELog::RegMethod RegA("HoleShape","createSquareSurfaces");
 
   // inner square
-  ModelSupport::buildPlane(SMap,holeIndex+33,Origin-X*xradius,X);
-  ModelSupport::buildPlane(SMap,holeIndex+34,Origin+X*xradius,X);
-  ModelSupport::buildPlane(SMap,holeIndex+35,Origin-Z*radius,Z);
-  ModelSupport::buildPlane(SMap,holeIndex+36,Origin+Z*radius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin-X*xradius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+X*xradius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*radius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*radius,Z);
   return;
 }
 
@@ -358,7 +362,7 @@ HoleShape::createSquareObj()
   ELog::RegMethod RegA("HoleShape","createSquareObj");
   
   const std::string Out=
-    ModelSupport::getComposite(SMap,holeIndex," 33 -34 35 -36");
+    ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36");
 
   return Out;
 }
@@ -377,7 +381,7 @@ HoleShape::createHexagonSurfaces()
   for(int i=0;i<6;i++)
     {
       const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);      
-      ModelSupport::buildPlane(SMap,holeIndex+31+i,
+      ModelSupport::buildPlane(SMap,buildIndex+31+i,
 			       Origin+Norm*radius,Norm);      
       theta+=2.0*M_PI/6.0;
     }
@@ -394,7 +398,7 @@ HoleShape::createHexagonObj()
   ELog::RegMethod RegA("HoleShape","createHexagonObj");
   
   const std::string Out=
-    ModelSupport::getComposite(SMap,holeIndex," -31 -32 -33 -34 -35 -36");
+    ModelSupport::getComposite(SMap,buildIndex," -31 -32 -33 -34 -35 -36");
   return Out;
 }
 
@@ -413,7 +417,7 @@ HoleShape::createOctagonSurfaces()
   for(int i=0;i<8;i++)
     {
       const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);
-      ModelSupport::buildPlane(SMap,holeIndex+31+i,Origin+Norm*radius,Norm);
+      ModelSupport::buildPlane(SMap,buildIndex+31+i,Origin+Norm*radius,Norm);
       theta+=2.0*M_PI/8.0;
     }
   return;
@@ -429,7 +433,7 @@ HoleShape::createOctagonObj()
   ELog::RegMethod RegA("HoleShape","createOctagonObj");
 
   const std::string Out=
-    ModelSupport::getComposite(SMap,holeIndex,
+    ModelSupport::getComposite(SMap,buildIndex,
 				 " -31 -32 -33 -34 -35 -36 -37 -38");
 
   return Out;
@@ -445,7 +449,7 @@ HoleShape::createRectangleObj()
   ELog::RegMethod RegA("HoleShape","createRectangleObj");
 
   const std::string Out=
-    ModelSupport::getComposite(SMap,holeIndex,
+    ModelSupport::getComposite(SMap,buildIndex,
 				 " 33 -34 35 -36 ");
 
   return Out;

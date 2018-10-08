@@ -60,6 +60,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -170,49 +172,49 @@ FuelElement::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FuelElement","populate");
 
-  nElement=ReactorGrid::getElement<size_t>(Control,keyName+"NFuel",
+  nElement=ReactorGrid::getElement<size_t>(Control,baseName+"NFuel",
 					   XIndex,YIndex);
  
-  width=ReactorGrid::getElement<double>(Control,keyName+"Width",
+  width=ReactorGrid::getElement<double>(Control,baseName+"Width",
 					XIndex,YIndex);
-  depth=ReactorGrid::getElement<double>(Control,keyName+"Depth",
+  depth=ReactorGrid::getElement<double>(Control,baseName+"Depth",
 					XIndex,YIndex);
  
-  topHeight=ReactorGrid::getElement<double>(Control,keyName+"TopHeight",
+  topHeight=ReactorGrid::getElement<double>(Control,baseName+"TopHeight",
 					    XIndex,YIndex);
-  baseHeight=ReactorGrid::getElement<double>(Control,keyName+"BaseHeight",
+  baseHeight=ReactorGrid::getElement<double>(Control,baseName+"BaseHeight",
 					     XIndex,YIndex);
-  baseRadius=ReactorGrid::getElement<double>(Control,keyName+"BaseRadius",
+  baseRadius=ReactorGrid::getElement<double>(Control,baseName+"BaseRadius",
 					     XIndex,YIndex);
-  fuelHeight=ReactorGrid::getElement<double>(Control,keyName+"FuelHeight",
+  fuelHeight=ReactorGrid::getElement<double>(Control,baseName+"FuelHeight",
 					     XIndex,YIndex);
-  fuelDepth=ReactorGrid::getElement<double>(Control,keyName+"FuelDepth",
+  fuelDepth=ReactorGrid::getElement<double>(Control,baseName+"FuelDepth",
 					    XIndex,YIndex);
-  fuelWidth=ReactorGrid::getElement<double>(Control,keyName+"FuelWidth",
+  fuelWidth=ReactorGrid::getElement<double>(Control,baseName+"FuelWidth",
 					    XIndex,YIndex);
-  cladHeight=ReactorGrid::getElement<double>(Control,keyName+"CladHeight",
+  cladHeight=ReactorGrid::getElement<double>(Control,baseName+"CladHeight",
 					     XIndex,YIndex);
-  cladDepth=ReactorGrid::getElement<double>(Control,keyName+"CladDepth",
+  cladDepth=ReactorGrid::getElement<double>(Control,baseName+"CladDepth",
 					    XIndex,YIndex);
-  cladWidth=ReactorGrid::getElement<double>(Control,keyName+"CladWidth",
+  cladWidth=ReactorGrid::getElement<double>(Control,baseName+"CladWidth",
 					    XIndex,YIndex);
 
-  waterDepth=ReactorGrid::getElement<double>(Control,keyName+"WaterDepth",
+  waterDepth=ReactorGrid::getElement<double>(Control,baseName+"WaterDepth",
 					     XIndex,YIndex);
 
-  barRadius=ReactorGrid::getElement<double>(Control,keyName+"BarRadius",
+  barRadius=ReactorGrid::getElement<double>(Control,baseName+"BarRadius",
 					    XIndex,YIndex);
-  barOffset=ReactorGrid::getElement<double>(Control,keyName+"BarOffset",
+  barOffset=ReactorGrid::getElement<double>(Control,baseName+"BarOffset",
 					    XIndex,YIndex);
 
-  alMat=ReactorGrid::getMatElement(Control,keyName+"AlMat",
+  alMat=ReactorGrid::getMatElement(Control,baseName+"AlMat",
 				   XIndex,YIndex);
-  fuelMat=ReactorGrid::getMatElement(Control,keyName+"FuelMat",
+  fuelMat=ReactorGrid::getMatElement(Control,baseName+"FuelMat",
 				     XIndex,YIndex);
-  watMat=ReactorGrid::getMatElement(Control,keyName+"WaterMat",
+  watMat=ReactorGrid::getMatElement(Control,baseName+"WaterMat",
 				    XIndex,YIndex);
   
-  nFuel=ReactorGrid::getElement<size_t>(Control,keyName+"NFuelDivide",
+  nFuel=ReactorGrid::getElement<size_t>(Control,baseName+"NFuelDivide",
 					XIndex,YIndex);
   makeFuelDivider();
   return;
@@ -283,40 +285,40 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG)
 {  
   ELog::RegMethod RegA("FuelElement","createSurface(exclude)");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*depth/2.0,Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*width/2.0,X);
   const double tHeight(fuelHeight/2.0+cladHeight+topHeight);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
-  ModelSupport::buildPlane(SMap,surfIndex+6,
+  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
+  ModelSupport::buildPlane(SMap,buildIndex+6,
    			   Origin+Z*tHeight,Z);
   // Width numbers:
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*fuelWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*fuelWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*fuelHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*fuelHeight/2.0,Z);
   // Cladding
-  ModelSupport::buildPlane(SMap,surfIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(fuelWidth/2.0+cladWidth),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(fuelWidth/2.0+cladWidth),X);
-  ModelSupport::buildPlane(SMap,surfIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(fuelHeight/2.0+cladHeight),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(fuelHeight/2.0+cladHeight),Z);
 
-  int surfOffset(surfIndex+100);
+  int surfOffset(buildIndex+100);
   size_t excFlag(0);
   for(size_t i=0;i<nElement;i++)
     {
@@ -351,12 +353,12 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG)
     }
 
   // TOP HOLDER:
-  ModelSupport::buildCylinder(SMap,surfIndex+37,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,
 			      Origin+Z*(tHeight-barOffset),
 			      X,barRadius);
 
   // Base Holder
-  ModelSupport::buildCylinder(SMap,surfIndex+47,Origin,Z,baseRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Z,baseRadius);
   
   return;
 }
@@ -392,19 +394,19 @@ FuelElement::createObjects(Simulation& System)
 
   std::string Out;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
 
   // Outer plates:
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -23 25 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -23 25 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 24 -4 25 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 24 -4 25 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
-  int surfOffset(surfIndex+100);
+  int surfOffset(buildIndex+100);
   // Front water plate
-  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+  Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 				 " 1 -21M 23 -24 25 -26 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
   waterCells.push_back(cellIndex-1);
@@ -425,13 +427,13 @@ FuelElement::createObjects(Simulation& System)
       if (Exclude.find(i)==Exclude.end())
 	{
 	  // Fuel
-	  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+	  Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					 " 11M -12M 13 -14 15 -16 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,fuelMat,0.0,Out));
 	  fuelCells.push_back(cellIndex-1);
 	  fuelCentre.push_back(plateCentre(i));
 	  // Cladding
-	  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+	  Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					 " 21M -22M 23 -24 25 -26 "
 					 " (-11M:12M:-13:14:-15:16) ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
@@ -439,14 +441,14 @@ FuelElement::createObjects(Simulation& System)
 	  // Water (def material) [ one + 
 
 	  if (i!=nElement-1 && Exclude.find(i+1)==Exclude.end())
-	    Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+	    Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					   " 22M -121M 23 -24 25 -26 ");
 	  else if (i==nElmMax)
-	    Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+	    Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					     " 22M -2 23 -24 25 -26 ");
 	  else 
 	    {
-	      Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+	      Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					     " 22M -121M 23 -24 25 -26 ");
 	    }
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
@@ -462,25 +464,25 @@ FuelElement::createObjects(Simulation& System)
   if (midCell.empty())
     {
       // Holder:
-      Out=ModelSupport::getComposite(SMap,surfIndex,"23 -24 -37 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"23 -24 -37 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
       // Water in space
-      Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 23 -24 26 -6 37 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 23 -24 26 -6 37 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
     }
   else
     {
       // ONLY Water in space
-      Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 23 -24 26 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 23 -24 26 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
     }
   topCell=cellIndex-1;
 
   // -------- BASE -----------------
-  Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 -47 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -25 -47 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 47 3 -4 1 -2");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -25 47 3 -4 1 -2");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   return;
@@ -539,7 +541,7 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
 
   if (nFuel<2) return;
   // All fuel cells
-  int SI(surfIndex+4001);
+  int SI(buildIndex+4001);
   for(size_t i=0;i<fuelCells.size();i++)
     {
       ModelSupport::surfDivide DA;
@@ -555,8 +557,8 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
       DA.init();
       DA.setCellN(fuelCells[i]);
       DA.setOutNum(cellIndex,SI);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(surfIndex+15),
-				   SMap.realSurf(surfIndex+16));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+15),
+				   SMap.realSurf(buildIndex+16));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
       SI+=100;

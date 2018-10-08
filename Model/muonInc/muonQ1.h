@@ -40,8 +40,6 @@ class muonQ1 : public attachSystem::FixedComp,
 {
  private:
   
-  const int muQ1Index;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step

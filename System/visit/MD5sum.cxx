@@ -58,6 +58,8 @@
 #include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "MatMD5.h"
 #include "MD5sum.h"

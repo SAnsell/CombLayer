@@ -48,8 +48,6 @@ class H2Wing :
 
   const std::string baseName; ///< Basename
   const std::string extraName; ///< Extra name
-  const int wingIndex;       ///< Index of surface offset
-  int cellIndex;             ///< Cell index
 
   int engActive;             ///< Engineering active
   int bfType; ///< Type (BF1 or BF2)

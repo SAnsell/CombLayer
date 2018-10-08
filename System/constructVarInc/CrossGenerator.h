@@ -50,6 +50,7 @@ class CrossGenerator
   double flangeLen;          ///< Flange length
     
   std::string voidMat;          ///< void material [void]
+  std::string plateMat;         ///< plate material
   std::string wallMat;          ///< wall material
 
  public:
@@ -60,6 +61,7 @@ class CrossGenerator
   ~CrossGenerator();
 
   void setPlates(const double,const double,const double);
+  void setTotalPorts(const double,const double);
   void setPorts(const double,const double);
   void setFlange(const double,const double);
   /// set void material

@@ -59,7 +59,6 @@
 #include "masterRotate.h"
 #include "Surface.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Line.h"
@@ -75,6 +74,8 @@
 #include "TwinComp.h"
 #include "LinearComp.h"
 #include "PositionSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkSupport.h"
@@ -194,7 +195,6 @@ beamTallyConstruct::processPoint(SimMCNP& System,
 	("tally",Index,2,"beamline number not given");
       const std::string face=IParam.getValueError<std::string>
 	("tally",Index,3,"beamline face : front/back not given");
-      const long int linkNumber=attachSystem::getLinkIndex(face);
 
       const double beamDist=
 	IParam.getDefValue<double>(1000.0,"tally",Index,3);
@@ -205,7 +205,7 @@ beamTallyConstruct::processPoint(SimMCNP& System,
       const double pointZRot=
 	IParam.getDefValue<double>(0.0,"tally",Index,6);
 
-      addViewInnerTally(System,beamNum-1,linkNumber,
+      addViewInnerTally(System,beamNum-1,face,
 			beamDist,timeOffset,
 			windowOffset,pointZRot);
       return;
@@ -236,8 +236,6 @@ beamTallyConstruct::addBeamLineTally(SimMCNP& System,
 {
   ELog::RegMethod RegA("beamTallyConstruct","addBeamLineTally");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -256,36 +254,36 @@ beamTallyConstruct::addBeamLineTally(SimMCNP& System,
     {
       if (beamNum<4)
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("decoupled",errModStr);
 	  vSurface=1;
 	}
       else if (beamNum<9)
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("hydrogen",errModStr);
 	  vSurface=1;
 	}
       else if (beamNum<14)
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("groove",errModStr);
 	  vSurface=1;
 	}
       else
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("decoupled",errModStr);
 	  vSurface=2;
 	}
     }
   else
     {
-      ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+      ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	(modName,errModStr);
     }
   
-  ShutterPtr=OR.getObjectThrow<attachSystem::FixedComp>
+  ShutterPtr=System.getObjectThrow<attachSystem::FixedComp>
     ("shutter"+std::to_string(beamNum),"Shutter Object");
   
 
@@ -363,8 +361,6 @@ beamTallyConstruct::addShutterTally(SimMCNP& System,
 {
   ELog::RegMethod RegA("beamTallyConstruct","addShutterTally");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -378,8 +374,8 @@ beamTallyConstruct::addShutterTally(SimMCNP& System,
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
 
-  ModPtr=OR.getObject<attachSystem::FixedComp>(modName);  
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
+  ModPtr=System.getObject<attachSystem::FixedComp>(modName);  
+  ShutterPtr=System.getObject<attachSystem::FixedComp>
     (StrFunc::makeString(std::string("shutter"),beamNum));
 
   if (!ShutterPtr)    
@@ -459,8 +455,6 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
 {
   ELog::RegMethod RegA("beamTallyConstruct","addViewLineTally");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -470,7 +464,7 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
 
   const attachSystem::FixedComp* ShutterPtr;
 
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
+  ShutterPtr=System.getObject<attachSystem::FixedComp>
     (StrFunc::makeString(std::string("shutter"),beamNum));
 
   if (!ShutterPtr)    
@@ -522,7 +516,7 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
 void 
 beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 				 const int beamNum,
-				 const long int faceFlag,     
+    			         const std::string& faceName,     
 				 const double beamDist,
 				 const double timeOffset,
 				 const double windowOffset,
@@ -531,7 +525,7 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
     Adds a beamline tally to the system
     \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
-    \param faceFlag :: Face -- Front/Back
+    \param faceName :: Face -- Front/Back
     \param beamDist :: Distance from moderator face
     \param timeOffset :: Time back step for tally
     \param windowOffset :: Distance to move window towards tally point
@@ -541,8 +535,6 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 
   ELog::RegMethod RegA("beamTallyConstruct","addViewInnerTally");
       
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -550,14 +542,11 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 
   int masterPlane(0);
 
-  const attachSystem::FixedComp* ShutterPtr;
-
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
-    (StrFunc::makeString(std::string("shutter"),beamNum));
-
-  if (!ShutterPtr)    
-    throw ColErr::InContainerError<int>(beamNum,"Shutter Object not found");
-
+  const attachSystem::FixedComp* ShutterPtr=
+    System.getObjectThrow<attachSystem::FixedComp>
+    ("shutter"+std::to_string(beamNum),
+     "Shutter Object not found");
+  const long int faceFlag=ShutterPtr->getSideIndex(faceName);
   // MODERATOR PLANE
   masterPlane=ShutterPtr->getExitWindow(0,Planes);
   const shutterSystem::BlockShutter* BSPtr=

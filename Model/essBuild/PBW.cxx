@@ -3,7 +3,7 @@
 
  * File:   essBuild/PBW.cxx
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2004-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -71,6 +73,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "FixedOffset.h"
 #include "surfDBase.h"
@@ -80,7 +85,9 @@
 #include "mergeTemplate.h"
 #include "AttachSupport.h"
 
-#include "ContainedGroup.h"
+//#include "BaseMap.h"
+#include "CellMap.h"
+#include "FrontBackCut.h"
 #include "TelescopicPipe.h"
 #include "PBW.h"
 
@@ -90,8 +97,6 @@ namespace essSystem
 PBW::PBW(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,8),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1),
   shield(new TelescopicPipe(Key+"Shield"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -109,7 +114,6 @@ PBW::PBW(const std::string& Key)  :
 PBW::PBW(const PBW& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   plugLength1(A.plugLength1),
   plugLength2(A.plugLength2),
@@ -142,9 +146,9 @@ PBW::PBW(const PBW& A) :
   foilCylOffset(A.foilCylOffset),
   foilWaterThick(A.foilWaterThick),
   foilWaterLength(A.foilWaterLength),
-  protonTubeRad(A.protonTubeRad),
-  protonTubeMatBefore(A.protonTubeMatBefore),
-  protonTubeMatAfter(A.protonTubeMatAfter),
+  pipeRad(A.pipeRad),
+  pipeMatBefore(A.pipeMatBefore),
+  pipeMatAfter(A.pipeMatAfter),
   coolingMat(A.coolingMat),mat(A.mat),
   shield(A.shield->clone())
   /*!
@@ -198,9 +202,9 @@ PBW::operator=(const PBW& A)
       foilCylOffset=A.foilCylOffset;
       foilWaterThick=A.foilWaterThick;
       foilWaterLength=A.foilWaterLength;
-      protonTubeRad=A.protonTubeRad;
-      protonTubeMatBefore=A.protonTubeMatBefore;
-      protonTubeMatAfter=A.protonTubeMatAfter;
+      pipeRad=A.pipeRad;
+      pipeMatBefore=A.pipeMatBefore;
+      pipeMatAfter=A.pipeMatAfter;
       coolingMat=A.coolingMat;
       mat=A.mat;
       *shield=*A.shield;
@@ -267,9 +271,9 @@ PBW::populate(const FuncDataBase& Control)
   foilCylOffset=Control.EvalVar<double>(keyName+"FoilCylOffset");
   foilWaterThick=Control.EvalVar<double>(keyName+"FoilWaterThick");
   foilWaterLength=Control.EvalVar<double>(keyName+"FoilWaterLength");
-  protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
-  protonTubeMatBefore=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMatBefore");
-  protonTubeMatAfter=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMatAfter");
+  pipeRad=Control.EvalVar<double>(keyName+"PipeRadius");
+  pipeMatBefore=ModelSupport::EvalMat<int>(Control,keyName+"PipeMatBefore");
+  pipeMatAfter=ModelSupport::EvalMat<int>(Control,keyName+"PipeMatAfter");
 
   coolingMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolingMat");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
@@ -302,112 +306,112 @@ PBW::createSurfaces()
   ELog::RegMethod RegA("PBW","createSurfaces");
 
   // plug
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(plugLength2),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(plugLength1),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(plugLength2),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(plugLength1),Y);
 
   const double alpha = atan((plugWidth1-plugWidth2)/2.0/(plugLength1+plugLength2))*180/M_PI;
 
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,
 				  Origin-X*(plugWidth1/2.0)+Y*(plugLength1),
 				  X,Z,alpha);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,
 				  Origin+X*(plugWidth1/2.0)+Y*(plugLength1),
 				  X,Z,-alpha);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(plugDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(plugHeight),Z);
 
   // proton tube rad
-  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,protonTubeRad);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,pipeRad);
 
   // plug void
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(plugVoidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(plugVoidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(plugVoidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(plugVoidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(plugVoidDepth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(plugVoidHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(plugVoidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(plugVoidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(plugVoidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(plugVoidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(plugVoidDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(plugVoidHeight),Z);
 
   // flanges
   //         water rings
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+21,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+21,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+11),
 				  flangeWaterRingOffset);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+22,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+21),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+22,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+21),
 				  flangeWaterRingThick);
 
-  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
   const double cyl28rad = flangeRadius+flangeThick; // used as half height of plug Al plate
-  ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,cyl28rad);
+  ModelSupport::buildCylinder(SMap,buildIndex+28,Origin,Y,cyl28rad);
 
-  ModelSupport::buildCylinder(SMap,surfIndex+29,Origin,Y,flangeWaterRingRadiusIn);
-  ModelSupport::buildCylinder(SMap,surfIndex+30,Origin,Y,flangeWaterRingRadiusOut);
+  ModelSupport::buildCylinder(SMap,buildIndex+29,Origin,Y,flangeWaterRingRadiusIn);
+  ModelSupport::buildCylinder(SMap,buildIndex+30,Origin,Y,flangeWaterRingRadiusOut);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+31,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+12),
 				  -flangeWaterRingOffset);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+32,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+31),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+31),
 				  -flangeWaterRingThick);
 
   //         1st flange notch
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+41,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+41,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+11),
 				  flangeNotchOffset);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+42,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+41),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+42,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+41),
 				  flangeNotchThick);
-  ModelSupport::buildCylinder(SMap,surfIndex+47,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Y,
 			      flangeRadius+flangeThick-flangeNotchDepth);
   //          2nd flange notch
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+61,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+61,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+12),
 				  -flangeNotchOffset);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+62,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+61),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+62,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+61),
 				  -flangeNotchThick);
 
   // Plug Al plate
-  ModelSupport::buildPlane(SMap,surfIndex+71,Origin-Y*(plugAlLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+72,Origin+Y*(plugAlLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+71,Origin-Y*(plugAlLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+72,Origin+Y*(plugAlLength/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+73,Origin-X*(cyl28rad),X);
-  ModelSupport::buildPlane(SMap,surfIndex+74,Origin+X*(cyl28rad),X);
+  ModelSupport::buildPlane(SMap,buildIndex+73,Origin-X*(cyl28rad),X);
+  ModelSupport::buildPlane(SMap,buildIndex+74,Origin+X*(cyl28rad),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+75,Origin-Z*(cyl28rad),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+76,Origin+Z*(cyl28rad),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+75,Origin-Z*(cyl28rad),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+76,Origin+Z*(cyl28rad),Z);
 
   // Plug Al plate - groove
-  ModelSupport::buildPlane(SMap,surfIndex+81,
+  ModelSupport::buildPlane(SMap,buildIndex+81,
 			   Origin-Y*(plugAlLength/2.0-plugAlGrooveDepth),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+82,
+  ModelSupport::buildPlane(SMap,buildIndex+82,
 			   Origin+Y*(plugAlLength/2.0-plugAlGrooveDepth),Y);
-  ModelSupport::buildCylinder(SMap,surfIndex+87,Origin,Y,plugAlGrooveRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+87,Origin,Y,plugAlGrooveRadius);
 
   // Plug Al plate - gap
-  ModelSupport::buildPlane(SMap,surfIndex+93,Origin-X*(plugAlGapWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+94,Origin+X*(plugAlGapWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+93,Origin-X*(plugAlGapWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+94,Origin+X*(plugAlGapWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+95,Origin-Z*(plugAlGapHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+96,Origin+Z*(plugAlGapHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+95,Origin-Z*(plugAlGapHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+96,Origin+Z*(plugAlGapHeight/2.0),Z);
 
   // PBW foil
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+101,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+82),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+101,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+82),
 				  -foilOffset-foilThick);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+102,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+102,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+101),
 				  foilThick);
-  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin+Y*(foilCylOffset),X,foilRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+108,Origin+Y*(foilCylOffset),X,foilRadius+foilThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin+Y*(foilCylOffset),X,foilRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+108,Origin+Y*(foilCylOffset),X,foilRadius+foilThick);
 
   // PBW foil - water
-  ModelSupport::buildPlane(SMap,surfIndex+115,Origin-Z*(foilWaterLength/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+116,Origin+Z*(foilWaterLength/2.0),Z);
-  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin+Y*(foilCylOffset),X,
+  ModelSupport::buildPlane(SMap,buildIndex+115,Origin-Z*(foilWaterLength/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(foilWaterLength/2.0),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin+Y*(foilCylOffset),X,
 			      (foilRadius+foilRadius+foilThick-foilWaterThick)/2.0);
-  ModelSupport::buildCylinder(SMap,surfIndex+118,Origin+Y*(foilCylOffset),X,
+  ModelSupport::buildCylinder(SMap,buildIndex+118,Origin+Y*(foilCylOffset),X,
 			      (foilRadius+foilRadius+foilThick+foilWaterThick)/2.0);
 
   return;
@@ -425,122 +429,122 @@ PBW::createObjects(Simulation& System)
   std::string Out;
 
   // plug
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76) "); // outer void
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 7 (-11:12:-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // proton tube void
-  Out=ModelSupport::getComposite(SMap,surfIndex, " -7 12 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " -7 1 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatBefore,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 12 -2");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 1 -11");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
 
   // flange cylinder
   // inner steel
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -71 27 -29 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -71 27 -29 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 72 -12 27 -29 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 72 -12 27 -29 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // flange cylinder - inner layer
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -41 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 22 -41 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 29 -47 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -71 29 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 72 -62 29 -28 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 29 -47 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 29 -47 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 42 -71 29 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 61 -32 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 72 -62 29 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 32 -31 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 62 -61 29 -47 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 61 -32 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 32 -31 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 31 -12 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -12 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // flange - outer steel
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -41 30 -28 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -41 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 47 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 47 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 61 -12 30 -28 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 62 -61 47 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 61 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // void inside PBW main cell
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -81 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatBefore,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 82 -12 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -81 -27 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 82 -12 -27 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   // PBW Al plate
-  Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 27 -87 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -81 27 -87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 87 73 -74 75 -76 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 71 -81 87 73 -74 75 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 81 -82 73 -74 75 -76 (-93:94:-95:96)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 27 -87 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 82 -72 27 -87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 87 73 -74 75 -76 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 82 -72 87 73 -74 75 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
   // PBW foil
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -101 108 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatBefore,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 81 -101 108 93 -94 95 -96 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -102 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -107 -102 93 -94 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 93 -94 95 -96 107");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -102 93 -94 95 -96 107");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 102 -82 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 102 -82 93 -94 95 -96 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   // cylindrical segment:
   //                      sides
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 116 93 -94 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 116 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 -115 93 -94 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 -115 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   // central cylindrical segment with water:
   if (std::abs(foilThick-foilWaterThick)>Geometry::zeroTol)
     {
-    Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -117 -101 115 -116 93 -94 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -117 -101 115 -116 93 -94 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-    Out=ModelSupport::getComposite(SMap,surfIndex, " 117 -118 -101 115 -116 93 -94 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex, " 117 -118 -101 115 -116 93 -94 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
-    Out=ModelSupport::getComposite(SMap,surfIndex, " 118 -108 -101 115 -116 93 -94 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex, " 118 -108 -101 115 -116 93 -94 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
     }
   else // no side Al layers
     {
-    Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 115 -116 93 -94 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 115 -116 93 -94 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;
@@ -556,28 +560,28 @@ PBW::createLinks()
   ELog::RegMethod RegA("PBW","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(plugLength2),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(plugLength1),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0)+Y*(plugLength1),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin-X*(plugWidth2/2.0)-Y*(plugLength2),-X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+3));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(4,Origin+X*(plugWidth1/2.0)+Y*(plugLength1),X);
-  FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+4));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(5,Origin+X*(plugWidth2/2.0)-Y*(plugLength2),X);
-  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+4));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(6,Origin-Z*(plugDepth),-Z);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+5));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(7,Origin+Z*(plugHeight),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+6));
 
   return;
 }
@@ -609,9 +613,10 @@ PBW::createAll(Simulation& System,
 
   if (engActive)
     {
-      shield->createAll(System,*this,8,SB,sblp,SB);
-      attachSystem::addToInsertSurfCtrl(System,SB,
-					shield->getCC("Full"));
+      shield->setFront(*this,8);
+      shield->setBack(SB,sblp);
+      shield->createAll(System,*this,8);
+      attachSystem::addToInsertSurfCtrl(System,SB,shield->getCC("Full"));
     }
 
   return;

@@ -69,6 +69,8 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "variableSetup.h"
@@ -142,7 +144,7 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       chipIRDatum::chipDataStore::Instance().writeMasterTable("chipIR.table");
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -163,7 +165,6 @@ main(int argc,char* argv[])
     }
 
   mainSystem::exitDelete(SimPtr);
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

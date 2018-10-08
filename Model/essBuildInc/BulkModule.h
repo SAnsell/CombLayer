@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BulkModule.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,7 @@ class BulkModule : public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-  
-  const int bulkIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-   
+     
   size_t nLayer;                 ///< Number of layers
   std::vector<double> radius;        ///< radius of outer
   std::vector<double> height;        ///< Heights

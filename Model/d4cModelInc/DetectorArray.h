@@ -48,8 +48,6 @@ class DetectorArray : public attachSystem::ContainedComp,
 {
  private:
   
-  const int detIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double centRadius;            ///< Radius of from centre
   double tubeRadius;            ///< Radius of detector

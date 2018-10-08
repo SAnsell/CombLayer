@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -61,24 +60,24 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
+#include "FixedComp.h"
+#include "FixedOffset.h" 
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "Building.h"
 
 namespace epbSystem
 {
 
 Building::Building(const std::string& Key) : 
-  attachSystem::FixedComp(Key,6),
-  attachSystem::ContainedComp(),
-  hallIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hallIndex+1)
+  attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -86,10 +85,8 @@ Building::Building(const std::string& Key) :
 {}
 
 Building::Building(const Building& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  hallIndex(A.hallIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),height(A.height),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  height(A.height),
   depth(A.depth),width(A.width),length(A.length),
   floorThick(A.floorThick),wallThick(A.wallThick),
   roofThick(A.roofThick),concMat(A.concMat)
@@ -109,14 +106,8 @@ Building::operator=(const Building& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       height=A.height;
       depth=A.depth;
       width=A.width;
@@ -145,12 +136,7 @@ Building::populate(const Simulation& System)
   ELog::RegMethod RegA("Building","populate");
 
   const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -175,8 +161,8 @@ Building::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("Building","createUnitVector");
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
+
   return;
 }
 
@@ -188,18 +174,18 @@ Building::createSurfaces()
 {
   ELog::RegMethod RegA("Building","createSurface");
 
-  ModelSupport::buildPlane(SMap,hallIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,hallIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,hallIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,hallIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,hallIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,hallIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   // Outer Walls
-  ModelSupport::buildPlane(SMap,hallIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,hallIndex+14,Origin+X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,hallIndex+15,Origin-Z*(depth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,hallIndex+16,Origin+Z*(height+roofThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
   return;
 }
 
@@ -214,13 +200,13 @@ Building::createObjects(Simulation& System)
 
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,hallIndex,"1 -2 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
   addOuterSurf(Out);      
   
-  Out=ModelSupport::getComposite(SMap,hallIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,hallIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 13 -14 15 -16 (-3:4:-5:6)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
 
@@ -242,12 +228,12 @@ Building::createLinks()
   FixedComp::setConnect(4,Origin+Z*(height+roofThick),-Z);     
   FixedComp::setConnect(5,Origin+Z*(height+floorThick),Z);     
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(hallIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(hallIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(hallIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(hallIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(hallIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(hallIndex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   
   return;
 }

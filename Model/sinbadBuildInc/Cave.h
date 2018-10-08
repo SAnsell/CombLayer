@@ -18,8 +18,6 @@ class Cave  : public attachSystem::ContainedComp,
 {
  private:
   
-  const int caveIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
 
   double xStep;          ///< X step

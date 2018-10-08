@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTally.h
+ * File:   flukaTallyInc/flukaTally.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -31,8 +31,8 @@ namespace flukaSystem
   \class flukaTally
   \version 1.0
   \author S. Ansell
-  \date Febryar 2018
-  \brief Holds a tally object as a base class
+  \date February 2018
+  \brief Holds a fluka tally object as a base class
   
 */
 
@@ -44,21 +44,30 @@ class flukaTally
   int outputUnit;                   ///< Fortran output number
   std::string comments;             ///< comment line
 
-  std::string particle;             ///< Auxillary particle
+  std::string auxParticle;          ///< Auxillary particle
   std::string doseType;             ///< Auxillary dose type if used
   
  public:
   
   explicit flukaTally(const int);
+  flukaTally(const std::string&,const int);
   flukaTally(const flukaTally&);
   flukaTally& operator=(const flukaTally&);
   virtual flukaTally* clone() const; 
   virtual ~flukaTally();
   
   void setKeyName(const std::string&);
+  void setBinary();
   void setComment(const std::string&);
+  void setAuxParticles(const std::string&);
+  virtual void setDoseType(const std::string&,const std::string&);
+  virtual void setEnergy(const bool,const double,const double,const size_t);
+  virtual void setAngle(const bool,const double,const double,const size_t);
+
+  const std::string& getKeyName() const;
   /// access out unit
   int getOutUnit() const { return outputUnit; }
+
   
   virtual void write(std::ostream&) const;
   virtual void writeAuxScore(std::ostream&) const;

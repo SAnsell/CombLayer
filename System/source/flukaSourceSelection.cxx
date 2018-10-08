@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/SourceSelector.cxx
+ * File:   source/flukaSourceSelector.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -63,6 +63,8 @@
 #include "FixedComp.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"
@@ -89,8 +91,6 @@ flukaSourceSelection(Simulation& System,
 {
   ELog::RegMethod RegA("SourceSelector[F]","flukaSourceSelection");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
   
@@ -106,34 +106,48 @@ flukaSourceSelection(Simulation& System,
   
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
-    *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
+    *(System.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
 
-  const long int linkIndex=(DSnd.empty()) ?  0 :
-    attachSystem::getLinkIndex(DSnd) % 1000;
+  const long int linkIndex=(DSnd.empty()) ? 0 :  FC.getSideIndex(DSnd);
 
-  // NOTE: No return to allow active SSW systems  
-  const std::string sdefType=IParam.getValue<std::string>("sdefType");
+  // NOTE: No return to allow active SSW systems
+  const size_t NSDef(IParam.setCnt("sdefType"));
+
   std::string sName;
-  ELog::EM<<"SDEF TYPE == "<<sdefType<<ELog::endDiag;
+  std::string eName;
+  for(size_t sdefIndex=0;sdefIndex<NSDef;sdefIndex++)
+    {
+      const std::string sdefType=IParam.getValue<std::string>
+	("sdefType",sdefIndex,0);
 
-  if (sdefType=="Wiggler")                       // blader wiggler
-    {
-      sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
-    }
-  else if (sdefType=="Beam" || sdefType=="beam")
-    {
-      sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
-    }
-  else
-    {
-      ELog::EM<<"sdefType :\n"
-	"Beam :: Test Beam [Radial] source \n"
-	"Wiggler :: Wiggler Source for balder \n"
-	      <<ELog::endBasic;
+      ELog::EM<<"SDEF TYPE ["<<sdefIndex<<"] == "<<sdefType<<ELog::endDiag;
+      
+      if (sdefType=="Wiggler")                       // blader wiggler
+	sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
+      
+      else if (sdefType=="Beam" || sdefType=="beam")
+	sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
+      
+      else if (sdefType=="external" || sdefType=="External" ||
+	       sdefType=="source" || sdefType=="Source")
+	eName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+      
+      else
+	{
+	  ELog::EM<<"sdefType :\n"
+	    "Beam :: Test Beam [Radial] source \n"
+	    "Wiggler :: Wiggler Source for balder \n"
+	    "External/Sourece :: External source from source.f \n"
+	    
+		  <<ELog::endBasic;
+	}
     }
   ELog::EM<<"Source name == "<<sName<<ELog::endDiag;
+
   if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
+  if (!eName.empty())
+    System.setExtraSourceName(eName);
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerQUnit.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,6 @@ class BunkerQUnit : public attachSystem::ContainedComp,
   public attachSystem::SurfMap
 {
  private:
-
-  const int cutIndex;             ///< Surface index
-  int cellIndex;                  ///< Cell index
   
   double xGap;                    ///< x stuff
   double zGap;                    ///< Needs to be surface

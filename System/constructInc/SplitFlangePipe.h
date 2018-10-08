@@ -48,20 +48,18 @@ class SplitFlangePipe :
   
   bool frontJoin;               ///< Flag for front join
   Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;        ///< Front point
+  Geometry::Vec3D FAxis;        ///< Front axis for join
 
-  bool backJoin;                ///< Flag for front join
-  Geometry::Vec3D BPt;          ///< Front point for join
-  Geometry::Vec3D BAxis;        ///< Front axis for join
+  bool backJoin;                ///< Flag for back join 
+  Geometry::Vec3D BPt;          ///< Back point for join
+  Geometry::Vec3D BAxis;        ///< Back axis for join
 
-  double radius;                ///< void radius [inner]
-  
+  double radius;                ///< void radius [inner] 
   double length;                ///< void length [total]
+  double feThick;               ///< pipe wall thickness
 
-  double feThick;               ///< pipe thickness
-
-  double bellowThick;           ///< Thickness of bellow effect
-  double bellowStep;            ///< Thickness of bellow effect
+  double bellowThick;           ///< Thickness of bellow (effective)
+  double bellowStep;            ///< Step from flange of bellow material
 
   double flangeARadius;          ///< Joining Flange radius [-ve for rect]
   double flangeALength;          ///< Joining Flange length
@@ -72,8 +70,7 @@ class SplitFlangePipe :
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material
   int bellowMat;                ///< Pipe material (fractional density)
-  
-  
+    
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

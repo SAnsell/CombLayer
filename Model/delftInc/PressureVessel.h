@@ -44,8 +44,6 @@ class PressureVessel : public attachSystem::ContainedComp,
 {
  private:
   
-  const int pressIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int reshiftOrigin;          ///< Reshift origin [-1 front / 1 back ]
   double frontLength;         ///< Offset of front cap [y axis]

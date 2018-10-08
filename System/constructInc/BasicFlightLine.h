@@ -39,13 +39,7 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
- protected:
-  
-  const int flightIndex;        ///< Index of surface offset
-
  private:
-  
-  int cellIndex;                ///< Cell index
   
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane

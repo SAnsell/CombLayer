@@ -65,6 +65,8 @@
 #include "MaterialSupport.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"

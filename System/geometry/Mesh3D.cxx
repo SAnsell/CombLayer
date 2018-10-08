@@ -212,13 +212,13 @@ Mesh3D::midPoints() const
     Calculate a linearized mid point list
     Retruns (NX-1*NY-1*NZ-1) points indexing
     on X [highest] Y[mid] Z [lowest] index
-    \return vector of point
+    \return vector of points XYZ order
    */
 {
   ELog::RegMethod RegA("Mesh3D","midPoints");
 
   std::vector<Geometry::Vec3D> midPt;
-  if (!NX*NY*NZ) return midPt;           // origin on failure
+  if (NX*NY*NZ==0) return midPt;           // origin on failure
 
   double xA,xB,yA,yB,zA,zB;
   xB=getXCoordinate(0);

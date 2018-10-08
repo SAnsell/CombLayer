@@ -119,7 +119,7 @@ setTS1MarkIV(defaultConfig& A)
   A.setVar("TriModPoisonThick",0.005);
   A.setVar("TriModPCladThick",0.3);
   A.setVar("TriModPoisonMat","Gadolinium");
-  A.setVar("TriModXYangle",-95.0); 
+  A.setVar("TriModXYAngle",-95.0); 
   A.setVar("TriModXStep",0.0);
   A.setVar("TriModYStep",0.0);
   A.setVar("TriFlightAAngleXY1",30.0);
@@ -179,7 +179,7 @@ setTS1MarkV(defaultConfig& A)
   A.setVar("TriModPoisonThick",0.005);
   A.setVar("TriModPCladThick",0.3);
   A.setVar("TriModPoisonMat","Gadolinium");
-  A.setVar("TriModXYangle",-95.0); 
+  A.setVar("TriModXYAngle",-95.0); 
   A.setVar("TriModXStep",0.0);
   A.setVar("TriModYStep",0.0);
   A.setVar("TriFlightAAngleXY1",30.0);
@@ -241,7 +241,7 @@ setTS1MarkVI(defaultConfig& A)
   A.setVar("TriModPoisonThick",0.005);
   A.setVar("TriModPCladThick",0.3);
   A.setVar("TriModPoisonMat","Gadolinium");
-  A.setVar("TriModXYangle",-95.0); 
+  A.setVar("TriModXYAngle",-95.0); 
   A.setVar("TriModXStep",0.0);
   A.setVar("TriModYStep",0.0);
   A.setVar("TriFlightAAngleXY1",30.0);
@@ -338,8 +338,8 @@ setTS1MarkVI(defaultConfig& A)
   A.setVar("H2LayerXStep",5.2);      
   A.setVar("H2LayerYStep",20.25);  // +9.8    
   A.setVar("H2LayerZStep",-12.20);     
-  A.setVar("H2LayerXYangle",100.0);  
-  A.setVar("H2LayerZangle",0.0);  
+  A.setVar("H2LayerXYAngle",100.0);  
+  A.setVar("H2LayerZAngle",0.0);  
 
   
   A.setVar("H2LayerNPoison",0); 

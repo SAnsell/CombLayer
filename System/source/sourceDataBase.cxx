@@ -57,9 +57,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -67,6 +68,9 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+
+#include "FixedOffset.h"
+#include "PointSource.h"
 
 namespace SDef
 {
@@ -121,7 +125,9 @@ sourceDataBase::registerSource(const std::string& Name,
       if (mc->second.get()== &SObj) return;
       Components.erase(mc);
     }
+
   Components.emplace(Name,STYPE(SObj.clone()));
+
   return;
 }
 
@@ -133,9 +139,10 @@ sourceDataBase::getInternalSource(const std::string& Name) const
     \return SourcePtr / 0 
   */
 {
-  ELog::RegMethod RegA("sourceDataBase","getInternalSource(const)");
+  ELog::RegMethod RegA("sourceDataBase","getInternalSource() const");
 
   SMAP::const_iterator mc=Components.find(Name);
+  ELog::EM<<"Get item == "<<Name<<ELog::endDiag;
   return (mc!=Components.end()) ? mc->second.get() : 0;
 }
 

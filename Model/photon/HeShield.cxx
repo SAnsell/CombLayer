@@ -3,7 +3,7 @@
  
  * File:   photon/HeShield.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -77,9 +78,7 @@ namespace photonSystem
       
 HeShield::HeShield(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  heIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(heIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -90,7 +89,7 @@ HeShield::HeShield(const std::string& Key) :
 HeShield::HeShield(const HeShield& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  heIndex(A.heIndex),cellIndex(A.cellIndex),length(A.length),
+  length(A.length),
   width(A.width),height(A.height),
   frontPolyThick(A.frontPolyThick),collLen(A.collLen),
   collWidth(A.collWidth),collHeight(A.collHeight),
@@ -115,7 +114,6 @@ HeShield::operator=(const HeShield& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -204,31 +202,31 @@ HeShield::createSurfaces()
   
   // boundary surfaces
 
-  ModelSupport::buildPlane(SMap,heIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,heIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,heIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,heIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   // Cd collimator
-  ModelSupport::buildPlane(SMap,heIndex+101,Origin-Y*collLen,Y);
-  ModelSupport::buildPlane(SMap,heIndex+103,Origin-X*(collWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+104,Origin+X*(collWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+105,Origin-Z*(collHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,heIndex+106,Origin+Z*(collHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*collLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(collWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(collWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(collHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(collHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,heIndex+111,Origin-Y*collThick,Y);
-  ModelSupport::buildPlane(SMap,heIndex+113,
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin-Y*collThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+113,
 			   Origin-X*(collThick+collWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+114,
+  ModelSupport::buildPlane(SMap,buildIndex+114,
 			   Origin+X*(collThick+collWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+115,
+  ModelSupport::buildPlane(SMap,buildIndex+115,
 			   Origin-Z*(collThick+collHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,heIndex+116,
+  ModelSupport::buildPlane(SMap,buildIndex+116,
 			   Origin+Z*(collThick+collHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,heIndex+201,
+  ModelSupport::buildPlane(SMap,buildIndex+201,
 			   Origin-Y*(collThick+frontPolyThick),Y);
   
   return; 
@@ -245,32 +243,32 @@ HeShield::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,heIndex,heIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
   addCell("Main",cellIndex-1);
 
   // cd void
-  Out=ModelSupport::getComposite(SMap,heIndex,heIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex,
 				 " -1 101  103 -104 105 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite
-    (SMap,heIndex,heIndex," -1 101 113 -114 115 -116 (-103:104:-105:106) ");
+    (SMap,buildIndex,buildIndex," -1 101 113 -114 115 -116 (-103:104:-105:106) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cdMat,0.0,Out));
 
   Out=ModelSupport::getComposite
-    (SMap,heIndex,heIndex," -1 111 3 -4 5 -6 (-113:114:-115:116) ");
+    (SMap,buildIndex,buildIndex," -1 111 3 -4 5 -6 (-113:114:-115:116) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cdMat,0.0,Out));
 
   Out=ModelSupport::getComposite
-    (SMap,heIndex,heIndex," -111 201 3 -4 5 -6 (-113:114:-115:116) ");
+    (SMap,buildIndex,buildIndex," -111 201 3 -4 5 -6 (-113:114:-115:116) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,heIndex," 201 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   
-  Out=ModelSupport::getComposite(SMap,heIndex,heIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex,
 				 " -1 101 113 -114 115 -116 ");
   addOuterUnionSurf(Out);
   

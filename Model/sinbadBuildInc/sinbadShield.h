@@ -18,9 +18,7 @@ class sinbadShield  : public attachSystem::ContainedComp,
 {
  private:
   
-  const int slabIndex;        ///< Index of surface offset
 
-  int cellIndex;                ///< Cell index
 
   double offSetX;               ///< Master offset distance 
   double offSetY;               ///< Master offset distance 

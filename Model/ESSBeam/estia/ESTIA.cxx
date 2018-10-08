@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESTIA.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 
 #include "LinkUnit.h"
@@ -66,6 +68,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"

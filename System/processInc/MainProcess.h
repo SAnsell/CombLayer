@@ -22,6 +22,7 @@
 #ifndef mainSystem_MainProcess_h
 #define mainSystem_MainProcess_h
 
+class objectGroups;
 class Simulation;
 class SimPHITS;
 class SimFLUKA;
@@ -41,6 +42,7 @@ namespace mainSystem
 {
   class inputParam;
 
+  void buildWorld(objectGroups&);
   void activateLogging(ELog::RegMethod&);
 
   void getVariables(std::vector<std::string>&,
@@ -69,7 +71,9 @@ namespace mainSystem
   void InputModifications(Simulation*,inputParam&,
 			  std::vector<std::string>&);
 
+  void buildFullSimFLUKA(SimPHITS*,const inputParam&,const std::string&);
   void buildFullSimMCNP(SimMCNP*,const inputParam&,const std::string&);
+  void buildFullSimPHITS(SimPHITS*,const inputParam&,const std::string&);
   void buildFullSimPOVRay(SimPOVRay*,const inputParam&,const std::string&);
   void buildFullSimulation(Simulation*,const inputParam&,const std::string&);
   void exitDelete(Simulation*);

@@ -39,12 +39,13 @@ struct pName
   const std::string phitsName;        ///< PHITS word name 
   const int phitsITYP;                ///< iTyp number from phits
   const int mcplNumber;               ///< MCPL number
+  const double mass;                  ///< mass in MeV/c^2
   const int nucleon;                  ///< number of nucleons
   
   pName(const std::string&,const int,
 	const std::string&,const int,
 	const std::string&,const int,
-	const int,const int);
+	const int,const double,const int);
 
   pName(const pName&);
   ~pName() {}          ///< Destructor
@@ -108,12 +109,15 @@ class particleConv
 
   bool hasName(const std::string&) const;
 
+  const std::string& nameToMCNP(const std::string&) const;
   const std::string& nameToPHITS(const std::string&) const;
   const std::string& nameToFLUKA(const std::string&) const;
   
   const std::string& mcnpToFLUKA(const int) const;
   //  const std::string& mcnpToFluka(const int) const;
 
+  double momentumFromKE(const std::string&,const double) const; 
+    
 };
  
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/Rabbit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -72,6 +74,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "Rabbit.h"
@@ -81,10 +85,8 @@ namespace delftSystem
 
 Rabbit::Rabbit(const std::string& Key,const int index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(index),3),
-  baseName(Key),
-  rabbitIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(rabbitIndex+1),innerVoid(0)
+  attachSystem::FixedOffset(Key+std::to_string(index),3),
+  baseName(Key),innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,8 +96,8 @@ Rabbit::Rabbit(const std::string& Key,const int index)  :
 
 Rabbit::Rabbit(const Rabbit& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  baseName(A.baseName),rabbitIndex(A.rabbitIndex),
-  cellIndex(A.cellIndex),nLayer(A.nLayer),
+  baseName(A.baseName),
+  nLayer(A.nLayer),
   Radii(A.Radii),Mat(A.Mat),length(A.length),capThick(A.capThick),
   capMat(A.capMat),innerVoid(A.innerVoid)
   /*!
@@ -116,7 +118,6 @@ Rabbit::operator=(const Rabbit& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       nLayer=A.nLayer;
       Radii=A.Radii;
       Mat=A.Mat;
@@ -236,14 +237,14 @@ Rabbit::createSurfaces()
 
   // Outer layers
 
-  ModelSupport::buildPlane(SMap,rabbitIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin,Z);
-  ModelSupport::buildPlane(SMap,rabbitIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Z*length,Z);
-  ModelSupport::buildPlane(SMap,rabbitIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Z*capThick,Z);
 
-  int RI(rabbitIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildCylinder(SMap,RI+7,
@@ -252,28 +253,28 @@ Rabbit::createSurfaces()
     }
 
   // Create sample capulse [500]
-  ModelSupport::buildCylinder(SMap,rabbitIndex+507,
+  ModelSupport::buildCylinder(SMap,buildIndex+507,
 			      Origin,Z,capsuleRadius);
-  ModelSupport::buildCylinder(SMap,rabbitIndex+517,
+  ModelSupport::buildCylinder(SMap,buildIndex+517,
 			      Origin,Z,capsuleRadius+capsuleWall); 
-  ModelSupport::buildPlane(SMap,rabbitIndex+501,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+501,Origin+
 			   Z*(capsuleZShift-capsuleLen/2.0),Z);
-  ModelSupport::buildPlane(SMap,rabbitIndex+502,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+502,Origin+
 			   Z*(capsuleZShift+capsuleLen/2.0),Z);
-  ModelSupport::buildSphere(SMap,rabbitIndex+508,
+  ModelSupport::buildSphere(SMap,buildIndex+508,
 			    Origin+Z*(capsuleZShift-capsuleLen/2.0),
 			    capsuleRadius);
-  ModelSupport::buildSphere(SMap,rabbitIndex+509,
+  ModelSupport::buildSphere(SMap,buildIndex+509,
 			    Origin+Z*(capsuleZShift+capsuleLen/2.0),
 			    capsuleRadius);
-  ModelSupport::buildSphere(SMap,rabbitIndex+518,
+  ModelSupport::buildSphere(SMap,buildIndex+518,
 			    Origin+Z*(capsuleZShift-capsuleLen/2.0),
 			    capsuleRadius+capsuleWall);
-  ModelSupport::buildSphere(SMap,rabbitIndex+519,
+  ModelSupport::buildSphere(SMap,buildIndex+519,
 			    Origin+Z*(capsuleZShift+capsuleLen/2.0),
 			    capsuleRadius+capsuleWall);
   // Create sample 
-  ModelSupport::buildSphere(SMap,rabbitIndex+1007,
+  ModelSupport::buildSphere(SMap,buildIndex+1007,
 			    Origin+Z*capsuleZShift,sampleRadius);
 
   return;
@@ -293,39 +294,39 @@ Rabbit::createObjects(Simulation& System)
   std::string Out;
 
   // Add sample
-  Out=ModelSupport::getComposite(SMap,rabbitIndex," -1007 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
 
   // Capsule
-  Out=ModelSupport::getComposite(SMap,rabbitIndex
+  Out=ModelSupport::getComposite(SMap,buildIndex
 ,				 "-507 (-508:501) (-509:-502) 1007 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,rabbitIndex,"501 -502 507 -517 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"501 -502 507 -517 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,capsuleMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,rabbitIndex,"-501 508 -518");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-501 508 -518");
   System.addCell(MonteCarlo::Qhull(cellIndex++,capsuleMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,rabbitIndex,"502 509 -519");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"502 509 -519");
   System.addCell(MonteCarlo::Qhull(cellIndex++,capsuleMat,0.0,Out));
 
   const std::string capExclude=
-    ModelSupport::getComposite(SMap,rabbitIndex," (507:508:509) ");
+    ModelSupport::getComposite(SMap,buildIndex," (507:508:509) ");
 
-  int RI=rabbitIndex-10;
+  int RI=buildIndex-10;
   for(size_t i=0;i<nLayer;i++)
     {
       if (i)
-	Out=ModelSupport::getComposite(SMap,rabbitIndex,RI," 1 -2 7M -17M");
+	Out=ModelSupport::getComposite(SMap,buildIndex,RI," 1 -2 7M -17M");
       else
-	Out=ModelSupport::getComposite(SMap,rabbitIndex," 1 -2 -7M ")+
+	Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7M ")+
 	  capExclude;
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
       RI+=10;
     }
-  Out=ModelSupport::getComposite(SMap,rabbitIndex,RI," -1 11 -7M");
+  Out=ModelSupport::getComposite(SMap,buildIndex,RI," -1 11 -7M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,capMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,rabbitIndex,RI," -2 11 -7M");
+  Out=ModelSupport::getComposite(SMap,buildIndex,RI," -2 11 -7M");
   addOuterSurf(Out);
 
   return;
@@ -346,9 +347,9 @@ Rabbit::createLinks()
   FixedComp::setConnect(1,Origin+Z*length,Z);
   FixedComp::setConnect(2,Origin+Y*Radii.back(),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(rabbitIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(rabbitIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(rabbitIndex+7+
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7+
 					 10*static_cast<int>(nLayer-1)));
 
   return;

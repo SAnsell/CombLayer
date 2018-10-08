@@ -63,6 +63,8 @@
 #include "PhysImp.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimPHITS.h"
@@ -95,7 +97,8 @@ writeMany(SimMCNP& System,const std::string& OName,const int Number)
 
 void
 writeIndexSim(SimMCNP& System,
-	      const std::string& OName,const int Number)
+	      const std::string& OName,
+	      const int Number)
   /*!
     Writes out many different files, each with a new random
     number
@@ -129,9 +132,9 @@ writeIndexSimFLUKA(SimFLUKA& System,
    */
 {
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
-  
+
   System.prepareWrite();
-  System.makeObjectsDNForCNF();
+  System.setRND(System.getRNDseed()+Number*11);
   System.write(OName+std::to_string(Number+1)+".inp");
   
   return;

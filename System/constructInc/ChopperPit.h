@@ -43,8 +43,6 @@ class ChopperPit :
 {
  private:
   
-  const int pitIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   bool activeFront;             ///< Pit doesn't have front
   HeadRule frontCut;            ///< Front cut

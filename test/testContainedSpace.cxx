@@ -58,6 +58,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ObjSurfMap.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "surfRegister.h"
@@ -67,6 +69,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 
 #include "testFunc.h"
@@ -127,7 +130,6 @@ testContainedSpace::createSurfaces()
   SurI.createSurface(14,"px 30");
   SurI.createSurface(15,"pz -30");
   SurI.createSurface(16,"pz 30");
-
 
   // Sphere :
   SurI.createSurface(100,"so 200");

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/BulkShield.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@ class BulkShield : public attachSystem::FixedComp,
 {
  private:
   
-  const int bulkIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
   int populated;                  ///< 1:var
   const size_t numberBeamLines;      ///< Number of beamlines
 
@@ -107,13 +105,13 @@ class BulkShield : public attachSystem::FixedComp,
   double getORadius() const { return outerRadius; }
 
   /// Get Mono Exit surface
-  int getMonoSurf() const { return SMap.realSurf(bulkIndex+37); }
+  int getMonoSurf() const { return SMap.realSurf(buildIndex+37); }
   /// Get Inner Bulk surface
-  int getInnerSurf() const { return SMap.realSurf(bulkIndex+27); }
+  int getInnerSurf() const { return SMap.realSurf(buildIndex+27); }
   /// Get  Bulk surface
-  int getShutterSurf() const { return SMap.realSurf(bulkIndex+17); }
+  int getShutterSurf() const { return SMap.realSurf(buildIndex+17); }
   /// Get Torpedo surface
-  int getTorpedoSurf() const { return SMap.realSurf(bulkIndex+7); }
+  int getTorpedoSurf() const { return SMap.realSurf(buildIndex+7); }
 
   const shutterSystem::Torpedo* getTorpedo(const size_t) const;
   const shutterSystem::GeneralShutter* getShutter(const size_t) const;

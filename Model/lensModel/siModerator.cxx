@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -77,8 +79,7 @@ namespace lensSystem
 
 siModerator::siModerator(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  surIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -87,7 +88,6 @@ siModerator::siModerator(const std::string& Key) :
 
 siModerator::siModerator(const siModerator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  surIndex(A.surIndex),cellIndex(A.cellIndex),
   populated(A.populated),modLength(A.modLength),
   modWidth(A.modWidth),modHeight(A.modHeight),topThick(A.topThick),
   baseThick(A.baseThick),sideThick(A.sideThick),
@@ -111,7 +111,6 @@ siModerator::operator=(const siModerator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       modLength=A.modLength;
       modWidth=A.modWidth;
@@ -178,26 +177,26 @@ siModerator::createSurfaces()
   ELog::RegMethod RegA("siModerator","createSurfaces");
 
   // Across sides
-  ModelSupport::buildPlane(SMap,surIndex+1,Origin-X*modWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,surIndex+2,Origin+X*modWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,surIndex+3,Origin-Y*modLength/2.0,Y);
-  ModelSupport::buildPlane(SMap,surIndex+4,Origin+Y*modLength/2.0,Y);
-  ModelSupport::buildPlane(SMap,surIndex+5,Origin-Z*modHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,surIndex+6,Origin+Z*modHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-X*modWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+X*modWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-Y*modLength/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+Y*modLength/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*modHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*modHeight/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,surIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-X*(modWidth/2.0+sideThick),X);
-  ModelSupport::buildPlane(SMap,surIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+X*(modWidth/2.0+sideThick),X);
-  ModelSupport::buildPlane(SMap,surIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(modHeight/2.0+baseThick),Z);
-  ModelSupport::buildPlane(SMap,surIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(modHeight/2.0+topThick),Z);
 
   // Now create Z plane silicon/poly layers:
   double Zpoint=-modHeight/2.0+polyThick;
   int nextType(0);          // 0 ==> next to add is poly / 1 next to add is poly
-  int planeIndex(surIndex+101);  // Plane to add
+  int planeIndex(buildIndex+101);  // Plane to add
   while(Zpoint<modHeight/2.0-siThick)
     {
       ModelSupport::buildPlane(SMap,planeIndex,Origin+Z*Zpoint,Z);
@@ -219,7 +218,7 @@ siModerator::createObjects(Simulation& System)
 
   std::string Out;
   // Virtual box:
-  Out=ModelSupport::getComposite(surIndex,"11 -12 3 -4 15 -16");
+  Out=ModelSupport::getComposite(buildIndex,"11 -12 3 -4 15 -16");
   addOuterSurf(Out);
 
   //  System.makeVirtual(cellIndex-1);         
@@ -236,7 +235,7 @@ siModerator::createObjects(Simulation& System)
     {
       cx.str("");
       cx<<prevIndex<<" "<<(-planeIndex);
-      Out=ModelSupport::getComposite(surIndex,XYsides+cx.str());
+      Out=ModelSupport::getComposite(buildIndex,XYsides+cx.str());
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[nextType],temp,Out));
       prevIndex=planeIndex;
       planeIndex++;
@@ -246,11 +245,11 @@ siModerator::createObjects(Simulation& System)
   // Last cell that hits the outside limit:
   cx.str("");
   cx<<prevIndex<<" -6";
-  Out=ModelSupport::getComposite(surIndex,XYsides+cx.str());
+  Out=ModelSupport::getComposite(buildIndex,XYsides+cx.str());
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat[nextType],temp,Out));
 
   // Add AL surrounds:
-  Out=ModelSupport::getComposite(surIndex,
+  Out=ModelSupport::getComposite(buildIndex,
 				 "11 -12 3 -4 15 -16 ( -1 : 2 : -5 : 6 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,surroundMat,temp,Out));
   return; 
@@ -270,12 +269,12 @@ siModerator::createLinks()
   FixedComp::setConnect(4,-Z*(modLength/2.0+baseThick),-Z);
   FixedComp::setConnect(5,Z*(modLength/2.0+topThick),Z);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(surIndex+3));
-  FixedComp::setLinkSurf(1,SMap.realSurf(surIndex+4));
-  FixedComp::setLinkSurf(2,SMap.realSurf(surIndex+11));
-  FixedComp::setLinkSurf(3,SMap.realSurf(surIndex+12));
-  FixedComp::setLinkSurf(4,SMap.realSurf(surIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(surIndex+16));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   return;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/collInsertBase.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,8 @@ class collInsertBase  : public attachSystem::ContainedComp,
 {
  protected:
 
-  const int blockIndex;         ///< Index of block
-
-  const int surfIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  const std::string baseName;   ///< basenaem
+  const int blockID;            ///< Block number
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
 
   Geometry::Vec3D beamOrigin;   ///< beam mid point
@@ -77,7 +75,7 @@ class collInsertBase  : public attachSystem::ContainedComp,
   
  public:
 
-  collInsertBase(const int,const int,const std::string&);
+  collInsertBase(const std::string&,const int);
   collInsertBase(const collInsertBase&);
   collInsertBase& operator=(const collInsertBase&);
   virtual collInsertBase* clone() const =0;

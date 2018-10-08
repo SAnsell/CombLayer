@@ -42,8 +42,6 @@ class voidCylVolume : public attachSystem::ContainedComp,
 {
  private:
 
-  const int voidIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   size_t nSegment;                ///< Number of layers
 

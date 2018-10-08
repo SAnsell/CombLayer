@@ -49,8 +49,6 @@ class TableSupport : public attachSystem::ContainedComp,
 {
  private:
 
-  const int tabIndex;         ///< Index of surface offset
-  int cellIndex;              ///< Cell index
 
   double length;              ///< Outer thickenss
   double width;               ///< width of back volume

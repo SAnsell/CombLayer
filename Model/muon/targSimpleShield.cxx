@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muon/targSimpleShield.cxx
 *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,7 +63,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
-#include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,9 +78,7 @@ namespace muSystem
 {
 
 targSimpleShield::targSimpleShield(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
-  targShieldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(targShieldIndex+1)
+  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -89,7 +87,6 @@ targSimpleShield::targSimpleShield(const std::string& Key)  :
 
 targSimpleShield::targSimpleShield(const targSimpleShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  targShieldIndex(A.targShieldIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
   height(A.height),depth(A.depth),width(A.width),
@@ -114,7 +111,6 @@ targSimpleShield::operator=(const targSimpleShield& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -199,25 +195,25 @@ targSimpleShield::createSurfaces()
   ELog::RegMethod RegA("targSimpleShield","createSurface");
 
   // outer layer
-  ModelSupport::buildPlane(SMap,targShieldIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,targShieldIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
   // shield layer
-  ModelSupport::buildPlane(SMap,targShieldIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(depth/2.0-backThick),Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(depth/2.0-forwThick),Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0-leftThick),X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0-rightThick),X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0-baseThick),Z);
-  ModelSupport::buildPlane(SMap,targShieldIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0-topThick),Z);  
 
 
@@ -237,15 +233,15 @@ targSimpleShield::createObjects(Simulation& System)
   std::string Out1;
 
     // shield
-  Out=ModelSupport::getComposite(SMap,targShieldIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out1=ModelSupport::getComposite(SMap,targShieldIndex,
+  Out1=ModelSupport::getComposite(SMap,buildIndex,
 				  "(-11:12:-13:14:-15:16) ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Out1));
 
     // hole
-  Out=ModelSupport::getComposite(SMap,targShieldIndex,"11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   return;
@@ -259,12 +255,12 @@ targSimpleShield::createLinks()
 {
   ELog::RegMethod RegA("targSimpleShield","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(targShieldIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(targShieldIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(targShieldIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(targShieldIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(targShieldIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(targShieldIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // shield layer
   FixedComp::setConnect(0,Origin-Y*(depth/2.0-backThick),-Y);

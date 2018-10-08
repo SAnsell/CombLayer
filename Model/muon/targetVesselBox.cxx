@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muon/targetVesselBox.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -52,8 +51,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -67,6 +64,8 @@
 #include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,9 +79,7 @@ namespace muSystem
 {
 
 targetVesselBox::targetVesselBox(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
-  tvBoxIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tvBoxIndex+1)
+  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -145,25 +142,25 @@ targetVesselBox::createSurfaces()
   ELog::RegMethod RegA("targetVesselBox","createSurface");
 
   // outer layer
-  ModelSupport::buildPlane(SMap,tvBoxIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
   // steel layer
-  ModelSupport::buildPlane(SMap,tvBoxIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(depth/2.0-steelThick),Y);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(depth/2.0-steelThick),Y);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0-steelThick),X);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0-steelThick),X);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0-steelThick),Z);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0-steelThick),Z);  
 
   return;
@@ -182,14 +179,14 @@ targetVesselBox::createObjects(Simulation& System)
   std::string Out1;
 
     // Steel
-  Out=ModelSupport::getComposite(SMap,tvBoxIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out1=ModelSupport::getComposite(SMap,tvBoxIndex,"(-11:12:-13:14:-15:16) ");  
+  Out1=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15:16) ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out+Out1));
 
     // hole
-  Out=ModelSupport::getComposite(SMap,tvBoxIndex,"11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   return;
@@ -204,12 +201,12 @@ targetVesselBox::createLinks()
 {
   ELog::RegMethod RegA("targetVesselBox","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(tvBoxIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(tvBoxIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(tvBoxIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(tvBoxIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(tvBoxIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(tvBoxIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

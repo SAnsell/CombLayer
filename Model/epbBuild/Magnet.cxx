@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -66,6 +65,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,26 +75,24 @@
 #include "FixedComp.h"
 #include "FixedOffset.h" 
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "Magnet.h"
 
 namespace epbSystem
 {
 
 Magnet::Magnet(const std::string& Key,const size_t Index) : 
-  attachSystem::FixedOffset(StrFunc::makeString(Key,Index),6),
-  attachSystem::ContainedComp(),baseName(Key),
-  magIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(magIndex+1)
+  attachSystem::FixedOffset(Key+std::to_string(Index),6),
+  attachSystem::ContainedComp(),baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
+    \parma Index :: ID number
   */
 {}
 
 Magnet::Magnet(const Magnet& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  baseName(A.baseName),magIndex(A.magIndex),cellIndex(A.cellIndex),
+  baseName(A.baseName),
   segIndex(A.segIndex),segLen(A.segLen),length(A.length),height(A.height),
   width(A.width),feMat(A.feMat)
   /*!
@@ -114,7 +113,6 @@ Magnet::operator=(const Magnet& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       segIndex=A.segIndex;
       segLen=A.segLen;
       length=A.length;
@@ -185,12 +183,12 @@ Magnet::createSurfaces()
 {
   ELog::RegMethod RegA("Magnet","createSurface");
 
-  ModelSupport::buildPlane(SMap,magIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,magIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,magIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,magIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,magIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,magIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   return;
 }
 
@@ -207,7 +205,7 @@ Magnet::createObjects(Simulation& System,
 
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,magIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
   for(size_t i=1;i<=segLen;i++)
     Out+=FC.getLinkString(static_cast<long int>(segIndex+i));
@@ -231,12 +229,12 @@ Magnet::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);     
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);     
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(magIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(magIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(magIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(magIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(magIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(magIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   return;
 }

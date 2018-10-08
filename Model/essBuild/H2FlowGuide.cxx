@@ -67,6 +67,8 @@
 #include "RuleSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
@@ -92,9 +94,7 @@ H2FlowGuide::H2FlowGuide(const std::string& baseKey,
 			 const std::string& extraKey,
 			 const std::string& finalKey ) :
   attachSystem::FixedComp(baseKey+extraKey+finalKey,6),
-  baseName(baseKey),midName(extraKey),endName(finalKey),
-  flowIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(flowIndex+1)
+  baseName(baseKey),midName(extraKey),endName(finalKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Butterfly main key
@@ -106,8 +106,6 @@ H2FlowGuide::H2FlowGuide(const std::string& baseKey,
 H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   attachSystem::FixedComp(A),
   baseName(A.baseName),midName(A.midName),endName(A.endName),
-  flowIndex(A.flowIndex),
-  cellIndex(A.cellIndex),
   wallThick(A.wallThick),len1L(A.len1L),
   baseOffset(A.baseOffset),
   len1R(A.len1R),
@@ -147,7 +145,6 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       wallThick=A.wallThick;
       len1L=A.len1L;
       baseOffset=A.baseOffset;
@@ -351,7 +348,7 @@ H2FlowGuide::createSurfaces()
 
   double x(0.0);
   double y(baseOffset);
-  int SI(flowIndex);
+  int SI(buildIndex);
   createCurvedBladeSurf(SI,x,y,len1R,len1L,len1Foot,angle1,radius1);
   y += wallThick;
   x += wallThick;
@@ -404,7 +401,7 @@ H2FlowGuide::createObjects(Simulation& System,
   const std::string tb(HW.getLinkString(13)+HW.getLinkString(14));
   HeadRule wallExclude;
 
-  int SI(flowIndex);
+  int SI(buildIndex);
 
   // curved blades 1 and 2
   for (size_t i=0; i<2; i++)

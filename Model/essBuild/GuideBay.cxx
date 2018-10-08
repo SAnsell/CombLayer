@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -72,6 +74,8 @@
 #include "FixedOffsetGroup.h"
 #include "SurInter.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -86,11 +90,10 @@ namespace essSystem
 
 GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffset(StrFunc::makeString(Key,BN),6),
+  attachSystem::FixedOffset(Key+std::to_string(BN),6),
   attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
-  bayIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(bayIndex+1),nItems(0)
+  nItems(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -100,8 +103,7 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
 GuideBay::GuideBay(const GuideBay& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  baseKey(A.baseKey),bayNumber(A.bayNumber),bayIndex(A.bayIndex),
-  cellIndex(A.cellIndex),
+  baseKey(A.baseKey),bayNumber(A.bayNumber),
   viewAngle(A.viewAngle),innerHeight(A.innerHeight),
   innerDepth(A.innerDepth),height(A.height),depth(A.depth),
   midRadius(A.midRadius),mat(A.mat),nItems(A.nItems),
@@ -125,7 +127,6 @@ GuideBay::operator=(const GuideBay& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       viewAngle=A.viewAngle;
       innerHeight=A.innerHeight;
       innerDepth=A.innerDepth;
@@ -212,19 +213,19 @@ GuideBay::createSurfaces()
 {
   ELog::RegMethod RegA("GuideBay","createSurface");
 
-  ModelSupport::buildPlane(SMap,bayIndex+1,Origin,Y);    // Divider plane
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    // Divider plane
 
-  SMap.addMatch(bayIndex+7,innerCyl);
-  SMap.addMatch(bayIndex+27,outerCyl);
+  SMap.addMatch(buildIndex+7,innerCyl);
+  SMap.addMatch(buildIndex+27,outerCyl);
   const Geometry::Cylinder* CPtr=
-    SMap.realPtr<Geometry::Cylinder>(bayIndex+7);
+    SMap.realPtr<Geometry::Cylinder>(buildIndex+7);
   const double RInner=CPtr->getRadius();
-  ModelSupport::buildCylinder(SMap,bayIndex+17,Origin,Z,RInner+midRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,RInner+midRadius);
   
-  ModelSupport::buildPlane(SMap,bayIndex+5,Origin-Z*innerDepth,Z);
-  ModelSupport::buildPlane(SMap,bayIndex+6,Origin+Z*innerHeight,Z);
-  ModelSupport::buildPlane(SMap,bayIndex+15,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,bayIndex+16,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*innerDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*innerHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*height,Z);
   
   // Calculate the point the cylinder intersects:
   Geometry::Vec3D LVec(X);
@@ -242,28 +243,28 @@ GuideBay::createSurfaces()
   const Geometry::Vec3D RPoint=Origin+X*(RInner*sin(viewAngle/2.0))+
     Y*(RInner*cos(viewAngle/2.0));
 
-  ModelSupport::buildPlane(SMap,bayIndex+3,LPoint,LVec);  
-  ModelSupport::buildPlane(SMap,bayIndex+4,RPoint,RVec);  
+  ModelSupport::buildPlane(SMap,buildIndex+3,LPoint,LVec);  
+  ModelSupport::buildPlane(SMap,buildIndex+4,RPoint,RVec);  
 
   // Link Points created here as access to variables
   const Geometry::Cylinder* DPtr=
-    SMap.realPtr<Geometry::Cylinder>(bayIndex+27);
+    SMap.realPtr<Geometry::Cylinder>(buildIndex+27);
   const double ROuter=DPtr->getRadius();
 
   const double midRad=(RInner+ROuter)/2.0;
   // Inner point 
   FixedComp::setConnect(0,Origin+Y*RInner,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(bayIndex+7));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));
   FixedComp::setConnect(1,Origin+Y*ROuter,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(bayIndex+27));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+27));
   FixedComp::setConnect(2,LPoint+LEdge*midRad,-LVec);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(bayIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   FixedComp::setConnect(3,RPoint+REdge*midRad,RVec);
-  FixedComp::setLinkSurf(3,SMap.realSurf(bayIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
   FixedComp::setConnect(4,Origin+Y*midRad-Z*depth,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(bayIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   FixedComp::setConnect(5,Origin+Y*midRad+Z*height,-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(bayIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   return;
 }
@@ -278,12 +279,12 @@ GuideBay::createObjects(Simulation& System)
   ELog::RegMethod RegA("GuideBay","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,bayIndex,"1 7 -17 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 7 -17 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   CellMap::addCell("Inner",cellIndex-1);
   addOuterSurf("Inner",Out);
   
-  Out=ModelSupport::getComposite(SMap,bayIndex,"1 17 -27 3 -4 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 17 -27 3 -4 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   CellMap::addCell("Outer",cellIndex-1);
   addOuterSurf("Outer",Out);
@@ -325,9 +326,9 @@ GuideBay::outerMerge(Simulation& System,
       (otherBay.CellMap::getCell("Outer"),"Outer cell not found");
   // Get radii:
   const Geometry::Cylinder* CInner=
-    SMap.realPtr<Geometry::Cylinder>(bayIndex+7);
+    SMap.realPtr<Geometry::Cylinder>(buildIndex+7);
   const Geometry::Cylinder* COuter=
-    SMap.realPtr<Geometry::Cylinder>(bayIndex+27);
+    SMap.realPtr<Geometry::Cylinder>(buildIndex+27);
   const double midRadius=
     (CInner->getRadius()+COuter->getRadius())/2.0;
 
@@ -382,27 +383,28 @@ GuideBay::createGuideItems(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* ModFC=
-    OR.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
+    System.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
                                                "Focus unit not found");
   const std::string BL=StrFunc::makeString("G",bayNumber)+"BLine"+modName;
   
   const long int lFocusIndex=(bayNumber==1) ? 2 : 3;
   const long int rFocusIndex=(bayNumber==1) ? 1 : 4;
   
-  const int dPlane=SMap.realSurf(bayIndex+1);
+  const int dPlane=SMap.realSurf(buildIndex+1);
 
   const GuideItem* GB(0);  // guides can intersect
 
   
   attachSystem::ContainedGroup* CG=
     (!wheelName.empty()) ?
-    OR.getObjectThrow<attachSystem::ContainedGroup>
+    System.getObjectThrow<attachSystem::ContainedGroup>
     (wheelName,"Wheel unit not found") : 0;
     
   for(size_t i=0;i<nItems;i++)
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
       std::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
+      OR.addObject(GA);
       GA->setCylBoundary(dPlane,innerCyl,outerCyl);
 
       GA->addInsertCell("Inner",getCell("Inner"));
@@ -410,15 +412,10 @@ GuideBay::createGuideItems(Simulation& System,
 
       GA->createAll(System,*ModFC,FI,GB);
       GUnit.push_back(GA);
-      OR.addObject(GUnit.back());
 
       // Add wheel to inner cell if required
       if (GA->hasItem("BodyMetal"))
-	{
-	  GA->insertComponent(System,"Body",CG->getCC("Wheel"));
-     //	  attachSystem::addToInsertSurfCtrl(System,*GA,"BodyMetal",
-     //					    CG->getCC("Wheel"));
-	}
+	GA->insertComponent(System,"Body",CG->getCC("Wheel"));
       
       GB=GA.get();
     }

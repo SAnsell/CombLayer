@@ -40,9 +40,6 @@ class EmptyCyl : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   double height;                ///< height
   int mat;                   ///< material
   

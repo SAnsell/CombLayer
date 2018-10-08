@@ -57,6 +57,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 
 #include "LinkUnit.h"
@@ -65,6 +67,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -127,7 +130,7 @@ CSPEC::CSPEC(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
+  //  OR.cell(newName+"Axis");
   OR.addObject(cspecAxis);
 
   OR.addObject(FocusA);

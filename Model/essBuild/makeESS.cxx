@@ -3,7 +3,7 @@
 
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,15 +58,20 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "LayerComp.h"
+#include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -292,7 +297,7 @@ makeESS::makeTargetClearance(Simulation& System, const int engActive)
       attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
 
-      std::vector<std::shared_ptr<GuideItem> > GUnit = GB->GetGuideItems();
+      std::vector<std::shared_ptr<GuideItem> > GUnit = GB->getGuideItems();
       for (const std::shared_ptr<GuideItem> GA : GUnit)
 	{
 	  if (GA->isActive())
@@ -390,7 +395,7 @@ makeESS::buildIradComponent(Simulation& System,
           std::shared_ptr<IradCylinder>
             IRadComp(new IradCylinder(objectName));
           const attachSystem::FixedComp* FC=
-            OR.getObject<attachSystem::FixedComp>(compName);
+	    System.getObject<attachSystem::FixedComp>(compName);
           if (!FC)
             throw ColErr::InContainerError<std::string>
               (compName,"Component not found");
@@ -450,7 +455,7 @@ makeESS::buildTopButterfly(Simulation& System)
     \param System :: Stardard simulation
   */
 {
-  ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
+  ELog::RegMethod RegA("makeESS","buildTopButtefly");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -628,13 +633,13 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      // get focal points
 	      midWaterName = moderator + "MidWater";
-	      const attachSystem::FixedComp* midWater = OR.getObject<attachSystem::FixedComp>(midWaterName);
+	      const attachSystem::FixedComp* midWater = System.getObject<attachSystem::FixedComp>(midWaterName);
 	      if (!midWater)
 		throw ColErr::InContainerError<std::string>
 		  (midWaterName,"Component not found");
 
 	      lobeName = moderator + "LeftLobe";
-	      const attachSystem::FixedComp* lobe = OR.getObject<attachSystem::FixedComp>(lobeName);
+	      const attachSystem::FixedComp* lobe = System.getObject<attachSystem::FixedComp>(lobeName);
 	      if (!lobe)
 		throw ColErr::InContainerError<std::string>
 		  (lobeName,"Component not found");
@@ -690,7 +695,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      // set up the focal points
 	      const std::string midH2Name = moderator+"MidH2";
-	      const attachSystem::FixedComp *midH2 = OR.getObject<attachSystem::FixedComp>(midH2Name);
+	      const attachSystem::FixedComp *midH2 = System.getObject<attachSystem::FixedComp>(midH2Name);
 	      if (!midH2)
 		throw ColErr::InContainerError<std::string>
 		  (midH2Name,"Component not found");
@@ -828,9 +833,9 @@ makeESS::buildBunkerChicane(Simulation& System,
 	    IParam.getValueError<std::string>
 	    ("bunkerChicane",j,2,"SegmentNumber "+errMess);
 	  const attachSystem::FixedComp* FCPtr=
-	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
+	    System.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
 
-	  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+	  const long int linkIndex=FCPtr->getSideIndex(linkName);
           CF->createAll(System,*FCPtr,linkIndex);
 	}
       else
@@ -1183,7 +1188,6 @@ makeESS::build(Simulation& System,
       throw ColErr::ExitAbort("Help system exit");
     }
 
-  
   buildFocusPoints(System);
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);
@@ -1255,15 +1259,24 @@ makeESS::build(Simulation& System,
       LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
       LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
     }
+  else
+    {
+      // If LowMod is not built then still create Low[AB],
+      // but with respect to TopMod. In this case their ZStep and XYAngle
+      // are adjusted in moderatorVariables.cxx in order to place them
+      // in the original position with LowMod.
+      LowAFL->createAll(System,World::masterOrigin(),0,*Reflector,4,*Bulk,-3);
+      LowBFL->createAll(System,World::masterOrigin(),0,*Reflector,3,*Bulk,-3);
+    }
 
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+  ELog::EM << "Forced" << ELog::endDiag;
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
-  if (lowModType != "None")
-    {
-      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
-    }
+
+  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
@@ -1272,6 +1285,7 @@ makeESS::build(Simulation& System,
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
+  ELog::EM << "Forced" << ELog::endDiag;
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
@@ -1304,8 +1318,10 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
-  
-  PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
+
+  PBeam->setFront(*Bulk,4);
+  PBeam->setBack(*TSMainBuildingObj,-1);
+  PBeam->createAll(System,*Bulk,4,*ShutterBayObj,-6);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));

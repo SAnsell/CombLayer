@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackPoint.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ObjSurfMap.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -100,8 +102,8 @@ ObjectTrackPoint::operator=(const ObjectTrackPoint& A)
 
 void
 ObjectTrackPoint::addUnit(const Simulation& System,
-			const long int objN,
-			const Geometry::Vec3D& IPt)
+			  const long int objN,
+			  const Geometry::Vec3D& IPt)
   /*!
     Create a target track between the IPt and the target point
     \param System :: Simulation to use

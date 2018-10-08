@@ -307,15 +307,12 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
   D1.addUnit(SP1);
   D2.addUnit(SP2);
 
-
   sourceCard.setData(xyz[(aR+1) % 3],D1); // equiv of +2/-1
   sourceCard.setData(xyz[aR % 3],D2);
   sourceCard.setComp("ara",4.0*xRange*zRange);
-
   
   if (TransPtr)
     sourceCard.setComp("tr",TransPtr->getName());
-
   
   SourceBase::createEnergySource(sourceCard);    
   

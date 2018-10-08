@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,56 +54,21 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "objectRegister.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "LinkSupport.h"
 
 namespace attachSystem
 {
 
-long int
-getLinkIndex(const std::string& linkName)
-  /*!
-    Convert a name front back etc into a standard link number
-    \param linkName :: Linkname with a leading - if name reverse
-    \return link number [-ve for beamFront/beamBack]
-  */
-{
-  ELog::RegMethod RegA("LinkSupport","getLinkIndex");
-
-  long int linkPt(0);
-  if (!StrFunc::convert(linkName,linkPt))
-    {
-      if (linkName=="origin") 
-	linkPt= 0;
-      else if (linkName=="front") 
-	linkPt= 1;
-      else if (linkName=="front-") 
-	linkPt= -1;
-      else if (linkName=="back")
-	linkPt= 2;
-      else if (linkName=="back-")
-	linkPt= -2;
-      else if (linkName=="beamFront")
-	linkPt=1001;
-      else if (linkName=="beamBack")
-	linkPt=1002;
-      else if (linkName=="beamFront-")
-	linkPt= -1001;
-      else if (linkName=="beamBack-")
-	linkPt= -1002;
-      else
-	{
-	  throw ColErr::InContainerError<std::string>
-	    (linkName,"linkName failure");
-	}
-    }
-  return linkPt;
-}
 
   
 int
-getAttachPoint(const std::string& FCName,
+getAttachPoint(const objectGroups& OGrp,
+	       const std::string& FCName,
 	       const std::string& linkName,
 	       Geometry::Vec3D& Pt,
 	       Geometry::Vec3D& YAxis)
@@ -111,6 +76,7 @@ getAttachPoint(const std::string& FCName,
     Takes the linkName and the fixed object and converts
     this into the direction and point.
     - Note that link points are +1 offset and 
+    \param OGrp :: Object groups
     \param FCName :: Name for the fixed object
     \param linkName :: Name/number for the link point
     \param Pt :: Link point [out]
@@ -120,21 +86,20 @@ getAttachPoint(const std::string& FCName,
 {
   ELog::RegMethod RegA("LinkSupport","getAttachPoint");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* FC=
-    OR.getObject<attachSystem::FixedComp>(FCName);
+    OGrp.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
-  const long int index=getLinkIndex(linkName);
+  const long int index=FC->getSideIndex(linkName);
   Pt=FC->getLinkPt(index);
   YAxis=FC->getLinkAxis(index);
   return 1;
 }
 
 int
-getAttachPointWithXYZ(const std::string& FCName,
+getAttachPointWithXYZ(const objectGroups& OGrp,
+		      const std::string& FCName,
                       const std::string& linkName,
                       Geometry::Vec3D& Pt,
                       Geometry::Vec3D& XAxis,
@@ -155,14 +120,12 @@ getAttachPointWithXYZ(const std::string& FCName,
 {
   ELog::RegMethod RegA("LinkSupport","getAttachPointWithXYZ");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const FixedComp* FC=
-    OR.getObject<attachSystem::FixedComp>(FCName);
+    OGrp.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
-  const long int index=getLinkIndex(linkName);
+  const long int index=FC->getSideIndex(linkName);
   // All these calls throw on error
   Pt=FC->getLinkPt(index);
   YAxis=FC->getLinkAxis(index);
@@ -175,16 +138,20 @@ getAttachPointWithXYZ(const std::string& FCName,
 }
 
 size_t 
-getPoint(const std::vector<std::string>& StrItem,
+getPoint(const objectGroups& OGrp,
+	 const std::vector<std::string>& StrItem,
 	 const size_t index,
 	 Geometry::Vec3D& Pt)
-/*!
-    Get a vector based on a StrItem  ether using a
+  /*!
+    Get a vector based on a StrItem either using a
     a name unit or a value.
     \param StrItem :: List of strings
     \param index :: Place to start in list
     \param Pt :: Point found
-    \return 1 on success / 0 on failure
+    \retval  0 on failure
+    \retval  1 basic point
+    \retval  2 FixedComp+ axis
+    \retval  3 itemed evector
    */
 {
   ELog::RegMethod RegA("LinkSupport[F]","getPoint");
@@ -199,7 +166,7 @@ getPoint(const std::vector<std::string>& StrItem,
     {
       Geometry::Vec3D YAxis;  
       if (attachSystem::getAttachPoint
-	  (StrItem[index],StrItem[index+1],Pt,YAxis))
+	  (OGrp,StrItem[index],StrItem[index+1],Pt,YAxis))
 	return 2;
     }
   

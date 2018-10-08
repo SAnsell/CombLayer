@@ -66,7 +66,6 @@ namespace Geometry
 {
 
 surfImplicates::surfImplicates() 
-  //  functionMap({"PlanePlane",&surfImplicates::planePlane})
   /*!
     Constructor
   */
@@ -171,7 +170,8 @@ std::pair<int,int>
 surfImplicates::planeCylinder(const Geometry::Surface* APtr,
 			      const Geometry::Surface* BPtr) const
   /*!
-    Determine if two planes are implicates
+    Determine if plane / cylinder are implicates
+    Condition is that the plane normal -- CylAxis are orthoganal
     \param APtr :: First plane pointer
     \param BPtr :: second cylinder pointer
    */
@@ -186,7 +186,7 @@ surfImplicates::planeCylinder(const Geometry::Surface* APtr,
   const Geometry::Vec3D& BCent=BCyl->getCentre();
   const double R=BCyl->getRadius();
 
-  if (ANorm.dotProd(BAxis)<Geometry::zeroTol)
+  if (std::abs(ANorm.dotProd(BAxis))<Geometry::zeroTol)
     {
       const double D=APlane->distance(BCent);
       if (std::abs(D)>R)

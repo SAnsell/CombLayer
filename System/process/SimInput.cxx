@@ -55,6 +55,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "Triple.h"
@@ -69,6 +71,9 @@
 #include "LineTrack.h"
 #include "ImportControl.h"
 #include "SimValid.h"
+#include "LinkUnit.h"
+#include "surfRegister.h"
+#include "FixedComp.h"
 #include "MainProcess.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -109,7 +114,36 @@ processExitChecks(Simulation& System,
 	}
       else if (IParam.flag("validFC"))
 	{
-
+	  const std::string FCObject=
+	    IParam.getValueError<std::string>("validFC",0,0,"No FC-object");
+	  const std::string linkPos=
+	    IParam.getValueError<std::string>("validFC",0,1,"No FC-link Pos");
+	  
+	  const attachSystem::FixedComp* FC=
+	    System.getObjectThrow<attachSystem::FixedComp>
+	    (FCObject,"FixedComp");
+	  
+          const long int sideIndex=FC->getSideIndex(linkPos);
+	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex);
+	  ELog::EM<<"Validation point "<<CPoint<<ELog::endDiag;
+		  
+	  if (!SValidCheck.runPoint(System,CPoint,
+				    IParam.getValue<size_t>("validCheck")))
+	    errFlag += -1;
+	}
+      else if (IParam.flag("validAll"))
+	{
+	  // This should work BUT never does
+	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  typedef objectGroups::cMapTYPE CM;
+	  const CM& mapFC=System.getComponents();
+	  for(const CM::value_type& mc : mapFC)
+	    {
+	      const attachSystem::FixedComp& FC = *(mc.second);
+	      const Geometry::Vec3D& CP=FC.getCentre();
+	      if (SValidCheck.runPoint(System,CP,NPts))
+		  errFlag += -1;
+	    }
 	}
       else 
 	{
@@ -119,7 +153,7 @@ processExitChecks(Simulation& System,
 	}
 
     }
-  
+
   const size_t NLine = IParam.setCnt("validLine");
   for(size_t i=0;i<NLine;i++)
     {

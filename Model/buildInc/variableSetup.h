@@ -31,7 +31,6 @@ namespace mainSystem
 namespace setVariable
 {
 
-  void balderVariables(FuncDataBase&);
   void BilbauVariables(FuncDataBase&);
   void BNCTVariables(FuncDataBase&);
   void ChipVariables(FuncDataBase&);
@@ -46,6 +45,7 @@ namespace setVariable
   void gammaVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);
   void IMatVariables(FuncDataBase&);
+  void MaxIVVariables(FuncDataBase&,const std::set<std::string>&);
   void MuonVariables(FuncDataBase&);
   void PipeVariables(FuncDataBase&);
   void PhotonVariables(FuncDataBase&);

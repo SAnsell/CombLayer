@@ -3,7 +3,7 @@
  
  * File:   photon/CylLayer.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -91,9 +92,7 @@ LInfo::resize(const size_t N)
       
 CylLayer::CylLayer(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::BoundOuter(),
-  layerIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(layerIndex+1)
+  attachSystem::BoundOuter()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -109,7 +108,6 @@ CylLayer::~CylLayer()
 CylLayer::CylLayer(const CylLayer& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::BoundOuter(A),
-  layerIndex(A.layerIndex),cellIndex(A.cellIndex),
   outerRadius(A.outerRadius),
   nLayers(A.nLayers),LVec(A.LVec)
   /*!
@@ -131,7 +129,6 @@ CylLayer::operator=(const CylLayer& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::BoundOuter::operator=(A);
-      cellIndex=A.cellIndex;
       outerRadius=A.outerRadius;
       nLayers=A.nLayers;
       LVec=A.LVec;
@@ -169,7 +166,7 @@ CylLayer::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string KN=keyName+StrFunc::makeString(i);
+      const std::string KN=keyName+std::to_string(i);
       const size_t copyNum=
 	Control.EvalDefVar<size_t>(KN+"CopyCell",i);
       if (copyNum==i)
@@ -181,7 +178,7 @@ CylLayer::populate(const FuncDataBase& Control)
 	  LI.resize(LI.nDisk);
 	  for(size_t j=0;j<LI.nDisk;j++)
 	    {
-	      const std::string subNum=StrFunc::makeString(j);
+              const std::string subNum=std::to_string(j);
 	      if (j+1!=LI.nDisk)
 		LI.Radii[j]=Control.EvalPair<double>(KN+"Radius"+subNum,
 						     keyName+"Radius"+subNum);
@@ -205,6 +202,7 @@ CylLayer::createUnitVector(const attachSystem::FixedComp& FC,
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: 
   */
 {
   ELog::RegMethod RegA("CylLayer","createUnitVector");
@@ -225,13 +223,13 @@ CylLayer::createSurfaces()
   // Outer surface:
   if (!(BoundOuter::setFlag & 2))
     {
-      ModelSupport::buildCylinder(SMap,layerIndex+8,
+      ModelSupport::buildCylinder(SMap,buildIndex+8,
 				  Origin,Y,outerRadius);
-      outerStruct.procSurfNum(-SMap.realSurf(layerIndex+8));
+      outerStruct.procSurfNum(-SMap.realSurf(buildIndex+8));
     }
 	  
   // Divide plane
-  int index(layerIndex);
+  int index(buildIndex);
   Geometry::Vec3D OR(Origin);
   for(const LInfo& LI : LVec)
     {
@@ -261,7 +259,7 @@ CylLayer::createObjects(Simulation& System)
   ELog::RegMethod RegA("CylLayer","createObjects");
 
   std::string Out;
-  int index(layerIndex);
+  int index(buildIndex);
   for(const LInfo& LI : LVec)
     {
       int subIndex(index);
@@ -271,7 +269,7 @@ CylLayer::createObjects(Simulation& System)
       // Inner cell:
       if (LI.nDisk==1)
 	Out=outerStruct.display();
-      //	Out=ModelSupport::getComposite(SMap,layerIndex," -8 ");
+      //	Out=ModelSupport::getComposite(SMap,buildIndex," -8 ");
       else 
 	Out=ModelSupport::getComposite(SMap,subIndex," -7 ");
 	    
@@ -296,7 +294,7 @@ CylLayer::createObjects(Simulation& System)
 	}
       index+=100;
     }
-  Out=ModelSupport::getComposite(SMap,layerIndex,index," 1 -1M");
+  Out=ModelSupport::getComposite(SMap,buildIndex,index," 1 -1M");
   addOuterSurf(Out+outerStruct.display());
   return; 
 }
@@ -312,26 +310,26 @@ CylLayer::createLinks()
   double tThick(0.0);
   for(const LInfo& LI : LVec)
     tThick+=LI.thick;
-  const int NL(layerIndex+static_cast<int>(nLayers-1)*100);
+  const int NL(buildIndex+static_cast<int>(nLayers-1)*100);
 
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(layerIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*tThick,Y);
   FixedComp::setLinkSurf(1,-SMap.realSurf(NL+101));
 
   FixedComp::setConnect(2,Origin+Y*(tThick/2.0)-X*outerRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(layerIndex+8));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+8));
   
   FixedComp::setConnect(3,Origin+Y*(tThick/2.0)+X*outerRadius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(layerIndex+8));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+8));
   
   FixedComp::setConnect(4,Origin+Y*(tThick/2.0)-Z*outerRadius,-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(layerIndex+8));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+8));
 
   FixedComp::setConnect(5,Origin+Y*(tThick/2.0)+Z*outerRadius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(layerIndex+8));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+8));
 
   return;
 }

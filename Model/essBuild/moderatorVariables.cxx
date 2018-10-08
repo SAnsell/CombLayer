@@ -386,7 +386,6 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.copyVarSet("TopRightPreWing","LowRightPreWing");
   Control.addVariable("TopRightPreWingXYAngle",180.0);
 
-  // if lowMod is None then BeRefLowVoidThick must be set to 0.0
   const std::string lowMod=IParam.getValue<std::string>("lowMod");
   const std::string topMod=IParam.getValue<std::string>("topMod");
 
@@ -602,6 +601,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 
   if (lowMod=="None") // single
     {
+      // if lowMod is None then BeRefLowVoidThick must be set to 0.0
       Control.setVariable("BeRefLowVoidThick", 0);
       Control.setVariable("BeRefLowRefMat", std::string("SS316L"));
       Control.setVariable("BeRefLowWallMat", std::string("AluminiumBe"));

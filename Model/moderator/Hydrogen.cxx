@@ -62,6 +62,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,8 +82,7 @@ namespace moderatorSystem
 
 Hydrogen::Hydrogen(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  hydIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hydIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +91,6 @@ Hydrogen::Hydrogen(const std::string& Key)  :
 
 Hydrogen::Hydrogen(const Hydrogen& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  hydIndex(A.hydIndex),cellIndex(A.cellIndex),
   populated(A.populated),width(A.width),height(A.height),
   depth(A.depth),radius(A.radius),innerXShift(A.innerXShift),
   alDivide(A.alDivide),alFront(A.alFront),alTop(A.alTop),
@@ -114,7 +114,6 @@ Hydrogen::operator=(const Hydrogen& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       width=A.width;
       height=A.height;
@@ -218,33 +217,33 @@ Hydrogen::createSurfaces(const attachSystem::LinkUnit& LU)
   FixedComp::setConnect(5,Origin+Z*(height/2.0+alTop),Z);
 
 
-  SMap.addMatch(hydIndex+11,LU.getLinkSurf());
+  SMap.addMatch(buildIndex+11,LU.getLinkSurf());
   // Hydrogen Layers
-  ModelSupport::buildPlane(SMap,hydIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,hydIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,hydIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,hydIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   // Inner divide Al 
-  ModelSupport::buildPlane(SMap,hydIndex+1,Origin+Y*alDivide,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*alDivide,Y);
 
-  ModelSupport::buildPlane(SMap,hydIndex+13,Origin-X*(alSide+width/2.0),X);
-  ModelSupport::buildPlane(SMap,hydIndex+14,Origin+X*(alSide+width/2.0),X);
-  ModelSupport::buildPlane(SMap,hydIndex+15,Origin-Z*(alTop+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,hydIndex+16,Origin+Z*(alBase+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(alSide+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(alSide+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(alTop+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(alBase+height/2.0),Z);
 
-  ModelSupport::buildCylinder(SMap,hydIndex+2,HCentre,Z,radius);
-  ModelSupport::buildCylinder(SMap,hydIndex+12,HCentre+Y*alFront,Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+2,HCentre,Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+12,HCentre+Y*alFront,Z,radius);
   
   int signVal(-1);
   for(int i=0;i<6;i++)
     {
       FixedComp::setLinkSurf(static_cast<size_t>(i),
-			     signVal*SMap.realSurf(hydIndex+i+1));
+			     signVal*SMap.realSurf(buildIndex+i+1));
       signVal*=-1;
     }
   // Set divide surface
-  FixedComp::addLinkSurf(1,-SMap.realSurf(hydIndex+1));
+  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+1));
   return;
 }
 
@@ -258,15 +257,15 @@ Hydrogen::createObjects(Simulation& System)
   ELog::RegMethod RegA("Hydrogen","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,hydIndex,"11 -12 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,hydIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addBoundarySurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
   HCell=cellIndex-1;
   // Al layers :
-  Out=ModelSupport::getComposite(SMap,hydIndex,"11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 " (-1 : 2 : -3 : 4 : -5 : 6 ) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
   
@@ -280,7 +279,7 @@ Hydrogen::getDividePlane() const
     \return Dividing plane [pointing out]
   */
 {
-  return SMap.realSurf(hydIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
 int
@@ -290,7 +289,7 @@ Hydrogen::viewSurf() const
     \return view surface [pointing out]
    */
 {
-  return SMap.realSurf(hydIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
   
 void

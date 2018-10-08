@@ -46,9 +46,7 @@ class ReflectRods : public attachSystem::ContainedComp,
 
   typedef std::map<int,constructSystem::hexUnit*> MTYPE;
   
-  const int rodIndex;          ///< Index of surface offset
   const std::string baseName;  ///< Base keyname
-  int cellIndex;               ///< Cell index
   int populated;               ///< Cells populated
 
 

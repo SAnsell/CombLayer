@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/H2Moderator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,18 +37,11 @@ namespace ts1System
 */
 
 class H2Moderator : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,public attachSystem::FixedComp
+  public attachSystem::LayerComp,
+  public attachSystem::FixedOffset
 {
  private:
   
-  const int h2Index;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-  double xyAngle;               ///< Angle [degrees]
-
   double width;                 ///< width
   double height;                ///< height
   double depth;                 ///< viewed distance [inner]

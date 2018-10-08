@@ -56,6 +56,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +81,7 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,9),
-  attachSystem::CellMap(),attachSystem::SurfMap(),  
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -92,7 +92,6 @@ DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) :
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),
   midIndex(A.midIndex),midZ(A.midZ),zStep(A.zStep),
   outerRadius(A.outerRadius),thick(A.thick),radius(A.radius),
   mat(A.mat),temp(A.temp)
@@ -118,7 +117,6 @@ DiskLayerMod::operator=(const DiskLayerMod& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       
-      cellIndex=A.cellIndex;
       midIndex=A.midIndex;
       midZ=A.midZ;
       zStep=A.zStep;
@@ -243,9 +241,9 @@ DiskLayerMod::createSurfaces()
 {
   ELog::RegMethod RegA("DiskLayerMod","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin,Z);
-  SurfMap::setSurf("Layer0",SMap.realSurf(modIndex+5));
-  int SI(modIndex+200);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
+  SurfMap::setSurf("Layer0",SMap.realSurf(buildIndex+5));
+  int SI(buildIndex+200);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildPlane(SMap,SI+5,Origin+Z*thick[i],Z);
@@ -259,8 +257,8 @@ DiskLayerMod::createSurfaces()
         }
       SI+=200;
     }
-  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,outerRadius);
-  SurfMap::setSurf("OuterRad",SMap.realSurf(modIndex+7));
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,outerRadius);
+  SurfMap::setSurf("OuterRad",SMap.realSurf(buildIndex+7));
   return; 
 }
 
@@ -275,7 +273,7 @@ DiskLayerMod::createObjects(Simulation& System)
 
   std::string Out,outerOut;
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       size_t j;
@@ -295,7 +293,7 @@ DiskLayerMod::createObjects(Simulation& System)
 	  innerOut=ModelSupport::getComposite(SMap,TI," 207 ");
 	  TI+=10;
 	}
-      outerOut=ModelSupport::getComposite(SMap,modIndex," -7 ");
+      outerOut=ModelSupport::getComposite(SMap,buildIndex," -7 ");
       if (mat[i][j]!=-1)
         {
           System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
@@ -304,7 +302,7 @@ DiskLayerMod::createObjects(Simulation& System)
         }
       SI+=200;
     }
-  //  int SI(modIndex);
+  //  int SI(buildIndex);
 
   //=ModelSupport::getComposite(SMap,,TI," 5 -205 - ");
 
@@ -323,10 +321,10 @@ DiskLayerMod::createLinks()
 {  
   ELog::RegMethod RegA("DiskLayerMod","createLinks");
 
-  const int SI(modIndex+static_cast<int>(thick.size())*200);
+  const int SI(buildIndex+static_cast<int>(thick.size())*200);
 
   FixedComp::setConnect(4,Origin,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(modIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   FixedComp::setConnect(5,Origin+Z*thick[nLayers-1],Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+5));
 
@@ -410,8 +408,8 @@ DiskLayerMod::getLayerSurf(const size_t layerIndex,
       const int LI((SI==5) ? static_cast<int>(midIndex-layerIndex)
                    : static_cast<int>(midIndex+layerIndex+1));
       
-      return (SI==5) ? -signValue*SMap.realSurf(modIndex+LI*200+5) :
-	signValue*SMap.realSurf(modIndex+LI*200+5);
+      return (SI==5) ? -signValue*SMap.realSurf(buildIndex+LI*200+5) :
+	signValue*SMap.realSurf(buildIndex+LI*200+5);
     }
   // HORRIZONTAL CUT
 
@@ -422,7 +420,7 @@ DiskLayerMod::getLayerSurf(const size_t layerIndex,
 					 "layerIndex in XY");
   const int LI(static_cast<int>(layerIndex+1));
   if (SI<=4)
-    return signValue*SMap.realSurf(modIndex+LI*200+7);
+    return signValue*SMap.realSurf(buildIndex+LI*200+7);
   
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 

@@ -3,7 +3,7 @@
  
  * File:   Main/sns.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "mainJobs.h"
@@ -124,7 +126,7 @@ main(int argc,char* argv[])
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -144,7 +146,6 @@ main(int argc,char* argv[])
       exitFlag= -1;
     }
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

@@ -67,6 +67,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,8 +84,7 @@ namespace hutchSystem
 
 ScatterPlate::ScatterPlate(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
-  spIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(spIndex+1),populated(0),nLayers(0)
+  populated(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +93,6 @@ ScatterPlate::ScatterPlate(const std::string& Key)  :
 
 ScatterPlate::ScatterPlate(const ScatterPlate& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  spIndex(A.spIndex),cellIndex(A.cellIndex),
   populated(A.populated),Axis(A.Axis),
   XAxis(A.XAxis),ZAxis(A.ZAxis),Centre(A.Centre),zAngle(A.zAngle),
   xyAngle(A.xyAngle),fStep(A.fStep),width(A.width),height(A.height),
@@ -116,7 +116,6 @@ ScatterPlate::operator=(const ScatterPlate& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       Axis=A.Axis;
       XAxis=A.XAxis;
@@ -229,24 +228,24 @@ ScatterPlate::createSurfaces()
   // INNER PLANES
   
   // Front
-  ModelSupport::buildPlane(SMap,spIndex+1,Centre,Axis);
-  ModelSupport::buildPlane(SMap,spIndex+2,Centre+Axis*depth,Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Centre,Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Centre+Axis*depth,Axis);
   
   if (height>0.0)   // Only create if not using register edges
     {
-      ModelSupport::buildPlane(SMap,spIndex+6,
+      ModelSupport::buildPlane(SMap,buildIndex+6,
 			       Centre+ZAxis*(height/2.0),ZAxis);
       // down
-      ModelSupport::buildPlane(SMap,spIndex+5,
+      ModelSupport::buildPlane(SMap,buildIndex+5,
 			       Centre-ZAxis*height/2.0,ZAxis);
     }
   if (width>0.0)
     {
       // left [Dept. on Axis]
-      ModelSupport::buildPlane(SMap,spIndex+3,
+      ModelSupport::buildPlane(SMap,buildIndex+3,
 			       Centre-XAxis*(width/2.0),XAxis);
       // right [Dept. on Axis]
-      ModelSupport::buildPlane(SMap,spIndex+3,
+      ModelSupport::buildPlane(SMap,buildIndex+3,
 			       Centre+XAxis*(width/2.0),XAxis);
     }
 
@@ -272,7 +271,7 @@ ScatterPlate::createObjects(Simulation& System)
   
 
   // Master box: 
-  Out=ModelSupport::getComposite(SMap,spIndex,cx.str());
+  Out=ModelSupport::getComposite(SMap,buildIndex,cx.str());
   addOuterSurf(Out);
   Out+=getContainer();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
@@ -307,10 +306,10 @@ ScatterPlate::layerProcess(Simulation& System)
       DA.init();
       // Cell Specific:
       DA.setCellN(CDivideList[i]);
-      DA.setOutNum(cellIndex,spIndex+201+100*static_cast<int>(i));
+      DA.setOutNum(cellIndex,buildIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(spIndex+1),
-				   -SMap.realSurf(spIndex+2));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+				   -SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
@@ -334,17 +333,17 @@ ScatterPlate::exitWindow(const double Dist,
   window.clear();
   if (width>0.0)
     {
-      window.push_back(SMap.realSurf(spIndex+3));
-      window.push_back(SMap.realSurf(spIndex+4));
+      window.push_back(SMap.realSurf(buildIndex+3));
+      window.push_back(SMap.realSurf(buildIndex+4));
     }
   if (depth>0.0)
     {
-      window.push_back(SMap.realSurf(spIndex+5));
-      window.push_back(SMap.realSurf(spIndex+6));
+      window.push_back(SMap.realSurf(buildIndex+5));
+      window.push_back(SMap.realSurf(buildIndex+6));
     }
   Pt=Centre+Axis*(depth+Dist);  
 
-  return SMap.realSurf(spIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
   
 void

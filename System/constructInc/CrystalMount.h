@@ -45,8 +45,6 @@ class CrystalMount : public attachSystem::ContainedComp,
   const std::string baseName;  ///< Base name
   const size_t ID;             ///< ID Number
   
-  const int xtalIndex;     ///< Index of surface offset
-  int cellIndex;           ///< Cell index
 
   int active;              ///< Active flag (built but no object)
   double width;            ///< Radius of from centre

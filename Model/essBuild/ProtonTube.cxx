@@ -3,7 +3,7 @@
 
  * File:   essBuild/ProtonTube.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -71,9 +73,16 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FrontBackCut.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "FrontBackCut.h"
+#include "CopiedComp.h"
 
 #include "PBW.h"
 #include "TelescopicPipe.h"
@@ -84,8 +93,12 @@ namespace essSystem
 {
 
 ProtonTube::ProtonTube(const std::string& Key) :
-  TelescopicPipe(Key),
-  pbw(new PBW(Key+"PBW"))
+  attachSystem::CopiedComp(Key,Key),
+  attachSystem::ContainedGroup(),
+  attachSystem::FixedOffset(newName,2),
+  attachSystem::FrontBackCut(),
+  tube(new TelescopicPipe(newName+"Pipe")),
+  pbw(new PBW(newName+"PBW"))
   /*!
     Constructor
   */
@@ -93,14 +106,19 @@ ProtonTube::ProtonTube(const std::string& Key) :
   ELog::RegMethod RegA("ProtonTube","ProtonTube(const std::string&)");
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  OR.addObject(tube);
   OR.addObject(pbw);
   
   return;
 }
 
 ProtonTube::ProtonTube(const ProtonTube& A) :
-  TelescopicPipe(A),
+  attachSystem::CopiedComp(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::FrontBackCut(A),
   engActive(A.engActive),
+  tube(A.tube->clone()),
   pbw(A.pbw->clone())
   /*!
     Copy constructor
@@ -118,8 +136,8 @@ ProtonTube::operator=(const ProtonTube& A)
 {
   if (this!=&A)
     {
-      TelescopicPipe::operator=(A);
       engActive=A.engActive;
+      *tube=*A.tube;
       *pbw=*A.pbw;
     }
   return *this;
@@ -139,7 +157,6 @@ ProtonTube::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ProtonTube","populate");
-
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   return;
@@ -147,32 +164,34 @@ ProtonTube::populate(const FuncDataBase& Control)
 
 void
 ProtonTube::createAll(Simulation& System,
-		      const attachSystem::FixedComp& TargetFC,const long int tIndex,
-		      const attachSystem::FixedComp& BulkFC,const long int bIndex,
-		      const attachSystem::FixedComp& SB,const long int sbIndex,
-		      const attachSystem::FixedComp& Bulk)
+		      const attachSystem::FixedComp& originFC,
+		      const long int originIndex,
+		      const attachSystem::FixedComp& SB,
+		      const long int sbIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param TargetFC :: FixedComp for origin and target outer surf (tube start)
-    \param tIndex :: Target plate surface [signed]
-    \param BulkFC :: FixedComp for tube end (not used if next arg is 0)
-    \param bIndex :: Tube end link point (not used if 0 - then the tube ends at its max length)
+    \param originFC :: FixedComp for origin
+    \param originIndex :: Target plate surface [signed]
     \param SB :: FixedComp for Monolith Shielding (shutter bay object)
     \param sbIndex :: ShutterBay roof link point
-    \param Bulk :: Bulk object (to remove BeamMonitor from)						
   */
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
 
-  TelescopicPipe::createAll(System,TargetFC,tIndex,BulkFC,bIndex,SB);
+  tube->setFront(frontRule());
+  tube->setBack(backRule());
+  tube->createAll(System,originFC,originIndex);
+
+  attachSystem::ContainedGroup::operator=(*tube);
+
   populate(System.getDataBase());
   
   if (engActive)
     {
       pbw->createAll(System, World::masterOrigin(), 0, SB,sbIndex);
       attachSystem::addToInsertSurfCtrl(System,SB,*pbw);
-      attachSystem::addToInsertLineCtrl(System,*this, *pbw);
+      attachSystem::addToInsertLineCtrl(System,*tube, *pbw);
     }
 
   return;

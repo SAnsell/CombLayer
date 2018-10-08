@@ -56,6 +56,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -63,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
@@ -387,8 +390,7 @@ ODIN::buildOutGuide(Simulation& System,
 
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->insertObjects(System);
-  
-  
+
   OutACut->addInsertCell(OutPitA->getCells("MidLayerFront"));
   OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(1),
                     OutPitA->getKey("Mid").getFullRule(-1));

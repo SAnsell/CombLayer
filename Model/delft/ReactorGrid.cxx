@@ -69,6 +69,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,6 +83,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h" 
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -227,7 +231,7 @@ ReactorGrid::getElementName(const std::string& Name,const size_t I,
   
   std::string Out(Name);
   Out+=StrFunc::indexToAlpha(I);
-  Out+=StrFunc::makeString(J);
+  Out+=std::to_string(J);
   return Out;
 }
 
@@ -253,8 +257,7 @@ ReactorGrid::getElementNumber(const std::string& Name)
 
 ReactorGrid::ReactorGrid(const std::string& Key) : 
   attachSystem::FixedOffset(Key,7),attachSystem::ContainedComp(),
-  gridIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(gridIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulateed.
     \param Key :: KeyName
@@ -263,7 +266,7 @@ ReactorGrid::ReactorGrid(const std::string& Key) :
 
 ReactorGrid::ReactorGrid(const ReactorGrid& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  gridIndex(A.gridIndex),cellIndex(A.cellIndex),
+  attachSystem::CellMap(A),
   NX(A.NX),NY(A.NY),Width(A.Width),Depth(A.Depth),Base(A.Base),
   Top(A.Top),plateThick(A.plateThick),plateRadius(A.plateRadius),
   plateMat(A.plateMat),waterMat(A.waterMat),GType(A.GType),
@@ -333,7 +336,7 @@ ReactorGrid::populate(const FuncDataBase& Control)
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   
-  if (!(NX*NY) || (NX*NY)>4000)
+  if ( (NX*NY)==0 || (NX*NY)>4000)
     throw ColErr::IndexError<size_t>(NX*NY,4000,
 				     "NXYZ array size");
 
@@ -378,25 +381,25 @@ ReactorGrid::createSurfaces()
 {
   ELog::RegMethod RegA("ReactorGrid","createSurface");
   // Outside surfaces
-  ModelSupport::buildPlane(SMap,gridIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin-X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,gridIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+X*Width/2.0,X);
   
 
-  ModelSupport::buildPlane(SMap,gridIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-Y*Depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,gridIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+Y*Depth/2.0,Y);
 
 
-  ModelSupport::buildPlane(SMap,gridIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*Base,Z);
-  ModelSupport::buildPlane(SMap,gridIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*Top,Z);
 
   // Plate Base:
-  ModelSupport::buildPlane(SMap,gridIndex+5005,
+  ModelSupport::buildPlane(SMap,buildIndex+5005,
 			   Origin-Z*(Base+plateThick),Z);
 
 
@@ -411,9 +414,9 @@ ReactorGrid::createSurfaces()
       const Geometry::Vec3D LStep
 	(Axis[dimI]*(SArray[dimI]/static_cast<double>(NArray[dimI])));
       
-      int sNum(gridIndex+7+dimI);
+      int sNum(buildIndex+7+dimI);
 
-      SMap.addMatch(sNum,gridIndex+1+dimI*2);   // match 1,3,5 to 7,8,9
+      SMap.addMatch(sNum,buildIndex+1+dimI*2);   // match 1,3,5 to 7,8,9
       for(size_t i=1;i<NArray[dimI];i++)
 	{
 	  sNum+=10; 
@@ -422,11 +425,11 @@ ReactorGrid::createSurfaces()
 	}
       
       sNum+=10;  // For exit
-      SMap.addMatch(sNum,gridIndex+2+dimI*2);   // match 2,4 to x7,x8
+      SMap.addMatch(sNum,buildIndex+2+dimI*2);   // match 2,4 to x7,x8
     }
 
   // Create Plates centres:
-  int cNum(gridIndex+5007);
+  int cNum(buildIndex+5007);
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       {
@@ -449,25 +452,25 @@ ReactorGrid::createObjects(Simulation& System)
 
   std::string Out;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,gridIndex,"1 -2 3 -4 5005 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5005 -6 ");
   addOuterSurf(Out);      
 
   const std::string ZPart=
-    ModelSupport::getComposite(SMap,gridIndex," 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");
   const std::string ZPlate=
-    ModelSupport::getComposite(SMap,gridIndex," -5 5005 ");
+    ModelSupport::getComposite(SMap,buildIndex," -5 5005 ");
 
   
   // Note GridNumbers created at offset values:
-  int cNum(gridIndex+5000);
+  int cNum(buildIndex+5000);
   for(int i=0;i<static_cast<int>(NX);i++)
     {
       const std::string XPart=
-	ModelSupport::getComposite(SMap,gridIndex+i*10," 7 -17 ");
+	ModelSupport::getComposite(SMap,buildIndex+i*10," 7 -17 ");
       for(int j=0;j<static_cast<int>(NY);j++)
 	{
 	  const std::string YPart=
-	    ModelSupport::getComposite(SMap,gridIndex+j*10," 8 -18 ");
+	    ModelSupport::getComposite(SMap,buildIndex+j*10," 8 -18 ");
 	  
 	  const size_t si=static_cast<size_t>(i);
 	  const size_t sj=static_cast<size_t>(j);
@@ -502,7 +505,7 @@ ReactorGrid::getCellNumber(const long int i,const long int j) const
     \return Cell number
    */
 {
-  return gridIndex+static_cast<int>((i+1)*100+j);
+  return buildIndex+static_cast<int>((i+1)*100+j);
 }
 
 Geometry::Vec3D 
@@ -515,6 +518,7 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getCellOrigin");
+  
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
 
@@ -602,7 +606,7 @@ ReactorGrid::createLinks()
 
   for(size_t i=0;i<7;i++)
     FixedComp::setLinkSurf
-      (i,SMap.realSurf(gridIndex+static_cast<int>(i)+1));
+      (i,SMap.realSurf(buildIndex+static_cast<int>(i)+1));
   
   return;
 }
@@ -643,8 +647,6 @@ ReactorGrid::getFuelCells(const Simulation& System,
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getFuelCells");
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
   const ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   
   std::vector<int> cellOut;
@@ -652,9 +654,9 @@ ReactorGrid::getFuelCells(const Simulation& System,
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
-	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
-	  for(int index=cellBegin;index<=cellEnd;index++)
+	  const std::vector<int> cellVec=
+	    System.getObjectRange(Grid[i][j]->getItemKeyName());
+	  for(const int index : cellVec)
 	    {
 	      const MonteCarlo::Object* OPtr=
 		System.findQhull(index);
@@ -680,17 +682,15 @@ ReactorGrid::getAllCells(const Simulation& System) const
    */
 {
   ELog::RegMethod RegA("ReactorGrid","getAllCells");
-  const ModelSupport::objectRegister& OR= 
-    ModelSupport::objectRegister::Instance();
 
   std::vector<int> cellOut;
   for(long int i=0;i<static_cast<long int>(NX);i++)
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
-	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
-	  for(int index=cellBegin;index<=cellEnd;index++)
+	  const std::vector<int> cellVec=
+	    System.getObjectRange(Grid[i][j]->getItemKeyName());
+	  for(const int index : cellVec)
 	    {
 	      if (System.existCell(index))
 		cellOut.push_back(index);

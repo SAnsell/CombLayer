@@ -59,14 +59,18 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "FlightLine.h"
 #include "FlightCluster.h"
 
@@ -77,7 +81,6 @@ FlightCluster::FlightCluster(const std::string& Key) :
   keyName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param N :: Index value
     \param Key :: Name for item in search
   */
 {}
@@ -205,6 +208,7 @@ FlightCluster::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed component
+    \param outerSurf :: surface nubmer to connect flightline to
   */
 {
   ELog::RegMethod RegA("FlightCluster","createAll");

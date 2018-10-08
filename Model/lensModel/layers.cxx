@@ -3,7 +3,7 @@
  
  * File:   lensModel/layers.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,15 +67,19 @@
 #include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "siModerator.h"
 #include "surfDIter.h"
 #include "ProtonFlight.h"
@@ -90,8 +94,7 @@ namespace lensSystem
 
 layers::layers(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
-  surIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surIndex+1),populated(0),innerCompSurf(0),
+  populated(0),innerCompSurf(0),
   PA("proton"),FC("flight")
   /*!
     Constructor
@@ -101,7 +104,6 @@ layers::layers(const std::string& Key) :
 
 layers::layers(const layers& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  surIndex(A.surIndex),cellIndex(A.cellIndex),
   populated(A.populated),innerCompSurf(A.innerCompSurf),PA(A.PA),
   FC(A.FC),waterRad(A.waterRad),DCRad(A.DCRad),leadRad(A.leadRad),
   bPolyRad(A.bPolyRad),epoxyRad(A.epoxyRad),outPolyRad(A.outPolyRad),
@@ -136,7 +138,6 @@ layers::operator=(const layers& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       innerCompSurf=A.innerCompSurf;
       PA=A.PA;
@@ -264,42 +265,42 @@ layers::createSurfaces()
   ELog::RegMethod RegA("layers","createSurfaces");
   
   // Water Layer:
-  ModelSupport::buildCylinder(SMap,surIndex+107,Origin,Z,waterRad);
-  ModelSupport::buildPlane(SMap,surIndex+105,Origin-Z*waterDepth,Z);
-  ModelSupport::buildPlane(SMap,surIndex+106,Origin+Z*waterHeight,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Z,waterRad);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*waterDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*waterHeight,Z);
 
   // Aluminium Layer : 
-  ModelSupport::buildCylinder(SMap,surIndex+117,Origin,Z,waterRad+waterAlThick);
-  ModelSupport::buildPlane(SMap,surIndex+115,Origin-Z*(waterDepth+waterAlThick),Z);
-  ModelSupport::buildPlane(SMap,surIndex+116,Origin+Z*(waterHeight+waterAlThick),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Z,waterRad+waterAlThick);
+  ModelSupport::buildPlane(SMap,buildIndex+115,Origin-Z*(waterDepth+waterAlThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(waterHeight+waterAlThick),Z);
 
   // Decoupler Layer:
-  ModelSupport::buildCylinder(SMap,surIndex+127,Origin,Z,DCRad);
-  ModelSupport::buildPlane(SMap,surIndex+125,Origin-Z*DCDepth,Z);
-  ModelSupport::buildPlane(SMap,surIndex+126,Origin+Z*DCHeight,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,Z,DCRad);
+  ModelSupport::buildPlane(SMap,buildIndex+125,Origin-Z*DCDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+126,Origin+Z*DCHeight,Z);
 
   // Lead layer
-  ModelSupport::buildCylinder(SMap,surIndex+137,Origin,Z,leadRad);
-  ModelSupport::buildPlane(SMap,surIndex+135,Origin-Z*leadDepth,Z);
-  ModelSupport::buildPlane(SMap,surIndex+136,Origin+Z*leadHeight,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+137,Origin,Z,leadRad);
+  ModelSupport::buildPlane(SMap,buildIndex+135,Origin-Z*leadDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+136,Origin+Z*leadHeight,Z);
 
   // BPoly
-  ModelSupport::buildCylinder(SMap,surIndex+147,Origin,Z,bPolyRad);
-  ModelSupport::buildPlane(SMap,surIndex+145,Origin-Z*bPolyDepth,Z);
-  ModelSupport::buildPlane(SMap,surIndex+146,Origin+Z*bPolyHeight,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+147,Origin,Z,bPolyRad);
+  ModelSupport::buildPlane(SMap,buildIndex+145,Origin-Z*bPolyDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+146,Origin+Z*bPolyHeight,Z);
 
   // Epoxy
-  ModelSupport::buildCylinder(SMap,surIndex+157,Origin,Z,epoxyRad);
-  ModelSupport::buildPlane(SMap,surIndex+155,Origin-Z*epoxyDepth,Z);
-  ModelSupport::buildPlane(SMap,surIndex+156,Origin+Z*epoxyHeight,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+157,Origin,Z,epoxyRad);
+  ModelSupport::buildPlane(SMap,buildIndex+155,Origin-Z*epoxyDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+156,Origin+Z*epoxyHeight,Z);
 
   // Outer
-  ModelSupport::buildCylinder(SMap,surIndex+167,Origin,Z,outPolyRad);
-  ModelSupport::buildPlane(SMap,surIndex+165,Origin-Z*outPolyDepth,Z);
-  ModelSupport::buildPlane(SMap,surIndex+166,Origin+Z*outPolyHeight,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+167,Origin,Z,outPolyRad);
+  ModelSupport::buildPlane(SMap,buildIndex+165,Origin-Z*outPolyDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+166,Origin+Z*outPolyHeight,Z);
 
   // Outer void
-  ModelSupport::buildCylinder(SMap,surIndex+177,Origin,Z,outVoidRad);
+  ModelSupport::buildCylinder(SMap,buildIndex+177,Origin,Z,outVoidRad);
 
   // Wedge 
   Geometry::Vec3D xDircA(X);
@@ -307,25 +308,25 @@ layers::createSurfaces()
   Geometry::Quaternion::calcQRotDeg(wedgeAngleXY[0],Z).rotate(xDircA);
   Geometry::Quaternion::calcQRotDeg(wedgeAngleXY[1],Z).rotate(xDircB);
 
-  ModelSupport::buildPlane(SMap,surIndex+203,
+  ModelSupport::buildPlane(SMap,buildIndex+203,
 			   Origin-X*wedgeWidth/2.0,xDircA);
-  ModelSupport::buildPlane(SMap,surIndex+204,
+  ModelSupport::buildPlane(SMap,buildIndex+204,
 			   Origin+X*wedgeWidth/2.0,xDircB);
-  ModelSupport::buildPlane(SMap,surIndex+205,Origin-Z*wedgeHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,surIndex+206,Origin+Z*wedgeHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*wedgeHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*wedgeHeight/2.0,Z);
 
   // Layers of Wedge:
   for(int i=0;i<static_cast<int>(nWedge);i++)
     {
       const unsigned int uI(static_cast<unsigned int>(i));
-      ModelSupport::buildPlane(SMap,surIndex+213+10*i,
+      ModelSupport::buildPlane(SMap,buildIndex+213+10*i,
        Origin-X*wedgeWidth/2.0+xDircA*wedgeLiner[uI],xDircA);
-      ModelSupport::buildPlane(SMap,surIndex+214+10*i,
+      ModelSupport::buildPlane(SMap,buildIndex+214+10*i,
        Origin+X*wedgeWidth/2.0-xDircB*wedgeLiner[uI],xDircB);
 
-      ModelSupport::buildPlane(SMap,surIndex+215+10*i,
+      ModelSupport::buildPlane(SMap,buildIndex+215+10*i,
          Origin-Z*wedgeHeight/2.0+Z*wedgeLiner[uI],Z);
-      ModelSupport::buildPlane(SMap,surIndex+216+10*i,
+      ModelSupport::buildPlane(SMap,buildIndex+216+10*i,
           Origin+Z*wedgeHeight/2.0-Z*wedgeLiner[uI],Z);
     }
   return;
@@ -344,28 +345,28 @@ layers::createObjects(Simulation& System,
 
   std::string Wedge,Out;
   // Build Wedge Takeout
-  Wedge=ModelSupport::getComposite(SMap,surIndex,"-127 ")+
+  Wedge=ModelSupport::getComposite(SMap,buildIndex,"-127 ")+
     CS.getLinkString(2);
   
   // Build Wedge units [Always build 1]
   for(int i=0;i<=static_cast<int>(nWedge);i++)
     {
       const unsigned int uI(static_cast<unsigned int>(i));
-      Out=ModelSupport::getComposite(SMap,surIndex+i*10,"203 -204 205 -206 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex+i*10,"203 -204 205 -206 ");
       Out+=Wedge;
       if (i!=static_cast<int>(nWedge))
-	Out+=ModelSupport::getComposite(SMap,surIndex+(i+1)*10,
+	Out+=ModelSupport::getComposite(SMap,buildIndex+(i+1)*10,
 					"(-203:204:-205:206) ");
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,
 				       wedgeLinerMat[uI],0.0,Out));
     }
   
-  Wedge+=ModelSupport::getComposite(SMap,surIndex," 203 -204 205 -206 ");  
+  Wedge+=ModelSupport::getComposite(SMap,buildIndex," 203 -204 205 -206 ");  
 
   // Build objects:
   // Inner water
-  Out=ModelSupport::getComposite(SMap,surIndex,"105 -106 -107 ");  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"105 -106 -107 ");  
   Out+=CS.getTopExclude();
   Out+="#("+Wedge+")";
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
@@ -373,7 +374,7 @@ layers::createObjects(Simulation& System,
   PA.addAllInsertCell(cellIndex-1);
 
   // Outer Al :
-  Out=ModelSupport::getComposite(SMap,surIndex,"115 -116 -117 (-105:106:107) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"115 -116 -117 (-105:106:107) ");
   Out+=CS.getTopExclude();
   Out+="#("+Wedge+")";
   FC.addInsertCell(cellIndex);
@@ -381,7 +382,7 @@ layers::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // DECOUPLER:
-  Out=ModelSupport::getComposite(SMap,surIndex,"125 -126 -127 (-115 : 116 : 117) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"125 -126 -127 (-115 : 116 : 117) ");
   //				 "(-71 : 72 :-73 : 74 : -115 )");
   Out+=CS.getExclude()+CS.getHeadExclude();
   Out+="#("+Wedge+")";
@@ -390,7 +391,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // LEAD:
-  Out=ModelSupport::getComposite(SMap,surIndex,"135 -136 -137 (-125 : 126 : 127)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"135 -136 -137 (-125 : 126 : 127)");
   // (56 : -71 : 72 : -73 : 74 : -125)");    
   Out+=CS.getExclude()+CS.getHeadExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,leadMat,0.0,Out));
@@ -398,7 +399,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // BPOLY
-  Out= ModelSupport::getComposite(SMap,surIndex,"145 -146 -147 "
+  Out= ModelSupport::getComposite(SMap,buildIndex,"145 -146 -147 "
 				  "(-135 : 136 : 137) ");
   Out+=CS.getExclude()+CS.getHeadExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,bPolyMat,0.0,Out));  
@@ -406,7 +407,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // EPOXY
-  Out= ModelSupport::getComposite(SMap,surIndex,"155 -156 -157 "
+  Out= ModelSupport::getComposite(SMap,buildIndex,"155 -156 -157 "
 				  "(-145 : 146 : 147) ");
   Out+=CS.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,epoxyMat,0.0,Out));
@@ -414,7 +415,7 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT POLY
-  Out=ModelSupport::getComposite(SMap,surIndex,"165 -166 -167 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -167 "
 				 "(-155 : 156 : 157) ");
   Out+=CS.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,outPolyMat,0.0,Out));
@@ -422,12 +423,12 @@ layers::createObjects(Simulation& System,
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT VOID
-  Out=ModelSupport::getComposite(SMap,surIndex,"165 -166 -177 167");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 167");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,surIndex,"165 -166 -177 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 ");
   addOuterSurf(Out);
   return;
 }
@@ -447,7 +448,7 @@ layers::createLinks(const attachSystem::FixedComp& CS)
   for(size_t i=0;i<2;i++)
     {
       FixedComp::setConnect(i,Origin,Y);
-      FixedComp::setLinkSurf(i,SMap.realSurf(surIndex+127));
+      FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+127));
       FixedComp::addLinkSurf(i,CS.getLinkSurf(1));
     }
 
@@ -466,10 +467,10 @@ layers::constructFlightLines(Simulation& System,
 {
   ELog::RegMethod RegA("layers","constructFlightLines");
 
-  FC.createAll(System,*this,-SMap.realSurf(surIndex+177));
+  FC.createAll(System,*this,-SMap.realSurf(buildIndex+177));
 
   // Add outer cylinder
-  PA.addBack(SMap.realSurf(surIndex+177));
+  PA.addBack(SMap.realSurf(buildIndex+177));
   PA.createAll(System,Vac,0);
 
   return;

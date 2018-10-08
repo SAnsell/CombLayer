@@ -83,6 +83,25 @@ Cylinder::Cylinder(const int N,const int T) :
   Cylinder::setBaseEqn();
 }
 
+Cylinder::Cylinder(const int N,const Geometry::Vec3D& Org,
+		   const Geometry::Vec3D& A,const double R) : 
+  Quadratic(N,0),
+  Centre(Org),Normal(A.unit()),Nvec(0),Radius(R)
+  /*!
+    Standard Constructor creates a cylinder 
+    \param N :: Name
+    \param Org :: origin 
+    \param A :: axis 
+    \param R :: radius
+  */
+{
+  // Called after it has been sized by Quadratic
+  Cylinder::setBaseEqn();
+  setNvec();
+}
+
+
+  
 Cylinder::Cylinder(const Cylinder& A) :
   Quadratic(A),Centre(A.Centre),Normal(A.Normal),
   Nvec(A.Nvec),Radius(A.Radius)

@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRInsert.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,6 +84,8 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "chipDataStore.h"
@@ -238,7 +242,7 @@ ChipIRInsert::createUnitVector()
   
   // Modification of ExitPoint
   const Geometry::Cylinder* OutCyl=
-    SMap.realPtr<const Geometry::Cylinder>(surfIndex+27);
+    SMap.realPtr<const Geometry::Cylinder>(buildIndex+27);
   voidOrigin=OutCyl->getCentre();
 
   MonteCarlo::LineIntersectVisit 
@@ -257,21 +261,21 @@ ChipIRInsert::createSurfaces()
   ELog::RegMethod RegA("ChipIRInsert","createSurface");
   // Front plane
   if (fStep>0.0)
-    ModelSupport::buildCylinder(SMap,surfIndex+101,
+    ModelSupport::buildCylinder(SMap,buildIndex+101,
 				voidOrigin,Z,innerRadius+fStep);		  else
-    SMap.addMatch(surfIndex+101,surfIndex+7);          // Outer top
+    SMap.addMatch(buildIndex+101,buildIndex+7);          // Outer top
 
   // Back plane
   if (bStep>0.0)
     {
-      ModelSupport::buildCylinder(SMap,surfIndex+102,
+      ModelSupport::buildCylinder(SMap,buildIndex+102,
 				  voidOrigin,Z,outerRadius-bStep);
     }
   else
-    SMap.addMatch(surfIndex+102,surfIndex+27);          // Outer top
+    SMap.addMatch(buildIndex+102,buildIndex+27);          // Outer top
 
   // Central cylinder
-  ModelSupport::buildCylinder(SMap,surfIndex+107,
+  ModelSupport::buildCylinder(SMap,buildIndex+107,
 			      Origin+X*rXDisp+Z*rZDisp,Axis,radius);
 
   // Low cut
@@ -279,7 +283,7 @@ ChipIRInsert::createSurfaces()
   // cylinder upwards
   if (fabs(lowCut)>Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,surfIndex+115,
+      ModelSupport::buildPlane(SMap,buildIndex+115,
 			       Origin+X*rXDisp+Z*(lowCut+rZDisp-radius),Z);
     }
   
@@ -301,52 +305,52 @@ ChipIRInsert::createObjects(Simulation& System)
   if (fabs(lowCut)>Geometry::zeroTol)
     {
       // Low cut fragment [Inner]:
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-115 -107 101 -17 3 -4 -5 6 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
       // Low cut fragment [Outer]:
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-115 -107 17 -102 13 -14 -15 16 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
       // Inner void
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "115 -107 101 -17 3 -4 -5 6 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       chipInnerVoid=cellIndex-1;
 
       // outer Void
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "115 -107 17 -102 13 -14 -15 16 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       chipOuterVoid=cellIndex-1;
 
       // Set Containers:
-      Out=ModelSupport::getComposite(SMap,surfIndex," 115 -107 3 -4 -5 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 115 -107 3 -4 -5 ");
       addBoundarySurf("inner",Out);
-      Out=ModelSupport::getComposite(SMap,surfIndex," 115 -107 13 -14 -15 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 115 -107 13 -14 -15 ");
       addBoundarySurf("outer",Out);
     }
   else
     {
       // Inner void
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-107 101 -17 3 -4 -5 6 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       chipInnerVoid=cellIndex-1;
       // Outer void
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-107 17 -102 13 -14 -15 16 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       chipOuterVoid=cellIndex-1;
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,"-107 3 -4 -5 6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-107 3 -4 -5 6 ");
       addBoundarySurf("inner",Out);
-      Out=ModelSupport::getComposite(SMap,surfIndex,"-107 13 -14 -15 16 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-107 13 -14 -15 16 ");
       addBoundarySurf("outer",Out);
 
     }
   // Inner Material:
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "107 101 -17 3 -4 -5 6 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   CDivideList.push_back(cellIndex-1);
@@ -354,13 +358,13 @@ ChipIRInsert::createObjects(Simulation& System)
   // Inner edge void
   if (fStep>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "7 -101 3 -4 -5 6 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,frontMat,0.0,Out));
     }
 
   // Outer Material:
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "107 17 -27 -102 13 -14 -15 16 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   //  CDivideList.push_back(cellIndex-1);
@@ -368,7 +372,7 @@ ChipIRInsert::createObjects(Simulation& System)
   // Outer edge void
   if (bStep>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "102 -27 13 -14 -15 16 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,backMat,0.0,Out));
     }
@@ -405,12 +409,12 @@ ChipIRInsert::layerProcess(Simulation& System)
       DA.init();
       // Cell Specific:
       DA.setCellN(CDivideList[static_cast<size_t>(i)]);
-      DA.setOutNum(cellIndex,surfIndex+501+100*i);
+      DA.setOutNum(cellIndex,buildIndex+501+100*i);
       DA.makePair<Geometry::Cylinder,Geometry::Plane>
-	(SMap.realSurf(surfIndex+107),-SMap.realSurf(surfIndex+3+10*i));
-      DA.addOuterSingle(SMap.realSurf(surfIndex+4+10*i));
-      DA.addOuterSingle(SMap.realSurf(surfIndex+5+10*i));
-      DA.addOuterSingle(SMap.realSurf(surfIndex+6+10*i));
+	(SMap.realSurf(buildIndex+107),-SMap.realSurf(buildIndex+3+10*i));
+      DA.addOuterSingle(SMap.realSurf(buildIndex+4+10*i));
+      DA.addOuterSingle(SMap.realSurf(buildIndex+5+10*i));
+      DA.addOuterSingle(SMap.realSurf(buildIndex+6+10*i));
        
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
@@ -430,14 +434,14 @@ ChipIRInsert::createDatumPoints() const
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
   const Geometry::Cylinder* inPlate=
-    SMap.realPtr<const Geometry::Cylinder>(surfIndex+101);
+    SMap.realPtr<const Geometry::Cylinder>(buildIndex+101);
   const Geometry::Cylinder* outPlate=
-    SMap.realPtr<const Geometry::Cylinder>(surfIndex+102);
+    SMap.realPtr<const Geometry::Cylinder>(buildIndex+102);
 
   const Geometry::Cylinder* fPlate=
-    SMap.realPtr<const Geometry::Cylinder>(surfIndex+7);
+    SMap.realPtr<const Geometry::Cylinder>(buildIndex+7);
   const Geometry::Cylinder* bPlate=
-    SMap.realPtr<const Geometry::Cylinder>(surfIndex+27);
+    SMap.realPtr<const Geometry::Cylinder>(buildIndex+27);
   
   MonteCarlo::LineIntersectVisit 
     AxisLine(Origin+Z*rZDisp+X*rXDisp,Axis);

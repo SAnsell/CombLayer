@@ -33,18 +33,10 @@ namespace constructSystem
   \brief Group origin for two or more objects
 */
 
-class GroupOrigin : public attachSystem::FixedComp
+class GroupOrigin : public attachSystem::FixedOffset
 {
  private:
   
-  const int grpIndex;           ///< Index of surface offset
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-  double xyAngle;               ///< Angle [degrees]
-  double zAngle;                ///< Angle [degrees]
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 

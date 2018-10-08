@@ -41,8 +41,6 @@ class SplitInner : public ts1System::CH4Layer
  private:
 
   const std::string IKeyName;     ///< Inner key name
-  const int innerIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   size_t innerNLayer;             ///< Number of layers [internal]
   std::vector<double> thick;      ///< thickness of layers

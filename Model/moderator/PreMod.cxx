@@ -59,6 +59,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -75,8 +77,7 @@ namespace moderatorSystem
 
 PreMod::PreMod(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(preIndex+1),centOrgFlag(1),
+  centOrgFlag(1),
   divideSurf(0),targetSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -86,7 +87,6 @@ PreMod::PreMod(const std::string& Key)  :
 
 PreMod::PreMod(const PreMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex),
   centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
   modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
@@ -109,7 +109,6 @@ PreMod::operator=(const PreMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       centOrgFlag=A.centOrgFlag;
       width=A.width;
       height=A.height;
@@ -188,66 +187,66 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
 
   // Outer DIVIDE PLANE/Cylinder
   if (divideSurf)
-    SMap.addMatch(preIndex+1,divideSurf);
+    SMap.addMatch(buildIndex+1,divideSurf);
   else
-    ModelSupport::buildPlane(SMap,preIndex+1,Origin,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
 
-  SMap.addMatch(preIndex+5,cFlag*FC.getLinkSurf(baseIndex));
+  SMap.addMatch(buildIndex+5,cFlag*FC.getLinkSurf(baseIndex));
   if (targetSurf)
-    SMap.addMatch(preIndex+7,targetSurf);  // This is a cylinder [hopefully]
+    SMap.addMatch(buildIndex+7,targetSurf);  // This is a cylinder [hopefully]
 
   // Outer surfaces:
-  ModelSupport::buildPlane(SMap,preIndex+2,Origin+Y*depth,Y);
-  ModelSupport::buildPlane(SMap,preIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,preIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,preIndex+6,Origin+cAxis*height,cAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+cAxis*height,cAxis);
 
   // Inner surfaces:
-  ModelSupport::buildPlane(SMap,preIndex+12,Origin+Y*(depth-alThickness),Y);
-  ModelSupport::buildPlane(SMap,preIndex+13,Origin-X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,preIndex+14,Origin+X*(width/2.0-alThickness),X);
-  ModelSupport::buildPlane(SMap,preIndex+16,Origin+cAxis*(height-alThickness),cAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(depth-alThickness),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0-alThickness),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0-alThickness),X);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+cAxis*(height-alThickness),cAxis);
 
   Geometry::Surface* SX;
   Geometry::Plane* PX;  
   if (targetSurf)
     {
       SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(preIndex+7),alThickness);
-      SX->setName(preIndex+17);
-      SMap.registerSurf(preIndex+17,SX);
+	(SMap.realSurfPtr(buildIndex+7),alThickness);
+      SX->setName(buildIndex+17);
+      SMap.registerSurf(buildIndex+17,SX);
     }
 
-  if (SMap.realSurf(preIndex+5)<0)
+  if (SMap.realSurf(buildIndex+5)<0)
     {
       SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(preIndex+5),-alThickness);
+	(SMap.realSurfPtr(buildIndex+5),-alThickness);
       PX=dynamic_cast<Geometry::Plane*>(SX);
       if (PX)
 	PX->mirrorSelf();
     }
   else
     SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(preIndex+5),alThickness);
+      (SMap.realSurfPtr(buildIndex+5),alThickness);
 
-  SX->setName(preIndex+15);
-  SMap.registerSurf(preIndex+15,SX);
+  SX->setName(buildIndex+15);
+  SMap.registerSurf(buildIndex+15,SX);
       
   // divider:
-  if (SMap.realSurf(preIndex+1)<0)
+  if (SMap.realSurf(buildIndex+1)<0)
     {
       SX=ModelSupport::surfaceCreateExpand
-	(SMap.realSurfPtr(preIndex+1),-alThickness);
+	(SMap.realSurfPtr(buildIndex+1),-alThickness);
       PX=dynamic_cast<Geometry::Plane*>(SX);
       if (PX)
 	PX->mirrorSelf();
     }
   else
     SX=ModelSupport::surfaceCreateExpand
-      (SMap.realSurfPtr(preIndex+1),alThickness);
+      (SMap.realSurfPtr(buildIndex+1),alThickness);
 
-  SX->setName(preIndex+11);
-  SMap.registerSurf(preIndex+11,SX);
+  SX->setName(buildIndex+11);
+  SMap.registerSurf(buildIndex+11,SX);
 
   return;
 }
@@ -262,14 +261,14 @@ PreMod::createObjects(Simulation& System)
   ELog::RegMethod RegA("PreMod","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"1 -2 3 -4 5 -6 7");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 7");
   addOuterSurf(Out);
 
-  Out+=ModelSupport::getSetComposite(SMap,preIndex,
+  Out+=ModelSupport::getSetComposite(SMap,buildIndex,
 				    "(-11:12:-13:14:-15:16:-17)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"11 -12 13 -14 15 -16 17");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
   return;
 }
@@ -283,22 +282,22 @@ PreMod::createLinks()
   ELog::RegMethod RegA("PreMod","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(preIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(1,Origin+Y*depth,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(preIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(preIndex+3));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(preIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
         
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(4,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+6));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+6));
   
   return;
 }

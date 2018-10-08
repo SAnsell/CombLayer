@@ -3,7 +3,7 @@
  
  * File:   construct/shutterVar.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -325,7 +324,7 @@ shutterVar::buildVar(FuncDataBase& Control,
   // Last B4C scrapper addition
   blockIndex+=b4cNumber;
   const std::string finalBlock=
-    StrFunc::makeString(std::string(keyName+"ShutterBlock"),blockIndex);
+    keyName+"ShutterBlock"+std::to_string(blockIndex);
   Control.addVariable(keyName+"ShutterNBlocks",blockIndex);     //   Inner blocks
 
   Control.addVariable(finalBlock+"CentX",0.0);    //   Inner blocks
@@ -403,7 +402,7 @@ shutterVar::buildCylVar(FuncDataBase& Control,
 	}
     } 
   const std::string finalBlock=
-    StrFunc::makeString(std::string(keyName+"ShutterBlock"),blockIndex);
+    keyName+"ShutterBlock"+std::to_string(blockIndex);
   Control.addVariable(keyName+"ShutterNBlocks",blockIndex);     //   Inner blocks 
 
   Control.addVariable(finalBlock+"CentX",0.0);  //   Inner blocks
@@ -416,4 +415,4 @@ shutterVar::buildCylVar(FuncDataBase& Control,
   return;
 }
 
-}   // NAMESAPCE 
+}   // NAMESAPCE ts1System

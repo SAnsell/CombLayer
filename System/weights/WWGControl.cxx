@@ -64,6 +64,8 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "CellWeight.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "objectRegister.h"
@@ -233,7 +235,9 @@ void
 WWGControl::wwgCreate(const Simulation& System,
                       const mainSystem::inputParam& IParam)
   /*!
-    Calculate a WWG weights based 
+    Calculate a WWG weights based. This calls the tracking
+    system to calculate the attenuation from the source/adjoint
+    to the cell in readiness for the expected Markov process [if used]
     \param System :: Simulation
     \param IParam :: Input deck
    */
@@ -448,7 +452,6 @@ WWGControl::wwgCombine(const Simulation& System,
 	}
       else if (ptType=="Source" && sndPtType=="Source")
 	{
-	  ELog::EM<<"S "<<(long int )sourceFlux<<ELog::endDiag;
 	  sourceFlux->CADISnorm(System,*adjointFlux,
 				EBand,GridMidPt,sourcePt[ptIndex],
                                 sourcePt[sndPtIndex]);

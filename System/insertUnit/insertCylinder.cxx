@@ -62,6 +62,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -153,24 +155,24 @@ insertCylinder::createSurfaces()
   ELog::RegMethod RegA("insertCylinder","createSurface");
 
   if (!frontActive())
-    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*length/2.0,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*length/2.0,Y);
   if (!backActive())
-    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*length/2.0,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length/2.0,Y);
 
-  ModelSupport::buildCylinder(SMap,ptIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
 
   if (!frontActive())
-    setSurf("Front",ptIndex+1);
+    setSurf("Front",buildIndex+1);
   else
     setSurf("Front",getFrontRule().getPrimarySurface());
 
   if (!backActive())
-    setSurf("Back",SMap.realSurf(ptIndex+2));
+    setSurf("Back",SMap.realSurf(buildIndex+2));
   else
     setSurf("Back",getBackRule().getPrimarySurface());
 
-  setSurf("Radius",SMap.realSurf(ptIndex+7));
+  setSurf("Radius",SMap.realSurf(buildIndex+7));
   return;
 }
 
@@ -187,13 +189,13 @@ insertCylinder::createLinks()
   if (!frontActive())
     {
       FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
       FixedComp::setConnect(1,Origin+Y*(length/2.0),-Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
   
   FixedComp::setConnect(2,Origin-X*radius,-X);
@@ -201,10 +203,10 @@ insertCylinder::createLinks()
   FixedComp::setConnect(4,Origin-Z*radius,-Z);
   FixedComp::setConnect(5,Origin+Z*radius,Z);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
 
   // corners
   const double r2=sqrt(radius);
@@ -213,15 +215,15 @@ insertCylinder::createLinks()
   FixedComp::setConnect(8,Origin-X*r2+Z*r2,-X+Z);
   FixedComp::setConnect(9,Origin+X*r2+Z*r2,X+Z);
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(8,SMap.realSurf(ptIndex+7));
-  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+7));
 
-  FixedComp::addLinkSurf(6,SMap.realSurf(ptIndex+7));
-  FixedComp::addLinkSurf(7,SMap.realSurf(ptIndex+7));
-  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+7));
-  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+7));
+  FixedComp::addLinkSurf(6,SMap.realSurf(buildIndex+7));
+  FixedComp::addLinkSurf(7,SMap.realSurf(buildIndex+7));
+  FixedComp::addLinkSurf(8,SMap.realSurf(buildIndex+7));
+  FixedComp::addLinkSurf(9,SMap.realSurf(buildIndex+7));
 
   return;
 }
@@ -236,7 +238,7 @@ insertCylinder::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertCylinder","createObjects");
   
   std::string Out=
-    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 -7 ");
+    ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 -7 ");
   Out+=frontRule();
   Out+=backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));

@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -87,9 +89,7 @@ namespace essSystem
 
 EmptyCyl::EmptyCyl(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,7 +99,6 @@ EmptyCyl::EmptyCyl(const std::string& Key)  :
 EmptyCyl::EmptyCyl(const EmptyCyl& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -119,7 +118,6 @@ EmptyCyl::operator=(const EmptyCyl& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       height=A.height;
       mat=A.mat;
     }
@@ -184,8 +182,8 @@ EmptyCyl::createSurfaces()
 {
   ELog::RegMethod RegA("EmptyCyl","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin+Y*(height),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Y*(height),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z,Z);
 
   return;
 }
@@ -222,7 +220,7 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   if (Origin[2]>0.0)
     ELog::EM << "Target inner lp not needed. Now this cylinder cuts EmptyCyl, but I have to increase the angle of triangle (adjust GuideBay)" << ELog::endDiag;
 
-  const std::string topBot(ModelSupport::getComposite(SMap,surfIndex," -5 ")+
+  const std::string topBot(ModelSupport::getComposite(SMap,buildIndex," -5 ")+
 			   " "+FC.getLinkString(floor)+" ");
   const std::string common(topBot+BC.getLinkString(bulk)+" "+
 			   std::to_string(FC.getLinkSurf(inner)));
@@ -240,14 +238,14 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     }
   else // triangle cut below target
     {
-      Out=common+ModelSupport::getComposite(SMap,surfIndex," -6 ") +
+      Out=common+ModelSupport::getComposite(SMap,buildIndex," -6 ") +
 	GB1.getLinkString(-gb1lp)+" "+GB2.getLinkString(-gb2lp);
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
       Out=common+std::to_string(FC.getLinkSurf(-side))+
 	" ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+
-	" : "+ModelSupport::getComposite(SMap,surfIndex," -6 ")+")";
+	" : "+ModelSupport::getComposite(SMap,buildIndex," -6 ")+")";
 
       addOuterSurf(Out);
     }
@@ -271,7 +269,7 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
   FixedComp::setLinkSignedCopy(2,FC,side+1);
   
   FixedComp::setConnect(3,Origin+Y*(height),Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+6));
 
   // for (int i=0; i<4; i++)
   //   ELog::EM << getLinkPt(i+1) << ":\t" << getLinkString(i+1) << ELog::endDiag;

@@ -40,6 +40,7 @@ namespace StrFunc
   char indexToAlpha(const size_t);
   char indexToRevAlpha(const size_t);
 
+  size_t alphaToIndex(const char);
   size_t revAlphaToIndex(const char);
   
   size_t checkKey(const std::string&,const std::string&,

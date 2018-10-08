@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -63,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -89,10 +92,9 @@ namespace essSystem
 
 BunkerWall::BunkerWall(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(bunkerName+"Wall",6),
+  attachSystem::FixedComp(bunkerName+"Wall",6,20000),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
-  wallIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
-  cellIndex(wallIndex+1),activeWall(0),frontSurf(0),backSurf(0),
+  activeWall(0),frontSurf(0),backSurf(0),
   topSurf(0),baseSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -103,8 +105,7 @@ BunkerWall::BunkerWall(const std::string& bunkerName) :
 BunkerWall::BunkerWall(const BunkerWall& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  baseName(A.baseName),wallIndex(A.wallIndex),
-  cellIndex(A.cellIndex),wallThick(A.wallThick),
+  baseName(A.baseName),wallThick(A.wallThick),
   wallMat(A.wallMat),activeWall(A.activeWall),nVert(A.nVert),
   nRadial(A.nRadial),nMedial(A.nMedial),vert(A.vert),
   radial(A.radial),medial(A.medial),nBasic(A.nBasic),
@@ -132,7 +133,6 @@ BunkerWall::operator=(const BunkerWall& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
       activeWall=A.activeWall;
@@ -182,7 +182,8 @@ BunkerWall::populate(const FuncDataBase& Control)
 				  wallThick,basic);
   ModelSupport::populateDivide(Control,nBasic,keyName+"Mat",
 			       ModelSupport::EvalMatString(wallMat),
-			       basicMatVec);	  
+			       basicMatVec);
+
 
   // Need two sets active and passive :
   // ACTIVE:
@@ -204,7 +205,7 @@ BunkerWall::populate(const FuncDataBase& Control)
       
       ModelSupport::populateDivideLen(Control,nMedial,keyName+"Medial",
 				      1.0,medial);
-
+      
       loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
       outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
     }
@@ -275,7 +276,8 @@ BunkerWall::createSector(Simulation& System,
 {
   ELog::RegMethod RegA("BunkerWall","createSector");
 
-
+  const FuncDataBase& Control=System.getDataBase();
+  
   std::vector<double> empty;
   
   ModelSupport::LayerDivide3D LD3(keyName+"MainWall"+
@@ -289,9 +291,13 @@ BunkerWall::createSector(Simulation& System,
 
   const bool AFlag (activeWall & (1 << sectNum));
 
+  std::vector<std::string> actualMatVec;
+  ModelSupport::populateVecDivide
+    (Control,keyName+std::to_string(sectNum)+"Mat",
+     basicMatVec,actualMatVec);
+
   if (AFlag)
     {
-
       LD3.setFractions(0,radial);
       LD3.setFractions(1,medial);	    
       LD3.setFractions(2,vert);
@@ -300,8 +306,8 @@ BunkerWall::createSector(Simulation& System,
 			      ModelSupport::EvalMatString(wallMat)))
 	{
 	  ELog::EM<<"Using Basic Material Layers: [size="
-		  <<basicMatVec.size()<<"]"<<ELog::endDiag;
-	  LD3.setMaterials(0,basicMatVec);
+		  <<actualMatVec.size()<<"]"<<ELog::endDiag;	    
+	  LD3.setMaterials(0,actualMatVec);
 	}
     }
   else
@@ -309,8 +315,7 @@ BunkerWall::createSector(Simulation& System,
       LD3.setFractions(0,basic);
       LD3.setFractions(1,empty);
       LD3.setFractions(2,empty);
-      for(size_t index=0;index<basicMatVec.size();index++)
-	LD3.setMaterials(0,basicMatVec);
+      LD3.setMaterials(0,actualMatVec);
     }
   LD3.divideCell(System,cellN);
   addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());

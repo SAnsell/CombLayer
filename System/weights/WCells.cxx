@@ -3,7 +3,7 @@
  
  * File:   weights/WCells.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "cellValueSet.h"
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
@@ -129,12 +130,11 @@ WCells::operator==(const WCells& A) const
   return 1;
 }
 
-
 void 
 WCells::populateCells(const std::map<int,MonteCarlo::Qhull*>& Object)
   /*!
     Populate cell types for each object
-    \param Object :: The Qhull map to interigate
+    \param Object :: The Qhull map to integrate
   */
 {
   ELog::RegMethod RegA("WCells","populateCells");
@@ -514,6 +514,32 @@ WCells::writePHITSHead(std::ostream& OX) const
   return;
 }
 
+
+void
+WCells::writeFLUKA(std::ostream& OX) const
+  /*!
+    Generic write output for FLUKA
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("WCells","writeFLUKA");
+
+  flukaSystem::cellValueSet<2> wwFactor("wwfactor","WW-FACTO");
+  std::vector<int> cellVec;
+    
+  for(const ItemTYPE::value_type& wf : WVal)
+    {
+      if (!wf.second.isNegative())
+	{
+	  cellVec.push_back(wf.first);
+	  const double W=wf.second.getWeight().front();
+	  wwFactor.setValues(wf.first,W,W*5.0);
+	}
+    }
+
+  wwFactor.writeFLUKA(OX,cellVec,"%2 %3 1.0 R0 R1 1.0");
+  return;
+}
 
 void
 WCells::writePHITS(std::ostream& OX) const

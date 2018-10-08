@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,8 +82,7 @@ namespace zoomSystem
 
 ZoomTank::ZoomTank(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0),
-  tankIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tankIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +91,6 @@ ZoomTank::ZoomTank(const std::string& Key)  :
 
 ZoomTank::ZoomTank(const ZoomTank& A) : 
   attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  tankIndex(A.tankIndex),cellIndex(A.cellIndex),
   populated(A.populated),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   nCylinder(A.nCylinder),cylThickness(A.cylThickness),
@@ -118,7 +118,6 @@ ZoomTank::operator=(const ZoomTank& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -165,8 +164,8 @@ ZoomTank::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
 
   nCylinder=Control.EvalVar<size_t>(keyName+"NCylinder");
   CRadius.resize(nCylinder);
@@ -241,30 +240,30 @@ ZoomTank::createSurfaces()
   ELog::RegMethod RegA("ZoomTank","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,tankIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin+Y*cylTotalDepth,Y);
-  ModelSupport::buildPlane(SMap,tankIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*(cylTotalDepth+length),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tankIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tankIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,tankIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,tankIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin+Y*(cylTotalDepth+wallThick),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(cylTotalDepth+length-wallThick),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0-wallThick),X);
-  ModelSupport::buildPlane(SMap,tankIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0-wallThick),X);
-  ModelSupport::buildPlane(SMap,tankIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0-wallThick),Z);
-  ModelSupport::buildPlane(SMap,tankIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0-wallThick),Z);
 
 
@@ -273,26 +272,26 @@ ZoomTank::createSurfaces()
     {
       const int iN(static_cast<int>(i));
       // Plates across
-      ModelSupport::buildPlane(SMap,tankIndex+111+iN,
+      ModelSupport::buildPlane(SMap,buildIndex+111+iN,
 			       Origin+Y*depthSum,Y);
-      ModelSupport::buildPlane(SMap,tankIndex+121+iN,
+      ModelSupport::buildPlane(SMap,buildIndex+121+iN,
 			       Origin+Y*(depthSum+wallThick),Y);
       depthSum+=CylDepth[i];
       // Radii [Outer]
-      ModelSupport::buildCylinder(SMap,tankIndex+171+iN,
+      ModelSupport::buildCylinder(SMap,buildIndex+171+iN,
 				  Origin+X*CylX[i]+Z*CylZ[i],
 				  Y,CRadius[i]);
       // Radii [Inner]
-      ModelSupport::buildCylinder(SMap,tankIndex+181+iN,
+      ModelSupport::buildCylinder(SMap,buildIndex+181+iN,
 				  Origin+X*CylX[i]+Z*CylZ[i],
 				  Y,CRadius[i]-wallThick);
     }      
 
   // Window stuff
-  ModelSupport::buildCylinder(SMap,tankIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin+X*CylX[0]+Z*CylZ[0],
 			      Y,windowRadius);
-  ModelSupport::buildPlane(SMap,tankIndex+101,
+  ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin+Y*(wallThick-windowThick),Y);
   
   return;
@@ -308,54 +307,54 @@ ZoomTank::createObjects(Simulation& System)
   ELog::RegMethod RegA("ZoomTank","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tankIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "111 -2 3 -4 5 -6 (1:-173)");
   addOuterSurf(Out);
 
   // Dead Volume
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-173 171 111 -113 (-112:172)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-173 171 111 -113 (-112:172)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   // Inner Volume
-  Out=ModelSupport::getComposite(SMap,tankIndex,"11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   // first Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-181 121 -122");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-181 121 -122");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // skipping front window
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-171 181 121 -122");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-171 181 121 -122");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // second Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-182 122 -123");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-182 122 -123");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-172 171 112 -123 (-122:182)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-172 171 112 -123 (-122:182)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // third Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-183 123 -11");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-183 123 -11");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-173 172 113 -11 (-123:183)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-173 172 113 -11 (-123:183)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // Main bulk tank:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"1 -2 3 -4 5 -6 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 "((-11 173):12:-13:14:-15:16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   
 
   // window
   //   support:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-171 17 111 -121");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-171 17 111 -121");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   //  Silicon window
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 101 -121");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 101 -121");
   System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
   //  void
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 111 -101 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 111 -101 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   return;

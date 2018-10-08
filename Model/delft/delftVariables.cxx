@@ -74,8 +74,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftGridXStep",0.0); // X step
   Control.addVariable("delftGridYStep",0.0); // Y step
   Control.addVariable("delftGridZStep",0.0); // Z step
-  Control.addVariable("delftGridXYangle",0.0); // Z step
-  Control.addVariable("delftGridZangle",0.0); // Z step
+  Control.addVariable("delftGridXYAngle",0.0); // Z step
+  Control.addVariable("delftGridZAngle",0.0); // Z step
 
   Control.addVariable("delftGridWidth",46.254);  
   Control.addVariable("delftGridDepth",56.70); 

@@ -54,64 +54,7 @@ matrix:
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
-     # linux - clang 3.8 with g++6
-     - os: linux
-       addons:
-         apt:
-           sources:
-             - ubuntu-toolchain-r-test
-             - llvm-toolchain-precise-3.8
-             - george-edison55-precise-backports
-           packages:
-             - g++-6
-             - clang-3.8
-             - cmake
-             - cmake-data
-             - libgsl0-dev
-             - libboost-dev
-             - libboost-regex-dev
-             - libboost-filesystem-dev
-       env:
-          - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-     # linux - clang 3.9 with g++6
-     - os: linux
-       addons:
-         apt:
-           sources:
-             - ubuntu-toolchain-r-test
-             - llvm-toolchain-trusty-3.9
-             - george-edison55-precise-backports
-           packages:
-             - g++-6
-             - clang-3.9
-             - cmake
-             - cmake-data
-             - libgsl0-dev
-             - libboost-dev
-             - libboost-regex-dev
-             - libboost-filesystem-dev
-       env:
-          - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-     # linux - clang 4.0 with g++6
-     - os: linux
-       addons:
-         apt:
-           sources:
-             - ubuntu-toolchain-r-test
-             - llvm-toolchain-trusty-4.0
-             - george-edison55-precise-backports
-           packages:
-             - g++-6
-             - clang-4.0
-             - cmake
-             - cmake-data
-             - libgsl0-dev
-             - libboost-dev
-             - libboost-regex-dev
-             - libboost-filesystem-dev
-       env:
-          - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-     # linux - clang 5.0 with g++6
+    # linux - clang 5.0 with g++6
      - os: linux
        addons:
          apt:
@@ -149,6 +92,7 @@ script:
   - ./muBeam -r mu_test
   - ./pipe -r pipe_test
   - ./balder -r balder_test
+  - ./balder -r -validCheck 100000 ba_vtest
   - ./singleItem -r single_test
   - ./t1MarkII -r t1_test1
   - ./t1Real -r t1_test2
@@ -170,7 +114,6 @@ script:
   - ./ess      -topMod BF2     -lowMod BF1  -validCheck 100000  -r BilbaoWheel bf2-bf1-test
   - ./ess -eng -topMod BF1     -lowMod BF2  -validCheck 100000 bf2-bf1-test
   - ./ess      -topMod BF1     -lowMod BF2  -validCheck 100000 bf2-bf1-test
-  - ./ess -r -defaultConfig Single NMX -bunker void --validCheck 100000 a
-  - ./ess -r -defaultConfig Single NMX -bunker void --validCheck 100000 a
-  - ./ess -r -eng -defaultConfig Single NMX VOR --validCheck 10000 a
-  - ./ess -r -eng -defaultConfig Single NMX G1BLineTop2 VOR --validCheck 10000 b
+  - ./ess -r -defaultConfig Single NMX -bunker void -v TargetTopClearanceHeight 2 --validCheck 100000 a
+  - ./ess -r -eng -defaultConfig Single CSPEC VOR --validCheck 10000 a
+  - ./ess -r -eng -defaultConfig Single NMX G1BLineTop3 VOR --validCheck 10000 b

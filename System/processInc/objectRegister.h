@@ -27,45 +27,35 @@ namespace attachSystem
   class FixedComp;
 }
 
+class objectGroups;
+
 namespace ModelSupport
 {
 
 /*!
   \class objectRegister 
-  \version 1.0
+  \version 2.0
   \author S. Ansell
-  \date June 2011
-  \brief Controls Object Registration in 10000 (or greater) blocks
+  \date September 2018
+  \brief Holds the objectGroup pointer
+
+  Thie holds the objectGroup point to 
+  allow objects to be register without excessive re-write
+  and without excessive passing of a state variable.
+
 */
 
 class objectRegister
 {
  private:
  
-  /// Storage type : name : startPt : size 
-  typedef std::map<std::string,std::pair<int,int> > MTYPE;
-  /// Storage of component pointers
-  typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
-  /// Index of them
-  typedef std::map<std::string,CTYPE> cMapTYPE;
-
-  int cellNumber;                  ///< Current new cell number
-  MTYPE regionMap;                 ///< Index of kept object number
-  MTYPE renumMap;                  ///< Index of renumbered units
-  std::set<int> activeCells;       ///< Active cells
-  cMapTYPE Components;             ///< Pointer to real objects
-
+  objectGroups* GPtr;    ///< The official object group pointer
 
   objectRegister();
   ///\cond SINGLETON
   objectRegister(const objectRegister&);
   objectRegister& operator=(const objectRegister&);
   ///\endcond SINGLETON
-
-  const attachSystem::FixedComp*
-    getInternalObject(const std::string&) const;
-  attachSystem::FixedComp*
-    getInternalObject(const std::string&);
   
  public:
   
@@ -73,55 +63,16 @@ class objectRegister
 
   static objectRegister& Instance();
 
-  int getNextCell(const int) const;
+  void setObjectGroup(objectGroups&);
   
   int cell(const std::string&,const int = 10000);
-  int getCell(const std::string&) const;
-  int getLast(const std::string&) const;
-  int getRange(const std::string&) const;
-  
-  std::string inRange(const int) const;
-  bool hasCell(const std::string&,const int) const;
 
-
-  int getRenumberCell(const std::string&) const;
-  int getRenumberLast(const std::string&) const;
-  int getRenumberRange(const std::string&) const;
-  
-  std::string inRenumberRange(const int) const;
-
-  int calcRenumber(const int) const;
-    
+  // to be removed:
+    /// Storage of component pointers
+  typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   void addObject(const std::string&,const CTYPE&);
   void addObject(const CTYPE&);
-  template<typename T> const T*
-    getObject(const std::string&) const;
-  template<typename T>  T*
-    getObject(const std::string&);
-  template<typename T> const T*
-    getObjectThrow(const std::string&,const std::string&) const;
-  template<typename T>  T*
-    getObjectThrow(const std::string&,const std::string&);
-  bool hasObject(const std::string&) const;
-  void setRenumber(const std::string&,const int,const int);
-  
-  void addActiveCell(const int);
-  void removeActiveCell(const int);
-  void renumberActiveCell(const int,const int);
-  /// get active cells
-  const std::set<int>& getActiveCells() const
-     { return activeCells; }
 
-  /// Get full components list
-  const cMapTYPE& getComponents() const
-    { return Components; }
-    
-  
-  std::vector<int> getObjectRange(const std::string&) const;
-  void reset();
-  void rotateMaster();
-  void write(const std::string&) const;
-  
 };
 
 }

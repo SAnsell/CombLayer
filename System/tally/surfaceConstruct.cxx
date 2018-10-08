@@ -61,6 +61,8 @@
 #include "LinkSupport.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -106,12 +108,11 @@ surfaceConstruct::processSurface(SimMCNP& System,
     {
       const std::string place=
 	IParam.getValueError<std::string>("tally",Index,2,"position not given");
-      const std::string snd=
+      const std::string linkName=
 	IParam.getValueError<std::string>
 	("tally",Index,3,"front/back/side not give");
       
-      const long int linkNumber=attachSystem::getLinkIndex(snd);
-      processSurfObject(System,idType,place,linkNumber,excludeSurf);
+      processSurfObject(System,idType,place,linkName,excludeSurf);
       return;
     }
 
@@ -136,9 +137,9 @@ surfaceConstruct::processSurface(SimMCNP& System,
     {
       const std::string place=IParam.getValueError<std::string>
 	("tally",Index,2,"position not given");
-      const std::string snd=IParam.getValueError<std::string>
+      const std::string linkName=IParam.getValueError<std::string>
 	("tally",Index,3,"front/back/side not give");
-      const long int linkNumber=attachSystem::getLinkIndex(snd);
+
       std::vector<int> surfN;
       const size_t maxIndex=IParam.itemCnt("tally",Index);
       for(size_t i=4;i<maxIndex;i++)
@@ -148,7 +149,7 @@ surfaceConstruct::processSurface(SimMCNP& System,
 	    IParam.getValue<std::string>("tally",Index,i);
 	  excludeSurf.push_back(ST);
 	}
-      processSurfObject(System,idType,place,linkNumber,excludeSurf);
+      processSurfObject(System,idType,place,linkName,excludeSurf);
       return;
     }
   ELog::EM<<"Surface Tally NOT Processed"<<ELog::endErr;
@@ -160,34 +161,30 @@ int
 surfaceConstruct::processSurfObject(SimMCNP& System,
 				    const int idType,
 				    const std::string& FObject,
-				    const long int linkPt,
+				    const std::string& linkName,
 				    const std::vector<std::string>& linkN)
   /*!
     Process a surface tally on a registered object
     \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
-    \param linkPt :: Link point [-ve for beam object]
+    \param linkName :: Link point [-ve for beam object]
     \param linkN :: surface exclude number for making a region of interest
     \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfObject");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const int tNum=System.nextTallyNum(idType);
+  const attachSystem::FixedComp* TPtr=
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+  const long int linkPt=TPtr->getSideIndex(linkName);
   if (linkPt)
     {
-      const attachSystem::FixedComp* TPtr=
-	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
-      
       const int masterPlane= TPtr->getLinkSurf(linkPt);
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
-	{
-	  const long int LIndex=attachSystem::getLinkIndex(linkN[i]);
-	  surfN.push_back(TPtr->getLinkSurf(LIndex));
-	}
+	surfN.push_back(TPtr->getLinkSurf(linkN[i]));
+
       addF1Tally(System,tNum,masterPlane,surfN);
       return 1;
     }
@@ -210,14 +207,12 @@ surfaceConstruct::processSurfMap(SimMCNP& System,
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const int tNum=System.nextTallyNum(idType);
   if (linkIndex)
     {
       const attachSystem::SurfMap* SPtr=
-	OR.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
+	System.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
 
       const int side=(linkIndex>0) ? 1 : -1;
       const size_t index=(linkIndex>0) ? static_cast<size_t>(linkIndex-1) :

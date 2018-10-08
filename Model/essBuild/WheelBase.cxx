@@ -3,7 +3,7 @@
  
  * File:   essBuild/WheelBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -56,6 +57,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -65,6 +68,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -77,9 +82,7 @@ namespace essSystem
 WheelBase::WheelBase(const std::string& Key) :
   attachSystem::ContainedGroup("Wheel","Shaft"),
   attachSystem::FixedOffset(Key,13),
-  attachSystem::CellMap(),
-  wheelIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(wheelIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor
     There are 10 links possible -- last for are used if BilbaoWheel used..
@@ -90,8 +93,7 @@ WheelBase::WheelBase(const std::string& Key) :
 WheelBase::WheelBase(const WheelBase& A) : 
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),
-  wheelIndex(A.wheelIndex),cellIndex(A.cellIndex)
+  attachSystem::CellMap(A)
   /*!
     Copy constructor
     \param A :: WheelBase to copy
@@ -111,7 +113,6 @@ WheelBase::operator=(const WheelBase& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
     }
   return *this;
 }
@@ -125,7 +126,7 @@ WheelBase::~WheelBase()
 
 void
 WheelBase::createUnitVector(const attachSystem::FixedComp& FC,
-			const long int sideIndex)
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component

@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/BoxModerator.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,6 @@ class BoxModerator :
   public EssModBase
 {
  private:
-
-  const int flyIndex;        ///< Index of surface offset
-  int cellIndex;             ///< Cell index
 
   std::shared_ptr<Box> MidH2;        ///< Hydrogen box in the middle
   std::shared_ptr<EdgeWater> LeftWater;    ///< Left reflector part

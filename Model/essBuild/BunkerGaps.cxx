@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerGaps.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -90,8 +92,7 @@ namespace essSystem
 {
 
 BunkerGaps::BunkerGaps(const std::string& bunkerName) :
-  attachSystem::FixedComp(bunkerName+"Gaps",0),
-  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName))
+  attachSystem::FixedComp(bunkerName+"Gaps",0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof

@@ -62,7 +62,7 @@ GateValveGenerator::GateValveGenerator() :
   length(7.0),width(24.0),height(46.0),depth(10.5),
   wallThick(0.5),portRadius(5.0),portThick(1.0),portLen(1.0),
   bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),voidMat("Void"),
-  bladeMat("Tungsten"),wallMat("Stainless304")
+  bladeMat("Aluminium"),wallMat("Stainless304")
   /*!
     Constructor and defaults
   */

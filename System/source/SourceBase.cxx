@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -228,8 +228,6 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
 
   mainSystem::MITYPE::const_iterator mc,mcB;
 
-
-  
   int eFlag(0);
   if (!mainSystem::findInput(inputMap,"particle",0,particleType))
     mainSystem::findInput(inputMap,"particleType",0,particleType);
@@ -417,16 +415,16 @@ SourceBase::writePHITS(std::ostream& OX) const
 
   const particleConv& partCV=particleConv::Instance();
  
-  OX<<"    proj = "<<particleType<<std::endl;
-  OX<<"    wgt  = "<<weight<<std::endl;
+  OX<<"  proj = "<<particleType<<std::endl;
+  OX<<"  wgt  = "<<weight<<std::endl;
   if (Energy.size()==1)
-    OX<<"    e0  = "<<Energy.front()<<std::endl;
+    OX<<"  e0  = "<<Energy.front()<<std::endl;
   else if (!Energy.empty())
     {
-      OX<<"    e-type  = 1"<<std::endl;
-      OX<<"    ne      = "<<Energy.size()<<std::endl;
+      OX<<"  e-type  = 1"<<std::endl;
+      OX<<"  ne      = "<<Energy.size()<<std::endl;
       double eStart=0.0;
-      OX<<"     0.0 ";
+      OX<<"    0.0 ";
       for(size_t i=0;i<Energy.size();i++)
 	{
 	  OX<<"    "<<eStart<<"  "<<EWeight[i]<<std::endl;

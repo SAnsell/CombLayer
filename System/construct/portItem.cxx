@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -66,8 +65,11 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "AttachSupport.h"
 #include "LinkUnit.h"
@@ -82,12 +84,25 @@
 namespace constructSystem
 {
 
-portItem::portItem(const std::string& Key) :
-  attachSystem::FixedComp(Key,2),
+portItem::portItem(const std::string& baseKey,
+		   const std::string& Key) :
+  attachSystem::FixedComp(Key,5),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  statusFlag(0),
-  portIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(portIndex+1),radius(0.0),wall(0.0),
+  portBase(baseKey),
+  statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
+  flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
+  voidMat(0),wallMat(0),plateMat(0)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: KeyName
+  */
+{}
+
+portItem::portItem(const std::string& Key) :
+  attachSystem::FixedComp(Key,5),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  portBase(keyName),
+  statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
   voidMat(0),wallMat(0),plateMat(0)
   /*!
@@ -99,11 +114,13 @@ portItem::portItem(const std::string& Key) :
 portItem::portItem(const portItem& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  statusFlag(A.statusFlag),portIndex(A.portIndex),
-  cellIndex(A.cellIndex),externalLength(A.externalLength),
+  portBase(keyName),
+  statusFlag(A.statusFlag),outerFlag(A.outerFlag),
+  externalLength(A.externalLength),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),plateThick(A.plateThick),
-  voidMat(A.voidMat),wallMat(A.wallMat),plateMat(A.plateMat),
+  voidMat(A.voidMat),wallMat(A.wallMat),
+  plateMat(A.plateMat),outerCell(A.outerCell),
   refComp(A.refComp),exitPoint(A.exitPoint)
   /*!
     Copy constructor
@@ -124,10 +141,9 @@ portItem::operator=(const portItem& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      
+
       statusFlag=A.statusFlag;
-      portIndex=A.portIndex;
-      cellIndex=A.cellIndex;
+      outerFlag=A.outerFlag;
       externalLength=A.externalLength;
       radius=A.radius;
       wall=A.wall;
@@ -193,15 +209,53 @@ portItem::setCoverPlate(const double T,const int M)
 }
 
 void
-portItem::setMaterial(const int V,const int W)
+portItem::setMaterial(const int V,const int W,
+		      const int PM)
   /*!
     Sets the materials
     \param V :: Void mat
     \param W :: Wall Mat.
+    \param PM :: Plate Material [-ve for default]
    */
 {
   voidMat=V;
   wallMat=W;
+  plateMat=(PM<0) ? wallMat : PM;
+  return;
+}
+
+void
+portItem::populate(const FuncDataBase& Control)
+  /*!
+    Populate variables
+    \param Control :: Variable DataBase
+   */
+{
+  ELog::RegMethod RegA("portItem","populate");
+
+  centreOffset=
+    Control.EvalVar<Geometry::Vec3D>(keyName+"Centre");
+  axisOffset=
+    Control.EvalPair<Geometry::Vec3D>(keyName,portBase,"Axis");
+      
+  externalLength=Control.EvalPair<double>(keyName,portBase,"Length");
+  radius=Control.EvalPair<double>(keyName,portBase,"Radius");
+  wall=Control.EvalPair<double>(keyName,portBase,"Wall");
+  
+  flangeRadius=Control.EvalPair<double>(keyName,portBase,"FlangeRadius");
+  flangeLength=Control.EvalPair<double>(keyName,portBase,"FlangeLength");
+  plateThick=Control.EvalDefPair<double>(keyName,portBase,"PlateThick",0.0);
+
+  voidMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"VoidMat",portBase+"VoidMat",0);
+    
+  wallMat=ModelSupport::EvalMat<int>
+    (Control,keyName+"WallMat",portBase+"WallMat");
+  plateMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"PlateMat",portBase+"PlateMat",wallMat);
+
+  outerFlag=
+    static_cast<bool>(Control.EvalDefVar<int>(keyName+"OuterVoid",outerFlag));
   return;
 }
 
@@ -218,7 +272,7 @@ portItem::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   refComp=FC.getKeyName();
-  statusFlag |= 1;
+  statusFlag=1;
   return;
 }
 
@@ -235,9 +289,10 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
    */
 {
   portItem::createUnitVector(FC,0);
-  
+
   Origin+=X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
   const Geometry::Vec3D DVec=X*Axis.X()+Y*Axis.Y()+Z*Axis.Z();
+
   FixedComp::reOrientate(1,DVec.unit());
   return;
 }
@@ -262,13 +317,13 @@ portItem::createSurfaces()
   ELog::RegMethod RegA("portItem","createSurfaces");
   // divider surface if needeed :
 
-  ModelSupport::buildPlane(SMap,portIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   if (flangeRadius-Geometry::zeroTol<=radius+wall)
     throw ColErr::SizeError<double>(flangeRadius,wall+radius,
 				    "Wall Radius<FlangeRadius");
-  ModelSupport::buildCylinder(SMap,portIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,portIndex+17,Origin,Y,radius+wall);
-  ModelSupport::buildCylinder(SMap,portIndex+27,Origin,Y,flangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wall);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
   return;
 }
@@ -291,6 +346,7 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
 {
   ELog::RegMethod RegA("portItem","createLinks");
 
+  FixedComp::nameSideIndex(0,"BasePoint");
   if (AIndex)
     {
       FixedComp::setConnect(0,LT.getPoint(AIndex-1),-Y);
@@ -299,21 +355,36 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
   else
     {
       FixedComp::setConnect(0,Origin,-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(portIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
     }
 
   const Geometry::Vec3D exitPoint=LT.getPoint(BIndex+1);
-
+  FixedComp::nameSideIndex(1,"OuterPlate");
   if (plateThick>Geometry::zeroTol)
     {
       FixedComp::setConnect(1,exitPoint+Y*(externalLength+plateThick),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(portIndex+202));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
     }
   else
     {
       FixedComp::setConnect(1,exitPoint+Y*externalLength,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(portIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
     }
+
+  FixedComp::nameSideIndex(2,"InnerRadius");
+  FixedComp::setConnect(2,exitPoint+Y*(externalLength/2.0)+X*radius,X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
+  FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
+
+  FixedComp::nameSideIndex(3,"OuterRadius");
+  FixedComp::setConnect(3,exitPoint+Y*(externalLength/2.0)+X*(wall+radius),X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
+
+  FixedComp::nameSideIndex(4,"InnerPlate");
+  FixedComp::setConnect(4,exitPoint+Y*externalLength,Y);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+2));
+
   return;
 }
 
@@ -335,14 +406,14 @@ portItem::constructOuterFlange(Simulation& System,
   const Geometry::Vec3D exitPoint=LT.getPoint(lastIndex+1);
 
   // Final outer
-  ModelSupport::buildPlane(SMap,portIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   exitPoint+Y*externalLength,Y);
 
-  ModelSupport::buildPlane(SMap,portIndex+102,
+  ModelSupport::buildPlane(SMap,buildIndex+102,
 			   exitPoint+Y*(externalLength-flangeLength),Y);
 
   if (plateThick>Geometry::zeroTol)
-    ModelSupport::buildPlane(SMap,portIndex+202,
+    ModelSupport::buildPlane(SMap,buildIndex+202,
 			     exitPoint+Y*(externalLength+plateThick),Y);
   
   // determine start surface:
@@ -357,77 +428,91 @@ portItem::constructOuterFlange(Simulation& System,
   // construct inner volume:
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,portIndex," 1 -7 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -2 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
   
-  Out=ModelSupport::getComposite(SMap,portIndex," 1 -17 7 -2 ");
-  System.addCell(cellIndex++,wallMat,0.0,Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
 
-  Out=ModelSupport::getComposite(SMap,portIndex," 102 -27 17 -2 ");
-  System.addCell(cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,portIndex," 1 17 -27 -102  ");
-  makeCell("OutVoid",System,cellIndex++,0,0.0,Out+midSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -27 17 -2 ");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
 
   if (plateThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,portIndex," -27 202 2 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -27 -202 2 ");
       makeCell("Plate",System,cellIndex++,plateMat,0.0,Out);
-      
-      Out=ModelSupport::getComposite(SMap,portIndex," -202 -27  1 ");
+    }
+  
+  if (outerFlag)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 17 -27 -102  ");
+      makeCell("OutVoid",System,cellIndex++,0,0.0,Out+midSurf);
+      Out= (plateThick>Geometry::zeroTol) ?
+	ModelSupport::getComposite(SMap,buildIndex," -202 -27  1 ") :
+	ModelSupport::getComposite(SMap,buildIndex," -2 -27  1 ");
+      addOuterSurf(Out+midSurf);
     }
   else
-    Out=ModelSupport::getComposite(SMap,portIndex," -2 -27  1 ");
+    {
+      Out= (plateThick>Geometry::zeroTol) ?
+	ModelSupport::getComposite(SMap,buildIndex," -202 -27 102 ") :
+	ModelSupport::getComposite(SMap,buildIndex," -2 -27 102 ");
+      addOuterSurf(Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 -102 1 ");
+      addOuterUnionSurf(Out+midSurf);
+    }
   
-  addOuterSurf(Out);
-
   // Mid port exclude
   const std::string tubeExclude=
-    ModelSupport::getComposite(SMap,portIndex," ( 17 : -1 )");
+    ModelSupport::getComposite(SMap,buildIndex," ( 17 : -1 )");
 
-  std::set<int> activeCell;
+  //  std::set<int> activeCell;
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
   const std::vector<double>& Track=LT.getTrack();
   double T(0.0);   // extention base out point
-  for(size_t i=startIndex;i<OVec.size() && T<externalLength;i++)
+
+  for(size_t i=startIndex;i<OVec.size() &&
+	T<(externalLength-Geometry::zeroTol);i++)
     {
       MonteCarlo::Object* OPtr=OVec[i];
       const int OName=OPtr->getName();
-
-      if (i>lastIndex)   
+      if (i>lastIndex)
 	T+=Track[i];
 
-      if (T>=externalLength-flangeLength ||
-	  outerCell.find(OName)!=outerCell.end())
+      if (outerCell.find(OName)==outerCell.end())
 	{
-	  OPtr->addSurfString(getExclude());
-	  activeCell.insert(OName);
+	  if (i>lastIndex)
+	    OPtr->addSurfString(getExclude());
+	  else 
+	    OPtr->addSurfString(tubeExclude);
 	}
-      else 
-	OPtr->addSurfString(tubeExclude);
+    }
+  if (externalLength<flangeLength+Geometry::zeroTol)
+    {
+      const Geometry::Surface* cylPtr=LT.getSurfVec()[lastIndex];
+      insertComponent(System,"Flange",std::to_string(cylPtr->getName()));
     }
   // do essential outerCells
   for(const int ON : outerCell)
     {
-      if (activeCell.find(ON)==activeCell.end())
-	{
-	  MonteCarlo::Object* OPtr=System.findQhull(ON);
-	  if (!OPtr)
-	    throw ColErr::InContainerError<int>(ON,"Cell not found");
-	  OPtr->addSurfString(getExclude());
-	}
+      MonteCarlo::Object* OPtr=System.findQhull(ON);
+      if (!OPtr)
+	throw ColErr::InContainerError<int>(ON,"Cell not found");
+      OPtr->addSurfString(getExclude());
     }
-  
   return;
 }
 
 void
-portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
+portItem::calcBoundaryCrossing(const objectGroups& OGrp,
+			       const ModelSupport::LineTrack& LT,
 			       size_t& AIndex,size_t& BIndex) const
   /*!
     Creates the inner and outer objects of the track in the 
     current ref cell. Base on the idea that the pipe will only
     have to cut solid system [ie. not inner voids]
+    \param OGrp :: Object map
     \param LT :: Line track
     \param AIndex :: start index
     \param BIndex :: end index
@@ -435,8 +520,6 @@ portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   AIndex=0;
   BIndex=0;
@@ -447,7 +530,7 @@ portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
     {
       const MonteCarlo::Object* oPtr=OVec[i];
       const int ONum=oPtr->getName();
-      if (OR.hasCell(refComp,ONum))
+      if (OGrp.hasCell(refComp,ONum))
 	{
 	  if (oPtr->getDensity()>0.01)
 	    {
@@ -459,37 +542,77 @@ portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
   return;
 }
 
+void
+portItem::intersectPair(Simulation& System,
+			const portItem& Outer) const
+  /*!
+    Intersect two port
+    \param Simulation :: Simulation to use
+    \param Outer :: setcond port to intersect
+  */
+{
+  ELog::RegMethod RegA("portItem","intersectPair");
+
+  const HeadRule mainComp(getFullRule(3).complement());
+  Outer.insertComponent(System,"Wall",mainComp);
+  const HeadRule outerComp(Outer.getFullRule(3).complement());
+  const HeadRule outerWallComp(Outer.getFullRule(4).complement());
+  this->insertComponent(System,"Wall",outerWallComp);
+  this->insertComponent(System,"Void",outerComp);
+  return;
+}
   
 void
 portItem::constructTrack(Simulation& System)
   /*!
     Construct a track system
     \param System :: Simulation of model
-   */
+  */
 {
   ELog::RegMethod RegA("portItem","constructTrack");
 
 
-  if ((statusFlag & 1)!=1)
+  if (!statusFlag)
     {
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
       return;
     }
-  createSurfaces();
   
+  createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();
-
+ 
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
-
+  
   size_t AIndex,BIndex;
 
-  calcBoundaryCrossing(LT,AIndex,BIndex);
+  calcBoundaryCrossing(System,LT,AIndex,BIndex);
   constructOuterFlange(System,LT,AIndex,BIndex);
-
   createLinks(LT,AIndex,BIndex);
   return;
 }
+
+void
+portItem::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
+  /*!
+    Build the system assuming outer cells have been added
+    \param System :: Simulation to use
+    \param FC :: Fixed comp
+    \param sideIndex :: Link point
+   */
+{
+  ELog::RegMethod RegA("portItem","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  setCentLine(FC,centreOffset,axisOffset);
+  constructTrack(System);
+  return;
+}
   
+
+
 }  // NAMESPACE constructSystem

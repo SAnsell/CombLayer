@@ -122,11 +122,11 @@ setESSFull(defaultConfig& A)
       {"BIFROST","G1BLineTop4"},    // W4
       {"NMX","G1BLineTop1"},        // W1
       {"VOR","G2BLineTop10"},   // also 17
-      {"LOKI","G1BLineTop17"},
-      {"DREAM","G1BLineTop19"},
+      {"LOKI","G1BLineTop15"},
+      {"DREAM","G2BLineTop19"}, // S3
       // {"CSPEC","G4BLine3"},
        {"VESPA","G2BLineTop7"},
-      {"FREIA","G1BLineTop15"},     // N5
+      {"FREIA","G1BLineTop17"},     // N5
       {"ODIN","G1BLineTop20"}        // was low / now high
     };
   
@@ -330,10 +330,10 @@ setESS(defaultConfig& A)
   const std::map<std::string,std::string> beamDef=
     {
       {"NMX","G1BLineTop1"},
-      {"DREAM","G1BLineTop19"},
+      {"DREAM","G2BLineTop19"}, // S3
       {"CSPEC","G1BLineTop3"},
       {"VOR","G1BLinetop7"},   // also 17  
-      {"LOKI","G1BLineTop17"},
+      {"LOKI","G1BLineTop15"},
       {"ODIN","G2BLineTop20"}
     };     
   const std::set<std::string> beamFilled=

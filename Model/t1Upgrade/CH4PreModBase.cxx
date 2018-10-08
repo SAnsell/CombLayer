@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4PreModBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -66,9 +65,7 @@ namespace ts1System
 {
   
 CH4PreModBase::CH4PreModBase(const std::string& Key,const size_t NLink)  : 
-  ContainedComp(),FixedOffset(Key,NLink),LayerComp(0,0),
-  preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(preIndex+1)
+  ContainedComp(),FixedOffset(Key,NLink),LayerComp(0,0)
   /*!
     Constructor
     \param Key :: Keyname 
@@ -77,8 +74,7 @@ CH4PreModBase::CH4PreModBase(const std::string& Key,const size_t NLink)  :
 {}
 
 CH4PreModBase::CH4PreModBase(const CH4PreModBase& A) : 
-  ContainedComp(A),FixedOffset(A),LayerComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex)
+  ContainedComp(A),FixedOffset(A),LayerComp(A)
   /*!
     Copy constructor
     \param A :: CH4PreModBase to copy
@@ -97,7 +93,6 @@ CH4PreModBase::operator=(const CH4PreModBase& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
     }
   return *this;
 }

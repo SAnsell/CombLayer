@@ -24,6 +24,12 @@
 
 class localRotate;
 
+namespace phitsSystem
+{
+  class phitsTally;
+  class phitsPhysics;
+}
+
 /*!
   \class SimPHITS
   \brief Modifides Simulation to output PHITS input file
@@ -33,10 +39,20 @@ class localRotate;
  */
 class SimPHITS : public Simulation
 {
+ public:
+
+  /// Tally  : tally
+  typedef std::map<int,phitsSystem::phitsTally*> PTallyTYPE;
+
  private:
 
+  int icntl;                           ///< ICNTL
   size_t nps;                          ///< number of particles to run
   long int rndSeed;                    ///< RND seed
+
+  PTallyTYPE PTItem;                   ///< Phits tally map
+  
+  phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics
   
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -56,6 +72,22 @@ class SimPHITS : public Simulation
   SimPHITS& operator=(const SimPHITS&);
   virtual ~SimPHITS() {}           ///< Destructor
 
+  void setICNTL(const std::string&);
+  /// set nps [move to physics]
+  void setNPS(const size_t N) { nps=N; }
+  /// set rndseed [move to physics]
+  void setRND(const long int N) { rndSeed=N; }
+
+  /// access to physics
+  phitsSystem::phitsPhysics* getPhysics() { return PhysPtr; }
+
+
+  // TALLY Processing 
+  void addTally(const phitsSystem::phitsTally&);
+  phitsSystem::phitsTally* getTally(const int) const;
+  PTallyTYPE& getTallyMap() { return PTItem; }            ///< Access tally map
+  const PTallyTYPE& getTallyMap() const { return PTItem; }  ///< Access constant
+  
   virtual void write(const std::string&) const;
 
 };

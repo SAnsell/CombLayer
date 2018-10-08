@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/TriangleMod.cxx 
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "RuleSupport.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
@@ -89,7 +91,7 @@ namespace moderatorSystem
 
 TriangleMod::TriangleMod(const std::string& Key)  :
   constructSystem::ModBase(Key,5),
-  Outer(modIndex+100)
+  Outer(buildIndex+100)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -169,8 +171,8 @@ TriangleMod::populate(const FuncDataBase& Control)
   absXStep=Control.EvalDefVar<double>(keyName+"AbsXStep",0.0);
   absYStep=Control.EvalDefVar<double>(keyName+"AbsYStep",0.0);
   absZStep=Control.EvalDefVar<double>(keyName+"AbsZStep",0.0);
-  absXYAngle=Control.EvalDefVar<double>(keyName+"AbsXYangle",0.0);
-  absZAngle=Control.EvalDefVar<double>(keyName+"AbsZangle",0.0);
+  absXYAngle=Control.EvalDefVar<double>(keyName+"AbsXYAngle",0.0);
+  absZAngle=Control.EvalDefVar<double>(keyName+"AbsZAngle",0.0);
 
 
   Outer.clear();
@@ -192,7 +194,7 @@ TriangleMod::populate(const FuncDataBase& Control)
   IUnits.clear();
   for(size_t i=0;i<nIUnits;i++)
     {
-      TriUnit tU(modIndex+3000+1000*static_cast<int>(i));
+      TriUnit tU(buildIndex+3000+1000*static_cast<int>(i));
       const std::string IUStr=keyName+"Inner"+StrFunc::makeString(i+1);
       const size_t INC=Control.EvalVar<size_t>(IUStr+"NCorner");
       for(size_t j=0;j<INC;j++)
@@ -288,8 +290,8 @@ TriangleMod::createLinks()
   FixedComp::setConnect(1,Origin+Z*(height/2.0+OSize),Z);
 
   
-  FixedComp::setLinkSurf(0,-SMap.realSurf(modIndex+25));
-  FixedComp::setLinkSurf(1,SMap.realSurf(modIndex+26));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+26));
 
 
   for(size_t i=0;i<Outer.nCorner;i++)
@@ -301,7 +303,7 @@ TriangleMod::createLinks()
 	    cornerPair(Outer.Pts,i,i+1,OSize);
 	  FixedComp::setConnect(i+2,(CP.first+CP.second)/2.0,
 				sideNorm(CP));
-	  FixedComp::setLinkSurf(i+2,-SMap.realSurf(modIndex+101+ii));
+	  FixedComp::setLinkSurf(i+2,-SMap.realSurf(buildIndex+101+ii));
 	}
       else 
 	{
@@ -326,7 +328,7 @@ TriangleMod::createLinks()
 	  cx<<ii+1<<" )";
 
 	  const std::string Out=ModelSupport::getComposite
-	    (SMap,modIndex+300,cx.str());
+	    (SMap,buildIndex+300,cx.str());
 	  HeadRule AX;
 	  AX.procString(Out);
 	  AX.makeComplement();
@@ -453,7 +455,7 @@ TriangleMod::createSurfaces()
     {
       const int ii(static_cast<int>(i));
       double PDepth(0.0);  // + from origin
-      int triOffset(modIndex+101);
+      int triOffset(buildIndex+101);
       for(size_t j=0;j<nLayers;j++)
 	{
 	  const std::pair<Geometry::Vec3D,Geometry::Vec3D>
@@ -468,17 +470,17 @@ TriangleMod::createSurfaces()
 	}
     }
 
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,modIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,modIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);
 
-  ModelSupport::buildPlane(SMap,modIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(height/2.0+wallThick+baseClearance),Z);
-  ModelSupport::buildPlane(SMap,modIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(height/2.0+wallThick+topClearance),Z);
 
 
@@ -524,7 +526,7 @@ TriangleMod::createInnerObject(Simulation& System)
 
   HeadRule InnerExclude;
   const std::string vertUnit=
-    ModelSupport::getComposite(SMap,modIndex," 5 -6");
+    ModelSupport::getComposite(SMap,buildIndex," 5 -6");
 
 
   for(size_t i=0;i<nIUnits;i++)
@@ -618,7 +620,7 @@ TriangleMod::calcOverlaps(Simulation& System)
   OHull.createSurfaceList();
 
   
-  Geometry::Plane PZ(modIndex+5000,0);
+  Geometry::Plane PZ(buildIndex+5000,0);
   PZ.setPlane(Geometry::Vec3D(0,0,0),Z);
 
   std::vector<MonteCarlo::Qhull> IQH;
@@ -659,7 +661,7 @@ TriangleMod::createObjects(Simulation& System)
   std::string Out;
 
   // Full moderator
-  outUnit=ModelSupport::getComposite(SMap,modIndex," 5 -6 ")+
+  outUnit=ModelSupport::getComposite(SMap,buildIndex," 5 -6 ")+
     Outer.getString(0);
   
   Out=createInnerObject(System);
@@ -667,13 +669,13 @@ TriangleMod::createObjects(Simulation& System)
 
   // Wall       
   inUnit=MonteCarlo::getComplementShape(outUnit);
-  outUnit=ModelSupport::getComposite(SMap,modIndex," 15 -16 ")+
+  outUnit=ModelSupport::getComposite(SMap,buildIndex," 15 -16 ")+
     Outer.getString(1);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,outUnit+inUnit));
 
   // Clearance
   inUnit=MonteCarlo::getComplementShape(outUnit);
-  outUnit=ModelSupport::getComposite(SMap,modIndex," 25 -26 ")+
+  outUnit=ModelSupport::getComposite(SMap,buildIndex," 25 -26 ")+
     Outer.getString(2);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,outUnit+inUnit));
   
@@ -779,7 +781,7 @@ TriangleMod::getLayerSurf(const size_t layerIndex,
   
   int signValue((sideIndex<0) ? -1 : 1);
  
-  const int addNumber=modIndex+static_cast<int>(layerIndex)*10;
+  const int addNumber=buildIndex+static_cast<int>(layerIndex)*10;
 
   if (uSIndex==2)  // TOP
     return signValue*SMap.realSurf(addNumber+6);
@@ -787,7 +789,7 @@ TriangleMod::getLayerSurf(const size_t layerIndex,
     return signValue*SMap.realSurf(addNumber+5);
 
   const int lIndex=static_cast<int>(layerIndex);
-  const int SN=modIndex+100*lIndex+101+static_cast<int>(uSIndex-3);
+  const int SN=buildIndex+100*lIndex+101+static_cast<int>(uSIndex-3);
   return signValue*SMap.realSurf(SN);  
 }
 

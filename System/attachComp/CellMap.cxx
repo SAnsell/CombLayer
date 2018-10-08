@@ -56,6 +56,8 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "surfRegister.h"
 #include "LinkUnit.h"
@@ -98,6 +100,64 @@ CellMap::operator=(const CellMap& A)
 }
   
 void
+CellMap::insertCellMapInCell(Simulation& System,
+			     const std::string& cellKey,
+			     const int cellN) const
+  /*!
+    Insert a cellMap object into a cell
+    \param System :: Simulation to obtain cell from
+    \param cellKey :: Items in the Cell map to slice
+    \param cellN :: System cell number to change
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
+
+  MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN in System");
+
+  for(const int cn : getCells(cellKey))
+    {
+      const MonteCarlo::Object* OPtr=System.findQhull(cn);
+      if (OPtr)
+	{
+	  const HeadRule compObj=OPtr->getHeadRule().complement();
+	  CPtr->addSurfString(compObj.display());
+	}
+    }  
+  return;
+}
+
+void
+CellMap::insertCellMapInCell(Simulation& System,
+			     const std::string& cellKey,
+			     const size_t cellIndex,
+			     const int cellN) const
+  /*!
+    Insert a cellMap object into a cell
+    \param System :: Simulation to obtain cell from
+    \param cutKey :: Items in the Cell map to slice
+    \param cellIndex :: item number from the cell map
+    \param cellN :: System cell number to change
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
+
+  const int cn = getCell(cellKey);
+  const MonteCarlo::Object* OPtr=System.findQhull(cn);
+  if (!OPtr)
+    throw ColErr::InContainerError<int>(cn,"CellMap(int) in System");
+  const HeadRule compObj=OPtr->getHeadRule().complement();
+  
+  MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN in System");
+
+  CPtr->addSurfString(compObj.display());
+  return;
+}
+  
+void
 CellMap::insertComponent(Simulation& System,
 			 const std::string& cutKey,
 			 const CellMap& CM,
@@ -105,7 +165,7 @@ CellMap::insertComponent(Simulation& System,
   /*!
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
-    \param cutKey :: Items in the Cell map to slicde
+    \param cutKey :: Items in the Cell map to slice
     \param CM :: Items that will cut this
     \param holdKey :: Items in the Cell map to be inserted
    */
@@ -185,12 +245,31 @@ CellMap::insertComponent(Simulation& System,
 void
 CellMap::insertComponent(Simulation& System,
 			 const std::string& Key,
+			 const size_t index,
+			 const HeadRule& HR) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: cell index
+    \param HR :: Contained Componenet
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(index,HR)");
+  if (HR.hasRule())
+    insertComponent(System,Key,index,HR.display());
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
 			 const std::string& exclude) const
   /*!
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param exclude :: Excluded key
+    \param exclude :: Excluded surface(s)
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(string)");
@@ -233,6 +312,36 @@ CellMap::insertComponent(Simulation& System,
     throw ColErr::InContainerError<int>(cellNum,
 					"Cell["+Key+"] not present");
   outerObj->addSurfString(exclude);
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
+			 const size_t index,
+			 const CellMap& CM,
+			 const std::string& cmKey,
+			 const size_t cmIndex) const
+  /*!
+    Insert an exclude component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: Index on this cell [to be inserted]
+    \param CM :: Cell map to extract obbject for insertion
+    \param CMKey :: Key of cell map to insert
+    \param cmIndex :: index of CellMap CM
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(key,index,CMap,cmIndex)");
+
+  const int otherCellNum=CM.getCell(cmKey,cmIndex);
+  const MonteCarlo::Qhull* otherObj=System.findQhull(otherCellNum);
+  if (!otherObj)
+    throw ColErr::InContainerError<int>(otherCellNum,
+					"Cell["+cmKey+"] not present");
+  HeadRule HR=otherObj->getHeadRule();
+  HR.makeComplement();
+  insertComponent(System,Key,index,HR);
   return;
 }
 
@@ -371,5 +480,19 @@ CellMap::deleteCellWithData(Simulation& System,
   System.removeCell(CN);  // too complex to handle from ObjPtr
   return Out;
 }
- 
+
+void
+CellMap::renumberCell(const int oldCell,const int newCell)
+  /*!
+    Renumber cell -- decide not to do anything if not found
+    \param oldCell :: old cell number
+    \param newCell :: new cell number
+  */
+{
+  ELog::RegMethod RegA("CellMap","renumberCell");
+  
+  changeCell(oldCell,newCell);
+  return;
+}
+
 }  // NAMESPACE attachSystem

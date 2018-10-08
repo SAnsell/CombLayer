@@ -52,17 +52,20 @@ class portItem :
 {
  private:
 
-  size_t statusFlag;         ///< Flag to check object correct
-  int portIndex;             ///< port surface offset
-  int cellIndex;             ///< cell number
+  const std::string portBase;  ///< Base key name
+  bool statusFlag;             ///< Flag to check object correct
+  bool outerFlag;              ///< Make outer void
 
+  Geometry::Vec3D centreOffset;
+  Geometry::Vec3D axisOffset;
+  
   double externalLength;     ///< Length of item 
   double radius;             ///< radius of pipe
   double wall;               ///< wall thick
   double flangeRadius;       ///< flange radius
   double flangeLength;       ///< flange thick(length)
   double plateThick;         ///< Plate on flange [if thick>0]
-  
+
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
   int plateMat;              ///< plate Material
@@ -71,8 +74,7 @@ class portItem :
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
 
-
-  
+  void populate(const FuncDataBase&);
   void createSurfaces();
   void createLinks(const ModelSupport::LineTrack&,
 		   const size_t,const size_t);
@@ -80,30 +82,38 @@ class portItem :
   void constructOuterFlange(Simulation&,
 			    const ModelSupport::LineTrack&,
 			    const size_t,const size_t);
-  void calcBoundaryCrossing(const ModelSupport::LineTrack&,
+  void calcBoundaryCrossing(const objectGroups&,
+			    const ModelSupport::LineTrack&,
 			    size_t&,size_t&) const;
   
  public:
 
   portItem(const std::string&);
+  portItem(const std::string&,const std::string&);
   portItem(const portItem&);
   portItem& operator=(const portItem&);
   ~portItem();
 
+  double getExternalLength() const { return externalLength; }
+  
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void addOuterCell(const int);
   void setMain(const double,const double,const double);
-  void setMaterial(const int,const int);
+  void setMaterial(const int,const int,const int = -3);
   void setFlange(const double,const double);
   void setCoverPlate(const double,const int= -1);
-
+  /// surround the object
+  void setWrapVolume() { outerFlag=1; }
+  
   void constructTrack(Simulation&);
   
-  void calcMaxCut(const std::string&,const size_t);
-    
+  void intersectPair(Simulation&,const portItem&) const;
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
 				       
 };
   

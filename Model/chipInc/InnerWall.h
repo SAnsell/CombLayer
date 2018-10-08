@@ -41,8 +41,6 @@ class InnerWall :
 {
  private:
   
-  const int innerIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
  
   double height;            ///< Hole: Half Height
   double width;             ///< Hole: Half width

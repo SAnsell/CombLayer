@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTallyBuilder.h
+ * File:   flukaTallyInc/flukaTallyBuilder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

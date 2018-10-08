@@ -36,8 +36,9 @@ class userBin : public flukaTally
 {
  private:
 
+  bool binaryOut;                   ///< Make file binary output
   int meshType;                     ///< type / 10 / 0 for mesh
-  std::string particle;             ///< particle
+  std::string particle;             ///< particle/type
     
   std::array<size_t,3> Pts;      ///< N-Points
   Geometry::Vec3D minCoord;      ///< Min coordinate
@@ -58,7 +59,8 @@ class userBin : public flukaTally
   void setGridMesh() { meshType=10; }  ///< Set as a grid [default] mesh
   
   void setParticle(const std::string&);
-
+  virtual void setDoseType(const std::string&,const std::string&);
+ 
   void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
@@ -71,6 +73,8 @@ class userBin : public flukaTally
   /// access min/max point
   const std::array<size_t,3>& getNPt() const { return Pts; }
 
+
+  
   void writeCoordinates(std::ostream&) const;
   virtual void writeAuxScore(std::ostream&) const;
   virtual void write(std::ostream&) const;

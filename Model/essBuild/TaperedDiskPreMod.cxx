@@ -3,7 +3,7 @@
  
  * File:   essBuild/TaperedDiskPreMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,8 +85,6 @@ TaperedDiskPreMod::TaperedDiskPreMod(const std::string& Key) :
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,11),
   attachSystem::CellMap(),  
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1),
   InnerComp(new CylFlowGuide(Key+"FlowGuide"))
 
   /*!
@@ -101,8 +101,7 @@ TaperedDiskPreMod::TaperedDiskPreMod(const TaperedDiskPreMod& A) :
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
-  height(A.height),depth(A.depth),
+  radius(A.radius),height(A.height),depth(A.depth),
   mat(A.mat),temp(A.temp),
   InnerComp(A.InnerComp->clone()),
   tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),tiltRadius(A.tiltRadius)
@@ -243,13 +242,13 @@ TaperedDiskPreMod::createSurfaces()
   ELog::RegMethod RegA("TaperedDiskPreMod","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,Y);  
 
   const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
   const int tiltSign = tiltSide ? 1 : -1;
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
@@ -280,7 +279,7 @@ TaperedDiskPreMod::createObjects(Simulation& System)
 
   std::string Out, Out1;
 
-  int SI(modIndex);
+  int SI(buildIndex);
   // Process even number of surfaces:
   HeadRule Inner;
   for(size_t i=0;i<nLayers;i++)
@@ -353,23 +352,23 @@ TaperedDiskPreMod::createLinks()
 {  
   ELog::RegMethod RegA("TaperedDiskPreMod","createLinks");
 
-  int SI(modIndex+static_cast<int>(nLayers-1)*10);
+  int SI(buildIndex+static_cast<int>(nLayers-1)*10);
   FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
   
   
   FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
+  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(4,Origin-Z*depth[nLayers-1],-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
@@ -379,16 +378,16 @@ TaperedDiskPreMod::createLinks()
 
   // inner links point inwards
   FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(modIndex+7));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
 
   FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(modIndex+5));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
 
   // outer again
-  SI=modIndex+static_cast<int>(nLayers-2)*10;
+  SI=buildIndex+static_cast<int>(nLayers-2)*10;
   FixedComp::setConnect(9,Origin-Z*depth[nLayers-2],-Z);
   FixedComp::setLinkSurf(9,-SMap.realSurf(SI+6));
 
@@ -447,7 +446,7 @@ TaperedDiskPreMod::getLayerSurf(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 	       
   switch(sideIndex)
     {
@@ -479,26 +478,26 @@ TaperedDiskPreMod::getLayerString(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 
   std::ostringstream cx;
   switch(sideIndex)
     {
     case 0:
       cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< -SMap.realSurf(modIndex+2)<<" ";
+	<< -SMap.realSurf(buildIndex+2)<<" ";
       return cx.str();
     case 1:
       cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< SMap.realSurf(modIndex+2)<<" ";
+	<< SMap.realSurf(buildIndex+2)<<" ";
       return cx.str();
     case 2:
       cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
+	<< -SMap.realSurf(buildIndex+1)<<" ";
       return cx.str();
     case 3:
       cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< SMap.realSurf(modIndex+1)<<" ";
+	<< SMap.realSurf(buildIndex+1)<<" ";
       return cx.str();
     case 4:
       cx<<" "<<-SMap.realSurf(SI+5)<<" ";

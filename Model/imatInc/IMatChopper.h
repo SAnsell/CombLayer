@@ -43,8 +43,6 @@ class IMatChopper : public attachSystem::ContainedComp,
 {
  private:
   
-  const int chopIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on X to Target

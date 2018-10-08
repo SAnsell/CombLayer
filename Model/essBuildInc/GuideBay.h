@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideBay.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,15 +38,14 @@ namespace essSystem
 
 
 class GuideBay : public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffset,public attachSystem::CellMap
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
   
   const std::string baseKey;    ///< Base key
   const size_t bayNumber;       ///< Bay number [id]
-  const int bayIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-  
+
   double viewAngle;     ///< Angle of guide
   double innerHeight;   ///< height
   double innerDepth;    ///< Depth 
@@ -79,7 +78,9 @@ class GuideBay : public attachSystem::ContainedGroup,
   virtual ~GuideBay();
 
   void setCylBoundary(const int,const int);
-  std::vector<std::shared_ptr<GuideItem> > GetGuideItems() const {return GUnit;}
+  /// accessor to guid units
+  const std::vector<std::shared_ptr<GuideItem>>& getGuideItems() const
+  {return GUnit;}
 
   void outerMerge(Simulation&,GuideBay&);
   void createGuideItems(Simulation&,const std::string&,const std::string&);

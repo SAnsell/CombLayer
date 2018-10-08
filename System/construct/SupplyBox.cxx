@@ -64,6 +64,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,8 +83,7 @@ namespace constructSystem
 
 SupplyBox::SupplyBox(const std::string& Key)  :
   attachSystem::FixedComp(Key,2),optName(""),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),wallOffset(2),
+  wallOffset(2),
   Coaxial(Key+"CoAx"),nAngle(12)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -92,7 +93,6 @@ SupplyBox::SupplyBox(const std::string& Key)  :
 
 SupplyBox::SupplyBox(const SupplyBox& A) : 
   attachSystem::FixedComp(A),optName(A.optName),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   NSegIn(A.NSegIn),wallOffset(A.wallOffset),
   Width(A.Width),Depth(A.Depth),Mat(A.Mat),Temp(A.Temp),
   ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),
@@ -115,7 +115,6 @@ SupplyBox::operator=(const SupplyBox& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       NSegIn=A.NSegIn;
       Width=A.Width;
       Depth=A.Depth;

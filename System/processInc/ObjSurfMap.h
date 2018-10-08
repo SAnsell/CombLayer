@@ -82,6 +82,7 @@ class ObjSurfMap
   const std::set<int>& connectedObjects(const int) const;
   
   void removeReverseSurf(const int,const int);
+  void removeObject(const MonteCarlo::Object*);
 
   void write(const std::string&) const;
   void write(std::ostream&) const;

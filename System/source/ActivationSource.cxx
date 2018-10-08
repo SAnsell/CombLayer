@@ -75,6 +75,8 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "ModeCard.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "localRotate.h"
 #include "activeUnit.h"
@@ -431,9 +433,15 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
                                     "Failed to get totalFlux");
               
           ELog::EM<<"Gamma total == "<<totalFlux<<ELog::endDiag;
-          
-	  cellFlux.emplace(cellNumbers[index],
-                           activeUnit(totalFlux,energy,gamma));
+
+	  std::map<int,activeUnit>::iterator mc=
+	    cellFlux.find(cellNumbers[index]);
+	  if (mc==cellFlux.end())
+	      cellFlux.emplace(cellNumbers[index],
+			       activeUnit(totalFlux,energy,gamma));
+	  else
+	    mc->second=activeUnit(totalFlux,energy,gamma);
+	  
 	}
       IX.close();
     }

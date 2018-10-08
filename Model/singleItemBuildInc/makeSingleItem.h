@@ -37,9 +37,6 @@ class makeSingleItem
 {
  private:
   
-
-  
-
  public:
   
   makeSingleItem();
