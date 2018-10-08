@@ -62,7 +62,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
@@ -283,7 +285,10 @@ FrontEnd::buildObjects(Simulation& System)
   heatDump->addInsertCell(PI.getCell("Void"));
   heatDump->addInsertCell(heatBox->getCell("Void"));
 
+  // WRONG -- DELTEL FLANGE 
   heatDump->createAll(System,*heatDumpFlange,
+		      heatDumpFlange->getSideIndex("bladeCentre"),
+		      *heatDumpFlange,
 		      heatDumpFlange->getSideIndex("bladeCentre"));
 
   flightPipe->addInsertCell(ContainedComp::getInsertCells());

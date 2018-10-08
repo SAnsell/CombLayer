@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -88,6 +87,10 @@ namespace constructSystem
 
 Bellows::Bellows(const std::string& Key) :
   SplitFlangePipe(Key,0)
+  /*!
+    Constructor
+    \param Key :: KeyName
+  */
 {}
   
 Bellows::Bellows(const Bellows& A) : 

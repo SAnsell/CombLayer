@@ -62,7 +62,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
@@ -126,7 +128,6 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   heatPipe(new constructSystem::VacuumPipe(newName+"HeatPipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
-  heatTopFlange(new xraySystem::FlangeMount(newName+"HeatTopFlange")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
@@ -175,7 +176,6 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(heatPipe);
   OR.addObject(heatBox);
-  OR.addObject(heatTopFlange);
   OR.addObject(heatDump);
   OR.addObject(bellowD);
   OR.addObject(gateTubeA);
@@ -361,24 +361,15 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   heatBox->createAll(System,*heatPipe,2);
 
   const constructSystem::portItem& PIA=heatBox->getPort(1);
-  const constructSystem::portItem& PIB=heatBox->getPort(0);
   outerCell=createOuterVoidUnit(System,masterCell,
 				PIA,PIA.getSideIndex("OuterPlate"));
   heatBox->insertInCell(System,outerCell);
     
-  heatTopFlange->addInsertCell("Flange",outerCell);
-  heatTopFlange->addInsertCell("Body",heatBox->getCell("Void"));
-
   // cant use heatbox here because of port rotation
   
-  heatTopFlange->setBladeCentre(PIA,0);
-  heatTopFlange->createAll(System,*heatBox,2);
-
-  const long int TL=heatTopFlange->getSideIndex("bladeCentre");
-  ELog::EM<<"R = "<<heatTopFlange->getLinkPt(TL)<<ELog::endDiag;
   heatDump->addInsertCell(heatBox->getCell("Void"));
-  heatDump->createAll(System,*heatTopFlange,
-		      heatTopFlange->getSideIndex("bladeCentre"));
+  heatDump->createAll(System,PIA,0,*heatBox,2);
+
 
   //  const constructSystem::portItem& PI=heatBox->getPort(1);  
   bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));

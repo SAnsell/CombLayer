@@ -55,6 +55,7 @@
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
+#include "HeatDumpGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
@@ -789,6 +790,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::HeatDumpGenerator HeatGen;
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF150>();
@@ -813,14 +815,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",1);  // in beam
   
   const std::string hDump(frontKey+"HeatDump");
-  Control.addVariable(hDump+"Radius",4.0);
-  Control.addVariable(hDump+"Height",7.0);
-  Control.addVariable(hDump+"Width",3.0);
-  Control.addVariable(hDump+"Thick",8.0);
-  Control.addVariable(hDump+"CutHeight",2.0);
-  Control.addVariable(hDump+"CutDepth",1.0);
-  Control.addVariable(hDump+"CutAngle",30.0);
-  Control.addVariable(hDump+"Mat","Tungsten");
+  HeatGen.generateHD(Control,hDump,1);
 
   return;
 }
