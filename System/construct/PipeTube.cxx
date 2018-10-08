@@ -95,7 +95,10 @@ PipeTube::PipeTube(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(2,"FlangeA");
+  nameSideIndex(3,"FlangeB");
+}
 
   
 PipeTube::~PipeTube() 
@@ -130,10 +133,16 @@ PipeTube::populate(const FuncDataBase& Control)
 
   flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
 					 keyName+"FlangeLength");
+
+  flangeACap=Control.EvalDefPair<double>(keyName+"FlangeACap",
+					 keyName+"FlangeCap",0.0);
+  flangeBCap=Control.EvalDefPair<double>(keyName+"FlangeBCap",
+					 keyName+"FlangeCap",0.0);
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
+  capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
+    
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,PT;
@@ -219,9 +228,14 @@ PipeTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,
-			   Origin-Y*(length/2.0-flangeALength),Y);
+			   Origin-Y*(length/2.0-(flangeALength+flangeACap)),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(length/2.0-flangeBLength),Y);
+			   Origin+Y*(length/2.0-(flangeBLength+flangeBCap)),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+201,
+			   Origin-Y*(length/2.0-flangeACap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,
+			   Origin+Y*(length/2.0-flangeBCap),Y);
 
   // flange:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
@@ -242,21 +256,43 @@ PipeTube::createObjects(Simulation& System)
   const std::string frontSurf(frontRule());
   const std::string backSurf(backRule());
 
+  const std::string frontVoidSurf=
+    (flangeACap<Geometry::zeroTol) ? frontSurf :
+    ModelSupport::getComposite(SMap,buildIndex," 201 ");
+  const std::string backVoidSurf=
+    (flangeBCap<Geometry::zeroTol) ? backSurf :
+    ModelSupport::getComposite(SMap,buildIndex," -202 ");
+  
+  
   std::string Out;
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf+backSurf);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+
+	   frontVoidSurf+backVoidSurf);
   // main walls
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 ");
-  makeCell("MainTube",System,cellIndex++,wallMat,0.0,Out+frontSurf+backSurf);
+  makeCell("MainTube",System,cellIndex++,wallMat,0.0,
+	   Out+frontVoidSurf+backVoidSurf);
 
-
-  // flanges
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -207 102 ");
-  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontVoidSurf);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -207 102 ");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
+
+
+  if (flangeACap>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
+      makeCell("FrontCap",System,cellIndex++,capMat,0.0,Out+frontSurf);	    
+    }
+  
+  if (flangeBCap>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 202 -207 ");
+      makeCell("BackCap",System,cellIndex++,capMat,0.0,Out+backSurf);
+    }
+  
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
   addOuterSurf(Out);
@@ -283,6 +319,20 @@ PipeTube::createLinks()
   
   FrontBackCut::createFrontLinks(*this,Origin,Y); 
   FrontBackCut::createBackLinks(*this,Origin,Y);  
+
+  // getlinke points
+  FixedComp::setConnect(2,FixedComp::getLinkPt(1),-Y);
+  FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
+
+  // make a composite flange
+  std::string Out;
+  const std::string frontSurf(frontRule());
+  const std::string backSurf(backRule());
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
+  FixedComp::setLinkComp(2,Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
+  FixedComp::setLinkComp(3,Out+backSurf);
+
   
   return;
 }

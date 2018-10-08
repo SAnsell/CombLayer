@@ -62,7 +62,9 @@ PipeTubeGenerator::PipeTubeGenerator() :
   radius(2.5),wallThick(0.5),
   flangeALen(1.0),flangeARadius(1.0),
   flangeBLen(1.0),flangeBRadius(1.0),
-  voidMat("Void"),wallMat("Stainless304")
+  ACap(0.0),BCap(0.0),
+  voidMat("Void"),wallMat("Stainless304"),
+  capMat(wallMat)
   /*!
     Constructor and defaults
   */
@@ -132,6 +134,7 @@ PipeTubeGenerator::setAFlangeCF()
 {
   flangeARadius=CF::flangeRadius;
   flangeALen=CF::flangeLength;
+  ACap=0.0;
   return;
 }
 
@@ -144,6 +147,7 @@ PipeTubeGenerator::setBFlangeCF()
 {
   flangeBRadius=CF::flangeRadius;
   flangeBLen=CF::flangeLength;
+  BCap=0.0;
   return;
 }
 
@@ -174,6 +178,31 @@ PipeTubeGenerator::setBFlange(const double R,const double L)
 }
 
 void
+PipeTubeGenerator::setFlangeCap(const double AC,const double BC)
+  /*!
+    Set the flange cap values
+    \param AC :: Flange cap A
+    \param BC :: Flange cap B
+   */
+{
+  ACap=AC;
+  BCap=BC;
+  return;
+}
+
+void
+PipeTubeGenerator::setCap()
+  /*!
+    Set the flange cap values
+   */
+{
+  ACap=flangeALen;
+  BCap=flangeBLen;
+  return;
+}
+  
+  
+void
 PipeTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
 				const double yStep,
@@ -199,6 +228,10 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeALength",flangeALen);
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLen);
+
+  Control.addVariable(keyName+"FlangeACap",ACap);
+  Control.addVariable(keyName+"FlangeBCap",BCap);
+  Control.addVariable(keyName+"FlangeCapMat",capMat);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);

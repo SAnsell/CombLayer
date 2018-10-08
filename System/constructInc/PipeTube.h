@@ -51,9 +51,12 @@ class PipeTube :
   double flangeALength;        ///< Joining Flange length
   double flangeBRadius;        ///< Joining Flange radius
   double flangeBLength;        ///< Joining Flange length
-
+  double flangeACap;           ///< Thickness of Flange cap if present
+  double flangeBCap;           ///< Thickness of Flange cap if present
+  
   int voidMat;                ///< void material
   int wallMat;                ///< Fe material layer
+  int capMat;                 ///< flange cap material layer
 
   bool delayPortBuild;        ///< Delay port to manual construct
   size_t portConnectIndex;    ///< Port to connect to

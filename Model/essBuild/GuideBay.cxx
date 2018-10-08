@@ -379,6 +379,8 @@ GuideBay::createGuideItems(Simulation& System,
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* ModFC=
     System.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
@@ -402,6 +404,7 @@ GuideBay::createGuideItems(Simulation& System,
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
       std::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
+      OR.addObject(GA);
       GA->setCylBoundary(dPlane,innerCyl,outerCyl);
 
       GA->addInsertCell("Inner",getCell("Inner"));

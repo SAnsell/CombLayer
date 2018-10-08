@@ -127,6 +127,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   heatPipe(new constructSystem::VacuumPipe(newName+"HeatPipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatTopFlange(new xraySystem::FlangeMount(newName+"HeatTopFlange")),
+  heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
@@ -175,6 +176,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(heatPipe);
   OR.addObject(heatBox);
   OR.addObject(heatTopFlange);
+  OR.addObject(heatDump);
   OR.addObject(bellowD);
   OR.addObject(gateTubeA);
   OR.addObject(ionPB);
@@ -358,18 +360,28 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,*heatPipe,2);
 
-  const constructSystem::portItem& PI=heatBox->getPort(1);
+  const constructSystem::portItem& PIA=heatBox->getPort(1);
+  const constructSystem::portItem& PIB=heatBox->getPort(0);
   outerCell=createOuterVoidUnit(System,masterCell,
-				PI,PI.getSideIndex("OuterPlate"));
+				PIA,PIA.getSideIndex("OuterPlate"));
   heatBox->insertInCell(System,outerCell);
     
   heatTopFlange->addInsertCell("Flange",outerCell);
   heatTopFlange->addInsertCell("Body",heatBox->getCell("Void"));
-  heatTopFlange->setBladeCentre(*heatBox,0);
+
+  // cant use heatbox here because of port rotation
+  
+  heatTopFlange->setBladeCentre(PIA,0);
   heatTopFlange->createAll(System,*heatBox,2);
 
+  const long int TL=heatTopFlange->getSideIndex("bladeCentre");
+  ELog::EM<<"R = "<<heatTopFlange->getLinkPt(TL)<<ELog::endDiag;
+  heatDump->addInsertCell(heatBox->getCell("Void"));
+  heatDump->createAll(System,*heatTopFlange,
+		      heatTopFlange->getSideIndex("bladeCentre"));
+
   //  const constructSystem::portItem& PI=heatBox->getPort(1);  
-  bellowD->createAll(System,PI,PI.getSideIndex("OuterPlate"));
+  bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
@@ -583,10 +595,15 @@ maxpeemFrontEnd::insertFlanges(Simulation& System,
   ELog::RegMethod RegA("maxpeemFrontEnd","insertFlanges");
   
   const size_t voidN=this->getNItems("OuterVoid")-3;
-  this->insertComponent(System,"OuterVoid",voidN,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN,PT,"BackFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"BackFlange",0);
+
+  this->insertComponent(System,"OuterVoid",voidN,
+			PT.getFullRule("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN,
+			PT.getFullRule("FlangeB"));
+  this->insertComponent(System,"OuterVoid",voidN+2,
+			PT.getFullRule("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN+2,
+			PT.getFullRule("FlangeB"));
   return;
 }
   

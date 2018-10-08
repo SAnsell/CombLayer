@@ -135,7 +135,9 @@ HeatDump::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("HeatDump","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
+  applyOffset();
+  ELog::EM<<"Oring == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
   return;
 }
 
@@ -163,10 +165,8 @@ HeatDump::createSurfaces()
   // base durface
   const Geometry::Vec3D ZCut
     (Origin-Z*(height/2-cutHeight)+Y*cutDepth);
-  
   ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,Z);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,Z,X,cutAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,Z,X,-cutAngle);
 			   
   return; 
 }

@@ -48,20 +48,17 @@ class GuideLine : public attachSystem::ContainedComp,
   const int SUItem;              ///< Item offest [200 def]
   const int SULayer;             ///< Item layer [20 def]
 
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   double xStep;                 ///< Shielding X Step
   double yStep;                 ///< Shielding Y Step
   double zStep;                 ///< Shielding Z Step
   double xyAngle;               ///< Shielding Rotation angle
   double zAngle;                ///< Shielding Rotation angle
 
-  double beamXStep;             ///< Shielding X Step
-  double beamYStep;             ///< Shielding Y Step
-  double beamZStep;             ///< Shielding Z Step
-  double beamXYAngle;           ///< Shielding Rotation angle
-  double beamZAngle;            ///< Shielding Z-Rotation angle
+  double beamXStep;             ///< Guide X Step
+  double beamYStep;             ///< Guide Y Step
+  double beamZStep;             ///< Guide Z Step
+  double beamXYAngle;           ///< Guide Rotation angle
+  double beamZAngle;            ///< Guide Z-Rotation angle
 
   
   // OUTER DIMENTIONS:

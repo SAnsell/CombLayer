@@ -125,7 +125,7 @@ main(int argc,char* argv[])
 
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
+
       xraySystem::makeMaxIV BObj;
       World::createOuterObjects(*SimPtr);
       BObj.build(*SimPtr,IParam);

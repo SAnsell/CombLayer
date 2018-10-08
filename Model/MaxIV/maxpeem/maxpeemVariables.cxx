@@ -94,7 +94,7 @@ shieldVariables(FuncDataBase& Control,
 		const std::string& shieldKey,
 		const double YStep)
   /*!
-    Build the shield unit variables
+h    Build the shield unit variables
     \param Control :: Database
     \param shieldKey :: prename
     \param shieldKey :: distance of step
@@ -238,7 +238,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
-  shieldVariables(Control,splitKey+"ScreenB",10.0);
+  shieldVariables(Control,splitKey+"ScreenB",0.0);
 
   return;
 }
@@ -545,6 +545,7 @@ opticsBeamVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string gateName=opticKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,gateName,0.0,20.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
@@ -628,6 +629,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"ShortLen",240.0);
   // length to first full width point
   Control.addVariable(hutName+"FullLen",348.0);
+  Control.addVariable(hutName+"Extension",100.0);
 
   // THIS IS WRONG but the diagram is a mess.
   Control.addVariable(hutName+"InnerSkin",0.3);
@@ -769,7 +771,7 @@ heatDumpTable(FuncDataBase& Control,
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPB",0.0,26.6,26.6);
-  
+
   return;
 }
 
@@ -806,15 +808,18 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
 
   FlangeGen.setCF<setVariable::CF150>();
+  FlangeGen.setThread(3.0,14.0,"Nickel");
   FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
-  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",0);  // in beam
+  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",1);  // in beam
   
   const std::string hDump(frontKey+"HeatDump");
-  Control.addVariable(hDump+"Height",10.0);
+  Control.addVariable(hDump+"Radius",4.0);
+  Control.addVariable(hDump+"Height",7.0);
   Control.addVariable(hDump+"Width",3.0);
   Control.addVariable(hDump+"Thick",8.0);
-  Control.addVariable(hDump+"CutHeight",10.0);
-  Control.addVariable(hDump+"CutDepth",0.0);
+  Control.addVariable(hDump+"CutHeight",2.0);
+  Control.addVariable(hDump+"CutDepth",1.0);
+  Control.addVariable(hDump+"CutAngle",30.0);
   Control.addVariable(hDump+"Mat","Tungsten");
 
   return;
@@ -847,6 +852,7 @@ shutterTable(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowI",0,10.0);
   
   SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",0.0,16.0);
 
   // beam ports
@@ -854,6 +860,7 @@ shutterTable(FuncDataBase& Control,
   Control.addVariable(florName+"NPorts",4);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
+
   PItemGen.setCF<setVariable::CF40>(1.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
@@ -867,6 +874,7 @@ shutterTable(FuncDataBase& Control,
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeB";
   SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,frontKey+"GateTubeB",0.0,20.0);
   // beam ports
   Control.addVariable(gateName+"NPorts",2);

@@ -117,10 +117,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
     \param IParam :: Input paramters
   */
 {
-  ELog::RegMethod RegA("makeMaxIV","makeR1Ring");
+  ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
 
   const int voidCell(74123);
-  
+
+
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
 

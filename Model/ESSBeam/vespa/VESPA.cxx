@@ -209,7 +209,6 @@ VESPA::VESPA(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(vespaAxis);
 
   OR.addObject(FocusA);

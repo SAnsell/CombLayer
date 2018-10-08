@@ -162,11 +162,13 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 
 
   const std::string hDump(frontKey+"HeatDump");
+  Control.addVariable(hDump+"Radius",4.0);
   Control.addVariable(hDump+"Height",10.0);
   Control.addVariable(hDump+"Width",3.0);
   Control.addVariable(hDump+"Thick",8.0);
-  Control.addVariable(hDump+"CutHeight",10.0);
-  Control.addVariable(hDump+"CutDepth",0.0);
+  Control.addVariable(hDump+"CutHeight",2.0);
+  Control.addVariable(hDump+"CutDepth",1.0);
+  Control.addVariable(hDump+"CutAngle",30.0);
   Control.addVariable(hDump+"Mat","Tungsten");
   return;
 }

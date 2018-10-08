@@ -134,6 +134,11 @@ class FixedComp
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);
+
+  void setLinkComp(const size_t,const int);
+  void setLinkComp(const size_t,const std::string&);
+  void setLinkComp(const size_t,const HeadRule&);
+
   void setLinkSurf(const size_t,const HeadRule&,const bool,
 		   const HeadRule&,const bool);
 
@@ -151,7 +156,6 @@ class FixedComp
   void addBridgeSurf(const size_t,const std::string&);
 
   void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
-
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }

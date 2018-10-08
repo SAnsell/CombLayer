@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/simpleObj.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -79,8 +77,7 @@ namespace testSystem
 
 simpleObj::simpleObj(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  simpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(simpIndex+1),refFlag(0),xyAngle(0.0),zAngle(0.0),
+  refFlag(0),xyAngle(0.0),zAngle(0.0),
   xSize(15.0),ySize(3.0),zSize(15.0),defMat(3)
   /*!
     Constructor : Unlike typicaly constructors of this type
@@ -92,7 +89,7 @@ simpleObj::simpleObj(const std::string& Key)  :
 
 simpleObj::simpleObj(const simpleObj& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  simpIndex(A.simpIndex),cellIndex(A.cellIndex),refFlag(A.refFlag),
+  refFlag(A.refFlag),
   offset(A.offset),xyAngle(A.xyAngle),zAngle(A.zAngle),xSize(A.xSize),
   ySize(A.ySize),zSize(A.zSize),defMat(A.defMat)
   /*!
@@ -177,22 +174,22 @@ simpleObj::createSurfaces()
   if (refFlag)
     {
       // Outer layer:
-      ModelSupport::buildPlane(SMap,simpIndex+1,Origin-Y*ySize/2.0,-Y);
-      ModelSupport::buildPlane(SMap,simpIndex+2,Origin+Y*ySize/2.0,-Y);
-      ModelSupport::buildPlane(SMap,simpIndex+3,Origin-X*xSize/2.0,-X);
-      ModelSupport::buildPlane(SMap,simpIndex+4,Origin+X*xSize/2.0,-X);
-      ModelSupport::buildPlane(SMap,simpIndex+5,Origin-Z*zSize/2.0,-Z);
-      ModelSupport::buildPlane(SMap,simpIndex+6,Origin+Z*zSize/2.0,-Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*ySize/2.0,-Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ySize/2.0,-Y);
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xSize/2.0,-X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xSize/2.0,-X);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize/2.0,-Z);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize/2.0,-Z);
     }
   else
     {
   // Outer layer:
-      ModelSupport::buildPlane(SMap,simpIndex+1,Origin-Y*ySize/2.0,Y);
-      ModelSupport::buildPlane(SMap,simpIndex+2,Origin+Y*ySize/2.0,Y);
-      ModelSupport::buildPlane(SMap,simpIndex+3,Origin-X*xSize/2.0,X);
-      ModelSupport::buildPlane(SMap,simpIndex+4,Origin+X*xSize/2.0,X);
-      ModelSupport::buildPlane(SMap,simpIndex+5,Origin-Z*zSize/2.0,Z);
-      ModelSupport::buildPlane(SMap,simpIndex+6,Origin+Z*zSize/2.0,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*ySize/2.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*ySize/2.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xSize/2.0,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xSize/2.0,X);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize/2.0,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize/2.0,Z);
     }
 
   return;
@@ -209,9 +206,9 @@ simpleObj::createObjects(Simulation& System)
   
   std::string Out;
   if (refFlag)
-    Out=ModelSupport::getComposite(SMap,simpIndex,"-1 2 -3 4 -5 6");
+    Out=ModelSupport::getComposite(SMap,buildIndex,"-1 2 -3 4 -5 6");
   else
-    Out=ModelSupport::getComposite(SMap,simpIndex,"1 -2 3 -4 5 -6");
+    Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
@@ -239,7 +236,7 @@ simpleObj::createLinks()
   for(int i=0;i<6;i++)
     {
       FixedComp::setLinkSurf(static_cast<size_t>(i),
-			     surfSign*SMap.realSurf(simpIndex+1+i));
+			     surfSign*SMap.realSurf(buildIndex+1+i));
       surfSign*=-1;
     }
 
@@ -254,7 +251,7 @@ simpleObj::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,simpIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void
