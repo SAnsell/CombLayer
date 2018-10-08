@@ -421,7 +421,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       // Add inner boundary
       Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
 
-      if ( (i>0) && ((height[i]-height[i-1]<topGap) || (depth[i]-depth[i-1]<baseGap)))
+      if ( (i>0) && ((height[i]-height[i-1]<topGap) || (depth[i]-depth[i-1]<baseGap)|| (width[i]-width[i-1]<sideGap)))
 	{
 	  if (i>1)
 	    Out += ModelSupport::getComposite(SMap,GI-50, buildIndex,
