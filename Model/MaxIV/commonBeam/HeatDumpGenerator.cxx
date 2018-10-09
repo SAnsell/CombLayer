@@ -63,6 +63,7 @@ HeatDumpGenerator::HeatDumpGenerator() :
   cutAngle(30.0),cutDepth(1.0),
   topInnerRadius(CF100::innerRadius),
   topFlangeRadius(CF100::flangeRadius),
+  topFlangeLength(CF100::flangeLength),
   bellowLength(2.0),bellowThick(CF100::bellowThick),
   outRadius(CF100::flangeRadius),
   outLength(CF100::flangeLength),
@@ -143,7 +144,46 @@ HeatDumpGenerator::setMat(const std::string& M,const double T)
   return;
 }
   
-				  
+template<typename CF>
+void
+HeatDumpGenerator::setCF()
+  /*!
+    Set pipe/flange to CF format
+  */
+{
+  topInnerRadius=CF::innerRadius;
+  bellowThick=CF::bellowThick;
+  setMat(flangeMat,20.0*CF::wallThick/CF::bellowThick);
+  
+  setTopCF<CF>();
+  setOutCF<CF>();
+  return;
+}
+
+template<typename CF>
+void
+HeatDumpGenerator::setOutCF()
+  /*!
+    Set the Out [highest] flange 
+  */
+{
+  outRadius=CF::flangeRadius;
+  outLength=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+HeatDumpGenerator::setTopCF()
+  /*!
+    Set the top [flange] level
+  */
+{
+  topFlangeRadius=CF::flangeRadius;
+  topFlangeLength=CF::flangeLength;
+  return;
+}
+
 void
 HeatDumpGenerator::generateHD(FuncDataBase& Control,
 			      const std::string& keyName,
@@ -162,6 +202,7 @@ HeatDumpGenerator::generateHD(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Thick",thick);
   Control.addVariable(keyName+"Lift",lift);
+  ELog::EM<<"U == "<<keyName+"UpFlag"<<ELog::endDiag;
   Control.addVariable(keyName+"UpFlag",static_cast<int>(upFlag));
 
   Control.addVariable(keyName+"CutHeight",cutHeight);
@@ -187,6 +228,18 @@ HeatDumpGenerator::generateHD(FuncDataBase& Control,
   return;
 
 }
+
+template void HeatDumpGenerator::setCF<CF100>();
+template void HeatDumpGenerator::setCF<CF120>();
+template void HeatDumpGenerator::setCF<CF150>();
+
+template void HeatDumpGenerator::setOutCF<CF100>();
+template void HeatDumpGenerator::setOutCF<CF120>();
+template void HeatDumpGenerator::setOutCF<CF150>();
+
+template void HeatDumpGenerator::setTopCF<CF100>();
+template void HeatDumpGenerator::setTopCF<CF120>();
+template void HeatDumpGenerator::setTopCF<CF150>();
 
   
 }  // NAMESPACE setVariable

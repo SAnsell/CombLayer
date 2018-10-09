@@ -121,7 +121,6 @@ FrontEnd::FrontEnd(const std::string& Key) :
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   heatBox(new constructSystem::PortTube(newName+"HeatBox")),
-  heatDumpFlange(new xraySystem::FlangeMount(newName+"HeatDumpFlange")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe")),
   shutterBox(new constructSystem::PortTube(newName+"ShutterBox")),
@@ -156,7 +155,6 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(eCutDisk);
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
-  OR.addObject(heatDumpFlange);
   OR.addObject(heatDump);    
   OR.addObject(flightPipe);
   OR.addObject(shutterBox);
@@ -275,21 +273,11 @@ FrontEnd::buildObjects(Simulation& System)
   heatBox->registerSpaceCut(1,2);
   heatBox->createAll(System,*collExitPipe,2);
 
-  const constructSystem::portItem& PI=heatBox->getPort(0);
-  heatDumpFlange->addInsertCell("Flange",heatBox->getCell("OuterSpace"));
-  heatDumpFlange->addInsertCell("Body",PI.getCell("Void"));
-  heatDumpFlange->addInsertCell("Body",heatBox->getCell("Void"));
-  heatDumpFlange->setBladeCentre(PI,0);
-  heatDumpFlange->createAll(System,PI,2);
-
-  heatDump->addInsertCell(PI.getCell("Void"));
-  heatDump->addInsertCell(heatBox->getCell("Void"));
-
-  // WRONG -- DELTEL FLANGE 
-  heatDump->createAll(System,*heatDumpFlange,
-		      heatDumpFlange->getSideIndex("bladeCentre"),
-		      *heatDumpFlange,
-		      heatDumpFlange->getSideIndex("bladeCentre"));
+  const constructSystem::portItem& PI=heatBox->getPort(0);    
+  heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+  heatDump->addInsertCell("Inner",PI.getCell("Void"));
+  heatDump->addInsertCell("Outer",heatBox->getCell("OuterSpace"));
+  heatDump->createAll(System,*heatBox,0,PI,2);
 
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
   flightPipe->registerSpaceCut(1,2);

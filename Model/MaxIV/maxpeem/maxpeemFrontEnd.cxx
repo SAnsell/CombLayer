@@ -367,7 +367,8 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
     
   // cant use heatbox here because of port rotation
   
-  heatDump->addInsertCell(heatBox->getCell("Void"));
+  heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+  heatDump->addInsertCell("Outer",outerCell);
   heatDump->createAll(System,PIA,0,*heatBox,2);
 
 

@@ -815,6 +815,8 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",1);  // in beam
   
   const std::string hDump(frontKey+"HeatDump");
+  HeatGen.setCF<CF100>();
+  HeatGen.setTopCF<CF150>();
   HeatGen.generateHD(Control,hDump,1);
 
   return;

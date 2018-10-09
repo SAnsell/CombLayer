@@ -72,6 +72,9 @@ class HeatDumpGenerator
   virtual ~HeatDumpGenerator();
 
   template<typename CF> void setCF();
+  template<typename CF> void setOutCF();
+  template<typename CF> void setTopCF();
+  
   void setMat(const std::string&,const double);
   
   void generateHD(FuncDataBase&,const std::string&,

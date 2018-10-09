@@ -74,6 +74,9 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
+#include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "HeatDump.h"
 
@@ -82,7 +85,7 @@ namespace xraySystem
 {
 
 HeatDump::HeatDump(const std::string& Key) :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -124,7 +127,7 @@ HeatDump::populate(const FuncDataBase& Control)
 
   topInnerRadius=Control.EvalVar<double>(keyName+"TopInnerRadius");
   topFlangeRadius=Control.EvalVar<double>(keyName+"TopFlangeRadius");
-  topFlangeLength=Control.EvalVar<double>(keyName+"TopFlangeRadius");
+  topFlangeLength=Control.EvalVar<double>(keyName+"TopFlangeLength");
 
   bellowLength=Control.EvalVar<double>(keyName+"BellowLength");
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
@@ -164,7 +167,8 @@ HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   mainFC.createUnitVector(flangeFC,fIndex);
   
   applyOffset();
-  beamFC.applyShift(0,0,lift);  // only beam offset
+  if (upFlag)
+    beamFC.applyShift(0,0,lift);  // only beam offset
 
   setDefault("Main");
   return;
@@ -193,13 +197,14 @@ HeatDump::createSurfaces()
 			   (height-cutHeight),beamZ);
   ModelSupport::buildCylinder(SMap,buildIndex+7,beamOrg,beamZ,radius);
 
-  
-  const Geometry::Vec3D ZCut(beamOrg-beamZ*cutHeight+beamY*cutDepth);
+  const Geometry::Vec3D ZCut(beamOrg+beamY*cutDepth);
+
   ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,beamZ);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,beamZ,
 				  beamX,-cutAngle);
 
   // construct surround [Y is upwards]
+  ELog::EM<<"Origin == "<<Origin<<" "<<topFlangeLength<<ELog::endDiag;
   if (!isActive("mountSurf"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,Origin,Y);
@@ -215,11 +220,13 @@ HeatDump::createSurfaces()
 
 
   // bellows flange
-  
+  const double BL((upFlag) ? bellowLength+lift : bellowLength);
+
+    
   ModelSupport::buildPlane(SMap,buildIndex+201,
-			   Origin+Y*(topFlangeLength+bellowLength),Y);
+			   Origin+Y*(topFlangeLength+BL),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(topFlangeLength+bellowLength+outLength),Y);
+			   Origin+Y*(topFlangeLength+BL+outLength),Y);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,outRadius);
 			   
   return; 
@@ -234,17 +241,51 @@ HeatDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("HeatDump","createObjects");
 
-  const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
+  const std::string mountSurf
+    (ExternalCut::getRuleStr("mountSurf"));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 (-15:16) " );
-  makeCell("Dump",System,cellIndex++,mat,0.0,Out+mountSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 -6 (-15:16) " );
+  makeCell("Dump",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 15 -16 " );
   makeCell("Cut",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 " );
-  addOuterSurf(Out+mountSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 -6 " );
+  addOuterSurf("Inner",Out);
+
+
+  // create Flange:
+  Out=ModelSupport::getComposite(SMap,buildIndex," -102 -117 107 " );
+  makeCell("MountFlange",System,cellIndex++,flangeMat,0.0,Out+mountSurf);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -127 107 -201");
+  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-207 201 -202 (-3:4:7)");
+  makeCell("Topflange",System,cellIndex++,flangeMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 (-3:4:7) -201");
+  makeCell("LiftVoid",System,cellIndex++,0,0.0,Out+mountSurf);
+
+  // Add outer voids
+  Out=ModelSupport::getComposite(SMap,buildIndex,"127 102 -201 -117");
+  makeCell("BellowVoid",System,cellIndex++,0,0.0,Out);
+
+  if (topFlangeRadius+Geometry::zeroTol>outRadius)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -117 207");
+      makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
+    }
+  Out=ModelSupport::getComposite(SMap,buildIndex,"202 -6 -117 (-3:4:7)");
+  makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
+
+
+  // final exclude:
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -6");
+  addOuterSurf("Outer",mountSurf+Out);
+  
+  
   return; 
 }
 
@@ -297,7 +338,7 @@ HeatDump::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System,calcEdgePoints());       
+  insertObjects(System);       
 
   return;
 }

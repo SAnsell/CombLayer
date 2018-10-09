@@ -54,6 +54,7 @@
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
+#include "HeatDumpGenerator.h"
 #include "JawValveGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
@@ -140,6 +141,7 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::HeatDumpGenerator HeatGen;
 
 
   PTubeGen.setMat("Stainless304");
@@ -148,28 +150,16 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   PTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,8.0,20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",1);
 
-  // 20cm above port tube
-  PItemGen.setCF<setVariable::CF100>(20.0);
-  PItemGen.setPlate(0.0,"Void");  
-  FlangeGen.setCF<setVariable::CF100>();
-  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
+    
+  const std::string hDump(frontKey+"HeatDump");
+  HeatGen.setCF<CF100>();
+  HeatGen.setTopCF<CF150>();
+  HeatGen.generateHD(Control,hDump,1);
 
   const Geometry::Vec3D ZVec(0,0,1);
   const std::string heatName=frontKey+"HeatBoxPort0";
-  const std::string hName=frontKey+"HeatDumpFlange";
+
   PItemGen.generatePort(Control,heatName,Geometry::Vec3D(0,0,0),ZVec);
-  FlangeGen.generateMount(Control,hName,0);  // (no in beam)
-
-
-  const std::string hDump(frontKey+"HeatDump");
-  Control.addVariable(hDump+"Radius",4.0);
-  Control.addVariable(hDump+"Height",10.0);
-  Control.addVariable(hDump+"Width",3.0);
-  Control.addVariable(hDump+"Thick",8.0);
-  Control.addVariable(hDump+"CutHeight",2.0);
-  Control.addVariable(hDump+"CutDepth",1.0);
-  Control.addVariable(hDump+"CutAngle",30.0);
-  Control.addVariable(hDump+"Mat","Tungsten");
   return;
 }
 

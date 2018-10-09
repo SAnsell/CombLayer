@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class HeatDump :
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
