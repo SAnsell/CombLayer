@@ -64,7 +64,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -135,9 +134,13 @@ HeatDump::populate(const FuncDataBase& Control)
   outLength=Control.EvalVar<double>(keyName+"OutLength");
   outRadius=Control.EvalVar<double>(keyName+"OutRadius");
 
+  waterRadius=Control.EvalVar<double>(keyName+"WaterRadius");
+  waterZStop=Control.EvalVar<double>(keyName+"WaterZStop");
+
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   bellowMat=ModelSupport::EvalMat<int>(Control,keyName+"BellowMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   
   return;
 }
@@ -197,14 +200,15 @@ HeatDump::createSurfaces()
 			   (height-cutHeight),beamZ);
   ModelSupport::buildCylinder(SMap,buildIndex+7,beamOrg,beamZ,radius);
 
-  const Geometry::Vec3D ZCut(beamOrg+beamY*cutDepth);
+  const Geometry::Vec3D ZCut(beamOrg+beamY*cutDepth); 
 
   ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,beamZ);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,beamZ,
 				  beamX,-cutAngle);
-
+  // water cut
+  ModelSupport::buildPlane(SMap,buildIndex+305,ZCut+beamZ*waterZStop,beamZ);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,beamOrg,beamZ,waterRadius);
   // construct surround [Y is upwards]
-  ELog::EM<<"Origin == "<<Origin<<" "<<topFlangeLength<<ELog::endDiag;
   if (!isActive("mountSurf"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,Origin,Y);
@@ -245,8 +249,11 @@ HeatDump::createObjects(Simulation& System)
     (ExternalCut::getRuleStr("mountSurf"));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 -6 (-15:16) " );
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 3 -4 -7 5 -6 (-15:16) (307:-305) " );
   makeCell("Dump",System,cellIndex++,mat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"305 -307 -6");
+  makeCell("Water",System,cellIndex++,waterMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 15 -16 " );
   makeCell("Cut",System,cellIndex++,0,0.0,Out);

@@ -58,17 +58,19 @@ namespace setVariable
 {
 
 HeatDumpGenerator::HeatDumpGenerator() :
-  radius(4.0),height(20.0),width(3.0),
+  radius(4.0),height(20.0),width(4.1),
   thick(8.0),lift(6.0),cutHeight(2.0),
-  cutAngle(30.0),cutDepth(1.0),
+  cutAngle(25.0),cutDepth(1.0),
   topInnerRadius(CF100::innerRadius),
   topFlangeRadius(CF100::flangeRadius),
   topFlangeLength(CF100::flangeLength),
   bellowLength(2.0),bellowThick(CF100::bellowThick),
   outRadius(CF100::flangeRadius),
   outLength(CF100::flangeLength),
+  waterRadius(1.6),waterZStop(2.4),
   mat("Copper"),flangeMat("Stainless304"),
-  bellowMat("Stainless304%Void%10.0")
+  bellowMat("Stainless304%Void%10.0"),
+  waterMat("H2O")
   /*!
     Constructor and defaults
   */
@@ -82,7 +84,9 @@ HeatDumpGenerator::HeatDumpGenerator(const HeatDumpGenerator& A) :
   topFlangeRadius(A.topFlangeRadius),topFlangeLength(A.topFlangeLength),
   bellowLength(A.bellowLength),bellowThick(A.bellowThick),
   outRadius(A.outRadius),outLength(A.outLength),
-  mat(A.mat),flangeMat(A.flangeMat),bellowMat(A.bellowMat)
+  waterRadius(A.waterRadius),waterZStop(A.waterZStop),
+  mat(A.mat),flangeMat(A.flangeMat),bellowMat(A.bellowMat),
+  waterMat(A.waterMat)
   /*!
     Copy constructor
     \param A :: HeatDumpGenerator to copy
@@ -114,8 +118,11 @@ HeatDumpGenerator::operator=(const HeatDumpGenerator& A)
       bellowThick=A.bellowThick;
       outRadius=A.outRadius;
       outLength=A.outLength;
+      waterRadius=A.waterRadius;
+      waterZStop=A.waterZStop;
       mat=A.mat;
       flangeMat=A.flangeMat;
+      waterMat=A.waterMat;      
       bellowMat=A.bellowMat;
     }
   return *this;
@@ -202,7 +209,7 @@ HeatDumpGenerator::generateHD(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Thick",thick);
   Control.addVariable(keyName+"Lift",lift);
-  ELog::EM<<"U == "<<keyName+"UpFlag"<<ELog::endDiag;
+
   Control.addVariable(keyName+"UpFlag",static_cast<int>(upFlag));
 
   Control.addVariable(keyName+"CutHeight",cutHeight);
@@ -220,13 +227,15 @@ HeatDumpGenerator::generateHD(FuncDataBase& Control,
   Control.addVariable(keyName+"OutLength",outLength);
   Control.addVariable(keyName+"OutRadius",outRadius);
 
+  Control.addVariable(keyName+"WaterRadius",waterRadius);
+  Control.addVariable(keyName+"WaterZStop",waterZStop); 
+  
   Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   Control.addVariable(keyName+"BellowMat",bellowMat);
-
+  Control.addVariable(keyName+"WaterMat",waterMat);
        
   return;
-
 }
 
 template void HeatDumpGenerator::setCF<CF100>();

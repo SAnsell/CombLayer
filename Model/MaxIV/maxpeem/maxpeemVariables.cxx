@@ -563,7 +563,9 @@ opticsBeamVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string florName=opticKey+"FlorTubeA";
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
+
   Control.addVariable(florName+"NPorts",2);   // beam ports
   PItemGen.setCF<setVariable::CF40>(1.9);
   PItemGen.setPlate(0.0,"Void");  
@@ -578,6 +580,7 @@ opticsBeamVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string collName=opticKey+"PumpTubeA";
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
   Control.addVariable(collName+"NPorts",3);   // beam ports
   
@@ -733,6 +736,7 @@ heatDumpTable(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","heatDumpTable");
+
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
@@ -757,6 +761,7 @@ heatDumpTable(FuncDataBase& Control,
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
 
   // beam ports
@@ -787,16 +792,15 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 {
   ELog::RegMethod RegA("maxpeemVariables","heatDumpVariables");
 
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::HeatDumpGenerator HeatGen;
 
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF150>();
-  PTubeGen.setPortLength(2.5,2.5);
-  
-  PTubeGen.generateCFTube<CF150>(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports

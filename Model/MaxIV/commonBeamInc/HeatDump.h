@@ -64,10 +64,14 @@ class HeatDump :
   
   double outRadius;                ///< Out connect radius
   double outLength;                ///< Out connect length
-  
+
+  double waterRadius;              ///< Water radius
+  double waterZStop;               ///< Distance in Z to stop
+
   int mat;                 ///< Base material
   int flangeMat;           ///<  flange material
-  int bellowMat;           ///<  bellow material 
+  int bellowMat;           ///<  bellow material
+  int waterMat;            ///<  water material
   // Functions:
 
   void populate(const FuncDataBase&);

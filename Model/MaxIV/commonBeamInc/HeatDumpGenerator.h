@@ -58,11 +58,14 @@ class HeatDumpGenerator
   
   double outRadius;                ///< Out connect radius
   double outLength;                ///< Out connect length
+
+  double waterRadius;              ///< Water radius
+  double waterZStop;               ///< Distance in Z to stop
   
   std::string mat;                 ///< Base material
   std::string flangeMat;           ///<  flange material
   std::string bellowMat;           ///<  bellow material 
-
+  std::string waterMat;            ///<  water material
 
  public:
 
