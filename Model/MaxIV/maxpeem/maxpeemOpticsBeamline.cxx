@@ -549,11 +549,13 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 
   int cellA,cellB;
 
+  ELog::EM<<"Splitter : "<<initFC.getLinkPt(sideIndex)<<ELog::endDiag;  
   offPipeD->createAll(System,initFC,sideIndex);
   cellA=createDoubleVoidUnit(System,divider,*offPipeD,2);
   offPipeD->insertInCell(System,cellA);
 
   splitter->createAll(System,*offPipeD,2);
+  ELog::EM<<"Splitter : "<<offPipeD->getLinkPt(2)<<ELog::endDiag;
   cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
   cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
 
@@ -644,7 +646,8 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   offPipeC->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeC,2);
   offPipeC->insertInCell(System,outerCell);
-  
+
+  ELog::EM<
   M3Tube->createAll(System,*offPipeC,offPipeC->getSideIndex("FlangeBCentre"));
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);

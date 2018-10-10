@@ -290,6 +290,7 @@ m3MirrorVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string pumpName=mirrorKey+"PumpTubeB";
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
   Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
