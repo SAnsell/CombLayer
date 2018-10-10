@@ -423,6 +423,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 
       if ( (i>0) && ((height[i]-height[i-1]<topGap) || (depth[i]-depth[i-1]<baseGap)|| (width[i]-width[i-1]<sideGap)))
 	{
+	  ELog::EM << "This is ugly - optimise!!!" << ELog::endCrit;
 	  if (i>1)
 	    Out += ModelSupport::getComposite(SMap,GI-50, buildIndex,
 					      " (-3:4:-5:6:57:-57M) ");
