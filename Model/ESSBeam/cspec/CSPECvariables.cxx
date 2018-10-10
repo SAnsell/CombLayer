@@ -86,10 +86,10 @@ CSPECvariables(FuncDataBase& Control)
   // extent of beamline
   Control.addVariable("cspecStopPoint",0);
 
-  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(1,1.0,"Copper");
   FGen.setLayer(2,0.3,"Void");
   FGen.setYOffset(4.0);
-  FGen.generateTaper(Control,"cspecFA",350.0, 9.1,10.6, 10.0,14.8);
+  FGen.generateRectangle(Control,"cspecFA",350.0, 7, 5.5);
 
 
   PipeGen.generatePipe(Control,"cspecPipeB",8.0,46.0);
