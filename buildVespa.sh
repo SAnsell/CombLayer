@@ -3,11 +3,13 @@
 ./ess \
  -defaultConfig Single VESPA \
  -r \
- -X \
  -mcnp 10 \
  -matDB shielding \
  -n 1000 \
  -angle objAxis vespaAxis 0 \
+ -T tmesh DOSE free 'Vec3D(0, -100, -60)' 'Vec3D(6000, 100, 160)' 300 19 15 \
+ -T tmesh DOSEPHOTON free 'Vec3D(0, -100, -60)' 'Vec3D(6000, 100, 160)' 300 19 15 \
+ -T tmesh FLUX free 'Vec3D(0, -100, -60)' 'Vec3D(6000, 100, 160)' 300 19 15 \
  VESPA
 
 

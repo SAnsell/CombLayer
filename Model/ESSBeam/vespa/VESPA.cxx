@@ -371,63 +371,64 @@ VESPA::buildBunkerUnits(Simulation& System,
   FocusB->addInsertCell(VPipeB->getCells("Void"));
   FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
   
-  // JPipeAIn
-  JPipeAIn->addInsertCell(bunkerVoid);
-  JPipeAIn->createAll(System,FocusB->getKey("Guide0"),2);
-  FocusC->addInsertCell(JPipeAIn->getCells("Void"));
-  FocusC->createAll(System,*JPipeAIn,7,*JPipeAIn,7);
-  
-  // PSC-A
-  TwinChopperA->addInsertCell(bunkerVoid);
-  TwinChopperA->createAll(System,FocusC->getKey("Guide0"),2);
-  PSCDiskTopA->addInsertCell(TwinChopperA->getCell("Void"));
-  PSCDiskTopA->createAll(System,TwinChopperA->getKey("MotorTop"),0);
-  PSCDiskBottomA->addInsertCell(TwinChopperA->getCell("Void"));
-  PSCDiskBottomA->createAll(System,TwinChopperA->getKey("MotorBase"),0);
-  TwinChopperA->insertAxle(System,*PSCDiskBottomA,*PSCDiskTopA);
-  
-  // JPipeAB
-  JPipeAB->addInsertCell(bunkerVoid);
-  JPipeAB->setFront(TwinChopperA->getKey("Main"),2);
-  JPipeAB->createAll(System,TwinChopperA->getKey("Main"),2);
-  FocusD->addInsertCell(JPipeAB->getCells("Void"));
-  FocusD->createAll(System,*JPipeAB,7,*JPipeAB,7);
-  
-  // PSC-B
-  TwinChopperB->addInsertCell(bunkerVoid);
-  TwinChopperB->createAll(System,FocusD->getKey("Guide0"),2);
-  PSCDiskTopB->addInsertCell(TwinChopperB->getCell("Void"));
-  PSCDiskTopB->createAll(System,TwinChopperB->getKey("MotorTop"),0);
-  PSCDiskBottomB->addInsertCell(TwinChopperB->getCell("Void"));
-  PSCDiskBottomB->createAll(System,TwinChopperB->getKey("MotorBase"),0);
-  TwinChopperB->insertAxle(System,*PSCDiskBottomB,*PSCDiskTopB);
-  
-  // JPipeBC
-  JPipeBC->addInsertCell(bunkerVoid);
-  JPipeBC->setFront(TwinChopperB->getKey("Main"),2);
-  JPipeBC->createAll(System,TwinChopperB->getKey("Main"),2);
-  FocusE->addInsertCell(JPipeBC->getCells("Void"));
-  FocusE->createAll(System,*JPipeBC,7,*JPipeBC,7);
-  
-  // PSC-C
-  TwinChopperC->addInsertCell(bunkerVoid);
-  TwinChopperC->createAll(System,FocusE->getKey("Guide0"),2);
-  PSCDiskTopC->addInsertCell(TwinChopperC->getCell("Void"));
-  PSCDiskTopC->createAll(System,TwinChopperC->getKey("MotorTop"),0);
-  PSCDiskBottomC->addInsertCell(TwinChopperC->getCell("Void"));
-  PSCDiskBottomC->createAll(System,TwinChopperC->getKey("MotorBase"),0);
-  TwinChopperC->insertAxle(System,*PSCDiskBottomC,*PSCDiskTopC);
-  
-  // JPipeCOut
-  JPipeCOut->addInsertCell(bunkerVoid);
-  JPipeCOut->setFront(TwinChopperC->getKey("Main"),2);
-  JPipeCOut->createAll(System,TwinChopperC->getKey("Main"),2);
-  FocusF->addInsertCell(JPipeCOut->getCells("Void"));
-  FocusF->createAll(System,*JPipeCOut,7,*JPipeCOut,7);
+//  // JPipeAIn
+//  JPipeAIn->addInsertCell(bunkerVoid);
+//  JPipeAIn->createAll(System,FocusB->getKey("Guide0"),2);
+//  FocusC->addInsertCell(JPipeAIn->getCells("Void"));
+//  FocusC->createAll(System,*JPipeAIn,7,*JPipeAIn,7);
+//  
+//  // PSC-A
+//  TwinChopperA->addInsertCell(bunkerVoid);
+//  TwinChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+//  PSCDiskTopA->addInsertCell(TwinChopperA->getCell("Void"));
+//  PSCDiskTopA->createAll(System,TwinChopperA->getKey("MotorTop"),0);
+//  PSCDiskBottomA->addInsertCell(TwinChopperA->getCell("Void"));
+//  PSCDiskBottomA->createAll(System,TwinChopperA->getKey("MotorBase"),0);
+//  TwinChopperA->insertAxle(System,*PSCDiskBottomA,*PSCDiskTopA);
+//  
+//  // JPipeAB
+//  JPipeAB->addInsertCell(bunkerVoid);
+//  JPipeAB->setFront(TwinChopperA->getKey("Main"),2);
+//  JPipeAB->createAll(System,TwinChopperA->getKey("Main"),2);
+//  FocusD->addInsertCell(JPipeAB->getCells("Void"));
+//  FocusD->createAll(System,*JPipeAB,7,*JPipeAB,7);
+//  
+//  // PSC-B
+//  TwinChopperB->addInsertCell(bunkerVoid);
+//  TwinChopperB->createAll(System,FocusD->getKey("Guide0"),2);
+//  PSCDiskTopB->addInsertCell(TwinChopperB->getCell("Void"));
+//  PSCDiskTopB->createAll(System,TwinChopperB->getKey("MotorTop"),0);
+//  PSCDiskBottomB->addInsertCell(TwinChopperB->getCell("Void"));
+//  PSCDiskBottomB->createAll(System,TwinChopperB->getKey("MotorBase"),0);
+//  TwinChopperB->insertAxle(System,*PSCDiskBottomB,*PSCDiskTopB);
+//  
+//  // JPipeBC
+//  JPipeBC->addInsertCell(bunkerVoid);
+//  JPipeBC->setFront(TwinChopperB->getKey("Main"),2);
+//  JPipeBC->createAll(System,TwinChopperB->getKey("Main"),2);
+//  FocusE->addInsertCell(JPipeBC->getCells("Void"));
+//  FocusE->createAll(System,*JPipeBC,7,*JPipeBC,7);
+//  
+//  // PSC-C
+//  TwinChopperC->addInsertCell(bunkerVoid);
+//  TwinChopperC->createAll(System,FocusE->getKey("Guide0"),2);
+//  PSCDiskTopC->addInsertCell(TwinChopperC->getCell("Void"));
+//  PSCDiskTopC->createAll(System,TwinChopperC->getKey("MotorTop"),0);
+//  PSCDiskBottomC->addInsertCell(TwinChopperC->getCell("Void"));
+//  PSCDiskBottomC->createAll(System,TwinChopperC->getKey("MotorBase"),0);
+//  TwinChopperC->insertAxle(System,*PSCDiskBottomC,*PSCDiskTopC);
+//  
+//  // JPipeCOut
+//  JPipeCOut->addInsertCell(bunkerVoid);
+//  JPipeCOut->setFront(TwinChopperC->getKey("Main"),2);
+//  JPipeCOut->createAll(System,TwinChopperC->getKey("Main"),2);
+//  FocusF->addInsertCell(JPipeCOut->getCells("Void"));
+//  FocusF->createAll(System,*JPipeCOut,7,*JPipeCOut,7);
     
   // VPipeG + FocusG
   VPipeG->addInsertCell(bunkerVoid);
-  VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
+//  VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
+  VPipeG->createAll(System,FocusB->getKey("Guide0"),2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
   FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
   
@@ -451,7 +452,7 @@ VESPA::buildBunkerUnits(Simulation& System,
   // VPipeHS + FocusHS
   VPipeHS->addInsertCell(bunkerVoid);
 //  VPipeHS->createAll(System,*VPipeH,2);
-  FocusHS->addInsertCell(VPipeHS->getCells("Void"));
+//  FocusHS->addInsertCell(VPipeHS->getCells("Void"));
 //  FocusHS->createAll(System,*VPipeHS,0,*VPipeHS,0);
   
   return;

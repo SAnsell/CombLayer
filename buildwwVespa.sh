@@ -7,19 +7,18 @@
  -matDB shielding \
  -n 1000 \
  -angle objAxis vespaAxis 0 \
- -T tmesh FLUX free 'Vec3D(100, -136, -90.3)' 'Vec3D(6300, 136, 165.7)' 310 17 16 \
+ -T tmesh FLUX free 'Vec3D(100, -136, -90.3)' 'Vec3D(1500, 136, 165.7)' 110 17 16 \
  -w -wWWG \
   --weightEnergyType energy 10 1.0 \
   --weightSource 'Vec3D(201.01, 0.0, 13.7)' \
-  --weightSource 'Vec3D(5840, 0, 13.7)' \
-  --wwgRPtMesh 'Vec3D(201.01, 0.0, 13.7)' \
+  --weightSource 'Vec3D(1503, 0, 13.7)' \
   --wwgCalc SS0 0.0 1.0 0.9 1.0 1.5 \
   --wwgCalc TS1 0.0 1.0 0.9 1.0 1.5 \
-  --wwgCADIS SS0 TS1 \
-  --wwgXMesh -100 300 6300 \
-  --wwgYMesh -100 50 100 \
-  --wwgZMesh 13 1 14 \
-  --wwgNorm 40 \
+  --wwgCADIS TS1 \
+  --wwgXMesh 150 120 2000 \
+  --wwgYMesh -198.22 100 201.78 \
+  --wwgZMesh -120 100 200 \
+  --wwgNorm 1 \
  VESPA
  
 sed -i "s/wwp:n 8 1.4 5 -1 -2 0/wwp:n 8 1.4 5 -1 -1 0/" VESPA1.x

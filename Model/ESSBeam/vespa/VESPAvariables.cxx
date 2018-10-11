@@ -144,8 +144,8 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaPipeLSZStep",0.0);
   
   // VPipeB + FocusB > Pipe from light shutter to the triple chopper-system (PSCs) vacuum box
-  PipeGen.generatePipe(Control,"vespaPipeB",57.796,31.5);
-  FGen.generateRectangle(Control,"vespaFB",29.5,4.0,4.0);
+  PipeGen.generatePipe(Control,"vespaPipeB",57.796,171.5);
+  FGen.generateRectangle(Control,"vespaFB",169.5,4.0,4.0);
   FGen.setLayer(1,0.5,"Aluminium");
 
   
