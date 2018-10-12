@@ -117,6 +117,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::PipeTube> slitTube;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::FlangeMount>,4> jaws;
   /// Small Pipe to gate-valve
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;
   /// Gate valve

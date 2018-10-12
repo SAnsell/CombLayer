@@ -132,6 +132,11 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
+  jaws({
+      std::make_shared<xraySystem::FlangeMount>(newName+"JawMinusX"),
+      std::make_shared<xraySystem::FlangeMount>(newName+"JawPlusX"),
+      std::make_shared<xraySystem::FlangeMount>(newName+"JawMinusZ"),
+      std::make_shared<xraySystem::FlangeMount>(newName+"JawPlusZ")}),  
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -165,6 +170,9 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  for(const auto& JM : jaws)
+    OR.addObject(JM);
 
   OR.addObject(bellowA);
   OR.addObject(ionPA);
@@ -549,13 +557,11 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 
   int cellA,cellB;
 
-  ELog::EM<<"Splitter : "<<initFC.getLinkPt(sideIndex)<<ELog::endDiag;  
   offPipeD->createAll(System,initFC,sideIndex);
   cellA=createDoubleVoidUnit(System,divider,*offPipeD,2);
   offPipeD->insertInCell(System,cellA);
 
   splitter->createAll(System,*offPipeD,2);
-  ELog::EM<<"Splitter : "<<offPipeD->getLinkPt(2)<<ELog::endDiag;
   cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
   cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
 
@@ -647,7 +653,6 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeC,2);
   offPipeC->insertInCell(System,outerCell);
 
-  ELog::EM<
   M3Tube->createAll(System,*offPipeC,offPipeC->getSideIndex("FlangeBCentre"));
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);
@@ -733,10 +738,24 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
 
+  ELog::EM<<"--------------"<<ELog::endDiag;
   slitTube->splitObject(System,1501,outerCell,
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,1));
-  cellIndex++;
+  cellIndex++;  // remember creates an extra cell in  primary
+  ELog::EM<<"--------------"<<ELog::endDiag;
+  for(size_t i=0;i<jaws.size();i++)
+    {
+      const constructSystem::portItem& PI=slitTube->getPort(i);
+      jaws[i]->addInsertCell("Flange",outerCell);
+      jaws[i]->addInsertCell("Body",PI.getCell("Void"));
+      jaws[i]->addInsertCell("Body",slitTube->getCell("SplitVoid",i));
+      jaws[i]->setBladeCentre(PI,0);
+      jaws[i]->createAll(System,PI,2);
+    }
+
+
+  
 
   pipeE->createAll(System,*slitTube,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeE,2);

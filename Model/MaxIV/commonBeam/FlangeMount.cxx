@@ -223,7 +223,7 @@ FlangeMount::calcThreadLength()
     on the bladeCentre point [if set]
   */
 {
-  if (bladeCentreActive)
+  if (!bladeCentreActive)
     {
       const Geometry::Vec3D DVec=bladeCentre-Origin;
       threadLength=std::abs(DVec.dotProd(Y));
@@ -262,7 +262,8 @@ FlangeMount::createSurfaces()
   const Geometry::Vec3D PZ(-Y);
 
   const Geometry::Vec3D BCent(Origin+PZ*(threadLength-lift));
-
+  ELog::EM<<"Centre == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"BCent["<<keyName<<"] == "<<BCent<<ELog::endDiag;
   const Geometry::Quaternion QR
     (Geometry::Quaternion::calcQRotDeg(bladeXYAngle,Y));
   QR.rotate(PX);

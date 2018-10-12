@@ -403,6 +403,8 @@ slitPackageVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+
   
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -439,6 +441,17 @@ slitPackageVariables(FuncDataBase& Control,
   CPt+=PStep*2.0;
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
+
+  // Jaw units:
+  FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setThread(1.0,30.0,"Nickel");
+  FlangeGen.setBlade(3.0,3.0,2.0,0.0,"Tungsten",1);   // W / H / T / ang
+  const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
+  for(size_t i=0;i<4;i++)
+    {
+      const std::string fname=slitKey+jawKey[i];
+      FlangeGen.generateMount(Control,fname,0);  // in beam
+    }		       
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
@@ -795,7 +808,6 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
   setVariable::HeatDumpGenerator HeatGen;
 
   SimpleTubeGen.setMat("Stainless304");
@@ -813,11 +825,6 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   const std::string hName=frontKey+"HeatDumpFlange";
   PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  FlangeGen.setCF<setVariable::CF150>();
-  FlangeGen.setThread(3.0,14.0,"Nickel");
-  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
-  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",1);  // in beam
   
   const std::string hDump(frontKey+"HeatDump");
   HeatGen.setCF<CF100>();
@@ -1002,7 +1009,6 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator CollGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
 
   Control.addVariable(frontKey+"OuterRadius",50.0);
   
