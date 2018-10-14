@@ -130,13 +130,19 @@ setDefRotation(const objectGroups& OGrp,
     {
       const size_t nP=IParam.setCnt("offset");
       for(size_t i=0;i<nP;i++)
-        procOffset(OGrp,IParam,i);
+        procOffset(OGrp,IParam,"offset",i);
     }
   if (IParam.flag("angle"))
     {
       const size_t nP=IParam.setCnt("angle");
       for(size_t i=0;i<nP;i++)
         procAngle(OGrp,IParam,i);
+    }
+  if (IParam.flag("postOffset"))
+    {
+      const size_t nP=IParam.setCnt("postOffset");
+      for(size_t i=0;i<nP;i++)
+        procOffset(OGrp,IParam,"postOffset",i);
     }
   return;
 }
@@ -273,6 +279,7 @@ procAngle(const objectGroups& OGrp,
 void
 procOffset(const objectGroups& OGrp,
 	   const mainSystem::inputParam& IParam,
+	   const std::string& keyID,
            const size_t index)
   /*!
     Process an offset unit
@@ -285,16 +292,16 @@ procOffset(const objectGroups& OGrp,
   masterRotate& MR = masterRotate::Instance();  
 
   const std::string AItem=
-    IParam.getValue<std::string>("offset",index);
-  const std::string BItem=(IParam.itemCnt("offset",index)>1) ?
-    IParam.getValue<std::string>("offset",index,1) : "";
+    IParam.getValue<std::string>(keyID,index);
+  const std::string BItem=(IParam.itemCnt(keyID,index)>1) ?
+    IParam.getValue<std::string>(keyID,index,1) : "";
 
   if (AItem=="object" || AItem=="Object")
     {
       const attachSystem::FixedComp* GIPtr=
         OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
-        IParam.getDefValue<std::string>("0","offset",index,2);
+        IParam.getDefValue<std::string>("0",keyID,index,2);
       const long int sideIndex=GIPtr->getSideIndex(CItem);
       ELog::EM<<"Offset at "<<GIPtr->getLinkPt(sideIndex)
               <<ELog::endDiag;
@@ -304,11 +311,11 @@ procOffset(const objectGroups& OGrp,
     {
       size_t itemIndex(1);
       const Geometry::Vec3D OffsetPos=
-        IParam.getCntVec3D("offset",index,itemIndex,"Offset need vec3D");
+        IParam.getCntVec3D(keyID,index,itemIndex,keyID+" need vec3D");
       MR.addDisplace(-OffsetPos);
     }
   else
-    throw ColErr::InContainerError<std::string>(AItem,"offset: input error");
+    throw ColErr::InContainerError<std::string>(AItem,keyID+": input error");
 
   return;
 }

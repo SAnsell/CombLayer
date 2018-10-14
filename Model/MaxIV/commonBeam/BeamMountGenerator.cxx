@@ -163,6 +163,8 @@ BeamMountGenerator::generateMount(FuncDataBase& Control,
   Control.addVariable(keyName+"BlockFlag",blockType);
   Control.addVariable(keyName+"UpFlag",upFlag);
 
+  Control.addVariable(keyName+"BeamZStep",0.0);
+
   Control.addVariable(keyName+"OutLift",outLift);
   Control.addVariable(keyName+"BeamLift",beamLift);
   

@@ -445,7 +445,7 @@ slitPackageVariables(FuncDataBase& Control,
 
   // Jaw units:
   BeamMGen.setThread(1.0,"Nickel");
-  BeamMGen.setLift(0.0,0.0);
+  BeamMGen.setLift(0.0,8.5);
   BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Tungsten");    
   const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
   for(size_t i=0;i<4;i++)
