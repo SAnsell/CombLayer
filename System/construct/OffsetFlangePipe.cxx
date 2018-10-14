@@ -77,8 +77,6 @@
 #include "SurfMap.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
-#include "SurInter.h"
-#include "surfDivide.h"
 
 #include "OffsetFlangePipe.h"
 

@@ -54,6 +54,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class BremBlock;
+  class BeamMount;
   class FlangeMount;
   class HeatDump;
   class LCollimator;
@@ -153,7 +154,7 @@ class maxpeemFrontEnd :
   /// Main shutters
   std::shared_ptr<constructSystem::PipeTube> shutterBox;
   /// Shutters
-  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
+  std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Brem-block

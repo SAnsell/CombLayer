@@ -98,8 +98,10 @@
 #include "Undulator.h"
 #include "SquareFMask.h"
 #include "FlangeMount.h"
+#include "BeamMount.h"
 #include "HeatDump.h"
 #include "BremBlock.h"
+
 #include "LCollimator.h"
 
 #include "maxpeemFrontEnd.h"
@@ -151,8 +153,8 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
-      std::make_shared<xraySystem::FlangeMount>(newName+"Shutter0"),
-      std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
+      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
+	std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
 	}),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bremBlock(new xraySystem::BremBlock(newName+"BremBlock")),  
@@ -537,7 +539,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
   shutterBox->insertInCell(System,outerCell);
-
+  
   cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
 				       shutterBox->getCell("Void"),
 				       {0,1});
@@ -550,11 +552,13 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   for(size_t i=0;i<shutters.size();i++)
     {
       const constructSystem::portItem& PI=shutterBox->getPort(i);
-      shutters[i]->addInsertCell("Flange",shutterBox->getCell("SplitOuter",i));
-      shutters[i]->addInsertCell("Body",PI.getCell("Void"));
-      shutters[i]->addInsertCell("Body",shutterBox->getCell("SplitVoid",i));
-      shutters[i]->setBladeCentre(PI,0);
-      shutters[i]->createAll(System,PI,2);
+      shutters[i]->addInsertCell("Support",PI.getCell("Void"));
+      shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
+      shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
+
+      shutters[i]->createAll(System,*offPipeA,
+			     offPipeA->getSideIndex("FlangeACentre"),
+			     PI,PI.getSideIndex("InnerPlate"));
     }
 
   offPipeB->createAll(System,*shutterBox,2);

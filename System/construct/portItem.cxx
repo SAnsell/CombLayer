@@ -382,8 +382,8 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
   FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(4,"InnerPlate");
-  FixedComp::setConnect(4,exitPoint+Y*externalLength,Y);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect(4,exitPoint+Y*externalLength,-Y);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
 
   return;
 }

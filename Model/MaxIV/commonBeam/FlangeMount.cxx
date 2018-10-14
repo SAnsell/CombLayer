@@ -262,8 +262,6 @@ FlangeMount::createSurfaces()
   const Geometry::Vec3D PZ(-Y);
 
   const Geometry::Vec3D BCent(Origin+PZ*(threadLength-lift));
-  ELog::EM<<"Centre == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"BCent["<<keyName<<"] == "<<BCent<<ELog::endDiag;
   const Geometry::Quaternion QR
     (Geometry::Quaternion::calcQRotDeg(bladeXYAngle,Y));
   QR.rotate(PX);

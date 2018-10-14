@@ -60,6 +60,7 @@
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
+#include "BeamMountGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
@@ -850,7 +851,7 @@ shutterTable(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::BeamMountGenerator BeamMGen;
     
   // joined and open
   GateGen.setLength(3.5);
@@ -908,12 +909,11 @@ shutterTable(FuncDataBase& Control,
   
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
   // lift is actually 60mm [check]
-  FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setThread(1.0,30.0,"Nickel");
-  // W / H / T / ang 
-  FlangeGen.setBlade(6.0,6.0,20.0,0.0,"Tungsten",1);  
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(5.0,0.0);
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,"Tungsten");  
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
@@ -921,9 +921,9 @@ shutterTable(FuncDataBase& Control,
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
       const std::string fname=frontKey+"Shutter"+std::to_string(i);
-
+      
       PItemGen.generatePort(Control,name,CPos,ZVec);
-      FlangeGen.generateMount(Control,fname,0);  // in beam
+      BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
       CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
     }
 
