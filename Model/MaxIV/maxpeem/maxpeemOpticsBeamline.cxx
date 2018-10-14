@@ -63,6 +63,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
@@ -96,7 +98,7 @@
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValve.h"
-#include "FlangeMount.h"
+#include "BeamMount.h"
 #include "GrateMonoBox.h"
 #include "GratingMono.h"
 #include "TwinPipe.h"
@@ -133,10 +135,10 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
   jaws({
-      std::make_shared<xraySystem::FlangeMount>(newName+"JawMinusX"),
-      std::make_shared<xraySystem::FlangeMount>(newName+"JawPlusX"),
-      std::make_shared<xraySystem::FlangeMount>(newName+"JawMinusZ"),
-      std::make_shared<xraySystem::FlangeMount>(newName+"JawPlusZ")}),  
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")}),  
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -738,20 +740,20 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
 
-  ELog::EM<<"--------------"<<ELog::endDiag;
+
   slitTube->splitObject(System,1501,outerCell,
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,1));
   cellIndex++;  // remember creates an extra cell in  primary
-  ELog::EM<<"--------------"<<ELog::endDiag;
+
   for(size_t i=0;i<jaws.size();i++)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
-      jaws[i]->addInsertCell("Flange",outerCell);
-      jaws[i]->addInsertCell("Body",PI.getCell("Void"));
-      jaws[i]->addInsertCell("Body",slitTube->getCell("SplitVoid",i));
-      jaws[i]->setBladeCentre(PI,0);
-      jaws[i]->createAll(System,PI,2);
+      jaws[i]->addInsertCell("Support",PI.getCell("Void"));
+      jaws[i]->addInsertCell("Support",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("Block",slitTube->getCell("SplitVoid",i));
+      jaws[i]->createAll(System,*slitTube,0,
+			 PI,PI.getSideIndex("InnerPlate"));
     }
 
 

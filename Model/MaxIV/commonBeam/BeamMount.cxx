@@ -141,8 +141,12 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
 			   const long int fIndex)
   /*!
     Create the unit vectors.
-    The first beamFC is to set the X,Y,Z relative to the beam
+    The first flangeFC is to set the X,Y,Z relative to the axis
     and the origin at the beam centre position.
+    
+    The beamFC axis are set so (a) Y ==> cIndex axis
+                               (b) Z ==> mount axis
+                               (c) X ==> correct other
 
     \param centreFC :: FixedComp for origin
     \param cIndex :: link point of centre [and axis]
@@ -155,20 +159,37 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  beamFC.createUnitVector(centreFC,cIndex);
   mainFC.createUnitVector(flangeFC,fIndex);
-
+  const Geometry::Vec3D& ZBeam=mainFC.getY();
+  const Geometry::Vec3D YBeam=centreFC.getLinkAxis(cIndex);
+  const Geometry::Vec3D XBeam=ZBeam*YBeam;
   Geometry::Vec3D BC(mainFC.getCentre());
-  BC[2]=beamFC.getCentre()[2];
-  beamFC.setCentre(BC);
+
+  // need to remove directoin in Y of flange
+  
+  const double BY=BC.dotProd(ZBeam);
+  const double MY=centreFC.getLinkPt(cIndex).dotProd(ZBeam);
+  BC += ZBeam * (MY-BY);
+  if (XBeam.abs()>0.5)
+    {
+      beamFC.createUnitVector(BC,XBeam,YBeam,ZBeam);
+    }
+  else
+    {
+      beamFC.createUnitVector(flangeFC,fIndex);
+      ELog::EM<<"XAXIS Fail["<<keyName<<"]X == "<<XBeam<<ELog::endDiag;
+      ELog::EM<<"XAXIS Fail["<<keyName<<"]Y == "<<YBeam<<ELog::endDiag;
+      ELog::EM<<"XAXIS Fail["<<keyName<<"]Z == "<<ZBeam<<ELog::endErr;
+    }
   applyOffset();
 
-  if (beamFC.getZ().dotProd(mainFC.getY()) < -Geometry::zeroTol)
-    beamFC.applyAngleRotate(0,180.0);
+
   if (upFlag)
     beamFC.applyShift(0,0,-outLift);  // only lift offset
   else
     beamFC.applyShift(0,0,-beamLift);  // only beam offset
+
+
   setDefault("Main");
   
 
@@ -227,8 +248,8 @@ BeamMount::createSurfaces()
       else             // make on lower edge
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+5,
-				   beamOrg-beamZ*height,beamY);
-	  ModelSupport::buildPlane(SMap,buildIndex+6,beamOrg,beamY);
+				   beamOrg-beamZ*height,beamZ);
+	  ModelSupport::buildPlane(SMap,buildIndex+6,beamOrg,beamZ);
 	}
     }
   return; 

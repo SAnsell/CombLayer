@@ -168,8 +168,6 @@ MAXPEEM::build(Simulation& System,
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
   opticsHut->createAll(System,*wallLead,2);
 
-  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
-  return;
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));

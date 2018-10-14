@@ -404,7 +404,7 @@ slitPackageVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::BeamMountGenerator BeamMGen;
 
   
   PipeGen.setMat("Stainless304");
@@ -426,7 +426,7 @@ slitPackageVariables(FuncDataBase& Control,
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(6.1);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(setVariable::CF63::flangeLength,"Stainless304");
 
   // -1/5 missed
   const Geometry::Vec3D XVec(1,0,0);
@@ -440,18 +440,18 @@ slitPackageVariables(FuncDataBase& Control,
   CPt+=PStep*2.0;
   PItemGen.generatePort(Control,sName+"Port2",CPt,-ZVec);
   CPt+=PStep*2.0;
-  PItemGen.setOuterVoid(0);
+  PItemGen.setOuterVoid(0); /// ???
   PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
 
   // Jaw units:
-  FlangeGen.setCF<setVariable::CF63>();
-  FlangeGen.setThread(1.0,30.0,"Nickel");
-  FlangeGen.setBlade(3.0,3.0,2.0,0.0,"Tungsten",1);   // W / H / T / ang
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(0.0,0.0);
+  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Tungsten");    
   const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
   for(size_t i=0;i<4;i++)
     {
       const std::string fname=slitKey+jawKey[i];
-      FlangeGen.generateMount(Control,fname,0);  // in beam
+      BeamMGen.generateMount(Control,fname,0);  // in beam
     }		       
 
   PipeGen.setCF<setVariable::CF63>();
@@ -913,7 +913,7 @@ shutterTable(FuncDataBase& Control,
   // lift is actually 60mm [check]
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(5.0,0.0);
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,"Tungsten");  
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");  
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);

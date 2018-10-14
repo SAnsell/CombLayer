@@ -59,7 +59,7 @@ namespace setVariable
 
 BeamMountGenerator::BeamMountGenerator() :
   blockType(0),outLift(5.0),beamLift(0.0),supportRadius(1.0),
-  supportMat("Nickel"),height(4.0),width(3.0),
+  supportMat("Nickel"),xyAngle(0.0),height(4.0),width(3.0),
   length(5.0),blockMat("Tungsten")
   /*!
     Constructor and defaults
@@ -104,12 +104,14 @@ BeamMountGenerator::setThread(const double R,
 
 void
 BeamMountGenerator::setCentreBlock(const double W,const double H,
-				   const double L,const std::string& Mat)
+				   const double L,const double XYA,
+				   const std::string& Mat)
   /*!
     Set the centred block
     \param W :: Width
     \param H :: Height
     \param L :: Length
+    \param XYA :: xyAngle
     \param Mat :: Material of blade
    */
 {
@@ -117,21 +119,25 @@ BeamMountGenerator::setCentreBlock(const double W,const double H,
   width=W;
   height=H;
   length=L;
+  xyAngle=XYA;
   blockMat=Mat;
   return;
 }
 void
 BeamMountGenerator::setEdgeBlock(const double W,const double H,
-				 const double L,const std::string& Mat)
+				 const double L,const double XYA,
+				 const std::string& Mat)
   /*!
     Set the edge  block
     \param W :: Width
     \param H :: Height
     \param L :: Length
+    \param XYA :: xyAngle
     \param Mat :: Material of blade
    */
 {
   blockType=2;
+  xyAngle=XYA;
   width=W;
   height=H;
   length=L;

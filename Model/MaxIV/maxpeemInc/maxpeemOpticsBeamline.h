@@ -55,7 +55,7 @@ namespace xraySystem
   class OpticsHutch;
   class GrateMonoBox;
   class GratingMono;
-  class FlangeMount;
+  class BeamMount;
   class Mirror;
   class PipeShield;
   class JawValve;
@@ -118,7 +118,7 @@ class maxpeemOpticsBeamline :
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::PipeTube> slitTube;
   /// Jaws for the slit tube (x/z pair)
-  std::array<std::shared_ptr<xraySystem::FlangeMount>,4> jaws;
+  std::array<std::shared_ptr<xraySystem::BeamMount>,4> jaws;
   /// Small Pipe to gate-valve
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;
   /// Gate valve

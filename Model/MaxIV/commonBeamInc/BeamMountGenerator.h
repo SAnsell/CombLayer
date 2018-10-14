@@ -45,7 +45,8 @@ class BeamMountGenerator
   
   double supportRadius;    ///< Radius of support  
   std::string supportMat;          ///< support material
-  
+
+  double xyAngle;          ///< Rotation angle about Z
   double height;           ///< height total 
   double width;            ///< width accross beam
   double length;           ///< Thickness in normal direction to reflection  
@@ -65,9 +66,9 @@ class BeamMountGenerator
   void setBeamLift(const double L) { beamLift=L; }
 
   void setCentreBlock(const double,const double,
-		      const double,const std::string&);
+		      const double,const double,const std::string&);
   void setEdgeBlock(const double,const double,
-		    const double,const std::string&);
+		    const double,const double,const std::string&);
   void generateMount(FuncDataBase&,const std::string&,
 		     const int) const;
 
