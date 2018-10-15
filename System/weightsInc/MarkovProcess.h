@@ -25,18 +25,6 @@
 ///\file 
 
 class Simulation;
-namespace Geometry
-{
-  class Plane;
-}
-
-/*!
-  \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
-  \author S. Ansell
-  \version 1.0
-  \date April 2009
-*/
 
 namespace WeightSystem
 {

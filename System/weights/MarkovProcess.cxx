@@ -145,7 +145,7 @@ MarkovProcess::computeMatrix(const Simulation& System,
 			     const double r2Length,
 			     const double r2Power)
   /*!
-    Calculate the makov chain process
+    Calculate the Markov chain process
     \param System :: Simualation
     \param wSet :: WWG set for grid
     \param densityFactor :: Scaling factor for density
