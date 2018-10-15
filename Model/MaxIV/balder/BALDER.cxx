@@ -63,6 +63,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
@@ -94,8 +96,9 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "BeamMount.h"
 #include "FrontEndCave.h"
-#include "FrontEnd.h"
+#include "balderFrontEnd.h"
 #include "OpticsBeamline.h"
 #include "ConnectZone.h"
 #include "PipeShield.h"
@@ -109,7 +112,7 @@ BALDER::BALDER(const std::string& KN) :
   attachSystem::CopiedComp("Balder",KN),
   ringCaveA(new FrontEndCave(newName+"RingCaveA")),
   ringCaveB(new FrontEndCave(newName+"RingCaveB")),
-  frontBeam(new FrontEnd(newName+"FrontBeam")),
+  frontBeam(new balderFrontEnd(newName+"FrontBeam")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new OpticsBeamline(newName+"OpticsLine")),
@@ -179,7 +182,8 @@ BALDER::build(Simulation& System,
   const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
-
+  return;
+  
   if (stopPoint=="frontEnd") return;
 
   opticsHut->addInsertCell(voidCell);

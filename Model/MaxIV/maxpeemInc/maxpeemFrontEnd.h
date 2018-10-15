@@ -105,8 +105,6 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> heatPipe;
   /// Heat dump container
   std::shared_ptr<constructSystem::PipeTube> heatBox;
-  /// Flange for heat shield
-  std::shared_ptr<xraySystem::FlangeMount> heatTopFlange;
   /// Heat dump container
   std::shared_ptr<xraySystem::HeatDump> heatDump;
   /// bellow after HeatShield

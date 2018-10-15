@@ -48,13 +48,14 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class BeamMount;
   class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class OpticsBeamline;
   class FrontEndCave;
   class ConnectZone;
-  class FrontEnd;
+  class balderFrontEnd;
   class PipeShield;
   
   /*!
@@ -77,7 +78,7 @@ class BALDER : public attachSystem::CopiedComp
   std::shared_ptr<FrontEndCave> ringCaveB;
 
   /// the components in the front end
-  std::shared_ptr<FrontEnd> frontBeam;
+  std::shared_ptr<balderFrontEnd> frontBeam;
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;

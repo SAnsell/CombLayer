@@ -270,18 +270,12 @@ FrontEnd::buildObjects(Simulation& System)
   collExitPipe->registerSpaceCut(1,2);
   collExitPipe->createAll(System,*collTubeC,2);
 
-  ELog::EM<<"SADFAF D"<<ELog::endDiag;
 
   // FAKE insertcell:
-  heatBox->addInsertCell(masterCell.getName());
-  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,*heatPipe,2);
-
   heatBox->addInsertCell(ContainedComp::getInsertCells());
   heatBox->registerSpaceCut(1,2);
   heatBox->createAll(System,*collExitPipe,2);
 
-  ELog::EM<<"SADFAF D"<<ELog::endDiag;
   
   const constructSystem::portItem& PI=heatBox->getPort(0);    
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));

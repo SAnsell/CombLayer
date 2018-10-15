@@ -32,6 +32,7 @@ namespace constructSystem
   class Bellows;
   class CrossPipe;
   class GateValve;
+  class OffsetFlangePipe;
   class portItem;
   class PipeTube;
   class PortTube;
@@ -52,9 +53,10 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class FlangeMount;
+
   class HeatDump;
   class SqrCollimator;
+  class SquareFMask;
   class Wiggler;
 
     
@@ -69,7 +71,9 @@ namespace xraySystem
 class balderFrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap
 {
  private:
 
@@ -106,22 +110,46 @@ class balderFrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// Pipe from collimator B to heat dump
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
+
   /// head dump port
   std::shared_ptr<constructSystem::PortTube> heatBox;
-  /// heat dump 
-  std::shared_ptr<xraySystem::HeatDump> heatDump;  
-  /// Pipe from heat dump to shutters
-  std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
+  /// Heat dump container
+  std::shared_ptr<xraySystem::HeatDump> heatDump;
+  /// bellow after HeatShield
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Gate box
+  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPB;
+  /// Pipe to third optic table
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// Exit of movables [?]
+  std::shared_ptr<constructSystem::GateValve> gateA;
+  /// bellows for florescence system
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// florescence screen tube
+  std::shared_ptr<constructSystem::PipeTube> florTubeA;
+  /// bellows for florescence system
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// Gate box B
+  std::shared_ptr<constructSystem::PipeTube> gateTubeB;
+  /// Front port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters
-  std::shared_ptr<constructSystem::PortTube> shutterBox;
+  std::shared_ptr<constructSystem::PipeTube> shutterBox;
   /// Shutters
-  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
-  /// Pipe from shutters - join pipe
+  std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
+  /// Back port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
+  /// Front port connection for shutterbox exit
+  std::shared_ptr<constructSystem::Bellows> bellowK;
+  
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   double outerRadius;   ///< radius of tube for divisions
 
-    int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
+  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
 			  const attachSystem::FixedComp&,
 			  const long int);
  
@@ -134,9 +162,12 @@ class balderFrontEnd :
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
-  void buildHeatTable(Simulation&,MonteCarlo::Object&);
-  void buildApertureTable(Simulation&,MonteCarlo::Object&);
-  void buildShutterTable(Simulation&,MonteCarlo::Object&);  
+  void buildHeatTable(Simulation&,MonteCarlo::Object&,
+		      const attachSystem::FixedComp&,const long int);
+  void buildApertureTable(Simulation&,MonteCarlo::Object&,
+			  const attachSystem::FixedComp&,const long int);
+  void buildShutterTable(Simulation&,MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,const long int);  
 
   
   void createSurfaces();
