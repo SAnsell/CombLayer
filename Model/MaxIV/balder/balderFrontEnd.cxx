@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/FrontEnd.cxx
+ * File: balder/balderFrontEnd.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -93,14 +93,14 @@
 #include "FlangeMount.h"
 #include "HeatDump.h"
 
-#include "FrontEnd.h"
+#include "balderFrontEnd.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-FrontEnd::FrontEnd(const std::string& Key) :
+balderFrontEnd::balderFrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -163,14 +163,14 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(exitPipe);
 }
   
-FrontEnd::~FrontEnd()
+balderFrontEnd::~balderFrontEnd()
   /*!
     Destructor
    */
 {}
 
 void
-FrontEnd::populate(const FuncDataBase& Control)
+balderFrontEnd::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
    */
@@ -180,7 +180,7 @@ FrontEnd::populate(const FuncDataBase& Control)
 }
 
 void
-FrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
+balderFrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
 			   const long int sideIndex)
   /*!
     Create the unit vectors
@@ -191,7 +191,7 @@ FrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("FrontEnd","createUnitVector");
+  ELog::RegMethod RegA("balderFrontEnd","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -199,78 +199,268 @@ FrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+balderFrontEnd::createSurfaces()
+  /*!
+    Create surfaces
+  */
+{
+  ELog::RegMethod RegA("balderFrontEnd","createSurfaces");
+
+  if (outerRadius>Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+  if (!frontActive())
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
+      setFront(SMap.realSurf(buildIndex+1));
+    }
+  return;
+}
+
+int
+balderFrontEnd::createOuterVoidUnit(Simulation& System,
+				     MonteCarlo::Object& masterCell,
+				     const attachSystem::FixedComp& FC,
+				     const long int sideIndex)
+/*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("balderFrontEnd","createOuterVoid");
+
+  static HeadRule divider;
+  // construct an cell based on previous cell:
+  std::string Out;
+  
+  if (!divider.hasRule())
+    divider=FrontBackCut::getFrontRule();
+
+  const HeadRule& backHR=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    FrontBackCut::getBackRule();
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out+=divider.display()+backHR.display();
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  divider=backHR;
+
+  // make the master cell valid:
+  
+  divider.makeComplement();
+
+  refrontMasterCell(masterCell,FC,sideIndex);
+  return cellIndex-1;
+}
 
 void
-FrontEnd::buildObjects(Simulation& System)
+balderFrontEnd::refrontMasterCell(MonteCarlo::Object& MCell,
+				   const attachSystem::FixedComp& FC,
+				   const long int sideIndex) const
+  /*!
+    This horrifc function to re-build MCell so that it is correct
+    as createOuterVoid consumes the front of the master cell
+    \param MCell :: master cell object
+    \param FC :: FixedComp
+    \param sideIndex :: side index for back of FC object
+  */
+{
+  ELog::RegMethod RegA("balderFrontEnd","refrontMasterCell");
+
+  std::string Out;  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out+=backRule()+FC.getLinkString(sideIndex);
+  MCell.procString(Out);
+  return;
+}
+ 
+MonteCarlo::Object&
+balderFrontEnd::constructMasterCell(Simulation& System)
+ /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \return cell object
+  */
+{
+  ELog::RegMethod RegA("balderFrontEnd","constructMasterCell");
+
+  std::string Out;
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out+=frontRule()+backRule();
+  makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
+  addOuterSurf(Out);
+  insertObjects(System);
+
+  return *System.findQhull(cellIndex-1);
+}
+
+void
+balderFrontEnd::insertFlanges(Simulation& System,
+			       const constructSystem::PipeTube& PT)
+  /*!
+    Boilerplate function to insert the flanges from pipetubes
+    that extend past the linkzone in to ther neighbouring regions.
+    \param System :: Simulation to use
+    \param PT :: PipeTube
+   */
+{
+  ELog::RegMethod RegA("balderFrontEnd","insertFlanges");
+  
+  const size_t voidN=this->getNItems("OuterVoid")-3;
+
+  this->insertComponent(System,"OuterVoid",voidN,
+			PT.getFullRule("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN,
+			PT.getFullRule("FlangeB"));
+  this->insertComponent(System,"OuterVoid",voidN+2,
+			PT.getFullRule("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN+2,
+			PT.getFullRule("FlangeB"));
+  return;
+}
+
+void
+balderFrontEnd::buildHeatTable(Simulation& System,
+			       MonteCarlo::Object& masterCell)
+  /*!
+    Build the heatDump table
+    \param System :: Simulation to use
+    \param masterCell :: Main cell with all components in
+  */
+{
+  ELog::RegMethod RegA("balderFrontEnd","buildHeatTable");
+
+  int outerCell;
+  // FAKE insertcell:
+  heatBox->addInsertCell(masterCell.getName());
+  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  heatBox->createAll(System,*heatPipe,2);
+
+  const constructSystem::portItem& PIA=heatBox->getPort(1);
+  outerCell=createOuterVoidUnit(System,masterCell,
+				PIA,PIA.getSideIndex("OuterPlate"));
+  heatBox->insertInCell(System,outerCell);
+    
+  // cant use heatbox here because of port rotation
+  
+  heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+  heatDump->addInsertCell("Outer",outerCell);
+  heatDump->createAll(System,PIA,0,*heatBox,2);
+
+
+  //  const constructSystem::portItem& PI=heatBox->getPort(1);  
+  bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowD,2);
+  bellowD->insertInCell(System,outerCell);
+
+
+  // FAKE insertcell:
+  gateTubeA->addInsertCell(masterCell.getName());
+  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  gateTubeA->createAll(System,*bellowD,2);  
+
+  const constructSystem::portItem& GPI=gateTubeA->getPort(1);
+  outerCell=createOuterVoidUnit(System,masterCell,
+				GPI,GPI.getSideIndex("OuterPlate"));
+  gateTubeA->insertInCell(System,outerCell);
+  
+  ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
+  outerCell=createOuterVoidUnit(System,masterCell,*ionPB,2);
+  ionPB->insertInCell(System,outerCell);
+
+  insertFlanges(System,*gateTubeA);
+  
+  pipeB->createAll(System,*ionPB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*pipeB,2);
+  pipeB->insertInCell(System,outerCell);
+  
+  return;
+  
+}
+
+void
+balderFrontEnd::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("FrontEnd","buildObjects");
+  ELog::RegMethod RegA("balderFrontEnd","buildObjects");
 
-  wigglerBox->addInsertCell(ContainedComp::getInsertCells());
-  wigglerBox->registerSpaceCut(0,2);
+  int outerCell;
+  MonteCarlo::Object& masterCell=constructMasterCell(System);
+  
   wigglerBox->createAll(System,*this,0);
+  outerCell=createOuterVoidUnit(System,masterCell,*wiggerBox,2);
+  wigglerBox->insertInCell(System,outCell);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
-  wiggler->createAll(System,*wigglerBox,0);
+  wiggler->insertInCell(System,outerCell);
 
-  dipolePipe->addInsertCell(ContainedComp::getInsertCells());
-  dipolePipe->registerSpaceCut(1,2);
+  
   dipolePipe->setFront(*wigglerBox,2);
-  dipolePipe->createAll(System,*wigglerBox,2);
+  dipolePipe->createAll(System,*wiggleBox,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  dipolePipe->insertInCell(System,outerCell);
 
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
 
-  bellowA->addInsertCell(ContainedComp::getInsertCells());
-  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
 
-  collTubeA->addInsertCell(ContainedComp::getInsertCells());
-  collTubeA->setFront(*bellowA,2);  // needed to allow bend if miss aligned
-  collTubeA->registerSpaceCut(1,2);
-  collTubeA->createAll(System,*bellowA,2);  
-
+  collTubeA->setFront(*bellowA,2);
+  collTubeA->createAll(System,*bellowA,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*collTubeA,2);
+  collTubeA->insertInCell(System,outerCell);
+  
   collA->addInsertCell(collTubeA->getCell("Void"));
   collA->createAll(System,*collTubeA,0);
 
-  bellowB->addInsertCell(ContainedComp::getInsertCells());
-  bellowB->registerSpaceCut(1,2);
   bellowB->createAll(System,*collTubeA,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowB,2);
+  bellowB->insertInCell(System,outerCell);
 
-  collABPipe->addInsertCell(ContainedComp::getInsertCells());
-  collABPipe->registerSpaceCut(1,2);
   collABPipe->createAll(System,*bellowB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*collABPipe,2);
+  collABPipe->insertInCell(System,outerCell);
 
-  bellowC->addInsertCell(ContainedComp::getInsertCells());
-  bellowC->registerSpaceCut(1,2);
   bellowC->createAll(System,*collABPipe,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowC,2);
+  bellowC->insertInCell(System,outerCell);
+  
 
-  collTubeB->addInsertCell(ContainedComp::getInsertCells());
-  collTubeB->registerSpaceCut(1,2);
+  collTubeB->setFront(*bellowC,2);
   collTubeB->createAll(System,*bellowC,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*collTubeB,2);
+  collTubeB->insertInCell(System,outerCell);
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
 
 
-  collTubeC->addInsertCell(ContainedComp::getInsertCells());
-  collTubeC->registerSpaceCut(1,2);
+  collTubeC->setFront(*collTubeB,2);
   collTubeC->createAll(System,*collTubeB,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*collTubeC,2);
+  collTubeC->insertInCell(System,outerCell);
 
   collC->addInsertCell(collTubeC->getCell("Void"));
   collC->createAll(System,*collTubeC,0);
 
 
-  collExitPipe->addInsertCell(ContainedComp::getInsertCells());
-  collExitPipe->registerSpaceCut(1,2);
+  collExitPipe->setFront(*collTubeC,2);
   collExitPipe->createAll(System,*collTubeC,2);
+  outerCell=createOuterVoidUnit(System,masterCell,*collExitPipe,2);
+  collExitPipe->insertInCell(System,outerCell);
 
-  ELog::EM<<"SADFAF D"<<ELog::endDiag;
 
   // FAKE insertcell:
   heatBox->addInsertCell(masterCell.getName());
@@ -326,7 +516,7 @@ FrontEnd::buildObjects(Simulation& System)
 }
 
 void
-FrontEnd::createLinks()
+balderFrontEnd::createLinks()
   /*!
     Create a front/back link
    */
@@ -338,7 +528,7 @@ FrontEnd::createLinks()
   
   
 void 
-FrontEnd::createAll(Simulation& System,
+balderFrontEnd::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
   /*!
@@ -346,15 +536,23 @@ FrontEnd::createAll(Simulation& System,
     \param System :: Simulation system
     \param FC :: Fixed component
     \param sideIndex :: link point
-   */
+  */
 {
   // For output stream
-  ELog::RegMethod RControl("FrontEnd","build");
+  ELog::RegMethod RControl("balderFrontEnd","build");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  createSurfaces();
   buildObjects(System);
   createLinks();
+
+  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  Out+=frontRule()+backRule();
+
+  addOuterSurf(Out);
+  insertObjects(System);
+
   return;
 }
 

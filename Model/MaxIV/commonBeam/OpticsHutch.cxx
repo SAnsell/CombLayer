@@ -302,7 +302,7 @@ OpticsHutch::createSurfaces()
   if (outerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1033,
-       Origin-X*(outWidth+steelThick+pbWallThick+innerOutVoid),X);  
+       Origin-X*(outWidth+steelThick+pbWallThick+outerOutVoid),X);  
 
   if (std::abs(ringWallAngle)>Geometry::zeroTol)
     {
@@ -548,6 +548,7 @@ OpticsHutch::createChicane(Simulation& System)
 
   for(size_t i=0;i<NChicane;i++)
     {
+      ELog::EM<<"ADSFASDF "<<ELog::endDiag;
       const std::string NStr(std::to_string(i));
       std::shared_ptr<PortChicane> PItem=
 	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);

@@ -242,7 +242,7 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+314,SPtr,TW);
 
   if (outerOutVoid>Geometry::zeroTol)
-    ModelSupport::buildPlane(SMap,buildIndex+1033,Origin-X*(outWidth+TW+innerOutVoid),X);  
+    ModelSupport::buildPlane(SMap,buildIndex+1033,Origin-X*(outWidth+TW+outerOutVoid),X);  
 
   if (inletRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
@@ -275,10 +275,10 @@ maxpeemOpticsHut::createObjects(Simulation& System)
 
   if (innerOutVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
-      makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
+      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floorStr);
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 2007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out);
+      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
   else
     {
@@ -302,7 +302,7 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       makeCell("Ring"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
       Out=ModelSupport::getComposite(SMap,HI,"1 -2 -3 103 -6 ");
-      makeCell("Outer"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+      makeCell("Far"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
       Out=ModelSupport::getComposite(SMap,HI,"1 -2 103 -104 (-114:-124) 6 -106 ");
       makeCell("Roof"+layer,System,cellIndex++,mat,0.0,Out);
@@ -375,7 +375,7 @@ maxpeemOpticsHut::createChicane(Simulation& System)
   */
 {
   ELog::RegMethod Rega("maxpeemOpticsHut","createChicane");
-  return;
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -391,6 +391,7 @@ maxpeemOpticsHut::createChicane(Simulation& System)
 	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
 
       OR.addObject(PItem);
+
       PItem->addInsertCell("Main",getCell("WallVoid"));
       PItem->addInsertCell("Inner",getCell("InnerWall",0));
       PItem->addInsertCell("Inner",getCell("LeadWall",0));

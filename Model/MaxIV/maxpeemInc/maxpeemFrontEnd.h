@@ -162,7 +162,7 @@ class maxpeemFrontEnd :
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  double outerRadius;
+  double outerRadius;   ///< radius of tube for divisions
    
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
 			  const attachSystem::FixedComp&,
