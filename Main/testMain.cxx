@@ -128,6 +128,7 @@
 #include "testFunc.h"
 #include "testFunction.h"
 #include "testGeomSupport.h"
+#include "testGenerateSurf.h"
 #include "testGroupRange.h"
 #include "testHeadRule.h"
 #include "testInputParam.h"
@@ -941,29 +942,38 @@ processTest(const int type,const int extra)
     {
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testBoxLine          (1)"<<std::endl;
-      std::cout<<"testInputParam       (2)"<<std::endl;
-      std::cout<<"testLineTrack        (3)"<<std::endl;
-      std::cout<<"testObjectRegister   (4)"<<std::endl;
-      std::cout<<"testObjectTrackAct   (5)"<<std::endl;
-      std::cout<<"testObjSurfMap       (6)"<<std::endl;
-      std::cout<<"testObjTrackItem     (7)"<<std::endl;
-      std::cout<<"testPairFactory      (8)"<<std::endl;
-      std::cout<<"testPairItem         (9)"<<std::endl;
-      std::cout<<"testPipeLine        (10)"<<std::endl;
-      std::cout<<"testPipeUnit        (11)"<<std::endl;
-      std::cout<<"testSimpleObj       (12)"<<std::endl;
-      std::cout<<"testSurfDIter       (13)"<<std::endl;
-      std::cout<<"testSurfDivide      (14)"<<std::endl;
-      std::cout<<"testSurfEqual       (15)"<<std::endl;
-      std::cout<<"testSurfExpand      (16)"<<std::endl;
-      std::cout<<"testSurfRegister    (17)"<<std::endl;
-      std::cout<<"testVolumes         (18)"<<std::endl;
-      std::cout<<"testWrapper         (19)"<<std::endl;
+      std::cout<<"testGenerateSurf     (2)"<<std::endl;
+      std::cout<<"testInputParam       (3)"<<std::endl;
+      std::cout<<"testLineTrack        (4)"<<std::endl;
+      std::cout<<"testObjectRegister   (5)"<<std::endl;
+      std::cout<<"testObjectTrackAct   (6)"<<std::endl;
+      std::cout<<"testObjSurfMap       (7)"<<std::endl;
+      std::cout<<"testObjTrackItem     (8)"<<std::endl;
+      std::cout<<"testPairFactory      (9)"<<std::endl;
+      std::cout<<"testPairItem        (10)"<<std::endl;
+      std::cout<<"testPipeLine        (11)"<<std::endl;
+      std::cout<<"testPipeUnit        (12)"<<std::endl;
+      std::cout<<"testSimpleObj       (13)"<<std::endl;
+      std::cout<<"testSurfDIter       (14)"<<std::endl;
+      std::cout<<"testSurfDivide      (15)"<<std::endl;
+      std::cout<<"testSurfEqual       (16)"<<std::endl;
+      std::cout<<"testSurfExpand      (17)"<<std::endl;
+      std::cout<<"testSurfRegister    (18)"<<std::endl;
+      std::cout<<"testVolumes         (19)"<<std::endl;
+      std::cout<<"testWrapper         (20)"<<std::endl;
     }
   int index(1);
   if(type==index || type<0)
     {
       testBoxLine A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  index++;
+
+  if(type==index || type<0)
+    {
+      testGenerateSurf A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

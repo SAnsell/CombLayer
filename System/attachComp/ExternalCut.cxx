@@ -477,7 +477,8 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 			     const double dExtra) 
   /*!
     Support function to calculate the shifted surface based
-    on surface type and form
+    on surface type and form. Moves away from the center if dExtra
+    positive.
     \param SMap :: local surface register
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
@@ -485,7 +486,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","getExpandedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf(HR)");
   
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
@@ -499,7 +500,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 	  int sideFlag=PPtr->side(expandCentre);
 	  if (sideFlag==0) sideFlag=1;
 	  ModelSupport::buildShiftedPlane
-	    (SMap,index,PPtr,sideFlag*dExtra);
+	    (SMap,index,PPtr, -sideFlag*dExtra);
 	  return;
 	}
       
@@ -567,7 +568,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf(string)");
 
   const cutUnit* CU=findUnit(extName);
   if (!CU)
@@ -594,7 +595,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf(string)");
 
   const cutUnit* CU=findUnit(extName);
   if (!CU)

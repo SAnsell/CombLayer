@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamVar/PortChicaneGenerator.cxx
+ * File:   commonBeamVar/SimpleChicaneGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -53,37 +52,36 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "PortChicaneGenerator.h"
+#include "SimpleChicaneGenerator.h"
 
 namespace setVariable
 {
 
-PortChicaneGenerator::PortChicaneGenerator() :
-  width(60.0),height(45.0),clearGap(8.0),downStep(12.0),
-  overHang(4.0),skinThick(0.3),plateThick(1.2),
-  wallThick(0.8),plateMat("Lead"),
-  wallMat("Stainless304")
+SimpleChicaneGenerator::SimpleChicaneGenerator() :
+  width(50.0),height(20.0),clearGap(8.0),upStep(10.0),
+  plateThick(0.2),barThick(4.0),plateMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
 
 
-PortChicaneGenerator::PortChicaneGenerator(const PortChicaneGenerator& A) : 
+SimpleChicaneGenerator::SimpleChicaneGenerator
+(const SimpleChicaneGenerator& A) : 
   width(A.width),height(A.height),clearGap(A.clearGap),
-  skinThick(A.skinThick),plateThick(A.plateThick),
-  wallThick(A.wallThick),plateMat(A.plateMat),wallMat(A.wallMat)
+  upStep(A.upStep),plateThick(A.plateThick),barThick(A.barThick),
+  plateMat(A.plateMat)
   /*!
     Copy constructor
-    \param A :: PortChicaneGenerator to copy
+    \param A :: SimpleChicaneGenerator to copy
   */
 {}
 
-PortChicaneGenerator&
-PortChicaneGenerator::operator=(const PortChicaneGenerator& A)
+SimpleChicaneGenerator&
+SimpleChicaneGenerator::operator=(const SimpleChicaneGenerator& A)
   /*!
     Assignment operator
-    \param A :: PortChicaneGenerator to copy
+    \param A :: SimpleChicaneGenerator to copy
     \return *this
   */
 {
@@ -92,26 +90,25 @@ PortChicaneGenerator::operator=(const PortChicaneGenerator& A)
       width=A.width;
       height=A.height;
       clearGap=A.clearGap;
-      skinThick=A.skinThick;
+      upStep=A.upStep;
       plateThick=A.plateThick;
-      wallThick=A.wallThick;
+      barThick=A.barThick;
       plateMat=A.plateMat;
-      wallMat=A.wallMat;
     }
   return *this;
 }
   
   
-PortChicaneGenerator::~PortChicaneGenerator() 
+SimpleChicaneGenerator::~SimpleChicaneGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-PortChicaneGenerator::setSize(const double G,
-			      const double W,
-			      const double H)
+SimpleChicaneGenerator::setSize(const double G,
+				const double W,
+				const double H)
   /*!
     Set length/width/height
     \param G :: Gap 
@@ -125,38 +122,22 @@ PortChicaneGenerator::setSize(const double G,
   return;
 }
 
-void
-PortChicaneGenerator::setPlate(const double PT,
-			       const double ST,
-			       const std::string& PM)
-  /*!
-    Set plate size
-    \param PT :: Plate thick
-    \param ST :: Skin thick
-    \param PM :: Material for plate
-   */
-{
-  plateThick=PT;
-  skinThick=ST;
-  plateMat=PM;
-  return;
-}
 
 void
-PortChicaneGenerator::setWall(const double WT,const std::string& WMat)
+SimpleChicaneGenerator::setWall(const double WT,const std::string& WMat)
 /*!
     Set wall paramaters
     \param WT :: Wall thickness
     \param WMat :: Wall material
    */
 {
-  wallThick=WT;
-  wallMat=WMat;
+  plateThick=WT;
+  plateMat=WMat;
   return;
 }
 				  
 void
-PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
+SimpleChicaneGenerator::generateSimpleChicane(FuncDataBase& Control,
 					  const std::string& keyName,
 					  const double xStep,
 					  const double zStep) const
@@ -168,7 +149,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
     \param zStep :: Step up/down fixed centre point
   */
 {
-  ELog::RegMethod RegA("PortChicaneGenerator","generatePortChicane");
+  ELog::RegMethod RegA("SimpleChicaneGenerator","generateSimpleChicane");
   
   Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"YStep",0.0);
@@ -177,20 +158,13 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"ClearGap",clearGap);
-  Control.addVariable(keyName+"DownStep",downStep);
-  Control.addVariable(keyName+"OverHang",overHang);
+  Control.addVariable(keyName+"UpStep",upStep);
   
-  Control.addVariable(keyName+"InnerSkin",skinThick);
-  Control.addVariable(keyName+"InnerPlate",plateThick);
-
-  Control.addVariable(keyName+"OuterSkin",skinThick);
-  Control.addVariable(keyName+"OuterPlate",plateThick);
+  Control.addVariable(keyName+"PlateThick",plateThick);
   
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"BaseThick",wallThick);
-
-  Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"PlateMat",plateMat);
+  Control.addVariable(keyName+"InnerXWidth",barThick);
+  Control.addVariable(keyName+"InnerXDepth",barThick);
 
        
   return;
