@@ -108,7 +108,9 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
 				      int& cellA,int& cellB)
   /*!
     Construct a link region exiting the FixedComp link unit
-    \param System :: Simulation to use						
+    \param System :: Simulation to use	
+    \param FCname :: name of fixed comp
+    \param FCiindex :: name of link point
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
@@ -121,6 +123,41 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
   const long int FCI=FCPtr->getSideIndex(FCindex);
 
   const int surfN=FCPtr->getLinkSurf(FCI);
+  if (!surfN) return 0;
+
+  const std::pair<const MonteCarlo::Object*,
+	    const MonteCarlo::Object*> RefPair=
+    System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
+  
+  if (RefPair.first && RefPair.second)
+    {
+      cellA=RefPair.first->getName();
+      cellB=RefPair.second->getName();
+      return 1;
+    }
+  return 0;
+}
+
+bool
+userBdxConstruct::constructSurfRegion(const Simulation& System,
+				      const std::string& FCname,
+				      const std::string& surfName,
+				      int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the FixedComp link unit
+    \param System :: Simulation to use	
+    \param FCname :: name of SurfMap
+    \param FCiindex :: name of link point
+  */
+{
+  ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
+  
+  const attachSystem::SurfMap* SMPtr=
+    System.getObject<attachSystem::SurfMap>(FCname);
+
+  if (!FCPtr) return 0;
+
+  const int surfN=SMPtr->getSurf(surfName);
   if (!surfN) return 0;
 
   const std::pair<const MonteCarlo::Object*,
@@ -180,7 +217,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 			     const size_t Index) 
   /*!
     Add BDX tally (s) as needed
-    \param System :: SimMCNP to add tallies
+    \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
