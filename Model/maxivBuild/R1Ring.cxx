@@ -75,10 +75,12 @@
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedSpace.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 
+#include "RingDoor.h"
 #include "R1Ring.h"
 
 namespace xraySystem
@@ -152,7 +154,8 @@ R1Ring::populate(const FuncDataBase& Control)
     }
   concaveNPoints=concavePts.size();
 
-  doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorActive",0);
+
+  doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
   return;
 }
 
@@ -242,12 +245,19 @@ R1Ring::createSurfaces()
 	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN-1000+3));
 	  SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+3));
 
-	  SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1020+3));
-	  SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
+	  if (cIndex)
+	    {
+	      SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1010+3));
+	      SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
+	    }
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
       surfN+=10;
     }
+  // last wall
+  SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1010+3));
+  SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
+	  
 
   // Exit wall dividers
   surfN=buildIndex+3000;
@@ -541,14 +551,23 @@ R1Ring::createDoor(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+
   if (doorActive)
     {
       doorPtr=std::make_shared<xraySystem::RingDoor>(keyName+"RingDoor");
       OR.addObject(doorPtr);
-      doorPtr->setCutSurf("innerWall",-SMap.realSurf(buildIndex+3));
-      doorPtr->setCutSurf("outerWall",SMap.realSurf(buildIndex+13));
 
-      doorPtr->addInsertCell(getCell("OuterWall"));
+      ELog::EM<<"Inner wall == "<<SurfMap::getSurf("SideInner",doorActive-1)
+	      <<ELog::endDiag;
+      ELog::EM<<"Outer wall == "<<SurfMap::getSurf("SideOuter",doorActive-1)
+	      <<ELog::endDiag;
+      doorPtr->setCutSurf
+	("innerWall",SurfMap::getSurf("SideInner",doorActive-1));
+      doorPtr->setCutSurf
+	("outerWall",-SurfMap::getSurf("SideOuter",doorActive-1));
+
+      ELog::EM<<"Cell == "<<getCell("Wall",(doorActive % 10))<<ELog::endDiag;
+      doorPtr->addInsertCell(getCell("Wall",doorActive % 10));
       doorPtr->createAll(System,*this,3);
     }
   return;
@@ -575,7 +594,9 @@ R1Ring::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
+
+  createDoor(System);
   return;
 }
   

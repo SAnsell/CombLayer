@@ -137,13 +137,13 @@ CellMap::insertCellMapInCell(Simulation& System,
     Insert a cellMap object into a cell
     \param System :: Simulation to obtain cell from
     \param cutKey :: Items in the Cell map to slice
-    \param cellIndex :: item number from the cell map
+    \param cellIndex :: Item number from the cell map
     \param cellN :: System cell number to change
    */
 {
   ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
 
-  const int cn = getCell(cellKey);
+  const int cn = getCell(cellKey,cellIndex);
   const MonteCarlo::Object* OPtr=System.findQhull(cn);
   if (!OPtr)
     throw ColErr::InContainerError<int>(cn,"CellMap(int) in System");

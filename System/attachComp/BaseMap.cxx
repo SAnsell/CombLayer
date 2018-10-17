@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -159,7 +158,7 @@ BaseMap::setItem(const std::string& Key,
         Items.insert(LCTYPE::value_type(Key,{CN}));
       else
 	throw ColErr::InContainerError<std::string>
-	  (Key,"Key not defined for index["+StrFunc::makeString(Index)+"]");
+	  (Key,"Key not defined for index["+std::to_string(Index)+"]");
       return;
     }
   // Replace current object [NO IDENTICAL CHECK (yet)]

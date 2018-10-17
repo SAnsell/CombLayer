@@ -64,6 +64,7 @@
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
+#include "RingDoorGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "SimpleChicaneGenerator.h"
 #include "LeadBoxGenerator.h"
@@ -96,7 +97,7 @@ shieldVariables(FuncDataBase& Control,
 		const std::string& shieldKey,
 		const double YStep)
   /*!
-h    Build the shield unit variables
+    Build the shield unit variables
     \param Control :: Database
     \param shieldKey :: prename
     \param shieldKey :: distance of step
@@ -1072,9 +1073,13 @@ MAXPEEMvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","maxpeemVariables");
-
+  RingDoorGenerator RGen;
+  
   Control.addVariable("sdefType","Wiggler");
-
+  // add ring door to our sector
+  RGen.generateDoor(Control,"R1RingRingDoor",80.0);
+  Control.addVariable("R1RingRingDoorWallID",9);
+  
   maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  
   maxpeemVar::wallVariables(Control,"MaxPeemWallLead");
   maxpeemVar::transferVariables(Control,"MaxPeem");
