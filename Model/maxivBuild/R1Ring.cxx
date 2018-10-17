@@ -89,7 +89,8 @@ R1Ring::R1Ring(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  NPoints(0),concaveNPoints(0)
+  NPoints(0),concaveNPoints(0),
+  doorActive(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -150,7 +151,8 @@ R1Ring::populate(const FuncDataBase& Control)
 	concavePts.push_back(i);
     }
   concaveNPoints=concavePts.size();
-    
+
+  doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorActive",0);
   return;
 }
 
@@ -239,6 +241,9 @@ R1Ring::createSurfaces()
 	{
 	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN-1000+3));
 	  SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+3));
+
+	  SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1020+3));
+	  SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
       surfN+=10;
@@ -523,6 +528,32 @@ R1Ring::createLinks()
     }
   return;
 }
+
+void
+R1Ring::createDoor(Simulation& System)
+  /*!
+    Build if a ring-door is required
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("R1Ring","createMaze");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  if (doorActive)
+    {
+      doorPtr=std::make_shared<xraySystem::RingDoor>(keyName+"RingDoor");
+      OR.addObject(doorPtr);
+      doorPtr->setCutSurf("innerWall",-SMap.realSurf(buildIndex+3));
+      doorPtr->setCutSurf("outerWall",SMap.realSurf(buildIndex+13));
+
+      doorPtr->addInsertCell(getCell("OuterWall"));
+      doorPtr->createAll(System,*this,3);
+    }
+  return;
+}
+
 
 void
 R1Ring::createAll(Simulation& System,

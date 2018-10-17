@@ -1021,10 +1021,15 @@ Simulation::getCellMaterial(const int cellNumber) const
 
 std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
 Simulation::findCellPair(const int surfN,
-			 const groupRange& activeGroup) const
+			 const groupRange& activeGroup,
+			 const size_t indexA,
+			 const size_t indexB) const
   /*!
     Find a cell pair (or 1) that have -/+SN as a valid cell 
-    \param surfN :: Surface number [signed -- must be in grouprnage]
+    \param surfN :: Surface number [signed -- must be in groupRange]
+    \param activeGroup :: Range of primary cells to use
+    \param indexA :: Index of region found in primary
+    \param indexB :: Index region found in secondary
     \return Pair Object valid for -SN : Object valid for +SN 
   */
 {
@@ -1038,22 +1043,32 @@ Simulation::findCellPair(const int surfN,
     OSMPtr->getObjects(surfN);
 
   // This is -ve incoming sign == so internal objects in groupRange
+  size_t nCount(0);
   for(const MonteCarlo::Object* OPtr : negType)
     {
       if (!OPtr->isPlaceHold() &&
 	  activeGroup.valid(OPtr->getName()))
 	{
-	  Out.first=OPtr;
-	  break;
+	  if (nCount==indexA)
+	    {
+	      Out.first=OPtr;
+	      break;
+	    }
+	  nCount++;
 	}
     }
   // This is +ve incoming sign == so external objects not in groupRange
+  nCount=0;
   for(const MonteCarlo::Object* OPtr : plusType)
     {
       if (!OPtr->isPlaceHold())
 	{
-	  Out.second=OPtr;
-	  break;
+	  if (nCount==indexB)
+	    {
+	      Out.second=OPtr;
+	      break;
+	    }
+	  nCount++;
 	}
     }
   return Out;
