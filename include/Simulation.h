@@ -135,6 +135,8 @@ class Simulation : public objectGroups
 			       MonteCarlo::Object*) const;
   std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
     findCellPair(const Geometry::Vec3D&,const int) const;
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+    findCellPair(const int) const;
   
   int findCellNumber(const Geometry::Vec3D&,const int) const;  
 

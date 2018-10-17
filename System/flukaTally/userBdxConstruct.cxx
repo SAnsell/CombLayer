@@ -57,8 +57,12 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "CellMap.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+
 #include "Object.h"
 #include "Qhull.h"
 #include "SimFLUKA.h"
@@ -155,14 +159,14 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
   const attachSystem::SurfMap* SMPtr=
     System.getObject<attachSystem::SurfMap>(FCname);
 
-  if (!FCPtr) return 0;
+  if (!SMPtr) return 0;
 
   const int surfN=SMPtr->getSurf(surfName);
   if (!surfN) return 0;
 
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
-    System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
+    System.findCellPair(surfN);
   
   if (RefPair.first && RefPair.second)
     {

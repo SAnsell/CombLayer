@@ -336,8 +336,8 @@ maxpeemOpticsHut::createObjects(Simulation& System)
   // far/side wall extension
   if (outerFarVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,HI,"1 -2M -303 1303 -6M ");
-      makeCell("OuterFarVoid",System,cellIndex++,0,0.0,Out+floorStr);
+      Out=ModelSupport::getComposite(SMap,buildIndex,HI,"-2M -303 1303 -6M ");
+      makeCell("OuterFarVoid",System,cellIndex++,0,0.0,Out+floorStr+ringWall);
     }
   
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -3002 1303 -304 (-314:-324) -306 ");
