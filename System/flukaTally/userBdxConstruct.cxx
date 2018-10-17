@@ -148,7 +148,9 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
 				      const std::string& surfName,
 				      int& cellA,int& cellB)
   /*!
-    Construct a link region exiting the FixedComp link unit
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
     \param System :: Simulation to use	
     \param FCname :: name of SurfMap
     \param FCiindex :: name of link point
@@ -164,9 +166,12 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
   const int surfN=SMPtr->getSurf(surfName);
   if (!surfN) return 0;
 
+  // throws on error [unlikely because SurfMap is good]
+  const groupRange& activeGrp=System.getGroup(FCname);
+  
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
-    System.findCellPair(surfN);
+    System.findCellPair(surfN,activeGrp);
   
   if (RefPair.first && RefPair.second)
     {
@@ -243,8 +248,12 @@ userBdxConstruct::processBDX(SimFLUKA& System,
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
       
-      (!constructLinkRegion(System,FCname,FCindex,cellA,cellB))
+      (!constructLinkRegion(System,FCname,FCindex,cellA,cellB)) &&
+      (!constructSurfRegion(System,FCname,FCindex,cellA,cellB))
+
+
       )
+    
     {
       throw ColErr::InContainerError<std::string>
 	(FCname+":"+FCindex,"No connecting surface on regions");

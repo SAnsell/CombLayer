@@ -306,7 +306,6 @@ R1Ring::createRoof(Simulation& System)
 
   std::string Out;
   
-  int prevN(buildIndex+50);
   int surfN(buildIndex);
 
 
@@ -372,27 +371,15 @@ R1Ring::createObjects(Simulation& System)
 				 " -3 -13 -23 -33 -43 -53 5 -16" );
   makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
 
-  int prevN(buildIndex+40);
-  int surfN(buildIndex+50);
-  int nextN(buildIndex);
-  const std::string baseStr=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
-  // note extra 103M and 10surf  that is because the +7 dividers don't
-  // perfectly meet at the 103/113 divide point
-  for(size_t i=0;i<6;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,prevN,surfN,nextN,
-				     " 7 -7M 3M -103M -103 -103N" );
-      makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+baseStr);
-      prevN=surfN;
-      surfN=nextN;
-      nextN+=10;
-    }
-
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " -103 -113 -123 -133 -143 -153 5 -16 "
+				 " (3 : 13 : 23 : 33 : 43 : 53) ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+  
 
   // Create inner voids
   std::string Unit;
-  surfN=5000;
+  int surfN=5000;
   for(size_t i=0;i<concaveNPoints;i++)
     {
       Unit+=std::to_string(surfN+9)+" ";
@@ -471,7 +458,7 @@ R1Ring::createObjects(Simulation& System)
     }
 
   // NOW DO external void-triangles:
-  prevN=buildIndex+2200;
+  int prevN=buildIndex+2200;
   surfN=buildIndex+2000;
   
   for(size_t i=0;i<12;i++)
