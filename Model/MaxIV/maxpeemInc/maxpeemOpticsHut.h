@@ -26,7 +26,7 @@ class Simulation;
 
 namespace xraySystem
 {
-  class PortChicane;
+  class SimpleChicane;
 /*!
   \class maxpeemOpticsHut
   \version 1.0
@@ -63,8 +63,8 @@ class maxpeemOpticsHut :
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerSkin;            ///< Outer wall/roof skin
 
-  double innerOutVoid;          ///< Extension for inner left void space
-  double outerOutVoid;          ///< Extension for outer left void space 
+  double innerFarVoid;          ///< Extension for inner left void space
+  double outerFarVoid;          ///< Extension for outer left void space 
   
   double inletXStep;            ///< Inlet XStep
   double inletZStep;            ///< Inlet ZStep  
@@ -82,7 +82,7 @@ class maxpeemOpticsHut :
 
 
   /// Chicanes 
-  std::vector<std::shared_ptr<PortChicane>> PChicane;  
+  std::vector<std::shared_ptr<SimpleChicane>> PChicane;  
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

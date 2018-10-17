@@ -1,7 +1,7 @@
  /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/SquareFMask.h
+ * File:   commonBeamInc/SquareFMask.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

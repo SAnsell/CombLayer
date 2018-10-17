@@ -491,6 +491,7 @@ FixedComp::applyAngleRotate(const double xAngle,
   Qx.rotate(X);
   Qx.rotate(Y);
   Qx.rotate(Z);
+
   return;
 }
 

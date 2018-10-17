@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/HeatDump.h
+ * File:   commonBeamInc/BeamMount.h
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_HeatDump_h
-#define xraySystem_HeatDump_h
+#ifndef xraySystem_BeamMount_h
+#define xraySystem_BeamMount_h
 
 class Simulation;
 
@@ -28,50 +28,36 @@ namespace xraySystem
 {
 
 /*!
-  \class HeatDump
+  \class BeamMount
   \author S. Ansell
   \version 1.0
   \date January 2018
   \brief Focasable mirror in mount
 */
 
-class HeatDump :
+class BeamMount :
   public attachSystem::ContainedGroup,
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
-
-  bool upFlag;             ///< Up/down
   
-  double radius;           ///< Radius 
+  int blockFlag;     ///< build the block [1:centre / 2 low Edge]    
+  bool upFlag;             ///< Up/down
+
+  double outLift;         ///< Amount to lift [when raised]
+  double beamLift;        ///< Amount to lift by in the beam
+  
+  double supportRadius;    ///< Radius of support  
+  int supportMat;          ///< support material
+
+    
   double height;           ///< height total 
   double width;            ///< width accross beam
-  double thick;            ///< Thickness in normal direction to reflection  
-  double lift;             ///< Amount to lift [when raized]
-  
-  double cutHeight;        ///< Z from base [centre on beam axis] 
-  double cutAngle;         ///< Angle of cut
-  double cutDepth;         ///< cut distance in Y
+  double length;           ///< Thickness in normal direction to reflection  
+  int blockMat;            ///< Base material
 
-  double topInnerRadius;          ///<  Flange inner radius radius 
-  double topFlangeRadius;          ///< Joining Flange radius 
-  double topFlangeLength;          ///< Joining Flange length
-
-  double bellowLength;             ///< Bellow length [compessed]
-  double bellowThick;              ///< Bellow thick
-  
-  double outRadius;                ///< Out connect radius
-  double outLength;                ///< Out connect length
-
-  double waterRadius;              ///< Water radius
-  double waterZStop;               ///< Distance in Z to stop
-
-  int mat;                 ///< Base material
-  int flangeMat;           ///<  flange material
-  int bellowMat;           ///<  bellow material
-  int waterMat;            ///<  water material
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -85,10 +71,10 @@ class HeatDump :
   
  public:
 
-  HeatDump(const std::string&);
-  HeatDump(const HeatDump&);
-  HeatDump& operator=(const HeatDump&);
-  virtual ~HeatDump();
+  BeamMount(const std::string&);
+  BeamMount(const BeamMount&);
+  BeamMount& operator=(const BeamMount&);
+  virtual ~BeamMount();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,

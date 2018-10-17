@@ -3,7 +3,7 @@
  
  * File:   construct/BeamShutter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -50,7 +49,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -113,7 +111,7 @@ BeamShutter::populate(const FuncDataBase& Control)
   double TTotal(0.0);
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string IStr=StrFunc::makeString(i);
+      const std::string IStr=std::to_string(i);
       if (i+1==nLayers)
 	Thick.push_back(length-TTotal);
       else

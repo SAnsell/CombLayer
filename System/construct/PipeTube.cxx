@@ -316,10 +316,8 @@ PipeTube::createLinks()
   ELog::RegMethod RegA("PipeTube","createLinks");
 
   // port centre
-  
   FrontBackCut::createFrontLinks(*this,Origin,Y); 
   FrontBackCut::createBackLinks(*this,Origin,Y);  
-
   // getlinke points
   FixedComp::setConnect(2,FixedComp::getLinkPt(1),-Y);
   FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
@@ -493,6 +491,8 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
   /*!
     Calculate the shift vector
     \param pIndex :: Port index [0-NPorts]
+    \return the directional vector from the port origin
+    to the pipetube surface
    */
 {
   ELog::RegMethod RegA("PipeTube","calcCylinderDistance");

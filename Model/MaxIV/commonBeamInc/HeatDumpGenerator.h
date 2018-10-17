@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/HeatDump.h
-*
+ * File:   commonBeamInc/HeatDumpGenerator.h
+ *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,32 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_HeatDump_h
-#define xraySystem_HeatDump_h
+#ifndef setVariable_HeatDumpGenerator_h
+#define setVariable_HeatDumpGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace xraySystem
+namespace setVariable
 {
 
 /*!
-  \class HeatDump
-  \author S. Ansell
+  \class HeatDumpGenerator
   \version 1.0
-  \date January 2018
-  \brief Focasable mirror in mount
+  \author S. Ansell
+  \date May 2018
+  \brief HeatDumpGenerator for variables
 */
 
-class HeatDump :
-  public attachSystem::ContainedGroup,
-  public attachSystem::FixedOffsetGroup,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+class HeatDumpGenerator
 {
  private:
 
-  bool upFlag;             ///< Up/down
-  
   double radius;           ///< Radius 
   double height;           ///< height total 
   double width;            ///< width accross beam
@@ -59,7 +53,7 @@ class HeatDump :
   double topFlangeRadius;          ///< Joining Flange radius 
   double topFlangeLength;          ///< Joining Flange length
 
-  double bellowLength;             ///< Bellow length [compessed]
+  double bellowLength;             ///< Bellow length
   double bellowThick;              ///< Bellow thick
   
   double outRadius;                ///< Out connect radius
@@ -67,33 +61,28 @@ class HeatDump :
 
   double waterRadius;              ///< Water radius
   double waterZStop;               ///< Distance in Z to stop
-
-  int mat;                 ///< Base material
-  int flangeMat;           ///<  flange material
-  int bellowMat;           ///<  bellow material
-  int waterMat;            ///<  water material
-  // Functions:
-
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
-
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-  std::vector<Geometry::Vec3D> calcEdgePoints() const;
   
+  std::string mat;                 ///< Base material
+  std::string flangeMat;           ///<  flange material
+  std::string bellowMat;           ///<  bellow material 
+  std::string waterMat;            ///<  water material
+
  public:
 
-  HeatDump(const std::string&);
-  HeatDump(const HeatDump&);
-  HeatDump& operator=(const HeatDump&);
-  virtual ~HeatDump();
+  HeatDumpGenerator();
+  HeatDumpGenerator(const HeatDumpGenerator&);
+  HeatDumpGenerator& operator=(const HeatDumpGenerator&);
+  virtual ~HeatDumpGenerator();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+  template<typename CF> void setCF();
+  template<typename CF> void setOutCF();
+  template<typename CF> void setTopCF();
   
+  void setMat(const std::string&,const double);
+  
+  void generateHD(FuncDataBase&,const std::string&,
+		  const bool) const;
+
 };
 
 }

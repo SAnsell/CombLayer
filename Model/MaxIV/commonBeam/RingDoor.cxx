@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/RingDoor.cxx
+ * File:   commonBeam/RingDoor.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -182,9 +182,9 @@ RingDoor::createSurfaces()
 
 
   ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+200,Origin,-innerThick);
+    (SMap,"innerWall",buildIndex+200,Origin,innerThick);
   ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+201,Origin,-(innerThick+gapSpace));
+    (SMap,"innerWall",buildIndex+201,Origin,innerThick+gapSpace);
 
   return;
 }

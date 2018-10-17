@@ -191,15 +191,16 @@ PipeTubeGenerator::setFlangeCap(const double AC,const double BC)
 }
 
 void
-PipeTubeGenerator::setCap()
+PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
   /*!
     Set the flange cap values
    */
 {
-  ACap=flangeALen;
-  BCap=flangeBLen;
+  ACap= (AFlag) ? flangeALen : 0;
+  BCap= (BFlag) ? flangeBLen : 0;
   return;
 }
+
   
   
 void

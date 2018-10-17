@@ -1020,6 +1020,46 @@ Simulation::getCellMaterial(const int cellNumber) const
 }
 
 std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+Simulation::findCellPair(const int surfN,
+			 const groupRange& activeGroup) const
+  /*!
+    Find a cell pair (or 1) that have -/+SN as a valid cell 
+    \param surfN :: Surface number [signed -- must be in grouprnage]
+    \return Pair Object valid for -SN : Object valid for +SN 
+  */
+{
+  ELog::RegMethod RegA("Simulation","findCellPair(SurfN,group)");
+  
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*> Out(0,0);
+
+  const ModelSupport::ObjSurfMap::STYPE& negType=
+    OSMPtr->getObjects(-surfN);
+  const ModelSupport::ObjSurfMap::STYPE& plusType=
+    OSMPtr->getObjects(surfN);
+
+  // This is -ve incoming sign == so internal objects in groupRange
+  for(const MonteCarlo::Object* OPtr : negType)
+    {
+      if (!OPtr->isPlaceHold() &&
+	  activeGroup.valid(OPtr->getName()))
+	{
+	  Out.first=OPtr;
+	  break;
+	}
+    }
+  // This is +ve incoming sign == so external objects not in groupRange
+  for(const MonteCarlo::Object* OPtr : plusType)
+    {
+      if (!OPtr->isPlaceHold())
+	{
+	  Out.second=OPtr;
+	  break;
+	}
+    }
+  return Out;
+}
+
+std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
 Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
   /*!
     Find a cell pair (or 1) that have -/+SN as a valid cell 

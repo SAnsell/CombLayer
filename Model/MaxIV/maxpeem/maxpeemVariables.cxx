@@ -55,15 +55,17 @@
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
+#include "HeatDumpGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
+#include "BeamMountGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
-#include "PortChicaneGenerator.h"
+#include "SimpleChicaneGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
 #include "GratingMonoGenerator.h"
@@ -289,6 +291,7 @@ m3MirrorVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string pumpName=mirrorKey+"PumpTubeB";
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
   Control.addVariable(pumpName+"NPorts",3);   // beam ports
 
@@ -401,6 +404,8 @@ slitPackageVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::BeamMountGenerator BeamMGen;
+
   
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -421,7 +426,7 @@ slitPackageVariables(FuncDataBase& Control,
 
   Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(6.1);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(setVariable::CF63::flangeLength,"Stainless304");
 
   // -1/5 missed
   const Geometry::Vec3D XVec(1,0,0);
@@ -435,8 +440,19 @@ slitPackageVariables(FuncDataBase& Control,
   CPt+=PStep*2.0;
   PItemGen.generatePort(Control,sName+"Port2",CPt,-ZVec);
   CPt+=PStep*2.0;
-  PItemGen.setOuterVoid(0);
+  PItemGen.setOuterVoid(0); /// ???
   PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
+
+  // Jaw units:
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(0.0,8.5);
+  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Tungsten");    
+  const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
+  for(size_t i=0;i<4;i++)
+    {
+      const std::string fname=slitKey+jawKey[i];
+      BeamMGen.generateMount(Control,fname,0);  // in beam
+    }		       
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
@@ -562,7 +578,9 @@ opticsBeamVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string florName=opticKey+"FlorTubeA";
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
+
   Control.addVariable(florName+"NPorts",2);   // beam ports
   PItemGen.setCF<setVariable::CF40>(1.9);
   PItemGen.setPlate(0.0,"Void");  
@@ -577,6 +595,7 @@ opticsBeamVariables(FuncDataBase& Control,
   // will be rotated vertical
   const std::string collName=opticKey+"PumpTubeA";
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
   Control.addVariable(collName+"NPorts",3);   // beam ports
   
@@ -649,10 +668,13 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"InletRadius",5.0);
 
 
-  Control.addVariable(hutName+"NChicane",2);
-  PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  Control.addVariable(hutName+"InnerFarVoid",15.0);
+  Control.addVariable(hutName+"OuterFarVoid",15.0);
+  Control.addVariable(hutName+"NChicane",1);
+
+  SimpleChicaneGenerator PGen;
+  PGen.generateSimpleChicane(Control,hutName+"Chicane0",170.0,-25.0);
+  PGen.generateSimpleChicane(Control,hutName+"Chicane1",370.0,-25.0);
 
 
   return;
@@ -732,6 +754,7 @@ heatDumpTable(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","heatDumpTable");
+
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
@@ -756,6 +779,7 @@ heatDumpTable(FuncDataBase& Control,
   // will be rotated vertical
   const std::string gateName=frontKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,frontKey+"GateTubeA",0.0,20.0);
 
   // beam ports
@@ -786,15 +810,14 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 {
   ELog::RegMethod RegA("maxpeemVariables","heatDumpVariables");
 
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::HeatDumpGenerator HeatGen;
 
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF150>();
-  PTubeGen.setPortLength(2.5,2.5);
-  
-  PTubeGen.generateCFTube<CF150>(Control,frontKey+"HeatBox",0.0,20.0);
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",0.0,20.0);
   Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
   // beam ports
@@ -806,21 +829,11 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   const std::string hName=frontKey+"HeatDumpFlange";
   PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  FlangeGen.setCF<setVariable::CF150>();
-  FlangeGen.setThread(3.0,14.0,"Nickel");
-  FlangeGen.setBlade(5.0,10.0,1.0,0.0,"Tungsten",0);     // W / H / T
-  FlangeGen.generateMount(Control,frontKey+"HeatTopFlange",1);  // in beam
   
   const std::string hDump(frontKey+"HeatDump");
-  Control.addVariable(hDump+"Radius",4.0);
-  Control.addVariable(hDump+"Height",7.0);
-  Control.addVariable(hDump+"Width",3.0);
-  Control.addVariable(hDump+"Thick",8.0);
-  Control.addVariable(hDump+"CutHeight",2.0);
-  Control.addVariable(hDump+"CutDepth",1.0);
-  Control.addVariable(hDump+"CutAngle",30.0);
-  Control.addVariable(hDump+"Mat","Tungsten");
+  HeatGen.setCF<CF100>();
+  HeatGen.setTopCF<CF150>();
+  HeatGen.generateHD(Control,hDump,1);
 
   return;
 }
@@ -841,7 +854,7 @@ shutterTable(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::BeamMountGenerator BeamMGen;
     
   // joined and open
   GateGen.setLength(3.5);
@@ -899,12 +912,11 @@ shutterTable(FuncDataBase& Control,
   
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
-  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
   // lift is actually 60mm [check]
-  FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setThread(1.0,30.0,"Nickel");
-  // W / H / T / ang 
-  FlangeGen.setBlade(6.0,6.0,20.0,0.0,"Tungsten",1);  
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(5.0,0.0);
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");  
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
@@ -912,9 +924,9 @@ shutterTable(FuncDataBase& Control,
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
       const std::string fname=frontKey+"Shutter"+std::to_string(i);
-
+      
       PItemGen.generatePort(Control,name,CPos,ZVec);
-      FlangeGen.generateMount(Control,fname,0);  // in beam
+      BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
       CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
     }
 
@@ -1000,7 +1012,6 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator CollGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
 
   Control.addVariable(frontKey+"OuterRadius",50.0);
   

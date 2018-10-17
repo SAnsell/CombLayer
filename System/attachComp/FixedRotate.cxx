@@ -123,7 +123,7 @@ FixedRotate::populate(const FuncDataBase& Control)
 
   // defaults used to fixedoffset can be used in a setting class.
   preXAngle=Control.EvalDefVar<double>(keyName+"PreXAngle",preXAngle);
-  preYAngle=Control.EvalDefVar<double>(keyName+"PreXAngle",preYAngle);
+  preYAngle=Control.EvalDefVar<double>(keyName+"PreYAngle",preYAngle);
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
@@ -156,7 +156,7 @@ FixedRotate::populate(const std::map<std::string,
   ELog::RegMethod RegA("FixedRotate","populate(map)");
 
   mainSystem::findInput(inputMap,"preXAngle",0,preXAngle);
-  mainSystem::findInput(inputMap,"preYAngle",0,preXAngle);
+  mainSystem::findInput(inputMap,"preYAngle",0,preYAngle);
   mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
   mainSystem::findInput(inputMap,"xAngle",0,xAngle);
   mainSystem::findInput(inputMap,"yAngle",0,yAngle);
@@ -254,7 +254,6 @@ FixedRotate::applyOffset()
   */
 {
   ELog::RegMethod RegA("FixedRotate","applyOffset");
-
   FixedComp::applyAngleRotate(preXAngle,preYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xAngle,yAngle,zAngle);

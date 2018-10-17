@@ -54,6 +54,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class BremBlock;
+  class BeamMount;
   class FlangeMount;
   class HeatDump;
   class LCollimator;
@@ -104,8 +105,6 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> heatPipe;
   /// Heat dump container
   std::shared_ptr<constructSystem::PipeTube> heatBox;
-  /// Flange for heat shield
-  std::shared_ptr<xraySystem::FlangeMount> heatTopFlange;
   /// Heat dump container
   std::shared_ptr<xraySystem::HeatDump> heatDump;
   /// bellow after HeatShield
@@ -153,7 +152,7 @@ class maxpeemFrontEnd :
   /// Main shutters
   std::shared_ptr<constructSystem::PipeTube> shutterBox;
   /// Shutters
-  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
+  std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Brem-block
@@ -161,7 +160,7 @@ class maxpeemFrontEnd :
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  double outerRadius;
+  double outerRadius;   ///< radius of tube for divisions
    
   int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
 			  const attachSystem::FixedComp&,

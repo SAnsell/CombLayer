@@ -63,6 +63,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
@@ -96,7 +98,7 @@
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValve.h"
-#include "FlangeMount.h"
+#include "BeamMount.h"
 #include "GrateMonoBox.h"
 #include "GratingMono.h"
 #include "TwinPipe.h"
@@ -132,6 +134,11 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
+  jaws({
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")}),  
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -165,6 +172,9 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  for(const auto& JM : jaws)
+    OR.addObject(JM);
 
   OR.addObject(bellowA);
   OR.addObject(ionPA);
@@ -644,7 +654,7 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
   offPipeC->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeC,2);
   offPipeC->insertInCell(System,outerCell);
-  
+
   M3Tube->createAll(System,*offPipeC,offPipeC->getSideIndex("FlangeBCentre"));
   outerCell=createOuterVoidUnit(System,masterCell,divider,*M3Tube,2);
   M3Tube->insertInCell(System,outerCell);
@@ -730,10 +740,24 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
 
+
   slitTube->splitObject(System,1501,outerCell,
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,1));
-  cellIndex++;
+  cellIndex++;  // remember creates an extra cell in  primary
+
+  for(size_t i=0;i<jaws.size();i++)
+    {
+      const constructSystem::portItem& PI=slitTube->getPort(i);
+      jaws[i]->addInsertCell("Support",PI.getCell("Void"));
+      jaws[i]->addInsertCell("Support",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("Block",slitTube->getCell("SplitVoid",i));
+      jaws[i]->createAll(System,*slitTube,0,
+			 PI,PI.getSideIndex("InnerPlate"));
+    }
+
+
+  
 
   pipeE->createAll(System,*slitTube,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeE,2);

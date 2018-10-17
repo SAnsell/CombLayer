@@ -57,8 +57,12 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "CellMap.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+
 #include "Object.h"
 #include "Qhull.h"
 #include "SimFLUKA.h"
@@ -108,7 +112,9 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
 				      int& cellA,int& cellB)
   /*!
     Construct a link region exiting the FixedComp link unit
-    \param System :: Simulation to use						
+    \param System :: Simulation to use	
+    \param FCname :: name of fixed comp
+    \param FCiindex :: name of link point
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
@@ -126,6 +132,46 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
     System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
+  
+  if (RefPair.first && RefPair.second)
+    {
+      cellA=RefPair.first->getName();
+      cellB=RefPair.second->getName();
+      return 1;
+    }
+  return 0;
+}
+
+bool
+userBdxConstruct::constructSurfRegion(const Simulation& System,
+				      const std::string& FCname,
+				      const std::string& surfName,
+				      int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: name of SurfMap
+    \param FCiindex :: name of link point
+  */
+{
+  ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
+  
+  const attachSystem::SurfMap* SMPtr=
+    System.getObject<attachSystem::SurfMap>(FCname);
+
+  if (!SMPtr) return 0;
+
+  const int surfN=SMPtr->getSurf(surfName);
+  if (!surfN) return 0;
+
+  // throws on error [unlikely because SurfMap is good]
+  const groupRange& activeGrp=System.getGroup(FCname);
+  
+  const std::pair<const MonteCarlo::Object*,
+	    const MonteCarlo::Object*> RefPair=
+    System.findCellPair(surfN,activeGrp);
   
   if (RefPair.first && RefPair.second)
     {
@@ -180,7 +226,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 			     const size_t Index) 
   /*!
     Add BDX tally (s) as needed
-    \param System :: SimMCNP to add tallies
+    \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -202,8 +248,12 @@ userBdxConstruct::processBDX(SimFLUKA& System,
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
       
-      (!constructLinkRegion(System,FCname,FCindex,cellA,cellB))
+      (!constructLinkRegion(System,FCname,FCindex,cellA,cellB)) &&
+      (!constructSurfRegion(System,FCname,FCindex,cellA,cellB))
+
+
       )
+    
     {
       throw ColErr::InContainerError<std::string>
 	(FCname+":"+FCindex,"No connecting surface on regions");

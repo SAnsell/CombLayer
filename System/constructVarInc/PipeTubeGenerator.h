@@ -72,7 +72,8 @@ class PipeTubeGenerator
   void setAFlange(const double,const double);
   void setBFlange(const double,const double);
   void setFlangeCap(const double,const double);
-  void setCap();
+  void setCap(const bool =1,const bool= 1);
+
   
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }

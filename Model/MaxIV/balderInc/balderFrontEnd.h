@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/FrontEnd.h
+ * File:   balderInc/balderbalderFrontEnd.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_FrontEnd_h
-#define xraySystem_FrontEnd_h
+#ifndef xraySystem_balderFrontEnd_h
+#define xraySystem_balderFrontEnd_h
 
 namespace insertSystem
 {
@@ -32,6 +32,7 @@ namespace constructSystem
   class Bellows;
   class CrossPipe;
   class GateValve;
+  class OffsetFlangePipe;
   class portItem;
   class PipeTube;
   class PortTube;
@@ -52,29 +53,33 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class FlangeMount;
+
   class HeatDump;
   class SqrCollimator;
+  class SquareFMask;
   class Wiggler;
 
     
   /*!
-    \class FrontEnd
+    \class balderFrontEnd
     \version 1.0
     \author S. Ansell
     \date March 2018
     \brief General constructor front end optics
   */
 
-class FrontEnd :
+class balderFrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap
 {
  private:
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
+  
   /// Wiggler in vacuum box
   std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
   /// Wiggler in vacuum box
@@ -105,31 +110,76 @@ class FrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// Pipe from collimator B to heat dump
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
+
   /// head dump port
   std::shared_ptr<constructSystem::PortTube> heatBox;
-  /// heat dump 
-  std::shared_ptr<xraySystem::HeatDump> heatDump;  
-  /// Pipe from heat dump to shutters
-  std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
+  /// Heat dump container
+  std::shared_ptr<xraySystem::HeatDump> heatDump;
+  /// bellow after HeatShield
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Gate box
+  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPB;
+  /// Pipe to third optic table
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// Exit of movables [?]
+  std::shared_ptr<constructSystem::GateValve> gateA;
+  /// bellows for florescence system
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+  /// florescence screen tube
+  std::shared_ptr<constructSystem::PipeTube> florTubeA;
+  /// bellows for florescence system
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// Gate box B
+  std::shared_ptr<constructSystem::PipeTube> gateTubeB;
+  /// Front port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters
-  std::shared_ptr<constructSystem::PortTube> shutterBox;
+  std::shared_ptr<constructSystem::PipeTube> shutterBox;
   /// Shutters
-  std::array<std::shared_ptr<xraySystem::FlangeMount>,2> shutters;
-  /// Pipe from shutters - join pipe
+  std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
+  /// Back port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
+  /// Front port connection for shutterbox exit
+  std::shared_ptr<constructSystem::Bellows> bellowK;
+  
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
+
+  double outerRadius;   ///< radius of tube for divisions
+
+  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
+			  const attachSystem::FixedComp&,
+			  const long int);
+ 
+  MonteCarlo::Object& constructMasterCell(Simulation&);
+  void refrontMasterCell(MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,
+			 const long int) const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
+  void buildHeatTable(Simulation&,MonteCarlo::Object&,
+		      const attachSystem::FixedComp&,const long int);
+  void buildApertureTable(Simulation&,MonteCarlo::Object&,
+			  const attachSystem::FixedComp&,const long int);
+  void buildShutterTable(Simulation&,MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,const long int);  
+
+  
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  FrontEnd(const std::string&);
-  FrontEnd(const FrontEnd&);
-  FrontEnd& operator=(const FrontEnd&);
-  ~FrontEnd();
+  balderFrontEnd(const std::string&);
+  balderFrontEnd(const balderFrontEnd&);
+  balderFrontEnd& operator=(const balderFrontEnd&);
+  ~balderFrontEnd();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

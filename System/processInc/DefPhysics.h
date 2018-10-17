@@ -46,7 +46,7 @@ namespace ModelSupport
   void setGenericPhysics(SimMCNP&,const std::string&);
   
   void procOffset(const objectGroups&,const mainSystem::inputParam&,
-		  const size_t);
+		  const std::string&,const size_t);
   void procAngle(const objectGroups&,const mainSystem::inputParam&,
 		 const size_t);
 

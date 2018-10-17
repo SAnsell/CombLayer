@@ -70,7 +70,6 @@ class objectGroups
  protected:
 
   groupRange& getGroup(const std::string&);
-  const groupRange& getGroup(const std::string&) const;
   groupRange& inRangeGroup(const int);
   
  public:
@@ -118,6 +117,7 @@ class objectGroups
   int getFirstCell(const std::string&) const;
   int getLastCell(const std::string&) const;
   std::vector<int> getObjectRange(const std::string&) const;
+  const groupRange& getGroup(const std::string&) const;
   
   void reset();
   void rotateMaster();
