@@ -325,7 +325,7 @@ CellMap::insertComponent(Simulation& System,
   /*!
     Insert an exclude component into a cell
     \param System :: Simulation to obtain cell from
-    \param Key :: KeyName for cell
+    \param Key :: keyName for cell
     \param index :: Index on this cell [to be inserted]
     \param CM :: Cell map to extract obbject for insertion
     \param CMKey :: Key of cell map to insert
@@ -335,6 +335,7 @@ CellMap::insertComponent(Simulation& System,
   ELog::RegMethod RegA("CellMap","insertComponent(key,index,CMap,cmIndex)");
 
   const int otherCellNum=CM.getCell(cmKey,cmIndex);
+  ELog::EM<<"Other Cell == "<<otherCellNum<<ELog::endDiag;
   const MonteCarlo::Qhull* otherObj=System.findQhull(otherCellNum);
   if (!otherObj)
     throw ColErr::InContainerError<int>(otherCellNum,

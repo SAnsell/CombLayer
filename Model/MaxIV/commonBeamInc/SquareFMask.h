@@ -35,7 +35,7 @@ namespace xraySystem
   */
   
 class SquareFMask :
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap

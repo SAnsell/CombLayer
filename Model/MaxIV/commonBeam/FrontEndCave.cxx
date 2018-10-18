@@ -74,7 +74,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -90,7 +89,7 @@ namespace xraySystem
 
 FrontEndCave::FrontEndCave(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   mazeActive(0),doorActive(0)

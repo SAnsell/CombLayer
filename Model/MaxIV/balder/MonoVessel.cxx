@@ -72,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -85,7 +84,7 @@ namespace xraySystem
 
 MonoVessel::MonoVessel(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,7 +93,7 @@ MonoVessel::MonoVessel(const std::string& Key) :
 {}
 
 MonoVessel::MonoVessel(const MonoVessel& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   radius(A.radius),ringWidth(A.ringWidth),outWidth(A.outWidth),
   wallThick(A.wallThick),doorThick(A.doorThick),
@@ -125,7 +124,7 @@ MonoVessel::operator=(const MonoVessel& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       radius=A.radius;

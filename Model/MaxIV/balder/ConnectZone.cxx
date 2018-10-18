@@ -65,7 +65,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -332,7 +331,7 @@ ConnectZone::buildObjects(Simulation& System,
   pipeB->insertInCell(System,pumpBoxA->getCell("Void",2));
 
   ionPumpA->delayPorts();
-  ionPumpA->setInsertCell(pumpBoxA->getCell("Void",1));
+  ionPumpA->addAllInsertCell(pumpBoxA->getCell("Void",1));
   ionPumpA->setFront(*pipeA,2);
   ionPumpA->setBack(*pipeB,1);
   ionPumpA->createAll(System,*pipeA,2);
@@ -392,7 +391,7 @@ ConnectZone::buildObjects(Simulation& System,
   pipeD->insertInCell(System,pumpBoxB->getCell("Void",2));
 
   ionPumpB->delayPorts();
-  ionPumpB->setInsertCell(pumpBoxB->getCell("Void",1));
+  ionPumpB->addAllInsertCell(pumpBoxB->getCell("Void",1));
   ionPumpB->setFront(*pipeC,2);
   ionPumpB->setBack(*pipeD,1);
   ionPumpB->createAll(System,*pipeC,2);

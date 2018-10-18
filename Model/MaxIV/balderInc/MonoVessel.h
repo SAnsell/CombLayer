@@ -39,7 +39,7 @@ namespace xraySystem
 
 class MonoVessel :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
