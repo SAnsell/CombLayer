@@ -532,12 +532,12 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
   ELog::RegMethod RegA("maxpeemOpticsBeamline","insertFlanges");
   
   const size_t voidN=this->getNItems("OuterVoid")-3;
-  //  ELog::EM<<"PT- "<<PT.getKeyName()<<ELog::endDiag;
-  //  ELog::EM<<"PT- "<<PT.<<ELog::endDiag;
-  this->insertComponent(System,"OuterVoid",voidN,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN,PT,"BackFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"BackFlange",0);
+
+  // inserting into the outerVoid +1 / -1 
+  this->insertComponent(System,"OuterVoid",voidN,PT.getCC("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN,PT.getCC("FlangeB"));
+  this->insertComponent(System,"OuterVoid",voidN+2,PT.getCC("FlangeA"));
+  this->insertComponent(System,"OuterVoid",voidN+2,PT.getCC("FlangeB"));
   return;
 }
 
