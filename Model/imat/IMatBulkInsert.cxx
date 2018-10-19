@@ -77,7 +77,6 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BulkInsert.h"
 #include "IMatBulkInsert.h"

@@ -73,7 +73,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -548,7 +547,6 @@ OpticsHutch::createChicane(Simulation& System)
 
   for(size_t i=0;i<NChicane;i++)
     {
-      ELog::EM<<"ADSFASDF "<<ELog::endDiag;
       const std::string NStr(std::to_string(i));
       std::shared_ptr<PortChicane> PItem=
 	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
@@ -561,24 +559,10 @@ OpticsHutch::createChicane(Simulation& System)
       // set surfaces:
 
       PItem->setCutSurf("innerWall",*this,"innerLeftWall");
-      PItem->setCutSurf("outerWall",*this,"leftWall");
-
-      PItem->setPrimaryCell("Main",getCell("WallVoid"));
-  
-      PItem->registerSpaceCut("Main",
-			      PItem->getSideIndex("innerLeft"),
-			      PItem->getSideIndex("innerRight"));
-
-      
+      PItem->setCutSurf("outerWall",*this,"leftWall");      
       PItem->createAll(System,*this,getSideIndex("leftWall"));
-
-      PItem->clearSpace("Main");
       PItem->addInsertCell("Main",getCell("OuterVoid",0));
 
-      PItem->setPrimaryCell("Main",getCell("OuterVoid"));
-      PItem->registerSpaceCut("Main",
-			      PItem->getSideIndex("outerLeft"),
-			      PItem->getSideIndex("outerRight"));
       PItem->insertObjects(System);
       PChicane.push_back(PItem);
       //      PItem->splitObject(System,23,getCell("WallVoid"));

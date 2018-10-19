@@ -72,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -88,7 +87,7 @@ namespace constructSystem
 
 VacuumPipe::VacuumPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,11),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   frontJoin(0),backJoin(0)
   /*!
@@ -102,7 +101,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 }
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   frontJoin(A.frontJoin),
@@ -133,7 +132,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);

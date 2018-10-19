@@ -67,7 +67,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -205,15 +204,9 @@ BALDER::build(Simulation& System,
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
 
-  joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipe->setFront(*frontBeam,2);
-  joinPipe->setSpaceLinkCopy(0,*opticsHut,-12);
-  joinPipe->registerSpaceCut(0,2);
   joinPipe->createAll(System,*frontBeam,2);
 
-  joinPipe->clear();
-  joinPipe->setPrimaryCell(caveVoid);
-  joinPipe->registerSpaceCut(1,0);
   joinPipe->insertObjects(System);
 
   System.removeCell(ringCaveA->getCell("Void"));
@@ -222,11 +215,7 @@ BALDER::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
-  joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipeB->setFront(*opticsBeam,2);
-  joinPipeB->setSpaceLinkCopy(1,*opticsHut,
-			      opticsHut->getSideIndex("-innerBack"));
-  joinPipeB->registerSpaceCut(1,0);
   joinPipeB->createAll(System,*opticsBeam,2);
 
   // pipe shield goes around joinPipeB:
@@ -245,7 +234,7 @@ BALDER::build(Simulation& System,
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*ringCaveA,2);
 
-  connectZone->registerJoinPipe(joinPipeC);
+  //  connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(voidCell);
   connectZone->setFront(*opticsHut,2);
   connectZone->setBack(*exptHut,1);

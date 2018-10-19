@@ -74,7 +74,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -247,8 +246,8 @@ R1Ring::createSurfaces()
 
 	  if (cIndex)
 	    {
-	      SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1010+3));
-	      SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
+	      SurfMap::addSurf("SideInner",-SMap.realSurf(surfN-1010+3));
+	      SurfMap::addSurf("SideOuter",-SMap.realSurf(surfN-10+3));
 	    }
 	  cIndex = (cIndex+1) % concaveNPoints;
 	}
@@ -557,18 +556,13 @@ R1Ring::createDoor(Simulation& System)
       doorPtr=std::make_shared<xraySystem::RingDoor>(keyName+"RingDoor");
       OR.addObject(doorPtr);
 
-      ELog::EM<<"Inner wall == "<<SurfMap::getSurf("SideInner",doorActive-1)
-	      <<ELog::endDiag;
-      ELog::EM<<"Outer wall == "<<SurfMap::getSurf("SideOuter",doorActive-1)
-	      <<ELog::endDiag;
       doorPtr->setCutSurf
 	("innerWall",SurfMap::getSurf("SideInner",doorActive-1));
       doorPtr->setCutSurf
 	("outerWall",-SurfMap::getSurf("SideOuter",doorActive-1));
 
-      ELog::EM<<"Cell == "<<getCell("Wall",(doorActive % 10))<<ELog::endDiag;
       doorPtr->addInsertCell(getCell("Wall",doorActive % 10));
-      doorPtr->createAll(System,*this,3);
+      doorPtr->createAll(System,*this,doorActive+2);
     }
   return;
 }

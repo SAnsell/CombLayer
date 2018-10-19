@@ -74,7 +74,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -87,7 +87,8 @@ namespace constructSystem
 
 PipeTube::PipeTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
+  attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   delayPortBuild(0),portConnectIndex(1),
   rotAxis(0,1,0)
@@ -293,13 +294,14 @@ PipeTube::createObjects(Simulation& System)
       makeCell("BackCap",System,cellIndex++,capMat,0.0,Out+backSurf);
     }
   
-  
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -17 ");
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
+  
   Out=ModelSupport::getComposite(SMap,buildIndex," -107 -101 ");
-  addOuterUnionSurf(Out+frontSurf);
+  addOuterSurf("FlangeA",Out+frontSurf);
+
   Out=ModelSupport::getComposite(SMap,buildIndex," -207 102 ");
-  addOuterUnionSurf(Out+backSurf);
+  addOuterSurf("FlangeB",Out+backSurf);
 
   return;
 }
@@ -347,10 +349,8 @@ PipeTube::createPorts(Simulation& System)
 
   for(size_t i=0;i<Ports.size();i++)
     {
-      if (getBuildCell())
-	Ports[i].addOuterCell(getBuildCell());
-      else
-	for(const int CN : insertCells)
+      const attachSystem::ContainedComp& CC=getCC("Main");
+      for(const int CN : CC.getInsertCells())
 	  Ports[i].addOuterCell(CN);
 
       for(const int CN : portCells)
@@ -668,13 +668,13 @@ PipeTube::splitVoidPorts(Simulation& System,
 }
 
 void
-PipeTube::insertInCell(Simulation& System,const int cellN)
+PipeTube::insertAllInCell(Simulation& System,const int cellN)
   /*!
-    Overload of containdComp so that the ports can also 
+    Overload of containdGroup so that the ports can also 
     be inserted if needed
   */
 {
-  ContainedComp::insertInCell(System,cellN);
+  ContainedGroup::insertAllInCell(System,cellN);
   if (!delayPortBuild)
     {
       for(const portItem& PC : Ports)

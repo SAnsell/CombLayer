@@ -68,7 +68,6 @@
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
 #include "channel.h"

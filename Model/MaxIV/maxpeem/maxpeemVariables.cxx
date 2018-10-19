@@ -165,7 +165,7 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UPipeFeThick",0.2);
 
   // undulator  
-  Control.addVariable(undKey+"UndulatorVGap",2.0);  // mininum 11mm
+  Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
   Control.addVariable(undKey+"UndulatorLength",247.989);   // 46.2mm*30*2
   Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
   Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
@@ -583,7 +583,7 @@ opticsBeamVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
 
   Control.addVariable(florName+"NPorts",2);   // beam ports
-  PItemGen.setCF<setVariable::CF40>(1.9);
+  PItemGen.setCF<setVariable::CF40>(2.25);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
@@ -1077,7 +1077,7 @@ MAXPEEMvariables(FuncDataBase& Control)
   
   Control.addVariable("sdefType","Wiggler");
   // add ring door to our sector
-  RGen.generateDoor(Control,"R1RingRingDoor",80.0);
+  RGen.generateDoor(Control,"R1RingRingDoor",0.0);
   Control.addVariable("R1RingRingDoorWallID",9);
   
   maxpeemVar::frontEndVariables(Control,"MaxPeemFrontBeam");  

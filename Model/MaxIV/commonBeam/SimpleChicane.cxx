@@ -70,7 +70,6 @@
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -202,8 +201,6 @@ SimpleChicane::createObjects(Simulation& System)
   const std::string innerOut=getRuleStr("innerWall");
   const std::string outerOut=getRuleStr("outerWall");
 
-  ELog::EM<<"A == "<<outerWall<<ELog::endDiag;
-  ELog::EM<<"B == "<<outerOut<<ELog::endDiag;
   ELog::EM<<"ORG == "<<Origin<<ELog::endDiag;
   
   // inner clearance gap

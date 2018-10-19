@@ -69,7 +69,6 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 
 #include "CSGroup.h"
 
@@ -91,6 +90,7 @@ CSGroup::CSGroup(const FCTYPE& FA)  :
   LCutters(2)
   /*!
     Constructor 
+    \param FA :: Single Fixed Component to cut on
   */
 {}
 
@@ -135,7 +135,7 @@ CSGroup::setConnect(const size_t Index,
    \param A :: Axis direciton
  */
 {
-  ELog::RegMethod RegA("ContainedComp","setConnect");
+  ELog::RegMethod RegA("CSGroup","setConnect");
   if (Index>=LCutters.size())
     throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU.size/index");
 
@@ -286,7 +286,7 @@ CSGroup::insertAllObjects(Simulation& System)
 
   if (primaryCell && buildCell)
     {
-      BBox=ContainedSpace::calcBoundary
+      BBox=SpaceCut::calcBoundary
 	(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
       buildWrapCell(System,primaryCell,buildCell);
     }

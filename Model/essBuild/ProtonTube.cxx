@@ -76,7 +76,6 @@
 #include "FrontBackCut.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
 #include "BaseMap.h"

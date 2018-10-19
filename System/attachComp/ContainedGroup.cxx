@@ -62,8 +62,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 
 namespace attachSystem
@@ -81,7 +79,7 @@ ContainedGroup::ContainedGroup(const std::string& A)
     \param A :: Key one
   */
 {
-  CMap.insert(CTYPE::value_type(A,ContainedSpace()));  
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
 }
 
 ContainedGroup::ContainedGroup(const std::string& A,
@@ -92,8 +90,8 @@ ContainedGroup::ContainedGroup(const std::string& A,
     \param B :: Key two
   */
 {
-  CMap.insert(CTYPE::value_type(A,ContainedSpace()));  
-  CMap.insert(CTYPE::value_type(B,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+  CMap.insert(CTYPE::value_type(B,ContainedComp()));
 }
 
 ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
@@ -105,9 +103,9 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
     \param C :: Key three
   */
 {
-  CMap.insert(CTYPE::value_type(A,ContainedSpace()));  
-  CMap.insert(CTYPE::value_type(B,ContainedSpace()));
-  CMap.insert(CTYPE::value_type(C,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+  CMap.insert(CTYPE::value_type(B,ContainedComp()));
+  CMap.insert(CTYPE::value_type(C,ContainedComp()));
 }
 
 ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
@@ -120,10 +118,10 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
     \param C :: Key four
   */
 {
-  CMap.insert(CTYPE::value_type(A,ContainedSpace()));  
-  CMap.insert(CTYPE::value_type(B,ContainedSpace()));
-  CMap.insert(CTYPE::value_type(C,ContainedSpace()));
-  CMap.insert(CTYPE::value_type(D,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+  CMap.insert(CTYPE::value_type(B,ContainedComp()));
+  CMap.insert(CTYPE::value_type(C,ContainedComp()));
+  CMap.insert(CTYPE::value_type(D,ContainedComp()));
 }
 
 ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
@@ -138,11 +136,11 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
     \param E :: Key five
   */
 {
-  CMap.insert(CTYPE::value_type(A,ContainedSpace()));  
-  CMap.insert(CTYPE::value_type(B,ContainedSpace()));
-  CMap.insert(CTYPE::value_type(C,ContainedSpace()));
-  CMap.insert(CTYPE::value_type(D,ContainedSpace()));
-  CMap.insert(CTYPE::value_type(E,ContainedSpace()));
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+  CMap.insert(CTYPE::value_type(B,ContainedComp()));
+  CMap.insert(CTYPE::value_type(C,ContainedComp()));
+  CMap.insert(CTYPE::value_type(D,ContainedComp()));
+  CMap.insert(CTYPE::value_type(E,ContainedComp()));
 }
 
 ContainedGroup::ContainedGroup(const ContainedGroup& A) : 
@@ -201,12 +199,12 @@ ContainedGroup::hasKey(const std::string& Key) const
   return (mc!=CMap.end()) ? 1 : 0;
 }
 
-ContainedSpace&
+ContainedComp&
 ContainedGroup::addCC(const std::string& Key)
   /*!
     Add a component to the group
     \param Key :: Key to add
-    \return ContainedSpace
+    \return ContainedComp
   */
 {
   ELog::RegMethod RegA("ContainedGroup","addCC");
@@ -215,12 +213,12 @@ ContainedGroup::addCC(const std::string& Key)
   if (mc!=CMap.end())
     throw ColErr::InContainerError<std::string>(Key,"Key in CMap");
 
-  CMap.insert(CTYPE::value_type(Key,ContainedSpace()));  
+  CMap.insert(CTYPE::value_type(Key,ContainedComp()));  
   mc=CMap.find(Key);
   return mc->second;
 }
 
-ContainedSpace&
+ContainedComp&
 ContainedGroup::getCC(const std::string& Key)
   /*!
     Determine the component from the key
@@ -236,7 +234,7 @@ ContainedGroup::getCC(const std::string& Key)
   return mc->second;
 }
 
-const ContainedSpace&
+const ContainedComp&
 ContainedGroup::getCC(const std::string& Key) const
 /*!
   Determine the key 
@@ -496,6 +494,21 @@ ContainedGroup::addAllInsertCell(const ContainedComp& CC)
 }
 
 void 
+ContainedGroup::addAllInsertCell(const std::vector<int>& CVec)
+  /*!
+    Adds a cell to the insert list [for all]
+    \param CVec :: Cell numbers
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addAllInsertCell(vec)");
+  CTYPE::iterator mc;
+  for(mc=CMap.begin();mc!=CMap.end();mc++)
+    mc->second.addInsertCell(CVec);
+  
+  return;
+}
+
+void 
 ContainedGroup::setInsertCell(const std::string& Key,
 			      const int CN)
   /*!
@@ -555,6 +568,23 @@ ContainedGroup::insertInCell(const std::string& Key,
 }
 
 void 
+ContainedGroup::insertAllInCell(Simulation& System,
+				const int CN)
+  /*!
+    Inserts all contained components into the cell 
+    \param System :: Simulation to get cells
+    \param CN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","insertInCell");
+  CTYPE::iterator mc;
+  for(CTYPE::value_type& mc : CMap)
+    mc.second.insertInCell(System,CN);
+
+  return;
+}
+
+void 
 ContainedGroup::insertInCell(const std::string& Key,
 			     Simulation& System,
 			     const std::vector<int>& CVec)
@@ -570,72 +600,20 @@ ContainedGroup::insertInCell(const std::string& Key,
   return;
 }
   
-
-void
-ContainedGroup::registerSpaceCut(const std::string& Key,
-				 const long int linkA,
-				 const long int linkB)
-  /*!
-    Register the surface space
-    \param Key :: Group name
-    \param linkA :: Signed link point
-    \param linkB :: Signed link point
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","registerSpaceCut");
-  
-  getCC(Key).registerSpaceCut(linkA,linkB);
-  return;
-}
-
-void
-ContainedGroup::clearSpace(const std::string& Key)
-  /*!
-    Clear a SpaceCut
-    \param Key :: Group name
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","clearSpace");
-  
-  getCC(Key).clear();
-  return;
-}
-
-void
-ContainedGroup::setPrimaryCell(const std::string& Key,
-			       const int cellN)
-  /*!
-    Set primary cell
-    \param Key :: Group name
-    \param cellN :: Cell number
-  */
-{
-  ELog::RegMethod RegA("ContainedGroup","setPrimaryCell");
-  
-  getCC(Key).setPrimaryCell(cellN);
-  return;
-}
-
-
 void
 ContainedGroup::insertObjects(Simulation& System)
   /*!
-    Create outer virtual space that includes the beamstop etc
+    Insert all the objects into appropiate cells
     \param System :: Simulation to add to 
   */
 {
   ELog::RegMethod RegA("ContainedGroup","insertObjects");
   
   CTYPE::iterator mc;
-  attachSystem::FixedComp* FCPtr=dynamic_cast<FixedComp*>(this);
 
   for(mc=CMap.begin();mc!=CMap.end();mc++)
-    {
-      if (FCPtr)
-	mc->second.insertObjects(System,*FCPtr);
-      else
-	mc->second.insertObjects(System);
-    }
+    mc->second.insertObjects(System);
+
       
 	
   return;

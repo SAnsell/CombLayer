@@ -72,7 +72,6 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -83,7 +82,7 @@ namespace xraySystem
 {
 
 LCollimator::LCollimator(const std::string& Key) :
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!

@@ -69,7 +69,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"

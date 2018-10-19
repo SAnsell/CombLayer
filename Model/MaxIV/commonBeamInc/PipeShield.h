@@ -34,7 +34,7 @@ namespace xraySystem
     \brief Extra beam stop for opticshutch
   */
   
-class PipeShield : public attachSystem::ContainedSpace,
+class PipeShield : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,

@@ -381,7 +381,7 @@ FixedComp::reOrientate(const size_t index,
     \param ADir :: axis direction
    */
 {
-  ELog::RegMethod RegA("FixedComp","reorientate");
+  ELog::RegMethod RegA("FixedComp","reOrientate");
   
   if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
