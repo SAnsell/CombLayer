@@ -177,10 +177,13 @@ BALDER::build(Simulation& System,
   ringCaveB->createAll(System,*ringCaveA,
 		       ringCaveA->getSideIndex("connectPt"));
 
-
+  frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
+  frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
+  
   const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
+
   return;
   
   if (stopPoint=="frontEnd") return;

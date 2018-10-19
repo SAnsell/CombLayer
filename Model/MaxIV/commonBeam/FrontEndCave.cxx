@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -92,6 +91,7 @@ FrontEndCave::FrontEndCave(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   mazeActive(0),doorActive(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -190,7 +190,12 @@ FrontEndCave::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
+  // get primary and use that: [not ideal but will do]
+  const HeadRule& HR=ExternalCut::getRule("front");
+  SurfMap::addSurf("BeamFront",SMap.realSurf(HR.getPrimarySurface()));
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  SurfMap::addSurf("BeamInner",-SMap.realSurf(buildIndex+2));
+  
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerGap,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringGap,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);

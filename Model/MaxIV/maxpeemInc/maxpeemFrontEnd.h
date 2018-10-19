@@ -117,6 +117,7 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowE;
+
   /// Variable Apperature pipe
   std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
   /// L collimator
