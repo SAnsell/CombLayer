@@ -194,7 +194,6 @@ RingDoor::createSurfaces()
 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
 
 
-  ELog::EM<<"Inner Thick == "<<innerThick<<ELog::endDiag;
   ExternalCut::makeExpandedSurf
     (SMap,"innerWall",buildIndex+200,Origin,innerThick);
   ExternalCut::makeExpandedSurf

@@ -409,12 +409,8 @@ balderFrontEnd::buildHeatTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,
 				PIA,PIA.getSideIndex("OuterPlate"));
   heatBox->insertAllInCell(System,outerCell);
-<<<<<<< HEAD
-    
-=======
 
 
->>>>>>> 4b4c66ee3ca3722ee8ac8f1f533e4ee3bbfaee83
   // cant use heatbox here because of port rotation
   
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
@@ -714,7 +710,6 @@ balderFrontEnd::buildObjects(Simulation& System)
 
   lastComp=wigglerBox;
 
-  return;
 
   exitPipe->createAll(System,*bellowK,2);
   outerCell=createOuterVoidUnit(System,masterCell,*exitPipe,2);

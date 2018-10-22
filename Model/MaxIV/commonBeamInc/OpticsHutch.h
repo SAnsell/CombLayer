@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/OpticsHutch.h
+ * File:   commonBeamInc/OpticsHutch.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -80,6 +80,8 @@ class OpticsHutch :
   int pbMat;                  ///< pb layer material for walls 
   int floorMat;               ///< Floor layer
 
+  double beamTubeRadius;      ///< Void to construct components in
+  
   /// Chicanes 
   std::vector<std::shared_ptr<PortChicane>> PChicane;  
   

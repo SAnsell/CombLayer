@@ -552,16 +552,13 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,145.0);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
 
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
   moveApertureTable(Control,frontKey);
   shutterTable(Control,frontKey);
   
-  PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"FlightPipe",0,333.0);
-
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
 
@@ -581,6 +578,8 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
 
+  Control.addVariable(hutName+"BeamTubeRadius",50.0);
+  
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1034.6);
@@ -1094,8 +1093,8 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wallVariables(Control,"BalderWallLead");
   
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,178.0);
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,173.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

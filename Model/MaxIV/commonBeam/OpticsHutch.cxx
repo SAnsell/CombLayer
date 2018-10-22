@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -213,6 +212,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
+  beamTubeRadius=Control.EvalDefVar<double>(keyName+"BeamTubeRadius",0.0);
   
   return;
 }
@@ -243,6 +243,12 @@ OpticsHutch::createSurfaces()
   */
 {
   ELog::RegMethod RegA("OpticsHutch","createSurfaces");
+
+  if (beamTubeRadius>Geometry::zeroTol)
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+3007,Origin,Y,beamTubeRadius);
+      setSurf("BeamTube",-SMap.realSurf(buildIndex+3007));
+    }
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -353,15 +359,20 @@ OpticsHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 (-4:-104) 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 (-4:-104) 5 -6 3007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 3007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
 
+  if (beamTubeRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3007");
+      makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
+    }
 
   // walls:
   int HI(buildIndex);
