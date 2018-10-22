@@ -97,6 +97,7 @@
 #include "FlangeMount.h"
 #include "BeamMount.h"
 #include "FrontEndCave.h"
+#include "WallLead.h"
 #include "balderFrontEnd.h"
 #include "OpticsBeamline.h"
 #include "ConnectZone.h"
@@ -112,6 +113,7 @@ BALDER::BALDER(const std::string& KN) :
   ringCaveA(new FrontEndCave(newName+"RingCaveA")),
   ringCaveB(new FrontEndCave(newName+"RingCaveB")),
   frontBeam(new balderFrontEnd(newName+"FrontBeam")),
+  wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new OpticsBeamline(newName+"OpticsLine")),
@@ -134,6 +136,7 @@ BALDER::BALDER(const std::string& KN) :
   OR.addObject(ringCaveA);
   OR.addObject(ringCaveB);
   OR.addObject(frontBeam);
+  OR.addObject(wallLead);
   OR.addObject(joinPipe);
   
   OR.addObject(opticsHut);
@@ -177,12 +180,18 @@ BALDER::build(Simulation& System,
   ringCaveB->createAll(System,*ringCaveA,
 		       ringCaveA->getSideIndex("connectPt"));
 
-
+  frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
+  frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
+  
   const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
-  return;
-  
+
+  wallLead->addInsertCell(ringCaveA->getCell("FrontWall"));
+  wallLead->setFront(-ringCaveA->getSurf("BeamInner"));
+  wallLead->setBack(-ringCaveA->getSurf("BeamOuter"));
+  wallLead->createAll(System,FCOrigin,sideIndex);
+
   if (stopPoint=="frontEnd") return;
 
   opticsHut->addInsertCell(voidCell);
@@ -198,7 +207,13 @@ BALDER::build(Simulation& System,
   ringCaveB->insertComponent
     (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
 
+  // joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
+  // joinPipe->addInsertCell(wallLead->getCell("Void"));
+  // joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
+  // joinPipe->addInsertCell(opticsHut->getCell("BeamVoid"));
+  // joinPipe->createAll(System,*frontBeam,2);
 
+  return;
   joinPipe->addInsertCell(ringCaveA->getCell("Void"));
   joinPipe->addInsertCell(ringCaveA->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));

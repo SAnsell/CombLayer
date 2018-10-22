@@ -36,8 +36,6 @@ namespace constructSystem
   class JawValve;
 }
 
-
-
 /*!
   \namespace xraySystem
   \brief General xray optics system
@@ -57,6 +55,7 @@ namespace xraySystem
   class ConnectZone;
   class balderFrontEnd;
   class PipeShield;
+  class WallLead;
   
   /*!
     \class BALDER
@@ -79,6 +78,7 @@ class BALDER : public attachSystem::CopiedComp
 
   /// the components in the front end
   std::shared_ptr<balderFrontEnd> frontBeam;
+  std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
