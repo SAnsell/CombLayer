@@ -345,11 +345,16 @@ maxpeemFrontEnd::constructMasterCell(Simulation& System)
    
 void
 maxpeemFrontEnd::buildHeatTable(Simulation& System,
-				MonteCarlo::Object& masterCell)
+				MonteCarlo::Object& masterCell,
+				const attachSystem::FixedComp& preFC,
+				const long int preSideIndex)
+
   /*!
     Build the heatDump table
     \param System :: Simulation to use
     \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildHeatTable");
@@ -358,7 +363,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   // FAKE insertcell:
   heatBox->addAllInsertCell(masterCell.getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,*heatPipe,2);
+  heatBox->createAll(System,preFC,preSideIndex);
 
   const constructSystem::portItem& PIA=heatBox->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
@@ -404,32 +409,37 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
 void
 maxpeemFrontEnd::buildApertureTable(Simulation& System,
-				    MonteCarlo::Object& masterCell)
+				    MonteCarlo::Object& masterCell,
+				    const attachSystem::FixedComp& preFC,
+				    const long int preSideIndex)
+  
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
     \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildApertureTable");
 
   int outerCell;
   // NOTE order for master cell [Next 4 object
-  aperturePipe->createAll(System,*pipeB,2);
+  aperturePipe->createAll(System,preFC,preSideIndex);
   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
   moveCollA->createAll(System,*aperturePipe,0);
   
   // bellows AFTER movable aperture pipe
-  bellowE->setFront(*pipeB,2);
+  bellowE->setFront(preFC,preSideIndex);
   bellowE->setBack(*aperturePipe,1);
-  bellowE->createAll(System,*pipeB,2);
+  bellowE->createAll(System,preFC,preSideIndex);
 
-  ionPC->createAll(System,*pipeB,2);
+  ionPC->createAll(System,preFC,preSideIndex);
 
   // bellows AFTER aperature ionpump and ion pump
   bellowF->setFront(*aperturePipe,2);
   bellowF->setBack(*ionPC,1);
-  bellowF->createAll(System,*pipeB,2);
+  bellowF->createAll(System,preFC,preSideIndex);
 
   // now do insert:
   outerCell=createOuterVoidUnit(System,masterCell,*bellowE,2);
@@ -482,17 +492,22 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
 
 void
 maxpeemFrontEnd::buildShutterTable(Simulation& System,
-				   MonteCarlo::Object& masterCell)
+				   MonteCarlo::Object& masterCell,
+				   const attachSystem::FixedComp& preFC,
+				   const long int preSideIndex)
+
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
     \param masterCell :: Main cell for insertion
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildShutterTable");
   int outerCell;
   
-  gateA->createAll(System,*pipeC,2);
+  gateA->createAll(System,preFC,preSideIndex);
   outerCell=createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
@@ -659,9 +674,9 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
 
-  buildHeatTable(System,masterCell);  
-  buildApertureTable(System,masterCell);
-  buildShutterTable(System,masterCell);
+  buildHeatTable(System,masterCell,*heatPipe,2);  
+  buildApertureTable(System,masterCell,*pipeB,2);
+  buildShutterTable(System,masterCell,*pipeC,2);
 
   lastComp=bellowK;
   
