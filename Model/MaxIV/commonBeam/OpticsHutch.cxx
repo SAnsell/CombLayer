@@ -71,7 +71,6 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -473,7 +472,6 @@ OpticsHutch::createLinks()
   // inner surf
   setConnect(2,Origin+Y*length,-Y);
   setLinkSurf(2,-SMap.realSurf(buildIndex+2));
-  nameSideIndex(2,"innerBack");
 
   // outer surf
   setConnect(3,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
@@ -505,6 +503,9 @@ OpticsHutch::createLinks()
   
   setLinkSurf(11,SMap.realSurf(buildIndex+1));
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
+
+  nameSideIndex(11,"innerFront");
+  nameSideIndex(12,"innerBack");
 
   // inner surf
   setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);

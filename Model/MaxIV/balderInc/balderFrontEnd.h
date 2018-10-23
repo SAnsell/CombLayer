@@ -74,7 +74,8 @@ class balderFrontEnd :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::FrontBackCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 

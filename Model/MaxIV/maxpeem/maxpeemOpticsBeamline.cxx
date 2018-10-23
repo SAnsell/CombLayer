@@ -318,8 +318,12 @@ maxpeemOpticsBeamline::constructDivideCell(Simulation& System,
  /*!
     Construct outer void object main pipe
     \param System :: Simulation
+    \param plusSide :: 
     \param FFC :: Front FC
+    \param frontIndex :: Index of front link point
     \param BFC :: Back FC
+    \param backIndex :: Index of back link point
+    \return new cell number
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","constructDivideCell");
@@ -843,7 +847,7 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   HeadRule divider;
   
   int outerCell;
-  // dummy space for first itme
+  // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
   bellowA->createAll(System,*this,0);

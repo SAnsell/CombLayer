@@ -110,6 +110,7 @@ balderFrontEnd::balderFrontEnd(const std::string& Key) :
   attachSystem::FixedOffset(newName,2),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
 
   wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
   wiggler(new Wiggler(newName+"Wiggler")),
@@ -350,12 +351,8 @@ balderFrontEnd::constructMasterCell(Simulation& System)
   addOuterSurf(Out);
   insertObjects(System);
 
-  ELog::EM<<"Cell = "<<cellIndex<<ELog::endDiag;
-  ELog::EM<<"BACK = "<<backRule()<<" :: "<<frontRule()<<ELog::endDiag;
   MonteCarlo::Object* OPtr= System.findQhull(cellIndex-1);
-  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
   return *OPtr;
-  return *System.findQhull(cellIndex-1);
 }
 
 void
@@ -370,7 +367,7 @@ balderFrontEnd::insertFlanges(Simulation& System,
 {
   ELog::RegMethod RegA("balderFrontEnd","insertFlanges");
   
-  const size_t voidN=this->getNItems("OuterVoid")-3;
+  const size_t voidN=CellMap::getNItems("OuterVoid")-3;
 
   this->insertComponent(System,"OuterVoid",voidN,
 			PT.getFullRule("FlangeA"));

@@ -45,12 +45,6 @@ namespace ModelSupport
   class ObjSurfMap;
 }
 
-namespace WeightSystem
-{
-  class WeightMesh;
-  class WeightControl;
-}
-
 namespace MonteCarlo
 {
   class Object;
@@ -94,7 +88,7 @@ class Simulation : public objectGroups
   size_t cellCNF;                       ///< max size to convert into CNF
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
-  std::set<int> voidCells;              ///< List of void cells
+  //   std::set<int> voidCells;              ///< List of void cells
 
   std::string sourceName;               ///< Source name
   
@@ -178,11 +172,6 @@ class Simulation : public objectGroups
   int addCell(const int,const int,const double,const std::string&);
   int addCell(const int,const int,const double,const HeadRule&);
 
-  // LIST Stuff
-
-  void reZeroFromVertex(const int,const unsigned int,const unsigned int,
-			const unsigned int,const unsigned int,Geometry::Vec3D&,
-			Geometry::Matrix<double>&);
 
   /// Get values
 
