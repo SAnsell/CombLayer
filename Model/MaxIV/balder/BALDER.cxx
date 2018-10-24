@@ -165,7 +165,7 @@ BALDER::build(Simulation& System,
     \param System :: Simulation system
     \param FCOrigin :: Start origin
     \param sideIndex :: link point for origin
-   */
+  */
 {
   // For output stream
   ELog::RegMethod RControl("BALDER","build");
@@ -198,7 +198,7 @@ BALDER::build(Simulation& System,
   opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
   opticsHut->createAll(System,*ringCaveA,2);
 
-  // UgLY HACK to get the two objects to merge
+  // Ugly HACK to get the two objects to merge
   const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
   ringCaveB->insertComponent
     (System,"OuterWall",*opticsHut,opticsHut->getSideIndex("frontCut"));
@@ -219,7 +219,7 @@ BALDER::build(Simulation& System,
   opticsBeam->setCell("MasterVoid",opticsHut->getCell("BeamVoid"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
-  opticsBeam->setCutSurf("back",*opticsHut,
+  opticsBeam->setCutSurf("innerBack",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   
   opticsBeam->setCutSurf("beam",opticsHut->getSurf("BeamTube"));  

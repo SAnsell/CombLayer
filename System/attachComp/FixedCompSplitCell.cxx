@@ -109,6 +109,7 @@ FixedComp::splitObject(Simulation& System,
     System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
 
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
+	
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);
 
@@ -191,7 +192,7 @@ FixedComp::splitObject(Simulation& System,
       OutCell.push_back(CN);
       
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
-      if (CMapPtr)
+      if (CMapPtr)	
 	CMapPtr->registerExtra(cellN,CN);
       SN++;
     }
