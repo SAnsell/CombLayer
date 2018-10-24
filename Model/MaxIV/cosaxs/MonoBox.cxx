@@ -72,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -86,7 +85,7 @@ namespace xraySystem
 MonoBox::MonoBox(const std::string& Key,
 		       const bool flag) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
   /*!

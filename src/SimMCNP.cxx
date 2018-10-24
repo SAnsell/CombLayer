@@ -631,7 +631,14 @@ SimMCNP::writePhysics(std::ostream& OX) const
 	    OX<<"           "<< *vc<<std::endl;
 	}
     }
-  
+
+  std::set<int> voidCells;
+  for(const std::pair<int,MonteCarlo::Qhull*>& OVal : OList)
+    {
+      if (!OVal.second->getMat())
+	voidCells.insert(OVal.first);
+    }
+
   // Remaining Physics cards
   PhysPtr->write(OX,cellOutOrder,voidCells);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;

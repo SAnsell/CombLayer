@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -73,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -191,6 +189,10 @@ maxpeemOpticsHut::createSurfaces()
 			   Origin+X*ringLongWidth+Y*fullLen+Z,
 			   X);
 
+  SurfMap::setSurf("InnerCorner",SMap.realSurf(buildIndex+14));
+  SurfMap::setSurf("InnerShort",SMap.realSurf(buildIndex+24));
+  SurfMap::setSurf("InnerRoof",SMap.realSurf(buildIndex+6));
+  
   if (innerFarVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1003,Origin-X*(outWidth-innerFarVoid),X);  
@@ -255,7 +257,10 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3002,
 			     Origin+Y*(length+TB+extension),Y);
   ModelSupport::buildPlane(SMap,buildIndex+1303,
-			     Origin-X*(outWidth+TW+outerFarVoid),X);  
+			     Origin-X*(outWidth+TW+outerFarVoid),X);
+
+  SurfMap::setSurf("OuterCorner",SMap.realSurf(buildIndex+314));
+  SurfMap::setSurf("OuterRoof",SMap.realSurf(buildIndex+306));
   return;
 }
 

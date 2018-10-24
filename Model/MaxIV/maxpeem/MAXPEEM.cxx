@@ -65,7 +65,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -175,6 +174,7 @@ MAXPEEM::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
 
   
+  
   opticsBeam->setCell("MasterVoid",opticsHut->getCell("BeamVoid"));
   opticsBeam->setCutSurf
     ("front",*opticsHut,opticsHut->getSideIndex("innerFront"));
@@ -185,7 +185,7 @@ MAXPEEM::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
   opticsBeam->buildOutGoingPipes(System,opticsHut->getCells("Back"),
 				 opticsHut->getCell("Extension"));
-
+  
   return;
 }
 

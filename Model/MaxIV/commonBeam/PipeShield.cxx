@@ -72,7 +72,6 @@
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -83,7 +82,7 @@ namespace xraySystem
 {
 
 PipeShield::PipeShield(const std::string& Key) :
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -94,7 +93,7 @@ PipeShield::PipeShield(const std::string& Key) :
 {}
 
 PipeShield::PipeShield(const PipeShield& A) : 
-  attachSystem::ContainedSpace(A),
+  attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
   height(A.height),width(A.width),length(A.length),
@@ -116,7 +115,7 @@ PipeShield::operator=(const PipeShield& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);

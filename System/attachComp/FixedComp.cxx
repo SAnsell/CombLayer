@@ -381,7 +381,7 @@ FixedComp::reOrientate(const size_t index,
     \param ADir :: axis direction
    */
 {
-  ELog::RegMethod RegA("FixedComp","reorientate");
+  ELog::RegMethod RegA("FixedComp","reOrientate");
   
   if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
@@ -1334,6 +1334,42 @@ FixedComp::getSideIndex(const std::string& sideName) const
         return 0;
     }
   throw ColErr::InContainerError<std::string>(sideName,"sideName");
+}
+
+bool
+FixedComp::hasSideIndex(const std::string& sideName) const
+  /*!
+    Find the object has a side ined
+    \param sideName :: Name with +/- at front if require to change 
+    \return true if possible
+  */
+{
+  ELog::RegMethod RegA("FixedComp","hasSideIndex");
+
+  if (sideName.empty()) return 0;
+
+  // return numbers:
+  long int linkPt(0);
+  size_t lp;
+  if (StrFunc::convert(sideName,linkPt))
+    {
+      if (!linkPt) return 1;      // Origin true
+      lp=std::abs(linkPt)-1;
+    }
+  else
+    {
+      const std::string partName=
+        (sideName[0]=='+' || sideName[0]=='-' || sideName[0]=='#') ?
+           sideName.substr(1) : sideName;
+
+      std::map<std::string,size_t>::const_iterator mc=
+        keyMap.find(partName);
+      
+      lp= (mc!=keyMap.end()) ?  mc->second : LU.size();      
+      if (partName=="Origin" || partName=="origin")
+        return 1;
+    }
+  return (lp<LU.size()) ? LU[lp].isComplete() : 0;
 }
   
 std::vector<Geometry::Vec3D>

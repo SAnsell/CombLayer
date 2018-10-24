@@ -124,6 +124,7 @@ RingDoor::createUnitVector(const attachSystem::FixedComp& FC,
 				 const long int sideIndex)
   /*!
     Create the unit vectors: Note only to construct front/back surf
+    Note that Y points OUT of the ring
     \param FC :: Centre point
     \param sideIndex :: Side index
   */
@@ -131,8 +132,20 @@ RingDoor::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("RingDoor","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
+  const HeadRule& HR=ExternalCut::getRule("innerWall");
+
+  const int SN=HR.getPrimarySurface();
+  const Geometry::Plane* PPtr=
+    dynamic_cast<const Geometry::Plane*>(HR.getSurface(SN));
+
+  if (PPtr)
+    {
+      Geometry::Vec3D PAxis=PPtr->getNormal();
+      if (Y.dotProd(PAxis)*SN < 0)
+	PAxis*=-1;
+      FixedComp::reOrientate(1,PAxis);
+    }  
   applyOffset();
-  
   return;
 }
 
@@ -201,6 +214,7 @@ RingDoor::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=ExternalCut::getRuleStr("innerWall");
   const std::string outerStr=ExternalCut::getRuleStr("outerWall");
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"200 3 -4 5 -6 ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr);
 
@@ -236,6 +250,7 @@ void
 RingDoor::createLinks()
   /*!
     Construct the links for the system
+    Note that Y points OUT of the ring
   */
 {
   ELog::RegMethod RegA("RingDoor","createLinks");

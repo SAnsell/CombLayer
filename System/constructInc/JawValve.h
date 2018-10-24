@@ -37,7 +37,7 @@ namespace constructSystem
 
 class JawValve :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut

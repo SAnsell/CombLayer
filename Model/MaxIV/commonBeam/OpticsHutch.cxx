@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -72,8 +71,6 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -214,6 +211,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
+  beamTubeRadius=Control.EvalDefVar<double>(keyName+"BeamTubeRadius",0.0);
   
   return;
 }
@@ -244,6 +242,12 @@ OpticsHutch::createSurfaces()
   */
 {
   ELog::RegMethod RegA("OpticsHutch","createSurfaces");
+
+  if (beamTubeRadius>Geometry::zeroTol)
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+3007,Origin,Y,beamTubeRadius);
+      setSurf("BeamTube",-SMap.realSurf(buildIndex+3007));
+    }
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -354,15 +358,20 @@ OpticsHutch::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
       makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 (-4:-104) 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 (-4:-104) 5 -6 3007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 3007 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
 
+  if (beamTubeRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3007");
+      makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
+    }
 
   // walls:
   int HI(buildIndex);
@@ -463,7 +472,6 @@ OpticsHutch::createLinks()
   // inner surf
   setConnect(2,Origin+Y*length,-Y);
   setLinkSurf(2,-SMap.realSurf(buildIndex+2));
-  nameSideIndex(2,"innerBack");
 
   // outer surf
   setConnect(3,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
@@ -495,6 +503,9 @@ OpticsHutch::createLinks()
   
   setLinkSurf(11,SMap.realSurf(buildIndex+1));
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
+
+  nameSideIndex(11,"innerFront");
+  nameSideIndex(12,"innerBack");
 
   // inner surf
   setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
@@ -548,7 +559,6 @@ OpticsHutch::createChicane(Simulation& System)
 
   for(size_t i=0;i<NChicane;i++)
     {
-      ELog::EM<<"ADSFASDF "<<ELog::endDiag;
       const std::string NStr(std::to_string(i));
       std::shared_ptr<PortChicane> PItem=
 	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
@@ -561,24 +571,10 @@ OpticsHutch::createChicane(Simulation& System)
       // set surfaces:
 
       PItem->setCutSurf("innerWall",*this,"innerLeftWall");
-      PItem->setCutSurf("outerWall",*this,"leftWall");
-
-      PItem->setPrimaryCell("Main",getCell("WallVoid"));
-  
-      PItem->registerSpaceCut("Main",
-			      PItem->getSideIndex("innerLeft"),
-			      PItem->getSideIndex("innerRight"));
-
-      
+      PItem->setCutSurf("outerWall",*this,"leftWall");      
       PItem->createAll(System,*this,getSideIndex("leftWall"));
-
-      PItem->clearSpace("Main");
       PItem->addInsertCell("Main",getCell("OuterVoid",0));
 
-      PItem->setPrimaryCell("Main",getCell("OuterVoid"));
-      PItem->registerSpaceCut("Main",
-			      PItem->getSideIndex("outerLeft"),
-			      PItem->getSideIndex("outerRight"));
       PItem->insertObjects(System);
       PChicane.push_back(PItem);
       //      PItem->splitObject(System,23,getCell("WallVoid"));

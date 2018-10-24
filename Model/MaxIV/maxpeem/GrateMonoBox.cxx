@@ -72,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -85,7 +84,7 @@ namespace xraySystem
 
 GrateMonoBox::GrateMonoBox(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),centreOrigin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

@@ -63,12 +63,11 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -85,6 +84,7 @@
 #include "insertCylinder.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "LCollimator.h"
 #include "GateValve.h"
 #include "OffsetFlangePipe.h"
 #include "VacuumBox.h"
@@ -110,7 +110,7 @@ balderFrontEnd::balderFrontEnd(const std::string& Key) :
   attachSystem::FixedOffset(newName,2),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
-
+  attachSystem::SurfMap(),
 
   wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
   wiggler(new Wiggler(newName+"Wiggler")),
@@ -127,13 +127,24 @@ balderFrontEnd::balderFrontEnd(const std::string& Key) :
   collC(new xraySystem::SqrCollimator(newName+"CollC")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
-  heatBox(new constructSystem::PortTube(newName+"HeatBox")),
+  heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
 
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
+  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),  
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
+  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  
   gateA(new constructSystem::GateValve(newName+"GateA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
@@ -176,9 +187,32 @@ balderFrontEnd::balderFrontEnd(const std::string& Key) :
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
   OR.addObject(heatDump);    
+
+
+  OR.addObject(pipeB);
+  OR.addObject(bellowE);
+  OR.addObject(aperturePipe);
+  OR.addObject(moveCollA);
+  OR.addObject(bellowF);
+  OR.addObject(ionPC);
+  OR.addObject(bellowG);
+  OR.addObject(aperturePipeB);
+  OR.addObject(moveCollB);
+  OR.addObject(bellowH);
+  OR.addObject(pipeC);
+
+  OR.addObject(gateA);
+  OR.addObject(bellowI);
+  OR.addObject(florTubeA);
+  OR.addObject(bellowJ);
+  OR.addObject(gateTubeB);
+  OR.addObject(offPipeA);
   OR.addObject(shutterBox);
   OR.addObject(shutters[0]);
   OR.addObject(shutters[1]);
+  OR.addObject(offPipeB);
+  OR.addObject(bellowK);
+
   OR.addObject(exitPipe);
 }
   
@@ -195,6 +229,7 @@ balderFrontEnd::populate(const FuncDataBase& Control)
    */
 {
   FixedOffset::populate(Control);
+  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
   return;
 }
 
@@ -228,6 +263,7 @@ balderFrontEnd::createSurfaces()
 
   if (outerRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
@@ -315,7 +351,8 @@ balderFrontEnd::constructMasterCell(Simulation& System)
   addOuterSurf(Out);
   insertObjects(System);
 
-  return *System.findQhull(cellIndex-1);
+  MonteCarlo::Object* OPtr= System.findQhull(cellIndex-1);
+  return *OPtr;
 }
 
 void
@@ -330,7 +367,7 @@ balderFrontEnd::insertFlanges(Simulation& System,
 {
   ELog::RegMethod RegA("balderFrontEnd","insertFlanges");
   
-  const size_t voidN=this->getNItems("OuterVoid")-3;
+  const size_t voidN=CellMap::getNItems("OuterVoid")-3;
 
   this->insertComponent(System,"OuterVoid",voidN,
 			PT.getFullRule("FlangeA"));
@@ -361,15 +398,16 @@ balderFrontEnd::buildHeatTable(Simulation& System,
 
   int outerCell;
   // FAKE insertcell:
-  heatBox->addInsertCell(masterCell.getName());
+  heatBox->addAllInsertCell(masterCell.getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,preFC,preSideIndex);
 
   const constructSystem::portItem& PIA=heatBox->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				PIA,PIA.getSideIndex("OuterPlate"));
-  heatBox->insertInCell(System,outerCell);
-    
+  heatBox->insertAllInCell(System,outerCell);
+
+
   // cant use heatbox here because of port rotation
   
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
@@ -384,14 +422,14 @@ balderFrontEnd::buildHeatTable(Simulation& System,
 
 
   // FAKE insertcell:
-  gateTubeA->addInsertCell(masterCell.getName());
+  gateTubeA->addAllInsertCell(masterCell.getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*bellowD,2);  
 
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeA->insertInCell(System,outerCell);
+  gateTubeA->insertAllInCell(System,outerCell);
   
   ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*ionPB,2);
@@ -408,12 +446,96 @@ balderFrontEnd::buildHeatTable(Simulation& System,
 }
 
 void
+balderFrontEnd::buildApertureTable(Simulation& System,
+				   MonteCarlo::Object& masterCell,
+				   const attachSystem::FixedComp& preFC,
+				   const long int preSideIndex)
+  
+  /*!
+    Build the moveable aperature table
+    \param System :: Simulation to use
+    \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
+  */
+{
+  ELog::RegMethod RegA("maxpeemFrontEnd","buildApertureTable");
+
+  int outerCell;
+  // NOTE order for master cell [Next 4 object
+  aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
+  moveCollA->addInsertCell(aperturePipe->getCell("Void"));
+  moveCollA->createAll(System,*aperturePipe,0);
+  
+  // bellows AFTER movable aperture pipe
+  bellowE->setFront(preFC,preSideIndex);
+  bellowE->setBack(*aperturePipe,1);
+  bellowE->createAll(System,preFC,preSideIndex);
+
+  ionPC->createAll(System,preFC,preSideIndex);
+
+  // bellows AFTER aperature ionpump and ion pump
+  bellowF->setFront(*aperturePipe,2);
+  bellowF->setBack(*ionPC,1);
+  bellowF->createAll(System,preFC,preSideIndex);
+
+  // now do insert:
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowE,2);
+  bellowE->insertInCell(System,outerCell);
+    
+  outerCell=createOuterVoidUnit(System,masterCell,*aperturePipe,2);
+  aperturePipe->insertInCell(System,outerCell);
+  
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowF,2);
+  bellowF->insertInCell(System,outerCell);
+
+  outerCell=createOuterVoidUnit(System,masterCell,*ionPC,2);
+  ionPC->insertInCell(System,outerCell);
+
+
+  // Next 4 objects need to be build before insertion
+  aperturePipeB->createAll(System,*ionPC,2);
+  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
+  moveCollB->createAll(System,*aperturePipeB,0);
+
+  // bellows AFTER movable aperture pipe
+  bellowG->setFront(*ionPC,2);
+  bellowG->setBack(*aperturePipeB,1);
+  bellowG->createAll(System,*ionPC,2);
+
+  pipeC->createAll(System,*ionPC,2);
+
+  // bellows AFTER movable aperture pipe
+  bellowH->setFront(*aperturePipeB,2);
+  bellowH->setBack(*pipeC,1);
+  bellowH->createAll(System,*ionPC,2);
+
+
+  // now do insert:
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowG,2);
+  bellowG->insertInCell(System,outerCell);
+    
+  outerCell=createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
+  aperturePipeB->insertInCell(System,outerCell);
+  
+  outerCell=createOuterVoidUnit(System,masterCell,*bellowH,2);
+  bellowH->insertInCell(System,outerCell);
+
+  outerCell=createOuterVoidUnit(System,masterCell,*pipeC,2);
+  pipeC->insertInCell(System,outerCell);
+
+  
+  return;
+}
+
+  
+void
 balderFrontEnd::buildShutterTable(Simulation& System,
 				   MonteCarlo::Object& masterCell,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
   /*!
-    Build the moveable aperature table
+    Build the shutter block table
     \param System :: Simulation to use
     \param masterCell :: Main cell for insertion
     \param preFC :: initial Fixedcomp 
@@ -432,13 +554,13 @@ balderFrontEnd::buildShutterTable(Simulation& System,
   outerCell=createOuterVoidUnit(System,masterCell,*bellowI,2);
   bellowI->insertInCell(System,outerCell);
 
-  florTubeA->addInsertCell(masterCell.getName());
+  florTubeA->addAllInsertCell(masterCell.getName());
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				FPI,FPI.getSideIndex("OuterPlate"));
-  florTubeA->insertInCell(System,outerCell);
+  florTubeA->insertAllInCell(System,outerCell);
   
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
@@ -448,13 +570,13 @@ balderFrontEnd::buildShutterTable(Simulation& System,
   insertFlanges(System,*florTubeA);
 
   // FAKE insertcell:
-  gateTubeB->addInsertCell(masterCell.getName());
+  gateTubeB->addAllInsertCell(masterCell.getName());
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeB->insertInCell(System,outerCell);
+  gateTubeB->insertAllInCell(System,outerCell);
 
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*offPipeA,2);
@@ -466,7 +588,7 @@ balderFrontEnd::buildShutterTable(Simulation& System,
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
-  shutterBox->insertInCell(System,outerCell);
+  shutterBox->insertAllInCell(System,outerCell);
   
   cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
 				       shutterBox->getCell("Void"),
@@ -474,7 +596,7 @@ balderFrontEnd::buildShutterTable(Simulation& System,
   cellIndex=
     shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
-  shutterBox->addInsertCell(outerCell);
+  shutterBox->addAllInsertCell(outerCell);
   shutterBox->createPorts(System);
 
   for(size_t i=0;i<shutters.size();i++)
@@ -513,7 +635,7 @@ balderFrontEnd::buildObjects(Simulation& System)
 
   int outerCell;
   MonteCarlo::Object& masterCell=constructMasterCell(System);
-  
+
   wigglerBox->createAll(System,*this,0);
   outerCell=createOuterVoidUnit(System,masterCell,*wigglerBox,2);
   wigglerBox->insertInCell(System,outerCell);
@@ -521,7 +643,6 @@ balderFrontEnd::buildObjects(Simulation& System)
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->insertInCell(System,outerCell);
 
-  
   dipolePipe->setFront(*wigglerBox,2);
   dipolePipe->createAll(System,*wigglerBox,2);
   outerCell=createOuterVoidUnit(System,masterCell,*dipolePipe,2);
@@ -538,7 +659,7 @@ balderFrontEnd::buildObjects(Simulation& System)
   collTubeA->setFront(*bellowA,2);
   collTubeA->createAll(System,*bellowA,2);
   outerCell=createOuterVoidUnit(System,masterCell,*collTubeA,2);
-  collTubeA->insertInCell(System,outerCell);
+  collTubeA->insertAllInCell(System,outerCell);
   
   collA->addInsertCell(collTubeA->getCell("Void"));
   collA->createAll(System,*collTubeA,0);
@@ -559,7 +680,7 @@ balderFrontEnd::buildObjects(Simulation& System)
   collTubeB->setFront(*bellowC,2);
   collTubeB->createAll(System,*bellowC,2);
   outerCell=createOuterVoidUnit(System,masterCell,*collTubeB,2);
-  collTubeB->insertInCell(System,outerCell);
+  collTubeB->insertAllInCell(System,outerCell);
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
@@ -568,7 +689,7 @@ balderFrontEnd::buildObjects(Simulation& System)
   collTubeC->setFront(*collTubeB,2);
   collTubeC->createAll(System,*collTubeB,2);
   outerCell=createOuterVoidUnit(System,masterCell,*collTubeC,2);
-  collTubeC->insertInCell(System,outerCell);
+  collTubeC->insertAllInCell(System,outerCell);
 
   collC->addInsertCell(collTubeC->getCell("Void"));
   collC->createAll(System,*collTubeC,0);
@@ -579,8 +700,12 @@ balderFrontEnd::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
+
   buildHeatTable(System,masterCell,*collExitPipe,2);
-  buildShutterTable(System,masterCell,*pipeB,2);
+  buildApertureTable(System,masterCell,*pipeB,2);
+  buildShutterTable(System,masterCell,*pipeC,2);
+
+  lastComp=wigglerBox;
 
 
   exitPipe->createAll(System,*bellowK,2);

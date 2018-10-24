@@ -55,6 +55,7 @@ namespace xraySystem
 {
 
   class HeatDump;
+  class LCollimator;
   class SqrCollimator;
   class SquareFMask;
   class Wiggler;
@@ -73,7 +74,8 @@ class balderFrontEnd :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::FrontBackCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
@@ -112,7 +114,7 @@ class balderFrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
   /// head dump port
-  std::shared_ptr<constructSystem::PortTube> heatBox;
+  std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Heat dump container
   std::shared_ptr<xraySystem::HeatDump> heatDump;
   /// bellow after HeatShield
@@ -124,6 +126,29 @@ class balderFrontEnd :
   /// Pipe to third optic table
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
+
+    /// bellows for third table
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// Variable Apperature pipe
+  std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
+  /// L collimator
+  std::shared_ptr<xraySystem::LCollimator> moveCollA;
+  /// bellows for third table
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPC;
+  /// bellows for second movable aperature
+  std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// Variable Apperature pipe B
+  std::shared_ptr<constructSystem::VacuumPipe> aperturePipeB;
+  /// L collimator
+  std::shared_ptr<xraySystem::LCollimator> moveCollB;
+  /// bellows for exit of moveable aperatures
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// Exit of movables
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+
+   
   /// Exit of movables [?]
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// bellows for florescence system

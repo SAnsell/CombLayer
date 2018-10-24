@@ -71,7 +71,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -82,7 +81,7 @@ namespace constructSystem
 {
 
 PipeCollimator::PipeCollimator(const std::string& Key) :
-  attachSystem::ContainedSpace(),attachSystem::FixedOffset(Key,2),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   setFlag(0)
   /*!
@@ -93,7 +92,7 @@ PipeCollimator::PipeCollimator(const std::string& Key) :
   
 
 PipeCollimator::PipeCollimator(const PipeCollimator& A) : 
-  attachSystem::ContainedSpace(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   setFlag(A.setFlag),innerStruct(A.innerStruct),
   outerStruct(A.outerStruct),length(A.length),mat(A.mat)
@@ -113,7 +112,7 @@ PipeCollimator::operator=(const PipeCollimator& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);

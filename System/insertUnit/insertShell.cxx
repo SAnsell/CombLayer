@@ -48,10 +48,8 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -300,14 +298,14 @@ insertShell::setValues(const double iR,const double oR,
 
 void
 insertShell::setValues(const double iR,const double oR,
-		       const std::string& InnerName,
-		       const std::string& MatName)
+		       const std::string& innerMatName,
+		       const std::string& matName)
   /*!
     Set the values and populate flag
     \param iR :: Inner Radius
     \param oR :: Outer Radius
-    \param InnerName :: Inner Material number
-    \param MatName :: Material number
+    \param innerMatName :: Inner Material number
+    \param matName :: Material number
    */
 {
   ELog::RegMethod RegA("insertPlate","setValues(string)");
@@ -315,7 +313,8 @@ insertShell::setValues(const double iR,const double oR,
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   innerRadius=iR;
   outerRadius=oR;
-  defMat=DB.processMaterial(MatName);
+  innerMat=DB.processMaterial(innerMatName);
+  defMat=DB.processMaterial(matName);
   populated=1;
   return;
 }

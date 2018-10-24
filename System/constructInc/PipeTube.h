@@ -37,7 +37,7 @@ namespace constructSystem
 
 class PipeTube :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
@@ -100,7 +100,7 @@ class PipeTube :
 
   void createPorts(Simulation&);
 
-  virtual void insertInCell(Simulation&,const int);
+  virtual void insertAllInCell(Simulation&,const int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

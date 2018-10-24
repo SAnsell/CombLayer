@@ -67,9 +67,7 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -211,14 +209,12 @@ FrontEnd::buildObjects(Simulation& System)
   ELog::RegMethod RegA("FrontEnd","buildObjects");
 
   wigglerBox->addInsertCell(ContainedComp::getInsertCells());
-  wigglerBox->registerSpaceCut(0,2);
   wigglerBox->createAll(System,*this,0);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);
 
   dipolePipe->addInsertCell(ContainedComp::getInsertCells());
-  dipolePipe->registerSpaceCut(1,2);
   dipolePipe->setFront(*wigglerBox,2);
   dipolePipe->createAll(System,*wigglerBox,2);
 
@@ -227,39 +223,32 @@ FrontEnd::buildObjects(Simulation& System)
   eCutDisk->createAll(System,*dipolePipe,-2);
 
   bellowA->addInsertCell(ContainedComp::getInsertCells());
-  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
 
-  collTubeA->addInsertCell(ContainedComp::getInsertCells());
+  collTubeA->addAllInsertCell(ContainedComp::getInsertCells());
   collTubeA->setFront(*bellowA,2);  // needed to allow bend if miss aligned
-  collTubeA->registerSpaceCut(1,2);
   collTubeA->createAll(System,*bellowA,2);  
 
   collA->addInsertCell(collTubeA->getCell("Void"));
   collA->createAll(System,*collTubeA,0);
 
   bellowB->addInsertCell(ContainedComp::getInsertCells());
-  bellowB->registerSpaceCut(1,2);
   bellowB->createAll(System,*collTubeA,2);
 
   collABPipe->addInsertCell(ContainedComp::getInsertCells());
-  collABPipe->registerSpaceCut(1,2);
   collABPipe->createAll(System,*bellowB,2);
 
   bellowC->addInsertCell(ContainedComp::getInsertCells());
-  bellowC->registerSpaceCut(1,2);
   bellowC->createAll(System,*collABPipe,2);
 
-  collTubeB->addInsertCell(ContainedComp::getInsertCells());
-  collTubeB->registerSpaceCut(1,2);
+  collTubeB->addAllInsertCell(ContainedComp::getInsertCells());
   collTubeB->createAll(System,*bellowC,2);
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
 
 
-  collTubeC->addInsertCell(ContainedComp::getInsertCells());
-  collTubeC->registerSpaceCut(1,2);
+  collTubeC->addAllInsertCell(ContainedComp::getInsertCells());
   collTubeC->createAll(System,*collTubeB,2);
 
   collC->addInsertCell(collTubeC->getCell("Void"));
@@ -267,13 +256,11 @@ FrontEnd::buildObjects(Simulation& System)
 
 
   collExitPipe->addInsertCell(ContainedComp::getInsertCells());
-  collExitPipe->registerSpaceCut(1,2);
   collExitPipe->createAll(System,*collTubeC,2);
 
 
   // FAKE insertcell:
-  heatBox->addInsertCell(ContainedComp::getInsertCells());
-  heatBox->registerSpaceCut(1,2);
+  heatBox->addAllInsertCell(ContainedComp::getInsertCells());
   heatBox->createAll(System,*collExitPipe,2);
 
   
@@ -284,20 +271,18 @@ FrontEnd::buildObjects(Simulation& System)
   heatDump->createAll(System,*heatBox,0,PI,2);
 
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
-  flightPipe->registerSpaceCut(1,2);
   flightPipe->createAll(System,*heatBox,2);
 
-  shutterBox->addInsertCell(ContainedComp::getInsertCells());
-  shutterBox->registerSpaceCut(1,2);
+  shutterBox->addAllInsertCell(ContainedComp::getInsertCells());
   shutterBox->delayPorts();
   shutterBox->createAll(System,*flightPipe,2);
 
   shutterBox->splitVoidPorts(System,"SplitVoid",1001,
   			     shutterBox->getCell("Void"),
 			     {0,1});
-  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-			     shutterBox->getBuildCell(),
-			     {0,1});
+  //  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+  //			     shutterBox->getBuildCell(),
+  //			     {0,1});
 
   shutterBox->createPorts(System);
   
@@ -312,7 +297,6 @@ FrontEnd::buildObjects(Simulation& System)
     }
 
   exitPipe->addInsertCell(ContainedComp::getInsertCells());
-  exitPipe->registerSpaceCut(1,2);
   exitPipe->createAll(System,*shutterBox,2);
   
   lastComp=exitPipe;

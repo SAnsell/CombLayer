@@ -66,8 +66,13 @@ class R1Ring :
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
 
+  size_t doorActive;           ///< Flag/sector for door if modeled
+  std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
+
+
   void createRoof(Simulation&);
   void createFloor(Simulation&);
+  void createDoor(Simulation&);
     
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

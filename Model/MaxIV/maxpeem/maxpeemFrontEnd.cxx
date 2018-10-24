@@ -68,9 +68,7 @@
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -347,25 +345,30 @@ maxpeemFrontEnd::constructMasterCell(Simulation& System)
    
 void
 maxpeemFrontEnd::buildHeatTable(Simulation& System,
-				MonteCarlo::Object& masterCell)
+				MonteCarlo::Object& masterCell,
+				const attachSystem::FixedComp& preFC,
+				const long int preSideIndex)
+
   /*!
     Build the heatDump table
     \param System :: Simulation to use
     \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildHeatTable");
 
   int outerCell;
   // FAKE insertcell:
-  heatBox->addInsertCell(masterCell.getName());
+  heatBox->addAllInsertCell(masterCell.getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,*heatPipe,2);
+  heatBox->createAll(System,preFC,preSideIndex);
 
   const constructSystem::portItem& PIA=heatBox->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				PIA,PIA.getSideIndex("OuterPlate"));
-  heatBox->insertInCell(System,outerCell);
+  heatBox->insertAllInCell(System,outerCell);
     
   // cant use heatbox here because of port rotation
   
@@ -381,14 +384,14 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
 
   // FAKE insertcell:
-  gateTubeA->addInsertCell(masterCell.getName());
+  gateTubeA->addAllInsertCell(masterCell.getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*bellowD,2);  
 
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeA->insertInCell(System,outerCell);
+  gateTubeA->insertAllInCell(System,outerCell);
   
   ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*ionPB,2);
@@ -406,32 +409,37 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
 void
 maxpeemFrontEnd::buildApertureTable(Simulation& System,
-				    MonteCarlo::Object& masterCell)
+				    MonteCarlo::Object& masterCell,
+				    const attachSystem::FixedComp& preFC,
+				    const long int preSideIndex)
+  
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
     \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildApertureTable");
 
   int outerCell;
   // NOTE order for master cell [Next 4 object
-  aperturePipe->createAll(System,*pipeB,2);
+  aperturePipe->createAll(System,preFC,preSideIndex);
   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
   moveCollA->createAll(System,*aperturePipe,0);
   
   // bellows AFTER movable aperture pipe
-  bellowE->setFront(*pipeB,2);
+  bellowE->setFront(preFC,preSideIndex);
   bellowE->setBack(*aperturePipe,1);
-  bellowE->createAll(System,*pipeB,2);
+  bellowE->createAll(System,preFC,preSideIndex);
 
-  ionPC->createAll(System,*pipeB,2);
+  ionPC->createAll(System,preFC,preSideIndex);
 
   // bellows AFTER aperature ionpump and ion pump
   bellowF->setFront(*aperturePipe,2);
   bellowF->setBack(*ionPC,1);
-  bellowF->createAll(System,*pipeB,2);
+  bellowF->createAll(System,preFC,preSideIndex);
 
   // now do insert:
   outerCell=createOuterVoidUnit(System,masterCell,*bellowE,2);
@@ -484,17 +492,22 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
 
 void
 maxpeemFrontEnd::buildShutterTable(Simulation& System,
-				   MonteCarlo::Object& masterCell)
+				   MonteCarlo::Object& masterCell,
+				   const attachSystem::FixedComp& preFC,
+				   const long int preSideIndex)
+
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
     \param masterCell :: Main cell for insertion
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildShutterTable");
   int outerCell;
   
-  gateA->createAll(System,*pipeC,2);
+  gateA->createAll(System,preFC,preSideIndex);
   outerCell=createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
@@ -504,13 +517,13 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   bellowI->insertInCell(System,outerCell);
 
   // FAKE insertcell:
-  florTubeA->addInsertCell(masterCell.getName());
+  florTubeA->addAllInsertCell(masterCell.getName());
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				FPI,FPI.getSideIndex("OuterPlate"));
-  florTubeA->insertInCell(System,outerCell);
+  florTubeA->insertAllInCell(System,outerCell);
   
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
@@ -520,13 +533,13 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   insertFlanges(System,*florTubeA);
 
   // FAKE insertcell:
-  gateTubeB->addInsertCell(masterCell.getName());
+  gateTubeB->addAllInsertCell(masterCell.getName());
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
   outerCell=createOuterVoidUnit(System,masterCell,
 				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeB->insertInCell(System,outerCell);
+  gateTubeB->insertAllInCell(System,outerCell);
 
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=createOuterVoidUnit(System,masterCell,*offPipeA,2);
@@ -538,7 +551,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
   outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
-  shutterBox->insertInCell(System,outerCell);
+  shutterBox->insertAllInCell(System,outerCell);
   
   cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
 				       shutterBox->getCell("Void"),
@@ -546,7 +559,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   cellIndex=
     shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
-  shutterBox->addInsertCell(outerCell);
+  shutterBox->addAllInsertCell(outerCell);
   shutterBox->createPorts(System);
 
   for(size_t i=0;i<shutters.size();i++)
@@ -661,9 +674,9 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
 
-  buildHeatTable(System,masterCell);  
-  buildApertureTable(System,masterCell);
-  buildShutterTable(System,masterCell);
+  buildHeatTable(System,masterCell,*heatPipe,2);  
+  buildApertureTable(System,masterCell,*pipeB,2);
+  buildShutterTable(System,masterCell,*pipeC,2);
 
   lastComp=bellowK;
   

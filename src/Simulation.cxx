@@ -86,15 +86,10 @@
 #include "WForm.h"
 #include "weightManager.h"
 #include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "Source.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "ObjSurfMap.h"
-#include "PhysicsCards.h"
 #include "ReadFunctions.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -120,7 +115,7 @@ Simulation::Simulation(const Simulation& A) :
   OSMPtr(new ModelSupport::ObjSurfMap(*A.OSMPtr)),
   TList(A.TList),cellDNF(A.cellDNF),cellCNF(A.cellCNF),
   cellOutOrder(A.cellOutOrder),
-  voidCells(A.voidCells),sourceName(A.sourceName)
+  sourceName(A.sourceName)
   /*!
     Copy constructor
     \param A :: Simulation to copy
@@ -148,7 +143,6 @@ Simulation::operator=(const Simulation& A)
       cellCNF=A.cellCNF;
       OList=A.OList;
       cellOutOrder=A.cellOutOrder;
-      voidCells=A.voidCells;
       sourceName=A.sourceName;
     }
   return *this;
@@ -1021,10 +1015,15 @@ Simulation::getCellMaterial(const int cellNumber) const
 
 std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
 Simulation::findCellPair(const int surfN,
-			 const groupRange& activeGroup) const
+			 const groupRange& activeGroup,
+			 const size_t indexA,
+			 const size_t indexB) const
   /*!
     Find a cell pair (or 1) that have -/+SN as a valid cell 
-    \param surfN :: Surface number [signed -- must be in grouprnage]
+    \param surfN :: Surface number [signed -- must be in groupRange]
+    \param activeGroup :: Range of primary cells to use
+    \param indexA :: Index of region found in primary
+    \param indexB :: Index region found in secondary
     \return Pair Object valid for -SN : Object valid for +SN 
   */
 {
@@ -1038,22 +1037,32 @@ Simulation::findCellPair(const int surfN,
     OSMPtr->getObjects(surfN);
 
   // This is -ve incoming sign == so internal objects in groupRange
+  size_t nCount(0);
   for(const MonteCarlo::Object* OPtr : negType)
     {
       if (!OPtr->isPlaceHold() &&
 	  activeGroup.valid(OPtr->getName()))
 	{
-	  Out.first=OPtr;
-	  break;
+	  if (nCount==indexA)
+	    {
+	      Out.first=OPtr;
+	      break;
+	    }
+	  nCount++;
 	}
     }
   // This is +ve incoming sign == so external objects not in groupRange
+  nCount=0;
   for(const MonteCarlo::Object* OPtr : plusType)
     {
       if (!OPtr->isPlaceHold())
 	{
-	  Out.second=OPtr;
-	  break;
+	  if (nCount==indexB)
+	    {
+	      Out.second=OPtr;
+	      break;
+	    }
+	  nCount++;
 	}
     }
   return Out;
@@ -1150,7 +1159,9 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
     \retval 0 :: No cell exists
   */
 {
+  ELog::RegMethod RegA("Simulation","findCell");
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
+  
   // First test users guess:
   if (testCell && testCell->isValid(Pt))
     {
@@ -1179,33 +1190,6 @@ Simulation::findCell(const Geometry::Vec3D& Pt,
   return 0;
 }
 
-void
-Simulation::reZeroFromVertex(const int CellN,const unsigned int M,
-			     const unsigned int A,const unsigned int B,
-			     const unsigned int C,
-			     Geometry::Vec3D& Dis,Geometry::Matrix<double>& MR)
-  /*! 
-     Given points M , A (x) , B (y) ,C (z)  
-     rezero the points matrix around the centre for a given Qhull
-     The qhull must have had convex hull intersects calculated.
-
-     \param CellN :: Cell ID number
-     \param M :: Vertex point in object for zero
-     \param A :: Vertex point for x-axis (A-M)
-     \param B :: Vertex point for y-axis (B-M)
-     \param C :: Vertex point for z-axis (C-M)
-     \param Dis :: Displacement vector 
-     \param MR :: Rotation matrix that is required
-   */
-{
-  const MonteCarlo::Qhull* QHX=findQhull(CellN);
-  if (!QHX) 
-    return;
-
-  MR=QHX->getRotation(M,A,B,C);
-  Dis=QHX->getDisplace(M);
-  return;
-}
 
 
 std::vector<int>
@@ -1722,15 +1706,12 @@ Simulation::prepareWrite()
   ELog::RegMethod RegA("Simulation","prepareWrite");
   
   cellOutOrder.clear();
-  voidCells.clear();
 
   for(const std::pair<int,MonteCarlo::Qhull*>& OVal : OList)
     {
       if (!OVal.second->isPlaceHold())
 	{
 	  cellOutOrder.push_back(OVal.first);
-	  if (!OVal.second->getMat())
-	    voidCells.insert(OVal.first);
 	}
     }
   return;
@@ -1769,9 +1750,9 @@ void
 Simulation::masterSourceRotation()
   /*!
     Apply master rotations to the physics system
-   */
+  */
 {
-  ELog::RegMethod RegA("Simulation","masterPhysicsRotation");
+  ELog::RegMethod RegA("Simulation","masterSourceRotation");
 
   SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
   const masterRotate& MR = masterRotate::Instance();

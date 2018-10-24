@@ -34,7 +34,7 @@ namespace constructSystem
     \brief Variable detemine hole type
   */
   
-class PipeCollimator : public attachSystem::ContainedSpace,
+class PipeCollimator : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap

@@ -70,7 +70,9 @@ namespace xraySystem
 class OpticsBeamline :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
 
@@ -186,6 +188,15 @@ class OpticsBeamline :
 
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
+
+  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
+			  HeadRule&,
+			  const attachSystem::FixedComp&,
+			  const long int);
+
+  void refrontMasterCell(MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,
+			 const long int) const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
