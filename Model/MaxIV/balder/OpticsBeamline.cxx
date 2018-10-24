@@ -303,7 +303,8 @@ OpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCell,
 {
   ELog::RegMethod RegA("OpticsBeamline","refrontMasterCell");
 
-  std::string Out;  
+  std::string Out;
+
   Out=getRuleStr("beam")+getRuleStr("innerBack")+
     FC.getLinkString(sideIndex);
   MCell.procString(Out);
@@ -314,8 +315,7 @@ OpticsBeamline::refrontMasterCell(MonteCarlo::Object& MCell,
 void
 OpticsBeamline::buildObjects(Simulation& System)
   /*!
-    Build all the objects relative to the main FC
-    point.
+    Build all the objects relative to the main FC point.
     \param System :: Simulation to use
   */
 {
@@ -347,7 +347,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   ionPA->insertInCell(System,outerCell);
   
   
-
   triggerPipe->setFront(*ionPA,2);
   triggerPipe->createAll(System,*ionPA,2);
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*triggerPipe,2);
@@ -366,7 +365,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*filterBox,2);
   filterBox->insertAllInCell(System,outerCell);
 
-  lastComp=pipeInit;
+
 
   // split on both inner void 
   filterBox->splitVoidPorts(System,"SplitVoid",1001,
@@ -393,7 +392,6 @@ OpticsBeamline::buildObjects(Simulation& System)
       filters[i]->createAll(System,PI,2);
     }
   
-
   pipeB->setFront(*filterBox,2);
   pipeB->createAll(System,*filterBox,2);
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*pipeB,2);
@@ -403,8 +401,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateA->createAll(System,*pipeB,2);
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*gateA,2);
   gateA->insertInCell(System,outerCell);
-
-
 
   mirrorBox->setFront(*gateA,2);
   mirrorBox->createAll(System,*gateA,2);
@@ -461,18 +457,13 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*driftB,2);
   driftB->insertInCell(System,outerCell);
 
-
   monoV->constructPorts(System);
-  // monoV->splitObject(System,-101,UnitA.getBuildCell());
-  // monoV->splitObject(System,201,UnitA.getBuildCell());
 
 
   gateC->setFront(*driftB,2);
   gateC->createAll(System,*driftB,2);
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*gateC,2);
   gateC->insertInCell(System,outerCell);
-
-
 
   driftC->setFront(*gateC,2);
   driftC->createAll(System,*gateC,2);
@@ -487,7 +478,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*slitsA,2);
   slitsA->insertInCell(System,outerCell);
   
-
   // fake inser for ports
   shieldPipe->addAllInsertCell(masterCell->getName());
   shieldPipe->setFront(*slitsA,2);
@@ -495,9 +485,9 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*shieldPipe,2);
   shieldPipe->insertAllInCell(System,outerCell);
 
-
   shieldPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+  cellIndex++;
 
 
   pipeD->setFront(*shieldPipe,2);
@@ -505,64 +495,90 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*pipeD,2);
   pipeD->insertInCell(System,outerCell);
 
+
   gateD->setFront(*pipeD,2);
   gateD->createAll(System,*pipeD,2);
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*gateD,2);
   gateD->insertInCell(System,outerCell);
 
-  lastComp=pipeInit;
-  return;
 
-  mirrorBoxB->addInsertCell(ContainedComp::getInsertCells());
   mirrorBoxB->setFront(*gateD,2);
   mirrorBoxB->createAll(System,*gateD,2);
+  outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
+				*mirrorBoxB,2);
+  mirrorBoxB->insertInCell(System,outerCell);
+
 
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
   mirrorB->createAll(System,*mirrorBoxB,0);
 
-  mirrorBoxB->splitObject(System,-11,mirrorBoxB->getCell("OuterSpace"));
-  mirrorBoxB->splitObject(System,12,mirrorBoxB->getCell("OuterSpace"));
+  mirrorBoxB->splitObject(System,-11,outerCell);
+  mirrorBoxB->splitObject(System,12,outerCell);
+  cellIndex+=2;
   
-  pipeE->addInsertCell(ContainedComp::getInsertCells());
+
+
   pipeE->setFront(*mirrorBoxB,2);
   pipeE->createAll(System,*mirrorBoxB,2);
+  outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
+				*pipeE,2);
+  pipeE->insertInCell(System,outerCell);
+  
 
-  slitsB->addInsertCell(ContainedComp::getInsertCells());
   slitsB->setFront(*pipeE,2);
   slitsB->createAll(System,*pipeE,2);
+  outerCell=
+    createOuterVoidUnit(System,*masterCell,frontDivider,*slitsB,2);
+  slitsB->setCell("OuterVoid",outerCell);
+  slitsB->insertInCell(System,outerCell);
 
-  viewPipe->addAllInsertCell(ContainedComp::getInsertCells());
-  //viewPipe->addInsertPortCells(slitsB->getBuildCell());
+
+  // fake insert for ports
+  viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
   viewPipe->createAll(System,*slitsB,2);
+  outerCell=
+    createOuterVoidUnit(System,*masterCell,frontDivider,*viewPipe,2);
+  viewPipe->insertAllInCell(System,outerCell);
 
-  viewPipe->splitObject(System,1001,viewPipe->getCell("OuterSpace"),
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-  viewPipe->splitObject(System,2001,viewPipe->getCell("OuterSpace",0),
+  // split the object into four
+  const int cNumOffset(outerCell);
+  viewPipe->splitObject(System,1001,outerCell,
+			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+  viewPipe->splitObject(System,2001,outerCell,
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-  viewPipe->splitObject(System,2002,viewPipe->getCell("OuterSpace",1),
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+
+  viewPipe->splitObject(System,2002,cNumOffset+1,
+  			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  cellIndex+=3;
 
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",1));
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",3));
+      viewMount[i]->addInsertCell("Flange",cNumOffset+1);
+      viewMount[i]->addInsertCell("Flange",cNumOffset+3);
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
 
-  pipeF->addInsertCell(ContainedComp::getInsertCells());
+  
   pipeF->setFront(*viewPipe,2);
   pipeF->createAll(System,*viewPipe,2);
+  outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
+				*pipeF,2);
+  pipeF->insertInCell(System,outerCell);
 
 
-  shutterPipe->addInsertCell(ContainedComp::getInsertCells());
   shutterPipe->setFront(*pipeF,2);
   shutterPipe->createAll(System,*pipeF,2);
+  outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
+				*shutterPipe,2);
+  shutterPipe->insertInCell(System,outerCell);
 
+  
+  
   monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
   monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
   monoShutter->setBladeCentre(*shutterPipe,0);
@@ -574,11 +590,21 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeG->setFront(*shutterPipe,2);
   pipeG->createAll(System,*shutterPipe,2);
 
+  outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
+				*pipeG,2);
+  pipeG->insertInCell(System,outerCell);
+
 
   gateE->addInsertCell(ContainedComp::getInsertCells());
   gateE->setFront(*pipeG,2);
   gateE->createAll(System,*pipeG,2);
+  outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
+				*gateE,2);
+  gateE->insertInCell(System,outerCell);
 
+  lastComp=pipeInit;
+  return;
+  
   neutShield[0]->addInsertCell(mirrorBox->getCell("FFlangeVoid"));
   neutShield[0]->addInsertCell(mirrorBox->getCell("OuterSpace",1));
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");

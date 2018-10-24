@@ -1408,8 +1408,8 @@ Simulation::calcCellRenumber(const std::vector<int>& cOffset,
       const int cNum=vc->second->getName();      
       if (!fullRange.valid(cNum))
 	{
-	  nNum++;
 	  renumberMap.emplace(cNum,nNum);
+	  nNum++;
 	}
       else
 	{
@@ -1452,7 +1452,8 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   const std::map<int,int> RMap=
     calcCellRenumber(cOffset,cRange);
-    
+
+  
   OTYPE newMap;           // New map with correct numbering
   for(const std::map<int,int>::value_type& RMItem : RMap)
     {
