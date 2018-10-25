@@ -291,6 +291,5 @@ PipeShield::createAll(Simulation& System,
 
   return;
 }
-
   
 }  // NAMESPACE xraySystem

@@ -411,10 +411,9 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,slitKey+"PipeC",0,33.6);
+  PipeGen.generatePipe(Control,slitKey+"PipeC",0,26.6);
 
-
-  shieldVariables(Control,slitKey+"ScreenA",0.0);
+  shieldVariables(Control,slitKey+"ScreenA",-4.0);
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
@@ -447,7 +446,7 @@ slitPackageVariables(FuncDataBase& Control,
   // Jaw units:
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(0.0,8.5);
-  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Tungsten");    
+  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Stainless304");    
   const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
   for(size_t i=0;i<4;i++)
     {
@@ -469,7 +468,6 @@ slitPackageVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,slitKey+"PipeF",0,14);
-
 
   return;
 }
@@ -507,7 +505,7 @@ m1MirrorVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,6.8);
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,13.8);
   Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
   Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
 

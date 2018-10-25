@@ -47,7 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"

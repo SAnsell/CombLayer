@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
@@ -406,7 +405,8 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirrorBox->createAll(System,*gateA,2);
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*mirrorBox,2);
   mirrorBox->insertInCell(System,outerCell);
-
+  mirrorBox->setCell("OuterVoid",outerCell);
+  
   mirrorBox->splitObject(System,-11,outerCell);
   mirrorBox->splitObject(System,12,outerCell);
   cellIndex+=2;
@@ -456,6 +456,7 @@ OpticsBeamline::buildObjects(Simulation& System)
 
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,*driftB,2);
   driftB->insertInCell(System,outerCell);
+  driftB->setCell("OuterVoid",outerCell);
 
   monoV->constructPorts(System);
 
@@ -507,6 +508,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=createOuterVoidUnit(System,*masterCell,frontDivider,
 				*mirrorBoxB,2);
   mirrorBoxB->insertInCell(System,outerCell);
+  mirrorBoxB->setCell("OuterVoid",outerCell);
 
 
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
@@ -602,29 +604,21 @@ OpticsBeamline::buildObjects(Simulation& System)
 				*gateE,2);
   gateE->insertInCell(System,outerCell);
 
-  lastComp=pipeInit;
-  return;
   
   neutShield[0]->addInsertCell(mirrorBox->getCell("FFlangeVoid"));
-  neutShield[0]->addInsertCell(mirrorBox->getCell("OuterSpace",1));
+  neutShield[0]->addInsertCell(mirrorBox->getCell("OuterVoid",1));
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
   neutShield[0]->createAll(System,*mirrorBox,-1);
 
-  neutShield[1]->addInsertCell(driftB->getCell("OuterSpace"));
+  neutShield[1]->addInsertCell(driftB->getCell("OuterVoid"));
   neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
   neutShield[1]->createAll(System,*driftB,-1);
 
+  
   neutShield[2]->addInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
-  neutShield[2]->addInsertCell(mirrorBoxB->getCell("OuterSpace",2));
+  neutShield[2]->addInsertCell(mirrorBoxB->getCell("OuterVoid",2));
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
   neutShield[2]->createAll(System,*mirrorBoxB,-2);
-
-
-  // build extra register space between beginning of pipe and end of gate
-  //  attachSystem::ContainedComp::insertPair
-  //    (System,ContainedComp::getInsertCells(),*pipeInit,1,*gateE,2);
-
-  
 
   
   lastComp=gateE;  
