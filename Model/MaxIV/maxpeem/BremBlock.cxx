@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/BremColl.cxx
+ * File:   maxpeem/BremBlock.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

@@ -818,18 +818,22 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
   offPipeB->createAll(System,*M1Tube,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
-
+  offPipeB->setCell("OuterVoid",outerCell);
+  
   gateA->createAll(System,*offPipeB,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*gateA,2);
   gateA->insertInCell(System,outerCell);
-
+  gateA->setCell("OuterVoid",outerCell);
+  
   pipeC->createAll(System,*gateA,2);
   outerCell=createOuterVoidUnit(System,masterCell,divider,*pipeC,2);
   pipeC->insertInCell(System,outerCell);
 
-  screenA->addInsertCell(outerCell);
+  screenA->addAllInsertCell(outerCell);
   screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
   screenA->createAll(System,*pipeC,0);
+  screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
+  screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
   
   return;
 }
@@ -969,8 +973,8 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
   outPipeB->addInsertCell(outCell);
   outPipeB->createAll(System,*pumpTubeBA,2);
   
-  screenB->addInsertCell(masterCellA->getName());
-  screenB->addInsertCell(masterCellB->getName());
+  screenB->addAllInsertCell(masterCellA->getName());
+  screenB->addAllInsertCell(masterCellB->getName());
 
   screenB->setCutSurf("inner",outPipeA->getSurfRule("OuterRadius"));
   screenB->setCutSurf("innerTwo",outPipeB->getSurfRule("OuterRadius"));

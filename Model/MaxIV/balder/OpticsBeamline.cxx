@@ -605,18 +605,18 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateE->insertInCell(System,outerCell);
 
   
-  neutShield[0]->addInsertCell(mirrorBox->getCell("FFlangeVoid"));
-  neutShield[0]->addInsertCell(mirrorBox->getCell("OuterVoid",1));
+  neutShield[0]->addAllInsertCell(mirrorBox->getCell("FFlangeVoid"));
+  neutShield[0]->addAllInsertCell(mirrorBox->getCell("OuterVoid",1));
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
   neutShield[0]->createAll(System,*mirrorBox,-1);
 
-  neutShield[1]->addInsertCell(driftB->getCell("OuterVoid"));
+  neutShield[1]->addAllInsertCell(driftB->getCell("OuterVoid"));
   neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
   neutShield[1]->createAll(System,*driftB,-1);
 
   
-  neutShield[2]->addInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
-  neutShield[2]->addInsertCell(mirrorBoxB->getCell("OuterVoid",2));
+  neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
+  neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("OuterVoid",2));
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
   neutShield[2]->createAll(System,*mirrorBoxB,-2);
 

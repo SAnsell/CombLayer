@@ -88,19 +88,22 @@ namespace maxpeemVar
   void monoVariables(FuncDataBase&,const std::string&);
   void m1MirrorVariables(FuncDataBase&,const std::string&);
   void splitterVariables(FuncDataBase&,const std::string&);
-  void shieldVariables(FuncDataBase&,const std::string&,const double);
+  void shieldVariables(FuncDataBase&,const std::string&,const double,
+		       const double);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
 
 void
 shieldVariables(FuncDataBase& Control,
 		const std::string& shieldKey,
-		const double YStep)
+		const double YStep,
+		const double WLength)
   /*!
     Build the shield unit variables
     \param Control :: Database
     \param shieldKey :: prename
-    \param shieldKey :: distance of step
+    \param YStep :: distance of step
+    \param WLength :: Wing length
   */
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","shieldVariables");
@@ -113,6 +116,10 @@ shieldVariables(FuncDataBase& Control,
   Control.addVariable(shieldKey+"ClearGap",0.2);
   Control.addVariable(shieldKey+"WallMat","Stainless304");
   Control.addVariable(shieldKey+"Mat","Lead");
+
+  Control.addVariable(shieldKey+"WingThick",7.0);
+  Control.addVariable(shieldKey+"WingLength",WLength);
+  Control.addVariable(shieldKey+"WingMat","Stainless304");
 
   return;
 }
@@ -241,7 +248,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
-  shieldVariables(Control,splitKey+"ScreenB",0.0);
+  shieldVariables(Control,splitKey+"ScreenB",0.0,0.0);
 
   return;
 }
@@ -413,7 +420,7 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,26.6);
 
-  shieldVariables(Control,slitKey+"ScreenA",-4.0);
+  shieldVariables(Control,slitKey+"ScreenA",-4.0,30.0);
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
