@@ -227,12 +227,29 @@ BALDER::build(Simulation& System,
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid"));
 
-  return;
   
+  joinPipeB->addInsertCell(opticsHut->getCell("BeamVoid"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
+
+  exptHut->addInsertCell(voidCell);
+  exptHut->createAll(System,*ringCaveA,2);
+  return;
+  //  connectZone->registerJoinPipe(joinPipeC);
+  connectZone->addInsertCell(voidCell);
+  connectZone->setFront(*opticsHut,2);
+  connectZone->setBack(*exptHut,1);
+  connectZone->createAll(System,*joinPipeB,2);
+
+
+
+
+
+
+
+  return;
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(joinPipeB->getCell("OuterSpace"));
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
@@ -246,14 +263,6 @@ BALDER::build(Simulation& System,
 
   System.removeCell(opticsHut->getCell("Void"));
 
-  exptHut->addInsertCell(voidCell);
-  exptHut->createAll(System,*ringCaveA,2);
-
-  //  connectZone->registerJoinPipe(joinPipeC);
-  connectZone->addInsertCell(voidCell);
-  connectZone->setFront(*opticsHut,2);
-  connectZone->setBack(*exptHut,1);
-  connectZone->createAll(System,*joinPipeB,2);
 
   // horrid way to create a SECOND register space [MAKE INTERNAL]
   joinPipeB->insertInCell(System,connectZone->getCell("firstVoid"));
