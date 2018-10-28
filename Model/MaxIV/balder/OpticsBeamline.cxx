@@ -252,7 +252,8 @@ OpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
 int
 OpticsBeamline::createOuterVoidUnit(Simulation& System,
 				    MonteCarlo::Object& masterCell,
-				    HeadRule& frontDivider,			    				    const attachSystem::FixedComp& FC,
+				    HeadRule& frontDivider,
+				    const attachSystem::FixedComp& FC,
 				    const long int sideIndex)
   /*!
     Construct outer void object main pipe
