@@ -178,7 +178,6 @@ LineTrack::calculate(const Simulation& ASim)
   if (!OPtr)
     ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
   int SN=OPtr->isOnSide(InitPt);
-  
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface

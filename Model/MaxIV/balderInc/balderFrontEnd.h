@@ -79,6 +79,9 @@ class balderFrontEnd :
 {
  private:
 
+  /// Inner buildzone
+  attachSystem::InnerZone buildZone;
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
@@ -174,15 +177,7 @@ class balderFrontEnd :
 
   double outerRadius;   ///< radius of tube for divisions
 
-  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
-			  const attachSystem::FixedComp&,
-			  const long int);
- 
-  MonteCarlo::Object& constructMasterCell(Simulation&);
-  void refrontMasterCell(MonteCarlo::Object&,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
-
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

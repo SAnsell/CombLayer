@@ -59,6 +59,8 @@ class InnerZone
   HeadRule surroundHR;               ///< Rule of surround
   HeadRule frontHR;                  ///< Rule of back
   HeadRule backHR;                   ///< Rule of back
+
+  HeadRule frontDivider;             ///< Local front divider [if needed]
   
  public:
 
@@ -78,12 +80,18 @@ class InnerZone
 			  HeadRule&,
 			  const attachSystem::FixedComp&,
 			  const long int);
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object&,
+			  const attachSystem::FixedComp&,
+			  const long int);
 
   void refrontMasterCell(MonteCarlo::Object&,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
 
   MonteCarlo::Object& constructMasterCell(Simulation&);
+  MonteCarlo::Object& constructMasterCell(Simulation&,
+					  const ContainedComp&);
 
 };
 

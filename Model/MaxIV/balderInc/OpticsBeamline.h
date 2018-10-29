@@ -76,6 +76,8 @@ class OpticsBeamline :
 {
  private:
 
+  attachSystem::InnerZone buildZone;  
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -189,18 +191,13 @@ class OpticsBeamline :
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
 
-  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
-			  HeadRule&,
-			  const attachSystem::FixedComp&,
-			  const long int);
-
-  void refrontMasterCell(MonteCarlo::Object&,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
+  double outerRadius;   /// Radius for cut cylinder
+  
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   

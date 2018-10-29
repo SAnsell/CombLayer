@@ -577,8 +577,6 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
-
-  Control.addVariable(hutName+"BeamTubeRadius",50.0);
   
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
@@ -677,7 +675,9 @@ monoVariables(FuncDataBase& Control,const double YStep)
   setVariable::PortItemGenerator PItemGen;
     
   const std::string preName("BalderOpticsLine");
-  
+
+  Control.addVariable(preName+"OuterRadius",50.0);
+
   Control.addVariable(preName+"MonoVacYStep",YStep);
   Control.addVariable(preName+"MonoVacZStep",2.0);
   Control.addVariable(preName+"MonoVacRadius",33.0);

@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "ExternalCut.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -182,7 +183,7 @@ BALDER::build(Simulation& System,
 
   frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
   frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
-  
+
   const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
@@ -207,32 +208,32 @@ BALDER::build(Simulation& System,
   ringCaveB->insertComponent
     (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
 
+  
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
-  joinPipe->addInsertCell(opticsHut->getCell("BeamVoid"));
-  
   joinPipe->createAll(System,*frontBeam,2);
-  joinPipe->insertObjects(System);
+  
 
-
-  opticsBeam->setCell("MasterVoid",opticsHut->getCell("BeamVoid"));
+    // new
+  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
-  opticsBeam->setCutSurf("innerBack",*opticsHut,
+  opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
-  
-  opticsBeam->setCutSurf("beam",opticsHut->getSurf("BeamTube"));  
   opticsBeam->createAll(System,*joinPipe,2);
 
-  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid"));
+
+  joinPipe->addInsertCell(opticsHut->getCell("OuterVoid",0));
 
   
-  joinPipeB->addInsertCell(opticsHut->getCell("BeamVoid"));
+
+  joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
+  return;
 
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*ringCaveA,2);

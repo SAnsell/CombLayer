@@ -73,6 +73,7 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 
@@ -134,7 +135,48 @@ InnerZone::setBack(const HeadRule& HR)
 int
 InnerZone::createOuterVoidUnit(Simulation& System,
 			       MonteCarlo::Object& masterCell,
-			       HeadRule& frontDivider,
+			       HeadRule& FDivider,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createOuterVoidUnit");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+
+
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+
+  const HeadRule& backDivider=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    backHR;
+  
+  Out=surroundHR.display()+
+    FDivider.display()+backDivider.display();
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  frontDivider=backDivider;
+  
+  // make the master cell valid:
+  
+  FDivider.makeComplement();
+
+  refrontMasterCell(masterCell,FC,sideIndex);
+  return cellIndex-1;
+}
+
+int
+InnerZone::createOuterVoidUnit(Simulation& System,
+			       MonteCarlo::Object& masterCell,
 			       const attachSystem::FixedComp& FC,
 			       const long int sideIndex)
   /*!
@@ -148,27 +190,7 @@ InnerZone::createOuterVoidUnit(Simulation& System,
 {
   ELog::RegMethod RegA("InnerZone","createOuterVoidUnit");
 
-    // construct an cell based on previous cell:
-  std::string Out;
-  
-  if (!frontDivider.hasRule())
-    frontDivider=frontHR;
-
-  const HeadRule& backDivider=
-    (sideIndex) ? FC.getFullRule(-sideIndex) :
-    backHR;
-  
-  Out=surroundHR.display()+
-    frontDivider.display()+backDivider.display();
-  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-  frontDivider=backDivider;
-  
-  // make the master cell valid:
-  
-  frontDivider.makeComplement();
-
-  refrontMasterCell(masterCell,FC,sideIndex);
-  return cellIndex-1;
+  return createOuterVoidUnit(System,masterCell,frontDivider,FC,sideIndex);
 }
 
 void
@@ -210,6 +232,24 @@ InnerZone::constructMasterCell(Simulation& System)
   CellPtr->makeCell("Mastervoid",System,cellIndex++,0,0.0,Out);
   MonteCarlo::Object* OPtr= System.findQhull(cellIndex-1);
   return *OPtr;
+}
+
+
+MonteCarlo::Object&
+InnerZone::constructMasterCell(Simulation& System,
+			       const attachSystem::ContainedComp& CC)
+ /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param CC :: Contained Comp
+    \return cell object
+  */
+{
+  ELog::RegMethod RegA("balderFrontEnd","constructMasterCell(CC)");
+ 
+  MonteCarlo::Object& ORef=constructMasterCell(System);
+  CC.insertExternalObject(System,ORef);
+  return ORef;
 }
 
 

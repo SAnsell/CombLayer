@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/FrontBackCut.h
+ * File:   attachCompInc/FrontBackCut.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

@@ -525,7 +525,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
   BIndex=0;
   // no point checking first value
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-    
+
   for(size_t i=1;i<OVec.size();i++)
     {
       const MonteCarlo::Object* oPtr=OVec[i];
@@ -584,7 +584,7 @@ portItem::constructTrack(Simulation& System)
  
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
-  
+
   size_t AIndex,BIndex;
 
   calcBoundaryCrossing(System,LT,AIndex,BIndex);
