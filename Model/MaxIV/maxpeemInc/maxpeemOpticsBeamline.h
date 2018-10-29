@@ -185,50 +185,29 @@ class maxpeemOpticsBeamline :
   MonteCarlo::Object* masterCellB;
 
 
-  void constructMasterCell(Simulation&,const HeadRule&);
   int constructDivideCell(Simulation&,const bool,
 			   const attachSystem::FixedComp&,
 			   const long int,
 			   const attachSystem::FixedComp&,
 			   const long int);
-  
-  int createOuterVoidUnit(Simulation&,
-			  MonteCarlo::Object*,
-			  const HeadRule&,HeadRule&,
-			  const attachSystem::FixedComp&,
-			  const long int);
-
-  int createOuterVoidUnit(Simulation&,
-			  MonteCarlo::Object*,
-			  HeadRule&,
-			  const attachSystem::FixedComp&,
-			  const long int);
 
   int createDoubleVoidUnit(Simulation&,
 			   HeadRule&,
 			   const attachSystem::FixedComp&,
 			   const long int);
   
-  void refrontMasterCell(MonteCarlo::Object*,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
-  
-  void refrontMasterCell(MonteCarlo::Object*,MonteCarlo::Object*,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
-  
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
-  void buildM1Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
+  void buildM1Mirror(Simulation&,MonteCarlo::Object&,
 		     const attachSystem::FixedComp&,const long int);
-  void buildM3Mirror(Simulation&,HeadRule&,MonteCarlo::Object*,
+  void buildM3Mirror(Simulation&,MonteCarlo::Object&,
 		     const attachSystem::FixedComp&,const long int);
-  void buildMono(Simulation&,HeadRule&,MonteCarlo::Object*,
+  void buildMono(Simulation&,MonteCarlo::Object&,
 		 const attachSystem::FixedComp&,const long int);
-  void buildSlitPackage(Simulation&,HeadRule&,MonteCarlo::Object*,
+  void buildSlitPackage(Simulation&,MonteCarlo::Object&,
 		       const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,HeadRule&,
+  void buildSplitter(Simulation&,MonteCarlo::Object&,
 		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);

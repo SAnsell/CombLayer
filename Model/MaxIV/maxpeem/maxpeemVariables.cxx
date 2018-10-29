@@ -549,6 +549,8 @@ opticsBeamVariables(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+
+  Control.addVariable(opticKey+"OuterRadius",80.0);
   
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
@@ -640,9 +642,6 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
-
-  Control.addVariable(hutName+"BeamTubeRadius",80.0);
-
 
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",950.0);

@@ -59,6 +59,7 @@ class InnerZone
   HeadRule surroundHR;               ///< Rule of surround
   HeadRule frontHR;                  ///< Rule of back
   HeadRule backHR;                   ///< Rule of back
+  HeadRule middleHR;                 ///< Rule of middel 
 
   HeadRule frontDivider;             ///< Local front divider [if needed]
   
@@ -74,7 +75,12 @@ class InnerZone
   void setSurround(const HeadRule&);
   void setFront(const HeadRule&);
   void setBack(const HeadRule&);
-  
+  void setMiddle(const HeadRule&);
+
+  void constructMiddleSurface(ModelSupport::surfRegister&,
+			      const int,const attachSystem::FixedComp&,
+			      const long int);
+
   int createOuterVoidUnit(Simulation&,
 			  MonteCarlo::Object&,
 			  HeadRule&,
@@ -85,14 +91,43 @@ class InnerZone
 			  const attachSystem::FixedComp&,
 			  const long int);
 
+  int createOuterVoidNegUnit(Simulation&,
+			     MonteCarlo::Object&,
+			     HeadRule&,
+			     const attachSystem::FixedComp&,
+			     const long int);
+  
+  int createOuterVoidNegUnit(Simulation&,
+			     MonteCarlo::Object&,
+			     const attachSystem::FixedComp&,
+			     const long int);
+  
+  int createOuterVoidPosUnit(Simulation&,
+			     MonteCarlo::Object&,
+			     HeadRule&,
+			     const attachSystem::FixedComp&,
+			     const long int);
+
+  int createOuterVoidPosUnit(Simulation&,
+			     MonteCarlo::Object&,
+			     const attachSystem::FixedComp&,
+			     const long int);
+
+
+  
   void refrontMasterCell(MonteCarlo::Object&,
 			 const attachSystem::FixedComp&,
 			 const long int) const;
 
-  MonteCarlo::Object& constructMasterCell(Simulation&);
-  MonteCarlo::Object& constructMasterCell(Simulation&,
-					  const ContainedComp&);
+  void refrontMasterCell(MonteCarlo::Object&,
+			 MonteCarlo::Object&,
+			 const attachSystem::FixedComp&,
+			 const long int) const;
 
+  MonteCarlo::Object& constructMasterCell(Simulation&);
+  MonteCarlo::Object& constructMasterCell
+    (Simulation&,const ContainedComp&);
+  
 };
 
 }

@@ -76,6 +76,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "generateSurf.h"
 
 #include "InnerZone.h"
 
@@ -131,6 +132,37 @@ InnerZone::setBack(const HeadRule& HR)
   backHR=HR;
   return;
 }
+
+void
+InnerZone::setMiddle(const HeadRule& HR)
+  /*!
+    Set the front facing rule
+    \param HR :: Rule at front [inward]
+  */
+{
+  middleHR=HR;
+  return;
+}
+
+void
+InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
+				  const int surfID,
+				  const attachSystem::FixedComp& FC,
+				  const long int sideIndex)
+
+{
+  ELog::RegMethod RegA("InnerZone","constructMiddleSurface");
+  
+  
+  const Geometry::Vec3D DPoint(FC.getLinkPt(sideIndex));
+  Geometry::Vec3D crossX,crossY,crossZ;
+  FC.selectAltAxis(sideIndex,crossX,crossY,crossZ);
+  ModelSupport::buildPlane(SMap,surfID,DPoint,crossX);
+  
+  middleHR=HeadRule(SMap.realSurf(surfID));
+  return;
+}
+
   
 int
 InnerZone::createOuterVoidUnit(Simulation& System,
@@ -164,12 +196,11 @@ InnerZone::createOuterVoidUnit(Simulation& System,
   Out=surroundHR.display()+
     FDivider.display()+backDivider.display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-  frontDivider=backDivider;
-  
-  // make the master cell valid:
-  
+
+  FDivider=backDivider;
   FDivider.makeComplement();
 
+  // make the master cell valid:
   refrontMasterCell(masterCell,FC,sideIndex);
   return cellIndex-1;
 }
@@ -193,6 +224,98 @@ InnerZone::createOuterVoidUnit(Simulation& System,
   return createOuterVoidUnit(System,masterCell,frontDivider,FC,sideIndex);
 }
 
+
+int
+InnerZone::createOuterVoidNegUnit(Simulation& System,
+				  MonteCarlo::Object& masterCell,
+				  HeadRule& FDivider,
+				  const attachSystem::FixedComp& FC,
+				  const long int sideIndex)
+  /*!
+    Construct outer void object main pipe on the neg side of the 
+    middle divider
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell number
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createOuterVoidNegUnit");
+
+  const std::string midStr=
+    middleHR.complement().display();
+      
+  // construct an cell based on previous cell:
+  std::string Out;
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+
+  const HeadRule& backDivider=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    backHR;
+
+  Out=surroundHR.display()+
+    FDivider.display()+backDivider.display()+midStr;
+
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+  FDivider=backDivider;
+  FDivider.makeComplement();
+
+  // make the master cell valid:
+  refrontMasterCell(masterCell,FC,sideIndex);
+  masterCell.addSurfString(midStr);
+  return cellIndex-1;
+}
+
+int
+InnerZone::createOuterVoidPosUnit(Simulation& System,
+				  MonteCarlo::Object& masterCell,
+				  HeadRule& FDivider,
+				  const attachSystem::FixedComp& FC,
+				  const long int sideIndex)
+  /*!
+    Construct outer void object main pipe on the neg side of the 
+    middle divider
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell number
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createOuterVoidPosUnit");
+
+  const std::string midStr=
+    middleHR.display();
+      
+  // construct an cell based on previous cell:
+  std::string Out;
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+
+  const HeadRule& backDivider=
+    (sideIndex) ? FC.getFullRule(-sideIndex) :
+    backHR;
+
+  Out=surroundHR.display()+
+    FDivider.display()+backDivider.display()+midStr;
+  
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+  FDivider=backDivider;
+  FDivider.makeComplement();
+
+  // make the master cell valid:
+  refrontMasterCell(masterCell,FC,sideIndex);
+  masterCell.addSurfString(midStr);
+  return cellIndex-1;
+}
+
+  
 void
 InnerZone::refrontMasterCell(MonteCarlo::Object& MCell,
 			     const attachSystem::FixedComp& FC,
@@ -214,7 +337,33 @@ InnerZone::refrontMasterCell(MonteCarlo::Object& MCell,
   MCell.procString(Out);
   return;
 }
- 
+
+void
+InnerZone::refrontMasterCell(MonteCarlo::Object& MCellNeg,
+			     MonteCarlo::Object& MCellPlus,
+			     const attachSystem::FixedComp& FC,
+			     const long int sideIndex) const
+  /*!
+    This horrifc function to re-build a double MCell 
+    based on centre point split 
+    \param MCellNeg :: Based on the negative side
+    \param MCellPlus :: Based on the positive side
+    \param FC :: FixedComp
+    \param sideIndex :: side index for back of FC object
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","refrontMasterCell");
+
+
+  std::string Out;  
+  Out+=surroundHR.display() + backHR.display()+
+    FC.getLinkString(sideIndex);
+
+  MCellNeg.procString(Out+middleHR.complement().display());
+  MCellPlus.procString(Out+middleHR.display());
+  return;
+}
+  
 
 MonteCarlo::Object&
 InnerZone::constructMasterCell(Simulation& System)
@@ -229,7 +378,7 @@ InnerZone::constructMasterCell(Simulation& System)
   std::string Out;
   
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
-  CellPtr->makeCell("Mastervoid",System,cellIndex++,0,0.0,Out);
+  CellPtr->makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
   MonteCarlo::Object* OPtr= System.findQhull(cellIndex-1);
   return *OPtr;
 }

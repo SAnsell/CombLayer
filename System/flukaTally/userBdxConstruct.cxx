@@ -162,7 +162,7 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
     \param cellB :: Secondary region cell number
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
+  ELog::RegMethod RegA("userBdxConstruct","constructSurfRegion");
   
   const attachSystem::SurfMap* SMPtr=
     System.getObject<attachSystem::SurfMap>(FCname);

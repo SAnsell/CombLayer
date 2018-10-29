@@ -171,19 +171,21 @@ MAXPEEM::build(Simulation& System,
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
-  joinPipe->addInsertCell(opticsHut->getCell("BeamVoid"));
   joinPipe->createAll(System,*frontBeam,2);
 
+
+  
+  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->setCutSurf("front",*opticsHut,
+			 opticsHut->getSideIndex("innerFront"));
+  opticsBeam->setCutSurf("back",*opticsHut,
+			 opticsHut->getSideIndex("innerBack"));
+  opticsBeam->createAll(System,*joinPipe,2);
+
+  return;
+  joinPipe->addInsertCell(opticsHut->getCell("OuterVoid",0));
   
   return;
-  opticsBeam->setCell("MasterVoid",opticsHut->getCell("BeamVoid"));
-  opticsBeam->setCutSurf
-    ("front",*opticsHut,opticsHut->getSideIndex("innerFront"));
-  opticsBeam->setCutSurf
-    ("back",*opticsHut,opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("beam",opticsHut->getSurf("BeamTube"));
-    
-  opticsBeam->createAll(System,*joinPipe,2);
   opticsBeam->buildOutGoingPipes(System,opticsHut->getCells("Back"),
 				 opticsHut->getCell("Extension"));
   
