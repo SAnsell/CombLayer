@@ -79,6 +79,9 @@ class maxpeemFrontEnd :
   public attachSystem::CellMap  
 {
  private:
+
+  /// construction of fluka cutting space
+  attachSystem::InnerZone buildZone;
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -162,16 +165,7 @@ class maxpeemFrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
   double outerRadius;   ///< radius of tube for divisions
-   
-  int createOuterVoidUnit(Simulation&,MonteCarlo::Object&,
-			  const attachSystem::FixedComp&,
-			  const long int);
- 
-  MonteCarlo::Object& constructMasterCell(Simulation&);
-  void refrontMasterCell(MonteCarlo::Object&,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
-
+    
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   void buildHeatTable(Simulation&,MonteCarlo::Object&,
 		      const attachSystem::FixedComp&,const long int);

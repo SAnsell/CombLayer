@@ -74,6 +74,7 @@
 #include "SurfMap.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
@@ -114,6 +115,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   attachSystem::FixedOffset(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  buildZone(*this,cellIndex),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
@@ -233,6 +235,8 @@ maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","populate");
   FixedOffset::populate(Control);
+
+  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
   return;
 }
 
@@ -263,6 +267,12 @@ maxpeemOpticsBeamline::createSurfaces()
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","createSurfaces");
+
+  if (outerRadius>Geometry::zeroTol)
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+    }
 
   if (!isActive("front"))
     {

@@ -70,6 +70,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
+#include "InnerZone.h"
 #include "CopiedComp.h"
 #include "ExternalCut.h"
 #include "World.h"
@@ -156,7 +157,7 @@ MAXPEEM::build(Simulation& System,
 
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
@@ -174,7 +175,7 @@ MAXPEEM::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
 
   
-  
+  return;
   opticsBeam->setCell("MasterVoid",opticsHut->getCell("BeamVoid"));
   opticsBeam->setCutSurf
     ("front",*opticsHut,opticsHut->getSideIndex("innerFront"));

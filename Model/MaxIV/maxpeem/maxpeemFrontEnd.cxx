@@ -75,6 +75,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "ModelSupport.h"
@@ -116,6 +117,7 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
 
+  buildZone(*this,cellIndex),
   //  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
   undulator(new xraySystem::Undulator(newName+"Undulator")),
@@ -252,7 +254,10 @@ maxpeemFrontEnd::createSurfaces()
   ELog::RegMethod RegA("maxpeemFrontEnd","createSurfaces");
 
   if (outerRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+    }
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
@@ -261,87 +266,6 @@ maxpeemFrontEnd::createSurfaces()
   return;
 }
 
-int
-maxpeemFrontEnd::createOuterVoidUnit(Simulation& System,
-				     MonteCarlo::Object& masterCell,
-				     const attachSystem::FixedComp& FC,
-				     const long int sideIndex)
-/*!
-    Construct outer void object main pipe
-    \param System :: Simulation
-    \param masterCell :: full master cell
-    \param FC :: FixedComp
-    \param sideIndex :: link point
-    \return cell nubmer
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","createOuterVoid");
-
-  static HeadRule divider;
-  // construct an cell based on previous cell:
-  std::string Out;
-  
-  if (!divider.hasRule())
-    divider=FrontBackCut::getFrontRule();
-
-  const HeadRule& backHR=
-    (sideIndex) ? FC.getFullRule(-sideIndex) :
-    FrontBackCut::getBackRule();
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=divider.display()+backHR.display();
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-  divider=backHR;
-
-  // make the master cell valid:
-  
-  divider.makeComplement();
-
-  refrontMasterCell(masterCell,FC,sideIndex);
-  return cellIndex-1;
-}
-
-void
-maxpeemFrontEnd::refrontMasterCell(MonteCarlo::Object& MCell,
-				   const attachSystem::FixedComp& FC,
-				   const long int sideIndex) const
-  /*!
-    This horrifc function to re-build MCell so that it is correct
-    as createOuterVoid consumes the front of the master cell
-    \param MCell :: master cell object
-    \param FC :: FixedComp
-    \param sideIndex :: side index for back of FC object
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","refrontMasterCell");
-
-  std::string Out;  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=backRule()+FC.getLinkString(sideIndex);
-  MCell.procString(Out);
-  return;
-}
- 
-MonteCarlo::Object&
-maxpeemFrontEnd::constructMasterCell(Simulation& System)
- /*!
-    Construct outer void object main pipe
-    \param System :: Simulation
-    \return cell object
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","constructMasterCell");
-
-  std::string Out;
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=frontRule()+backRule();
-  makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
-  addOuterSurf(Out);
-  insertObjects(System);
-
-  return *System.findQhull(cellIndex-1);
-}
    
 void
 maxpeemFrontEnd::buildHeatTable(Simulation& System,
@@ -366,8 +290,8 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   heatBox->createAll(System,preFC,preSideIndex);
 
   const constructSystem::portItem& PIA=heatBox->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
-				PIA,PIA.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
+					 PIA,PIA.getSideIndex("OuterPlate"));
   heatBox->insertAllInCell(System,outerCell);
     
   // cant use heatbox here because of port rotation
@@ -379,7 +303,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
   //  const constructSystem::portItem& PI=heatBox->getPort(1);  
   bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowD,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
 
@@ -389,18 +313,18 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
   gateTubeA->createAll(System,*bellowD,2);  
 
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
 				GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeA->insertAllInCell(System,outerCell);
   
   ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*ionPB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPB,2);
   ionPB->insertInCell(System,outerCell);
 
   insertFlanges(System,*gateTubeA);
   
   pipeB->createAll(System,*ionPB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*pipeB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
   
   return;
@@ -442,16 +366,16 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
   bellowF->createAll(System,preFC,preSideIndex);
 
   // now do insert:
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowE,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
   bellowE->insertInCell(System,outerCell);
     
-  outerCell=createOuterVoidUnit(System,masterCell,*aperturePipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipe,2);
   aperturePipe->insertInCell(System,outerCell);
   
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowF,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
   bellowF->insertInCell(System,outerCell);
 
-  outerCell=createOuterVoidUnit(System,masterCell,*ionPC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPC,2);
   ionPC->insertInCell(System,outerCell);
 
 
@@ -474,16 +398,16 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
 
 
   // now do insert:
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowG,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowG,2);
   bellowG->insertInCell(System,outerCell);
     
-  outerCell=createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
   aperturePipeB->insertInCell(System,outerCell);
   
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowH,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   bellowH->insertInCell(System,outerCell);
 
-  outerCell=createOuterVoidUnit(System,masterCell,*pipeC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
   pipeC->insertInCell(System,outerCell);
 
   
@@ -508,12 +432,12 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   int outerCell;
   
   gateA->createAll(System,preFC,preSideIndex);
-  outerCell=createOuterVoidUnit(System,masterCell,*gateA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
   // bellows 
   bellowI->createAll(System,*gateA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowI,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowI,2);
   bellowI->insertInCell(System,outerCell);
 
   // FAKE insertcell:
@@ -521,13 +445,13 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
 				FPI,FPI.getSideIndex("OuterPlate"));
   florTubeA->insertAllInCell(System,outerCell);
   
   // bellows 
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowJ,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowJ,2);
   bellowJ->insertInCell(System,outerCell);
 
   insertFlanges(System,*florTubeA);
@@ -537,12 +461,12 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
 				GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeB->insertAllInCell(System,outerCell);
 
   offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*offPipeA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
 
   insertFlanges(System,*gateTubeB);
@@ -550,7 +474,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   shutterBox->delayPorts();
   shutterBox->createAll(System,*offPipeA,
 			offPipeA->getSideIndex("FlangeBCentre"));
-  outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterBox,2);
   shutterBox->insertAllInCell(System,outerCell);
   
   cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
@@ -575,7 +499,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
     }
 
   offPipeB->createAll(System,*shutterBox,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*offPipeB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
 
   bremBlock->addInsertCell(offPipeB->getCell("Void"));
@@ -585,7 +509,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
     
   // bellows 
   bellowK->createAll(System,*offPipeB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowK,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowK,2);
   bellowK->insertInCell(System,outerCell);
   
   return;
@@ -627,10 +551,14 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   ELog::RegMethod RegA("maxpeemFrontEnd","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object& masterCell=constructMasterCell(System);
+  buildZone.setFront(getFrontRule());
+  buildZone.setBack(getBackRule());
+  MonteCarlo::Object& masterCell=
+    buildZone.constructMasterCell(System,*this);
+
 
   undulatorPipe->createAll(System,*this,0);
-  outerCell=createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
   undulatorPipe->insertInCell("FFlange",System,outerCell);
   undulatorPipe->insertInCell("BFlange",System,outerCell);
   undulatorPipe->insertInCell("Pipe",System,outerCell);
@@ -641,7 +569,7 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   
   dipolePipe->setFront(*undulatorPipe,2);
   dipolePipe->createAll(System,*undulatorPipe,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
 
@@ -651,33 +579,34 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
 
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
   collA->createAll(System,*bellowA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*collA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collA,2);
   collA->insertInCell(System,outerCell);
   
   bellowB->createAll(System,*collA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
 
   ionPA->createAll(System,*bellowB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*ionPA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPA,2);
   ionPA->insertInCell(System,outerCell);
 
   bellowC->createAll(System,*ionPA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
 
   heatPipe->createAll(System,*bellowC,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*heatPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
 
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
 
+  setCell("MasterVoid",masterCell.getName());
   lastComp=bellowK;
   
   return;

@@ -78,6 +78,9 @@ class maxpeemOpticsBeamline :
 {
  private:
 
+  /// System for building a divided inner
+  attachSystem::InnerZone buildZone;
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -176,9 +179,12 @@ class maxpeemOpticsBeamline :
   /// Pipe to exit
   std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
 
+  double outerRadius;           ///< Radius for inner void
+  
   MonteCarlo::Object* masterCellA;
   MonteCarlo::Object* masterCellB;
-  
+
+
   void constructMasterCell(Simulation&,const HeadRule&);
   int constructDivideCell(Simulation&,const bool,
 			   const attachSystem::FixedComp&,
