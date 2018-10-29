@@ -149,7 +149,15 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
 				  const int surfID,
 				  const attachSystem::FixedComp& FC,
 				  const long int sideIndex)
-
+  /*!
+    Construct a middle surface based on a link point
+    The surfaces normal is orthogonal to the y axis of the link point
+    and the Z axis of the FixedComp
+    \param SMap :: Surface register
+    \param surfID :: new surface number
+    \param FC :: Fixed point for axis
+    \param sideIdnex :: link axis
+   */
 {
   ELog::RegMethod RegA("InnerZone","constructMiddleSurface");
   

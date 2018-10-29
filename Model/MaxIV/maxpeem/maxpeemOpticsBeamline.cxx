@@ -415,10 +415,9 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   splitter->createAll(System,*offPipeD,2);
   buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
   
-  cellA=buildZone.createOuterVoidNegUnit(System,masterCell,*splitter,2);
-  cellB=buildZone.createOuterVoidPosUnit(System,masterCell,*splitter,2);
+  std::tie(cellA,cellB)=
+    buildZone.createOuterVoidPair(System,masterCell,*splitter,2);
 
-  
   splitter->insertAllInCell(System,cellA);
 
   

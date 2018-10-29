@@ -79,19 +79,16 @@ namespace flukaSystem
 
 void 
 userTrackConstruct::createTally(SimFLUKA& System,
-			      const std::string& PType,const int fortranTape,
-			      const int cellA,const int cellB,
-			      const bool eLog,const double Emin,
-			      const double Emax,const size_t nE,
-			      const bool aLog,const double Amin,
-			      const double Amax,const size_t nA)
-  /*!
+				const std::string& PType,const int fortranTape,
+				const int cellA,
+				const bool eLog,const double Emin,
+				const double Emax,const size_t nE)
+/*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
     \param fortranTape :: output stream
     \param CellA :: initial region
-    \param CellB :: secondary region
     \param eLog :: energy in log bins
     \param aLog :: angle in log bins
     \param Emin :: Min energy 
@@ -105,9 +102,8 @@ userTrackConstruct::createTally(SimFLUKA& System,
   userTrack UD(fortranTape);
   UD.setParticle(FG.nameToFLUKA(PType));
 
-  UD.setCell(cellA,cellB);
+  UD.setCell(cellA);
   UD.setEnergy(eLog,Emin,Emax,nE);
-  UD.setAngle(aLog,Amin,Amax,nA);
   
   System.addTally(UD);
 
@@ -116,21 +112,21 @@ userTrackConstruct::createTally(SimFLUKA& System,
 
 
 void
-userTrackConstruct::processBDX(SimFLUKA& System,
+userTrackConstruct::processTrack(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
 			     const size_t Index) 
   /*!
-    Add BDX tally (s) as needed
+    Add TRACK tally (s) as needed
     - Input:
     -- particle FixedComp index
-    -- particle cellA  cellB
+    -- particle cellA  
     -- particle SurfMap name
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("userTrackConstruct","processBdx");
+  ELog::RegMethod RegA("userTrackConstruct","processTrack");
 
   
   const std::string particleType=
@@ -142,28 +138,13 @@ userTrackConstruct::processBDX(SimFLUKA& System,
 
   size_t itemIndex(4);
   int cellA(0);
-  int cellB(0);
-  if (
-      (!StrFunc::convert(FCname,cellA) ||
-       !StrFunc::convert(FCindex,cellB) ||
-       !checkLinkCells(System,cellA,cellB) ) &&
-      
-      !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
-      )
-    
+  if (!StrFunc::convert(FCname,cellA))
     {
-      // special class because must give regions
-      itemIndex+=2;
-      const size_t regionIndexA=IParam.getDefValue(0,"tally",Index,4);
-      const size_t regionIndexB=IParam.getDefValue(0,"tally",Index,5);
-
-      if (!constructSurfRegion(System,FCname,FCindex,
-			       regionIndexA,regionIndexB,cellA,cellB))
-	throw ColErr::InContainerError<std::string>
-	  (FCname+":"+FCindex,"No connecting surface on regions");
+      throw ColErr::InContainerError<std::string>
+	(FCname+":"+FCindex,"No regions");
     }
   
-  ELog::EM<<"Regions connected from "<<cellA<<" "<<cellB<<ELog::endDiag;  
+  ELog::EM<<"Regions connected from "<<cellA<<ELog::endDiag;  
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
@@ -171,16 +152,9 @@ userTrackConstruct::processBDX(SimFLUKA& System,
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
   const double EB=IParam.getDefValue<double>(1000,"tally",Index,itemIndex++);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
-
-  const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
-  const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
-  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
-
   
   userTrackConstruct::createTally(System,particleType,nextId,
-				cellA,cellB,
-				1,EA,EB,NE,
-				0,AA,AB,NA);
+				  cellA,1,EA,EB,NE);
   
   return;      
 }  

@@ -56,10 +56,9 @@ namespace flukaSystem
 {
 
 userTrack::userTrack(const int outID) :
-  flukaTally("surf"+std::to_string(outID),outID),
-  particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
-  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
-  angleA(0),angleB(4.0*M_PI)
+  flukaTally("cell"+std::to_string(outID),outID),
+  particle("208"),eLogFlag(0),fluenceFlag(0),
+  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]
@@ -68,9 +67,8 @@ userTrack::userTrack(const int outID) :
 
 userTrack::userTrack(const std::string& KN,const int outID) :
   flukaTally(KN,outID),
-  particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
-  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
-  angleA(0),angleB(4.0*M_PI)
+  particle("208"),eLogFlag(0),fluenceFlag(0),
+  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
   /*!
     Constructor
     \param KN :: KeyName
@@ -80,11 +78,9 @@ userTrack::userTrack(const std::string& KN,const int outID) :
 
 userTrack::userTrack(const userTrack& A) : 
   flukaTally(A),
-  particle(A.particle),eLogFlag(A.eLogFlag),aLogFlag(A.aLogFlag),
-  fluenceFlag(A.fluenceFlag),oneDirFlag(A.oneDirFlag),
-  nE(A.nE),energyA(A.energyA),energyB(A.energyB),
-  nA(A.nA),angleA(A.angleA),angleB(A.angleB),cellA(A.cellA),
-  cellB(A.cellB)
+  particle(A.particle),eLogFlag(A.eLogFlag),fluenceFlag(A.fluenceFlag),
+  oneDirFlag(A.oneDirFlag),nE(A.nE),energyA(A.energyA),
+  energyB(A.energyB),cellA(A.cellA)
   /*!
     Copy constructor
     \param A :: userTrack to copy
@@ -104,17 +100,12 @@ userTrack::operator=(const userTrack& A)
       flukaTally::operator=(A);
       particle=A.particle;
       eLogFlag=A.eLogFlag;
-      aLogFlag=A.aLogFlag;
       fluenceFlag=A.fluenceFlag;
       oneDirFlag=A.oneDirFlag;
       nE=A.nE;
       energyA=A.energyA;
       energyB=A.energyB;
-      nA=A.nA;
-      angleA=A.angleA;
-      angleB=A.angleB;
       cellA=A.cellA;
-      cellB=A.cellB;
     }
   return *this;
 }
@@ -142,8 +133,7 @@ userTrack::getLogType() const
     'return flag
   */
 {
-  const int signV((eLogFlag) ? -1 : 1);
-  return (aLogFlag) ?  2*signV : signV;
+  return (eLogFlag) ? 1 : 0;
 }
   
 void
@@ -154,36 +144,6 @@ userTrack::setParticle(const std::string& P)
   */
 {
   particle=P;
-  return;
-}
-
-void
-userTrack::setAngle(const bool aFlag,const double aMin,
-		  const double aMax,const size_t NA)
-  /*!
-    Set the angles 
-    \param aFlag :: log flag [if true]
-    \param aMin :: Min angle [min 0.001 if log]
-    \param aMax :: Max angle [4pi]
-    \param NA :: Number of points [min 3 if log]
-  */
-{
-  ELog::RegMethod RegA("userTrack","setAngle");
-
-  const double minV((aFlag) ? 1e-6 : 0.0);
-  const size_t minN((aFlag) ? 3 : 1);
-
-  if (aMax>4*M_PI)
-    throw ColErr::RangeError<double>(aMax,minV,4*M_PI,"aMax out of range");
-  if (aMin<minV)
-    throw ColErr::RangeError<double>(aMin,minV,4*M_PI,"aMin out of range");
-  if (NA<minN)
-    throw ColErr::SizeError<size_t>(NA,minN,"NA to small");
-
-  aLogFlag=aFlag;
-  angleA=aMin;
-  angleB=aMax;
-  nA=NA;
   return;
 }
   
@@ -219,15 +179,13 @@ userTrack::setEnergy(const bool eFlag,const double eMin,
 }
 
 void
-userTrack::setCell(const int RA,const int RB)
+userTrack::setCell(const int RA)
   /*!
     Set the cells/regions
     \param RA :: Region A
-    \param RB :: Region B
   */
 {
   cellA=RA;
-  cellB=RB;
   return;
 }
   
@@ -247,8 +205,7 @@ userTrack::write(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"USRTRACK "<<energyB<<" "<<energyA<<" "<<nE<<" ";
-  cx<<angleB<<" "<<angleA<<" "<<nA<<" &";
+  cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - &";
   StrFunc::writeFLUKA(cx.str(),OX);  
   return;
 }

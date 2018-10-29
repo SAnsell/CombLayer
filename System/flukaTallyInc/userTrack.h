@@ -39,7 +39,6 @@ class userTrack : public flukaTally
   std::string particle;             ///< particle/type
     
   bool eLogFlag;                    ///< energy log flag
-  bool aLogFlag;                    ///< angle log flag
   bool fluenceFlag;                 ///< fluence score
   bool oneDirFlag;                  ///< one direction flag
 
