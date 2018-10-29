@@ -225,57 +225,32 @@ InnerZone::createOuterVoidUnit(Simulation& System,
 }
 
 
-int
-InnerZone::createOuterVoidNegUnit(Simulation& System,
-				  MonteCarlo::Object& masterCell,
-				  HeadRule& FDivider,
-				  const attachSystem::FixedComp& FC,
-				  const long int sideIndex)
+
+std::pair<int,int>
+InnerZone::createOuterVoidPair(Simulation& System,
+			       MonteCarlo::Object& masterCell,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Construct outer void object main pipe on the neg side of the 
     middle divider
     \param System :: Simulation
     \param masterCell :: full master cell
-    \param FDivider :: Front divider
     \param FC :: FixedComp
     \param sideIndex :: link point
     \return cell number
   */
 {
-  ELog::RegMethod RegA("InnerZone","createOuterVoidNegUnit");
-
-  const std::string midStr=
-    middleHR.complement().display();
-      
-  // construct an cell based on previous cell:
-  std::string Out;
-  if (!FDivider.hasRule())
-    FDivider=frontHR;
-
-  const HeadRule& backDivider=
-    (sideIndex) ? FC.getFullRule(-sideIndex) :
-    backHR;
-
-  Out=surroundHR.display()+
-    FDivider.display()+backDivider.display()+midStr;
-
-  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-
-  FDivider=backDivider;
-  FDivider.makeComplement();
-
-  // make the master cell valid:
-  refrontMasterCell(masterCell,FC,sideIndex);
-  masterCell.addSurfString(midStr);
-  return cellIndex-1;
+  ELog::RegMethod RegA("InnerZone","createOuterVoidPair");
+  return createOuterVoidPair(System,masterCell,frontDivider,FC,sideIndex);
 }
-
-int
-InnerZone::createOuterVoidPosUnit(Simulation& System,
-				  MonteCarlo::Object& masterCell,
-				  HeadRule& FDivider,
-				  const attachSystem::FixedComp& FC,
-				  const long int sideIndex)
+  
+std::pair<int,int>
+InnerZone::createOuterVoidPair(Simulation& System,
+			       MonteCarlo::Object& masterCell,
+			       HeadRule& FDivider,
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Construct outer void object main pipe on the neg side of the 
     middle divider
@@ -287,10 +262,10 @@ InnerZone::createOuterVoidPosUnit(Simulation& System,
     \return cell number
   */
 {
-  ELog::RegMethod RegA("InnerZone","createOuterVoidPosUnit");
+  ELog::RegMethod RegA("InnerZone","createOuterVoidPair");
 
-  const std::string midStr=
-    middleHR.display();
+  const std::string midNegStr=middleHR.complement().display();
+  const std::string midPosStr=middleHR.display();
       
   // construct an cell based on previous cell:
   std::string Out;
@@ -302,8 +277,11 @@ InnerZone::createOuterVoidPosUnit(Simulation& System,
     backHR;
 
   Out=surroundHR.display()+
-    FDivider.display()+backDivider.display()+midStr;
-  
+    FDivider.display()+backDivider.display()+midNegStr;  
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=surroundHR.display()+
+    FDivider.display()+backDivider.display()+midPosStr;  
   CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
 
   FDivider=backDivider;
@@ -311,8 +289,7 @@ InnerZone::createOuterVoidPosUnit(Simulation& System,
 
   // make the master cell valid:
   refrontMasterCell(masterCell,FC,sideIndex);
-  masterCell.addSurfString(midStr);
-  return cellIndex-1;
+  return std::pair<int,int>(cellIndex-2,cellIndex-1);
 }
 
   

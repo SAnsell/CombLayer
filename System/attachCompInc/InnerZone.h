@@ -91,30 +91,19 @@ class InnerZone
 			  const attachSystem::FixedComp&,
 			  const long int);
 
-  int createOuterVoidNegUnit(Simulation&,
-			     MonteCarlo::Object&,
-			     HeadRule&,
-			     const attachSystem::FixedComp&,
-			     const long int);
   
-  int createOuterVoidNegUnit(Simulation&,
-			     MonteCarlo::Object&,
-			     const attachSystem::FixedComp&,
-			     const long int);
+  std::pair<int,int> createOuterVoidPair(Simulation&,
+					 MonteCarlo::Object&,
+					 const attachSystem::FixedComp&,
+					 const long int);
+
+  std::pair<int,int> createOuterVoidPair(Simulation&,
+					 MonteCarlo::Object&,
+					 HeadRule&,
+					 const attachSystem::FixedComp&,
+					 const long int);
   
-  int createOuterVoidPosUnit(Simulation&,
-			     MonteCarlo::Object&,
-			     HeadRule&,
-			     const attachSystem::FixedComp&,
-			     const long int);
 
-  int createOuterVoidPosUnit(Simulation&,
-			     MonteCarlo::Object&,
-			     const attachSystem::FixedComp&,
-			     const long int);
-
-
-  
   void refrontMasterCell(MonteCarlo::Object&,
 			 const attachSystem::FixedComp&,
 			 const long int) const;

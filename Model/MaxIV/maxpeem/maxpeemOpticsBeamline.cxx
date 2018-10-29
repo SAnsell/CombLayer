@@ -282,8 +282,6 @@ maxpeemOpticsBeamline::createSurfaces()
   return;
 }
 
-  
-
 int
 maxpeemOpticsBeamline::constructDivideCell(Simulation& System,
 					   const bool plusSide,
@@ -415,8 +413,14 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   offPipeD->insertInCell(System,cellA);
 
   splitter->createAll(System,*offPipeD,2);
-  cellA=buildZone.createOuterVoidUnit(System,masterCell,*splitter,2);
+  buildZone.constructMiddleSurface(SMap,buildIndex+10,*offPipeD,2);
+  
+  cellA=buildZone.createOuterVoidNegUnit(System,masterCell,*splitter,2);
+  cellB=buildZone.createOuterVoidPosUnit(System,masterCell,*splitter,2);
+
+  
   splitter->insertAllInCell(System,cellA);
+
   
   //  cellA=constructDivideCell(System,0,*offPipeD,2,*splitter,2);
   //  cellB=constructDivideCell(System,1,*offPipeD,2,*splitter,3);  
