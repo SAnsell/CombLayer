@@ -53,7 +53,7 @@ class InnerZone
 
   std::string FCName;                  ///< Fixed comp name [if available]
   int& cellIndex;                      ///< Cell index from FCPtr
-  attachSystem::FixedComp* FCPtr;      ///< Point to FixedComp [
+  attachSystem::FixedComp* FCPtr;      ///< Point to FixedComp 
   attachSystem::CellMap* CellPtr;      ///< Pointer to cell map 
 
   HeadRule surroundHR;               ///< Rule of surround
@@ -73,49 +73,33 @@ class InnerZone
 
 
   void setSurround(const HeadRule&);
+  void addMiddleToSurround(const int);
   void setFront(const HeadRule&);
   void setBack(const HeadRule&);
   void setMiddle(const HeadRule&);
 
+  InnerZone buildMiddleZone(const int) const;
+  
   void constructMiddleSurface(ModelSupport::surfRegister&,
 			      const int,const attachSystem::FixedComp&,
 			      const long int);
 
   int createOuterVoidUnit(Simulation&,
-			  MonteCarlo::Object&,
+			  MonteCarlo::Object*,
 			  HeadRule&,
 			  const attachSystem::FixedComp&,
 			  const long int);
   int createOuterVoidUnit(Simulation&,
-			  MonteCarlo::Object&,
+			  MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,
 			  const long int);
 
   
-  std::pair<int,int> createOuterVoidPair(Simulation&,
-					 MonteCarlo::Object&,
-					 const attachSystem::FixedComp&,
-					 const long int);
+  void refrontMasterCell(MonteCarlo::Object*,
+			 const HeadRule&) const;
 
-  std::pair<int,int> createOuterVoidPair(Simulation&,
-					 MonteCarlo::Object&,
-					 HeadRule&,
-					 const attachSystem::FixedComp&,
-					 const long int);
-  
-
-  void refrontMasterCell(MonteCarlo::Object&,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
-
-  void refrontMasterCell(MonteCarlo::Object&,
-			 MonteCarlo::Object&,
-			 const attachSystem::FixedComp&,
-			 const long int) const;
-
-  MonteCarlo::Object& constructMasterCell(Simulation&);
-  MonteCarlo::Object& constructMasterCell
-    (Simulation&,const ContainedComp&);
+  MonteCarlo::Object* constructMasterCell(Simulation&);
+  MonteCarlo::Object* constructMasterCell(Simulation&,const ContainedComp&);
   
 };
 

@@ -1094,7 +1094,7 @@ BALDERvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,173.0);
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,170.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

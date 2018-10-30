@@ -261,11 +261,11 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   ELog::RegMethod RegA("Simulation","addCell(int,Qhull)");
 
   OTYPE::iterator mpt=OList.find(cellNumber);
-  
+
   // Adding existing cell:
   if (mpt!=OList.end())
     {
-      ELog::EM<<"Cell Exists Object ::"<<cellNumber<<std::endl;
+      ELog::EM<<"Cell Exists Object ::"<<cellNumber<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
   OList.insert(OTYPE::value_type(cellNumber,A.clone()));

@@ -223,64 +223,52 @@ BALDER::build(Simulation& System,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-
-  joinPipe->addInsertCell(opticsHut->getCell("OuterVoid",0));
-
-  
+  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-  return;
 
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*ringCaveA,2);
-  return;
-  //  connectZone->registerJoinPipe(joinPipeC);
+
+  connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(voidCell);
-  connectZone->setFront(*opticsHut,2);
-  connectZone->setBack(*exptHut,1);
+  connectZone->setCutSurf("front",*opticsHut,2);
+  connectZone->setCutSurf("back",*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
 
+  joinPipeB->insertInCell(System,connectZone->getCell("OuterVoid",0));
 
 
-
-
-
-
-  return;
   // pipe shield goes around joinPipeB:
-  pShield->addAllInsertCell(joinPipeB->getCell("OuterSpace"));
+  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   pShield->setCutSurf("front",*opticsHut,"innerBack");
   pShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
 
   // pipe shield goes around joinPipeB:
-  nShield->addAllInsertCell(joinPipeB->getCell("OuterSpace"));
+  nShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   nShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   nShield->createAll(System,*opticsHut,opticsHut->getSideIndex("exitHole"));
 
-  System.removeCell(opticsHut->getCell("Void"));
+  // outer pipe shield goes around joinPipeB:
 
-
-  // horrid way to create a SECOND register space [MAKE INTERNAL]
-  joinPipeB->insertInCell(System,connectZone->getCell("firstVoid"));
-
-  // pipe shield goes around joinPipeB:
-
-  outerShield->addAllInsertCell(connectZone->getCell("firstVoid"));
+  outerShield->addAllInsertCell(connectZone->getCell("OuterVoid"));
   outerShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   outerShield->setCutSurf("front",*opticsHut,"back");
   outerShield->createAll(System,*opticsHut,
 			 opticsHut->getSideIndex("-exitHole"));
-
+  
   joinPipeC->insertInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell(System,exptHut->getCell("EnteranceHole"));
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
+
+
 
   return;
 }

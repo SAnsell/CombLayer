@@ -306,7 +306,7 @@ balderFrontEnd::insertFlanges(Simulation& System,
 
 void
 balderFrontEnd::buildHeatTable(Simulation& System,
-			       MonteCarlo::Object& masterCell,
+			       MonteCarlo::Object* masterCell,
 			       const attachSystem::FixedComp& preFC,
 			       const long int preSideIndex)
 
@@ -324,7 +324,7 @@ balderFrontEnd::buildHeatTable(Simulation& System,
   int outerCell;
   // FAKE insertcell:
 
-  heatBox->addAllInsertCell(masterCell.getName());
+  heatBox->addAllInsertCell(masterCell->getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,preFC,preSideIndex);
 
@@ -349,7 +349,7 @@ balderFrontEnd::buildHeatTable(Simulation& System,
 
 
   // FAKE insertcell:
-  gateTubeA->addAllInsertCell(masterCell.getName());
+  gateTubeA->addAllInsertCell(masterCell->getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*bellowD,2);  
 
@@ -374,7 +374,7 @@ balderFrontEnd::buildHeatTable(Simulation& System,
 
 void
 balderFrontEnd::buildApertureTable(Simulation& System,
-				   MonteCarlo::Object& masterCell,
+				   MonteCarlo::Object* masterCell,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
   
@@ -458,7 +458,7 @@ balderFrontEnd::buildApertureTable(Simulation& System,
   
 void
 balderFrontEnd::buildShutterTable(Simulation& System,
-				   MonteCarlo::Object& masterCell,
+				   MonteCarlo::Object* masterCell,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
   /*!
@@ -481,7 +481,7 @@ balderFrontEnd::buildShutterTable(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowI,2);
   bellowI->insertInCell(System,outerCell);
 
-  florTubeA->addAllInsertCell(masterCell.getName());
+  florTubeA->addAllInsertCell(masterCell->getName());
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
@@ -497,7 +497,7 @@ balderFrontEnd::buildShutterTable(Simulation& System,
   insertFlanges(System,*florTubeA);
 
   // FAKE insertcell:
-  gateTubeB->addAllInsertCell(masterCell.getName());
+  gateTubeB->addAllInsertCell(masterCell->getName());
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
@@ -564,7 +564,7 @@ balderFrontEnd::buildObjects(Simulation& System)
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
   
-  MonteCarlo::Object& masterCell=
+  MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
 
@@ -642,7 +642,7 @@ balderFrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*exitPipe,2);
   exitPipe->insertInCell(System,outerCell);
 
-  setCell("MasterVoid",masterCell.getName());
+  setCell("MasterVoid",masterCell->getName());
   
   lastComp=exitPipe;
   return;

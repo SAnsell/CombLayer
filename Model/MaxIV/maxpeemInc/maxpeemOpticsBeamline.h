@@ -181,9 +181,6 @@ class maxpeemOpticsBeamline :
 
   double outerRadius;           ///< Radius for inner void
   
-  MonteCarlo::Object* masterCellA;
-  MonteCarlo::Object* masterCellB;
-
 
   int constructDivideCell(Simulation&,const bool,
 			   const attachSystem::FixedComp&,
@@ -199,15 +196,15 @@ class maxpeemOpticsBeamline :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
-  void buildM1Mirror(Simulation&,MonteCarlo::Object&,
+  void buildM1Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
-  void buildM3Mirror(Simulation&,MonteCarlo::Object&,
+  void buildM3Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
-  void buildMono(Simulation&,MonteCarlo::Object&,
+  void buildMono(Simulation&,MonteCarlo::Object*,
 		 const attachSystem::FixedComp&,const long int);
-  void buildSlitPackage(Simulation&,MonteCarlo::Object&,
+  void buildSlitPackage(Simulation&,MonteCarlo::Object*,
 		       const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,MonteCarlo::Object&,
+  void buildSplitter(Simulation&,MonteCarlo::Object*,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
@@ -224,7 +221,8 @@ class maxpeemOpticsBeamline :
   maxpeemOpticsBeamline& operator=(const maxpeemOpticsBeamline&);
   ~maxpeemOpticsBeamline();
 
-  void buildOutGoingPipes(Simulation&,const std::vector<int>&,const int);
+  void buildOutGoingPipes(Simulation&,const int,const int,
+			  const std::vector<int>&);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

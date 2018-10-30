@@ -75,6 +75,7 @@
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "InnerZone.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"

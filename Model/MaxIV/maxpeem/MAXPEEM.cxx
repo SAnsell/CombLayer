@@ -182,12 +182,13 @@ MAXPEEM::build(Simulation& System,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-  return;
-  joinPipe->addInsertCell(opticsHut->getCell("OuterVoid",0));
-  
-  return;
-  opticsBeam->buildOutGoingPipes(System,opticsHut->getCells("Back"),
-				 opticsHut->getCell("Extension"));
+  //  joinPipe->addInsertCell(opticsHut->getCell("OuterVoid",0));
+
+  std::vector<int> cells(opticsHut->getCells("Back"));
+  cells.emplace_back(opticsHut->getCell("Extension"));
+  opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
+				 opticsBeam->getCell("RightVoid"),
+				 cells);
   
   return;
 }

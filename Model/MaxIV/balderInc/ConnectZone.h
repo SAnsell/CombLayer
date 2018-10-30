@@ -68,11 +68,13 @@ class ConnectZone :
   public attachSystem::CopiedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::FrontBackCut,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap      
 {
  private:
 
+  attachSystem::InnerZone buildZone;
+  
   /// First bellow
   std::shared_ptr<constructSystem::Bellows> bellowA;
 

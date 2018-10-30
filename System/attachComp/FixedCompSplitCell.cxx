@@ -235,10 +235,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
       
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
       if (CMapPtr)
-	{
-	  ELog::EM<<"This : "<<keyName<<ELog::endDiag;
-	  CMapPtr->registerExtra(cellN,CN);
-	}
+	CMapPtr->registerExtra(cellN,CN);
       SN++;
     }
   

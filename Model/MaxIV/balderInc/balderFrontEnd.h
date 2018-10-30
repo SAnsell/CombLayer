@@ -182,11 +182,11 @@ class balderFrontEnd :
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
-  void buildHeatTable(Simulation&,MonteCarlo::Object&,
+  void buildHeatTable(Simulation&,MonteCarlo::Object*,
 		      const attachSystem::FixedComp&,const long int);
-  void buildApertureTable(Simulation&,MonteCarlo::Object&,
+  void buildApertureTable(Simulation&,MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,const long int);
-  void buildShutterTable(Simulation&,MonteCarlo::Object&,
+  void buildShutterTable(Simulation&,MonteCarlo::Object*,
 			 const attachSystem::FixedComp&,const long int);  
 
   

@@ -269,7 +269,7 @@ maxpeemFrontEnd::createSurfaces()
    
 void
 maxpeemFrontEnd::buildHeatTable(Simulation& System,
-				MonteCarlo::Object& masterCell,
+				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
 
@@ -285,7 +285,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
   int outerCell;
   // FAKE insertcell:
-  heatBox->addAllInsertCell(masterCell.getName());
+  heatBox->addAllInsertCell(masterCell->getName());
   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
   heatBox->createAll(System,preFC,preSideIndex);
 
@@ -308,7 +308,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
 
   // FAKE insertcell:
-  gateTubeA->addAllInsertCell(masterCell.getName());
+  gateTubeA->addAllInsertCell(masterCell->getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeA->createAll(System,*bellowD,2);  
 
@@ -333,7 +333,7 @@ maxpeemFrontEnd::buildHeatTable(Simulation& System,
 
 void
 maxpeemFrontEnd::buildApertureTable(Simulation& System,
-				    MonteCarlo::Object& masterCell,
+				    MonteCarlo::Object* masterCell,
 				    const attachSystem::FixedComp& preFC,
 				    const long int preSideIndex)
   
@@ -416,7 +416,7 @@ maxpeemFrontEnd::buildApertureTable(Simulation& System,
 
 void
 maxpeemFrontEnd::buildShutterTable(Simulation& System,
-				   MonteCarlo::Object& masterCell,
+				   MonteCarlo::Object* masterCell,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
 
@@ -441,7 +441,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   bellowI->insertInCell(System,outerCell);
 
   // FAKE insertcell:
-  florTubeA->addAllInsertCell(masterCell.getName());
+  florTubeA->addAllInsertCell(masterCell->getName());
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
   const constructSystem::portItem& FPI=florTubeA->getPort(1);
@@ -457,7 +457,7 @@ maxpeemFrontEnd::buildShutterTable(Simulation& System,
   insertFlanges(System,*florTubeA);
 
   // FAKE insertcell:
-  gateTubeB->addAllInsertCell(masterCell.getName());
+  gateTubeB->addAllInsertCell(masterCell->getName());
   gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
   gateTubeB->createAll(System,*bellowJ,2);  
   const constructSystem::portItem& GPI=gateTubeB->getPort(1);
@@ -553,7 +553,7 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   int outerCell;
   buildZone.setFront(getFrontRule());
   buildZone.setBack(getBackRule());
-  MonteCarlo::Object& masterCell=
+  MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
 
@@ -606,7 +606,7 @@ maxpeemFrontEnd::buildObjects(Simulation& System)
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
 
-  setCell("MasterVoid",masterCell.getName());
+  setCell("MasterVoid",masterCell->getName());
   lastComp=bellowK;
   
   return;

@@ -281,9 +281,8 @@ OpticsBeamline::buildObjects(Simulation& System)
   int outerCell;
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));  
-  MonteCarlo::Object& masterCell=
+  MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
-
 
   // dummy space for first item
   // This is a mess but want to preserve insert items already
@@ -314,7 +313,7 @@ OpticsBeamline::buildObjects(Simulation& System)
 
   
   // fake inser for ports
-  filterBox->addAllInsertCell(masterCell.getName());
+  filterBox->addAllInsertCell(masterCell->getName());
   filterBox->setFront(*pipeA,2);
   filterBox->createAll(System,*pipeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBox,2);
@@ -437,7 +436,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   slitsA->insertInCell(System,outerCell);
   
   // fake inser for ports
-  shieldPipe->addAllInsertCell(masterCell.getName());
+  shieldPipe->addAllInsertCell(masterCell->getName());
   shieldPipe->setFront(*slitsA,2);
   shieldPipe->createAll(System,*slitsA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shieldPipe,2);
@@ -493,7 +492,7 @@ OpticsBeamline::buildObjects(Simulation& System)
 
 
   // fake insert for ports
-  viewPipe->addAllInsertCell(masterCell.getName());
+  viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
   viewPipe->createAll(System,*slitsB,2);
   outerCell=
@@ -575,7 +574,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
   neutShield[2]->createAll(System,*mirrorBoxB,-2);
 
-  setCell("LastVoid",masterCell.getName());
+  setCell("LastVoid",masterCell->getName());
   lastComp=gateE;  
 
   return;
