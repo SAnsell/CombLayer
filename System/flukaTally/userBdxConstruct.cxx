@@ -171,10 +171,8 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
   
   const int surfN=SMPtr->getSignedSurf(surfName);
   if (!surfN) return 0;
-
   // throws on error [unlikely because SurfMap is good]
   const groupRange& activeGrp=System.getGroup(FCname);
-  
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
     System.findCellPair(surfN,activeGrp,indexA,indexB);
