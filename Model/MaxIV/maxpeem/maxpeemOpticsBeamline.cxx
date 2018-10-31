@@ -124,6 +124,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  screenExtra(new xraySystem::PipeShield(newName+"ScreenExtra")),
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
@@ -184,6 +185,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(florTubeA);
   OR.addObject(bellowC);
   OR.addObject(pipeB);
+  OR.addObject(screenExtra);
   OR.addObject(pumpTubeA);
   OR.addObject(offPipeA);
   OR.addObject(M1Tube);
@@ -337,7 +339,6 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
 
   // No need for insert -- note removal of old master cell
-  ELog::EM<<"Master Cell ="<<masterCellA<<ELog::endDiag;
   System.removeCell(masterCellA->getName());
   
   masterCellA=leftZone.constructMasterCell(System);
@@ -689,7 +690,10 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
     (System,masterCellA,*pipeB,2);
   pipeB->insertInCell(System,outerCell);
 
-
+  screenExtra->addAllInsertCell(outerCell);
+  screenExtra->setCutSurf("inner",*pipeB,"pipeOuterTop");
+  screenExtra->createAll(System,*pipeB,0);
+  
   // FAKE insertcell: required
   pumpTubeA->addAllInsertCell(masterCellA->getName());
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));

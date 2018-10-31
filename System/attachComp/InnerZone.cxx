@@ -146,7 +146,6 @@ InnerZone::buildMiddleZone(const int flag) const
   InnerZone BUnit(*this);
   BUnit.addMiddleToSurround(flag);
   BUnit.frontHR=frontDivider;
-  ELog::EM<<"Front Divider == "<<frontDivider<<ELog::endDiag;
   return BUnit;
 }
   

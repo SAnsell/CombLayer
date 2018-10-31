@@ -48,29 +48,36 @@
 #include "variableSetup.h"
 
 #include "CFFlanges.h"
-#include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
-#include "BellowGenerator.h"
-#include "LeadPipeGenerator.h"
+
+#include "BeamMountGenerator.h"
+#include "CollGenerator.h"
 #include "CrossGenerator.h"
+#include "FlangeMountGenerator.h"
 #include "GateValveGenerator.h"
-#include "JawValveGenerator.h"
+#include "GratingMonoGenerator.h"
 #include "HeatDumpGenerator.h"
+#include "JawValveGenerator.h"
+#include "LeadBoxGenerator.h"
+
+#include "MirrorGenerator.h"
+#include "PipeGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
-#include "VacBoxGenerator.h"
-#include "BeamMountGenerator.h"
-#include "FlangeMountGenerator.h"
-#include "MirrorGenerator.h"
-#include "CollGenerator.h"
 #include "RingDoorGenerator.h"
-#include "SqrFMaskGenerator.h"
+#include "PipeShieldGenerator.h"
 #include "SimpleChicaneGenerator.h"
-#include "LeadBoxGenerator.h"
-#include "GrateMonoBoxGenerator.h"
-#include "GratingMonoGenerator.h"
+#include "SplitPipeGenerator.h"
+#include "BellowGenerator.h"
+#include "LeadPipeGenerator.h"
+#include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
+#include "VacBoxGenerator.h"
+#include "GrateMonoBoxGenerator.h"
+
+
+
+
 
 namespace setVariable
 {
@@ -88,41 +95,8 @@ namespace maxpeemVar
   void monoVariables(FuncDataBase&,const std::string&);
   void m1MirrorVariables(FuncDataBase&,const std::string&);
   void splitterVariables(FuncDataBase&,const std::string&);
-  void shieldVariables(FuncDataBase&,const std::string&,const double,
-		       const double);
   void slitPackageVariables(FuncDataBase&,const std::string&);
 
-
-void
-shieldVariables(FuncDataBase& Control,
-		const std::string& shieldKey,
-		const double YStep,
-		const double WLength)
-  /*!
-    Build the shield unit variables
-    \param Control :: Database
-    \param shieldKey :: prename
-    \param YStep :: distance of step
-    \param WLength :: Wing length
-  */
-{
-  ELog::RegMethod RegA("maxpeemVariables[F]","shieldVariables");
-
-  Control.addVariable(shieldKey+"YStep",YStep);
-  Control.addVariable(shieldKey+"Length",7.0);
-  Control.addVariable(shieldKey+"Width",60.0);
-  Control.addVariable(shieldKey+"Height",60.0);
-  Control.addVariable(shieldKey+"WallThick",0.5);
-  Control.addVariable(shieldKey+"ClearGap",0.2);
-  Control.addVariable(shieldKey+"WallMat","Stainless304");
-  Control.addVariable(shieldKey+"Mat","Lead");
-
-  Control.addVariable(shieldKey+"WingThick",7.0);
-  Control.addVariable(shieldKey+"WingLength",WLength);
-  Control.addVariable(shieldKey+"WingMat","Stainless304");
-
-  return;
-}
   
 void
 collimatorVariables(FuncDataBase& Control,
@@ -195,7 +169,8 @@ void
 splitterVariables(FuncDataBase& Control,
   		  const std::string& splitKey)
   /*!
-    Builds the variables for the slitter
+    Builds the variables for the splitter at
+    the end of the opticsHut/opticsBeam
     \param Control :: Database
     \param splitKey :: prename
   */
@@ -207,6 +182,7 @@ splitterVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeShieldGenerator ShieldGen;
 
   
   TwinGen.setCF<CF40>();
@@ -248,8 +224,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
-  shieldVariables(Control,splitKey+"ScreenB",0.0,0.0);
-
+  ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
+  
   return;
 }
   
@@ -407,20 +383,22 @@ slitPackageVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("maxpeemVariables[F]","slitPackageVariables");
 
+  setVariable::BeamMountGenerator BeamMGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::GateValveGenerator GateGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::BeamMountGenerator BeamMGen;
-
+  setVariable::PipeShieldGenerator ShieldGen;
   
   PipeGen.setMat("Stainless304");
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,26.6);
 
-  shieldVariables(Control,slitKey+"ScreenA",-4.0,30.0);
+  // ystep : wing
+  ShieldGen.generateShield(Control,slitKey+"ScreenA",-4.0,30.0);
+
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
@@ -549,6 +527,7 @@ opticsBeamVariables(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeShieldGenerator ShieldGen;
 
   Control.addVariable(opticKey+"OuterRadius",80.0);
   
@@ -599,6 +578,11 @@ opticsBeamVariables(FuncDataBase& Control,
   
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,opticKey+"PipeB",0,174.0);
+
+  ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
+  ShieldGen.setPlate(25.0,25.0,5.0);
+  // ystep : wing  
+  ShieldGen.generateShield(Control,opticKey+"ScreenExtra",-80.0,0.0);
 
   // will be rotated vertical
   const std::string collName=opticKey+"PumpTubeA";

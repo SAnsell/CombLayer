@@ -100,6 +100,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe to some stuff
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// Extra screen to make stuff good
+  std::shared_ptr<xraySystem::PipeShield> screenExtra;
   /// collimator-port ?
   std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
   /// Front port of mirror box
