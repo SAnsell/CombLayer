@@ -248,6 +248,10 @@ SquareFMask::createSurfaces()
 	    (SMap,BI+8,PCent-X*(pipeXWidth/2.0),Z,pipeRadius);
 	  ModelSupport::buildCylinder
 	    (SMap,BI+9,PCent+X*(pipeXWidth/2.0),Z,pipeRadius);
+	  // divider plane :
+	  if (i<3)
+	    ModelSupport::buildPlane
+	      (SMap,BI+1,pipeOrgZ+Y*((pipeYStep[i]+pipeYStep[i+1])/2.0),Y);
 	  BI+=10;
 	}
       // divider [only a pair of left/right needed]
@@ -282,45 +286,51 @@ SquareFMask::createObjects(Simulation& System)
 
   if (pipeRadius>Geometry::zeroTol)
     {
-      HeadRule pipeFirstHR,pipeHR;
+
       int BI(buildIndex+1000);
       const std::string topSurf=
 	ModelSupport::getComposite(SMap,buildIndex," -6 ");
+      const std::string frontSurf=
+	ModelSupport::getComposite(SMap,buildIndex," 1 ");
+
+
+      HeadRule pipeHR[4];
       for(size_t i=0;i<4;i++)
-	{
+	{	  
 	  Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-7M -1003 -1004 ");
 	  CellMap::makeCell("PipeA",System,cellIndex++,waterMat,0.0,Out);
-	  pipeHR.addUnion(Out);
-
+	  pipeHR[i].addUnion(Out);
+	  
 	  Out=ModelSupport::getComposite(SMap,buildIndex,BI," -8M 1003 ");
 	  CellMap::makeCell("PipeLeft",System,cellIndex++,
 			    waterMat,0.0,Out+topSurf);
-	  pipeHR.addUnion(Out);
-
+	  pipeHR[i].addUnion(Out);
+	  
 	  Out=ModelSupport::getComposite(SMap,buildIndex,BI," -9M 1004 ");
 	  CellMap::makeCell("PipeRight",System,cellIndex++,
 			    waterMat,0.0,Out+topSurf);
-	  pipeHR.addUnion(Out);
+	  pipeHR[i].addUnion(Out);
+	  pipeHR[i].makeComplement();
 	  BI+=10;
-	  if (i==2)
-	    {
-	      pipeFirstHR=pipeHR;
-	      pipeHR.reset();
-	    }
 	}
 
-      pipeFirstHR.makeComplement();
-      pipeHR.makeComplement();
-      
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex," 11 -101 3 -4 5 -6 (-103:104:-105:106) ");
-      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
-			Out+pipeFirstHR.display());
+      const std::string FC=ModelSupport::getComposite
+	(SMap,buildIndex," 3 -4 5 -6 (-103:104:-105:106) ");
 
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -1001 ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[0].display());
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1011 ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[1].display());
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -101 ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[2].display());
+      
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
       CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,
-			Out+pipeHR.display());
+			Out+pipeHR[3].display());
 
     }
   else   // two simple sections:
