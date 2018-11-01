@@ -69,7 +69,7 @@ namespace WeightSystem
 
 WWG::WWG() :
   pType({"n"}),wupn(8.0),wsurv(1.4),maxsp(5),
-  mwhere(-1),mtime(0),switchn(-2),
+  mwhere(-1),mtime(0),switchn(-1),
   EBin({1e8}),WMesh(1,Grid)
   /*!
     Constructor : 
