@@ -523,6 +523,7 @@ opticsBeamVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("maxpeemVariables[F]","opticsBeamVariables");
 
   setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -545,6 +546,11 @@ opticsBeamVariables(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,opticKey+"IonPA",0.0,24.4,36.6);
 
+  // joined and open
+  GateGen.setLength(3.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,opticKey+"GateRing",0.0,0);
+  
   // will be rotated vertical
   const std::string gateName=opticKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
@@ -577,7 +583,7 @@ opticsBeamVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticKey+"BellowC",0,16.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,opticKey+"PipeB",0,174.0);
+  PipeGen.generatePipe(Control,opticKey+"PipeB",0,169.5);
 
   ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
   ShieldGen.setPlate(25.0,25.0,5.0);
