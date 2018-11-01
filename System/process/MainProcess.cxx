@@ -340,7 +340,7 @@ setVariables(Simulation& System,const inputParam& IParam,
       if (!NP)
 	Control.addVariable("EngineeringActive",1);
     }
-  
+
 
   return;
 }
@@ -404,7 +404,11 @@ createSimulation(inputParam& IParam,
   if (IParam.flag("PHITS"))
     SimPtr=new SimPHITS;
   else if (IParam.flag("FLUKA"))
-    SimPtr=new SimFLUKA;
+    {
+      masterWrite::Instance().setSigFig(12);
+      masterWrite::Instance().setZero(1e-15);
+      SimPtr=new SimFLUKA;
+    }
   else if (IParam.flag("PovRay"))
     SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))

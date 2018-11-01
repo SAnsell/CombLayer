@@ -251,6 +251,7 @@ maxpeemOpticsHut::createSurfaces()
 			     Origin-X*(outWidth+TW+outerFarVoid),X);
 
   SurfMap::setSurf("OuterCorner",SMap.realSurf(buildIndex+314));
+  SurfMap::setSurf("OuterBack",SMap.realSurf(buildIndex+302));
   SurfMap::setSurf("OuterRoof",SMap.realSurf(buildIndex+306));
   return;
 }

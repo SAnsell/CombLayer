@@ -3,7 +3,7 @@
  
  * File:   process/masterWrite.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,16 +57,17 @@ masterWrite::Instance()
 }
 
 void
-masterWrite::setSigFig(const int S)
+masterWrite::setSigFig(const size_t S)
   /*!
     Sets the number of significant figures
     \param S :: Significant figures
   */
 {
-  if (S<=0)
-    throw ColErr::IndexError<int>(S,0,"masterWrite::setSigFig");
+  if (S==0)
+    throw ColErr::IndexError<size_t>(S,0,"masterWrite::setSigFig");
   std::ostringstream cx;
   cx<<"\%1."<<S<<"g";
+  sigFig=S; 
   FMTdouble=boost::format(cx.str());
   return;
 }
@@ -78,7 +79,7 @@ masterWrite::setZero(const double Z)
     \param Z :: Zero
   */
 {
-  zeroTol=fabs(Z);
+  zeroTol=std::abs(Z);
   return;
 }
 
@@ -90,7 +91,7 @@ masterWrite::Num(const double& D)
     \return formated number / 0.0 
    */
 {
-  if (fabs(D)<zeroTol)
+  if (std::abs(D)<zeroTol)
     return "0.0";
 
   return (FMTdouble % D).str();
