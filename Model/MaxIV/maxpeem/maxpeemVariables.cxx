@@ -75,10 +75,6 @@
 #include "VacBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
 
-
-
-
-
 namespace setVariable
 {
 
@@ -1035,6 +1031,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);
   CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
+  
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",0,10.0);
