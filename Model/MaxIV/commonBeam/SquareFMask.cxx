@@ -317,7 +317,7 @@ SquareFMask::createObjects(Simulation& System)
       const std::string FC=ModelSupport::getComposite
 	(SMap,buildIndex," 3 -4 5 -6 (-103:104:-105:106) ");
 
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -1001 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1001 ");
       CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
 			FC+Out+pipeHR[0].display());
       Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1011 ");
