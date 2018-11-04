@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -269,12 +268,12 @@ Motor::createPlates(Simulation& System)
     backPlate->frontRule()+backPlate->backRule();
   
   Out=frontPlate->getSurfComplement("innerRing");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,
 				   Out+FPlate+axle));
   addCell("MotorFrontPlate",cellIndex-1);
 
   Out=backPlate->getSurfComplement("innerRing");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,
 				   Out+BPlate+axle));
   addCell("MotorBackPlate",cellIndex-1);
 
@@ -303,7 +302,7 @@ Motor::createObjects(Simulation& System)
 
   // Axle
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,axleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,axleMat,0.0,Out));
   addCell("Axle",cellIndex-1);
     
   // Main motor
@@ -312,7 +311,7 @@ Motor::createObjects(Simulation& System)
   else
     Out=ModelSupport::getComposite(SMap,buildIndex," -12 2 -107 ");
       
-  System.addCell(MonteCarlo::Qhull(cellIndex++,bodyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,bodyMat,0.0,Out));
   addCell("MotorBody",cellIndex-1);
 
   addOuterUnionSurf("Outer",Out);

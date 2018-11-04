@@ -121,10 +121,9 @@ pointDetOpt::createObjAct(const Simulation& ASim)
   Simulation::OTYPE::const_iterator vc;
   for(vc=Cells.begin();vc!=Cells.end();vc++)
     {
-      if (!vc->second->isPlaceHold())
-	{
-	  OA.addUnit(ASim,vc->first,vc->second->getCofM());
-	}
+      ELog::EM<<"Not ignoring CofM -- get from objectRegister?"<<ELog::endCrit;
+      //      if (!vc->second->isPlaceHold())
+      //	OA.addUnit(ASim,vc->first,vc->second->getCofM());
 
     }
   return;

@@ -64,7 +64,6 @@
 #include "HeadRule.h"
 #include "neutron.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -221,11 +220,11 @@ Aperture::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
                                  "1 -2 3 -4 5 -6 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");

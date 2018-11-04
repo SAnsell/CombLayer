@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -439,89 +438,89 @@ Cryostat::createObjects(Simulation& System)
 
   // Sample
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
   addCell("SampleHolder",cellIndex-1);
 
   // stick
   Out=ModelSupport::getComposite(SMap,buildIndex," -107  6 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,stickMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,stickMat,0.0,Out));
 
   // sample void
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -16 (-6:107) (-5:6:7) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("SampleVoid",cellIndex-1);
   // sample void skin
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 25 -26 (17:-15:16) (-15:117) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
 
   // stick bore
   Out=ModelSupport::getComposite(SMap,buildIndex," -117 16 -116 107  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // stick bore walls
   Out=ModelSupport::getComposite(SMap,buildIndex," -127 -126 26 107  (117:116) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // heat shield
   Out=ModelSupport::getComposite(SMap,buildIndex," -207 205 -206  (127:-26) (27:26:-25) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -217 215 -206 (207:-205) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Heat shield to N2 tanks (on top of heat shield)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 405 -406 417 -427 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,liqN2Mat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,liqN2Mat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 226 -416 407 -437 (-405:406:-417:427) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
 
   // He tanks (inside N2 tanks)
   Out=ModelSupport::getComposite(SMap,buildIndex," 505 -506 517 -527 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,liqHeMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,liqHeMat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 515 -516 507 -537 (-505:506:-517:527) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
   
   // piece in cone
   Out=ModelSupport::getComposite(SMap,buildIndex," 206 -226 127 -218");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 206 -226 218 -228 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
 
   
   // tail
   Out=ModelSupport::getComposite(SMap,buildIndex," -307 305 -306 (217:-215:206) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -317 315 -306  (307:-305) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
 
 
   // piece in cone
   Out=ModelSupport::getComposite(SMap,buildIndex," 306 -226 -318 217 228 -327 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 206 -318 127 -325");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  //  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 306 -325 318 -328 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
 
   // Outer wall (veritcal)
   Out=ModelSupport::getComposite(SMap,buildIndex," 226 -326 -327 127 "
                                                 " (437:-407:416) (537:-507:516:-515) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 325 -326 -337 327 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
 
   // roof
   Out=ModelSupport::getComposite(SMap,buildIndex," 326 -336 -337 127 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));  
 
   // Heat protection layer
   

@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -317,10 +316,10 @@ channel::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 11 3 -4 -5 15 ");
   addOuterUnionSurf(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,cIndex,"-1 -2M 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
   
   return;
 }

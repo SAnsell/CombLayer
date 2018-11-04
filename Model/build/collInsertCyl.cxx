@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -291,13 +290,13 @@ collInsertCyl::createObjects(Simulation& System,
   // Centre void
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 ")+
     frontBack;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Outer metal
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "3 -4 5 -6 17 ")+
     frontBack;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
   
   return;
 }

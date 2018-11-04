@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -542,30 +541,30 @@ WaterDividers::createObjects(Simulation& System)
   // Front divider:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 47 33 (-2:-48:-23) -3 -22 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -57 -34 (-2:58:24) 4 -22 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Thin divider
   Out=ModelSupport::getComposite(SMap,buildIndex,"22 -81 -63 73 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"22 -81 64 -74 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // End block on left
   Out=ModelSupport::getComposite(SMap,buildIndex,"81 -2002 83 -84 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   // End block on right
   Out=ModelSupport::getComposite(SMap,buildIndex,"81 -2002 93 -94 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   //---------------------
@@ -576,7 +575,7 @@ WaterDividers::createObjects(Simulation& System)
 				 "101  (-137:132:133 ) "
 				 "(-102 : -123 : (147 -142 -143)) "
 				 "-122 -103 113 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Mid section divider:
@@ -584,25 +583,25 @@ WaterDividers::createObjects(Simulation& System)
 				 "101  (-138:132:-134 ) "
 				 "(-102 : 124 : (148 -142 144)) "
 				 "-122 104 -114 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   
   // Mid thin dividers:
   Out=ModelSupport::getComposite(SMap,buildIndex,"122 -181 -163 173 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"122 -181 164 -174 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // End block on left
   Out=ModelSupport::getComposite(SMap,buildIndex,"181 -2002 183 -184 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   // End block on right
   Out=ModelSupport::getComposite(SMap,buildIndex,"181 -2002 193 -194 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   //---------------------------------------------------------------
@@ -613,7 +612,7 @@ WaterDividers::createObjects(Simulation& System)
   				 "201  (-237:232:233 ) "
   				 "(-202 : -223 : (247 -242 -243)) "
   				 "-222 -203 213 5 -6 ");
-   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+   System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
    addOuterUnionSurf(Out);
 
   // Back section divider:
@@ -621,16 +620,16 @@ WaterDividers::createObjects(Simulation& System)
   				 "201  (-238:232:-234 ) "
     			 "(-202 : 224 : (248 -242 244)) "
   				 "-222 204 -214 5 -6 ");
-   System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+   System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
    addOuterUnionSurf(Out);
   
   // End block on left
   Out=ModelSupport::getComposite(SMap,buildIndex,"222 -2002 283 -284 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   // End block on right
   Out=ModelSupport::getComposite(SMap,buildIndex,"222 -2002 293 -294 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Insert
@@ -638,19 +637,19 @@ WaterDividers::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"301 -2002 303 -304 305 -306");
   addOuterUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"(-401:2002:407) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));  
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"401 -2002 -407");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,insMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,insMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   // Corners
   Out=ModelSupport::getComposite(SMap,buildIndex,"501 -2002 -503 284 2005 -2006");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"501 -2002 504 -293 2005 -2006");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,dMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,dMat,0.0,Out));
   addOuterUnionSurf(Out);
   
   return;

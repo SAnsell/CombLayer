@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -227,12 +226,12 @@ InnerWall::createObjects(Simulation& System)
   // HOLE:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Main wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 (-3:4:-5:6)");
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   CDivideList.push_back(cellIndex-1);
 
   return;

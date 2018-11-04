@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -242,33 +241,33 @@ MonoPlug::createObjects(Simulation& System,
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+
 	voidSurf+" "+bulkSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"7 -17 ")+
 	voidSurf+" "+bulkSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 17 ")+
 	voidSurf+" "+bulkSurf+" "+outSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
       return;
     }
 
   // First Layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"-6 -7 ")+
     voidSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-6 7 -17 ")+
     voidSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-6 16 17 -117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-16 17 ")+
     voidSurf+outSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
   
   // MAIN LOOP
   int pI=buildIndex;
@@ -276,29 +275,29 @@ MonoPlug::createObjects(Simulation& System,
     {
       // Steel inner:
       Out=ModelSupport::getComposite(SMap,pI, "6 -106 -107");      
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,pI, "6 -106 -117 107 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
      
       Out=ModelSupport::getComposite(SMap,pI+100, "-6 16 17 -117 ");      
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,pI,"16 -116 117 ")+outSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
       // Next loop index
       pI+=100;
     }
   
   // TOP Layer
   Out=ModelSupport::getComposite(SMap,pI, "6 -107")+bulkSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,pI, "6 -117 107 ")+bulkSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,pI, "16 117 ")+bulkSurf+outSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   
   return;
 }

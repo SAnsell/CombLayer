@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -190,7 +189,7 @@ PipeCollimator::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
   Out+=innerStruct.display()+outerStruct.display();
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("Main",cellIndex-1);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");

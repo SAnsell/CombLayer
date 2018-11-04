@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -304,8 +303,8 @@ TS2ModifyTarget::createObjects(Simulation& System,
   std::string Out;
   int offset;
 
-  MonteCarlo::Qhull* QPtrA=System.findQhull(mainBody);
-  MonteCarlo::Qhull* QPtrB=System.findQhull(skinBody);
+  MonteCarlo::Object* QPtrA=System.findObject(mainBody);
+  MonteCarlo::Object* QPtrB=System.findObject(skinBody);
   if (!QPtrA || !QPtrB)
     {
       ELog::EM<<"Failed on QHull for main/skin body "<<
@@ -327,7 +326,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 7 8 ");
 	  addOuterUnionSurf(Out);
 	  Out+=getContainer();
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,SCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,SCut[i].mat,0.0,Out));
 	  offset+=100;
 	}
     }
@@ -347,14 +346,14 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (CCut[i].dist<0)
 	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+getContainer();
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 	  
 	  cx.str("");
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+getContainer();
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,CCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,CCut[i].mat,0.0,Out));
 
 	  cx.str("");
 	  cx<<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)
@@ -362,7 +361,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (CCut[i].dist<0)
 	    cx<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)<<" ";
 	  Out=cx.str()+getContainer();
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 
 	  cx.str("");
@@ -398,22 +397,22 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (PCut[i].layerMat<0)
 	    {
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull
+	      System.addCell(MonteCarlo::Object
 			     (cellIndex++,PCut[i].mat,0.0,Out));
 	    }
 	  else
 	    {
 	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].mat,0.0,Out));
 	    }
 	  offset+=100;

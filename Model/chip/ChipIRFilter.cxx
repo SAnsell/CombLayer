@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -225,7 +224,7 @@ ChipIRFilter::createObjects(Simulation& System)
 
   // Outer layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   return;
 }
 

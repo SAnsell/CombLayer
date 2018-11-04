@@ -64,7 +64,6 @@
 #include "inputParam.h"
 
 #include "Object.h"
-#include "Qhull.h"
 #include "SimFLUKA.h"
 #include "particleConv.h"
 #include "flukaGenParticle.h"
@@ -89,8 +88,8 @@ userBdxConstruct::checkLinkCells(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","checkLinkCells");
-  const MonteCarlo::Object* APtr=System.findQhull(cellA);
-  const MonteCarlo::Object* BPtr=System.findQhull(cellB);
+  const MonteCarlo::Object* APtr=System.findObject(cellA);
+  const MonteCarlo::Object* BPtr=System.findObject(cellB);
   if (!APtr || !BPtr)
     return 0;
 

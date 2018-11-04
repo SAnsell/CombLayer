@@ -21,15 +21,6 @@ my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 
 ##my @modelNames= @modelLibDir;
 
-
-## GENERAL Directory 
-my @sublibdir=("src","beamline","global",
-	       "instrument","scatMat","transport","special",
-	       "test");                            
-
-
-my @libnames=@sublibdir;
-
 ## INCLUDES
 
 ## MODEL Directory

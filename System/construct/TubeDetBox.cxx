@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -292,13 +291,13 @@ TubeDetBox::createObjects(Simulation& System)
       for(size_t i=0;i<nDet;i++)
         {
           Out=ModelSupport::getComposite(SMap,buildIndex,DI," 5 -6 -7M ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));
           addCell("Tubes",cellIndex-1);
           addCell("Tube"+StrFunc::makeString(i),cellIndex-1);
           
           Out=ModelSupport::getComposite(SMap,buildIndex,DI,
                                          " 15 -16 (-5:6:7M) -17M ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
           
           mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
           DI+=100;
@@ -306,22 +305,22 @@ TubeDetBox::createObjects(Simulation& System)
 	  // Main body:
       Out= ModelSupport::getComposite(SMap,buildIndex,
 					  " 1001 -1002 15 -16  1003 -1004 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+mainBody));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+mainBody));
       if (outerMat>=0) 
 	{
 	  Out= ModelSupport::getComposite
 	    (SMap,buildIndex," 1001 -2002 2005 -2006  2003 -2004  "
                            " (1002:-15:16:-1003:1004)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  // filter
 	  Out= ModelSupport::getComposite
 	    (SMap,buildIndex," 2001 -1001 -2002 2005 -2006  2003 -2004  ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,filterMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,filterMat,0.0,Out));
 	  // outer wall
 	  Out= ModelSupport::getComposite
 	    (SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014  "
                            " (2002:-2003:2004:-2005:2006)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
 	  Out= ModelSupport::getComposite
 	    (SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014 ");
 	}

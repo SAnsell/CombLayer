@@ -60,7 +60,7 @@ class WCells : public WForm
   bool isMasked(const int) const;
 
   void renumberCell(const int,const int);  
-  void populateCells(const std::map<int,MonteCarlo::Qhull*>&);
+  void populateCells(const std::map<int,MonteCarlo::Object*>&);
   void maskCell(const int); 
   void maskCellComp(const int,const size_t); 
   void setWeights(const std::vector<double>&);

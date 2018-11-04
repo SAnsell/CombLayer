@@ -68,7 +68,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -474,14 +473,14 @@ ChipIRHutch::createWallObjects(Simulation& System,
   // -------------
   // Front void
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 33 -34 15 -16 -84");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("FrontVoid",cellIndex-1);
   collimatorVoid=cellIndex-1;
   
   // tail void
   Out=ModelSupport::getComposite(SMap,buildIndex,"102 -32 33 (-44 : -82) "
 				 "(-84 : 82) 43 35 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("TailVoid",cellIndex-1);
   tailVoid=cellIndex-1;
 
@@ -492,7 +491,7 @@ ChipIRHutch::createWallObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -2 3 13 15 -16 "
 				 "(-33 : -43 )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   layerCells["leftWall"]=cellIndex-1;
 
   // Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -502,25 +501,25 @@ ChipIRHutch::createWallObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -4 11 3 15 -8 -16 (-1:34) ");
   Out+=IC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   layerCells["rightFWall"]=cellIndex-1;
 
   // EDGE VOID:
   // Out=ModelSupport::getComposite(SMap,buildIndex,
   // 				 "11 -22 (-3:-13) 73 15 -16 ");
   // Out+=WC.getExclude();
-  // System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  // System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Surround walls Right back
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "8 15 -16 84 -14 -2 (-24 : 62) (-82 : 44) ");
   Out+=IC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   layerCells["rightBWall"]=cellIndex-1;
   
   // Right Extension 
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -22 -14 44 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   layerCells["walkWallCell"]=cellIndex-1;  
 
   // MAIN ROOF: ALL
@@ -528,7 +527,7 @@ ChipIRHutch::createWallObjects(Simulation& System,
 				 "11 -22 3 (-2 : 64) 13 (-4 : 62) "
                                  "-14 (-24 : 62) 16 -6");
   Out+=IC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out));
   layerCells["roof"]=cellIndex-1;  
   BStop->addInsertCell(cellIndex-1);
 
@@ -536,18 +535,18 @@ ChipIRHutch::createWallObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -22 3 13 (-4 : 62) -14 (-24 : 62) -15 5");
   Out+=IC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,floorMat,0.0,Out));
   layerCells["floor"]=cellIndex-1;
   // FALSE FLOOR:
   Out=ModelSupport::getComposite(SMap,buildIndex,"102 -32 33 "
 				 "(-44 : -82) "
 				 "(-84 : 82) 43 25 -35");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,falseFloorMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,falseFloorMat,0.0,Out));
   // FALSE FLOOR [void]:
   Out=ModelSupport::getComposite(SMap,buildIndex,"102 -32 33 "
 				 "(-44 : -82) "
 				 "(-84 : 82) 43 15 -25");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // ----------------------------------------------------
   // CREATE WALKWAY
@@ -555,45 +554,45 @@ ChipIRHutch::createWallObjects(Simulation& System,
   //  door:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "54 -44 42 -22 15 -16 42");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "64 -54 2 -22 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerWallMat,0.0,Out));
   BStop->addInsertCell(cellIndex-1);
 
   // void in walkway [above floor]
   Out=ModelSupport::getComposite(SMap,buildIndex,"54 -44 32 -42 35 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // floor in walkway
   Out=ModelSupport::getComposite(SMap,buildIndex,"54 -44 32 -42 25 -35");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,falseFloorMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,falseFloorMat,0.0,Out));
 
   // Concrete feedthrough
   Out=ModelSupport::getComposite(SMap,buildIndex,"54 -44 902 -42 15 -25");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,fbMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,fbMat,0.0,Out));
   // void in walkway
   Out=ModelSupport::getComposite(SMap,buildIndex,"54 -44 32 -902 15 -25");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // REAR WALL [WITH Void for BEAMSTOP]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "32 -54 33 43 -2 15 -16"
 				 " (-503 : 504 : -505 : 506)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   layerCells["backWall"]=cellIndex-1;
   BStop->addInsertCell(cellIndex-1);
 
   // Void for rear wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"32 -2 503  -504 505 -506");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   BStop->addInsertCell(cellIndex-1);
 
   // Void [Goes into roof space]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "2 -22 -64 13 15 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,rearVoidMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,rearVoidMat,0.0,Out));
   BStop->addInsertCell(cellIndex-1);
 
   // Block unit : On forward corner 
@@ -601,11 +600,11 @@ ChipIRHutch::createWallObjects(Simulation& System,
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "402 -412 -14 -44 (-84 : 82) 35 -16 404");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       layerCells["blockWall"]=cellIndex-1;
 
       // Add to inner void
-      MonteCarlo::Qhull* QH=System.findQhull(tailVoid);
+      MonteCarlo::Object* QH=System.findObject(tailVoid);
       Out=ModelSupport::getComposite(SMap,buildIndex,"(-402:412:-404)");
       QH->addSurfString(Out);
     }
@@ -901,35 +900,6 @@ ChipIRHutch::writeMasterPoints() const
   return;
 }
 
-int
-ChipIRHutch::isObjectContained(Simulation& System,
-			       const int PrimaryObj,
-			       const int SecondaryObj)
-  /*!
-    Compare two object to find if they intersect.
-    \param System :: Simulation to use
-    \param PrimaryObj :: Object to calculate if extents to Secondary
-    \param SecondaryObj :: Object to check points exist in
-    \return 1 on intersection / 0 on no intersection
-  */
-{
-  ELog::RegMethod RegA("ChipIRHutch","isObjectContained");
-
-  MonteCarlo::Qhull* POptr=System.findQhull(PrimaryObj);
-  MonteCarlo::Qhull* SOptr=System.findQhull(SecondaryObj);
-  if (!POptr || !SOptr)
-    {
-      ELog::EM<<"Failed to find object "<<PrimaryObj<<" "
-	      <<SecondaryObj<<ELog::endErr;
-      return 0;
-    }
-  
-  if (!POptr->hasIntersections())
-    POptr->calcIntersections();
-
-  return 0;
-}
-
 Geometry::Vec3D
 ChipIRHutch::calcIndexPosition(const int Index) const
   /*!
@@ -1125,12 +1095,12 @@ ChipIRHutch::addExtraWalls(Simulation& System,
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-1004 1011 (4:-11) -8 15 -6 ");
       Out+=Guide.getLinkString(9);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addOuterUnionSurf(Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-1024 24 -1002 8 15 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out)); 
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out)); 
       addOuterUnionSurf(Out);
 
       layerCells["westFront"]=cellIndex-2;

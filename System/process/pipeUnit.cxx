@@ -58,7 +58,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -394,7 +393,7 @@ pipeUnit::createObjects(Simulation& System)
 	  Out=Cap+ModelSupport::getComposite(SMap,SI," -7 ");
 	  if (SIprev)
 	    Out+=ModelSupport::getComposite(SMap,SIprev," 7 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,cylVar[i].MatN,
+	  System.addCell(MonteCarlo::Object(cellIndex++,cylVar[i].MatN,
 					   cylVar[i].Temp,Out));
 	  SIprev=SI;
 	}      
@@ -477,7 +476,7 @@ pipeUnit::insertObjects(Simulation& System)
     {
       if (OMap.find(forceCellN)==OMap.end())
 	{
-	  MonteCarlo::Object* SObj=System.findQhull(forceCellN);
+	  MonteCarlo::Object* SObj=System.findObject(forceCellN);
 	  if (SObj)
 	    OMap.insert(MTYPE::value_type(forceCellN,SObj));
 	}

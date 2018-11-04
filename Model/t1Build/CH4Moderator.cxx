@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -315,43 +314,43 @@ CH4Moderator::createObjects(Simulation& System)
     // CH4 + Poison
   Out=ModelSupport::getComposite(SMap,buildIndex,
 	"101 -102 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,ch4Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,poisonMat,ch4Temp,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 	"111 -101 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,ch4Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,ch4Temp,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 	"-112 102 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,ch4Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,ch4Temp,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -111 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,ch4Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,ch4Temp,Out));
   
     Out=ModelSupport::getComposite(SMap,buildIndex,"-8 112 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,ch4Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,ch4Temp,Out));
 
   // Inner al
   Out=ModelSupport::getComposite(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
 				 " (7:8:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,ch4Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,ch4Temp,Out));
 
   // Vac layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"23 -24 -27 -28 25 -26 "
 				 " (17:18:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Outer Al
   Out=ModelSupport::getComposite(SMap,buildIndex,"33 -34 -37 -38 35 -36 "
 				 " (-23:24:27:28:-25:26) ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Outer Al
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);  
   Out+=ModelSupport::getComposite(SMap,buildIndex, " (-33:34:37:38:-35:36) ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 
 //  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 45 -46 ");

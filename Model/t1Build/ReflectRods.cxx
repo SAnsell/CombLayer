@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -676,23 +675,23 @@ ReflectRods::createObjects(Simulation& System)
 
       if (!APtr->isCut())
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,CylA));
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,CylA));
 	  if (iLayer)
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,CylB));
+	    System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,CylB));
 	  Out+=plates;
 	}
       else 
 	{
 	  const std::string OutX= APtr->getCut();
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,
 					   CylA+OutX));
 	  if (iLayer)
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,
+	    System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,
 					     CylB+OutX));
 	  Out+=OutX+plates;
 	}
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
       cylIndex+=10;
     }
 

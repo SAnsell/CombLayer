@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -558,20 +557,20 @@ GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
 	  OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
 					  "(-2003:2004) 2023 -2024 12M -111M ")+addUnit;
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutA));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,OutB));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
+      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutB));
 
       // Insert blocks:
       OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
 				      "(-3:4) 2013 -2014 101M -102M ")+addUnit;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,OutA));
+      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutA));
 
       OutA=ModelSupport::getComposite(SMap,buildIndex,SN,
 				      "(-101M:102M:-2013) 2023 -3 111M -112M ")+addUnit;
       OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
 				      "(-101M:102M:2014) -2024 4 111M -112M ")+addUnit;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutA));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutB));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutB));
 
       SN+=100;
       
@@ -581,8 +580,8 @@ GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
 				  "(-3:4) 2003 -2004 12M -17")+addUnit;
   OutB=ModelSupport::getComposite(SMap,buildIndex,SN,
 				  "(-2003:2004) 2023 -2024 12M -17 ")+addUnit;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutA));
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,OutB));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutA));
+  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,OutB));
   return;
 }
 
@@ -601,15 +600,15 @@ GeneralShutter::createObjects(Simulation& System)
   const std::string dSurf=divideStr();
   // top
   Out=ModelSupport::getComposite(SMap,buildIndex,"-10 5 2023 -2024 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
 
   // void 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-5 15 2023 -2024 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Bulk Steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"-15 25 3 -4 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
   upperCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-15 25");
@@ -621,36 +620,36 @@ GeneralShutter::createObjects(Simulation& System)
       innerVoidCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"-125 126 13 -14 7 -100 ")+dSurf;
-      MonteCarlo::Qhull IVHi(cellIndex++,0,0.0,Out);
+      MonteCarlo::Object IVHi(cellIndex++,0,0.0,Out);
       if (closed>1) IVHi.setImp(0);
       System.addCell(IVHi);
 
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"-225 226 113 -114 100 -17 ")+dSurf;
-      MonteCarlo::Qhull IVHo(cellIndex++,0,0.0,Out);
+      MonteCarlo::Object IVHo(cellIndex++,0,0.0,Out);
       if (closed>1) IVHo.setImp(0);
       System.addCell(IVHo);
       // Surrounder
       Out=ModelSupport::getComposite(SMap,buildIndex,
 		     "-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
 	     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
     }
   else
     {
       innerVoidCell=cellIndex;
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-125 126 13 -14 7 -17 ")+dSurf;
-      MonteCarlo::Qhull IVH(cellIndex++,0,0.0,Out);
+      MonteCarlo::Object IVH(cellIndex++,0,0.0,Out);
       if (closed>1) IVH.setImp(0);
       System.addCell(IVH);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
 	     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
     }  
 
   // Insert Clearance Gap
@@ -659,17 +658,17 @@ GeneralShutter::createObjects(Simulation& System)
 
   // Bulk Steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"-26 16 3 -4 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
   lowerCell=cellIndex-1;
 
   // Base void
   Out=ModelSupport::getComposite(SMap,buildIndex,"-16 6 2023 -2024 7 -17 ")
     +dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Base Steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"-6 20 2023 -2024 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shutterMat,0.0,Out));
 
   // Add exclude
   Out=ModelSupport::getComposite(SMap,buildIndex,"2023 -2024 ")+dSurf;
@@ -779,12 +778,12 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
     }
   if (SB.flag & 2)          // Lower
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex,SB.matN,0.0,lx.str())); 
+      System.addCell(MonteCarlo::Object(cellIndex,SB.matN,0.0,lx.str())); 
       SimProcess::registerOuter(System,lowerCell,cellIndex++);
     }
   if (SB.flag & 1) 
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex,SB.matN,0.0,tx.str())); 
+      System.addCell(MonteCarlo::Object(cellIndex,SB.matN,0.0,tx.str())); 
       SimProcess::registerOuter(System,upperCell,cellIndex++);
     }
   return;

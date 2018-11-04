@@ -72,7 +72,6 @@
 #include "PhysImp.h"
 #include "PhysicsCards.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -124,18 +123,21 @@ getCellsContainingZaid(Simulation& System,
   std::vector<Geometry::Vec3D> FissionVec;
   for(const int CN : fuelCells)
     {
-      MonteCarlo::Qhull* OPtr=System.findQhull(CN);
+      MonteCarlo::Object* OPtr=System.findObject(CN);
       if (OPtr)
 	{
 	  const int matN=OPtr->getMat();
 	  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
+	  /*
+	    Calc vertex + cofm
 	  if (cellMat.hasZaid(zaid,0,0) && 
 	      OPtr->calcVertex())
 	    {
-	      const Geometry::Vec3D& CPt(OPtr->getCofM());
+	      //	      const Geometry::Vec3D& CPt(OPtr->getCofM());
 	      if (OPtr->isValid(CPt))
 		FissionVec.push_back(CPt);
 	    }
+	  */
 	}
     }
   return FissionVec;

@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -461,7 +460,7 @@ CH4Layer::createObjects(Simulation& System)
 
       Main.addIntersection(frontX);
       Main.addIntersection(backX);
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,LVec[i].getMat(),
 		      LVec[i].getTemp(),Main.display()));
 

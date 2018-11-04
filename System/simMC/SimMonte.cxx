@@ -189,7 +189,7 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
   ModelSupport::LineTrack LT(N.Pos,N.Pos+N.uVec*Dist);
   LT.calculate(*this);
 
-  const std::vector<double>& tLen=LT.getTrack();
+  const std::vector<double>& tLen=LT.getSegmentLen();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
 
   for(size_t i=0;i<oVec.size();i++)

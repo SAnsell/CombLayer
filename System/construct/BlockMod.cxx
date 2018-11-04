@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -287,13 +286,13 @@ BlockMod::createObjects(Simulation& System)
   for(size_t i=0;i<nConic;i++)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,CI," -7 5 -6 -7M 1M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       Conics[i].getMat(),temp[0],Out));
       if (Conics[i].getWall()>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,CI,
 					 " -7 5 -6 (7M:-1M) -17M 11M");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,
+	  System.addCell(MonteCarlo::Object(cellIndex++,
 					   Conics[i].getWallMat(),
 					   temp[0],Out));
 	  Out=ModelSupport::getComposite(SMap,buildIndex,CI," -7 5 -6 -17M 11M ");
@@ -314,7 +313,7 @@ BlockMod::createObjects(Simulation& System)
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
       else
 	Out+=OutUnit.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       SI+=10;
     }
   return; 

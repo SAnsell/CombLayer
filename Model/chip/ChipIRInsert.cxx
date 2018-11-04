@@ -68,7 +68,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -306,21 +305,21 @@ ChipIRInsert::createObjects(Simulation& System)
       // Low cut fragment [Inner]:
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-115 -107 101 -17 3 -4 -5 6 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
       // Low cut fragment [Outer]:
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-115 -107 17 -102 13 -14 -15 16 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
       // Inner void
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "115 -107 101 -17 3 -4 -5 6 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       chipInnerVoid=cellIndex-1;
 
       // outer Void
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "115 -107 17 -102 13 -14 -15 16 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       chipOuterVoid=cellIndex-1;
 
       // Set Containers:
@@ -334,12 +333,12 @@ ChipIRInsert::createObjects(Simulation& System)
       // Inner void
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-107 101 -17 3 -4 -5 6 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       chipInnerVoid=cellIndex-1;
       // Outer void
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-107 17 -102 13 -14 -15 16 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       chipOuterVoid=cellIndex-1;
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"-107 3 -4 -5 6 ");
@@ -351,7 +350,7 @@ ChipIRInsert::createObjects(Simulation& System)
   // Inner Material:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "107 101 -17 3 -4 -5 6 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   CDivideList.push_back(cellIndex-1);
 
   // Inner edge void
@@ -359,13 +358,13 @@ ChipIRInsert::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "7 -101 3 -4 -5 6 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,frontMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,frontMat,0.0,Out));
     }
 
   // Outer Material:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "107 17 -27 -102 13 -14 -15 16 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   //  CDivideList.push_back(cellIndex-1);
 
   // Outer edge void
@@ -373,7 +372,7 @@ ChipIRInsert::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "102 -27 13 -14 -15 16 ")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,backMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,backMat,0.0,Out));
     }
 
   System.removeCell(innerVoid);

@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -319,13 +318,13 @@ PreCollimator::createObjects(Simulation& System)
       std::string OutItem=HU.createObjects();
       if (OutItem!=" ")
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutItem));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutItem));
 	  Out+=" "+HU.getExclude();
 	}
     }
 
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));            
   CDivideList.push_back(cellIndex-1);
 
   return;

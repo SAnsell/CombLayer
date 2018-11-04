@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "MaterialSupport.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -424,7 +423,7 @@ insertBaseInfo::createObjects(const int initSurf,int& initCell)
   createSides();
   // BUILD OBJECTS:
   for(vc=Components.begin();vc!=Components.end();vc++)
-    System.addCell(MonteCarlo::Qhull(initCell++,
+    System.addCell(MonteCarlo::Object(initCell++,
 				     vc->matID,0.0,vc->cellString()));
   return;
 }

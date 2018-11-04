@@ -52,7 +52,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -127,7 +126,7 @@ testPipeUnit::createObjects()
   const int surIndex(0);
 
   Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

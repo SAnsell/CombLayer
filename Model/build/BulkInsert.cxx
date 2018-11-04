@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -327,18 +326,18 @@ BulkInsert::createObjects(Simulation& System)
   const std::string dSurf=divideStr();
   // inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"-5 6 3 -4 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
   innerVoid=cellIndex-1;
 
   // Outer
   Out=ModelSupport::getComposite(SMap,buildIndex,"-15 16 13 -14 17 -27 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
   outerVoid=cellIndex-1;
 
   // ---------------
   // Add excludes
   // ---------------
-  MonteCarlo::Qhull* shutterObj=System.findQhull(innerCell);
+  MonteCarlo::Object* shutterObj=System.findObject(innerCell);
   if (!shutterObj)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
@@ -348,7 +347,7 @@ BulkInsert::createObjects(Simulation& System)
   ExLiner.makeComplement();
   shutterObj->addSurfString(ExLiner.display());
   
-  shutterObj=System.findQhull(outerCell);  
+  shutterObj=System.findObject(outerCell);  
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
   if (impZero) shutterObj->setImp(0);

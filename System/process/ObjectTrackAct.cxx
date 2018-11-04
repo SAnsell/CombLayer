@@ -138,7 +138,7 @@ ObjectTrackAct::getMatSum(const long int objN) const
   const std::vector<MonteCarlo::Object*>& OVec=
     mc->second.getObjVec();
   const std::vector<double>& TVec=
-    mc->second.getTrack();
+    mc->second.getSegmentLen();
   double sum(0.0);
   for(size_t i=0;i<TVec.size();i++)
     if (OVec[i]->getMat()!=0)
@@ -166,7 +166,7 @@ ObjectTrackAct::getAttnSum(const long int objN) const
   // Get Two Paired Vectors
   const std::vector<MonteCarlo::Object*>& OVec=
     mc->second.getObjVec();
-  const std::vector<double>& TVec=mc->second.getTrack();
+  const std::vector<double>& TVec=mc->second.getSegmentLen();
   
   double sum(0.0);
   for(size_t i=0;i<TVec.size();i++)
@@ -204,7 +204,7 @@ ObjectTrackAct::getAttnSum(const long int objN,const double E) const
   // Get Two Paired Vectors
   const std::vector<MonteCarlo::Object*>& OVec=
     mc->second.getObjVec();
-  const std::vector<double>& TVec=mc->second.getTrack();
+  const std::vector<double>& TVec=mc->second.getSegmentLen();
   
   double sum(0.0);
   for(size_t i=0;i<TVec.size();i++)

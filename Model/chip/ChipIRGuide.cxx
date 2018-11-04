@@ -67,7 +67,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -665,7 +664,7 @@ ChipIRGuide::createObjects(Simulation& System)
   // Inner void:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-100 1 -2 3 -4 5 -6");
   voidCells.push_back(cellIndex);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // Cell liner:
   const std::string BasicOut=
     ModelSupport::getComposite(SMap,buildIndex,"-100 1 -2 ");
@@ -677,7 +676,7 @@ ChipIRGuide::createObjects(Simulation& System)
       GI+=20;
       Out+=ModelSupport::getComposite(SMap,GI," 3 -4 5 -6 ");
       voidCells.push_back(cellIndex);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,LMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,LMat[i],0.0,Out));
     }
   // Outer layer
   Out=ModelSupport::getComposite(SMap,GI," (-3:4:-5:6) ");
@@ -685,7 +684,7 @@ ChipIRGuide::createObjects(Simulation& System)
   // First Layer
   Out+=ModelSupport::getComposite(SMap,buildIndex,
        "-100 1 -2 13 113 -14 -114 115 -116 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("SteelInner",cellIndex-1));
 
@@ -693,64 +692,64 @@ ChipIRGuide::createObjects(Simulation& System)
   // Roof:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 116 -206 213 -204 -214");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
 
   // Floor
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 -115 205 213 -204 -214 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
 
   // Right Wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100  1 -1002 115 -116 (14:114) -204 -214 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   //  voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("ConcRight",cellIndex-1));
 
   // Left Wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 115 -116 (-13:-113) 213 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("ConcLeft",cellIndex-1));
 
   // BlockWall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 205 -306 -213 303 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 306 -206 -213 303 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Extra left Wall
   // everything below wall height to limit of wall length
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 402 205 -406 -303 403 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   //above wall height, below roof
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 406 -206 -303 403 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // below wall height beyond end of wall length
 
   // Extra right Wall [W2 side]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -502 205 -506 214 -503 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
 
   // REMEDIAL WALL West [W2 side]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 (214:204) (502:503:506) "
 				 "205 -606 -604 -614 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcW2",cellIndex-1));
 
     // REMEDIAL ROOF to the wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 -214 -204 213 206 -606");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcRoof",cellIndex-1));
 
 
@@ -758,7 +757,7 @@ ChipIRGuide::createObjects(Simulation& System)
  //above wall height, below roof
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -502 506 -206 214 -503 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Add full outer system
   // Inner 

@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "groupRange.h"
@@ -74,19 +73,21 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "Torpedo.h"
 
-#include "Debug.h"
 
 namespace shutterSystem
 {
 
 Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
-  FixedComp(Key+std::to_string(ID),6),
+  attachSystem::FixedComp(Key+std::to_string(ID),6),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   baseName(Key),shutterNumber(ID)
   /*!\
     Constructor BUT ALL variable are left unpopulated.
@@ -97,12 +98,12 @@ Torpedo::Torpedo(const size_t ID,const std::string& Key) :
 
 Torpedo::Torpedo(const Torpedo& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   baseName(A.baseName),shutterNumber(A.shutterNumber),
   vBox(A.vBox),
   voidXoffset(A.voidXoffset),
   xyAngle(A.xyAngle),innerRadius(A.innerRadius),zOffset(A.zOffset),
-  Height(A.Height),Width(A.Width),innerSurf(A.innerSurf),
-  voidCell(A.voidCell)
+  Height(A.Height),Width(A.Width),innerSurf(A.innerSurf)
   /*!
     Copy constructor
     \param A :: Torpedo to copy
@@ -121,6 +122,7 @@ Torpedo::operator=(const Torpedo& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       vBox=A.vBox;
       voidXoffset=A.voidXoffset;
       xyAngle=A.xyAngle;
@@ -129,7 +131,6 @@ Torpedo::operator=(const Torpedo& A)
       Height=A.Height;
       Width=A.Width;
       innerSurf=A.innerSurf;
-      voidCell=A.voidCell;
     }
   return *this;
 }
@@ -236,7 +237,7 @@ Torpedo::calcConvex(Simulation& System)
 {
   ELog::RegMethod RegA("Torpedo","calcConvex");
 
-  MonteCarlo::Qhull* VC=System.findQhull(voidCell);
+  MonteCarlo::Object* VC=System.findObject(getCell("Void"));
   if (VC)
     {
       VC->calcVertex();
@@ -298,8 +299,8 @@ Torpedo::createObjects(Simulation& System)
   dSurf=getInnerSurf();
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 ");
   // ADD INNER SURF HERE:
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+dSurf));
-  voidCell=cellIndex-1;
+  CellMap::makeCell(System,"Void",cellIndex++,0,0.0,Out+dSurf));
+  
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ")+dSurf;  
   addOuterSurf(Out);
@@ -358,7 +359,8 @@ Torpedo::createLinks()
 }
 
 void 
-Torpedo::addCrossingIntersect(Simulation& System,const Torpedo& Other)
+Torpedo::addCrossingIntersect(Simulation& System,
+			      const Torpedo& Other)
   /*!
     Check and add cross in surface if an intersect exists:
     \param System :: Simulation system
@@ -381,7 +383,8 @@ Torpedo::addCrossingIntersect(Simulation& System,const Torpedo& Other)
 	  if (index)
 	    cx<<index<<" ";
 	}
-      MonteCarlo::Qhull* VC=System.findQhull(voidCell);
+      
+      MonteCarlo::Object* VC=System.findObject(getCell("Void"));
       if (VC)
 	VC->addSurfString(cx.str());
     }
@@ -397,6 +400,8 @@ Torpedo::findPlane(const Geometry::Face& FC) const
     \return surface number 
    */
 {
+  ELog::RegMethod RegA("Torpedo","findPlane");
+  
   const Geometry::Vec3D& A=FC.getVertex(0)->getV();
   const Geometry::Vec3D& B=FC.getVertex(1)->getV();
   const Geometry::Vec3D& C=FC.getVertex(2)->getV();

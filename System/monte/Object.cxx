@@ -1330,6 +1330,62 @@ Object::str() const
   return cx.str();
 }
 
+
+std::string
+Object::cellStr(const std::map<int,Object*>& MList) const
+  /*!
+    Returns just the cell string object. Processes complement
+    and self include.
+    \param MList :: List of indexable Hulls
+    \return Cell String (from TopRule)
+    \todo Break infinite recusion
+  */
+{
+  ELog::RegMethod RegA("Object","cellStr");
+
+  const char compUnit[]="%#";
+  std::string TopStr=this->topRule()->display();
+  std::string::size_type pos=TopStr.find_first_of(compUnit);
+  std::ostringstream cx;
+  while(pos!=std::string::npos)
+    {
+      const int compFlag(TopStr[pos]=='%' ? 0 : 1); 
+      pos++;
+      cx<<TopStr.substr(0,pos);            // Everything including the #
+      int cN(0);
+      const size_t nLen=StrFunc::convPartNum(TopStr.substr(pos),cN);
+      if (nLen>0)
+        {
+	  std::map<int,MonteCarlo::Object*>::const_iterator vc=MList.find(cN);
+	  if (vc==MList.end() || cN==this->getName())
+	    {
+	      ELog::EM<<"Cell:"<<getName()<<" comp unit:"
+		      <<cN<<ELog::endCrit;
+	      ELog::EM<<"full string == "
+		      <<topRule()->display()<<ELog::endCrit;
+	      cx<<compUnit[compFlag]<<cN;
+	      throw ColErr::InContainerError<int>
+		(cN,"Object::cellStr unknown complementary unit");
+	    }
+	  else
+	    {
+	      if (compFlag) cx<<"(";
+	      // Not the recusion :: This will cause no end of problems 
+	      // if there is an infinite loop.
+	      cx<<vc->second->cellStr(MList);
+	      if (compFlag) cx<<")";
+	    }
+	  cx<<" ";
+	  pos+=nLen;
+	}
+      TopStr.erase(0,pos);
+      pos=TopStr.find_first_of(compUnit);
+    }
+
+  cx<<TopStr;
+  return cx.str();
+}
+
 void 
 Object::write(std::ostream& OX) const
   /*!

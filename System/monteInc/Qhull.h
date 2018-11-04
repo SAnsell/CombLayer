@@ -81,7 +81,6 @@ class Qhull : public Object
   void printVertex() const;
   void printVertex(const Geometry::Vec3D&,const Geometry::Matrix<double>&) const;
   //  std::vector<Geometry::Vec3D>& getVertexPoints();
-  std::string cellStr(const std::map<int,Qhull*>&) const;
   std::vector<Geometry::Vec3D> getVertex() const;
 
   virtual void displace(const Geometry::Vec3D&);

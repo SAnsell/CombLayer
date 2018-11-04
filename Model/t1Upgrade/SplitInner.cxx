@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -232,7 +231,7 @@ SplitInner::createObjects(Simulation& System)
       	Out=backX.display();
 
       Out+=Edge+prevLayer;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       prevLayer=ModelSupport::getComposite(SMap,iLayer," 1 ");
       iLayer+=10;
     }

@@ -58,7 +58,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "WItem.h"
@@ -280,7 +279,7 @@ WCellControl::scaleObject(const Simulation& System,
   const std::vector<int> cellVec=System.getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
         WF->scaleWeights(cellN,WEng);
     }
@@ -340,7 +339,7 @@ WCellControl::findMax(const Simulation& System,
   size_t foundCellCnt(0);
   for(const int CN : cellRange)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(CN);
+      const MonteCarlo::Object* CellPtr=System.findObject(CN);
       if (CellPtr && CellPtr->getMat())
 	{
           foundCellCnt++;
@@ -449,7 +448,7 @@ WCellControl::calcCellTrack(const Simulation& System,
   /*
     for(const int cellN : cellVec)
     {
-    const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+    const MonteCarlo::Object* CellPtr=System.findObject(cellN);
     if (CellPtr && CellPtr->getMat())
     {
     index.push_back(CellPtr->getName());  // this should be cellN ??
@@ -482,11 +481,11 @@ WCellControl::calcCellTrack(const Simulation& System,
 
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
-          Pts.push_back(CellPtr->getCofM());
+	  //          Pts.push_back(CellPtr->getCofM());
         }
     }
 
@@ -514,11 +513,11 @@ WCellControl::calcCellTrack(const Simulation& System,
 
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
-          Pts.push_back(CellPtr->getCofM());
+	  //          Pts.push_back(CellPtr->getCofM());
           ELog::EM<<"Cell Track = "<<initPt<<" : "<<index.back()
                   <<" : [COM] "<<Pts.back()<<ELog::endDiag;
         }

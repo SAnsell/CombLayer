@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -317,11 +316,11 @@ OpenBlockTarget::createObjects(Simulation& System)
   // Create the pressure vessel:
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 " ( -1 : 2 : -3 : 4 : -5 : 6 ) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pressMat,0.0, Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pressMat,0.0, Out));
   // create surround water
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 " ( -203 : 204 : -205 : 206 ) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0, Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
 
 
   const std::string H2OEdge=
@@ -335,11 +334,11 @@ OpenBlockTarget::createObjects(Simulation& System)
     {
       // Front water
       Out=ModelSupport::getComposite(SMap,PT," -1 ")+H2OEdge+preLayer;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
       // Ta surround
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,PT,"1M -2M ( -11M:12M:-103:104:-105:106) ")+H2OEdge;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
       // Void case
       if (tVoid[i]>Geometry::zeroTol)
@@ -347,27 +346,27 @@ OpenBlockTarget::createObjects(Simulation& System)
 	  // inner void
 	  Out=ModelSupport::getComposite
 	    (SMap,buildIndex,PT,"21M -22M 303 -304 305 -306");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 	  // W with void hole
 	  Out=ModelSupport::getComposite
 	    (SMap,buildIndex,PT," 11M -12M 103 -104 105 -106 "
 	     " (-21M : 22M : -303 : 304 : -305 : 306)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 	}
       else
 	{
 	  // W with no hole 	
 	  Out=ModelSupport::getComposite
 	    (SMap,buildIndex,PT,"11M -12M 103 -104 105 -106 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 	}
       preLayer=ModelSupport::getComposite(SMap,PT," 2 ");
       PT+=100;
     }
   // Last water plate
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 ")+H2OEdge+preLayer;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");

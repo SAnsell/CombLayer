@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -337,30 +336,30 @@ CH4PreMod::createObjects(Simulation& System,
   std::string Out;
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"13 -14 15 -16 -131 132");
   Out+=Inner+touch;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Water:
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "-121 122 23 -24 25 -26 (-13:14:-15:16)");
   Out+=touch;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "-131 132 33 -34 35 -36 (-23:24:-25:26)");
   Out+=touch;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Front al wrapper
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "-131 121 23 -24 25 -26 (-13:14:-15:16)");
   Out+=touch;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Front al wrapper
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		  "132 -122 23 -24 25 -26 (-13:14:-15:16)");
   Out+=touch;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   const std::string FFace=FC.getLinkString(-(frontIndex+1));
   const std::string BFace=FC.getLinkString(-(backIndex+1));
@@ -372,7 +371,7 @@ CH4PreMod::createObjects(Simulation& System,
   IOut+=Inner+touch;
   Out+="#("+IOut+")";
   Out+=FullInner;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				    "43 -44 45 -46 ");  

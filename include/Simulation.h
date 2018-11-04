@@ -72,7 +72,7 @@ class Simulation : public objectGroups
  public:
 
   // UGLY
-  typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
+  typedef std::map<int,MonteCarlo::Object*> OTYPE;      ///< Object type
 
  protected:
 
@@ -97,10 +97,10 @@ class Simulation : public objectGroups
   void deleteObjects();
   
 
-  int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
+  int checkInsert(const MonteCarlo::Object&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
-  int removeComplement(MonteCarlo::Qhull&) const;
-  void addObjSurfMap(MonteCarlo::Qhull*);
+  int removeComplement(MonteCarlo::Object&) const;
+  void addObjSurfMap(MonteCarlo::Object*);
 
   std::map<int,int> calcCellRenumber(const std::vector<int>&,
 				     const std::vector<int>&) const;
@@ -123,8 +123,10 @@ class Simulation : public objectGroups
   void setCellDNF(const size_t C) { cellDNF=C; }
   /// set cell CNF
   void setCellCNF(const size_t C) { cellCNF=C; }
-  MonteCarlo::Qhull* findQhull(const int);         
-  const MonteCarlo::Qhull* findQhull(const int) const; 
+
+  MonteCarlo::Object* findObject(const int);         
+  const MonteCarlo::Object* findObject(const int) const; 
+
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
 			       MonteCarlo::Object*) const;
   std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
@@ -166,8 +168,8 @@ class Simulation : public objectGroups
 
   int getNextCell(int) const;
   // ADD Objects
-  int addCell(const MonteCarlo::Qhull&);         
-  int addCell(const int,const MonteCarlo::Qhull&);         
+  int addCell(const MonteCarlo::Object&);         
+  int addCell(const int,const MonteCarlo::Object&);         
   int addCell(const int,const int,const std::string&);
   int addCell(const int,const int,const double,const std::string&);
   int addCell(const int,const int,const double,const HeadRule&);

@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -267,10 +266,10 @@ MultiChannel::createObjects(Simulation& System)
   for(size_t i=0;i<nBlades;i++)
     {
       Out=BHR.display()+ModelSupport::getComposite(SMap,SN," -3 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FB));
+      System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+FB));
 
       Out=ModelSupport::getComposite(SMap,SN," 3 -4 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out+FB));
+      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out+FB));
       
       Out=ModelSupport::getComposite(SMap,SN," 4 ");
       BHR.procString(Out);
@@ -278,7 +277,7 @@ MultiChannel::createObjects(Simulation& System)
     }
   // LAST Volume
   Out=BHR.display()+topRule.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FB));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+FB));
   
   Out=FB+baseRule.display()+" "+topRule.display();
   addOuterSurf(Out);

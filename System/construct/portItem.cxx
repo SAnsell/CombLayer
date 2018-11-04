@@ -61,7 +61,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -469,7 +468,7 @@ portItem::constructOuterFlange(Simulation& System,
 
   //  std::set<int> activeCell;
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  const std::vector<double>& Track=LT.getTrack();
+  const std::vector<double>& Track=LT.getSegmentLen();
   double T(0.0);   // extention base out point
 
   for(size_t i=startIndex;i<OVec.size() &&
@@ -496,7 +495,7 @@ portItem::constructOuterFlange(Simulation& System,
   // do essential outerCells
   for(const int ON : outerCell)
     {
-      MonteCarlo::Object* OPtr=System.findQhull(ON);
+      MonteCarlo::Object* OPtr=System.findObject(ON);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(ON,"Cell not found");
       OPtr->addSurfString(getExclude());

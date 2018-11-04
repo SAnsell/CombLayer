@@ -65,7 +65,6 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
-#include "ObjTrackItem.h"
 #include "neutron.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -117,7 +116,7 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
 
 LineTrack::LineTrack(const LineTrack& A) : 
   InitPt(A.InitPt),EndPt(A.EndPt),aimDist(A.aimDist),TDist(A.TDist),
-  Cells(A.Cells),ObjVec(A.ObjVec),Track(A.Track)
+  Cells(A.Cells),ObjVec(A.ObjVec),segmentLen(A.segmentLen)
   /*!
     Copy constructor
     \param A :: LineTrack to copy
@@ -137,7 +136,7 @@ LineTrack::operator=(const LineTrack& A)
       TDist=A.TDist;
       Cells=A.Cells;
       ObjVec=A.ObjVec;
-      Track=A.Track;
+      segmentLen=A.segmentLen;
     }
   return *this;
 }
@@ -153,7 +152,7 @@ LineTrack::clearAll()
   ObjVec.clear();
   SurfVec.clear();
   SurfIndex.clear();
-  Track.clear();
+  segmentLen.clear();
   return;
 }
 
@@ -323,10 +322,10 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,
   TDist+=D;
   if (aimDist-TDist < -Geometry::zeroTol)
     {
-      Track.push_back(D-TDist+aimDist);
+      segmentLen.push_back(D-TDist+aimDist);
       return 0;
     }
-  Track.push_back(D);
+  segmentLen.push_back(D);
   return 1;
 }
 
@@ -373,14 +372,14 @@ LineTrack::getPoint(const size_t Index) const
 {
   ELog::RegMethod RegA("LineTrack","getPoint");
 
-  if (Index>Track.size())
-    throw ColErr::IndexError<size_t>(Index,Track.size(),"Index");
+  if (Index>segmentLen.size())
+    throw ColErr::IndexError<size_t>(Index,segmentLen.size(),"Index");
 
   if (!Index) return InitPt;
 
   double Len=0.0;
   for(size_t i=0;i<Index;i++)
-    Len+=Track[i];
+    Len+=segmentLen[i];
 
   return InitPt+(EndPt-InitPt).unit()*Len;
 }
@@ -400,14 +399,14 @@ LineTrack::createMatPath(std::vector<int>& mVec,
     {
       const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
       mVec.push_back(matN);
-      aVec.push_back(Track[i]);
+      aVec.push_back(segmentLen[i]);
     }
   return;
 }
 
 void
 LineTrack::createCellPath(std::vector<MonteCarlo::Object*>& cellVec,
-			 std::vector<double>& aVec) const
+			  std::vector<double>& aVec) const
   /*!
     Calculate track components
     \param cellVec :: Object Ptr vector
@@ -417,7 +416,7 @@ LineTrack::createCellPath(std::vector<MonteCarlo::Object*>& cellVec,
   for(size_t i=0;i<Cells.size();i++)
     {
       cellVec.push_back(ObjVec[i]);
-      aVec.push_back(Track[i]);
+      aVec.push_back(segmentLen[i]);
     }
   return;
 }
@@ -442,7 +441,7 @@ LineTrack::createAttenPath(std::vector<long int>& cVec,
 	  const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
 	  const double density=matInfo.getAtomDensity();
 	  const double A=matInfo.getMeanA();
-	  const double sigma=Track[i]*density*std::pow(A,0.66);
+	  const double sigma=segmentLen[i]*density*std::pow(A,0.66);
 	  cVec.push_back(ObjVec[i]->getName());
 	  aVec.push_back(sigma);
 	}
@@ -457,7 +456,6 @@ LineTrack::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
 
@@ -470,8 +468,8 @@ LineTrack::write(std::ostream& OX) const
       const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
       const double density=matInfo.getAtomDensity();
       const double A=matInfo.getMeanA();
-      const double sigma=Track[i]*density*std::pow(A,0.66);
-      OX<<"  "<<Cells[i]<<" : "<<Track[i]<<" "<<
+      const double sigma=segmentLen[i]*density*std::pow(A,0.66);
+      OX<<"  "<<Cells[i]<<" : "<<segmentLen[i]<<" "<<
 	matN<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
       sumSigma+=sigma;
     }

@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -483,7 +482,7 @@ LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
   */
 {
   ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
-  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  const MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
 
@@ -514,7 +513,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   checkDivide();
   
-  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  const MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
 

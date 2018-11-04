@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -298,14 +297,14 @@ boxPort::createObjects(Simulation& System)
     (SMap,buildIndex," 13 -14 15 -16 (-3:4:-5:6) ");
 
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,FBStr+EdgeStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,FBStr+EdgeStr));
   addCell("Box",cellIndex-1);
 
 
   if (innerExclude)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FBStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+FBStr));
       addCell("InnerVoid",cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");      

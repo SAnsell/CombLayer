@@ -259,7 +259,6 @@ VolSum::addDistance(const int ObjN,const double D)
     \param D :: Distance to add to tally calc
    */
 {
-  // Change to a boost::bind
   tvTYPE::iterator mc;
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     mc->second.addUnit(ObjN,D);
@@ -275,7 +274,6 @@ VolSum::addFlux(const int ObjN,const double& R,const double& D)
     \param D :: Distance to add to tally calc
    */
 {
-  // Change to a boost::bind
   tvTYPE::iterator mc;
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     mc->second.addFlux(ObjN,R,D);
@@ -392,11 +390,10 @@ VolSum::trackRun(const Simulation& System,const size_t N)
       const Geometry::Vec3D Pt=getCubePoint();
       const Geometry::Vec3D XPt=getCubePoint();
 
-
       LineTrack A(Pt,XPt);
       A.calculate(System);
       const std::vector<MonteCarlo::Object*>& OVec=A.getObjVec();
-      const std::vector<double>& TVec=A.getTrack();
+      const std::vector<double>& TVec=A.getSegmentLen();
       for(size_t i=0;i<OVec.size();i++)
 	{
 	  const MonteCarlo::Object* OPtr=OVec[i];
