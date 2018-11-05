@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -248,32 +247,32 @@ EQDetector::createObjects(Simulation& System)
   std::string Out;
   // Detector
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));
 
   // void
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "101 -102 103 -104 105 -106 (-1:2:7) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // lead liner
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -202 203 -204 205 -206 "
 				 "(102:-103:104:-105:106)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,leadMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,leadMat,0.0,Out));
 
   // plastic liner
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -302 303 -304 305 -306 "
 				 "(202:-203:204:-205:206)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plasticMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plasticMat,0.0,Out));
 
 
   // Front wall 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "201 -101 103 -104 105 -106 107");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,leadMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,leadMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"201 -101 -107");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"201 -302 303 -304 305 -306");
   addOuterSurf(Out);

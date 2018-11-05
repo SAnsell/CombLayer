@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -233,39 +232,39 @@ DetectorTank::createObjects(Simulation& System)
 
   // Main voids
   Out=ModelSupport::getComposite(SMap,buildIndex,"-7 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("SampleVoid",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 5 -6 7 -8");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("DetVoid",cellIndex-1);
 
   // WALLS:
   // sample
   Out=ModelSupport::getComposite(SMap,buildIndex,"-17 7 5 -6 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
   // front wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"-8 17 5 -6 -1 11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
   // Detector wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 11 8 -18");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   // Roof wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"6 -16 11 -18 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat+1,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat+1,0.0,Out));
   addCell("RoofSteel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"6 -16 -17");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  //  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   //  addCell("RoofSteel",cellIndex-1);
 
     // Detector wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 11 8 -18");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  //  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   //  addCell("Steel",cellIndex-1);
   
 

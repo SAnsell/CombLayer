@@ -64,7 +64,6 @@
 #include "inputParam.h"
 
 #include "Object.h"
-#include "Qhull.h"
 #include "SimFLUKA.h"
 #include "particleConv.h"
 #include "flukaGenParticle.h"

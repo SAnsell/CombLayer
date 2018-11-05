@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -273,20 +272,20 @@ NordBall::createObjects(Simulation& System)
   CompUnit.procString(cx.str());
   CompUnit.makeComplement();
   Out=ModelSupport::getComposite(SMap,buildIndex,cx.str());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+divide));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+divide));
 
   Out=ModelSupport::getComposite(SMap,buildIndex+50,cx.str());
   Out+=ModelSupport::getComposite(SMap,buildIndex,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+divide));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+divide));
 
   Out=ModelSupport::getComposite(SMap,buildIndex+50,cx.str());
   Out+=ModelSupport::getComposite(SMap,buildIndex," -101 1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Edge [void]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -1107 ");
   Out+=ModelSupport::getComposite(SMap,buildIndex+50,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 
   //MID
@@ -300,37 +299,37 @@ NordBall::createObjects(Simulation& System)
 
   // Inner
   Out=ModelSupport::getComposite(SMap,buildIndex,cx.str());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+midDivide));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+midDivide));
 
   // Wall
   Out=ModelSupport::getComposite(SMap,buildIndex+50,cx.str());
   Out+=ModelSupport::getComposite(SMap,buildIndex,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+midDivide));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+midDivide));
 
 
   // Edge [void]
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -3 -1107 ");
   Out+=ModelSupport::getComposite(SMap,buildIndex+50,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 
   // Back plate
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -1101 -1107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,Out));
 
   // support plate
   int eIndex(buildIndex);
   if (supportThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1101 -1201 -1107 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
       eIndex+=100;
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,eIndex,"1101M -1301 -1307 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,elecMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,elecMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,eIndex,"1101M -1301 1307 -1107");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -1301 -1107 ");

@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -285,10 +284,10 @@ BulletVessel::createObjects(Simulation& System)
 
   // FRONT UNITS:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 ((-27 25 -26) : -28) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -21 ((-17 15 -16) : -18) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   
   int PV(buildIndex);
@@ -302,20 +301,20 @@ BulletVessel::createObjects(Simulation& System)
       // WATER
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     " -2 -3M ((-7 5M -6M) : -8M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-2  3M ((-7 5M -6M) : -8M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
       // TA 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 			  "-2 -3M ((-17 15M -16M) : -18M) (7:-5M:6M) 8M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontSurf));
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 			   "-2 3M ((-17 15M -16M) : -18M) (7:-5M:6M) 8M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontSurf));
       
       // Clear
       if (!i)
@@ -323,10 +322,10 @@ BulletVessel::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 			 "-2 -3M ((-27 25M -26M) : -28M) (17:-15M:16M) 18M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
      			 "-2 3M ((-27 25M -26M) : -28M) (17:-15M:16M) 18M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-2 ((-27 25M -26M) : -28M)");

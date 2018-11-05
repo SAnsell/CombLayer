@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -355,72 +354,72 @@ InnerTarget::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"-8 : (1 -2 -7)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 
   // Cladding [with front water divider]
   Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -1 8 117");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -17 -12 (7:2) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // Water
   Out=ModelSupport::getComposite(SMap,buildIndex,"-28 -1 18");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -27 -22 (17:12) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
   // TA outer [pressure]
   Out=ModelSupport::getComposite(SMap,buildIndex,"-38 -1 28");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -37 -32 (27:22) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // void 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-48 -1 38");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -47 -42 (37:32) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Inner objects:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -107 -201 228");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -117 107 -201 228");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // First half sphere
   Out=ModelSupport::getComposite(SMap,buildIndex,"-208 -201");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"-218 208 -201");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"-228 218 -201");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"-238 228 -201 117 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // Second  sphere
   int TI(buildIndex+200);
   for(size_t i=1;i<nSphere;i++)
     {
       Out=ModelSupport::getComposite(SMap,TI,"(-8:-108) 1 -101");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,TI,"(-18:-118) (8 108) 1 -101");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,TI,"(-28:-128) (18 118) 1 -101");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,TI,"(-38:-138) (28 128) 1 -101");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
       TI+=100;
     }
   // Cone:
   Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -109 -2M -7M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 109 -119 -7M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 119 -129 -7M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,TI,buildIndex,"1 -2M 129 -139 -7M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," (117 : 201) ");
   TI=buildIndex+200;
@@ -436,7 +435,7 @@ InnerTarget::createObjects(Simulation& System)
       Out+=ModelSupport::getComposite(SMap,TI," (38:1) ");
       Out+=ModelSupport::getComposite(SMap,TI," (139 : -1) ");
     }
-  MonteCarlo::Qhull* IPtr=System.findQhull(buildIndex+1); 
+  MonteCarlo::Object* IPtr=System.findObject(buildIndex+1); 
   IPtr->addSurfString(Out);
 
   

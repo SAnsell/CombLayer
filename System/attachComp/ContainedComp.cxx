@@ -56,7 +56,6 @@
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -659,7 +658,7 @@ ContainedComp::insertExternalObject(Simulation& System,
     excludeObj.getHeadRule().complement().display();
   for(const int CN : insertCells)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
+      MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
 	outerObj->addSurfString(excludeStr);
       else
@@ -680,7 +679,7 @@ ContainedComp::insertObjects(Simulation& System)
 
   for(const int CN : insertCells)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
+      MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
 	outerObj->addSurfString(getExclude());
 
@@ -706,7 +705,7 @@ ContainedComp::insertObjects(Simulation& System,
 
   for(const int CN : insertCells)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
+      MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
 	{
 	  const HeadRule& HR=outerObj->getHeadRule();
@@ -739,7 +738,7 @@ ContainedComp::insertInCell(Simulation& System,
   
   if (!hasOuterSurf()) return;
 
-  MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  MonteCarlo::Object* outerObj=System.findObject(cellN);
 
   if (outerObj)
     outerObj->addSurfString(getExclude());
@@ -762,7 +761,7 @@ ContainedComp::insertInCell(Simulation& System,
   if (!hasOuterSurf()) return;
   for(const int cellN : cellVec)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+      MonteCarlo::Object* outerObj=System.findObject(cellN);
       if (outerObj)
 	outerObj->addSurfString(getExclude());
       else

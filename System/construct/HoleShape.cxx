@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -517,7 +516,7 @@ HoleShape::createObjects(Simulation& System)
       return;
     }
 
-  System.addCell(MonteCarlo::Qhull
+  System.addCell(MonteCarlo::Object
 		 (cellIndex++,0,0.0,Out+frontFace.display()+
 		  backFace.display()));
   addCell("Void",cellIndex-1);

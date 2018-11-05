@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -209,7 +208,7 @@ CryoMagnetBase::createObjects(Simulation& System)
       
     }
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7");
   addOuterSurf(Out);

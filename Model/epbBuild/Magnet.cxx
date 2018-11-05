@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -209,7 +208,7 @@ Magnet::createObjects(Simulation& System,
   addOuterSurf(Out);      
   for(size_t i=1;i<=segLen;i++)
     Out+=FC.getLinkString(static_cast<long int>(segIndex+i));
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   return;
 }

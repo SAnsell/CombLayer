@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -203,10 +202,10 @@ BeSurround::createObjects(Simulation& System,
   
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -2 -17 7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+ExcludeString));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+ExcludeString));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,frontMat,0.0,Out+ExcludeString));
+  System.addCell(MonteCarlo::Object(cellIndex++,frontMat,0.0,Out+ExcludeString));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 (7:-11) ");
   addOuterSurf(Out);

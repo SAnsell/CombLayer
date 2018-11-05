@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -145,7 +144,7 @@ LWInner::createObjects(Simulation& System)
 	  lSurf++;
 	}
       Inner=cx.str();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[i],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,layerMat[i],0.0,
 				       Outer+getNotExcludeUnit()+
 				       " #( "+Inner+" )" ));
       Outer=Inner;
@@ -156,7 +155,7 @@ LWInner::createObjects(Simulation& System)
     {
       addBoundarySurf(Inner);
       Inner+=getNotExcludeUnit();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Inner));
     }
   return;
 }

@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -287,27 +286,27 @@ FishGillVessel::createObjects(Simulation& System,
   const std::string FFace=TarObj.getLinkString(frontIndex);
   // Front water space
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 5 -6 -8 ")+FFace;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   
   // Void
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 ((-27 25 -26) : -18) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Wal
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -21 -17 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -8 6 -16 ")+FFace;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -8 -5 15 ")+FFace;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -8 16 -26 ")+FFace;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -8 -15 25 ")+FFace;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -18 ")+FFace;
   addOuterUnionSurf(Out);
@@ -323,21 +322,21 @@ FishGillVessel::createObjects(Simulation& System,
     {
       // WATER
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,"-3M -2 -7 5M -6M 8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,"3M -2 -7 5M -6M 8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
 
       // TA layer
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-3M -2 -17 15M -16M (7: -5M :6M)  8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontSurf));
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "3M -2 -17 15M -16M (7: -5M :6M)  8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontSurf));
       
       // Clear
       if (!i)
@@ -346,11 +345,11 @@ FishGillVessel::createObjects(Simulation& System,
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-3M -2 -27 25M -26M (17: -15M :16M) 8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "3M -2 -27 25M -26M (17: -15M : 16M) 8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
 
       Out=ModelSupport::getComposite(SMap,PV,buildIndex,"-2 -27 25M -26M ");
       if (i)
@@ -365,17 +364,17 @@ FishGillVessel::createObjects(Simulation& System,
   // WRAP ROUND CLEARANCE:
   PV-=100;
   Out=ModelSupport::getComposite(SMap,buildIndex,PV,"11 -18 (-25:26) -2M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+IRadius));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+IRadius));
   addOuterUnionSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -8 (-25 : 26) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FFace));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+FFace));
 
 
   // BACKPLATE:
   const std::string BFace=TarObj.getLinkString(2);
   Out=ModelSupport::getComposite(SMap,buildIndex,PV," -8 -2M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BFace));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+BFace));
   
   
   return;

@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -327,55 +326,55 @@ muBeamWindow::createObjects(Simulation& System)
   addOuterSurf(Out);
   addBoundarySurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"8 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
      // window
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -2 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
 
     // front void
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
      // small cylinder - cone  
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -21 -27 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"28 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -21 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
      // big cone  
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -31 -37 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"38 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -31 -38 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));    
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));    
   
      // end cylinder - cone  
   Out=ModelSupport::getComposite(SMap,buildIndex,"31 -41 -47 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"48 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"31 -41 -48 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
       // big cylinder
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -51 -57 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"58 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -51 -58 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out)); 
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out)); 
     
   return;
 }

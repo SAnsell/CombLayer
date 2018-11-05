@@ -89,7 +89,6 @@
 #include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "WForm.h"
 #include "weightManager.h"
 #include "ModeCard.h"
@@ -366,7 +365,7 @@ SimMCNP::renumberCells(const std::vector<int>& cOffset,
     {
       const int cNum=RMItem.first;
       const int nNum=RMItem.second;
-      MonteCarlo::Qhull* oPtr=Simulation::findQhull(nNum);   // NOTE new number
+      MonteCarlo::Object* oPtr=Simulation::findObject(nNum);   // NOTE new number
       if (!oPtr->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);
@@ -633,7 +632,7 @@ SimMCNP::writePhysics(std::ostream& OX) const
     }
 
   std::set<int> voidCells;
-  for(const std::pair<int,MonteCarlo::Qhull*>& OVal : OList)
+  for(const OTYPE::value_type& OVal : OList)
     {
       if (!OVal.second->getMat())
 	voidCells.insert(OVal.first);

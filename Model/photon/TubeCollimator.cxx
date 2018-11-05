@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -567,9 +566,9 @@ TubeCollimator::createCells(Simulation& System)
 	  //	  Out+=OutBoundary;
 	}
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,CylA+FBStr));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,CylB+FBStr));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,CylA+FBStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,CylB+FBStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+FBStr));
       RI+=10;
     }
   addOuterSurf(OutBoundary+FBStr);
@@ -682,10 +681,10 @@ TubeCollimator::createTubes(Simulation& System)
 		ModelSupport::buildCylinder(SMap,RI+8,CPoint,Y,radius+wallThick);
 		
 		Out=ModelSupport::getComposite(SMap,RI," -7 ");
-		System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+		System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+FBStr));
 		
 		Out=ModelSupport::getComposite(SMap,RI," 7 -8 ");
-		System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr));
+		System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr));
 		
 		if (!gridExclude)
 		  Out=ModelSupport::getComposite(SMap,RI," 8 ");
@@ -698,7 +697,7 @@ TubeCollimator::createTubes(Simulation& System)
       step++;
     }
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutBoundary+FBStr+HoleStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutBoundary+FBStr+HoleStr));
   addOuterSurf(OutBoundary+FBStr);
   
   return; 

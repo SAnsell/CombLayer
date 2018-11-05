@@ -35,7 +35,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -212,12 +211,12 @@ F5Collimator::createObjects(Simulation& System)
   
   // Internal region
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0, Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0, Out));
   
   // Wall
   Out=ModelSupport::getComposite(SMap, buildIndex,
 				 " (11 -2 13 -14 15 -16) (-1:2:-3:4:-5:6) ");
-  MonteCarlo::Qhull c = MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out);
+  MonteCarlo::Object c = MonteCarlo::Object(cellIndex++,voidMat,0.0,Out);
   c.setImp(0);
   System.addCell(c);
   

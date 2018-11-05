@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -364,59 +363,59 @@ H2Section::createObjects(Simulation& System)
       int plateIndex(buildIndex+100);
       // inital
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lh2Mat,lh2Temp,Out));
       for(int i=0;i<nSi;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,
 					 plateIndex,"1M -2M 3 -4 5 -6");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,siMat,lh2Temp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,siMat,lh2Temp,Out));
 	  if (i!=nSi-1)
 	    {
 	      Out=ModelSupport::getComposite(SMap,buildIndex,
 					     plateIndex,"2M -11M 3 -4 5 -6");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
+	      System.addCell(MonteCarlo::Object(cellIndex++,lh2Mat,lh2Temp,Out));
 	    }
 	  plateIndex+=10;
 	}
       // final
       Out=ModelSupport::getComposite(SMap,buildIndex,plateIndex-10,
 				     "2M -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lh2Mat,lh2Temp,Out));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,lh2Temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lh2Mat,lh2Temp,Out));
     }
 
   // AL
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,lh2Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,lh2Temp,Out));
 
   // vac layer
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "31 -32 33 -34 35 -36 (-21:22:-23:24:-25:26)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Ter layer
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "41 -42 43 -44 45 -46 (-31:32:-33:34:-35:36)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "51 -52 53 -54 55 -56 (-41:42:-43:44:-45:46)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Outer
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		      "61 -62 63 -64 65 -66 (-51:52:-53:54:-55:56)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -326,57 +325,57 @@ TS2FlatTarget::createObjects(Simulation& System)
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 17");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
     }
 
 
   // ----------------- FLANGE ----------------
   Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -207 101");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
     
   // -- WATER -- [Main Cylinder]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 27 -47");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
   // -----------------------------------------------------------
   // Main Cylinder
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   skinCell=cellIndex-1;
 
   // Ta Press: [Cylinder]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 47 -57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   
 
   // Spacer Void around target:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 57 -101");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Space for water manifold
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 190");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   ELog::EM<<"Cell == "<<Out<<" ::: "<<cellIndex-1<<ELog::endDiag;
   // FRONT Plate:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -27 301");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -47 311 (27 : -301)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -57 321 (47 : -311)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -101 331 (57 : -321)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
 
   // Set EXCLUDE:

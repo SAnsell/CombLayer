@@ -57,7 +57,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "neutron.h"
 
 #include "Debug.h"
@@ -159,7 +158,7 @@ testObject::populateMObj()
   MTYPE::const_iterator mc;
   for(mc=MString.begin();mc!=MString.end();mc++)
     {
-      MObj[mc->first]=new Qhull();
+      MObj[mc->first]=new Object();
       MObj[mc->first]->setObject(mc->second);
     }
   return;
@@ -269,7 +268,7 @@ testObject::testCellStr()
   Tests.push_back(TTYPE("5 0 #("+cx.str()+")",
 			"#( "+ox.str()+")"));
 
-  Qhull A;  
+  Object A;  
   for(const TTYPE& tc : Tests)
     {
       A.setObject(std::get<0>(tc));
@@ -307,7 +306,7 @@ testObject::testSetObject()
   for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
-      Qhull A;
+      Object A;
       A.setObject(std::get<0>(tc));
       A.write(cx);
       const std::string Out=
@@ -351,7 +350,7 @@ testObject::testSetObjectExtra()
   for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
-      Qhull A;
+      Object A;
       A.setObject(std::get<0>(tc));
       if (fabs(A.getTemp()-std::get<1>(tc))>1e-5)
 	{
@@ -394,7 +393,7 @@ testObject::testComplement()
   
   for(const TTYPE& tc : Tests)
     {
-      Qhull A;
+      Object A;
       A.setObject(std::get<0>(tc));
       if (!A.hasComplement())
 	{
@@ -438,7 +437,7 @@ testObject::testIsValid()
   ELog::RegMethod RegA("testObject","testIsValid");
 
   createSurfaces();
-  Qhull A;
+  Object A;
 
   // Object : Point : SN : Result
   typedef std::tuple<std::string,int,Geometry::Vec3D,int> TTYPE;
@@ -500,7 +499,7 @@ testObject::testIsOnSide()
   ELog::RegMethod RegA("testObject","testIsOnSide");
 
   createSurfaces();
-  Qhull A;
+  Object A;
 
   // Object : Point : SN : Result
   typedef std::tuple<std::string,Geometry::Vec3D,int> TTYPE;
@@ -586,7 +585,7 @@ testObject::testTrackCell()
   
   double aDist;
   const Geometry::Surface* SPtr;          // Output surface
-  Qhull A;
+  Object A;
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -687,13 +686,13 @@ testObject::testRemoveComplement()
 			"5 0 ("+ox.str()+")"));
 
   // Null list since we are not using #CellNum
-  std::map<int,MonteCarlo::Qhull*> OList;
+  std::map<int,MonteCarlo::Object*> OList;
   
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
-      Qhull A;
+      Object A;
       MonteCarlo::Algebra AX;
       A.setObject(std::get<0>(tc));
       A.makeComplement();

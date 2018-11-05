@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "surfDIter.h"
@@ -402,7 +401,7 @@ ZoomBend::createAttenuation(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex,ONum,
 				     "1M -2M 503 -1003 505 -506 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,ONum,
 				     " (-1M:2M:-503:1003:-505:506) ");
@@ -415,7 +414,7 @@ ZoomBend::createAttenuation(Simulation& System)
 	  if ((PA>=sectorLenA && PA<=sectorLenB) ||
 	      (PB>=sectorLenA && PB<=sectorLenB) )
 	    {
-	      MonteCarlo::Qhull* CRPtr=System.findQhull(innerShield[j]);
+	      MonteCarlo::Object* CRPtr=System.findObject(innerShield[j]);
 	      if (!CRPtr)
 		throw ColErr::InContainerError<int>(innerShield[j],"inner shield cell");
 	      CRPtr->addSurfString(Out);
@@ -533,15 +532,15 @@ ZoomBend::createObjects(Simulation& System)
       addOuterUnionSurf(SecName[i],Out);      
       Out=ModelSupport::getComposite(SMap,offset,"1 -2 3 -4 5 -6 "
 				     "(-101:102:-103:104:-105:106)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
 
       Out=ModelSupport::getComposite(SMap,offset,"101 -102 103 -104 105 -106");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out+Inner));
       innerShield.push_back(cellIndex-1);
     }
   // Create Bend itself [NOTE DEPENDENT ON NSection]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -32 -503 504 505 -506 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerCell=cellIndex-1;
   return;
 }

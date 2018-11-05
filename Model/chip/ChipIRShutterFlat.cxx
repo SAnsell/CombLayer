@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -243,7 +242,7 @@ ChipIRShutterFlat::createShutterInsert(Simulation& System)
   // Add front spacer:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-501 7")+dSurf+ASection.getFullSides();
-  System.addCell(MonteCarlo::Qhull(innerVoidCell,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(innerVoidCell,0,0.0,Out));
   // ADD scatter objects:
   ASection.createObjects(buildIndex+502,cellIndex);
 
@@ -318,17 +317,17 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 			       -Z);
       // Inner void
       Out=ModelSupport::getComposite(SMap,buildIndex,"1503 1504 1505 1506");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+fullLength));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+fullLength));
       // Lead
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "(-1503:-1504:-1505:-1506) -2007 ");
       Out+=ASection.getFullSides()+leadLength;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shineMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shineMat,0.0,Out));
       // Aluminium
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "(-1503:-1504:-1505:-1506) 2007 ");
       Out+=ASection.getFullSides()+fullLength;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,backScrapMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,backScrapMat,0.0,Out));
 
       
       // ADD SHINE POINTS TO CHIPDATUM:

@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 
 #include "groupRange.h"
 #include "objectGroups.h"

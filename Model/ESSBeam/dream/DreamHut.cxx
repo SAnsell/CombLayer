@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -268,32 +267,32 @@ DreamHut::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   setCell("Iron",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   setCell("Conc",cellIndex-1);
 
   // Front wall:
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   setCell("FrontWall",cellIndex-1);
 
   // Ring of concrete
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -1 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
 
   // Front concrete face
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
   
   // Exclude:

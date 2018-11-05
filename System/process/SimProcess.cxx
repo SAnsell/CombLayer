@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "PhysImp.h"
@@ -206,7 +205,7 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
 {  
   ELog::RegMethod RegA("SimProcess","registerOuter");
 
-  MonteCarlo::Qhull* Cptr=System.findQhull(cellNum);
+  MonteCarlo::Object* Cptr=System.findObject(cellNum);
   if (!Cptr)
     throw ColErr::InContainerError<int>(cellNum,RegA.getBase());
 

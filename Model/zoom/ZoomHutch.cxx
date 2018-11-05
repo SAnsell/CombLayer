@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -325,51 +324,51 @@ ZoomHutch::createObjects(Simulation& System)
   // OUTER WALLS
   // Front
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -31 3  -4  15 -16 77");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // port
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -31 -77");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // left
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -41 (11:3) 13 -33 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Add door here:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "41 -2 13 -43 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Right
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -42 (12:-4) -14 34 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "42 -52 (22:-14) -24 44 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "52 -2 -24 54 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Back wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "32 -2 43 -54 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // ROOF:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 (3 : 11) "
 				 "(-4 : 12) (-14 : 22) -24  16 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out));
 
   // Floor:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 (3 : 11) "
 				 "(-4 : 12) (-14 : 22) -24  -15 5");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,floorMat,0.0,Out));
 
   // INNER VOID
   Out=ModelSupport::getComposite(SMap,buildIndex,
    				 "31 -32 43 (33 : 41) "
    				 "(-34 : 42) (-44 : 52) -54  15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
   return;
 }

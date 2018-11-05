@@ -62,7 +62,6 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "inputParam.h"
 #include "objectSupport.h" 
 
@@ -135,7 +134,7 @@ cellSelection(const Simulation& System,
 
   for(const int CN : inputGrp)
     {
-      const MonteCarlo::Object* OPtr=System.findQhull(CN);
+      const MonteCarlo::Object* OPtr=System.findObject(CN);
       if (OPtr)
 	{
 	  const int matN=OPtr->getMat();

@@ -62,7 +62,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -273,36 +272,36 @@ FaradayCup::createObjects(Simulation& System)
       std::string Out;
       // collimator
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       
       // absorber
       Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
       
       // base
       Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       
       // collector
       Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
       
       // back plane
       Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       
       // shielding
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -102 -107 (-1:2:17) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 (-1:102:107) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shieldMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -112 -117 ");
       addOuterSurf(Out);

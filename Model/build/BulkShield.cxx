@@ -70,7 +70,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -85,6 +84,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -267,7 +268,7 @@ BulkShield::createTorpedoes(Simulation& System,
       OR.addObject(TData.back());
     }
 
-  MonteCarlo::Qhull* torpedoObj=System.findQhull(torpedoCell);
+  MonteCarlo::Object* torpedoObj=System.findObject(torpedoCell);
   if (!torpedoObj)
     throw ColErr::InContainerError<int>(torpedoCell,"torpedoObject");
 
@@ -334,7 +335,7 @@ BulkShield::createShutters(Simulation& System,
       //      GData.back());
     }
 
-  MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
+  MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
   if (!shutterObj)
     throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
 
@@ -412,19 +413,19 @@ BulkShield::createObjects(Simulation& System,
   // Torpedo
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   torpedoCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   shutterCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   innerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   outerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
@@ -442,11 +443,11 @@ BulkShield::processVoid(Simulation& System)
 {
   ELog::RegMethod RegA("BulkShield","processVoid");
   // Add void
-  MonteCarlo::Qhull* Obj=System.findQhull(74123);
+  MonteCarlo::Object* Obj=System.findObject(74123);
   if (Obj)
     Obj->procString("-1 "+getExclude());
   else
-    System.addCell(MonteCarlo::Qhull(74123,0,0.0,"-1 "+getExclude()));
+    System.addCell(MonteCarlo::Object(74123,0,0.0,"-1 "+getExclude()));
   return;
 }
 

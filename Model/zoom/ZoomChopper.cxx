@@ -68,7 +68,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -423,55 +422,55 @@ ZoomChopper::createObjects(Simulation& System,
   //Front steel
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "100 1 -11 3 -4 5 -6 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   //Mid Step
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -21 3 -4 5 -6 (-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Far Step
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "21 -2 3 -4 5 -6 (-33:34:-35:36) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // voids:
   Out=ModelSupport::getComposite(SMap,buildIndex,"100 1 -11 13 -14 15 -16");
   Out+=CObj.getExclude("B");
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -21 23 -24 25 -26");
   Out+=CObj.getExclude("D");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   voidCell=cellIndex-1;
 
 
   if (!voidEndMat)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 33 -34 35 -36");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       shieldCell=cellIndex-1;
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 33 -34 35 -36"
 				     "(-1033 : 1034 : -1035 :1036) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,voidEndMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,voidEndMat,0.0,Out));
       shieldCell=cellIndex-1;
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "21 -2 1033 -1034 1035 -1036 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
     }
 
   // WAX
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "100 1 -2 113 -3 5 -6  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "100 1 -2 -114 4 5 -6  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
 
   return;
 }

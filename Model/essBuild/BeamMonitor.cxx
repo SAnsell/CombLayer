@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -279,7 +278,7 @@ BeamMonitor::createObjects(Simulation& System,
       const std::string Exclude=
 	calcExclude(i,CG,CName);
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Exclude));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out+Exclude));
       BM+=10;
     }
   return;

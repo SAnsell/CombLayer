@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -212,7 +211,7 @@ simpleObj::createObjects(Simulation& System)
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   mainCell=cellIndex-1;
   return;
 }

@@ -58,7 +58,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -211,23 +210,23 @@ cShieldLayer::createObjects(Simulation& System)
       int plateIndex(buildIndex+100);
       // inital
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
       for(size_t i=1;i<nLay-1;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,
 					 plateIndex,"1M -11M 3 -4 5 -6");					 
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 	  plateIndex+=10;
 	}
       // final
       Out=ModelSupport::getComposite(SMap,buildIndex,plateIndex-10,
 				     "11M -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
     }
   return;
 }

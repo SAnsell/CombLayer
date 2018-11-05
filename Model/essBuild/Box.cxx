@@ -62,7 +62,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -267,7 +266,7 @@ Box::createObjects(Simulation& System)
       else
 	CellMap::setCell("Inner", cellIndex-1);
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 
       SI += 10;
     }

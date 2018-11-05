@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -304,21 +303,21 @@ MerlinModerator::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,PI,"3M -4M 3 -4 5 -6 ");
       Exclude+=ModelSupport::getComposite(SMap,PI,"(-3M : 4M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,poisonMat,0.0,Out));
       PI+=10;
     }      
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+Exclude));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+Exclude));
   mainCell=cellIndex-1;
   // Inner al
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 " (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
   // Vac/clearance layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
   addOuterSurf(Out);

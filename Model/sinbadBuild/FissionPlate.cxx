@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -359,7 +358,7 @@ FissionPlate::createObjects(Simulation& System,
 		fbSurf+sides+getZSurf(j);
 
 	      System.addCell
-		(MonteCarlo::Qhull
+		(MonteCarlo::Object
 		 (cellIndex++,matIndex[DI][i][j],matTemp[DI][i][j],Out));
 	      
 	    }

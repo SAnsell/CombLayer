@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -215,13 +214,13 @@ ChopperHousing::createObjects(Simulation& System)
 
   // Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 5 -16 (-1:2:-3:4:6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
   // Outer

@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -338,20 +337,20 @@ SegWheel::makeShaftObjects(Simulation& System)
   // inner he body
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1005 -1006 -1017 ( -1007: -1045 ) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,Out));
 
   // inner steel body
    Out=ModelSupport::getComposite(SMap,buildIndex,"(-1006 1045 1007 -7):(-1047 1017 1045 -45) : "
 				  "(-1006 1017 -1027 -1045 1025):(-1017 -1005 1015) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,0.0,Out));
 
   // outer wheel support
   Out=ModelSupport::getComposite(SMap,buildIndex,"(-1006 -1047 1017 46 ( -1027 : -1046)) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,0.0,Out));
 
   // wheel cooling downcomer
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -1017 -1006 1046 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,Out));
 
   // shaft cooling plate: Down for downcomer (open top), Up for upstream (open bottom)
   int SI0(buildIndex);
@@ -396,24 +395,24 @@ SegWheel::makeShaftObjects(Simulation& System)
 	    Out2=ModelSupport::getComposite(SMap,buildIndex,SI0,"503 2 -4M");
 	}
     
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
 				     0.0,Out0+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
 				     0.0,Out0+shaftCoolingUp));
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
 				     0.0,Out1+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
 				     0.0,Out1+shaftCoolingUp));
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
 				     0.0,Out2+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,heMat,
 				     0.0,Out2+shaftCoolingUp));
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,heMat,
 				     0.0,Out3+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+    System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,
 				     0.0,Out3+shaftCoolingUp));
  
     SI0+=10;
@@ -421,13 +420,13 @@ SegWheel::makeShaftObjects(Simulation& System)
 
   // void in shaft foot
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1017 -1015 1025");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // void around shaft
   Out=ModelSupport::getComposite(SMap,buildIndex," (-1037 1056 -1006 1027) : "
 				 "(-1057 -1056 1027 46 (1046:1047)): (-1057 1027 -45 1055 (-1045:1047)): "
 				 "(-1055 -1037 1035 (-1025:1027) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-18 1035 -1006 (-1037:(-1056 1055))");
   addOuterSurf("Shaft",Out);  
@@ -587,7 +586,7 @@ SegWheel::createObjects(Simulation& System)
 	    Out+=TopBaseW;
 	  else
 	    Out+=TopBaseSteelBody;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i1]],0.0,Out));  
+	  System.addCell(MonteCarlo::Object(cellIndex++,matNum[matTYPE[i1]],0.0,Out));  
 	  SI4+=10;
 	}
 
@@ -623,22 +622,22 @@ SegWheel::createObjects(Simulation& System)
 	    Out1=ModelSupport::getComposite(SMap,SI4,SI3," -1M 12M (3M : -4M : 7 ");
 	}
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++, matNum[matTYPE[0]],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++, matNum[matTYPE[0]],0.0,
 				       wheelQuarter+Out+TopBaseSteelFront));  
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[0]],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,matNum[matTYPE[0]],0.0,
 				       wheelQuarter+Out+TopBaseSteelBack));  
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[0]],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,matNum[matTYPE[0]],0.0,
 				       wheelQuarter+Out+TopBaseSteelBody));  
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,
 				       wheelQuarter+Out1+TopBaseHeFront));
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,
 				       wheelQuarter+Out1+TopBaseHeBack));
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,heMat,0.0,
 				       wheelQuarter+Out1+TopBaseHeBody));
       
       SI3+=10;
@@ -649,12 +648,12 @@ SegWheel::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex, 
 				 "(-10 9 35 -36 (-15:16:8)):(-10 28 -38  45 -46 (-25:26)) "
 				 " : (68 -28 45 -25):(68 -28 -46 26)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,buildIndex,"(38 -48 55 -56 (10:-35:36)) " 
 				          ":(18 -38 55 -56 (-45:46))");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // outer world 
   //  Out=ModelSupport::getComposite(SMap,buildIndex," (-48 55 -56 18) : "

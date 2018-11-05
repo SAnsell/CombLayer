@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -362,17 +361,17 @@ BeamTube::createCapEndObjects(Simulation& System)
   addOuterSurf(Out);
 
   Out+=ModelSupport::getComposite(SMap,buildIndex," ((18 -1) : 17)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Void (exclude inter wall)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " (-18:1) -2 -17  ((28 -1) : 27) (-41:-67)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,gapMat,0.0,Out));
   // Inner wall
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " (-28:1) ((38 -1) : 37) -2 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   // Inner Void
   Out=ModelSupport::getComposite(SMap,buildIndex," (-38:1)  -2 -37 ");
@@ -388,22 +387,22 @@ BeamTube::createCapEndObjects(Simulation& System)
 	{
 	  const std::string OutP=
 	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+	  System.addCell(MonteCarlo::Object(cellIndex++,portalMat[i],0.0,OutP));
 	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)");
 	  addCell("Portal"+std::to_string(i),cellIndex-1);
 	}
     }
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out+OutComposite));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out+OutComposite));
   addCell("innerVoid",cellIndex-1);
   innerVoid=cellIndex-1;
 
   // Inter wall
   Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,interMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,interMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "41 -17 67 (47:-57:-51) -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   return;
 }
@@ -428,20 +427,20 @@ BeamTube::createObjects(Simulation& System)
     {
       const std::string OutP=
 	ModelSupport::getComposite(SMap,buildIndex," -117 111 -112");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[0],0.0,OutP));
+      System.addCell(MonteCarlo::Object(cellIndex++,portalMat[0],0.0,OutP));
       Out+=ModelSupport::getComposite(SMap,buildIndex," (117:-111:112)"); 
     }
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Void (exclude inter wall)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -2 -17 (-21:27) (-41:-67)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,gapMat,0.0,Out));
   addCell("FrontVoid",cellIndex-1);
   
   // Inner wall
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -2 -27 (-31:37)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   // Inner Void
   Out=ModelSupport::getComposite(SMap,buildIndex," 31 -2 -37 ");
@@ -457,22 +456,22 @@ BeamTube::createObjects(Simulation& System)
 	{
 	  const std::string OutP=
 	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+	  System.addCell(MonteCarlo::Object(cellIndex++,portalMat[i],0.0,OutP));
 	  addCell("Portal"+std::to_string(i),cellIndex-1);
 	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
 	}
     }
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out+OutComposite));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out+OutComposite));
   addCell("innerVoid",cellIndex-1);
   innerVoid=cellIndex-1;
   // Inter wall
   Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,interMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,interMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "41 -17 67 (47:-57:-51) -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   return;
 }

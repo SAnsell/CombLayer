@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -327,7 +326,7 @@ insertGrid::createObjects(Simulation& System)
 
   // Inner space
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out+FB));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out+FB));
   addCell("Inner",cellIndex-1);
 
   int PI(buildIndex+50);
@@ -335,7 +334,7 @@ insertGrid::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite
 	(SMap,PI,PI-50," 3 -4 5 -6 (-3:4:-5:6) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FB));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,Out+FB));
       PI+=50;
     }
 

@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -319,37 +318,37 @@ PBIP::createObjects(Simulation& System,
   std::string Out;
   // main
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -21 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,foilMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,foilMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 13 -14 15 -16 "
 				 "(-1:2:-3:4:-5:6) (1:-103:104:-105:106) "
 				 " (-2:-203:204:-205:206) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf("main", Out);
 
   // before
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,start+Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,start+Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		  " -11 113 -114 115 -116 (-103:104:-105:106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,start+Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,start+Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 113 -114 115 -116 ");
   addOuterSurf("before",start+Out);
 
   // after
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 203 -204 205 -206 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+BSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out+BSurf));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		       " 12 213 -214 215 -216 (-2:-203:204:-205:206) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+BSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+BSurf));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 213 -214 215 -216 ");
   addOuterUnionSurf("after", Out+BSurf);

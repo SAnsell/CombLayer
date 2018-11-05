@@ -58,7 +58,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -221,7 +220,7 @@ BeamShutter::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,CN,"1M -11M 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out));
       addCell("Main",cellIndex-1);
       CN+=10;
     }
@@ -229,7 +228,7 @@ BeamShutter::createObjects(Simulation& System)
   // Surround
   Out=ModelSupport::getComposite(SMap,buildIndex,CN,
 				 "1 -11M 13 -14 15 -16 (-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,surroundMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,surroundMat,0.0,Out));
   addCell("Surround",cellIndex-1);
 
   // lower void if present
@@ -237,7 +236,7 @@ BeamShutter::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,CN,
                                      " 1 -11M 13 -14 105 -15 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addCell("Void",cellIndex-1);
     }
 
@@ -246,7 +245,7 @@ BeamShutter::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,CN,
                                      " 1 -11M 13 -14 16 -106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addCell("Void",cellIndex-1);
 	    
     }

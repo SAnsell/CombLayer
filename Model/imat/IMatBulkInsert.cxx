@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -229,21 +228,21 @@ IMatBulkInsert::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -17 3M -4M 5M -6M ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -17 3 -4 -5 6 "
                                  " (-3M : 4M : -5M : 6M) ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
   // Outer void
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "17 -27 3M -4M 5M -6M ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "17 -27 13 -14 -15 16 "
                                  " (-3M : 4M : -5M : 6M) ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
 
   

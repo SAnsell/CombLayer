@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -205,21 +204,21 @@ BulletPlates::createObjects(Simulation& System)
       if (blockType[i]=="Tungsten")
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -11M -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"11M -12M -7");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"11M -12M 7 -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"12M -2M -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 	}
       else if (blockType[i]=="Water")
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -2M -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 	}
       SI+=100;
     }

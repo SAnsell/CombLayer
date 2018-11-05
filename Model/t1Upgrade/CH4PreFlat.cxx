@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -236,17 +235,17 @@ CH4PreFlat::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   // AL layer
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				    " 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // VAC Outer:
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		       " 21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16) ");
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   //  voidCell=cellIndex-1;
   
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");

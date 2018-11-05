@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -301,7 +300,7 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
   int SIsec(buildIndex+0), SI1;
   std::string Out;
   if (nSectors==1)
-    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
+    System.addCell(MonteCarlo::Object(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
   else 
     {
       for (size_t j=0;j<nSectors;j++)
@@ -310,7 +309,7 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
 	  SI1 = (j!=nSectors-1) ? SIsec+10 : buildIndex+0;
 	  Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
 	  if (j>=nBrickSectors)
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
+	    System.addCell(MonteCarlo::Object(cellIndex++,innerMat,temp,
 					     Out+vertStr+cylStr));
 	  else
 	    {
@@ -323,7 +322,7 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	    //     so we need to select only one
 	    Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,
+	    System.addCell(MonteCarlo::Object(cellIndex++,secSepMat,
 					     temp,Out+vertStr+cylStr));
 
 	    SIsec+=10;
@@ -503,7 +502,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   int SI(buildIndex+1000*(static_cast<int>(sector+1)));
   // He layer in front of the bricks
   Out = ModelSupport::getComposite(SMap, SI, " 5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
+  System.addCell(MonteCarlo::Object(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
   
   
   ELog::EM << "TODO: simplification of these multiple IFs needed" << ELog::endCrit;
@@ -555,7 +554,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 	    }
 	  
 	  if (firstBrick)
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,
+	    System.addCell(MonteCarlo::Object(cellIndex++,
 					     mat, temp,
 					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
 	  if (lastBrick) break;
@@ -587,7 +586,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 	    }
 	  
 	  if (firstBrick)
-	    System.addCell(MonteCarlo::Qhull(cellIndex++, mat, temp,
+	    System.addCell(MonteCarlo::Object(cellIndex++, mat, temp,
 					     Out1+layerStr+vertStr+sideStr));
 	  
 	  if (lastBrick) break;
@@ -599,7 +598,7 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 	Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
       else
 	Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+side1+side2));
+      System.addCell(MonteCarlo::Object(cellIndex++, brickGapMat, temp, Out+vertStr+side1+side2));
       
       SI += 10;
     }

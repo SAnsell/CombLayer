@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -271,7 +270,7 @@ ColBox::createObjects(Simulation& System)
   
   // Front plate
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outMat,0.0,Out));
   
   
   return;

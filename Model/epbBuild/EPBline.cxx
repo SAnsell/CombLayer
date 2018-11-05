@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -243,10 +242,10 @@ EPBline::createObjects(Simulation& System)
   for(size_t i=1;i<nSeg;i++)
     {
       Out=ModelSupport::getComposite(SMap,PI,buildIndex, "1 -101 3M -4M 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       Out=ModelSupport::getComposite(SMap,PI,buildIndex, 
 				     "1 -101 13M -14M 15 -16 (-3M:4M:-5:6)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,PI,buildIndex, "1 -101 13M -14M 15 -16");
       addOuterUnionSurf(Out);
       PI+=100;

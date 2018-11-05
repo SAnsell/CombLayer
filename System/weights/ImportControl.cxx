@@ -58,7 +58,6 @@
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "LSwitchCard.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
@@ -141,7 +140,7 @@ zeroImp(physicsSystem::PhysicsCards& PC,
 
   for(int cellNum=initCell;cellNum<initCell+cellRange;cellNum++)
     {
-      MonteCarlo::Qhull* Obj=System.findQhull(cellNum);
+      MonteCarlo::Object* Obj=System.findObject(cellNum);
       if (Obj)
 	{
 	  PC.setCells("imp",cellNum,0); 
@@ -167,7 +166,7 @@ simulationImp(SimMCNP& System,
   physicsSystem::PhysicsCards& PC=System.getPC();
   if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
     {      
-      System.findQhull(74123)->setImp(0);
+      System.findObject(74123)->setImp(0);
       PC.setCells("imp",74123,0);  // outer void to z	
     }
   

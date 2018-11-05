@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -335,7 +334,7 @@ CylPreSimple::createObjects(Simulation& System,
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
       else if (CMod)
 	Out+=CMod->getExclude();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       SI+=10;
       if (i!=even)
 	CI+= (i+1>=(nLayers+1)/2) ? -10 : 10;
@@ -354,7 +353,7 @@ CylPreSimple::createObjects(Simulation& System,
 	  Out=ModelSupport::getComposite(SMap,SI,CI," 7 -7M ");
 	  Out+=ModelSupport::getComposite(SMap,SI+100*static_cast<int>(viewIndex),
 					  divideN," 101M (103:104:105:106) -113 -114 -115 -116");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	}
     }
   
@@ -367,7 +366,7 @@ CylPreSimple::createObjects(Simulation& System,
       std::string OComp(Out);
       OComp+=ModelSupport::getComposite(SMap,buildIndex+100*static_cast<int>(viewIndex),
 				 "101 -103 -104 -105 -106 " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OComp));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OComp));
     }
   return; 
 }

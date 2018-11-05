@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -201,7 +200,7 @@ JawSet::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   addOuterSurf(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   return;

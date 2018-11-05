@@ -67,7 +67,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -474,7 +473,7 @@ ReactorGrid::createObjects(Simulation& System)
 	  const size_t si=static_cast<size_t>(i);
 	  const size_t sj=static_cast<size_t>(j);
 	  const int MatN=getMatElement(Control,keyName+"Mat",si,sj);
-	  System.addCell(MonteCarlo::Qhull(getCellNumber(i,j),MatN,0.0,
+	  System.addCell(MonteCarlo::Object(getCellNumber(i,j),MatN,0.0,
 					   XPart+YPart+ZPart));
 
 	  // Plates:
@@ -482,11 +481,11 @@ ReactorGrid::createObjects(Simulation& System)
 	    ModelSupport::getComposite(SMap,cNum," -7 ");
 	  const std::string ExHole=
 	    ModelSupport::getComposite(SMap,cNum," 7 ");
-	  System.addCell(MonteCarlo::Qhull(getCellNumber(i,j)+5000,
+	  System.addCell(MonteCarlo::Object(getCellNumber(i,j)+5000,
 					   plateMat,0.0,
 					   XPart+YPart+ZPlate+ExHole));
 
-	  System.addCell(MonteCarlo::Qhull(getCellNumber(i,j)+6000,
+	  System.addCell(MonteCarlo::Object(getCellNumber(i,j)+6000,
 					   waterMat,0.0,ZPlate+Hole));
 	  cNum+=10;
 	}
@@ -658,7 +657,7 @@ ReactorGrid::getFuelCells(const Simulation& System,
 	  for(const int index : cellVec)
 	    {
 	      const MonteCarlo::Object* OPtr=
-		System.findQhull(index);
+		System.findObject(index);
 	      if (OPtr)
 		{
 		  const int matN=OPtr->getMat();

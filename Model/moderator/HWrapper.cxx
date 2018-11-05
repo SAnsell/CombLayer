@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -339,72 +338,72 @@ HWrapper::createObjects(Simulation& System,
 				 " (2 : -3 : 4 : -5 ) "
 				 "(-23 : 24 : 22 : -25 : -21 : 26)"
 				 "( -31 : -153 : 154 : -155 : 156) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Al skin
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (52 : -53 : 54 : -55 ) "
 				 "(-33 : 34 : 32 : -35 : -31 : 36)"
 				 "( -1 : -143 : 144 : -145 : 146) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Al EXTRA [26 > 156]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 2 -22 153 -154 26 -156 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Al EXTRA [36 > 146]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 52 -42 143 -144 36 -146 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Water
   Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "(-43 : 44 : 42 : -45 : -41 )"
 				 "( -1 : -133 : 134 : -135 : 136) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // Water EXTRA [36 > 146]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 42 -32 143 -144 36 -146 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // AL Inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"31 -42 43 -44 45 -36 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "(-53 : 54 : 52 : -55 : -51 : 56)"
 				 "( -1 : -103 : 104 : -105 : 106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
 
   // Vac inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -52 53 -54 55 -26 "
 				 " (2 : -3 : 4 : -5 ) "
 				 "( -1 : -103 : 104 : -105 : 106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // WINGS:
 
   // Al inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 42 133 -134 135 -136 -212 "
 				 " (-103 : 104 : -105 : 106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Water inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 32 143 -144 145 -146 -222 "
 				 " (-133 : 134 : -135 : 136) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // outer Al
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 22 153 -154 155 -156 -212 "
 				 " (-143 : 144 : 222 : -145 : 146) "
 				 " (-133 : 134 : -135 : 136) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // outer Vac
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 12 163 -164 165 -166 -202 "
 				 " (-153 : 154 : 212 : -155 : 156) "
 				 " (-103 : 104 : -105 : 106) ");
   Out+=CM.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

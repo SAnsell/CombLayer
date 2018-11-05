@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -278,40 +277,40 @@ SphereModerator::createObjects(Simulation& System)
 
   // void
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // al
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 7 -17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Hydrogen
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 17 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // Outer Al
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 27 -37");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
   
   // CYCLINDERS
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -111 -107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // al
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 107 -117");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Hydrogen
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 117 -127");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // Outer Al
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 127 -137");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Outer Al
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111 107 -137");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   return;
 }

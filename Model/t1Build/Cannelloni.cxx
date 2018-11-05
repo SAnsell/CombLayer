@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -272,20 +271,20 @@ Cannelloni::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"-7 1 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
   mainCell=cellIndex-1;
 
   // Cladding [with front water divider]
   Out=ModelSupport::getComposite(SMap,buildIndex,"-17 11 -12 (7:-1:2) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // W material
   Out=ModelSupport::getComposite(SMap,buildIndex,"-27 21 -22 (17:-11:12) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 
   // void 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32 (27:-21:22) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Set EXCLUDE:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32");
@@ -412,10 +411,10 @@ Cannelloni::createInnerObjects(Simulation& System)
 	  CylB+=outer;
 	  Out+=outer;
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,CylA));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,CylB));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,CylA));
+      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,CylB));
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+endCap));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+endCap));
       cylIndex+=10;
     }
   return;

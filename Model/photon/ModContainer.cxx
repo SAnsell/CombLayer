@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -217,11 +216,11 @@ ModContainer::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
   addCell("Skin",cellIndex-1);
   
 

@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -259,13 +258,13 @@ DetectorArray::createObjects(Simulation& System)
   for(size_t i=0;i<nDet;i++)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,SI,"-7M 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,SI,"-17M 15 -16 (7M:-5:6)");
       Bound+=ModelSupport::getComposite(SMap,SI," 17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       SI+=20;
     }
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Bound));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Bound));
 
   return; 
 }

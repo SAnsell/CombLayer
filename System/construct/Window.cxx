@@ -64,7 +64,6 @@
 #include "HeadRule.h"
 #include "neutron.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -163,7 +162,7 @@ Window::createCentre(Simulation& System)
 {
   ELog::RegMethod RegA("Window","createCentre");
   
-  MonteCarlo::Qhull* QHptr=System.findQhull(baseCell);
+  MonteCarlo::Object* QHptr=System.findObject(baseCell);
   if (!QHptr)
     {
       ELog::EM<<"Unable to find window base cell : "
@@ -274,7 +273,7 @@ Window::createObjects(Simulation& System)
   else
     {
       Out=WOut+cx.str();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addOuterSurf(Out);
     }
 

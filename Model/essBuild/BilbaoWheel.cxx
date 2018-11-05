@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -571,53 +570,53 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // void below
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,"-7 35 -115 2127 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   const int SJ(buildIndex+(static_cast<int>(nShaftLayers)-1)*10);
 
   // steel inside - outer radial part
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,SJ-10,
 				 " 35 -115 -2127 2007M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
   // steel inside - central part
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,SJ-10,
 				 " 35 -5 -2007M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // lower cell
   Out=ModelSupport::getComposite(SMap,buildIndex, " -7 2115 -2135" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex, " -7 2135 -35" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 7 -17 2115 -25" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 17 -2118 2115 -45 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   // 2nd void step
   // upper cell - inner steel - outer side layer
   Out=ModelSupport::getComposite(SMap,buildIndex,SJ,
 				 " 7 -17 26 -2116 2007M" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - inner steel - top layer
   Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10," -7 2136 -2116 2007M" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // upper cell - inner steel - inner void
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex+20,
 				 " -7 116 -2136 2007M" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   // upper cell - void around inner steel - vertical part
   Out=ModelSupport::getComposite(SMap,buildIndex, " -2118 17 46 -2116 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   // upper/lower connection
   Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10,
 				 " -2127 2007M 2166 -2176 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // shaft outer surface
   const std::string Rsurf(ModelSupport::getComposite(SMap,SJ-10," 2007 "));
@@ -628,73 +627,73 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   if (engActive)
     buildStiffeners(System,Out+Rsurf,buildIndex+3000,nSectors/2,steelMat);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,shaftUpperBigStiffHomoMat,mainTemp,Out+Rsurf));
+    System.addCell(MonteCarlo::Object(cellIndex++,shaftUpperBigStiffHomoMat,mainTemp,Out+Rsurf));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2126 2148 -2118 2157 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2126 2148 -2149 2157 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2116 -2146 2148 -2157 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   //   ring
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2146 -2156 -2147 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out+Rsurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out+Rsurf));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2146 -2156 2147 -2157");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2156 -2166 -2157 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out+Rsurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out+Rsurf));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2166 -2186 2127 -2157 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SJ-10,
 				 " -2127 2007M 2176 -2186 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   // wheel catcher
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2247 2238 -2239 -2125 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2125 -2115  2238 -2118 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2237 -2247 2238 2205 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   //     floor gap
   Out=ModelSupport::getComposite(SMap,buildIndex, " -2147 2208 2205 -2215 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2205 -2245 -2208 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -2217 2205 -2245 2208 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -2217 2205 2245 -2115 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -2227 2217 2215 -2115 2218 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // small cell between base cones
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2217 -2218 2208 2215 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 2227 -2237 2215 -2225 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // notch: big conical cell
   Out=ModelSupport::getComposite(SMap,buildIndex, " -2238 2227 2225 -2115 ");
   if (engActive)
     buildStiffeners(System,Out,buildIndex+3000,nSectors/2,steelMat);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
 
 
   // shaft layers
@@ -725,7 +724,7 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 	  continue;
 	}
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,
+      System.addCell(MonteCarlo::Object(cellIndex++,shaftMat[i],mainTemp,
 				       inner+outer+floor+roof));
       SI += 10;
     }
@@ -821,7 +820,7 @@ BilbaoWheel::divideRadial(Simulation& System,
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,sides));
       return;
     }
 
@@ -830,7 +829,7 @@ BilbaoWheel::divideRadial(Simulation& System,
   for(size_t j=0;j<nSectors;j++)
     {
       Out=ModelSupport::getComposite(SMap,SJ," 1 -11 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides));
       SJ+=10;
     }
   return;
@@ -854,7 +853,7 @@ BilbaoWheel::buildStiffeners(Simulation& System,
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,sides));
       return;
     }
 
@@ -863,10 +862,10 @@ BilbaoWheel::buildStiffeners(Simulation& System,
   for(size_t j=0;j<n;j++)
     {
       Out=ModelSupport::getComposite(SMap,SJ," 2 3 -4 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides));
 
       Out=ModelSupport::getComposite(SMap,SJ," 2 4 -13 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out+sides));
+      System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out+sides));
 
       SJ+=10;
     }
@@ -902,7 +901,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides+top+bot));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,sides+top+bot));
       return;
     }
   const int SI0(buildIndex+30000+surfOffset);
@@ -939,20 +938,20 @@ BilbaoWheel::buildHoles(Simulation& System,
 
       // cell below holes
       Out=ModelSupport::getComposite(SMap,SI0," -5 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+bot+sides));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+bot+sides));
 
       // cell above holes
       Out=ModelSupport::getComposite(SMap,SI0," 6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+top+sides+bot));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+top+sides+bot));
 
       // holes
       for(size_t j=0;j<nSectors;j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 5M -6M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out+sides));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out+sides));
 
 	  Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 5M -6M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides));
 
 	  SI+=SIstep;
 	}
@@ -961,10 +960,10 @@ BilbaoWheel::buildHoles(Simulation& System,
       for(size_t j=0;j<nSectors;j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out+sides+top+bot));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out+sides+top+bot));
 
 	  Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides+top+bot));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out+sides+top+bot));
 
 	  SI+=SIstep;
 	}
@@ -995,25 +994,25 @@ BilbaoWheel::buildCirclePipes(Simulation& System,
   if (nSectors<2)
     {
       Out=sides+inner;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,Out));
     } else
     {
       for (size_t j=0; j<nSectors; j++)
 	{
 	  Out=ModelSupport::getComposite(SMap,SJ," -8 ") + outer;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,Out));
 	  Out=ModelSupport::getComposite(SMap,SJ," 8 -9 ") + outer;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + inner;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,
 					   Out+sides));
 
 	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + floor;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,
 					   Out+sides));
 	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + roof;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,
 					   Out+sides));
 	  SJ+=10;
 	}
@@ -1188,42 +1187,42 @@ BilbaoWheel::createObjects(Simulation& System)
 	  if (!engActive)
 	    {
 	      Out=ModelSupport::getComposite(SMap,buildIndex,SI," 117 -17M 5 -6 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 	    }
 
 	  side=ModelSupport::getComposite(SMap,buildIndex," -117 107 ");
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -26 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex,"-105 25 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -25 35 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 26 -36 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 
 	  side=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -107 ");
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 105 -106 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -116 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -105 115 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 116 -36 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -115 35 ")+side;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 	}
       else if (mat==homoWMat)
 	{
@@ -1235,14 +1234,14 @@ BilbaoWheel::createObjects(Simulation& System)
 	  if (!engActive)
 	    {
 	      //divideRadial(System, Out, mat); // geocheck fails, but MCNP - not. why???
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 	    }
 	  nInner++;
 	}
       else // never actually called with standard geometry since nLayers=3
 	{
 	  //divideRadial(System, Out, mat);
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,mainTemp,Out));
 	}
 
       SI+=10;
@@ -1253,33 +1252,33 @@ BilbaoWheel::createObjects(Simulation& System)
   if (engActive)
     divideRadial(System, Out, heMat);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   side = ModelSupport::getComposite(SMap,buildIndex,SI," -7M 117" );
 
   // Void above W
   Out=ModelSupport::getComposite(SMap,buildIndex," 6 -16 ")+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
   // Void below W
   Out=ModelSupport::getComposite(SMap,buildIndex," 15 -5 ")+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   // Steel above W
   Out=ModelSupport::getComposite(SMap,buildIndex," 16 -26 ")+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // Steel below W
   Out=ModelSupport::getComposite(SMap,buildIndex," 25 -15 ")+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // Coolant above steel
   Out=ModelSupport::getComposite(SMap,buildIndex," 26 -36 ")+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ssVoidMat,mainTemp,Out));
   CellMap::setCell("CoolantAboveSteel",cellIndex-1);
 
   // Coolant below steel
   Out=ModelSupport::getComposite(SMap,buildIndex," 35 -25 " )+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ssVoidMat,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
@@ -1287,16 +1286,16 @@ BilbaoWheel::createObjects(Simulation& System)
   if (engActive)
     divideRadial(System, Out, steelMat);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
   side=ModelSupport::getComposite(SMap,buildIndex,"-527 17 ");
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -126 36 ")+side;	 // outer above W
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 125 -35 ")+side;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -1304,7 +1303,7 @@ BilbaoWheel::createObjects(Simulation& System)
   if (engActive)
     divideRadial(System, Out, 0);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-537 45 -46");
   addOuterSurf("Wheel",Out);

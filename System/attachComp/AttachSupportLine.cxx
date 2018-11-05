@@ -67,7 +67,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "objectRegister.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -264,7 +263,7 @@ addToInsertLineCtrl(Simulation& System,
   const std::vector<int>& cellVec=
     System.getObjectRange(InsertFC.getKeyName());
   System.populateCells(cellVec);
-  MonteCarlo::Qhull* CRPtr=System.findQhull(cellN);
+  MonteCarlo::Object* CRPtr=System.findObject(cellN);
 
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))
     {

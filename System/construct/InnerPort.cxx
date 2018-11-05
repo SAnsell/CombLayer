@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -261,18 +260,18 @@ InnerPort::createObjects(Simulation& System)
   if (windowMat)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
       addCell("Window",cellIndex-1);
       Out=ModelSupport::getComposite(SMap,buildIndex,
                                      "1 -2 3 -4 5 -6 (-101 : 102)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addCell("Void",cellIndex-1);
 
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addCell("Void",cellIndex-1);
     }
   
@@ -281,44 +280,44 @@ InnerPort::createObjects(Simulation& System)
 
       // Seal [4 segments]:
       Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -13 25 -26");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
       addCell("Seal",cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 14 -24 25 -26");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
       addCell("Seal",cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 13 -14 -15 25");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
       addCell("Seal",cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 13 -14 16 -26");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,Out));
       addCell("Seal",cellIndex-1);
 
       // surrounding seal [front/back]
       Out=ModelSupport::getComposite(SMap,buildIndex,
                                      "1 -21 23 -24 25 -26 (-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       addCell("Main",cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
                                      "22 -2 23 -24 25 -26 (-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       addCell("Main",cellIndex-1);
 
       // Inner seal Mat:
       
       Out=ModelSupport::getComposite(SMap,buildIndex,
                                      "1 -2 13 -14 15 -16 (-3:4:-5:6)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       addCell("Main",cellIndex-1);
       
        // Metal surrounding seal
       const int boltIndex((nBolt) ? buildIndex+30 : buildIndex+20);
       Out=ModelSupport::getComposite(SMap,buildIndex,boltIndex,
                                      " 1 -2 (-3M:4M:-5M:6M) " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
                                        Out+boundaryHR.display()));
       addCell("Outer",cellIndex-1);
     }
@@ -327,7 +326,7 @@ InnerPort::createObjects(Simulation& System)
       const int boltIndex((nBolt) ? buildIndex+30 : buildIndex);
       Out=ModelSupport::getComposite(SMap,buildIndex,boltIndex,
                                      " 1 -2 (-3M:4M:-5M:6M) " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
                                        Out+boundaryHR.display()));
       addCell("Outer",cellIndex-1);
     }
@@ -436,7 +435,7 @@ InnerPort::createBolts(Simulation& System)
       for(size_t i=0;i<nBolt;i++)
         {
           Out=ModelSupport::getComposite(SMap,buildIndex,BI,"1 -2 -7M");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out));
           addCell("Bolt",cellIndex-1);
           
           rightIndex=(i!=nBolt-1) ?
@@ -450,7 +449,7 @@ InnerPort::createBolts(Simulation& System)
           if (cornerCut[sideI])
             OutComp+= boundaryHR.display();
           
-          System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+          System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
                                            Out+OutComp+OutSide));
           addCell("Main",cellIndex-1);
           PI+= (sideI>1) ? -10 : 10;

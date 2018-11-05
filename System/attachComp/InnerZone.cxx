@@ -63,7 +63,6 @@
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -333,7 +332,7 @@ InnerZone::constructMasterCell(Simulation& System)
   
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
   CellPtr->makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
-  MonteCarlo::Object* OPtr= System.findQhull(cellIndex-1);
+  MonteCarlo::Object* OPtr= System.findObject(cellIndex-1);
 
   return OPtr;
 }

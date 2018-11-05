@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -237,17 +236,17 @@ IMatChopper::createObjects(Simulation& System)
 
   // Inner void cell:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Fe layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 "(-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   return;
 }

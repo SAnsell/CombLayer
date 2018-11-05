@@ -74,8 +74,10 @@ class ObjTrackItem
   bool isCompelete() const { return (aimDist-TDist)<1e-4; }
 
   void addDistance(const int,const double);
+
   /// Accessor to track
-  const std::map<int,double>& getTrack() const { return MTrack; }
+  const std::map<int,double>& getTrack() const
+  { return MTrack; }
   
   double getMatSum() const;
   void write(std::ostream&) const;

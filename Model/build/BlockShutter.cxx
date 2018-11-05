@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -253,7 +252,7 @@ BlockShutter::createInsert(Simulation& System)
   
   size_t cutPt(0);
   // Get Test object
-  const MonteCarlo::Qhull* OuterCell=System.findQhull(colletOuterCell);
+  const MonteCarlo::Object* OuterCell=System.findObject(colletOuterCell);
   // Create First Object: (or only object)
    if (nBlock>1)
     {
@@ -354,8 +353,8 @@ BlockShutter::createObjects(Simulation& System)
 	(SMap,buildIndex," (-313:314:325:-326) ");
       OutB=ModelSupport::getComposite
 	(SMap,buildIndex," (-413:414:425:-426) ");
-      MonteCarlo::Qhull* VObjA=System.findQhull(innerVoidCell);
-      MonteCarlo::Qhull* VObjB=System.findQhull(innerVoidCell+1);
+      MonteCarlo::Object* VObjA=System.findObject(innerVoidCell);
+      MonteCarlo::Object* VObjB=System.findObject(innerVoidCell+1);
 
       if (!VObjA || !VObjB)
 	{
@@ -370,16 +369,16 @@ BlockShutter::createObjects(Simulation& System)
       colletInnerCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"313 -314 -325 326 7 -401")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // OuterCollet
       colletOuterCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"413 -414 -425 426 -17 401");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // SPACER:
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
     }
   else

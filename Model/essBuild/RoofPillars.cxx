@@ -64,7 +64,6 @@
 #include "HeadRule.h"
 #include "SurInter.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -245,7 +244,7 @@ RoofPillars::insertRoofCells(Simulation& System,
 		{
 		  for(int newCN=prevCellN+1;newCN<cellN;newCN++)
 		    {
-		      MonteCarlo::Object* NPtr=System.findQhull(newCN);
+		      MonteCarlo::Object* NPtr=System.findObject(newCN);
 		      if (NPtr)
 			{
 			  OMap.emplace(newCN,NPtr);
@@ -538,10 +537,10 @@ RoofPillars::createObjects(Simulation& System)
       if (PItem.second.active)
 	{
 	  Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Base));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Base));
 	  addCell("Pillar"+PItem.first,cellIndex-1);
 	  Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Base));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+Base));
 	  addCell("Pillar"+PItem.first,cellIndex-1);
 	}
       // Object must be added afterward otherwise we add to self
@@ -550,27 +549,27 @@ RoofPillars::createObjects(Simulation& System)
       insertPillarCells(System,PItem.second,Out+footLevel+roofLevel);
       
       Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
 				       Out+roofLevel+plateLevelComp));
       addCell("Pillar"+PItem.first,cellIndex-1);
       Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,
 				       Out+roofLevel+plateLevelComp));
       addCell("Pillar"+PItem.first,cellIndex-1);
       
       // pillar in roof
       Out=ModelSupport::getComposite(SMap,RI,
 				     " 31 -32 33 -34  (-11:12:-13:14) ");
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,0,0.0,Out+roofLevel+plateLevelComp));
       
       Out=ModelSupport::getComposite(SMap,RI," 21 -22 23 -24  ");
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,mat,0.0,Out+plateLevel+footLevel));
       
       Out=ModelSupport::getComposite(SMap,RI,
 				     " 31 -32 33 -34  (-21:22:-23:24) ");
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,0,0.0,Out+plateLevel+footLevel));
       addCell("Foot"+PItem.first,cellIndex-1);
     }
@@ -775,15 +774,15 @@ RoofPillars::createBeamObjects(Simulation& System,
   
   // gap
   Out=ModelSupport::getComposite(SMap,RI," 23 -13  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
 				   Out+Outer.display()+fbBStr));
   Out=ModelSupport::getComposite(SMap,RI," 14 -24  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
 				   Out+Outer.display()+fbBStr));
   
   Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
   Out+=fbBStr+Inner.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
   
   
   // steel box [NOTE CARE for INCLUSION]:
@@ -795,7 +794,7 @@ RoofPillars::createBeamObjects(Simulation& System,
   Out+=fbBStr+Outer.display();
   Inner.makeComplement();
   Out+=Inner.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   return;
 }

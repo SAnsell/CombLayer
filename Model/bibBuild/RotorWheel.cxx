@@ -56,7 +56,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -311,56 +310,56 @@ RotorWheel::createObjects(Simulation& System)
 
   // Water
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
   // Be Segment
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 101 -7 8");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
 
   // Wall layer [Front/Back]
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 -7");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Front cut short by Be
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 11 -18");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Be inside wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 101 -8 18");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Wall Be outsde (full length)
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -12 7 -17");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Part without anthing in middle
   Out=ModelSupport::getComposite(SMap,buildIndex,"-18 -11 101");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Part without anthing in middle
   Out=ModelSupport::getComposite(SMap,buildIndex,"(17:-101:12) 21 -27 -22");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Part without anything in middle
   Out=ModelSupport::getComposite(SMap,buildIndex,"(27:-21:22) 31 -37 -32");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 49 -44 45 -46 "
 				 " (-51:52:54:-55:56)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vesselMat,0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,vesselMat,0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"51 -52 55 -56 61 -62");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pbMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pbMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"51 -52 55 -56 62 -54");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"51 -52 43 -61 55 -56 (37:-31:32)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -49 45 -46 "
                                       "(-51:52:54 :-55:56)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32");

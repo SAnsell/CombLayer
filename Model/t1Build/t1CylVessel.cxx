@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -226,23 +225,23 @@ t1CylVessel::createObjects(Simulation& System)
   // Inner voids
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-7 ((-8 -5) : (-9 6) : (5 -6)) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   voidCell=cellIndex-1;
   
   // Steel layers [in components]
   Out=ModelSupport::getComposite(SMap,buildIndex, "5 -6 -17 7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   steelCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -19 9 6 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -18 8 -5 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // clearance layer
   Out=ModelSupport::getComposite(SMap,buildIndex, "(5:-18) (-6:-19) -27 17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Outer Boundary : 
   Out=ModelSupport::getComposite(SMap,buildIndex,

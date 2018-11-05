@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -190,14 +189,14 @@ BeOElement::createObjects(Simulation& System)
   addOuterSurf(Out);      
 
   Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -6 "
 				  " (-21 : 22 : -23 : 24 : -25)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,coolMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
 
   return;
 }

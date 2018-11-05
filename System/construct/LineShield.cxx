@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -354,11 +353,11 @@ LineShield::createObjects(Simulation& System)
       for(size_t i=1;i<nWallLayers;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 13 -3 5M -6M ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 		 
 	  Out=ModelSupport::getComposite(SMap,WI,buildIndex," 4 -14 5M -6M ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 	  WI+=10;
 	}
@@ -368,7 +367,7 @@ LineShield::createObjects(Simulation& System)
       for(size_t i=1;i<nRoofLayers;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,RI,buildIndex," 3M -4M -16 6 ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
 	  RI+=10;
 	}
@@ -378,7 +377,7 @@ LineShield::createObjects(Simulation& System)
       for(size_t i=1;i<nFloorLayers;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,floorMat[i],0.0,Out+FBStr));
 	  FI+=10;
 	}
@@ -393,10 +392,10 @@ LineShield::createObjects(Simulation& System)
 	      const int mat((i>j) ? roofMat[i] : wallMat[j]);
 
 	      Out=ModelSupport::getComposite(SMap,WI,RI," -3 13 6M -16M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+FBStr));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+FBStr));
 	      
 	      Out=ModelSupport::getComposite(SMap,WI,RI," 4 -14 6M -16M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+FBStr));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+FBStr));
 	      WI+=10;
 	    }
 	  RI+=10;

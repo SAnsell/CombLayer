@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -287,7 +286,7 @@ DiskLayerMod::createObjects(Simulation& System)
 	  outerOut=ModelSupport::getComposite(SMap,TI," -207 ");
           if (mat[i][j]!=-1)
             {
-              System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
+              System.addCell(MonteCarlo::Object(cellIndex++,mat[i][j],temp[i][j],
                                                layerStr+innerOut+outerOut));
               CellMap::addCell("Layer"+std::to_string(i),cellIndex-1);
             }
@@ -297,7 +296,7 @@ DiskLayerMod::createObjects(Simulation& System)
       outerOut=ModelSupport::getComposite(SMap,buildIndex," -7 ");
       if (mat[i][j]!=-1)
         {
-          System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
+          System.addCell(MonteCarlo::Object(cellIndex++,mat[i][j],temp[i][j],
                                            layerStr+innerOut+outerOut));
           CellMap::addCell("Layer"+std::to_string(i),cellIndex-1);
         }

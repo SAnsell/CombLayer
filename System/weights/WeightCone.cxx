@@ -3,7 +3,7 @@
  
  * File:   weights/WeightCone.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "WItem.h"
@@ -106,7 +105,7 @@ WeightControl::calcCellTrack(const Simulation& System,
   /*
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
 	{
 	  index.push_back(CellPtr->getName());  // this should be cellN ??

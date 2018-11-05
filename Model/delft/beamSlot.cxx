@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -258,10 +257,10 @@ beamSlot::createObjects(Simulation& System)
   
   // End plates
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -13 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 14 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
 
   int surfOffset(buildIndex);
   const std::string baseOut=
@@ -270,14 +269,14 @@ beamSlot::createObjects(Simulation& System)
   for(size_t i=0;i<NChannels;i++)
     {
       Out=baseOut+ModelSupport::getComposite(SMap,surfOffset," 5 -15 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
       Out=baseOut+ModelSupport::getComposite(SMap,surfOffset," 15 -25 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       surfOffset+=20;
     }
   Out=baseOut+ModelSupport::getComposite(SMap,buildIndex,
 					 surfOffset," 5M -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
   
   return;
 }

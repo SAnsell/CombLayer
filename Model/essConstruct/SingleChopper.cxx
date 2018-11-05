@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -289,13 +288,13 @@ SingleChopper::createObjects(Simulation& System)
 
     // Main void
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Main block
   Out=ModelSupport::getComposite(SMap,buildIndex,
                 "1 -2 3 -4 5 -6 7 8 9 10 (-11:12:17)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Wall",cellIndex-1);
   addCell("MainBlock",cellIndex-1);
 
@@ -319,7 +318,7 @@ SingleChopper::createObjects(Simulation& System)
   const std::string innerBSurf=
     std::to_string(-backFlange->getSurf("innerRing"));
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerFSurf));
   addCell("PortVoid",cellIndex-1);
 
   IPA->addInnerCell(getCell("PortVoid",0));
@@ -327,7 +326,7 @@ SingleChopper::createObjects(Simulation& System)
 
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerBSurf));
   addCell("PortVoid",cellIndex-1);
 
   IPB->addInnerCell(getCell("PortVoid",1));

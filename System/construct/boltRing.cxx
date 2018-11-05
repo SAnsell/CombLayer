@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -391,13 +390,13 @@ boltRing::createObjects(Simulation& System)
   for(size_t i=0;i<NBolts;i++)
     {
       Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
       addCell("Bolts",cellIndex-1);
       
       Out=ModelSupport::getComposite
 	(SMap,prevBoltIndex,boltIndex," 3 -3M 7M ");
           
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,
 				       Out+FBStr+EdgeStr+sealUnitComp));
       addCell("Ring",cellIndex-1);
       
@@ -405,7 +404,7 @@ boltRing::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,prevBoltIndex,boltIndex," 3 -3M ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,sealMat,0.0,Out+sealUnit));
 	  addCell("Seal",cellIndex-1);
 	}
@@ -415,12 +414,12 @@ boltRing::createObjects(Simulation& System)
 
   if (!NBolts)
     {
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,mainMat,0.0,FBStr+EdgeStr+sealUnitComp));
       addCell("Ring",cellIndex-1);
       if (sealFlag)
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,sealUnit));
+	  System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,sealUnit));
 	  addCell("Seal",cellIndex-1);
 	}
     }

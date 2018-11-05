@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -351,23 +350,23 @@ H2Vac::createObjects(Simulation& System,const std::string& Exclude)
   // Inner 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -2 -3 ");
   Out+=" "+Exclude;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // First Al layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -12 -13 ( 1:2:3) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Tertiay layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"-21 -22 -23 (11:12:13) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Tertiay layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"-31 -32 -33 (21:22:23)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outMat,0.0,Out));
 
   // Outer clearance
   Out=ModelSupport::getComposite(SMap,buildIndex,"-41 -42 -43 (31:32:33)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

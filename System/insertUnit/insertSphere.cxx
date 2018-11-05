@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -190,7 +189,7 @@ insertSphere::createObjects(Simulation& System)
   
   std::string Out=
     ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   addCell("Main",cellIndex-1);
   addOuterSurf(Out);
   return;

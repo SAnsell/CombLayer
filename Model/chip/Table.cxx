@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -305,14 +304,14 @@ Table::createObjects(Simulation& System)
   // Base Object
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -16 "
 				 "(-11 : 12 : -13 : 14)" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   // Inner void
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Table top
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,topMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,topMat,0.0,Out));
 
   return;
 }

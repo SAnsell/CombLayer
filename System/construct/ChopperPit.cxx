@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -311,7 +310,7 @@ ChopperPit::createObjects(Simulation& System)
   const std::string frontSurf=frontCut.display();
   // Void 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
   setCell("Void",cellIndex-1);
 
   HeadRule Collet;
@@ -319,7 +318,7 @@ ChopperPit::createObjects(Simulation& System)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -102 103 -104 105 -106");
       Collet.procString(Out);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       Collet.makeComplement();
       setCell("Collet",cellIndex-1);
     }
@@ -329,26 +328,26 @@ ChopperPit::createObjects(Simulation& System)
   if (!activeFront)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex," 11 -1 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontSurf));
       addCell("MidLayerFront",cellIndex-1);
       addCell("MidLayer",cellIndex-1);
     }
     
   // Sides:
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 (-3:4:-5:6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontSurf));
   addCell("MidLayerSide",cellIndex-1);
   // back
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"2 -12 3 -4 5 -6");
   Out+=Collet.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   addCell("MidLayerBack",cellIndex-1);
   addCell("MidLayer",cellIndex-1);
   
   // Make full exclude:
   Out=ModelSupport::getSetComposite
     (SMap,buildIndex,"21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out+frontSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out+frontSurf));
   setCell("Outer",cellIndex-1);
 
   // Exclude:

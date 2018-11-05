@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -236,20 +235,20 @@ DHut::createObjects(Simulation& System)
   std::string Out;
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 -11 -12 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "101 -102 103 -104 105 -106  -111 -112 "
   				 "(-1:2:-3:4:-5: 6 :11 : 12)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   setCell("Steel",cellIndex-1);
     
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				   "201 -202 203 -204 205 -206 -211 -212 "
 				 "(-101:102:-103:104:-105: 106 :111 :112)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   setCell("Concrete",cellIndex-1);
   
   

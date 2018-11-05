@@ -57,6 +57,8 @@ class Object
 
   HeadRule HRule;    ///< Top rule
 
+  Geometry::Vec3D COM;       ///< Centre of mass 
+  
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;
  
@@ -190,12 +192,17 @@ class Object
   int trackOutCell(const MonteCarlo::neutron&,double&,
 		   const Geometry::Surface*&,const int =0) const;
 
+
+  /// acessor to forward 
+  Geometry::Vec3D getCofM() const { return COM; }
   // OUTPUT
   std::string cellCompStr() const;
   std::vector<Token> cellVec() const;
   std::string headStr() const;
   std::string str() const;
   std::string pointStr(const Geometry::Vec3D&) const;
+  std::string cellStr(const std::map<int,Object*>&) const;
+  
   void write(std::ostream&) const;         
   void writePHITS(std::ostream&) const;    
   void writeFLUKA(std::ostream&) const;    

@@ -37,7 +37,8 @@ namespace shutterSystem
   */
 
 class Torpedo : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  protected:
 
@@ -56,8 +57,6 @@ class Torpedo : public attachSystem::FixedComp,
 
   std::set<int> innerSurf;            ///< Inner surfaces
   
-  // Cells:
-  int voidCell;                 ///< Main void cell 
 
   //--------------
   // FUNCTIONS:

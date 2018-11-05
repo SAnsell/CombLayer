@@ -57,7 +57,6 @@
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -229,7 +228,7 @@ CSGroup::buildWrapCell(Simulation& System,
 {
   ELog::RegMethod RegA("CSGroup","buildWrapCell");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+  const MonteCarlo::Object* outerObj=System.findObject(pCell);
   if (!outerObj)
     throw ColErr::InContainerError<int>(pCell,"Primary cell does not exist");
 
@@ -293,7 +292,7 @@ CSGroup::insertAllObjects(Simulation& System)
 
   if (primaryCell)
     {
-      MonteCarlo::Object* outerObj=System.findQhull(primaryCell);
+      MonteCarlo::Object* outerObj=System.findObject(primaryCell);
       if (outerObj)
 	{
 	  outerObj->addSurfString(inwardCut.complement().display());

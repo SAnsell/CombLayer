@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -355,7 +354,7 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
   ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
 
-  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  const MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
 

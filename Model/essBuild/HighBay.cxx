@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -234,25 +233,25 @@ HighBay::createObjects(Simulation& System,
   Out+=leftWallInner.display()+rightWallInner.display();
   Out+=frontCut;
   Out+=bunkerTop.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
 				   Out+curtainCut.complement().display()));
 
   // Roof area
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 6 -16 ");
   Out+=leftWallInner.display()+rightWallInner.display();
   Out+=frontCut;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out));
 
   // Left wall
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
   Out+=leftWallOuter.display()+leftWallInner.complement().display();
   Out+=bunkerTop.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontCut));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontCut));
   // Right wall
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");
   Out+=rightWallOuter.display()+rightWallInner.complement().display();
   Out+=bunkerTop.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontCut));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontCut));
 		 
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -16 ");

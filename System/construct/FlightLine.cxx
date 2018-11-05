@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -485,7 +484,7 @@ FlightLine::createObjects(Simulation& System,
 
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
@@ -499,7 +498,7 @@ FlightLine::createObjects(Simulation& System,
 	  ICut.makeComplement();
 	  const std::string IOut=Out+ICut.display()+" "+
 	    capRule[i-1].display()+divider;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i-1],0.0,IOut));
+	  System.addCell(MonteCarlo::Object(cellIndex++,lMat[i-1],0.0,IOut));
 	  Out+=capRule[i].display()+divider;
 	}
       else
@@ -509,7 +508,7 @@ FlightLine::createObjects(Simulation& System,
 	  Out+=attachRule;         // forward boundary of object
 	}
       Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],0.0,Out));
     }      
 
   return;
@@ -550,7 +549,7 @@ FlightLine::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
@@ -559,7 +558,7 @@ FlightLine::createObjects(Simulation& System,
 				     " 13 -14 15 -16 (-3:4:-5:6) ");
       Out+=attachRule;         // forward boundary of object
       Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],0.0,Out));
     }      
 
   return;
@@ -584,7 +583,7 @@ FlightLine::processIntersectMajor(Simulation& System,
   int metalCell(buildIndex+2);
   for(size_t i=0;i<nLayer;i++)
     {
-      MonteCarlo::Object* Obj=System.findQhull(metalCell++);
+      MonteCarlo::Object* Obj=System.findObject(metalCell++);
       if (!Obj)
 	throw ColErr::InContainerError<int>
 	  (metalCell-1,"Cell no found at layer"+StrFunc::makeString(i+1));
@@ -599,7 +598,7 @@ FlightLine::processIntersectMajor(Simulation& System,
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-3:4:-5:6) ");  
   Out+=CC.getCompExclude(iKey);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }
@@ -623,7 +622,7 @@ FlightLine::processIntersectMinor(Simulation& System,
   int changeCell(buildIndex+1);
   for(size_t i=0;i<=nLayer;i++)
     {
-      MonteCarlo::Object* Obj=System.findQhull(changeCell++);
+      MonteCarlo::Object* Obj=System.findObject(changeCell++);
       if (!Obj)
 	throw ColErr::InContainerError<int>
 	  (changeCell-1,"Cell no found at layer"+StrFunc::makeString(i+1));

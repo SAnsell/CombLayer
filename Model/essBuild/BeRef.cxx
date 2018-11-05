@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -301,58 +300,58 @@ BeRef::createObjects(Simulation& System)
     {
       //  void volume
       Out=ModelSupport::getComposite(SMap,buildIndex," -307 305 -105 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 (307:-305) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lowRefMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lowRefMat,0.0,Out));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -105 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lowRefMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lowRefMat,0.0,Out));
     }
   setCell("lowBe",cellIndex-1);
   
   // low void
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 115 -205");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("lowVoid",cellIndex-1);
   // Target void
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 205 -206");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,targSepMat,0.0,Out));
   setCell("targetVoid",cellIndex-1);
   
   // top Segment
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -116 206");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("topVoid",cellIndex-1);
 
   // top segment
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -6 106");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,topRefMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,topRefMat,0.0,Out));
   setCell("topBe",cellIndex-1);
   
   if (wallThick>Geometry::zeroTol)
     {
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -105 (7:-5)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lowWallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lowWallMat,0.0,Out));
       setCell("lowWall",cellIndex-1);
       
       if (wallThickLow>Geometry::zeroTol)
 	{
 	  // divide layer
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -17 105 -115 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,lowWallMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,lowWallMat,0.0,Out));
 	  setCell("lowWallDivider",cellIndex-1);
 	  
 	  // divide layer
 	  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -106 116 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,topWallMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,topWallMat,0.0,Out));
 	}
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -17 -16 106 (7:6)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,topWallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,topWallMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,buildIndex," -17 15 -16 ");
     }

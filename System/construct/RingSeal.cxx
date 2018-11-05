@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -244,19 +243,19 @@ RingSeal::createObjects(Simulation& System)
       for(size_t i=1;i<NSection;i++)
         {
           Out=ModelSupport::getComposite(SMap,prevRingIndex," 3 -13 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+SealStr));
+          System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+SealStr));
           addCell("Ring",cellIndex-1);
           prevRingIndex+=10;
         }
 
       Out=ModelSupport::getComposite(SMap,prevRingIndex,buildIndex,
                                      " 3 -3M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+SealStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+SealStr));
       addCell("Ring",cellIndex-1);
     }
   else  // one ring
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,SealStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,SealStr));
       addCell("Ring",cellIndex-1);
     }
   addOuterSurf(SealStr);    

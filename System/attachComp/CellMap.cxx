@@ -52,7 +52,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -112,13 +111,13 @@ CellMap::insertCellMapInCell(Simulation& System,
 {
   ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
 
-  MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN in System");
 
   for(const int cn : getCells(cellKey))
     {
-      const MonteCarlo::Object* OPtr=System.findQhull(cn);
+      const MonteCarlo::Object* OPtr=System.findObject(cn);
       if (OPtr)
 	{
 	  const HeadRule compObj=OPtr->getHeadRule().complement();
@@ -144,12 +143,12 @@ CellMap::insertCellMapInCell(Simulation& System,
   ELog::RegMethod RegA("CellMap","insertCellMapInCell(int)");
 
   const int cn = getCell(cellKey,cellIndex);
-  const MonteCarlo::Object* OPtr=System.findQhull(cn);
+  const MonteCarlo::Object* OPtr=System.findObject(cn);
   if (!OPtr)
     throw ColErr::InContainerError<int>(cn,"CellMap(int) in System");
   const HeadRule compObj=OPtr->getHeadRule().complement();
   
-  MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN in System");
 
@@ -175,7 +174,7 @@ CellMap::insertComponent(Simulation& System,
   for(const int cn : CM.getCells(holdKey))
     {
       const MonteCarlo::Object* OPtr=
-	System.findQhull(cn);
+	System.findObject(cn);
       if (OPtr)
 	{
 	  const HeadRule compObj=OPtr->getHeadRule().complement();
@@ -281,7 +280,7 @@ CellMap::insertComponent(Simulation& System,
 
   for(const int cellNum : CVec)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+      MonteCarlo::Object* outerObj=System.findObject(cellNum);
       if (!outerObj)
 	throw ColErr::InContainerError<int>(cellNum,
 					    "Cell["+Key+"] not in simlutation");
@@ -307,7 +306,7 @@ CellMap::insertComponent(Simulation& System,
 
   const int cellNum=getCell(Key,index);
 
-  MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+  MonteCarlo::Object* outerObj=System.findObject(cellNum);
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellNum,
 					"Cell["+Key+"] not present");
@@ -336,7 +335,7 @@ CellMap::insertComponent(Simulation& System,
 
   const int otherCellNum=CM.getCell(cmKey,cmIndex);
   ELog::EM<<"Other Cell == "<<otherCellNum<<ELog::endDiag;
-  const MonteCarlo::Qhull* otherObj=System.findQhull(otherCellNum);
+  const MonteCarlo::Object* otherObj=System.findObject(otherCellNum);
   if (!otherObj)
     throw ColErr::InContainerError<int>(otherCellNum,
 					"Cell["+cmKey+"] not present");
@@ -427,7 +426,7 @@ CellMap::getCellsHR(const Simulation& System,
   const std::vector<int> cells=getCells(Key);
   for(const int cellN : cells)
     {
-      const MonteCarlo::Object* cellObj=System.findQhull(cellN);
+      const MonteCarlo::Object* cellObj=System.findObject(cellN);
       if (!cellObj)
 	throw ColErr::InContainerError<int>(cellN,"cellN on found");
       Out.addUnion(cellObj->getHeadRule());
@@ -449,7 +448,7 @@ CellMap::getCellHR(const Simulation& System,
   ELog::RegMethod RegA("CellMap","getCellHR");
 
   const int cellN=getCell(Key,Index);
-  const MonteCarlo::Object* cellObj=System.findQhull(cellN);
+  const MonteCarlo::Object* cellObj=System.findObject(cellN);
   if (!cellObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
   return cellObj->getHeadRule();
@@ -473,7 +472,7 @@ CellMap::deleteCellWithData(Simulation& System,
 
   if (!CN)
     throw ColErr::InContainerError<int>(CN,"Key["+Key+"] zero cell");
-  const MonteCarlo::Object* ObjPtr=System.findQhull(CN);
+  const MonteCarlo::Object* ObjPtr=System.findObject(CN);
   if (!ObjPtr)
     throw ColErr::InContainerError<int>(CN,"Cell Ptr zero");
 

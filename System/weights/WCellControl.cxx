@@ -58,7 +58,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "WItem.h"
@@ -68,6 +67,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "vertexCalc.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "PositionSupport.h"
@@ -280,7 +280,7 @@ WCellControl::scaleObject(const Simulation& System,
   const std::vector<int> cellVec=System.getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
         WF->scaleWeights(cellN,WEng);
     }
@@ -340,7 +340,7 @@ WCellControl::findMax(const Simulation& System,
   size_t foundCellCnt(0);
   for(const int CN : cellRange)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(CN);
+      const MonteCarlo::Object* CellPtr=System.findObject(CN);
       if (CellPtr && CellPtr->getMat())
 	{
           foundCellCnt++;
@@ -404,7 +404,7 @@ WCellControl::cTrack(const Simulation& System,
                       const std::vector<long int>& index,
                       CellWeight& CTrack)
   /*!
-    Calculate a specific trac from sourcePoint to  postion
+    Calculate a specific track from sourcePoint to postion
     \param System :: Simulation to use    
     \param initPlane :: Plane for outgoing track
     \param Pts :: Point on track
@@ -431,6 +431,7 @@ WCellControl::cTrack(const Simulation& System,
 void
 WCellControl::calcCellTrack(const Simulation& System,
                             const Geometry::Cone& curCone,
+			    const std::vector<int>& cellVec,
                             CellWeight& CTrack)
 /*!
   Calculate a given cone : calculate those cells
@@ -446,18 +447,17 @@ WCellControl::calcCellTrack(const Simulation& System,
   CTrack.clear();
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
-  /*
-    for(const int cellN : cellVec)
+  
+  for(const int cellN : cellVec)
     {
-    const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
-    if (CellPtr && CellPtr->getMat())
-    {
-    index.push_back(CellPtr->getName());  // this should be cellN ??
-    Pts.push_back(CellPtr->getCofM());
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
+      if (CellPtr && CellPtr->getMat())
+	{
+	  index.push_back(CellPtr->getName());  // this should be cellN ??
+	  Pts.push_back(ModelSupport::calcCOFM(*CellPtr));
+	}
     }
-    }
-    cTrack(System,curPlane,Pts,index,CTrack);
-  */
+  //  cTrack(System,curCone,Pts,index,CTrack);
   return;
 }
 
@@ -482,11 +482,11 @@ WCellControl::calcCellTrack(const Simulation& System,
 
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
-          Pts.push_back(CellPtr->getCofM());
+	  Pts.push_back(ModelSupport::calcCOFM(*CellPtr));
         }
     }
 
@@ -514,11 +514,11 @@ WCellControl::calcCellTrack(const Simulation& System,
 
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
       if (CellPtr && CellPtr->getMat())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
-          Pts.push_back(CellPtr->getCofM());
+	  //          Pts.push_back(CellPtr->getCofM());
           ELog::EM<<"Cell Track = "<<initPt<<" : "<<index.back()
                   <<" : [COM] "<<Pts.back()<<ELog::endDiag;
         }

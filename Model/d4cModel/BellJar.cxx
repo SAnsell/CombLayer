@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -262,22 +261,22 @@ BellJar::createObjects(Simulation& System)
 
   // Outer Wall
   Out=ModelSupport::getSetComposite(SMap,buildIndex," 15 -16 -17 (7:-5:6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Assuming a mid void boundary:
   if (!colAngle.empty())
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -27");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
       innerVoid=cellIndex-1;
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -7 27");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
       midVoid=cellIndex-1;
 
       // Now add collimator blades
       
-      MonteCarlo::Qhull* voidObj=System.findQhull(midVoid);
+      MonteCarlo::Object* voidObj=System.findObject(midVoid);
       if (!voidObj)
 	throw ColErr::InContainerError<int>(midVoid,
 					    "midVoid in System:Objects");
@@ -286,14 +285,14 @@ BellJar::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 " 3 -4 8 -9 5M -6M");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
 	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 " 13 -14 18 -19 5M -6M");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
 	  if (colMat)
 	    {
 	      ELog::EM<<"CollMat imp =0"<<ELog::endDiag;
-	      System.findQhull(cellIndex-1)->setImp(0);
+	      System.findObject(cellIndex-1)->setImp(0);
 	    }
 
 	  Out=ModelSupport::getComposite(SMap,SI,
@@ -305,7 +304,7 @@ BellJar::createObjects(Simulation& System)
   else
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
       innerVoid=cellIndex-1;
       midVoid=0;
     }
