@@ -75,10 +75,6 @@
 #include "VacBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
 
-
-
-
-
 namespace setVariable
 {
 
@@ -523,6 +519,7 @@ opticsBeamVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("maxpeemVariables[F]","opticsBeamVariables");
 
   setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -545,11 +542,16 @@ opticsBeamVariables(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,opticKey+"IonPA",0.0,24.4,36.6);
 
+  // joined and open
+  GateGen.setLength(3.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,opticKey+"GateRing",0.0,0);
+  
   // will be rotated vertical
   const std::string gateName=opticKey+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateName,0.0,20.0);
+  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF40>(0.45);
@@ -577,7 +579,7 @@ opticsBeamVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticKey+"BellowC",0,16.0);
   
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,opticKey+"PipeB",0,174.0);
+  PipeGen.generatePipe(Control,opticKey+"PipeB",0,169.5);
 
   ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
   ShieldGen.setPlate(25.0,25.0,5.0);
@@ -1029,6 +1031,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setBackGap(0.71,0.71);
   CollGen.setMinSize(10.2,0.71,0.71);
   CollGen.generateColl(Control,frontKey+"CollA",0.0,15.0);
+  
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",0,10.0);

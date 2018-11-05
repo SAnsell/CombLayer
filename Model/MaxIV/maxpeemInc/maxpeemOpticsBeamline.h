@@ -88,6 +88,8 @@ class maxpeemOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Real Ion pump (KF40) 24.4cm vertical
   std::shared_ptr<constructSystem::CrossPipe> ionPA;
+  /// Gate valve for ring
+  std::shared_ptr<constructSystem::GateValve> gateRing;
   /// Gate block
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Bellow to first connect line

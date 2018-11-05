@@ -96,6 +96,9 @@ processExitChecks(Simulation& System,
 {
   ELog::RegMethod RegA("SimInput[F]","processExitChecks");
 
+  System.populateCells();
+  System.createObjSurfMap();
+  
   int errFlag(0);
   if (IParam.flag("validCheck"))
     {
@@ -124,9 +127,12 @@ processExitChecks(Simulation& System,
 	    (FCObject,"FixedComp");
 	  
           const long int sideIndex=FC->getSideIndex(linkPos);
-	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex);
+	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex)+
+	    Geometry::Vec3D(0.001,0.001,0.001);
 	  ELog::EM<<"Validation point "<<CPoint<<ELog::endDiag;
-		  
+	  ELog::EM<<"NEEDS TO BE RE-WRITTEN SO WORKS STARTING"
+	    " ON A SURFACE"<<ELog::endCrit;
+
 	  if (!SValidCheck.runPoint(System,CPoint,
 				    IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;

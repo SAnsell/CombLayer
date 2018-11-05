@@ -118,6 +118,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   buildZone(*this,cellIndex),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
+  gateRing(new constructSystem::GateValve(newName+"GateRing")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
@@ -179,6 +180,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
 
   OR.addObject(bellowA);
   OR.addObject(ionPA);
+  OR.addObject(gateRing);
   OR.addObject(gateTubeA);
   OR.addObject(bellowB);
   OR.addObject(pipeA);
@@ -642,19 +644,21 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
   ionPA->createAll(System,*bellowA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCellA,*ionPA,2);
   ionPA->insertInCell(System,outerCell);
-  
+
+  gateRing->createAll(System,*ionPA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCellA,*gateRing,2);
+  gateRing->insertInCell(System,outerCell);
+  gateRing->setCell("OuterVoid",outerCell);
 
   // FAKE insertcell: required
   gateTubeA->addAllInsertCell(masterCellA->getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeA->createAll(System,*ionPA,2);  
+  gateTubeA->createAll(System,*gateRing,2);  
   
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCellA,GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeA->insertAllInCell(System,outerCell);
-
-
 
   bellowB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit

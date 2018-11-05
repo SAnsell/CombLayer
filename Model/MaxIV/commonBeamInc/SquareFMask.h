@@ -64,8 +64,15 @@ class SquareFMask :
   double flangeBOutRadius;       ///< Joining Flange outer radius 
   double flangeBLength;          ///< Joining Flange length
 
-  int flangeMat;                ///< material of flange
+  double pipeYStep[4];           ///< Step along model
+  double pipeRadius;             ///< Cooling radius
+  double pipeXWidth;             ///< Cooling length
+  double pipeZDepth;             ///< Distance below beam
+
   int mat;                      ///< material
+  int flangeMat;                ///< material of flange
+  int waterMat;                 ///< water material
+  
   int voidMat;                  ///< inner material
   
   void createUnitVector(const attachSystem::FixedComp&,
