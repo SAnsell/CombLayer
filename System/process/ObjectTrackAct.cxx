@@ -51,7 +51,6 @@
 #include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"

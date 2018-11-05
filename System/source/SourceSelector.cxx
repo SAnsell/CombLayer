@@ -81,9 +81,8 @@
 #include "DBMaterial.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "objectRegister.h"
+#include "vertexCalc.h"
 #include "particleConv.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
@@ -128,16 +127,14 @@ getCellsContainingZaid(Simulation& System,
 	{
 	  const int matN=OPtr->getMat();
 	  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
-	  /*
-	    Calc vertex + cofm
-	  if (cellMat.hasZaid(zaid,0,0) && 
-	      OPtr->calcVertex())
+	  
+	  if (cellMat.hasZaid(zaid,0,0))
 	    {
-	      //	      const Geometry::Vec3D& CPt(OPtr->getCofM());
-	      if (OPtr->isValid(CPt))
-		FissionVec.push_back(CPt);
+	      const Geometry::Vec3D CofM=
+		ModelSupport::calcCOFM(*OPtr);
+	      if (OPtr->isValid(CofM))
+		FissionVec.push_back(CofM);
 	    }
-	  */
 	}
     }
   return FissionVec;

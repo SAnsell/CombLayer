@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -389,7 +388,7 @@ OpticsHutch::createObjects(Simulation& System)
       // roof
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;
     }

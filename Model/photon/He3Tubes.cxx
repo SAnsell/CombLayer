@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -229,17 +228,17 @@ He3Tubes::createObjects(Simulation& System)
   for(size_t i=0;i<nTubes;i++)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,tubeIndex," 5 -6 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       addCell("He",cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,tubeIndex,"5 -6 7M -17M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       addCell("Wall",cellIndex-1);
       box += ModelSupport::getComposite(SMap,tubeIndex," 17 ");
       tubeIndex+=100;
     }
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+box));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+box));
   
   addOuterSurf(Out);
 

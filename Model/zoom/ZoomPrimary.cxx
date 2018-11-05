@@ -68,7 +68,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -239,12 +238,12 @@ ZoomPrimary::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   CDivideList.push_back(cellIndex-1);
 
   // Inner void:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
 
   return;

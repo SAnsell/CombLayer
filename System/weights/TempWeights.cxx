@@ -53,7 +53,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "WItem.h"

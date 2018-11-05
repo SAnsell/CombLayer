@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -313,49 +312,49 @@ ZoomTank::createObjects(Simulation& System)
 
   // Dead Volume
   Out=ModelSupport::getComposite(SMap,buildIndex,"-173 171 111 -113 (-112:172)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Inner Volume
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // first Cylinder:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-181 121 -122");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // skipping front window
   Out=ModelSupport::getComposite(SMap,buildIndex,"-171 181 121 -122");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // second Cylinder:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-182 122 -123");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-172 171 112 -123 (-122:182)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // third Cylinder:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-183 123 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-173 172 113 -11 (-123:183)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Main bulk tank:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 "((-11 173):12:-13:14:-15:16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
 
   // window
   //   support:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-171 17 111 -121");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   //  Silicon window
   Out=ModelSupport::getComposite(SMap,buildIndex,"-17 101 -121");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
   //  void
   Out=ModelSupport::getComposite(SMap,buildIndex,"-17 111 -101 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   return;
 }

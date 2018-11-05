@@ -59,7 +59,6 @@
 #include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "Zaid.h"
 #include "MXcards.h"

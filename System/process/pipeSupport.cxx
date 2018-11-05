@@ -59,7 +59,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "Source.h"
 #include "varList.h"
 #include "Code.h"

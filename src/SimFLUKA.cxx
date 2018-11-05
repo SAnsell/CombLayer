@@ -69,7 +69,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "Source.h"
 #include "inputSupport.h"

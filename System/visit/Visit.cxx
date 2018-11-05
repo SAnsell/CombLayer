@@ -46,16 +46,12 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "objectRegister.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -66,7 +62,7 @@
 
 Visit::Visit() :
   outType(VISITenum::cellID),
-  lineAverage(0),nPts(0,0,0)
+  lineAverage(0),nPts({0,0,0})
   /*!
     Constructor
   */
@@ -145,9 +141,9 @@ Visit::setIndex(const size_t A,const size_t B,const size_t C)
     \param C :: Zcoordinate division
   */
 {
-  nPts=Triple<long int>(static_cast<long int>(A),
-			static_cast<long int>(B),
-			static_cast<long int>(C));
+  nPts[0]=static_cast<long int>(A);
+  nPts[1]=static_cast<long int>(B);
+  nPts[2]=static_cast<long int>(C);
   mesh.resize(boost::extents[nPts[0]][nPts[1]][nPts[2]]);
   return;
 }

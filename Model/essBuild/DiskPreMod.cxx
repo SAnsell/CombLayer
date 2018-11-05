@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -319,7 +318,7 @@ DiskPreMod::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
 
 	
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
 				       Out+widthUnit+
 				       Inner.display()+Width.display()));
       if (!i)
@@ -336,7 +335,7 @@ DiskPreMod::createObjects(Simulation& System)
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       // For exit surface
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
     }

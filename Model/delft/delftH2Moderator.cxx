@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -386,7 +385,7 @@ delftH2Moderator::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -3 ");
   Out+=FInner+BInner;
   addBoundarySurf(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   HCell=cellIndex-1;
 
   // AL Layers:
@@ -398,7 +397,7 @@ delftH2Moderator::createObjects(Simulation& System)
 
   Out+=ModelSupport::getComposite(SMap,buildIndex," -13 ");
   Out+=FOuter+BOuter;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
   return;
 }
 

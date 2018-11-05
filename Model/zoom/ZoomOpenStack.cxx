@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -272,7 +271,7 @@ ZoomOpenStack::createObjects(Simulation& System)
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
                               " (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
 
   int SI(buildIndex+100);
@@ -282,10 +281,10 @@ ZoomOpenStack::createObjects(Simulation& System)
       // inner void
       Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M (-3:4:-5:6) 13 -14 15 -16 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,guideMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,guideMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M 13 -14 15 -16 ");
       MidVoid.addIntersection(Out);
@@ -295,7 +294,7 @@ ZoomOpenStack::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   MidVoid.makeComplement();
   Out+=MidVoid.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

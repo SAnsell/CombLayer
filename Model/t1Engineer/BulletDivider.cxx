@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -300,7 +299,7 @@ BulletDivider::createObjects(Simulation& System,
       // TA 
       Out=ModelSupport::getComposite(SMap,DV,buildIndex,"-2 3M -17 7");
       Out+=frontSurf+vertCut;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
       Out=ModelSupport::getComposite(SMap,DV,buildIndex," -2 -17 7 ");
       addOuterUnionSurf(Out+frontSurf+vertCut);
@@ -328,7 +327,7 @@ BulletDivider::excludeInsertCells(Simulation& System)
   std::vector<int> active;
   for(const int CN : getInsertCells())
     {
-      MonteCarlo::Object* OPtr=System.findQhull(CN);
+      MonteCarlo::Object* OPtr=System.findObject(CN);
       if (OPtr)
 	{
 	  OPtr->populate();

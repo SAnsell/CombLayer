@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -312,13 +311,13 @@ Decoupled::createObjects(Simulation& System)
 
   // Methane
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 -8");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   methCell=cellIndex-1;
 
   // Inner Al layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 -17 -18 "
 				 "(-3:4:-5:6:7:8) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   return;
 }

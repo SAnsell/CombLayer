@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -238,27 +237,27 @@ VacTank::createObjects(Simulation& System)
 
   // Main voids
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Steel layer
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -12 -17 -118 (2:7)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   // Nose cone
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 -108");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Nose Steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -1 -118 108");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   // window
   Out=ModelSupport::getComposite(SMap,buildIndex,"102 -101 -118");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
   addCell("Window",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"102 -118 -12 -17");

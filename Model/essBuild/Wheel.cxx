@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -235,31 +234,31 @@ Wheel::makeShaftObjects(Simulation& System)
 
   // Main body [disk]
   Out=ModelSupport::getComposite(SMap,buildIndex,"-7 5 -6");	  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,mainTemp,Out));
   // Coolant
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 (-5 : 6 2007)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   // steel
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 25 -26 (-15 : 16 2017)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // void
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 35 -36 (-25 : 26 2027)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,mainTemp,Out));
 
   // shaft
   Out=ModelSupport::getComposite(SMap,buildIndex," -2007 6 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainShaftMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainShaftMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2017 2007 16 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2027 2017 26 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cladShaftMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2037 2027 36 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2037 36 -2006 ");
   addOuterSurf("Shaft",Out);  
@@ -352,7 +351,7 @@ Wheel::createObjects(Simulation& System)
 	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -17M 5 -6 ");
       else
 	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -17M 15 -16 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       matNum[matTYPE[i]],mainTemp,Out));  
       SI+=10;
     }
@@ -370,7 +369,7 @@ Wheel::createObjects(Simulation& System)
 	    {
 	      Out=ModelSupport::getComposite(SMap,frontIndex,backIndex,
 					     " 7 -7M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
+	      System.addCell(MonteCarlo::Object(cellIndex++,heMat,
 					       mainTemp,Out+TopBase));
 	    }
 	  ELog::EM<<"++ Index = "<<buildIndex<<ELog::endDiag;
@@ -380,55 +379,55 @@ Wheel::createObjects(Simulation& System)
     }
   // Final coolant section [ UNACCEPTABLE JUNK CELL]
   Out=ModelSupport::getComposite(SMap,buildIndex," 6 -116 -517 1017 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -5 115 -517 1017 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,frontIndex,
 				 "-16 6 -1017 7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,frontIndex,
 				 "15 -5 -1017 7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
 
   
   // Back coolant:
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," 7M -517 5 -6");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-527 517 115 -116");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-527 1027 -16 116");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-527 1027 15 -115");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // Join Main sections:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1027 1017 -26 116");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1027 1017 25 -115");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // Inner Main sections:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1017 7 -26 16");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1017 7 25 -15");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,mainTemp,Out));
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "7 35 -36 -537 (-25:26:1027) (-125:126:527)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-537 35 -36");	
   addOuterSurf("Wheel",Out);

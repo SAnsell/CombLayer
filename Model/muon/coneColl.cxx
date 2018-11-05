@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -172,15 +171,15 @@ coneColl::createObjects(Simulation& System)
   addOuterSurf(Out);
   addBoundarySurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex,"17 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,tubeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,tubeMat,0.0,Out));
 
      // collimator material
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17 27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
     // hole
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   return;
 }

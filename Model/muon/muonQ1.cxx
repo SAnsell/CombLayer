@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -285,7 +284,7 @@ muonQ1::createObjects(Simulation& System)
   addBoundarySurf(Out);
   Out1=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-13:14:-15:16:111:112:113:114)");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out+Out1));  
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out+Out1));  
 
     // Copper
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -304,32 +303,32 @@ muonQ1::createObjects(Simulation& System)
 				 "(-31:32:-44:14:-45:46)");
   
   // This is junk!!
-  System.addCell(MonteCarlo::Qhull(cellIndex++,copperMat,
+  System.addCell(MonteCarlo::Object(cellIndex++,copperMat,
 				   0.0,Out+Out1+Out2+Out3+Out4+Out5));  
 
 
     // Inserts
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 33 -34 36 -16 ");    
-  System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
+  System.addCell(MonteCarlo::Object(cellIndex++,insertMat,0.0,Out));    
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 33 -34 -35 15 ");    
-  System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
+  System.addCell(MonteCarlo::Object(cellIndex++,insertMat,0.0,Out));    
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 13 -43 45 -46 ");    
-  System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
+  System.addCell(MonteCarlo::Object(cellIndex++,insertMat,0.0,Out));    
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -32 44 -14 45 -46 ");    
-  System.addCell(MonteCarlo::Qhull(cellIndex++,insertMat,0.0,Out));    
+  System.addCell(MonteCarlo::Object(cellIndex++,insertMat,0.0,Out));    
 
     // Void
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 23 -24 25 -26 ");
   
   // This is junk!!
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,
 				   Out+Out2+Out3+Out4+Out5));    
   return;
 }

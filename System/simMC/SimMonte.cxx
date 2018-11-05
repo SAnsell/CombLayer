@@ -66,7 +66,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "neutMaterial.h"
 #include "DBNeutMaterial.h"

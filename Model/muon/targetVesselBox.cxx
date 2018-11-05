@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -183,11 +182,11 @@ targetVesselBox::createObjects(Simulation& System)
   addOuterSurf(Out);
   addBoundarySurf(Out);
   Out1=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15:16) ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out+Out1));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out+Out1));
 
     // hole
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   return;
 }

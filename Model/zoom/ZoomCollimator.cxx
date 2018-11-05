@@ -67,7 +67,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -286,19 +285,19 @@ ZoomCollimator::createObjects(Simulation& System)
   // Outer steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 113 3 -114 "
 				 " -4 5 -6  (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Outer Wax
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 (-113:-3) 213 203  5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 (114:4) -214 -204  5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
 
   // Inner void:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
 
   return;

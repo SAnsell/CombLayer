@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -195,7 +194,7 @@ ZMonitorInsert::createObjects(Simulation& System)
   for(size_t i=0;i<nSegments;i++)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,GI," 7 -17 3 -4 5 -25 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0,Out));
       addOuterUnionSurf("Full",Out);
       GI+=20;
     }      

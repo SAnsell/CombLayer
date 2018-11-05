@@ -63,7 +63,6 @@
 #include "varBlock.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -290,12 +289,12 @@ ZoomStack::createObjects(Simulation& System)
     {
       // Path Void
       Out=FB+ModelSupport::getComposite(SMap,index," 503 -504 505 -506 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       // Main material
       Out=Sides+basePlate;
       Out+=ModelSupport::getComposite(SMap,index," -14 (-4 : 22) ");
       Out+=ModelSupport::getComposite(SMap,index," (-503:504:-505:506) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       Items[i].getVar<int>("Mat"),0.0,Out));
       
       
@@ -303,7 +302,7 @@ ZoomStack::createObjects(Simulation& System)
       Out=Sides+ModelSupport::getComposite(SMap,index," 4 (14 : -22) ");
       Out+=ModelSupport::getComposite(SMap,index," -34 (-24 : 32) ");
       basePlate=ModelSupport::getComposite(SMap,index," 24 (34 : -32) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
       index+=50;
     }

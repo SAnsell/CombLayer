@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -294,59 +293,59 @@ IMatShutter::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -100 13M -14M  15M  -16M"
 				 "  ( -3M : 4M : -5M : 6M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -100 23M -24M  25M  -26M"
 				 " ( -13M : 14M : -15M : 16M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -100 33M -34M  35M  -36M"
 				 " ( -23M : 24M : -25M : 26M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " -125 126 13 -14 51M -100 "
 				 " ( -33M : 34M : -35M : 36M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   // Back section
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 100 -17 13M -14M  15M  -16M"
 				 "  ( -3M : 4M : -5M : 6M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 100 -17 23M -24M  25M  -26M"
 				 " ( -13M : 14M : -15M : 16M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "  100 -17 33M -34M  35M  -36M"
 				 " ( -23M : 24M : -25M : 26M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " -225 226 113 -114 100 -17 "
 				 " ( -33M : 34M : -35M : 36M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   // Inner voids
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -17 3M -4M 5M -6M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Boron mask:
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -125 126 13 -14 -51M  "
 				 " (-53M : 54M : -55M : 56M) ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,maskMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,maskMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -51M 53M -54M 55M -56M ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 				 
 
   return;

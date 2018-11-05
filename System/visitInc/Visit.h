@@ -56,7 +56,7 @@ class Visit
   Geometry::Vec3D Origin;     ///< Origin
   Geometry::Vec3D XYZ;        ///< XYZ extent
 
-  Triple<long int> nPts;              ///< Number x points
+  std::array<long int,3> nPts;        ///< Number x/y/z points
   boost::multi_array<double,3> mesh;  ///< results mesh
 
   static long int procDist(double&,const double,double,double&);

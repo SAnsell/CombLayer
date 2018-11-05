@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -399,16 +398,16 @@ FuelElement::createObjects(Simulation& System)
 
   // Outer plates:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -23 25 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 24 -4 25 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   int surfOffset(buildIndex+100);
   // Front water plate
   Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 				 " 1 -21M 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,watMat,0.0,Out));
   waterCells.push_back(cellIndex-1);
   //  const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
   // First Point
@@ -429,14 +428,14 @@ FuelElement::createObjects(Simulation& System)
 	  // Fuel
 	  Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					 " 11M -12M 13 -14 15 -16 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,fuelMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,fuelMat,0.0,Out));
 	  fuelCells.push_back(cellIndex-1);
 	  fuelCentre.push_back(plateCentre(i));
 	  // Cladding
 	  Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					 " 21M -22M 23 -24 25 -26 "
 					 " (-11M:12M:-13:14:-15:16) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 	  
 	  // Water (def material) [ one + 
 
@@ -451,7 +450,7 @@ FuelElement::createObjects(Simulation& System)
 	      Out=ModelSupport::getComposite(SMap,buildIndex,surfOffset,
 					     " 22M -121M 23 -24 25 -26 ");
 	    }
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,watMat,0.0,Out));
 	  waterCells.push_back(cellIndex-1);
 
 	  surfOffset+=100;      
@@ -465,25 +464,25 @@ FuelElement::createObjects(Simulation& System)
     {
       // Holder:
       Out=ModelSupport::getComposite(SMap,buildIndex,"23 -24 -37 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
       // Water in space
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 23 -24 26 -6 37 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,watMat,0.0,Out));
     }
   else
     {
       // ONLY Water in space
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 23 -24 26 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,watMat,0.0,Out));
     }
   topCell=cellIndex-1;
 
   // -------- BASE -----------------
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -25 -47 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,watMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -25 47 3 -4 1 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   return;
 }
@@ -516,7 +515,7 @@ FuelElement::addWaterExclude(Simulation& System,
   std::vector<int>::const_iterator vc;
   for(vc=waterCells.begin();vc!=waterCells.end();vc++)
     {
-      MonteCarlo::Qhull* OPtr=System.findQhull(*vc);
+      MonteCarlo::Object* OPtr=System.findObject(*vc);
       if (OPtr && OPtr->isValid(Pt))
 	{
 	  OPtr->addSurfString(ExcStr);

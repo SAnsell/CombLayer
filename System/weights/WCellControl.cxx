@@ -67,6 +67,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "vertexCalc.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "PositionSupport.h"
@@ -403,7 +404,7 @@ WCellControl::cTrack(const Simulation& System,
                       const std::vector<long int>& index,
                       CellWeight& CTrack)
   /*!
-    Calculate a specific trac from sourcePoint to  postion
+    Calculate a specific track from sourcePoint to postion
     \param System :: Simulation to use    
     \param initPlane :: Plane for outgoing track
     \param Pts :: Point on track
@@ -430,6 +431,7 @@ WCellControl::cTrack(const Simulation& System,
 void
 WCellControl::calcCellTrack(const Simulation& System,
                             const Geometry::Cone& curCone,
+			    const std::vector<int>& cellVec,
                             CellWeight& CTrack)
 /*!
   Calculate a given cone : calculate those cells
@@ -445,18 +447,17 @@ WCellControl::calcCellTrack(const Simulation& System,
   CTrack.clear();
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
-  /*
-    for(const int cellN : cellVec)
+  
+  for(const int cellN : cellVec)
     {
-    const MonteCarlo::Object* CellPtr=System.findObject(cellN);
-    if (CellPtr && CellPtr->getMat())
-    {
-    index.push_back(CellPtr->getName());  // this should be cellN ??
-    Pts.push_back(CellPtr->getCofM());
+      const MonteCarlo::Object* CellPtr=System.findObject(cellN);
+      if (CellPtr && CellPtr->getMat())
+	{
+	  index.push_back(CellPtr->getName());  // this should be cellN ??
+	  Pts.push_back(ModelSupport::calcCOFM(*CellPtr));
+	}
     }
-    }
-    cTrack(System,curPlane,Pts,index,CTrack);
-  */
+  //  cTrack(System,curCone,Pts,index,CTrack);
   return;
 }
 
@@ -485,7 +486,7 @@ WCellControl::calcCellTrack(const Simulation& System,
       if (CellPtr && CellPtr->getMat())
         {
           index.push_back(CellPtr->getName());  // this should be cellN ??
-	  //          Pts.push_back(CellPtr->getCofM());
+	  Pts.push_back(ModelSupport::calcCOFM(*CellPtr));
         }
     }
 

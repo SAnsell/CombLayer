@@ -72,7 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExcludedComp.h"
 #include "LinkWrapper.h"

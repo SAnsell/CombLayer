@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -202,7 +201,7 @@ WedgeFlightLine::buildWedges(Simulation& System,
         "("+wedges[i]->getLinkString(2)+":"+
         wedges[i]->getLinkString(4)+")"+prevWedge;
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
                                        MatInfo.first,MatInfo.second,
                                        Out+baseOut));
       prevWedge=" ("+wedges[i]->getLinkString(2)+":"+
@@ -213,7 +212,7 @@ WedgeFlightLine::buildWedges(Simulation& System,
   Out=ModelSupport::getComposite(SMap,index-1,buildIndex," -1 -4M ")
     +prevWedge;
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,
+  System.addCell(MonteCarlo::Object(cellIndex++,
                                    MatInfo.first,MatInfo.second,
                                    Out+baseOut));
   

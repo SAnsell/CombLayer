@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -256,7 +255,7 @@ SwimingPool::createObjects(Simulation& System)
 				 " (17:3) (-18:-4) 5 -6 ");
 
   //  Out+=RG.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   addCell("Water",cellIndex-1);
   addOuterSurf(Out);
   

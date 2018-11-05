@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -244,25 +243,25 @@ HeShield::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
   addCell("Main",cellIndex-1);
 
   // cd void
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex,
 				 " -1 101  103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,buildIndex," -1 101 113 -114 115 -116 (-103:104:-105:106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cdMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cdMat,0.0,Out));
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,buildIndex," -1 111 3 -4 5 -6 (-113:114:-115:116) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cdMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cdMat,0.0,Out));
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,buildIndex," -111 201 3 -4 5 -6 (-113:114:-115:116) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,polyMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -2 3 -4 5 -6 ");

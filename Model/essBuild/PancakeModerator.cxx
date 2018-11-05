@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -216,7 +215,7 @@ PancakeModerator::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
   addCell("MainVoid",cellIndex-1);
 
   clearRules();

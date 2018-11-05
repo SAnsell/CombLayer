@@ -58,7 +58,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -236,21 +235,21 @@ BoxModerator::createObjects(Simulation& System)
   if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -15 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+HR.display()));
     }
 
   if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+HR.display()));
       // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
+      /*      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
       HeadRule bfHR;
       bfHR.procString(LeftUnit->getSideRule());
       bfHR.addUnion(RightUnit->getSideRule());
       bfHR.addUnion(MidH2->getSideRule());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
     }
 
   
@@ -259,7 +258,7 @@ BoxModerator::createObjects(Simulation& System)
   const std::string Exclude=sideRule;//ContainedComp::getExclude();
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
   setCell("ambientVoid", cellIndex-1);
 
   clearRules();

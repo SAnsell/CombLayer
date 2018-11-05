@@ -56,7 +56,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -206,12 +205,12 @@ NiGuide::createObjects(Simulation& System,
 
   // NiGuide
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 22 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 22 -2 11 -12 13 -14  (-3:4:-5:6)");
   Out+=CC.getContainer(); /// Con esto se incluye tooooodo lo que hay en el interior de esta celda en la guia
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 22 -2 11 -12 13 -14" ); /** Hay que añadir una superficie externa*/

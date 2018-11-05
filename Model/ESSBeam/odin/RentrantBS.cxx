@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -256,45 +255,45 @@ RentrantBS::createObjects(Simulation& System)
   
   // Inner cylinder :
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 -107");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 -117 107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6 117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
 
   // innter void + next
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -201 -207");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111 -117 207 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111  117 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
 
   // inner void surround
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -211 -217 207 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
 
   // extra concrete
   Out=ModelSupport::getComposite(SMap,buildIndex,"111 -211  217 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
 
   // === MAin
   // Steel section
   Out=ModelSupport::getComposite(SMap,buildIndex,"201 -301 -207");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));  
 
 
   // extra concrete
   Out=ModelSupport::getComposite(SMap,buildIndex,"211 -301 3 -4 5 -6 207 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
 
   // extra concrete
   Out=ModelSupport::getComposite(SMap,buildIndex,"301 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);

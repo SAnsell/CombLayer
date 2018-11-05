@@ -42,22 +42,18 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "SurInter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -73,6 +69,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "FixedOffset.h"
 #include "gridUnit.h"
 #include "hexUnit.h"
 #include "ReflectRods.h"
@@ -82,7 +79,7 @@ namespace ts1System
 
 ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+std::to_string(index),0),
+  attachSystem::FixedOffset(Key+std::to_string(index),0),
   baseName(Key),populated(0),
   topSurf(0),baseSurf(0),RefObj(0)  
   /*!
@@ -93,10 +90,9 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
 {}
 
 ReflectRods::ReflectRods(const ReflectRods& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  baseName(A.baseName),
-  populated(A.populated),
-  zAngle(A.zAngle),xyAngle(A.xyAngle),outerMat(A.outerMat),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  baseName(A.baseName),populated(A.populated),
+  outerMat(A.outerMat),
   innerMat(A.innerMat),linerMat(A.linerMat),HexHA(A.HexHA),
   HexHB(A.HexHB),HexHC(A.HexHC),topCentre(A.topCentre),
   baseCentre(A.baseCentre),radius(A.radius),
@@ -120,11 +116,9 @@ ReflectRods::operator=(const ReflectRods& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
-      zAngle=A.zAngle;
-      xyAngle=A.xyAngle;
       outerMat=A.outerMat;
       innerMat=A.innerMat;
       linerMat=A.linerMat;
@@ -232,8 +226,7 @@ ReflectRods::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ReflectRods","populate");
 
-  zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
+  FixedOffset::populate(baseName,Control);
   
   centSpc=Control.EvalPair<double>(keyName,baseName,"CentSpace");
   radius=Control.EvalPair<double>(keyName,baseName,"Radius");
@@ -262,7 +255,7 @@ ReflectRods::createUnitVector(const attachSystem::FixedComp& FC)
 
   // Origin is in the wrong place as it is at the EXIT:
   FixedComp::createUnitVector(FC);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   HexHA=X*cos(M_PI*60.0/180.0)-Y*sin(M_PI*60.0/180.0);
   HexHB=X;

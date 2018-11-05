@@ -56,7 +56,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -215,11 +214,11 @@ GuideBox::createObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 3 -4 5 -6 ");
   Out+=boundSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addBoundarySurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addBoundaryUnionSurf(Out);
 
   // Inner boundary surface [For insert devices]
@@ -228,7 +227,7 @@ GuideBox::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-2 7 3 -4 5 -6 (-13:14:-15:16)");
   Out+=boundSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ");
   Out+=boundSurf;

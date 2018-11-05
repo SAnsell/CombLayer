@@ -93,7 +93,6 @@
 #include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "ModeCard.h"

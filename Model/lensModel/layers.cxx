@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -357,7 +356,7 @@ layers::createObjects(Simulation& System,
 	Out+=ModelSupport::getComposite(SMap,buildIndex+(i+1)*10,
 					"(-203:204:-205:206) ");
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       wedgeLinerMat[uI],0.0,Out));
     }
   
@@ -368,7 +367,7 @@ layers::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,"105 -106 -107 ");  
   Out+=CS.getTopExclude();
   Out+="#("+Wedge+")";
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   //  FC.addInsertCell(cellIndex-1);
   PA.addAllInsertCell(cellIndex-1);
 
@@ -378,14 +377,14 @@ layers::createObjects(Simulation& System,
   Out+="#("+Wedge+")";
   FC.addInsertCell(cellIndex);
   PA.addInsertCell("line",cellIndex);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // DECOUPLER:
   Out=ModelSupport::getComposite(SMap,buildIndex,"125 -126 -127 (-115 : 116 : 117) ");
   //				 "(-71 : 72 :-73 : 74 : -115 )");
   Out+=CS.getExclude()+CS.getHeadExclude();
   Out+="#("+Wedge+")";
-  System.addCell(MonteCarlo::Qhull(cellIndex++,DCMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,DCMat,0.0,Out));  
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
@@ -393,7 +392,7 @@ layers::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,"135 -136 -137 (-125 : 126 : 127)");
   // (56 : -71 : 72 : -73 : 74 : -125)");    
   Out+=CS.getExclude()+CS.getHeadExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,leadMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,leadMat,0.0,Out));
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
@@ -401,7 +400,7 @@ layers::createObjects(Simulation& System,
   Out= ModelSupport::getComposite(SMap,buildIndex,"145 -146 -147 "
 				  "(-135 : 136 : 137) ");
   Out+=CS.getExclude()+CS.getHeadExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,bPolyMat,0.0,Out));  
+  System.addCell(MonteCarlo::Object(cellIndex++,bPolyMat,0.0,Out));  
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
@@ -409,7 +408,7 @@ layers::createObjects(Simulation& System,
   Out= ModelSupport::getComposite(SMap,buildIndex,"155 -156 -157 "
 				  "(-145 : 146 : 147) ");
   Out+=CS.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,epoxyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,epoxyMat,0.0,Out));
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
@@ -417,13 +416,13 @@ layers::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -167 "
 				 "(-155 : 156 : 157) ");
   Out+=CS.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outPolyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outPolyMat,0.0,Out));
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 
   // OUT VOID
   Out=ModelSupport::getComposite(SMap,buildIndex,"165 -166 -177 167");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   FC.addInsertCell(cellIndex-1);
   PA.addInsertCell("line",cellIndex-1);
 

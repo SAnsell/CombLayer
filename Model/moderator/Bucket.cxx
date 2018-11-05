@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -195,7 +194,7 @@ Bucket::createObjects(Simulation& System)
 
   // Inner Void
   Out+=" "+ContainedComp::getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
 
   return;
 }

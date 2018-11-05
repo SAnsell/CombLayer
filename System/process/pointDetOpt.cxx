@@ -53,7 +53,6 @@
 #include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
@@ -65,12 +64,12 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "vertexCalc.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
 #include "pointDetOpt.h"
 
-#include "debugMethod.h"
 
 namespace ModelSupport
 {
@@ -121,16 +120,19 @@ pointDetOpt::createObjAct(const Simulation& ASim)
   Simulation::OTYPE::const_iterator vc;
   for(vc=Cells.begin();vc!=Cells.end();vc++)
     {
-      ELog::EM<<"Not ignoring CofM -- get from objectRegister?"<<ELog::endCrit;
-      //      if (!vc->second->isPlaceHold())
-      //	OA.addUnit(ASim,vc->first,vc->second->getCofM());
-
+      if (!vc->second->isPlaceHold())
+	{
+	  const Geometry::Vec3D CofM=
+	    ModelSupport::calcCOFM(*(vc->second));
+          OA.addUnit(ASim,vc->first,CofM);
+         }
     }
   return;
 }
 
 void
-pointDetOpt::addTallyOpt(const int tallyN,const Simulation& ASim,
+pointDetOpt::addTallyOpt(const int tallyN,
+			 const Simulation& ASim,
 			 physicsSystem::PhysicsCards& PC)
   /*!
     Adds an importance card to the physics of type PD

@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "DefPhysics.h"
 #include "MainProcess.h"
 #include "MainInputs.h"

@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -298,11 +297,11 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
       for(size_t i=0;i<NBolts;i++)
         {
           Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
           addCell("OuterBolts",cellIndex-1);
           
           Out=ModelSupport::getComposite(SMap,boltIndex," 3 -13 7 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
+          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,
                                            Out+FBStr+EdgeStr));
 	  addCell("OuterWall",cellIndex-1);
           boltIndex+=10;
@@ -311,7 +310,7 @@ TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
   else
     {
       // If here need fron / back angles
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
       addCell("OuterWall",cellIndex-1);
     }
 
@@ -378,19 +377,19 @@ TwinBase::createLineBolts(Simulation& System,const int surfOffset,
       for(size_t i=0;i<NBolts;i++)
         {
           Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
           addCell("OuterBolts",cellIndex-1);
 
           Out=ModelSupport::getComposite(SMap,boltIndex," -8 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+          System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
           addCell("OuterBolts",cellIndex-1);
           
           Out=ModelSupport::getComposite(SMap,boltIndex," 5 -15  7 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr+leftEdgeStr));
+          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr+leftEdgeStr));
 	  addCell("OuterWall",cellIndex-1);
           
           Out=ModelSupport::getComposite(SMap,boltIndex," 5 -15 8 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr+rightEdgeStr));
+          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+FBStr+rightEdgeStr));
 	  addCell("OuterWall",cellIndex-1);
           boltIndex+=10;
        }
@@ -398,7 +397,7 @@ TwinBase::createLineBolts(Simulation& System,const int surfOffset,
   else
     {
       // If here need fron / back angles
-      //      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
+      //      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
       //      addCell("OuterWall",cellIndex-1);
     }
 
@@ -419,25 +418,25 @@ TwinBase::createObjects(Simulation& System)
 
   // Main void
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 (-17:-18)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
   
   // Main casing [inside bolt layer]
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"1 -11 23 -24 (5:-27) (-6:-28) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("FrontCase",cellIndex-1);
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"12 -2 23 -24 (5:-27) (-6:-28)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("BackCase",cellIndex-1);
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
                                  "11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addCell("EdgeCase",cellIndex-1);
 
   // OUTER RING :

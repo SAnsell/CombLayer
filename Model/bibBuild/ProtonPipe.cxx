@@ -56,7 +56,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -209,17 +208,17 @@ ProtonPipe::createObjects(Simulation& System)
 
   // Part without anthing in middle [separated as very long otherwize]xs
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Inner wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 7 -17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerWallMat,0.0,Out));
 
   // Outer wall
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -2 7 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -17");

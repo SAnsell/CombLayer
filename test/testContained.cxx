@@ -51,7 +51,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 // #include "FixedComp.h"

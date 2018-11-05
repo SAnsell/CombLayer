@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -229,10 +228,10 @@ BeRefInnerStructure::createObjects(Simulation& System,
   if (CM)
     {
       lowBeCell=CM->getCell("lowBe");
-      LowBeObj=System.findQhull(lowBeCell);
+      LowBeObj=System.findObject(lowBeCell);
       
       topBeCell=CM->getCell("topBe");
-      TopBeObj=System.findQhull(topBeCell);
+      TopBeObj=System.findObject(topBeCell);
     }
   if (!LowBeObj)
     throw ColErr::InContainerError<int>(topBeCell,"Reflector lowBe cell not found");
@@ -249,19 +248,19 @@ BeRefInnerStructure::createObjects(Simulation& System,
   Out = ModelSupport::getComposite(SMap, buildIndex, " -5 ");
   HR.procString(lowBeStr);
   HR.makeComplement();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterDiscMat,0,
+  System.addCell(MonteCarlo::Object(cellIndex++,waterDiscMat,0,
                                    Out+sideBeStr+HR.display()));
   
   Out = ModelSupport::getComposite(SMap, buildIndex, " 5 -15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscWallMat, 0,
+  System.addCell(MonteCarlo::Object(cellIndex++, waterDiscWallMat, 0,
                                    Out+sideBeStr));
 
   Out = ModelSupport::getComposite(SMap, buildIndex, " -7 15");
-  System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat, 0,
+  System.addCell(MonteCarlo::Object(cellIndex++, BeMat, 0,
                                    Out+Reflector.getLinkString(10)));
   
   Out = ModelSupport::getComposite(SMap,buildIndex," -17 7 15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,BeWallMat,0,
+  System.addCell(MonteCarlo::Object(cellIndex++,BeWallMat,0,
                                    Out+Reflector.getLinkString(10)));
   
   Out = ModelSupport::getComposite(SMap,buildIndex," -17 15 ");
@@ -276,19 +275,19 @@ BeRefInnerStructure::createObjects(Simulation& System,
   Out = ModelSupport::getComposite(SMap,buildIndex," 6 ");
   HR.procString(topBeStr);
   HR.makeComplement();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterDiscMat,0,
+  System.addCell(MonteCarlo::Object(cellIndex++,waterDiscMat,0,
                                    Out+sideBeStr+HR.display()));
   
   Out = ModelSupport::getComposite(SMap,buildIndex," 16 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterDiscWallMat,
+  System.addCell(MonteCarlo::Object(cellIndex++,waterDiscWallMat,
                                    0,Out+sideBeStr));
   
   Out = ModelSupport::getComposite(SMap,buildIndex," -7 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat,0,
+  System.addCell(MonteCarlo::Object(cellIndex++, BeMat,0,
                                    Out+Reflector.getLinkString(11)));
   
   Out = ModelSupport::getComposite(SMap, buildIndex, " -17 7 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,BeWallMat,0,
+  System.addCell(MonteCarlo::Object(cellIndex++,BeWallMat,0,
                                    Out+Reflector.getLinkString(11)));
   
   Out = ModelSupport::getComposite(SMap,buildIndex," -17 -16 ");

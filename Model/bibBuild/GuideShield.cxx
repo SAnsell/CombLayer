@@ -66,7 +66,6 @@
 #include "inputParam.h"
 #include "ReadFunctions.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -236,7 +235,7 @@ GuideShield::createObjects(Simulation& System,
       Out+=InnerFC.getLinkString(innerSide);
       Out+=OuterFC.getLinkString(outerSide);
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out));
       SI+=10;
     }
   if (nLayers)

@@ -68,7 +68,6 @@
 #include "ReadFunctions.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -239,7 +238,7 @@ BulkModule::createObjects(Simulation& System,
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
       else
 	OutX=CC.getExclude();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out+OutX));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
       RI+=10;
     }
   
@@ -319,7 +318,7 @@ BulkModule::addFlightUnit(Simulation& System,
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
     {
-      MonteCarlo::Qhull* OPtr=System.findQhull(buildIndex+i+1);
+      MonteCarlo::Object* OPtr=System.findObject(buildIndex+i+1);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(buildIndex+i+1,"layerCells");
       OPtr->addSurfString(cx.str());
@@ -333,7 +332,7 @@ BulkModule::addFlightUnit(Simulation& System,
 				 buildIndex+10*static_cast<int>(nLayer-1),
 				 " 7 -7M ");
   // Dividing surface ?
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+cx.str()));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+cx.str()));
   return;
 }
 

@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -295,19 +294,19 @@ Rabbit::createObjects(Simulation& System)
 
   // Add sample
   Out=ModelSupport::getComposite(SMap,buildIndex," -1007 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
 
   // Capsule
   Out=ModelSupport::getComposite(SMap,buildIndex
 ,				 "-507 (-508:501) (-509:-502) 1007 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"501 -502 507 -517 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,capsuleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,capsuleMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"-501 508 -518");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,capsuleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,capsuleMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"502 509 -519");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,capsuleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,capsuleMat,0.0,Out));
 
   const std::string capExclude=
     ModelSupport::getComposite(SMap,buildIndex," (507:508:509) ");
@@ -320,11 +319,11 @@ Rabbit::createObjects(Simulation& System)
       else
 	Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7M ")+
 	  capExclude;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out));
       RI+=10;
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,RI," -1 11 -7M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,capMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,capMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,RI," -2 11 -7M");
   addOuterSurf(Out);

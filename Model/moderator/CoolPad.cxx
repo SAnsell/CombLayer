@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -222,7 +221,7 @@ CoolPad::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ");
   Out+=hotSurf.display();
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,Mat,0.0,Out));
   addOuterSurf(Out);
 
 

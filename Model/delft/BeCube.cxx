@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -216,7 +215,7 @@ BeCube::createObjects(Simulation& System,
     Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
   addOuterSurf(Out);
   Out+=ExcludeString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   
   return;
 }

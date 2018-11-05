@@ -64,7 +64,6 @@
 #include "BnId.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"

@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -265,16 +264,16 @@ HfElement::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
 				     " 1 -2 23M -24M 25M -26M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,cIndex,controlIndex,
 				     " 11 -12 3M -4M 5M -6M ");
       ContainedGroup::addOuterUnionSurf("Rod",Out);      
-      System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,cIndex,buildIndex,
 				     " 21 -22 23M -24M 25M -26M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,cIndex,"(-1:2) (-21:22)");
       addWaterExclude(System,cutPos[i],Out);

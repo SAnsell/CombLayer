@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WCellControl.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ class WCellControl : public WeightControl
   void calcCellTrack(const Simulation&,const Geometry::Plane&,
 		     const std::vector<int>&,CellWeight&);
   void calcCellTrack(const Simulation&,const Geometry::Cone&,
-		     CellWeight&);
+		     const std::vector<int>&,CellWeight&);
 
 
  public:

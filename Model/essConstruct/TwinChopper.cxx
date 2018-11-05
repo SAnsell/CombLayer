@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -152,14 +151,14 @@ TwinChopper::buildPorts(Simulation& System)
     std::to_string(-backFlange->getSurf("innerRing"));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerFSurf));
   addCell("PortVoid",cellIndex-1);
   IPA->addInnerCell(getCell("PortVoid",0));
   IPA->createAll(System,Beam,0,Out+innerFSurf);
 
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+innerBSurf));
   addCell("PortVoid",cellIndex-1);
 
   IPB->addInnerCell(getCell("PortVoid",1));

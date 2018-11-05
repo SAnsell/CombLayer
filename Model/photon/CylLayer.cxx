@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -273,13 +272,13 @@ CylLayer::createObjects(Simulation& System)
       else 
 	Out=ModelSupport::getComposite(SMap,subIndex," -7 ");
 	    
-      System.addCell(MonteCarlo::Qhull(cellIndex++,LI.Mat[0],LI.Temp[0],
+      System.addCell(MonteCarlo::Object(cellIndex++,LI.Mat[0],LI.Temp[0],
 				       Out+layOut));
       // Inner bound cells:
       for(size_t i=1;i<LI.nDisk-1;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,subIndex," 7 -17 ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,LI.Mat[i],LI.Temp[i],Out+layOut));
 	  subIndex+=10;
 	}
@@ -288,7 +287,7 @@ CylLayer::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite(SMap,subIndex," 7 ");
 	  Out+=outerStruct.display();
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,LI.Mat.back(),LI.Temp.back(),
 			  Out+layOut));
 	}

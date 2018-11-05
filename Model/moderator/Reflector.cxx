@@ -61,7 +61,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -347,7 +346,7 @@ Reflector::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
   addOuterSurf(Out);
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   TarObj->addInsertCell(cellIndex-1);
 
   VacObj->addInsertCell(cellIndex-1);

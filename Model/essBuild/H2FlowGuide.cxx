@@ -66,7 +66,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -253,7 +252,7 @@ H2FlowGuide::createObjects(Simulation& System,
   if (CM)
     {
       innerCell=CM->getCell("Inner");
-      InnerObj=System.findQhull(innerCell);
+      InnerObj=System.findObject(innerCell);
     }
   if (!InnerObj)
     throw ColErr::InContainerError<int>
@@ -266,17 +265,17 @@ H2FlowGuide::createObjects(Simulation& System,
   // base
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 ");
   wallExclude.procString(Out); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -13 14 ");
   wallExclude.addUnion(Out); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   // arm
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 ");
   wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());

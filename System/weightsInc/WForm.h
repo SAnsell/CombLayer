@@ -24,7 +24,7 @@
 
 namespace MonteCarlo
 {
-  class Qhull;
+  class Object;
 }
 
 /*!

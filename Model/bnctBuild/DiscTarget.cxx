@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -208,7 +207,7 @@ DiscTarget::createObjects(Simulation& System)
   for(size_t i=0;i<NLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,DI-10,DI,"1 -1M -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out));
       if (maxRad-radius[i] >Geometry::zeroTol)
 	{
 	  double workRadius(radius[i]);
@@ -220,7 +219,7 @@ DiscTarget::createObjects(Simulation& System)
 		{
 		  Out=ModelSupport::getComposite(SMap,DI-10,DI,"1 -1M  ");
 		  Out+=ModelSupport::getComposite(SMap,SI,WI,"  ");
-		  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[j],0.0,Out));
+		  System.addCell(MonteCarlo::Object(cellIndex++,mat[j],0.0,Out));
 		  WI=SI;
 		  workRadius=radius[j];
 		}
@@ -232,7 +231,7 @@ DiscTarget::createObjects(Simulation& System)
 		{
 		  Out=ModelSupport::getComposite(SMap,DI-10,DI,"1 -1M ");
 		  Out+=ModelSupport::getComposite(SMap,SI,WI," 7M -7  ");
-		  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[j],0.0,Out));
+		  System.addCell(MonteCarlo::Object(cellIndex++,mat[j],0.0,Out));
 		  WI=SI;
 		  workRadius=radius[j];
 		}

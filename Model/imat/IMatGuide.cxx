@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -326,31 +325,31 @@ IMatGuide::createObjects(Simulation& System,
 
   // Inner void cell:
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Glass layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-2 13 -14 15 -16 (-3:4:-5:6) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
   // Box layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 23 -24 25 -26 "
 				 "(-13:14:-15:16) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,boxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,boxMat,0.0,Out));
 
   // Void layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 33 -34 35 -36 "
 				 "(-23:24:-25:26) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Fe layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 43 -44 45 -46 "
 				 "(-33:34:-35:36) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2  53 -54 55 -56 "
 				 "(-43:44:-45:46) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
 
   

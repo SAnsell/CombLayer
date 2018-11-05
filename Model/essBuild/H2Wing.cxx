@@ -67,7 +67,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -510,16 +509,16 @@ H2Wing::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	  CellMap::setCell("Inner",cellIndex-1);
 	}
       else
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
 				       OutA+InnerA.display()+CutA));
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
 					   OutB+InnerB.display()+CutB));
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
 					   OutC+InnerC.display()+CutC));
 	}
       

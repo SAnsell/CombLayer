@@ -79,6 +79,7 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
+#include "vertexCalc.h"
 #include "Torpedo.h"
 
 
@@ -240,10 +241,9 @@ Torpedo::calcConvex(Simulation& System)
   MonteCarlo::Object* VC=System.findObject(getCell("Void"));
   if (VC)
     {
-      VC->calcVertex();
-      std::vector<Geometry::Vec3D> PT=VC->getVertex();
-      const std::string dSurf=getInnerSurf();
-      vBox.setPoints(VC->getVertex());
+      const std::vector<Geometry::Vec3D> PT=
+	ModelSupport::calcVertexPoints(*VC);
+      vBox.setPoints(PT);
       vBox.createAll(1);
     }
   return;
@@ -299,7 +299,7 @@ Torpedo::createObjects(Simulation& System)
   dSurf=getInnerSurf();
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 ");
   // ADD INNER SURF HERE:
-  CellMap::makeCell(System,"Void",cellIndex++,0,0.0,Out+dSurf));
+  CellMap::makeCell("Void",System,cellIndex++,0,0.0,Out+dSurf);
   
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ")+dSurf;  

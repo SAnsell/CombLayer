@@ -61,7 +61,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -236,7 +235,7 @@ Chicane::createObjects(Simulation& System)
   for(const chicaneUnit& CU : CUnits)
     {
       Out=ModelSupport::getComposite(SMap,CIndex," 1 -2 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,CU.mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,CU.mat,0.0,Out));
       addOuterUnionSurf(Out);
       CIndex+=100;
     }

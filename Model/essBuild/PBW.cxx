@@ -62,7 +62,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -430,117 +429,117 @@ PBW::createObjects(Simulation& System)
   // plug
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76) "); // outer void
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 7 (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
   // proton tube void
   Out=ModelSupport::getComposite(SMap,buildIndex, " -7 12 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex, " -7 1 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatBefore,0.0,Out));
 
   // flange cylinder
   // inner steel
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -71 27 -29 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 72 -12 27 -29 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
   // flange cylinder - inner layer
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 22 -41 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 29 -47 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 42 -71 29 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 72 -62 29 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 62 -61 29 -47 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 61 -32 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 32 -31 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 31 -12 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
   // flange - outer steel
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -41 30 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 47 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 62 -61 47 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 61 -12 30 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
 
   // void inside PBW main cell
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -81 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatBefore,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 82 -12 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
 
   // PBW Al plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 71 -81 27 -87 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 71 -81 87 73 -74 75 -76 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 81 -82 73 -74 75 -76 (-93:94:-95:96)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 82 -72 27 -87 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 82 -72 87 73 -74 75 -76 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   // PBW foil
   Out=ModelSupport::getComposite(SMap,buildIndex, " 81 -101 108 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatBefore,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -107 -102 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " 101 -102 93 -94 95 -96 107");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex, " 102 -82 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMatAfter,0.0,Out));
 
   // cylindrical segment:
   //                      sides
   Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 116 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 -115 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   // central cylindrical segment with water:
   if (std::abs(foilThick-foilWaterThick)>Geometry::zeroTol)
     {
     Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -117 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
     Out=ModelSupport::getComposite(SMap,buildIndex, " 117 -118 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
     Out=ModelSupport::getComposite(SMap,buildIndex, " 118 -108 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
     }
   else // no side Al layers
     {
     Out=ModelSupport::getComposite(SMap,buildIndex, " 107 -108 -101 115 -116 93 -94 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,coolingMat,0.0,Out));
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");

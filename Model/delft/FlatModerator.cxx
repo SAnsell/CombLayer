@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -300,37 +299,37 @@ FlatModerator::createObjects(Simulation& System)
   addOuterSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -8 17 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -8 18 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -18 27 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 -18 28 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 -28 37 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modMat,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modMat,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 -28 38 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 -38 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
   // build Simple case [cylinder]:
   
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 -38 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,gasMat,gasTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,gasMat,gasTemp,Out));
 
   // Cap :
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -8");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   return;
 }

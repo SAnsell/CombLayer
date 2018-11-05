@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -238,44 +237,44 @@ void SkadiHut::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(1 -2 3 -4 5 -6) : (2 -41 -51) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -42 41 -51 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeL1Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeL1Mat,0.0,Out));
   setCell("L1Pipe",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -43 42 -51 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeL2Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeL2Mat,0.0,Out));
   setCell("L2Pipe",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -12 13 -14 15 -16 43 (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L1Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
   setCell("L1",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L1Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
   setCell("FrontWall",cellIndex-1);
   setCell("L1Front",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "11 -22 23 -24 25 -26 43 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L2Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
   setCell("L2",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L2Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
   setCell("L2Front",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "21 -32 33 -34 35 -36 43 (22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L3Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
   setCell("L3",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 33 -34 35 -36 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L3Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
   setCell("L3Front",cellIndex-1); 
 

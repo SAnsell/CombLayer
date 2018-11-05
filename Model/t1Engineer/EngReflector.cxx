@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -379,15 +378,15 @@ EngReflector::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "401 -402 403 -404 405 -406");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,inCutMat,inCutTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,inCutMat,inCutTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-417 415 -416");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,
+  System.addCell(MonteCarlo::Object(cellIndex++,
                             inBWatCutMat,inBWatCutTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-427 415 -416");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,
+  System.addCell(MonteCarlo::Object(cellIndex++,
                              inBWatCutMat,inBWatCutTemp,Out));
     				   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-7 3 -4 5 -6");
@@ -400,30 +399,30 @@ EngReflector::createObjects(Simulation& System)
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-401:402:-403:404:-405:406) ");			 
   Out+=ModelSupport::getComposite(SMap,buildIndex," (417:-415:416) ");		
   Out+=ModelSupport::getComposite(SMap,buildIndex," (427:-415:416) ");		
-  System.addCell(MonteCarlo::Qhull(cellIndex++,reflMat,reflTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,reflMat,reflTemp,Out));
   addCell("Reflector",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-7 3 -4 6 -36");
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-12:7:36:-6) ");
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-13:7:36:-6) ");
   Out+=ModelSupport::getComposite(SMap,buildIndex," (17:7:36:-6) ");			 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,liftMat,liftTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,liftMat,liftTemp,Out));
   addOuterUnionSurf(Out);	
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11  -21 -101 201 5 -105");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));	 
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));	 
   addOuterUnionSurf(Out);	
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"12  -22 102 -202 106 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));
   addOuterUnionSurf(Out);	
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"13  -23 103 -203 106 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));		 
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));		 
   addOuterUnionSurf(Out);	
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"14  -24 -104 204 5 -105");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));
   addOuterUnionSurf(Out);				 
 
     
