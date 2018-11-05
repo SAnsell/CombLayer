@@ -202,15 +202,17 @@ BilbaoWheelCassette::getSegWallArea() const
 
   // for the innermost segment without bricks:
   // get segmented wall area:
-  // it's a sum of rectangle (s1) and triangle (s2)
-  double s(0.0);
-  double h1(wallSegThick); // downstream thick
+
+
+  //  double h1(wallSegThick); // downstream thick
 
   // for the inner segment with  no bricks
   const double h3 = std::abs(wallSegLength[0])*tan(wallSegDelta*M_PI/180.0);
-  const double s1 = h1*std::abs(wallSegLength[0]); // rectangle
+  const double s1 = wallSegThick*std::abs(wallSegLength[0]); // rectangle
   const double s2 = wallSegLength[0]*h3/2.0; // triangle
-  s += s1+s2;
+
+  // it's a sum of rectangle (s1) and triangle (s2)
+  double s(s1+s2);
 
   // for the segments with bricks:
   double R(innerCylRadius);
@@ -219,9 +221,6 @@ BilbaoWheelCassette::getSegWallArea() const
       R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       const double L = 2*R*sin(wallSegDelta*M_PI/180.0);
       const double bg(getBrickGapThick(j));
-
-      //      ELog::EM << j << " " << R << " " << L-bg << ELog::endDiag;
-
       s += (L-bg)*std::abs(wallSegLength[j])/2;
     }
 
