@@ -87,9 +87,10 @@ CSPECvariables(FuncDataBase& Control)
   Control.addVariable("cspecStopPoint",0);
 
   FGen.setLayer(1,1.0,"Copper");
-  FGen.setLayer(2,0.3,"Void");
+  FGen.setLayer(2,0.2,"Void");
   FGen.setYOffset(4.0);
   FGen.generateRectangle(Control,"cspecFA",350.0, 7, 5.5);
+  Control.addVariable("cspecFANShapeLayers",3); // should be set automatically by the previous line depending on number of setLayer calls, but for some reason set to 2 in FocusGenerator::writeLayers
 
 
   PipeGen.generatePipe(Control,"cspecPipeB",8.0,46.0);
