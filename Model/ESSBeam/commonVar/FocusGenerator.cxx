@@ -198,8 +198,8 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
     \param Control :: Functional data base
     \param keyName :: main name
     \param length :: total length
-    \param HS :: Horrizontal start
-    \param HE :: Horrizontal end
+    \param HS :: Horizontal start
+    \param HE :: Horizontal end
     \param VS :: Vertical start
     \param VE :: Vertical end
    */
@@ -225,11 +225,11 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
 				  const double length,
 				  const double H,const double V)  const
 /*!
-    Generate the focus-taper variables
+    Generate the focus-Rectangle variables
     \param Control :: Functional data base
     \param keyName :: main name
     \param length :: total length
-    \param H :: Horrizontal 
+    \param H :: Horizontal
     \param V :: Vertical 
    */
 {
@@ -256,8 +256,8 @@ FocusGenerator::generateBender(FuncDataBase& Control,
     \param Control :: FuncDatabase to populate
     \param keyName :: principle name
     \param length :: total length
-    \param HS :: Horrizontal start
-    \param HE :: Horrizontal end
+    \param HS :: Horizontal start
+    \param HE :: Horizontal end
     \param VS :: Vertical start
     \param VE :: Vertical end
     \param radius :: radius of curvature [cm]
