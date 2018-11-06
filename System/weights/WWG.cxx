@@ -260,11 +260,13 @@ WWG::powerRange(const double pR)
 }
 
 void
-WWG::scaleRange(const double minR,
+WWG::scaleRange(const size_t eIndex,
+		const double minR,
 		const double maxR,
 		const double fullRange)
   /*!
     Normalize the mesh to have a max at 1.0
+    \param eIndex :: energy index + 1
     \param minR :: Min value
     \param maxR :: Max value
     \param fullRange :: range between 0 - fullRange [negative]
@@ -272,7 +274,7 @@ WWG::scaleRange(const double minR,
 {
   ELog::RegMethod RegA("WWG","scaleRange");
 
-  WMesh.scaleRange(minR,maxR,fullRange);
+  WMesh.scaleRange(eIndex,minR,maxR,fullRange);
   return;
 }
   

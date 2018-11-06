@@ -3,7 +3,7 @@
  
  * File:   weight/WWGWeight.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -384,11 +384,15 @@ WWGWeight::scaleMeshItem(const long int I,const long int J,
 }
 
 void
-WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
+WWGWeight::scaleRange(const size_t eIndex,
+		      double AValue,
+		      double BValue,
+		      const double fullRange)
   /*!
     Convert a set of value [EXP not taken]
     into  a source. 
     - 0 is full beam 
+    \param eIndex :: Energy index [0 for all energy values]
     \param AValue :: [log] Min Value [assumed to be fullRange] (>0 to use min)
     \param BValue :: [log] Max value [above assumed to be 1.0] (>0 to use max)
     \param fullRange :: Range of data output
@@ -401,7 +405,8 @@ WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
 
   double* TData=WGrid.data();
   const size_t NData=WGrid.num_elements();
-
+  
+  ELog::EM<<"Number of elements == "<<NData<<ELog::endDiag;
   if (AValue > 1e-10)
     AValue= *std::min_element(TData,TData+NData-1);
   if (BValue > 1e-10)
@@ -457,6 +462,7 @@ WWGWeight::wTrack(const Simulation& System,
     Calculate a specific track from sourcePoint to position
     \param System :: Simulation to use    
     \param initPt :: Point for outgoing track
+    \param EBand :: Energy grid
     \param MidPt :: Grid points
     \param densityFactor :: Scaling factor for density
     \param r2Length :: scale factor for length
@@ -511,6 +517,7 @@ WWGWeight::distTrack(const Simulation& System,
     Calculate a specific track from sourcePoint to position
     \param System :: Simulation to use    
     \param aimPt :: Point for outgoing track
+    \paramn E :: Central energy bin [MeV]
     \param gridPt :: Grid points
     \param densityFactor :: Scaling factor for density
     \param r2Length :: scale factor for length
@@ -559,6 +566,7 @@ WWGWeight::CADISnorm(const Simulation& System,
   double* SData=WGrid.data();
 
   const double* AData=Adjoint.WGrid.data();
+  
   const size_t NData=WGrid.num_elements();
   const size_t ANData=WGrid.num_elements();
   if (NData!=ANData)
@@ -585,22 +593,26 @@ WWGWeight::CADISnorm(const Simulation& System,
       // STILL in log space
       for(size_t i=0;i<gridPts.size();i++)
 	{
+	  const double W=distTrack(System,sourcePt,0.0,gridPts[i],1.0,1.0,2.0);
 	  for(size_t j=0;j<EnergyStride;j++)
 	    {
-	      const double EVal=1e-6+EBand[j];
-	      const double W=distTrack(System,sourcePt,EVal,
-				       gridPts[i],1.0,1.0,2.0);
-	      sumR[j]=(i) ? mathFunc::logAdd(sumR[j],SData[i*EnergyStride+j]+W) :
+	      sumR[j]=(i) ?
+		mathFunc::logAdd(sumR[j],SData[i*EnergyStride+j]+W) :
 		SData[i*EnergyStride+j]+W;
 	      
-	      sumRA[j]=(i) ? mathFunc::logAdd(sumRA[j],AData[i*EnergyStride+j]+W) :
+	      sumRA[j]=(i) ?
+		mathFunc::logAdd(sumRA[j],AData[i*EnergyStride+j]+W) :
 		AData[i*EnergyStride+j]+W;
 
 	      
 	      if (j==0 && !(i % tenthValue) )
-		ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[i*EnergyStride]<<" "
+		ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[j*EnergyStride+i]<<" "
 			<<AData[i*EnergyStride]<<" == "
-			<<gridPts[i]<<ELog::endDiag;
+			<<gridPts[i]<<" W == "<<W<<" "<<EBand[j]<<ELog::endDiag;
+	      if (j==1 && !(i % tenthValue) )
+		ELog::EM<<"CADIS PLUS["<<i<<"]:"<<SData[j*EnergyStride+i]<<" "
+			<<AData[i*EnergyStride+j]<<" == "
+			<<gridPts[i]<<" W = "<<W<<" "<<EBand[j]<<ELog::endDiag;
 
 	  //	  SData[i*EnergyStride]-=AData[i*EnergyStride];
 	    }

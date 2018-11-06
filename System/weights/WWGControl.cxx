@@ -356,6 +356,7 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   WWG& wwg=WM.getWWG();
 
   wwg.updateWM(*sourceFlux,1.0);
+  const size_t NE=wwg.getEBin().size();
   
   if (IParam.flag("wwgNorm"))
     {
@@ -381,7 +382,8 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
       //        IParam.getDefValue<double>(1.0,"wwgNorm",0,3);
       
 
-      wwg.scaleRange(lowRange,highRange,weightRange);
+      for(size_t i=0;i<NE;i++)
+	wwg.scaleRange(i,lowRange,highRange,weightRange);
       //      wwg.powerRange(powerWeight);
     }
   else

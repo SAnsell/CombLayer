@@ -95,7 +95,7 @@ class WWGWeight
 		     const long int, const double);
   void scaleGrid(const double);
   void scalePower(const double);
-  void scaleRange(const double,const double,const double);
+  void scaleRange(const size_t,const double,const double,const double);
   void setMinSourceValue(const double);
 
 

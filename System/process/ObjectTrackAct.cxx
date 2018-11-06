@@ -218,7 +218,8 @@ ObjectTrackAct::getAttnSum(const long int objN,const double E) const
 	  sum+=TVec[i]*std::pow(AMean,0.66)*density;
 	}
     }
-  return sum/E;
+  
+  return (E>Geometry::zeroTol) ? sum : sum;
 }
 
 double
