@@ -154,7 +154,7 @@ VOR::VOR(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This necessary:
-  OR.cell("vorAxis");
+  //  OR.cell("vorAxis");
   OR.addObject(vorAxis);
 
   OR.addObject(FocusA);

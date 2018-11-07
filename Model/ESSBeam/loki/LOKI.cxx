@@ -182,7 +182,7 @@ LOKI::registerObjects()
     ModelSupport::objectRegister::Instance();
   
   // This necessary:
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(lokiAxis);
 
   OR.addObject(BendA);

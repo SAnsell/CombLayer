@@ -166,7 +166,7 @@ MAGIC::MAGIC(const std::string& keyName) :
 
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(magicAxis);
 
   OR.addObject(FocusA);

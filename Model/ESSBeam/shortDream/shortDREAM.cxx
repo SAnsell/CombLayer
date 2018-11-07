@@ -164,7 +164,7 @@ shortDREAM::shortDREAM(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary:
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);

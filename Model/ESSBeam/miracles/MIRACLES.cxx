@@ -160,7 +160,7 @@ MIRACLES::MIRACLES(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(miraclesAxis);
 
   OR.addObject(FocusA);

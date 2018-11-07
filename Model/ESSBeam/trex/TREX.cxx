@@ -194,7 +194,7 @@ TREX::TREX(const std::string& keyName):
   ELog::RegMethod RegA("TREX","TREX");
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
 
   OR.addObject(trexAxis);
   

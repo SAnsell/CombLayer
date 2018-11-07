@@ -118,7 +118,7 @@ shortNMX::shortNMX(const std::string& keyName) :
 
   // This necessary:
   ELog::EM<<"New name == "<<newName<<" "<<keyName<<ELog::endDiag;
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(nmxAxis);
 
   OR.addObject(FocusA);

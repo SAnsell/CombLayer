@@ -129,7 +129,7 @@ NMX::NMX(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This necessary:
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(nmxAxis);
 
   OR.addObject(FocusA);

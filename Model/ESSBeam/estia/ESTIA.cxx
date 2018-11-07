@@ -120,7 +120,7 @@ ESTIA::ESTIA(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary:
-  OR.cell(newName+"Axis");
+  // OR.cell(newName+"Axis");
   OR.addObject(estiaAxis);
 
   OR.addObject(FocusMono);
