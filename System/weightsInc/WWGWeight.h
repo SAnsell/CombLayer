@@ -118,6 +118,7 @@ class WWGWeight
 		 const std::vector<Geometry::Vec3D>&,
 		 const T&,const U&);
   
+  void writeCHECK(const size_t) const;
   
   void writeWWINP(std::ostream&) const;
   void writeVTK(std::ostream&,const long int) const;

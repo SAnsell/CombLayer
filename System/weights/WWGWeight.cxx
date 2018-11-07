@@ -474,7 +474,7 @@ WWGWeight::wTrack(const Simulation& System,
   long int cN(1);
   ELog::EM<<"Processing  "<<MidPt.size()<<" for WWG"<<ELog::endDiag;
 
-  const long int NCut(static_cast<long int>(MidPt.size())/10);
+  const long int NCut(static_cast<long int>(MidPt.size())/5);
   for(const Geometry::Vec3D& Pt : MidPt)
     {
       for(long int index=0;index<WE;index++)
@@ -490,11 +490,6 @@ WWGWeight::wTrack(const Simulation& System,
 	    addLogPoint(cN-1,index,DT);
 	  else
 	    setLogPoint(cN-1,index,DT);
-	  
-	  if (!(cN % NCut))
-	    ELog::EM<<"Item[ "<<index<<"] == "
-		    <<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
-		    <<r2Length<<ELog::endDiag;
 	}
       cN++;
     }
@@ -606,11 +601,11 @@ WWGWeight::CADISnorm(const Simulation& System,
 
 	      
 	      if (j==0 && !(i % tenthValue) )
-		ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[j*EnergyStride+i]<<" "
+		ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[i*EnergyStride+j]<<" "
 			<<AData[i*EnergyStride]<<" == "
 			<<gridPts[i]<<" W == "<<W<<" "<<EBand[j]<<ELog::endDiag;
 	      if (j==1 && !(i % tenthValue) )
-		ELog::EM<<"CADIS PLUS["<<i<<"]:"<<SData[j*EnergyStride+i]<<" "
+		ELog::EM<<"CADIS PLUS["<<i<<"]:"<<SData[i*EnergyStride+j]<<" "
 			<<AData[i*EnergyStride+j]<<" == "
 			<<gridPts[i]<<" W = "<<W<<" "<<EBand[j]<<ELog::endDiag;
 
@@ -706,6 +701,17 @@ WWGWeight::write(std::ostream& OX) const
           OX<<std::endl;
         }
 
+  return;
+}
+
+
+void
+WWGWeight::writeCHECK(const size_t index) const
+{
+  const double* SData=WGrid.data();
+  const size_t EnergyStride(static_cast<size_t>(WE));
+
+  ELog::EM<<"WRITE CHECK:: S["<<index<<"] == "<<SData[index]<<" "<<SData[index+1]<<ELog::endDiag;
   return;
 }
 

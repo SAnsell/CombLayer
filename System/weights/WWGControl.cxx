@@ -268,6 +268,7 @@ WWGControl::wwgCreate(const Simulation& System,
       procParam(IParam,"wwgCalc",iSet,1);      
       WWGWeight& wSet=(adjointFlag) ? *adjointFlux : *sourceFlux;
 
+      ELog::EM<<"ADJOINT == "<<adjointFlag<<ELog::endDiag;
       if (ptType=="help" || ptType=="Help")
 	{
 	  ELog::EM<<"wwgCalc ==> \n"
@@ -336,6 +337,7 @@ WWGControl::wwgMarkov(const Simulation& System,
 	  MCalc.computeMatrix(System,wwg,density,r2Length,r2Power);
 	  MCalc.multiplyOut(nMult);
 	  MCalc.rePopulateWWG();
+	  ELog::EM<<"MARKOV FINISHED"<<ELog::endDiag;
 	}
     }
 
@@ -493,6 +495,7 @@ WWGControl::processWeights(Simulation& System,
       wwgMesh(IParam);               // create mesh [wwgXMesh etc]
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
+      sourceFlux->writeCHECK(100);
       wwgMarkov(System,IParam);
       wwgCombine(System,IParam);
       wwgNormalize(IParam);
