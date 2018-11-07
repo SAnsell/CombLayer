@@ -369,13 +369,29 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	  const Geometry::Vec3D BA=backPt(i,Thick[j]);
 	  Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
 	  Norm.makeUnit();
-	  
+
+	  ELog::EM << "PA: " << PA << ELog::endDiag;	 
+	  ELog::EM << "PB: " << PB << ELog::endDiag;
+	  ELog::EM << "BA: " << BA << ELog::endDiag;
+ 
 	  if (!rotateFlag)
 	    Norm*=-1;
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  
+	  if (j)
+	    ModelSupport::buildShiftedPlane(SMap,SN+10,
+					    SMap.realPtr<Geometry::Plane>(SN),
+					    -1.3); // thickness of "steps"
+
 	  SN++;
 	}
-    }   
+    }
+
+  // segment dividers along the insert for the gaps with steps nSteps? Step1Length
+  // this assumes nGapStep=1
+  ModelSupport::buildPlane(SMap,shapeIndex+1001,frontPt(0,Thick[0])+YVec*50,YVec)->print();
+  ModelSupport::buildPlane(SMap,shapeIndex+1002,frontPt(0,Thick[0])+YVec*55,YVec)->print();
+  
   return;
 }
 
@@ -406,9 +422,11 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
 
   if (!nCorner) return "";
 
-  std::ostringstream cx;
+  std::ostringstream cx,cxStep;
   bool bFlag(0);
   // Start from 1
+  // define rules for side surfaces (without front/back)
+  // both for segmentts without (cx) and with (cxStep) step
   int SN(layerSep*static_cast<int>(layerN)+1);
   for(size_t i=0;i<nCorner;i++)
     {
@@ -420,13 +438,46 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
       else
 	{
 	  cx<< ((bFlag) ? ") " : " ");
+	  cxStep << " "; // currently cxStep does not work if bFlag is true
 	  bFlag=0;
 	}
-      cx<<SN++;
+      cx<<SN;
+      cxStep<<SN+10;
+      SN++;
     }
   if (bFlag) cx<<")";
 
-  return ModelSupport::getComposite(SMap,shapeIndex,cx.str());
+  const size_t nGapStep(1); // todo: use variable
+  const size_t nGapSegments(nGapStep*2+1);
+  
+  std::string Out=cx.str();
+  if (layerN)
+    {
+      int SG=1000;
+      for (size_t j=0; j<nGapSegments; j++)
+	{
+	  int s1=SG+j+1;
+	  int s2=s1+1;
+	  if (j==0)
+	    {
+	      //	      Out += " " + std::to_string(-s1);
+	      Out += " -1001 ";
+	    }
+	  else if (j==1)
+	    {
+	      Out += " 1001 " + cxStep.str() + " -1002 ";
+	    }
+	  else if (j==2)
+	    {
+	      Out += " 1002 " + cx.str();
+	    }
+	  if (j!=nGapSegments-1)
+	    Out += " : ";
+	}
+    }
+  ELog::EM << nCorner << " getString: " << Out << ELog::endDiag;
+
+  return ModelSupport::getComposite(SMap,shapeIndex," ( " + Out + " ) ");
 }
 
 
