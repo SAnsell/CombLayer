@@ -70,7 +70,11 @@ class GuideLine : public attachSystem::ContainedComp,
 
   size_t nShapeLayers;              ///< Number of shapeLayers
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
-  std::vector<int> layerMat;        ///< Mat 
+  std::vector<int> layerMat;        ///< Mat
+
+  size_t nSteps;                   /// Number of steps
+  double_t stepThick;              /// Step thickness (if any)
+  std::vector<double> stepLength;  /// Length of each step segment
 
 
   bool beamFrontCut;           ///< Construct+Use beam cut as well

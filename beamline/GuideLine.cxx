@@ -119,7 +119,9 @@ GuideLine::GuideLine(const GuideLine& A) :
   length(A.length),height(A.height),depth(A.depth),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   nShapeLayers(A.nShapeLayers),layerThick(A.layerThick),
-  layerMat(A.layerMat),beamFrontCut(A.beamFrontCut),
+  layerMat(A.layerMat),
+  nSteps(A.nSteps),stepThick(A.stepThick),stepLength(A.stepLength),
+  beamFrontCut(A.beamFrontCut),
   beamEndCut(A.beamEndCut),nShapes(A.nShapes),
   activeShield(A.activeShield),
   feMat(A.feMat)
@@ -164,6 +166,9 @@ GuideLine::operator=(const GuideLine& A)
       nShapeLayers=A.nShapeLayers;
       layerThick=A.layerThick;
       layerMat=A.layerMat;
+      nSteps=A.nSteps;
+      stepThick=A.stepThick;
+      stepLength=A.stepLength;
       beamFrontCut=A.beamFrontCut;
       beamEndCut=A.beamEndCut;
       nShapes=A.nShapes;
@@ -248,6 +253,25 @@ GuideLine::populate(const FuncDataBase& Control)
       M=ModelSupport::EvalMat<int>(Control,keyName+"LayerMat"+NStr);
       layerThick.push_back(T);
       layerMat.push_back(M);
+    }
+
+  nSteps=Control.EvalDefVar<size_t>(keyName+"NSteps",0);
+  if (nSteps)
+    {
+      stepThick=Control.EvalVar<double>(keyName+"StepThick");
+      const size_t nSegments(nSteps*2);
+      for (size_t i=0; i<nSegments; i++)
+	{
+	  double L = Control.EvalVar<double>(keyName+"StepLength"+
+					     std::to_string(i));
+	  stepLength.push_back(L);
+	}
+      // check:
+      const double TLen(std::accumulate(stepLength.begin(),
+					stepLength.end(),0.0));
+      if (TLen>length)
+	throw ColErr::RangeError<long int>(length,0,TLen,
+		      "Total segment length must be smaller than full length");
     }
 
   // set frontcut based on offset:
@@ -559,6 +583,7 @@ GuideLine::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
       ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
     }
+
   // Note we ignore the length component of the last item 
   // and use the guide closer
   int GI(buildIndex+2001);
