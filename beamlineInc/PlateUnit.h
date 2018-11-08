@@ -55,6 +55,8 @@ class PlateUnit : public ShapeUnit
   std::vector<Geometry::Vec3D> BPts;  ///< Points of Tail shape
   std::vector<int> nonConvex;         ///< Points are non-convex
 
+  size_t nSegments;        ///< Number of step segments
+
   static size_t findFirstPoint(const Geometry::Vec3D&,
 			       const std::vector<Geometry::Vec3D>&); 
 

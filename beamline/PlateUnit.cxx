@@ -80,7 +80,7 @@ PlateUnit::PlateUnit(const PlateUnit& A) :
   CHPtr(A.CHPtr),XVec(A.XVec),YVec(A.YVec),ZVec(A.ZVec),
   nCorner(A.nCorner),rotateFlag(A.rotateFlag),
   APts(A.APts),BPts(A.BPts),
-  nonConvex(A.nonConvex)
+  nonConvex(A.nonConvex),nSegments(A.nSegments)
   /*!
     Copy constructor
     \param A :: PlateUnit to copy
@@ -106,6 +106,7 @@ PlateUnit::operator=(const PlateUnit& A)
       APts=A.APts;
       BPts=A.BPts;
       nonConvex=A.nonConvex;
+      nSegments=A.nSegments;
     }
   return *this;
 }
@@ -143,6 +144,7 @@ PlateUnit::clear()
   APts.clear();
   BPts.clear();
   nonConvex.clear();
+  nSegments=0.0;
   return;
 }
 
@@ -390,11 +392,15 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
     Build the surfaces for the track
     \param SMap :: SMap to use
     \param Thick :: Thickness for each layer
+    \param stepThick :: step thickness
+    \param stepLength :: step length
    */
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces [with stes]");
 
   createSurfaces(SMap,Thick);
+
+  nSegments = stepLength.size();
 
   for(size_t j=0;j<Thick.size();j++)
     {
@@ -411,11 +417,14 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	}
     }
 
-  // segment dividers along the insert for the gaps with steps nSteps? Step1Length
-  // this assumes nGapStep=1
-  ModelSupport::buildPlane(SMap,shapeIndex+1001,frontPt(0,Thick[0])+YVec*50,YVec)->print();
-  ModelSupport::buildPlane(SMap,shapeIndex+1002,frontPt(0,Thick[0])+YVec*55,YVec)->print();
-  
+  double L(stepLength[0]);
+  const int SI(shapeIndex+1000);
+  for (size_t i=1; i<=nSegments;i++)
+    {
+      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i),frontPt(0,Thick[0])+YVec*L,YVec);
+      L += stepLength[i];
+    }
+
   return;
 }
 
@@ -471,35 +480,24 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
     }
   if (bFlag) cx<<")";
 
-  const size_t nGapStep(1); // todo: use variable
-  const size_t nGapSegments(nGapStep*2+1);
-  
   std::string Out=cx.str();
-  if (layerN)
+  if ((layerN) && (nSegments))
     {
       int SG=1000;
-      for (size_t j=0; j<nGapSegments; j++)
+      for (size_t j=0; j<=nSegments; j++)
 	{
-	  int s1=SG+j+1;
+	  int s1=SG+static_cast<int>(j);
 	  int s2=s1+1;
 	  if (j==0)
-	    {
-	      //	      Out += " " + std::to_string(-s1);
-	      Out += " -1001 ";
-	    }
-	  else if (j==1)
-	    {
-	      Out += " 1001 " + cxStep.str() + " -1002 ";
-	    }
-	  else if (j==2)
-	    {
-	      Out += " 1002 " + cx.str();
-	    }
-	  if (j!=nGapSegments-1)
-	    Out += " : ";
+	      Out += " " + std::to_string(-s2) + " : ";
+	  else if (j==nSegments)
+	      Out += " " + std::to_string(s1) + " " + cx.str();
+	  else
+	      Out += " " + std::to_string(s1) + " " +
+		(j%2 ? cxStep.str() : cx.str()) + " " +
+		std::to_string(-s2) + " : ";
 	}
     }
-  ELog::EM << nCorner << " getString: " << Out << ELog::endDiag;
 
   return ModelSupport::getComposite(SMap,shapeIndex," ( " + Out + " ) ");
 }
