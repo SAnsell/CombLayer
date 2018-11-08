@@ -88,7 +88,10 @@ class ShapeUnit
 			    attachSystem::FixedComp&) const =0;
   
   virtual void createSurfaces(ModelSupport::surfRegister&,
-		      const std::vector<double>&) =0;
+			      const std::vector<double>&) =0;
+  virtual void createSurfaces(ModelSupport::surfRegister&,
+			      const std::vector<double>&,
+			      const double&,const std::vector<double>&) =0;
   ///\endcond ABSTRACT
 };
 

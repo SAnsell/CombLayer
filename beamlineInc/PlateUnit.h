@@ -99,9 +99,14 @@ class PlateUnit : public ShapeUnit
 				 const size_t) const;
   virtual void addSideLinks(const ModelSupport::surfRegister&,
 			    attachSystem::FixedComp&) const;
-  
+
+  // without steps
   virtual void createSurfaces(ModelSupport::surfRegister&,
 			      const std::vector<double>&);
+  //   with steps
+  virtual void createSurfaces(ModelSupport::surfRegister&,
+			      const std::vector<double>&,
+			      const double&,const std::vector<double>&);
 };
 
 

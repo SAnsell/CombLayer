@@ -270,7 +270,7 @@ GuideLine::populate(const FuncDataBase& Control)
       const double TLen(std::accumulate(stepLength.begin(),
 					stepLength.end(),0.0));
       if (TLen>length)
-	throw ColErr::RangeError<long int>(length,0,TLen,
+	throw ColErr::RangeError<double>(length,0,TLen,
 		      "Total segment length must be smaller than full length");
     }
 
@@ -592,7 +592,7 @@ GuideLine::createSurfaces()
       if (i)
 	ModelSupport::buildPlane(SMap,GI,
                                  shapeUnits[i]->getBegin(),Y);
-      shapeUnits[i]->createSurfaces(SMap,layerThick);
+      shapeUnits[i]->createSurfaces(SMap,layerThick,stepThick,stepLength);
       GI+=100;
     }
     

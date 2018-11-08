@@ -370,19 +370,43 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	  Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
 	  Norm.makeUnit();
 
-	  ELog::EM << "PA: " << PA << ELog::endDiag;	 
-	  ELog::EM << "PB: " << PB << ELog::endDiag;
-	  ELog::EM << "BA: " << BA << ELog::endDiag;
- 
 	  if (!rotateFlag)
 	    Norm*=-1;
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  
+	  SN++;
+	}
+    }
+
+  return;
+}
+
+void
+PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
+			  const std::vector<double>& Thick,
+			  const double& stepThick,
+			  const std::vector<double>& stepLength)
+  /*!
+    Build the surfaces for the track
+    \param SMap :: SMap to use
+    \param Thick :: Thickness for each layer
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","createSurfaces [with stes]");
+
+  createSurfaces(SMap,Thick);
+
+  for(size_t j=0;j<Thick.size();j++)
+    {
+      // Start from 1
+      int SN(shapeIndex+layerSep*static_cast<int>(j)+1);
+
+      for(size_t i=0;i<nCorner;i++)
+	{
 	  if (j)
 	    ModelSupport::buildShiftedPlane(SMap,SN+10,
 					    SMap.realPtr<Geometry::Plane>(SN),
-					    -1.3); // thickness of "steps"
-
+					    -stepThick);
 	  SN++;
 	}
     }
