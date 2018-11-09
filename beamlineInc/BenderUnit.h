@@ -96,7 +96,7 @@ class BenderUnit : public ShapeUnit
 		      const std::vector<double>&);
   virtual void createSurfaces(ModelSupport::surfRegister&,
 			      const std::vector<double>&,
-			      const double&,const std::vector<double>&) {;}
+			      const double&,const std::vector<double>&);
 };
 
 }

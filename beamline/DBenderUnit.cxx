@@ -387,6 +387,25 @@ DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
   return;
 }
 
+void
+DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
+		    const std::vector<double>& Thick,
+		    const double& stepThick,
+		    const std::vector<double>& stepLength)
+  /*!
+    Build the surfaces for the track
+    \param SMap :: SMap to use
+    \param Thick :: Thickness for each layer
+    \param stepThick :: step thickness
+    \param stepLength :: step length
+   */
+{
+  ELog::RegMethod RegA("BenderUnit","createSurfaces");
+
+  throw ColErr::AbsObjMethod("Not implemented yet");
+  return;
+}
+
 std::string
 DBenderUnit::getString(const ModelSupport::surfRegister& SMap,
 		      const size_t layerN) const
