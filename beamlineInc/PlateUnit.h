@@ -42,24 +42,27 @@ namespace beamlineSystem
 class PlateUnit : public ShapeUnit 
 {
  private:
-
+  
   Geometry::Convex2D* CHPtr;   ///< Convex hull ptr
-
   Geometry::Vec3D XVec;    ///< Current XVector
-  Geometry::Vec3D YVec;    ///< Current YVector
   Geometry::Vec3D ZVec;    ///< Current ZVector
-
-  size_t nCorner;                     ///< number of corner points
-  bool rotateFlag;                    ///< Rotation on points
   std::vector<Geometry::Vec3D> APts;  ///< Points of front shape
   std::vector<Geometry::Vec3D> BPts;  ///< Points of Tail shape
-  std::vector<int> nonConvex;         ///< Points are non-convex
 
   static size_t findFirstPoint(const Geometry::Vec3D&,
 			       const std::vector<Geometry::Vec3D>&); 
+  Geometry::Vec3D backPt(const size_t,const double) const;
+
+ protected:
+  
+  Geometry::Vec3D YVec;    ///< Current YVector
+  bool rotateFlag;                    ///< Rotation on points
+
+  size_t nCorner;                     ///< number of corner points
+  std::vector<int> nonConvex;         ///< Points are non-convex
+
 
   Geometry::Vec3D frontPt(const size_t,const double) const;
-  Geometry::Vec3D backPt(const size_t,const double) const;
 
  public:
 

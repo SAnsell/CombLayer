@@ -67,7 +67,7 @@ namespace beamlineSystem
 {
 
 PlateUnit::PlateUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0)
+  ShapeUnit(ON,LS),CHPtr(0),rotateFlag(0),nCorner(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -77,9 +77,10 @@ PlateUnit::PlateUnit(const int ON,const int LS)  :
 
 PlateUnit::PlateUnit(const PlateUnit& A) : 
   ShapeUnit(A),
-  CHPtr(A.CHPtr),XVec(A.XVec),YVec(A.YVec),ZVec(A.ZVec),
-  nCorner(A.nCorner),rotateFlag(A.rotateFlag),
+  CHPtr(A.CHPtr),XVec(A.XVec),ZVec(A.ZVec),
   APts(A.APts),BPts(A.BPts),
+  YVec(A.YVec),
+  rotateFlag(A.rotateFlag),nCorner(A.nCorner),
   nonConvex(A.nonConvex)
   /*!
     Copy constructor
