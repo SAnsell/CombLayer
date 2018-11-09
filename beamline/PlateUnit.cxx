@@ -67,7 +67,7 @@ namespace beamlineSystem
 {
 
 PlateUnit::PlateUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0)
+  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0),nSegments(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -479,6 +479,7 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
       SN++;
     }
   if (bFlag) cx<<")";
+
 
   std::string Out=cx.str();
   if ((layerN) && (nSegments))
