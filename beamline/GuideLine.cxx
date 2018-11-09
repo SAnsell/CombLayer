@@ -592,7 +592,10 @@ GuideLine::createSurfaces()
       if (i)
 	ModelSupport::buildPlane(SMap,GI,
                                  shapeUnits[i]->getBegin(),Y);
-      shapeUnits[i]->createSurfaces(SMap,layerThick,stepThick,stepLength);
+      if (nSteps)
+      	shapeUnits[i]->createSurfaces(SMap,layerThick,stepThick,stepLength);
+      else
+	shapeUnits[i]->createSurfaces(SMap,layerThick);
       GI+=100;
     }
     
@@ -666,7 +669,7 @@ GuideLine::createObjects(Simulation& System)
       const std::string GKey("Guide"+StrFunc::makeString(i));
       const std::string front=shapeFrontSurf(false,i);
       back=shapeBackSurf(false,i);
-      
+
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  // Note that shapeUnits has own offset but
