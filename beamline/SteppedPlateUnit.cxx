@@ -67,7 +67,7 @@ namespace beamlineSystem
 {
 
 PlateUnit::PlateUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0)
+  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0),nSegments(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -80,7 +80,7 @@ PlateUnit::PlateUnit(const PlateUnit& A) :
   CHPtr(A.CHPtr),XVec(A.XVec),YVec(A.YVec),ZVec(A.ZVec),
   nCorner(A.nCorner),rotateFlag(A.rotateFlag),
   APts(A.APts),BPts(A.BPts),
-  nonConvex(A.nonConvex)
+  nonConvex(A.nonConvex),nSegments(A.nSegments)
   /*!
     Copy constructor
     \param A :: PlateUnit to copy
@@ -106,6 +106,7 @@ PlateUnit::operator=(const PlateUnit& A)
       APts=A.APts;
       BPts=A.BPts;
       nonConvex=A.nonConvex;
+      nSegments=A.nSegments;
     }
   return *this;
 }
@@ -143,6 +144,7 @@ PlateUnit::clear()
   APts.clear();
   BPts.clear();
   nonConvex.clear();
+  nSegments=0.0;
   return;
 }
 
@@ -369,13 +371,60 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	  const Geometry::Vec3D BA=backPt(i,Thick[j]);
 	  Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
 	  Norm.makeUnit();
-	  
+
 	  if (!rotateFlag)
 	    Norm*=-1;
 	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  
 	  SN++;
 	}
-    }   
+    }
+
+  return;
+}
+
+void
+PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
+			  const std::vector<double>& Thick,
+			  const double& stepThick,
+			  const std::vector<double>& stepLength)
+  /*!
+    Build the surfaces for the track
+    \param SMap :: SMap to use
+    \param Thick :: Thickness for each layer
+    \param stepThick :: step thickness
+    \param stepLength :: step length
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","createSurfaces [with stes]");
+
+  createSurfaces(SMap,Thick);
+
+  nSegments = stepLength.size();
+
+  for(size_t j=0;j<Thick.size();j++)
+    {
+      // Start from 1
+      int SN(shapeIndex+layerSep*static_cast<int>(j)+1);
+
+      for(size_t i=0;i<nCorner;i++)
+	{
+	  if (j)
+	    ModelSupport::buildShiftedPlane(SMap,SN+10,
+					    SMap.realPtr<Geometry::Plane>(SN),
+					    -stepThick);
+	  SN++;
+	}
+    }
+
+  double L(stepLength[0]);
+  const int SI(shapeIndex+1000);
+  for (size_t i=1; i<=nSegments;i++)
+    {
+      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i),frontPt(0,Thick[0])+YVec*L,YVec);
+      L += stepLength[i];
+    }
+
   return;
 }
 
@@ -406,9 +455,11 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
 
   if (!nCorner) return "";
 
-  std::ostringstream cx;
+  std::ostringstream cx,cxStep;
   bool bFlag(0);
   // Start from 1
+  // define rules for side surfaces (without front/back)
+  // both for segmentts without (cx) and with (cxStep) step
   int SN(layerSep*static_cast<int>(layerN)+1);
   for(size_t i=0;i<nCorner;i++)
     {
@@ -420,13 +471,36 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
       else
 	{
 	  cx<< ((bFlag) ? ") " : " ");
+	  cxStep << " "; // currently cxStep does not work if bFlag is true
 	  bFlag=0;
 	}
-      cx<<SN++;
+      cx<<SN;
+      cxStep<<SN+10;
+      SN++;
     }
   if (bFlag) cx<<")";
 
-  return ModelSupport::getComposite(SMap,shapeIndex,cx.str());
+
+  std::string Out=cx.str();
+  if ((layerN) && (nSegments))
+    {
+      int SG=1000;
+      for (size_t j=0; j<=nSegments; j++)
+	{
+	  int s1=SG+static_cast<int>(j);
+	  int s2=s1+1;
+	  if (j==0)
+	      Out += " " + std::to_string(-s2) + " : ";
+	  else if (j==nSegments)
+	      Out += " " + std::to_string(s1) + " " + cx.str();
+	  else
+	      Out += " " + std::to_string(s1) + " " +
+		(j%2 ? cxStep.str() : cx.str()) + " " +
+		std::to_string(-s2) + " : ";
+	}
+    }
+
+  return ModelSupport::getComposite(SMap,shapeIndex," ( " + Out + " ) ");
 }
 
 
