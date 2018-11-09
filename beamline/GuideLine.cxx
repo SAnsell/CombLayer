@@ -86,6 +86,7 @@
 #include "FrontBackCut.h" 
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
+#include "SteppedPlateUnit.h"
 #include "BenderUnit.h"
 #include "DBenderUnit.h"
 #include "GuideLine.h"
@@ -389,7 +390,7 @@ GuideLine::processShape(const FuncDataBase& Control)
       const int GINumber(buildIndex+SUItem*static_cast<int>(index+1));
       if (typeID=="Rectangle")   
 	{
-	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
+	  SteppedPlateUnit* SU=new SteppedPlateUnit(GINumber,SULayer);
 	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
 	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
 
