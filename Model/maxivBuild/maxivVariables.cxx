@@ -95,7 +95,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
                        "maxivInstrumentVariables");
 
   const std::set<std::string> R1Beam(
-      {"RING1","MAXPEEM"});
+     {"RING1","MAXPEEM","SPECIES"});
 
   
   typedef void (*VariableFunction)(FuncDataBase&);
@@ -104,7 +104,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
      {"COSAXS",    &COSAXSvariables},
-     {"MAXPEEM",   &MAXPEEMvariables}
+     {"MAXPEEM",   &MAXPEEMvariables},
+     {"SPECIES",   &SPECIESvariables}
    });
 
   bool r1Flag(0);

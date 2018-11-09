@@ -37,6 +37,7 @@ namespace setVariable
   // MAXIV Beamlines 1.5GeV Ring
   void R1RingVariables(FuncDataBase&);
   void MAXPEEMvariables(FuncDataBase&);
+  void SPECIESvariables(FuncDataBase&);
 
   // MAXIV Beamlines 3.0GeV Ring
   void BALDERvariables(FuncDataBase&);

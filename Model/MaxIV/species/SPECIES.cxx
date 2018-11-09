@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: maxpeem/MAXPEEM.cxx
+ * File: species/SPECIES.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -86,9 +86,9 @@
 
 #include "R1Ring.h"
 #include "R1FrontEnd.h"
-#include "maxpeemFrontEnd.h"
-#include "maxpeemOpticsHut.h"
-#include "maxpeemOpticsBeamline.h"
+#include "speciesFrontEnd.h"
+// #include "speciesOpticsHut.h"
+// #include "speciesOpticsBeamline.h"
 #include "ExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
@@ -99,19 +99,15 @@
 #include "FlangeMount.h"
 #include "WallLead.h"
 
-
-#include "MAXPEEM.h"
+#include "SPECIES.h"
 
 namespace xraySystem
 {
 
-MAXPEEM::MAXPEEM(const std::string& KN) :
-  attachSystem::CopiedComp("Maxpeem",KN),
-  frontBeam(new maxpeemFrontEnd(newName+"FrontBeam")),
-  wallLead(new WallLead(newName+"WallLead")),
-  opticsHut(new maxpeemOpticsHut(newName+"OpticsHut")),
-  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsBeam(new maxpeemOpticsBeamline(newName+"OpticsBeam"))
+SPECIES::SPECIES(const std::string& KN) :
+  attachSystem::CopiedComp("Species",KN),
+  frontBeam(new speciesFrontEnd(newName+"FrontBeam")),
+  wallLead(new WallLead(newName+"WallLead"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -122,18 +118,16 @@ MAXPEEM::MAXPEEM(const std::string& KN) :
 
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
-  OR.addObject(opticsHut);
-  OR.addObject(joinPipe);
 }
 
-MAXPEEM::~MAXPEEM()
+SPECIES::~SPECIES()
   /*!
     Destructor
    */
 {}
 
 void 
-MAXPEEM::build(Simulation& System,
+SPECIES::build(Simulation& System,
 	       const attachSystem::FixedComp& FCOrigin,
 	       const long int sideIndex)
   /*!
@@ -144,7 +138,7 @@ MAXPEEM::build(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("MAXPEEM","build");
+  ELog::RegMethod RControl("SPECIES","build");
 
   const int voidCell(74123);
 
@@ -163,6 +157,7 @@ MAXPEEM::build(Simulation& System,
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
+  /*
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
@@ -189,7 +184,7 @@ MAXPEEM::build(Simulation& System,
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
 				 opticsBeam->getCell("RightVoid"),
 				 cells);
-  
+  */  
   return;
 }
 

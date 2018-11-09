@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: maxpeem/maxpeemFrontEnd.cxx
+ * File: species/speciesFrontEnd.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -102,14 +102,14 @@
 
 #include "LCollimator.h"
 #include "R1FrontEnd.h"
-#include "maxpeemFrontEnd.h"
+#include "speciesFrontEnd.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
+speciesFrontEnd::speciesFrontEnd(const std::string& Key) :
   R1FrontEnd(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
   undulator(new xraySystem::Undulator(newName+"Undulator"))
@@ -125,14 +125,14 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   OR.addObject(undulator);
 }
   
-maxpeemFrontEnd::~maxpeemFrontEnd()
+speciesFrontEnd::~speciesFrontEnd()
   /*!
     Destructor
   */
 {}
 
 void
-maxpeemFrontEnd::buildUndulator(Simulation& System,
+speciesFrontEnd::buildUndulator(Simulation& System,
 				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
@@ -145,7 +145,7 @@ maxpeemFrontEnd::buildUndulator(Simulation& System,
     \param preSideIndex :: Initial side index
   */
 {
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildObjects");
+  ELog::RegMethod RegA("speciesFrontEnd","buildObjects");
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
@@ -169,7 +169,7 @@ maxpeemFrontEnd::buildUndulator(Simulation& System,
 }
 
 void
-maxpeemFrontEnd::createLinks()
+speciesFrontEnd::createLinks()
   /*!
     Create a front/back link
   */

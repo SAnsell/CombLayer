@@ -82,6 +82,7 @@
 #include "BALDER.h"
 #include "COSAXS.h"
 #include "MAXPEEM.h"
+#include "SPECIES.h"
 
 #include "makeMaxIV.h"
 
@@ -140,6 +141,13 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre7"));
+	    }
+	  if (BL=="SPECIES")  // sector 10
+	    {
+	      SPECIES BL("Species");
+	      BL.setRing(r1Ring);
+	      BL.build(System,*r1Ring,
+		       r1Ring->getSideIndex("OpticCentre6"));
 	    }
 	  index++;
 	}

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/maxpeemFrontEnd.h
+ * File:   speciesInc/speciesFrontEnd.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_maxpeemFrontEnd_h
-#define xraySystem_maxpeemFrontEnd_h
+#ifndef xraySystem_speciesFrontEnd_h
+#define xraySystem_speciesFrontEnd_h
 
 namespace insertSystem
 {
@@ -64,14 +64,14 @@ namespace xraySystem
 
     
   /*!
-    \class maxpeemFrontEnd
+    \class speciesFrontEnd
     \version 1.0
     \author S. Ansell
     \date March 2018
     \brief General constructor front end optics
   */
 
-class maxpeemFrontEnd :  public R1FrontEnd
+class speciesFrontEnd :  public R1FrontEnd
 {
  private:
 
@@ -89,10 +89,10 @@ class maxpeemFrontEnd :  public R1FrontEnd
   
  public:
   
-  maxpeemFrontEnd(const std::string&);
-  maxpeemFrontEnd(const maxpeemFrontEnd&);
-  maxpeemFrontEnd& operator=(const maxpeemFrontEnd&);
-  virtual ~maxpeemFrontEnd();
+  speciesFrontEnd(const std::string&);
+  speciesFrontEnd(const speciesFrontEnd&);
+  speciesFrontEnd& operator=(const speciesFrontEnd&);
+  virtual ~speciesFrontEnd();
 
 };
 
