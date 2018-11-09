@@ -320,10 +320,10 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 }
 
 void
-BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-		    const std::vector<double>& Thick,
-		    const double& stepThick,
-		    const std::vector<double>& stepLength)
+BenderUnit::createSurfaces(ModelSupport::surfRegister&,
+		    const std::vector<double>&,
+		    const double&,
+		    const std::vector<double>&)
   /*!
     Build the surfaces for the track
     \param SMap :: SMap to use

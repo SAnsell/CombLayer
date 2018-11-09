@@ -102,6 +102,10 @@ class PlateUnit : public ShapeUnit
   
   virtual void createSurfaces(ModelSupport::surfRegister&,
 			      const std::vector<double>&);
+  //   with steps
+  virtual void createSurfaces(ModelSupport::surfRegister&,
+			      const std::vector<double>&,
+			      const double&,const std::vector<double>&);
 };
 
 

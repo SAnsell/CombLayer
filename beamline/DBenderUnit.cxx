@@ -388,10 +388,10 @@ DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 }
 
 void
-DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-		    const std::vector<double>& Thick,
-		    const double& stepThick,
-		    const std::vector<double>& stepLength)
+DBenderUnit::createSurfaces(ModelSupport::surfRegister&,
+		    const std::vector<double>&,
+		    const double&,
+		    const std::vector<double>&)
   /*!
     Build the surfaces for the track
     \param SMap :: SMap to use
