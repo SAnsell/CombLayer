@@ -158,9 +158,15 @@ SteppedPlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 
   double L(stepLength[0]);
   const int SI(shapeIndex+1000);
+  const Geometry::Vec3D front(frontPt(0,Thick[0]));
+
   for (size_t i=1; i<=nSegments;i++)
     {
-      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i),frontPt(0,Thick[0])+YVec*L,YVec);
+      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i),
+			       front+YVec*(L),YVec);
+      const double step = i%2 ? -stepThick : stepThick;
+      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i+100),
+			       front+YVec*(L+step),YVec);
       L += stepLength[i];
     }
 
@@ -216,7 +222,7 @@ SteppedPlateUnit::getString(const ModelSupport::surfRegister& SMap,
 	  int s1=SG+static_cast<int>(j);
 	  int s2=s1+1;
 	  if (j==0)
-	      Out += " " + std::to_string(-s2) + " : ";
+	    Out += " " + std::to_string(-s2) + " : ";
 	  else if (j==nSegments)
 	      Out += " " + std::to_string(s1) + " " + cx.str();
 	  else
