@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/maxpeemOpticsHut.cxx
+ * File:   species/speciesOpticsHut.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -77,12 +77,12 @@
 #include "ExternalCut.h"
 #include "SimpleChicane.h"
 
-#include "maxpeemOpticsHut.h"
+#include "speciesOpticsHut.h"
 
 namespace xraySystem
 {
 
-maxpeemOpticsHut::maxpeemOpticsHut(const std::string& Key) : 
+speciesOpticsHut::speciesOpticsHut(const std::string& Key) : 
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -94,20 +94,20 @@ maxpeemOpticsHut::maxpeemOpticsHut(const std::string& Key) :
   */
 {}
 
-maxpeemOpticsHut::~maxpeemOpticsHut() 
+speciesOpticsHut::~speciesOpticsHut() 
   /*!
     Destructor
   */
 {}
 
 void
-maxpeemOpticsHut::populate(const FuncDataBase& Control)
+speciesOpticsHut::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHut","populate");
+  ELog::RegMethod RegA("speciesOpticsHut","populate");
   
   FixedOffset::populate(Control);
 
@@ -116,10 +116,10 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
   ringShortWidth=Control.EvalVar<double>(keyName+"RingShortWidth");
   ringLongWidth=Control.EvalVar<double>(keyName+"RingLongWidth");
+  stepLen=Control.EvalVar<double>(keyName+"StepLen");
 
   extension=Control.EvalDefVar<double>(keyName+"Extension",0.0);
-  shortLen=Control.EvalVar<double>(keyName+"ShortLen");
-  fullLen=Control.EvalVar<double>(keyName+"FullLen");
+
 
   innerSkin=Control.EvalVar<double>(keyName+"InnerSkin");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
@@ -143,7 +143,7 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
 }
 
 void
-maxpeemOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
+speciesOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
 				     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -151,7 +151,7 @@ maxpeemOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHut","createUnitVector");
+  ELog::RegMethod RegA("speciesOpticsHut","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -162,15 +162,13 @@ maxpeemOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-maxpeemOpticsHut::createSurfaces()
+speciesOpticsHut::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHut","createSurfaces");
+  ELog::RegMethod RegA("speciesOpticsHut","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+31,Origin+Y*shortLen,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+Y*fullLen,Y);
   // Inner void [large volme
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
@@ -178,14 +176,11 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringLongWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*stepLen,Y);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*ringShortWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin+X*ringShortWidth+Y*shortLen,
-			   Origin+X*ringLongWidth+Y*fullLen,
-			   Origin+X*ringLongWidth+Y*fullLen+Z,
-			   X);
 
-  SurfMap::setSurf("InnerCorner",SMap.realSurf(buildIndex+14));
+
+  SurfMap::setSurf("InnerCorner",SMap.realSurf(buildIndex+11));
   SurfMap::setSurf("InnerShort",SMap.realSurf(buildIndex+24));
   SurfMap::setSurf("InnerRoof",SMap.realSurf(buildIndex+6));
   
@@ -193,8 +188,6 @@ maxpeemOpticsHut::createSurfaces()
     ModelSupport::buildPlane
       (SMap,buildIndex+1003,Origin-X*(outWidth-innerFarVoid),X);  
 
-  const Geometry::Plane* SPtr=
-    SMap.realPtr<const Geometry::Plane>(buildIndex+14);
   
   // Inner void [large volme
   double TF(innerSkin);
@@ -207,7 +200,8 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(ringLongWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height+TR),Z);
   ModelSupport::buildPlane(SMap,buildIndex+124,Origin+X*(ringShortWidth+TW),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+114,SPtr,TW);
+
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+Y*(stepLen-TW),Y);
 
   // outer lead
   TF+=pbFrontThick;
@@ -222,7 +216,8 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(ringLongWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(height+TR),Z);
   ModelSupport::buildPlane(SMap,buildIndex+224,Origin+X*(ringShortWidth+TW),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+214,SPtr,TW);
+  ModelSupport::buildPlane(SMap,buildIndex+211,Origin+Y*(stepLen-TW),Y);
+
 
   // final outer
   TF+=outerSkin;
@@ -231,13 +226,12 @@ maxpeemOpticsHut::createSurfaces()
   TB+=outerSkin;
 
   // Note use front surf
-  // ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*TF,Y);
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(length+TB),Y);
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*(outWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*(ringLongWidth+TW),X);
   ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(height+TR),Z);
   ModelSupport::buildPlane(SMap,buildIndex+324,Origin+X*(ringShortWidth+TW),X);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+314,SPtr,TW);
+  ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*(stepLen-TW),Y);
 
 
   if (inletRadius>Geometry::zeroTol)
@@ -249,20 +243,20 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1303,
 			     Origin-X*(outWidth+TW+outerFarVoid),X);
 
-  SurfMap::setSurf("OuterCorner",SMap.realSurf(buildIndex+314));
+  SurfMap::setSurf("OuterCorner",SMap.realSurf(buildIndex+311));
   SurfMap::setSurf("OuterBack",SMap.realSurf(buildIndex+302));
   SurfMap::setSurf("OuterRoof",SMap.realSurf(buildIndex+306));
   return;
 }
 
 void
-maxpeemOpticsHut::createObjects(Simulation& System)
+speciesOpticsHut::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHut","createObjects");
+  ELog::RegMethod RegA("speciesOpticsHut","createObjects");
 
   const std::string floorStr=getRuleStr("Floor");
   const std::string ringWall=getRuleStr("RingWall");
@@ -273,12 +267,12 @@ maxpeemOpticsHut::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
       makeCell("InnerFarVoid",System,cellIndex++,0,0.0,Out+floorStr);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (11:-24) -6 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6  ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (11:-24) -6  ");   
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
     
@@ -289,13 +283,13 @@ maxpeemOpticsHut::createObjects(Simulation& System)
     {
       const int mat=matList.front();
       matList.pop_front();
-      Out=ModelSupport::getComposite(SMap,HI,"1 -2 -104 (-114:-124) (4:(14 24)) -6 ");
+      Out=ModelSupport::getComposite(SMap,HI,"1 -2 -104 (111:-124) (4:(-11 24)) -6 ");
       makeCell("Ring"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
       Out=ModelSupport::getComposite(SMap,HI,"1 -2 -3 103 -6 ");
       makeCell("Far"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
-      Out=ModelSupport::getComposite(SMap,HI,"1 -2 103 -104 (-114:-124) 6 -106 ");
+      Out=ModelSupport::getComposite(SMap,HI,"1 -2 103 -104 (111:-124) 6 -106 ");
       makeCell("Roof"+layer,System,cellIndex++,mat,0.0,Out);
       
       Out=ModelSupport::getSetComposite(SMap,HI,buildIndex,"2 -102 103 -104 -106 17M");
@@ -331,20 +325,20 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       makeCell("OuterFarVoid",System,cellIndex++,0,0.0,Out+floorStr+ringWall);
     }
   
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -3002 1303 -304 (-314:-324) -306 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -3002 1303 -304 (311:-324) -306 ");
   addOuterSurf(Out);  
 
   return;
 }
 
 void
-maxpeemOpticsHut::createLinks()
+speciesOpticsHut::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHut","createLinks");
+  ELog::RegMethod RegA("speciesOpticsHut","createLinks");
 
   const double extraBack(innerSkin+outerSkin+pbBackThick);
   const double extraWall(innerSkin+outerSkin+pbWallThick);
@@ -386,7 +380,7 @@ maxpeemOpticsHut::createLinks()
 }
 
 void
-maxpeemOpticsHut::createChicane(Simulation& System)
+speciesOpticsHut::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
     Requirements:
@@ -406,7 +400,7 @@ maxpeemOpticsHut::createChicane(Simulation& System)
     \param System :: Simulation 
   */
 {
-  ELog::RegMethod Rega("maxpeemOpticsHut","createChicane");
+  ELog::RegMethod Rega("speciesOpticsHut","createChicane");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -442,7 +436,7 @@ maxpeemOpticsHut::createChicane(Simulation& System)
 }
 
 void
-maxpeemOpticsHut::createAll(Simulation& System,
+speciesOpticsHut::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -452,7 +446,7 @@ maxpeemOpticsHut::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsHut","createAll(FC)");
+  ELog::RegMethod RegA("speciesOpticsHut","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

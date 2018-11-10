@@ -629,16 +629,16 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
 
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",950.0);
-  // total inner width [short] - 295.0cm 
-  Control.addVariable(hutName+"OutWidth",207.81);
-  Control.addVariable(hutName+"RingShortWidth",87.19);
+  Control.addVariable(hutName+"Height",242.0);  
+  Control.addVariable(hutName+"Length",678.5);
+  // total inner width [short] - 295.0cm
+
+  Control.addVariable(hutName+"OutWidth",221.9);   
+  Control.addVariable(hutName+"RingShortWidth",140.1);
   // total inner width [short] - 400.0cm 
-  Control.addVariable(hutName+"RingLongWidth",192.19);
-  Control.addVariable(hutName+"ShortLen",240.0);
+  Control.addVariable(hutName+"RingLongWidth",196.3);
   // length to first full width point
-  Control.addVariable(hutName+"FullLen",348.0);
+  Control.addVariable(hutName+"StepLen",245.7);
   Control.addVariable(hutName+"Extension",100.0);
 
   // THIS IS WRONG but the diagram is a mess.
@@ -653,15 +653,13 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"OuterMat","Stainless304");
   
-
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
   Control.addVariable(hutName+"InletRadius",5.0);
 
-
-  Control.addVariable(hutName+"InnerFarVoid",15.0);
-  Control.addVariable(hutName+"OuterFarVoid",15.0);
-  Control.addVariable(hutName+"NChicane",1);
+  //  Control.addVariable(hutName+"InnerFarVoid",15.0);
+  //  Control.addVariable(hutName+"OuterFarVoid",15.0);
+  Control.addVariable(hutName+"NChicane",0);
 
   SimpleChicaneGenerator PGen;
   PGen.generateSimpleChicane(Control,hutName+"Chicane0",170.0,-25.0);

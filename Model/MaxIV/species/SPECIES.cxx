@@ -87,16 +87,8 @@
 #include "R1Ring.h"
 #include "R1FrontEnd.h"
 #include "speciesFrontEnd.h"
-// #include "speciesOpticsHut.h"
-// #include "speciesOpticsBeamline.h"
-#include "ExperimentalHutch.h"
-#include "CrossPipe.h"
-#include "MonoVessel.h"
-#include "MonoCrystals.h"
-#include "GateValve.h"
-#include "JawUnit.h"
-#include "JawValve.h"
-#include "FlangeMount.h"
+#include "speciesOpticsHut.h"
+#include "speciesOpticsBeamline.h"
 #include "WallLead.h"
 
 #include "SPECIES.h"
@@ -107,7 +99,10 @@ namespace xraySystem
 SPECIES::SPECIES(const std::string& KN) :
   attachSystem::CopiedComp("Species",KN),
   frontBeam(new speciesFrontEnd(newName+"FrontBeam")),
-  wallLead(new WallLead(newName+"WallLead"))
+  wallLead(new WallLead(newName+"WallLead")),
+  opticsHut(new speciesOpticsHut(newName+"OpticsHut")),
+  joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
+  opticsBeam(new speciesOpticsBeamline(newName+"OpticsBeam"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -118,6 +113,9 @@ SPECIES::SPECIES(const std::string& KN) :
 
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
+  OR.addObject(opticsHut);
+  OR.addObject(joinPipe);
+  OR.addObject(opticsBeam);
 }
 
 SPECIES::~SPECIES()
@@ -157,7 +155,7 @@ SPECIES::build(Simulation& System,
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  /*
+
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));
@@ -178,7 +176,7 @@ SPECIES::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
-
+  /*
   std::vector<int> cells(opticsHut->getCells("Back"));
   cells.emplace_back(opticsHut->getCell("Extension"));
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
