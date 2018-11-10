@@ -466,29 +466,25 @@ m1MirrorVariables(FuncDataBase& Control,
 
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::GateValveGenerator GateGen;
+  setVariable::PortItemGenerator PItemGen;
   setVariable::MirrorGenerator MirrGen;
+  setVariable::BellowGenerator BellowGen;
   
-  PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
-  PipeGen.setCF<setVariable::CF63>();
-  PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",0,6.8);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
-  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
-
   const std::string mName=mirrorKey+"M1Tube";
-  const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
-  Control.addVariable(mName+"XStep",centreOffset);   
-  Control.addVariable(mName+"NPorts",0);   // beam ports
 
-  PipeGen.setCF<setVariable::CF63>();
-  PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,13.8);
-  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
-  Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
+  SimpleTubeGen.setPipe(15.0,1.0,17.8,1.0);
+  SimpleTubeGen.setCap(1,1);
+  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
+
+  Control.addVariable(mName+"NPorts",2);   // beam ports
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF120>(15.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,mName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,mName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
 
   // mirror in M1Tube 
@@ -496,11 +492,14 @@ m1MirrorVariables(FuncDataBase& Control,
   // y/z/theta/phi/radius
   MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, 2.0, 0.0,0.0);
   Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
+
   
-  // joined and open
-  GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,mirrorKey+"GateA",0.0,0);
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,mirrorKey+"BellowC",0,16.0);
+  
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,mirrorKey+"PipeA",0,50.0);
+
 
   return;
 }
@@ -561,52 +560,6 @@ opticsBeamVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,opticKey+"BellowB",0,16.0);
 
-  PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,opticKey+"PipeA",0,50.0);
-
-  // will be rotated vertical
-  const std::string florName=opticKey+"FlorTubeA";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,florName,0.0,27.0);  // centre 13.5cm
-
-  Control.addVariable(florName+"NPorts",2);   // beam ports
-  PItemGen.setCF<setVariable::CF40>(2.25);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  BellowGen.generateBellow(Control,opticKey+"BellowC",0,16.0);
-  
-  PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,opticKey+"PipeB",0,169.5);
-
-  ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
-  ShieldGen.setPlate(25.0,25.0,5.0);
-  // ystep : wing  
-  ShieldGen.generateShield(Control,opticKey+"ScreenExtra",-80.0,0.0);
-
-  // will be rotated vertical
-  const std::string collName=opticKey+"PumpTubeA";
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,collName,0.0,40.0);
-  Control.addVariable(collName+"NPorts",3);   // beam ports
-  
-  PItemGen.setCF<setVariable::CF40>(5.95);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-
-  PItemGen.setCF<setVariable::CF63>(4.95);
-  PItemGen.setPlate(0.0,"Void");  
-  PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
-
-  const Geometry::Vec3D angVec(0,sin(M_PI*35.0/180.0),-cos(M_PI*35.0/180.0));
-  const double DLen=17.2-7.55/cos(M_PI*35.0/180.0);
-  PItemGen.setCF<setVariable::CF40>(DLen);
-  PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,collName+"Port2",
-			Geometry::Vec3D(0,0,0),-angVec);
   
   m1MirrorVariables(Control,opticKey);
   slitPackageVariables(Control,opticKey);

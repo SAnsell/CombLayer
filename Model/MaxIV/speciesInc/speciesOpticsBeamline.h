@@ -92,94 +92,14 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// Pipe to some stuff
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  /// Flor-port ???
-  std::shared_ptr<constructSystem::PipeTube> florTubeA;
-  /// Bellow to to super section
-  std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// Pipe to some stuff
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  /// Extra screen to make stuff good
-  std::shared_ptr<xraySystem::PipeShield> screenExtra;
-  /// collimator-port ?
-  std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
-  /// Front port of mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
-  /// back port of mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
-  /// Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateA;
-  /// Large Pipe to slit section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-  /// Shield between pipes
-  std::shared_ptr<xraySystem::PipeShield> screenA;
-  /// Small Pipe to slit section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
-  /// Small Pipe to slit section
-  std::shared_ptr<constructSystem::PipeTube> slitTube;
-  /// Jaws for the slit tube (x/z pair)
-  std::array<std::shared_ptr<xraySystem::BeamMount>,4> jaws;
-  /// Small Pipe to gate-valve
-  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
-  /// Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateB;
-  /// Bellow to to super section
-  std::shared_ptr<constructSystem::Bellows> bellowD;
-  /// Pipe exiting slit section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
-  /// Mono Box
-  std::shared_ptr<xraySystem::GrateMonoBox> monoB;
-  /// Mono Box
-  std::shared_ptr<xraySystem::GratingMono> monoXtal;
-  /// Pipe exiting slit section
-  std::shared_ptr<constructSystem::VacuumPipe> pipeG;
-  /// Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateC;
-  /// Bellow to to super section
-  std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Small Pipe to slits on before M3
-  std::shared_ptr<constructSystem::PipeTube> viewTube;
-  /// Slits [second pair]
-  std::shared_ptr<constructSystem::JawValve> slitsB;
-  /// Second pumping port
-  std::shared_ptr<constructSystem::PipeTube> pumpTubeB;
-  /// Front port of mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeC;
-  /// M3 - Mirror box
-  std::shared_ptr<constructSystem::PipeTube> M3Tube;
-  /// M3 - Mirror
-  std::shared_ptr<xraySystem::Mirror> M3Mirror;
-  /// back port of mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeD;
-  /// Splitter
-  std::shared_ptr<xraySystem::TwinPipe> splitter;
-  /// Shield between pipes
-  std::shared_ptr<xraySystem::PipeShield> screenB;
-
-  // PIPE A :: LEFT SIDE
-  // bellowA on left split
-  std::shared_ptr<constructSystem::Bellows> bellowAA;
-  /// Gate valve for left
-  std::shared_ptr<constructSystem::GateValve> gateAA;
-  /// Pumping tube
-  std::shared_ptr<constructSystem::PortTube> pumpTubeAA;
-
-  // PIPE B :: RIGHT SIDE
-  std::shared_ptr<constructSystem::Bellows> bellowBA;
-  /// Gate valve for right
-  std::shared_ptr<constructSystem::GateValve> gateBA;
-  /// Pumping tube
-  std::shared_ptr<constructSystem::PortTube> pumpTubeBA;
-
-  /// Pipe to exit
-  std::shared_ptr<constructSystem::VacuumPipe> outPipeA;
-  /// Pipe to exit
-  std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
+  /// Bellow to first connect line
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+    /// Pipe to some stuff
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
 
   double outerRadius;           ///< Radius for inner void
   
@@ -198,6 +118,8 @@ class speciesOpticsBeamline :
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   
 
+  void buildFrontTable(Simulation&,MonteCarlo::Object*,
+		       const attachSystem::FixedComp&,const long int);
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
   void buildM3Mirror(Simulation&,MonteCarlo::Object*,
