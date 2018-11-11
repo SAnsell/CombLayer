@@ -92,6 +92,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// Front port of mirror box
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   /// M1 - Mirror
@@ -99,7 +101,22 @@ class speciesOpticsBeamline :
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowC;
     /// Pipe to some stuff
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// First screen
+  std::shared_ptr<xraySystem::PipeShield> screenA;
+  /// Gate valve [after screen]
+  std::shared_ptr<constructSystem::GateValve> gateA;
+  /// Small Pipe to slit section
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// Small Pipe to slit section
+  std::shared_ptr<constructSystem::PipeTube> slitTube;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::BeamMount>,4> jaws;
+  /// Small Pipe to gate-valve
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  /// First screen
+  std::shared_ptr<xraySystem::PipeShield> screenB;
+
 
   double outerRadius;           ///< Radius for inner void
   

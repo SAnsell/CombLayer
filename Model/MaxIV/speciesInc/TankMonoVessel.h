@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GrateMonoBox.h
+ * File:   speciesInc/TankMonoVessel.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_GrateMonoBox_h
-#define xraySystem_GrateMonoBox_h
+#ifndef xraySystem_TankMonoVessel_h
+#define xraySystem_TankMonoVessel_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
   
 /*!
-  \class GrateMonoBox
+  \class TankMonoVessel
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief GrateMonoBox unit  
+  \brief TankMonoVessel unit  
 */
 
-class GrateMonoBox :
+class TankMonoVessel :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -45,18 +45,15 @@ class GrateMonoBox :
 
   const bool centreOrigin;      ///< Construct on the centre line
 
-  double voidHeight;            ///< void height [flat section]
-  double voidDepth;             ///< void depth [flat section]
-  double voidWidth;             ///< void width [total]
-  double voidLength;            ///< void forward [total]
-  double voidRadius;            ///< void radius [low Z only]
-
-  double overHangExtent;        ///< Overhang distance
-  double overHangDepth;         ///< Overhang distance
+  double voidRadius;            ///< void main radius
+  double voidDepth;             ///< void depth to dome
+  double voidHeight;            ///< void height to lid flange
+  double baseDepth;             ///< Extra at base for curve
+  double topLift;               ///< Extra at top for curve
   
   double wallThick;             ///< Thick of side walls
-  double radiusThick;           ///< radius thickness
-  double roofThick;             ///< roof thickness
+  double lidRadius;             ///< Lid flange radius
+  double lidDepth;              ///< Lid flange depth
 
   double portAXStep;          ///< XStep of port
   double portAZStep;          ///< ZStep of port
@@ -92,10 +89,10 @@ class GrateMonoBox :
 
  public:
 
-  GrateMonoBox(const std::string&);
-  GrateMonoBox(const GrateMonoBox&);
-  GrateMonoBox& operator=(const GrateMonoBox&);
-  virtual ~GrateMonoBox();
+  TankMonoVessel(const std::string&);
+  TankMonoVessel(const TankMonoVessel&);
+  TankMonoVessel& operator=(const TankMonoVessel&);
+  virtual ~TankMonoVessel();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

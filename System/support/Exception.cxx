@@ -157,7 +157,8 @@ IndexError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"IndexError:"<<ExBase::getErr()<<" "<<Val<<" :: 0 <==> "<<maxVal;
+  cx<<"\nEXCEPTION TYPE :: IndexError< "<<typeid(T).name()<<" > \n";
+  cx<<ExBase::getErr()<<" "<<Val<<" :: 0 <==> "<<maxVal;
   OutLine=cx.str();
   return;
 }
@@ -215,7 +216,8 @@ SizeError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"SizeError:"<<ExBase::getErr()<<" "<<Val<<" less than "<<minVal;
+  cx<<"\nEXCEPTION TYPE :: SizeError< "<<typeid(T).name()<<" > \n";
+  cx<<ExBase::getErr()<<" "<<Val<<" less than "<<minVal;
   OutLine=cx.str();
   return;
 }
@@ -268,6 +270,7 @@ FileError::setOutLine()
   */
 {
   std::stringstream cx;
+  cx<<"\nEXCEPTION TYPE :: FileError\n";
   cx<<getErr()<<" in "<<fileName;
   OutLine=cx.str();
   return;
@@ -321,7 +324,8 @@ EmptyValue<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<getErr()<<" EmptyValue for type "<<typeid(T).name();
+  cx<<"\nEXCEPTION TYPE :: EmptyValud< "<<typeid(T).name()<<" > \n";
+  cx<<getErr();
   OutLine=cx.str();
   return;
 }
@@ -371,7 +375,8 @@ EmptyContainer::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<getErr()<<" EmptyContainer ";
+  cx<<"\nEXCEPTION TYPE :: EmptyContainer\n";
+  cx<<getErr();
   OutLine=cx.str();
   return;
 }
@@ -428,7 +433,7 @@ InContainerError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"InContainerError<>::\n";
+  cx<<"\nEXCEPTION TYPE :: InContainerError< "<<typeid(T).name()<<"\n";
   cx<<getErr()<<"\nkey== "<<SearchObj<<" ==";
   OutLine=cx.str();
   return;
@@ -487,7 +492,7 @@ RangeError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"RangeError<>"<<std::endl;
+  cx<<"\nEXCEPTION TYPE :: RangeError< "<<typeid(T).name()<<"\n";
   cx<<getErr()<<" Value == "<<Index<<
     " Min == "<<minV<<
     " Max == "<<maxV;
@@ -547,7 +552,8 @@ OrderError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"OrderError<>"<<std::endl;
+  cx<<"\nEXCEPTION TYPE :: OrderError< "<<typeid(T).name()<<"\n";
+
   cx<<getErr()<<" value == "<<lowValue<<
     " = NOT LESS THAN = "<<highValue;
   OutLine=cx.str();
@@ -642,7 +648,9 @@ DimensionError<ndim,T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"DimensionError<"<<ndim<<">"<<std::endl;
+  cx<<"\nEXCEPTION TYPE :: DimensionError< "<<ndim<<" , "
+    <<typeid(T).name()<<"\n";
+
   cx<<getErr()<<":";
 
   for(unsigned int i=0;i<ndim;i++)
@@ -721,6 +729,8 @@ ArrayError<ndim>::setOutLine()
   */
 {
   std::stringstream cx;
+  cx<<"\nEXCEPTION TYPE :: ArrayError< "<<ndim<<"\n";
+
   cx<<"ArrayError<"<<ndim<<">"<<std::endl;
   cx<<getErr()<<":";
 
@@ -784,7 +794,8 @@ MisMatch<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"MisMatch<>"<<std::endl;
+  cx<<"\nEXCEPTION TYPE :: MisMatch< "<<typeid(T).name()<<"\n";
+
   cx<<getErr()<<" Item A!=B "<<Aval<<
     " "<<Bval<<" ";
   OutLine=cx.str();
@@ -841,7 +852,7 @@ TypeMatch::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"TypeMatch:"<<std::endl;
+  cx<<"\nEXCEPTION TYPE :: TypeMatch \n";
   cx<<getErr()<<" Names: "<<AName
     <<" "<<BName<<" ";
   OutLine=cx.str();
@@ -899,7 +910,8 @@ InvalidLine::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"InvalidLine"<<std::endl;
+  cx<<"\nEXCEPTION TYPE :: InvalidLine\n ";
+
   cx<<getErr()<<"\n Line: "<<Line<<" @ "<<pos;
   OutLine=cx.str();
   return;
@@ -958,7 +970,8 @@ CastError<Ptr>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"CastError:"<<typeid(Base).name()<<"\n";
+  
+  cx<<"\nCastError:"<<typeid(Base).name()<<"\n";
   cx<<"\nCast Obj[Address]: "<<reinterpret_cast<long int>(Base);
   cx<<"\n";
   cx<<"Reason :: "<<getErr()<<std::endl;
@@ -1018,7 +1031,7 @@ TypeConvError<T,U>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"TypeConvError:"<<typeid(T).name()
+  cx<<"\nTypeConvError:"<<typeid(T).name()
     <<" -> "<<typeid(U).name()<<"\n";
   cx<<"\nCast Obj: "<<ABase;
   cx<<"\n";
@@ -1080,7 +1093,8 @@ DynamicConv::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"DynamicConv:"<<getErr()<<"::\n"
+  cx<<"\nEXCEPTION TYPE :: DynamicConv\n";
+  cx<<getErr()<<"::\n"
     <<Base<<"  ==>> "<<Derived;
   OutLine=cx.str();
   return;
@@ -1136,7 +1150,8 @@ CommandError::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"CommandError:"<<getErr()<<" ::"<<Cmd;
+  cx<<"\nEXCEPTION TYPE :: CommandError\n";
+  cx<<getErr()<<" ::"<<Cmd;
   OutLine=cx.str();
   return;
 }
@@ -1262,7 +1277,8 @@ ConstructionError::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"ConstructionError:"<<getErr()<<" ::\n"
+  cx<<"\nEXCEPTION TYPE :: ConstructionError\n";
+  cx<<getErr()<<" ::\n"
     <<"Name:"<<Name<<"\n"
     <<"Method :"<<method<<"\n";
   if (input.empty())
@@ -1324,7 +1340,8 @@ AbsObjMethod::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"AbsObjMethod:"<<getErr();
+  cx<<"\nEXCEPTION TYPE :: AbsObjMethod\n";
+  cx<<getErr();
   OutLine=cx.str();
   return;
 }
@@ -1374,7 +1391,8 @@ NumericalAbort::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"NumericalAbort:"<<getErr();
+  cx<<"\nEXCEPTION TYPE :: NumericalAbort\n";
+  cx<<getErr();
   OutLine=cx.str();
   return;
 }

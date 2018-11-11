@@ -119,10 +119,22 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  pipeA(new constructSystem::VacuumPipe(newName+"PipeA"))
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
+  gateA(new constructSystem::GateValve(newName+"GateA")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
+  jaws({
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")}),  
+  pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  screenB(new xraySystem::PipeShield(newName+"ScreenB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -135,10 +147,11 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(ionPA);
   OR.addObject(gateTubeA);
   OR.addObject(bellowB);
+  OR.addObject(pipeA);
   OR.addObject(M1Tube);
   OR.addObject(M1Mirror);
   OR.addObject(bellowC);
-  OR.addObject(pipeA);
+  OR.addObject(pipeB);
 }
   
 speciesOpticsBeamline::~speciesOpticsBeamline()
@@ -296,10 +309,14 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
 
   int outerCell;
 
+  pipeA->createAll(System,initFC,sideIndex);
+  outerCell= buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
+
   // FAKE insertcell: reqruired
   M1Tube->addAllInsertCell(masterCell->getName());
   M1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  M1Tube->createAll(System,initFC,sideIndex);
+  M1Tube->createAll(System,*pipeA,2);
   
   const constructSystem::portItem& API=M1Tube->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
@@ -314,9 +331,88 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
     (System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
 
+  pipeB->createAll(System,*bellowC,2);
+  outerCell= buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
+  pipeB->insertInCell(System,outerCell);
+
+  screenA->addAllInsertCell(outerCell);
+  screenA->setCutSurf("inner",*pipeB,"pipeOuterTop");
+  screenA->createAll(System,*pipeB,0);
+  
+  
   return;
 }
 
+
+void
+speciesOpticsBeamline::buildSlitPackage(Simulation& System,
+					MonteCarlo::Object* masterCell,
+					const attachSystem::FixedComp& initFC, 
+					const long int sideIndex)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("speciesOpticsBeamline","buildSlitPackage");
+
+  int outerCell;
+  
+  gateA->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  gateA->insertInCell(System,outerCell);
+
+  pipeC->createAll(System,*gateA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
+  pipeC->insertInCell(System,outerCell);
+
+  // FAKE insertcell: required
+  slitTube->addAllInsertCell(masterCell->getName());
+  slitTube->createAll(System,*pipeC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitTube,2);
+  slitTube->insertAllInCell(System,outerCell);
+
+  slitTube->splitVoidPorts(System,"SplitVoid",1001,
+			   slitTube->getCell("Void"),
+			   Geometry::Vec3D(0,1,0));
+
+
+  slitTube->splitObject(System,1501,outerCell,
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+  cellIndex++;  // remember creates an extra cell in  primary
+
+  for(size_t i=0;i<jaws.size();i++)
+    {
+      const constructSystem::portItem& PI=slitTube->getPort(i);
+      jaws[i]->addInsertCell("Support",PI.getCell("Void"));
+      jaws[i]->addInsertCell("Support",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("Block",slitTube->getCell("SplitVoid",i));
+      jaws[i]->createAll(System,*slitTube,0,
+			 PI,PI.getSideIndex("InnerPlate"));
+    }
+
+  pipeD->createAll(System,*slitTube,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeD,2);
+  pipeD->insertInCell(System,outerCell);
+
+  const constructSystem::portItem& SPI=slitTube->getPort(3);
+  // this needs the plate as well if constructed
+  SPI.insertCellMapInCell(System,"Flange",0,outerCell);
+  
+  
+  screenB->addAllInsertCell(outerCell);
+  screenB->setCutSurf("inner",*pipeD,"pipeOuterTop");
+  screenB->createAll(System,*pipeD,0);
+
+  return;
+}
+
+
+  
 void
 speciesOpticsBeamline::buildObjects(Simulation& System)
   /*!
@@ -335,6 +431,7 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
 
   buildFrontTable(System,masterCellA,*this,0);
   buildM1Mirror(System,masterCellA,*bellowB,2);
+  buildSlitPackage(System,masterCellA,*pipeB,2);
   lastComp=bellowB;
 
 

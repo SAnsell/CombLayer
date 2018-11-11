@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/GrateMonoBox.cxx
+ * File:   species/TankMonoVessel.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -76,15 +75,16 @@
 #include "FrontBackCut.h"
 #include "portItem.h"
 
-#include "GrateMonoBox.h"
+#include "TankMonoVessel.h"
 
 namespace xraySystem
 {
 
-GrateMonoBox::GrateMonoBox(const std::string& Key) :
+TankMonoVessel::TankMonoVessel(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),centreOrigin(0)
+  attachSystem::FrontBackCut(),
+  centreOrigin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -92,35 +92,32 @@ GrateMonoBox::GrateMonoBox(const std::string& Key) :
   */
 {}
 
-GrateMonoBox::~GrateMonoBox() 
+TankMonoVessel::~TankMonoVessel() 
   /*!
     Destructor
   */
 {}
 
 void
-GrateMonoBox::populate(const FuncDataBase& Control)
+TankMonoVessel::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("GrateMonoBox","populate");
+  ELog::RegMethod RegA("TankMonoVessel","populate");
   
   FixedOffset::populate(Control);
 
+  
   // Void + Fe special:
+  voidRadius=Control.EvalVar<double>(keyName+"VoidWidth");
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
-  voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
-  voidLength=Control.EvalVar<double>(keyName+"VoidLength");
-  voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
 
-  overHangExtent=Control.EvalVar<double>(keyName+"OverHangExtent");
-  overHangDepth=Control.EvalVar<double>(keyName+"OverHangDepth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  radiusThick=Control.EvalVar<double>(keyName+"RadiusThick");
-  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  baseDepth=Control.EvalVar<double>(keyName+"baseDepth");
+  topLift=Control.EvalVar<double>(keyName+"TopLift");
 
   portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
   portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
@@ -206,7 +203,7 @@ GrateMonoBox::populate(const FuncDataBase& Control)
 }
 
 void
-GrateMonoBox::createUnitVector(const attachSystem::FixedComp& FC,
+TankMonoVessel::createUnitVector(const attachSystem::FixedComp& FC,
 			    const long int sideIndex)
   /*!
     Create the unit vectors
@@ -214,106 +211,53 @@ GrateMonoBox::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("GrateMonoBox","createUnitVector");
+  ELog::RegMethod RegA("TankMonoVessel","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  Origin+=Y*(portATubeLength+wallThick+voidLength/2.0);
+  Origin+=Y*(portATubeLength+wallThick+voidRadius);
   return;
 }
 
 void
-GrateMonoBox::createSurfaces()
+TankMonoVessel::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("GrateMonoBox","createSurfaces");
+  ELog::RegMethod RegA("TankMonoVessel","createSurfaces");
 
   // Do outer surfaces (vacuum ports)
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,
-	      Origin-Y*(portATubeLength+wallThick+voidLength/2.0),Y);
+	      Origin-Y*(portATubeLength+wallThick+voidRadius),Y);
       setFront(SMap.realSurf(buildIndex+101));
     }
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+102,
-	    Origin+Y*(portBTubeLength+wallThick+voidLength/2.0),Y);
+	    Origin+Y*(portBTubeLength+wallThick+voidRadius),Y);
       setBack(-SMap.realSurf(buildIndex+102));
     }
   
 
   // Inner void
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+7,Origin-Z*voidDepth,Y,voidRadius);
-
-  // Walls
-  ModelSupport::buildPlane(SMap,buildIndex+11,
-   			   Origin-Y*(wallThick+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,
-			   Origin+Y*(wallThick+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(wallThick+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin+X*(wallThick+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(roofThick+voidHeight),Z);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+17,Origin-Z*voidDepth,Y,voidRadius+radiusThick);
-
-  // FRONT PORT
-  const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,ACentre,Y,portATubeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,ACentre,Y,
-			      portATubeRadius+portAWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+127,ACentre,Y,flangeARadius);
-
-
-  // BACK PORT
-  const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,BCentre,Y,portBTubeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+217,BCentre,Y,
-			      portBTubeRadius+portBWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+227,BCentre,Y,flangeBRadius);
-
-  // Flange cut
-  FrontBackCut::getShiftedFront(SMap,buildIndex+111,1,Y,flangeALength);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+211,-1,Y,flangeBLength);
-
-
-  // Top plate:
-  ModelSupport::buildPlane(SMap,buildIndex+1001,
-   			   Origin-Y*(overHangExtent+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1002,
-			   Origin+Y*(overHangExtent+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1003,
-			   Origin-X*(overHangExtent+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,
-			   Origin+X*(overHangExtent+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,
-			   Origin+Z*(voidHeight-overHangDepth),Z);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+1007,Origin-Z*voidDepth,Y,voidRadius+overHangExtent);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-Z*voidDepth,Z,voidRadius);
     
   return;
 }
 
 void
-GrateMonoBox::createObjects(Simulation& System)
+TankMonoVessel::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("GrateMonoBox","createObjects");
+  ELog::RegMethod RegA("TankMonoVessel","createObjects");
 
   std::string Out;
 
@@ -411,7 +355,7 @@ GrateMonoBox::createObjects(Simulation& System)
 }
 
 void
-GrateMonoBox::createLinks()
+TankMonoVessel::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane.
@@ -419,7 +363,7 @@ GrateMonoBox::createLinks()
     Note that 0/1 are the flange surfaces
   */
 {
-  ELog::RegMethod RegA("GrateMonoBox","createLinks");
+  ELog::RegMethod RegA("TankMonoVessel","createLinks");
 
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
@@ -440,7 +384,7 @@ GrateMonoBox::createLinks()
 }
 
 void
-GrateMonoBox::createAll(Simulation& System,
+TankMonoVessel::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
   /*!
@@ -450,7 +394,7 @@ GrateMonoBox::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("GrateMonoBox","createAll(FC)");
+  ELog::RegMethod RegA("TankMonoVessel","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

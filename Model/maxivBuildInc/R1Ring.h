@@ -53,6 +53,7 @@ class R1Ring :
   double depth;                   ///< Main depth
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
+  double roofExtra;               ///< Roof Extra void above roof
 
   size_t NPoints;                 ///< number of points in track
   size_t concaveNPoints;          ///< number of concave points in track
