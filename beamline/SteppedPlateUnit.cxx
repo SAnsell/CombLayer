@@ -68,7 +68,7 @@ namespace beamlineSystem
 {
 
 SteppedPlateUnit::SteppedPlateUnit(const int ON,const int LS)  :
-  PlateUnit(ON,LS),nSegments(0)
+  PlateUnit(ON,LS),nSegments(0),gapSep(10)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -77,7 +77,7 @@ SteppedPlateUnit::SteppedPlateUnit(const int ON,const int LS)  :
 {}
 
 SteppedPlateUnit::SteppedPlateUnit(const SteppedPlateUnit& A) :
-  PlateUnit(A),nSegments(A.nSegments)
+  PlateUnit(A),nSegments(A.nSegments),gapSep(A.gapSep)
   /*!
     Copy constructor
     \param A :: SteppedPlateUnit to copy
@@ -135,39 +135,44 @@ SteppedPlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
     \param stepLength :: step length
    */
 {
-  ELog::RegMethod RegA("SteppedPlateUnit","createSurfaces [with stes]");
+  ELog::RegMethod RegA("SteppedPlateUnit","createSurfaces");
 
   PlateUnit::createSurfaces(SMap,Thick);
 
   nSegments = stepLength.size();
 
-  for(size_t j=0;j<Thick.size();j++)
+  // Build side planes for the steps in each layer
+  for(size_t layer=0;layer<Thick.size();layer++)
     {
       // Start from 1
-      int SN(shapeIndex+layerSep*static_cast<int>(j)+1);
+      int SN = shapeIndex+layerSep*static_cast<int>(layer)+1;
 
       for(size_t i=0;i<nCorner;i++)
 	{
-	  if (j)
-	    ModelSupport::buildShiftedPlane(SMap,SN+10,
+	  if (layer)
+	    ModelSupport::buildShiftedPlane(SMap,SN+gapSep,
 					    SMap.realPtr<Geometry::Plane>(SN),
 					    -stepThick);
 	  SN++;
 	}
     }
 
-  double L(stepLength[0]);
+  // Build front/back planes to separate steps in each layer
   const int SI(shapeIndex+1000);
   const Geometry::Vec3D front(frontPt(0,Thick[0]));
-
-  for (size_t i=1; i<=nSegments;i++)
+  for (size_t layer=1;layer<Thick.size(); layer++)
     {
-      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i),
-			       front+YVec*(L),YVec);
-      const double step = i%2 ? -stepThick : stepThick;
-      ModelSupport::buildPlane(SMap,SI+static_cast<int>(i+100),
-			       front+YVec*(L+step),YVec);
-      L += stepLength[i];
+      double L(0.0);
+      for (size_t segment=0; segment<nSegments;segment++)
+	{
+	  const double dt(Thick[layer]-Thick[1]);
+	  const double step = segment%2 ? dt : -dt;
+	  L += stepLength[segment];
+
+	  ModelSupport::buildPlane(SMap,SI+static_cast<int>(layer)*layerSep+
+				   static_cast<int>(segment),
+				   front+YVec*(L+step),YVec);
+	}
     }
 
   return;
@@ -175,7 +180,7 @@ SteppedPlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 
 std::string
 SteppedPlateUnit::getString(const ModelSupport::surfRegister& SMap,
-		      const size_t layerN) const
+			    const size_t layerN) const
   /*!
     Write string for layer number
     \param SMap :: Surface register
@@ -191,8 +196,8 @@ SteppedPlateUnit::getString(const ModelSupport::surfRegister& SMap,
   bool bFlag(0);
   // Start from 1
   // define rules for side surfaces (without front/back)
-  // both for segmentts without (cx) and with (cxStep) step
-  int SN(layerSep*static_cast<int>(layerN)+1);
+  // both for segments without (cx) and with (cxStep) step
+  int SN = layerSep*static_cast<int>(layerN)+1;
   for(size_t i=0;i<nCorner;i++)
     {
       if (nonConvex[i] || nonConvex[(i+1) % nCorner])
@@ -207,29 +212,45 @@ SteppedPlateUnit::getString(const ModelSupport::surfRegister& SMap,
 	  bFlag=0;
 	}
       cx<<SN;
-      cxStep<<SN+10;
+      cxStep<<SN+gapSep;
       SN++;
     }
   if (bFlag) cx<<")";
 
-
   std::string Out=cx.str();
   if ((layerN) && (nSegments))
     {
-      int SG=1000;
-      for (size_t j=0; j<=nSegments; j++)
+      std::string OutEven=cx.str() + " (";
+      std::string OutOdd=cxStep.str() + " (";
+      const int SG(1000);
+      for (size_t segment=0; segment<=nSegments; segment++)
 	{
-	  int s1=SG+static_cast<int>(j);
-	  int s2=s1+1;
-	  if (j==0)
-	    Out += " " + std::to_string(-s2) + " : ";
-	  else if (j==nSegments)
-	      Out += " " + std::to_string(s1) + " " + cx.str();
+	  // indices of back/front planes
+	  const int s1(SG+static_cast<int>(layerN)*layerSep+
+		       static_cast<int>(segment));
+	  const int s2(s1+1);
+
+	  if (segment==0)
+	    Out = std::to_string(-s1) + " : ";
+	  else if (segment==nSegments)
+	    Out = std::to_string(s2-2) + " ";
 	  else
-	      Out += " " + std::to_string(s1) + " " +
-		(j%2 ? cxStep.str() : cx.str()) + " " +
-		std::to_string(-s2) + " : ";
+	    {
+	      Out = std::to_string(s1-1) + " " + std::to_string(-s1);
+	      if (segment!=nSegments-1)
+		Out += " : ";
+	      else
+		Out += " ";
+	    }
+
+	  if (segment%2)
+	    OutOdd += Out;
+	  else
+	    OutEven += Out;
 	}
+      OutOdd += " )";
+      OutEven += " )";
+      Out = OutOdd + " : " + OutEven;
     }
 
   return ModelSupport::getComposite(SMap,shapeIndex," ( " + Out + " ) ");

@@ -38,6 +38,7 @@ class SteppedPlateUnit : public PlateUnit
  private:
 
   size_t nSegments;        ///< Number of step segments
+  const int gapSep;        ///< Gap separation count
 
  public:
 
