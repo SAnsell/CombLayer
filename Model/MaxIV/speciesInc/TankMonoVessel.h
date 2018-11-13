@@ -39,7 +39,7 @@ class TankMonoVessel :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -48,8 +48,8 @@ class TankMonoVessel :
   double voidRadius;            ///< void main radius
   double voidDepth;             ///< void depth to dome
   double voidHeight;            ///< void height to lid flange
-  double baseDepth;             ///< Extra at base for curve
-  double topLift;               ///< Extra at top for curve
+  double baseGap;               ///< Extra at base for curve
+  double topGap;                ///< Extra at top for curve
   
   double wallThick;             ///< Thick of side walls
   double lidRadius;             ///< Lid flange radius

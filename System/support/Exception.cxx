@@ -29,6 +29,7 @@
 #include <map>
 #include <cmath>
 
+#include "TypeString.h"
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -157,7 +158,7 @@ IndexError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: IndexError< "<<typeid(T).name()<<" > \n";
+  cx<<"\nEXCEPTION TYPE :: IndexError< "<<typeIDName<T>()<<" > \n";
   cx<<ExBase::getErr()<<" "<<Val<<" :: 0 <==> "<<maxVal;
   OutLine=cx.str();
   return;
@@ -216,7 +217,7 @@ SizeError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: SizeError< "<<typeid(T).name()<<" > \n";
+  cx<<"\nEXCEPTION TYPE :: SizeError< "<<typeIDName<T>()<<" > \n";
   cx<<ExBase::getErr()<<" "<<Val<<" less than "<<minVal;
   OutLine=cx.str();
   return;
@@ -324,7 +325,7 @@ EmptyValue<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: EmptyValud< "<<typeid(T).name()<<" > \n";
+  cx<<"\nEXCEPTION TYPE :: EmptyValud< "<<typeIDName<T>()<<" > \n";
   cx<<getErr();
   OutLine=cx.str();
   return;
@@ -433,7 +434,7 @@ InContainerError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: InContainerError< "<<typeid(T).name()<<"\n";
+  cx<<"\nEXCEPTION TYPE :: InContainerError< "<<typeIDName<T>()<<" >\n";
   cx<<getErr()<<"\nkey== "<<SearchObj<<" ==";
   OutLine=cx.str();
   return;
@@ -492,7 +493,7 @@ RangeError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: RangeError< "<<typeid(T).name()<<"\n";
+  cx<<"\nEXCEPTION TYPE :: RangeError< "<<typeIDName<T>()<<" >\n";
   cx<<getErr()<<" Value == "<<Index<<
     " Min == "<<minV<<
     " Max == "<<maxV;
@@ -552,7 +553,7 @@ OrderError<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: OrderError< "<<typeid(T).name()<<"\n";
+  cx<<"\nEXCEPTION TYPE :: OrderError< "<<typeIDName<T>()<<" >\n";
 
   cx<<getErr()<<" value == "<<lowValue<<
     " = NOT LESS THAN = "<<highValue;
@@ -649,7 +650,7 @@ DimensionError<ndim,T>::setOutLine()
 {
   std::stringstream cx;
   cx<<"\nEXCEPTION TYPE :: DimensionError< "<<ndim<<" , "
-    <<typeid(T).name()<<"\n";
+    <<typeIDName<T>()<<" >\n";
 
   cx<<getErr()<<":";
 
@@ -794,7 +795,7 @@ MisMatch<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: MisMatch< "<<typeid(T).name()<<"\n";
+  cx<<"\nEXCEPTION TYPE :: MisMatch< "<<typeIDName<T>()<<" >\n";
 
   cx<<getErr()<<" Item A!=B "<<Aval<<
     " "<<Bval<<" ";
@@ -1031,8 +1032,8 @@ TypeConvError<T,U>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nTypeConvError:"<<typeid(T).name()
-    <<" -> "<<typeid(U).name()<<"\n";
+  cx<<"\nTypeConvError:"<<typeIDName<T>()
+    <<" -> "<< typeIDName<U>() <<" >\n";
   cx<<"\nCast Obj: "<<ABase;
   cx<<"\n";
   cx<<"Reason :: "<<getErr()<<std::endl;

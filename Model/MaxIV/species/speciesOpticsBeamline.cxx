@@ -97,7 +97,7 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "BeamMount.h"
-#include "GrateMonoBox.h"
+#include "TankMonoVessel.h"
 #include "GratingMono.h"
 #include "TwinPipe.h"
 #include "Mirror.h"
@@ -134,7 +134,8 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
       std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")}),  
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  screenB(new xraySystem::PipeShield(newName+"ScreenB"))
+  screenB(new xraySystem::PipeShield(newName+"ScreenB")),
+  monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -411,6 +412,29 @@ speciesOpticsBeamline::buildSlitPackage(Simulation& System,
   return;
 }
 
+void
+speciesOpticsBeamline::buildMono(Simulation& System,
+				 MonteCarlo::Object* masterCell,
+				 const attachSystem::FixedComp& initFC, 
+				 const long int sideIndex)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("speciesOpticsBeamline","buildSlitPackage");
+
+  int outerCell;
+  
+  monoVessel->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
+  monoVessel->insertInCell(System,outerCell);
+
+  return;
+}
 
   
 void
@@ -432,6 +456,7 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildFrontTable(System,masterCellA,*this,0);
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
+  buildMono(System,masterCellA,*pipeD,2);
   lastComp=bellowB;
 
 

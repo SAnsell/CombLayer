@@ -73,7 +73,7 @@
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
-#include "GrateMonoBoxGenerator.h"
+#include "TankMonoVesselGenerator.h"
 
 namespace setVariable
 {
@@ -317,58 +317,6 @@ m3MirrorVariables(FuncDataBase& Control,
   return;
 }
 
-void
-monoVariables(FuncDataBase& Control,
-	      const std::string& monoKey)
-  /*!
-    Builds the variables for the mono packge
-    \param Control :: Database
-    \param slitKey :: prename
-  */
-{
-  ELog::RegMethod RegA("speciesVariables[F]","monoVariables");
-
-  setVariable::BellowGenerator BellowGen;
-  setVariable::GrateMonoBoxGenerator MBoxGen;
-  setVariable::GratingMonoGenerator MXtalGen;
-  setVariable::GateValveGenerator GateGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::PipeGenerator PipeGen;
-  
-  MBoxGen.setMat("Stainless304");
-  MBoxGen.setWallThick(1.0);
-  MBoxGen.setCF<CF63>();
-  MBoxGen.setAPortCF<CF63>();
-  MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setLid(3.0,1.0,1.0); // over/base/roof
-
-  // ystep/width/height/depth/length
-  // 
-  MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
-  Control.addVariable(monoKey+"MonoBoxPortBZStep",3.1);   //
-
-  
-  Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(7.5);
-  PItemGen.setPlate(0.0,"Void");
-
-  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
-
-  PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
-  PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,monoKey+"PipeG",0,7.0);
-
-  // joined and open
-  GateGen.setLength(7.5);
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,monoKey+"GateC",0.0,0);
-  
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,monoKey+"BellowE",0,7.5);
-  
-  return;
-}
 
 void
 preOpticsVariables(FuncDataBase& Control,
@@ -559,7 +507,35 @@ slitPackageVariables(FuncDataBase& Control,
 
   return;
 }
+
+void
+monoVariables(FuncDataBase& Control,
+	      const std::string& monoKey)
+  /*!
+    Builds the variables for the mono packge
+    \param Control :: Database
+    \param slitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("speciesVariables[F]","monoVariables");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::TankMonoVesselGenerator MBoxGen;
   
+
+  // ystep/width/height/depth/length
+  // 
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,300.0,50.0,50.0);
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.1);   //
+
+  
+  Control.addVariable(monoKey+"MonoVesselNPorts",0);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(7.5);
+  PItemGen.setPlate(0.0,"Void");
+  
+  return;
+}
+
 void
 opticsBeamVariables(FuncDataBase& Control,
 		    const std::string& opticKey)
@@ -578,7 +554,7 @@ opticsBeamVariables(FuncDataBase& Control,
   preOpticsVariables(Control,opticKey);
   m1MirrorVariables(Control,opticKey);
   slitPackageVariables(Control,opticKey);
-  //  monoVariables(Control,opticKey);
+  monoVariables(Control,opticKey);
   //  m3MirrorVariables(Control,opticKey);
   //  splitterVariables(Control,opticKey);
   return;

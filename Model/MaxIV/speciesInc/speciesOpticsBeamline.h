@@ -59,6 +59,7 @@ namespace xraySystem
   class Mirror;
   class PipeShield;
   class JawValve;
+  class TankMonoVessel;
   class TwinPipe;
     
   /*!
@@ -116,6 +117,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// First screen
   std::shared_ptr<xraySystem::PipeShield> screenB;
+  /// First screen
+  std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
 
 
   double outerRadius;           ///< Radius for inner void

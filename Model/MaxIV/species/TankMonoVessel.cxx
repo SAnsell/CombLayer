@@ -72,7 +72,7 @@
 #include "SpaceCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "FrontBackCut.h"
+#include "ExternalCut.h"
 #include "portItem.h"
 
 #include "TankMonoVessel.h"
@@ -83,7 +83,7 @@ namespace xraySystem
 TankMonoVessel::TankMonoVessel(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),
+  attachSystem::ExternalCut(),
   centreOrigin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -116,8 +116,9 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  baseDepth=Control.EvalVar<double>(keyName+"baseDepth");
-  topLift=Control.EvalVar<double>(keyName+"TopLift");
+
+  baseGap=Control.EvalVar<double>(keyName+"BaseGap");
+  topGap=Control.EvalVar<double>(keyName+"TopGap");
 
   portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
   portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
@@ -228,25 +229,36 @@ TankMonoVessel::createSurfaces()
   ELog::RegMethod RegA("TankMonoVessel","createSurfaces");
 
   // Do outer surfaces (vacuum ports)
-  if (!frontActive())
+  if (!isActive("Front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,
 	      Origin-Y*(portATubeLength+wallThick+voidRadius),Y);
-      setFront(SMap.realSurf(buildIndex+101));
+      setCutSurf("Front",SMap.realSurf(buildIndex+101));
     }
-  if (!backActive())
+  if (!isActive("Back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+102,
 	    Origin+Y*(portBTubeLength+wallThick+voidRadius),Y);
-      setBack(-SMap.realSurf(buildIndex+102));
+      setCutSurf("Back",-SMap.realSurf(buildIndex+102));
     }
-  
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-Z*voidDepth,Z,voidRadius);
-    
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
+			      Origin-Z*voidDepth,Z,voidRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
+			      Origin-Z*voidDepth,Z,voidRadius+wallThick);
+
+  // Top plate
+  const double xDrop=
+    (voidRadius*voidRadius-topGap*topGap)/(2.0*topGap);
+  const double topRadius=
+    (voidRadius*voidRadius+topGap*topGap)/(2.0*topGap);
+  const Geometry::Vec3D topCent=Origin-Z*(xDrop-voidHeight);
+  ModelSupport::buildSphere(SMap,buildIndex+108,topCent,topRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+wallThick);
+  
   return;
 }
 
@@ -261,95 +273,13 @@ TankMonoVessel::createObjects(Simulation& System)
 
   std::string Out;
 
-  const std::string FPortStr(frontRule());
-  const std::string BPortStr(backRule());
+  const std::string FPortStr(ExternalCut::getRuleStr("Front"));
+  const std::string BPortStr(ExternalCut::getRuleStr("Back"));
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7 ");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  // Base Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 -5");
-  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-
-  // main tank skins
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -3 5 -6");
-  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 4 -14 5 -6");
-  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1 13 -14 (-17 : 5) -6 107 ");
-  CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-12 2 13 -14 (-17 : 5) -6 207 ");
-  CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -17 -5");
-  CellMap::makeCell("RoundWall",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -1002 1003 -1004 6 -16");
-  CellMap::makeCell("Top",System,cellIndex++,wallMat,0.0,Out);
-
-  // Screen voids
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 1003 -13 5 -6 ");
-  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 14 -1004  5 -6");
-  CellMap::makeCell("Screen",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -11  1003 -1004 (-1007:5) -6 127 ");
-  CellMap::makeCell("FrontScreen",System,cellIndex++,voidMat,0.0,Out);
-				 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"12 -1002  1003 -1004 (-1007:5) -6 227 ");
-  CellMap::makeCell("BackScreen",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 17 -1007 -5");
-  CellMap::makeCell("RoundScreen",System,cellIndex++,voidMat,0.0,Out);
-
-
-  // PortVoids
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 107 -117 ");
-  CellMap::makeCell("PortAWall",System,cellIndex++,wallMat,0.0,Out+FPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
-  CellMap::makeCell("PortAFlange",System,cellIndex++,wallMat,0.0,Out+FPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 111 117 -127 ");
-  CellMap::makeCell("PortAScreen",System,cellIndex++,voidMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  CellMap::makeCell("PortBVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 207 -217 ");
-  CellMap::makeCell("PortBWall",System,cellIndex++,wallMat,0.0,Out+BPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 211 217 -227 ");
-  CellMap::makeCell("PortBFlange",System,cellIndex++,wallMat,0.0,Out+BPortStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
-  CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,Out);
-
-
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 1003 -1004 5 -16 ");
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 -1007 -5 ");
-  addOuterUnionSurf(Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
-  addOuterUnionSurf(Out);
 
   return;
 }
@@ -367,18 +297,9 @@ TankMonoVessel::createLinks()
 
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
-  
-  FrontBackCut::createFrontLinks(*this,ACentre,Y); 
-  FrontBackCut::createBackLinks(*this,BCentre,Y);  
-  // FixedComp::setConnect(2,Origin-X*((width+voidWidth)/2.0),-X);
-  // FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
-  // FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
-  // FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
 
-  // FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  // FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  // FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  ExternalCut::createLink("Front",*this,0,ACentre,Y);
+  ExternalCut::createLink("Back",*this,1,BCentre,Y); 
   
   return;
 }
