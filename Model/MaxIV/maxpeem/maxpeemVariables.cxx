@@ -203,7 +203,7 @@ splitterVariables(FuncDataBase& Control,
 
   const std::string pumpNameA=splitKey+"PumpTubeAA";
   const std::string pumpNameB=splitKey+"PumpTubeBA";
-  const Geometry::Vec3D zVec(0,0,-1);
+  const Geometry::Vec3D zVec(0,0,1);
   const Geometry::Vec3D centPoint(0,0,0);
   PTubeGen.generateCFTube<CF63>(Control,pumpNameA,0.0,20.0);
   Control.addVariable(pumpNameA+"NPorts",1);

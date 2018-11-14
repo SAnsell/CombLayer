@@ -296,8 +296,6 @@ TankMonoVessel::createObjects(Simulation& System)
   const std::string BPortStr(ExternalCut::getRuleStr("Back"));
 
   
-
-  
   // Main Void 
   Out=ModelSupport::getComposite(SMap,buildIndex," (5:-208) (-6:-108) -7 ");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);

@@ -150,13 +150,22 @@ FixedOffset::populate(const std::map<std::string,
 {
   ELog::RegMethod RegA("FixedOffset","populate(map)");
 
+  Geometry::Vec3D CentOffset(xStep,yStep,zStep);
+				
+  mainSystem::findInput(inputMap,"offset",0,CentOffset);
+  
   mainSystem::findInput(inputMap,"preXYAngle",0,preXYAngle);
   mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
   mainSystem::findInput(inputMap,"xyAngle",0,xyAngle);
   mainSystem::findInput(inputMap,"zAngle",0,zAngle);
+
+  xStep=CentOffset[0];
+  yStep=CentOffset[1];
+  zStep=CentOffset[2];
   mainSystem::findInput(inputMap,"xStep",0,xStep);
   mainSystem::findInput(inputMap,"yStep",0,yStep);
   mainSystem::findInput(inputMap,"zStep",0,zStep);
+  
   return;
   
 }

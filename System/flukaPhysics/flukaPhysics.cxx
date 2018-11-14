@@ -62,7 +62,7 @@ flukaPhysics::flukaPhysics() :
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
-      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECNUC") },
+      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
       { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
     }),
 
