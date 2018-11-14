@@ -91,6 +91,13 @@ CSPECvariables(FuncDataBase& Control)
   FGen.setYOffset(4.0);
   // 7x55 as of ESS-0098382.2:
   FGen.generateRectangle(Control,"cspecFA",350.0, 7, 5.5);
+  // step variables according to ESS-0098382.2
+  Control.addVariable("cspecFANSteps", 2);
+  Control.addVariable("cspecFAStepThick", 1.3);
+  Control.addVariable("cspecFAStepLength0", 98.0);
+  Control.addVariable("cspecFAStepLength1", 50.0);
+  Control.addVariable("cspecFAStepLength2", 100.0);
+  Control.addVariable("cspecFAStepLength3", 50.0);
   // should be set automatically by the previous line depending on number of
   // setLayer calls, but for some reason set to 2 in FocusGenerator::writeLayers
   Control.addVariable("cspecFANShapeLayers",3);
