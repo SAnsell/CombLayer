@@ -109,9 +109,8 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  
   // Void + Fe special:
-  voidRadius=Control.EvalVar<double>(keyName+"VoidWidth");
+  voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
 
@@ -200,6 +199,9 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
+  outerSize=Control.EvalDefVar<double>(keyName+"OuterSize",voidRadius+20.0);
+  
+
   return;
 }
 
@@ -242,22 +244,39 @@ TankMonoVessel::createSurfaces()
       setCutSurf("Back",-SMap.realSurf(buildIndex+102));
     }
 
+  // OUTER VOID
+  // mid-line
+  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*outerSize,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*outerSize,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*outerSize,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*outerSize,Z);  
+  
+  
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
-  ModelSupport::buildCylinder(SMap,buildIndex+7,
-			      Origin-Z*voidDepth,Z,voidRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,
-			      Origin-Z*voidDepth,Z,voidRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,voidRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
 
   // Top plate
-  const double xDrop=
+  const double xPlus=
     (voidRadius*voidRadius-topGap*topGap)/(2.0*topGap);
   const double topRadius=
     (voidRadius*voidRadius+topGap*topGap)/(2.0*topGap);
-  const Geometry::Vec3D topCent=Origin-Z*(xDrop-voidHeight);
+  const Geometry::Vec3D topCent=Origin-Z*(xPlus-voidHeight);
   ModelSupport::buildSphere(SMap,buildIndex+108,topCent,topRadius);
   ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+wallThick);
+
+  // Base plate
+  const double xDrop=
+    (voidRadius*voidRadius-baseGap*baseGap)/(2.0*baseGap);
+  const double baseRadius=
+    (voidRadius*voidRadius+baseGap*baseGap)/(2.0*baseGap);
+  const Geometry::Vec3D baseCent=Origin+Z*(xDrop-voidHeight);
+  ModelSupport::buildSphere(SMap,buildIndex+208,baseCent,baseRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+218,baseCent,baseRadius+wallThick);
+
   
   return;
 }
@@ -275,11 +294,45 @@ TankMonoVessel::createObjects(Simulation& System)
 
   const std::string FPortStr(ExternalCut::getRuleStr("Front"));
   const std::string BPortStr(ExternalCut::getRuleStr("Back"));
+
+  
+
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (5:-208) (-6:-108) -7 ");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  addOuterSurf(Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  -17 6 -118 108 ");
+  CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  5 -6 7 -17 ");
+  CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  -17 -5 -218 208 ");
+  CellMap::makeCell("BasePlate",System,cellIndex++,wallMat,0.0,Out);
+
+  // Front/Back port
+
+  
+  const std::string fbCut=FPortStr+BPortStr;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1001 5 -6 17 ");
+  CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,Out+fbCut);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1004 1001 5 -6 17 ");
+  CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,Out+fbCut);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 6 118 -1006 ");
+  CellMap::makeCell("OuterTopVoid",System,cellIndex++,0,0.0,Out+fbCut);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 -5 218 1005 ");
+  CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,Out+fbCut);
+
+
+  // Main exclusion box
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 1005 -1006 ");
+
+  addOuterSurf(Out+fbCut);
 
   return;
 }

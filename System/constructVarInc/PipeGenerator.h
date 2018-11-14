@@ -67,15 +67,17 @@ class PipeGenerator
 
   void setPipe(const double,const double);
   void setRectPipe(const double,const double,const double);
+  void setNoWindow();
   void setWindow(const double,const double);
   void setFlange(const double,const double);
+  void setAFlange(const double,const double);
+  void setBFlange(const double,const double);
   void setFlangePair(const double,const double,const double,const double);
   /// set pipe material
 
   template<typename CF> void setCF();
   template<typename CF> void setAFlangeCF();
   template<typename CF> void setBFlangeCF();
-
 
   /// setter for material name
   void setMat(const std::string& M) { pipeMat=M; }

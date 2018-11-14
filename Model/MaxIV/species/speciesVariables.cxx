@@ -134,7 +134,7 @@ undulatorVariables(FuncDataBase& Control,
 
   const double L(280.0);
   PipeGen.setMat("Aluminium");
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
 
@@ -217,7 +217,7 @@ splitterVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpNameB+"Port0",centPoint,zVec);
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
@@ -294,7 +294,7 @@ m3MirrorVariables(FuncDataBase& Control,
 			Geometry::Vec3D(0,0,0),-pAngVec);
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,mirrorKey+"OffPipeC",0,18.1);
@@ -335,7 +335,7 @@ preOpticsVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
     
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   
   BellowGen.setCF<setVariable::CF40>();
@@ -389,7 +389,7 @@ m1MirrorVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeShieldGenerator ShieldGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");   
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF120>();
@@ -458,7 +458,7 @@ slitPackageVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,slitKey+"GateA",0.0,0);
 
   PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,5.4);
@@ -519,13 +519,24 @@ monoVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("speciesVariables[F]","monoVariables");
 
+  setVariable::PipeGenerator PipeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::TankMonoVesselGenerator MBoxGen;
-  
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow(); 
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setBFlange(17.8,1.0);
+  PipeGen.generatePipe(Control,monoKey+"OffPipeA",0,3.0);
+  Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
+
+  
   // ystep/width/height/depth/length
   // 
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,300.0,50.0,50.0);
+  MBoxGen.setCF<CF63>();   // set ports
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,42.2,36.45,36.45);
+
   Control.addVariable(monoKey+"MonoVesselPortBZStep",3.1);   //
 
   
@@ -630,7 +641,7 @@ moveApertureTable(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF63>();
@@ -694,7 +705,7 @@ heatDumpTable(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
     
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   
   BellowGen.setCF<setVariable::CF40>();
@@ -829,7 +840,7 @@ shutterTable(FuncDataBase& Control,
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
   
   PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",0,6.8);
@@ -894,7 +905,7 @@ transferVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("speciesVariables[F]","transferVariables");
   setVariable::PipeGenerator PipeGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
   PipeGen.generatePipe(Control,transKey+"JoinPipe",0,145.0);
@@ -947,7 +958,7 @@ frontEndVariables(FuncDataBase& Control,
 
   Control.addVariable(frontKey+"OuterRadius",50.0);
   
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
 
   undulatorVariables(Control,frontKey);

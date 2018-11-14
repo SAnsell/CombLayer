@@ -92,6 +92,7 @@
 #include "PipeShield.h"
 
 #include "OpticsHutch.h"
+#include "BlockStand.h"
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"
@@ -129,6 +130,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
+  M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
@@ -190,6 +192,8 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(pumpTubeA);
   OR.addObject(offPipeA);
   OR.addObject(M1Tube);
+  OR.addObject(M1Mirror);
+  OR.addObject(M1Stand);
   OR.addObject(offPipeB);
   OR.addObject(gateA);
   OR.addObject(pipeC);
@@ -273,8 +277,25 @@ maxpeemOpticsBeamline::createSurfaces()
 
   if (outerRadius>Geometry::zeroTol)
     {
-      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+
+      if (isActive("floor"))
+	{
+	  std::string Out;
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+3,Origin-X*outerRadius,X);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+4,Origin+X*outerRadius,X);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+6,Origin+Z*outerRadius,Z);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+	  const HeadRule HR(Out+getRuleStr("floor"));
+	  buildZone.setSurround(HR);
+	}
+      else
+	{
+	  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+	  buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+	}
     }
 
   if (!isActive("front"))
@@ -586,10 +607,15 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
   M1Tube->createAll(System,initFC,sideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M1Tube,2);
   M1Tube->insertAllInCell(System,outerCell);
-
-
+  
   M1Mirror->addInsertCell(M1Tube->getCell("Void"));
   M1Mirror->createAll(System,*M1Tube,0);
+
+  M1Stand->setCutSurf("floor",this->getRule("floor"));
+  M1Stand->setCutSurf("front",*M1Tube,-1);
+  M1Stand->setCutSurf("back",*M1Tube,-2);
+  M1Stand->addInsertCell(outerCell);
+  M1Stand->createAll(System,*M1Tube,0);
   
   offPipeB->createAll(System,*M1Tube,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
@@ -626,7 +652,7 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
 
   int outerCell;
   buildZone.setFront(getRule("front"));
-  buildZone.setBack(getRule("back"));  
+  buildZone.setBack(getRule("back"));
   MonteCarlo::Object* masterCellA=
     buildZone.constructMasterCell(System,*this);
 

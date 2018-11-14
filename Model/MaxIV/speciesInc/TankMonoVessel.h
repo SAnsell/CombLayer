@@ -44,7 +44,8 @@ class TankMonoVessel :
  private:
 
   const bool centreOrigin;      ///< Construct on the centre line
-
+  double outerSize;             ///< Distance for outer void
+  
   double voidRadius;            ///< void main radius
   double voidDepth;             ///< void depth to dome
   double voidHeight;            ///< void height to lid flange

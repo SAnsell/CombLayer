@@ -416,7 +416,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction of surface axis (relative to HR.Plane)
-    \param YAxis :: Direction of cylindical shift
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param length :: length to shift by
   */
 {
@@ -553,7 +553,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param SMap :: local surface register
     \param extName :: cut unit name
     \param index :: offset index
-    \param expandCentre :: Centre for expansion
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param dExtra :: displacement extra [cm]
   */
 {

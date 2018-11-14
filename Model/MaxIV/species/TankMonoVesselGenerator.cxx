@@ -61,12 +61,14 @@ namespace setVariable
 
 TankMonoVesselGenerator::TankMonoVesselGenerator() :
   VacBoxGenerator(),
-  baseGap(3.0),topGap(6.0),
-  lidRadius(350.0),lidDepth(3.0)
+  baseGap(4.0),topGap(6.0),
+  lidOffset(3.0),lidRadius(3.0),lidDepth(3.0)
   /*!
     Constructor and defaults
   */
-{}
+{
+  setWallThick(1.0);
+}
 
 
 TankMonoVesselGenerator::~TankMonoVesselGenerator() 
@@ -111,11 +113,13 @@ TankMonoVesselGenerator::generateBox(FuncDataBase& Control,
 
   VacBoxGenerator::generateBox(Control,keyName,yStep,radius*2.0,
 			       height,depth,radius*2.0);
+  const double LR= (radius>lidRadius) ? radius+lidRadius : lidRadius;
 
   Control.addVariable(keyName+"VoidRadius",radius);
   Control.addVariable(keyName+"BaseGap",baseGap);
   Control.addVariable(keyName+"TopGap",topGap);
-  Control.addVariable(keyName+"LidRadius",lidRadius);
+  Control.addVariable(keyName+"LidOffset",lidOffset);
+  Control.addVariable(keyName+"LidRadius",LR);
   Control.addVariable(keyName+"LidDepth",lidDepth);
   
   return;

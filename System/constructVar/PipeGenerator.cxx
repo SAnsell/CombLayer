@@ -169,6 +169,17 @@ PipeGenerator::setWindow(const double R,const double T)
   return;
 }
 
+void
+PipeGenerator::setNoWindow()
+  /*!
+    Remove the window values
+   */
+{
+  windowRadius=-1.0;
+  windowThick=0.0;
+  return;
+}
+
 
 void
 PipeGenerator::setFlange(const double R,const double L)
@@ -178,13 +189,37 @@ PipeGenerator::setFlange(const double R,const double L)
     \param L :: length
    */
 {
+  setAFlange(R,L);
+  setBFlange(R,L);
+  return;
+}
+
+void
+PipeGenerator::setAFlange(const double R,const double L)
+  /*!
+    Set all the A-flange values
+    \param R :: radius of flange
+    \param L :: length
+   */
+{
   flangeARadius=R;
   flangeALen=L;
+  return;
+}
+
+void
+PipeGenerator::setBFlange(const double R,const double L)
+  /*!
+    Set all the B-flange values
+    \param R :: radius of flange
+    \param L :: length
+   */
+{
   flangeBRadius=R;
   flangeBLen=L;
   return;
 }
-
+  
 void
 PipeGenerator::setFlangePair(const double AR,const double AL,
 			     const double BR,const double BL)

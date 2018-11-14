@@ -42,6 +42,7 @@ class TankMonoVesselGenerator : public VacBoxGenerator
   double baseGap;             ///< Extra at base for curve
   double topGap;               ///< Extra at top for curve
   
+  double lidOffset;             ///< Lid flange offset from top of cylinder
   double lidRadius;             ///< Lid flange radius
   double lidDepth;              ///< Lid flange depth
    

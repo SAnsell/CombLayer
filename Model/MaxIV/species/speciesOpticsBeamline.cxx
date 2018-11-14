@@ -135,6 +135,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")}),  
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   screenB(new xraySystem::PipeShield(newName+"ScreenB")),
+  offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel"))
   /*!
     Constructor
@@ -428,8 +429,12 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   ELog::RegMethod RegA("speciesOpticsBeamline","buildSlitPackage");
 
   int outerCell;
+
+  offPipeA->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
+  offPipeA->insertInCell(System,outerCell);
   
-  monoVessel->createAll(System,initFC,sideIndex);
+  monoVessel->createAll(System,*offPipeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
 

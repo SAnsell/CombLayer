@@ -117,7 +117,9 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
   /// First screen
   std::shared_ptr<xraySystem::PipeShield> screenB;
-  /// First screen
+  /// Offset pipe for MonoTube
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
+  /// Main mono vessel
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
 
 
