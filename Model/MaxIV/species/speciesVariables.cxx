@@ -560,7 +560,7 @@ opticsBeamVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("speciesVariables[F]","opticsBeamVariables");
 
 
-  Control.addVariable(opticKey+"OuterRadius",80.0);
+  Control.addVariable(opticKey+"OuterRadius",110.0);
 
   preOpticsVariables(Control,opticKey);
   m1MirrorVariables(Control,opticKey);

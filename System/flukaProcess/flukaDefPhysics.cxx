@@ -188,7 +188,7 @@ setXrayPhysics(SimFLUKA& System,
       PC.setTHR("photthr",MN,"1e-3","1e-3","1.0");
 	
       // Interaction threshold : Brem-e+/e- moller scatter photonuclear"
-      PC.setTHR("elpothr",MN,"0.0","1e-3","0.0");
+      PC.setTHR("elpothr",MN,"1e-2","1e-2","1.0");
 
       // Turn off multiple scattering [not a good idea]
       //      PC.setTHR("mulsopt",MN,"0","0","3");

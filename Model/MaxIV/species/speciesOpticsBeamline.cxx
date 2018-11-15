@@ -66,7 +66,6 @@
 #include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -203,11 +202,27 @@ speciesOpticsBeamline::createSurfaces()
   */
 {
   ELog::RegMethod RegA("speciesOpticsBeamline","createSurfaces");
-
   if (outerRadius>Geometry::zeroTol)
     {
-      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+
+      if (isActive("floor"))
+	{
+	  std::string Out;
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+3,Origin-X*outerRadius,X);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+4,Origin+X*outerRadius,X);
+	  ModelSupport::buildPlane
+	    (SMap,buildIndex+6,Origin+Z*outerRadius,Z);
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+	  const HeadRule HR(Out+getRuleStr("floor"));
+	  buildZone.setSurround(HR);
+	}
+      else
+	{
+	  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+	  buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+	}
     }
 
   if (!isActive("front"))
@@ -452,7 +467,6 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("speciesOpticsBeamline","buildObjects");
 
-  int outerCell;
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));  
   MonteCarlo::Object* masterCellA=

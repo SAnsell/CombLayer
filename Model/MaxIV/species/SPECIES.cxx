@@ -171,6 +171,7 @@ SPECIES::build(Simulation& System,
 			 opticsHut->getSideIndex("innerFront"));
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
+  opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
