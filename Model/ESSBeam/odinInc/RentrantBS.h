@@ -43,8 +43,6 @@ class RentrantBS :
 {
  private:
   
-  const int bstopIndex;          ///< Index of surface offset
-  int cellIndex;                 ///< Cell index  
 
   double width;                  ///< Total 
   double height;                 ///< Height [+ve Z]

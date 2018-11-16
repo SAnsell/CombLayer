@@ -3,7 +3,7 @@
  
  * File:   essBuild/CompBInsert.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -65,7 +64,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -87,15 +87,51 @@ namespace essSystem
 
 CompBInsert::CompBInsert(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7),
-  attachSystem::CellMap(),attachSystem::FrontBackCut(),
-  insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(insIndex+1)
+  attachSystem::CellMap(),attachSystem::FrontBackCut()
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
+CompBInsert::CompBInsert(const CompBInsert& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  NBox(A.NBox),width(A.width),height(A.height),
+  length(A.length),mat(A.mat),NWall(A.NWall),wallThick(A.wallThick),
+  wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: CompBInsert to copy
+  */
+{}
+
+CompBInsert&
+CompBInsert::operator=(const CompBInsert& A)
+  /*!
+    Assignment operator
+    \param A :: CompBInsert to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      NBox=A.NBox;
+      width=A.width;
+      height=A.height;
+      length=A.length;
+      mat=A.mat;
+      NWall=A.NWall;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 CompBInsert::~CompBInsert() 
   /*!
@@ -119,7 +155,7 @@ CompBInsert::populate(const FuncDataBase& Control)
   int M;
   for(size_t index=0;index<NBox;index++)
     {
-      const std::string SNum=StrFunc::makeString(index);
+      const std::string SNum=std::to_string(index);
       H=Control.EvalPair<double>(keyName+"Height"+SNum,keyName+"Height");
       W=Control.EvalPair<double>(keyName+"Width"+SNum,keyName+"Width");
       L=Control.EvalPair<double>(keyName+"Length"+SNum,keyName+"Length");
@@ -135,7 +171,7 @@ CompBInsert::populate(const FuncDataBase& Control)
   double T;
   for(size_t index=0;index<NWall;index++)
     {
-      const std::string SNum=StrFunc::makeString(index);                                                                
+      const std::string SNum=std::to_string(index);
       T=Control.EvalPair<double>(keyName+"WallThick"+SNum,keyName+"WallThick");
       M=ModelSupport::EvalMat<int>(Control,keyName+"WallMat"+SNum,keyName+"WallMat");
       wallThick.push_back(T);
@@ -170,7 +206,7 @@ CompBInsert::createSurfaces()
 {
   ELog::RegMethod RegA("CompBInsert","createSurface");
 
-  int SI(insIndex);
+  int SI(buildIndex);
   double L(0.0);
   for(size_t index=0;index<NBox;index++)
     {
@@ -192,7 +228,7 @@ CompBInsert::createSurfaces()
 	    
   ModelSupport::buildPlane(SMap,SI+1,Origin+Y*L,Y);
   if (!frontActive())
-    setFront(SMap.realSurf(insIndex+1));
+    setFront(SMap.realSurf(buildIndex+1));
   if (!backActive())
     setBack(-SMap.realSurf(SI+1));
 
@@ -209,7 +245,7 @@ CompBInsert::createObjects(Simulation& System)
   ELog::RegMethod RegA("CompBInsert","createObjects");
   
   std::string Out;
-  int SI(insIndex);
+  int SI(buildIndex);
 
   std::string frontBack;
   for(size_t index=0;index<NBox;index++)
@@ -227,7 +263,7 @@ CompBInsert::createObjects(Simulation& System)
         {
           Out=ModelSupport::getComposite(SMap,SWI," 3 -4 5 -6 ");
           const int M=(!wallIndex) ? mat[index] : wallMat[wallIndex-1];
-          System.addCell(MonteCarlo::Qhull(cellIndex++,M,0.0,
+          System.addCell(MonteCarlo::Object(cellIndex++,M,0.0,
 					   frontBack+Out+Inner.display()));
 
           if (!wallIndex)
@@ -259,13 +295,13 @@ CompBInsert::createLinks()
   if (!frontActive())
     {
       FixedComp::setConnect(0,Origin,-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(insIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
     }
   
   size_t LOffset(0);
   double L(0.0);
   const int WIOffset(static_cast<int>(NWall)*10);
-  int SI(insIndex);
+  int SI(buildIndex);
 
   const double T=std::accumulate(wallThick.begin(),wallThick.end(),0.0);
 

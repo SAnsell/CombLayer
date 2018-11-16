@@ -41,8 +41,6 @@ class RefCutOut :
 {
  private:
   
-  const int pipeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int active;                  ///< Is object active
   

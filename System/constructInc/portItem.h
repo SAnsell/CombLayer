@@ -82,7 +82,8 @@ class portItem :
   void constructOuterFlange(Simulation&,
 			    const ModelSupport::LineTrack&,
 			    const size_t,const size_t);
-  void calcBoundaryCrossing(const ModelSupport::LineTrack&,
+  void calcBoundaryCrossing(const objectGroups&,
+			    const ModelSupport::LineTrack&,
 			    size_t&,size_t&) const;
   
  public:

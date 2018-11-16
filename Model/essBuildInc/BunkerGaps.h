@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerGaps.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,6 @@ class BunkerGaps : public attachSystem::ContainedComp,
   public attachSystem::FixedComp
 {
  private:
-
-  const int cutIndex;             ///< Surface index
-  int cellIndex;                  ///< Cell index
 
   /// Main cuts
   std::vector<std::shared_ptr<BunkerQUnit> > QUnit;

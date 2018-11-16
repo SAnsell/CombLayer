@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -70,7 +71,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -83,7 +83,7 @@ namespace xraySystem
 
 GrateMonoBox::GrateMonoBox(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),centreOrigin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -321,7 +321,10 @@ GrateMonoBox::createObjects(Simulation& System)
   const std::string BPortStr(backRule());
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 (-7 : 5)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  // Base Void 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 -5");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // main tank skins
@@ -364,13 +367,6 @@ GrateMonoBox::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 17 -1007 -5");
   CellMap::makeCell("RoundScreen",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1001 -1002 1003 -1004 -16 (-1007 : 5)");
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
-  addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
-  addOuterUnionSurf(Out);
 
   // PortVoids
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
@@ -398,6 +394,18 @@ GrateMonoBox::createObjects(Simulation& System)
   CellMap::makeCell("PortBScreen",System,cellIndex++,voidMat,0.0,Out);
 
 
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"1001 -1002 1003 -1004 5 -16 ");
+  addOuterSurf(Out);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"1001 -1002 -1007 -5 ");
+  addOuterUnionSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
+  addOuterUnionSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
+  addOuterUnionSurf(Out);
 
   return;
 }
@@ -455,4 +463,4 @@ GrateMonoBox::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE maxpeemSystem
+}  // NAMESPACE xraySystem

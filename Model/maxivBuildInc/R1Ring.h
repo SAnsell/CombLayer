@@ -53,7 +53,7 @@ class R1Ring :
   double depth;                   ///< Main depth
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
-
+  double roofExtra;               ///< Roof Extra void above roof
 
   size_t NPoints;                 ///< number of points in track
   size_t concaveNPoints;          ///< number of concave points in track
@@ -66,7 +66,15 @@ class R1Ring :
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
-  
+
+  size_t doorActive;           ///< Flag/sector for door if modeled
+  std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
+
+
+  void createRoof(Simulation&);
+  void createFloor(Simulation&);
+  void createDoor(Simulation&);
+    
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

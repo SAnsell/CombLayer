@@ -41,8 +41,6 @@ class RefPlug : public attachSystem::ContainedComp,
 {
  private:
   
-  const int refIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double height;                  ///< Be height
   double depth;                  ///< Be depth

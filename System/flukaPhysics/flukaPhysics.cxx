@@ -62,7 +62,7 @@ flukaPhysics::flukaPhysics() :
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
-      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECNUC") },
+      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
       { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
     }),
 
@@ -84,7 +84,7 @@ flukaPhysics::flukaPhysics() :
 
   emfFlag({
       { "emfcut",  cellValueSet<2>("emfcut","EMFCUT","",{-1e-3,1e-3}) },
-      { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{1e-3,1e-3})},
+      { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{-1e-3,1e-3})},
       { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",{1e-3,1e-3})},
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
       { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },

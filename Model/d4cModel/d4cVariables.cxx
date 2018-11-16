@@ -74,8 +74,8 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("cellXStep",0.0);         // Radius the beam
   Control.addVariable("cellYStep",0.0);         // Radius the beam
   Control.addVariable("cellZStep",0.0);         // Radius the beam
-  Control.addVariable("cellZangle",0.0);         // Radius the beam
-  Control.addVariable("cellXYangle",0.0);         // Radius the beam
+  Control.addVariable("cellZAngle",0.0);         // Radius the beam
+  Control.addVariable("cellXYAngle",0.0);         // Radius the beam
   Control.addVariable("cellNLayers",2);         // Radius the beam
   Control.addVariable("cellRadius1",0.25);       //
   Control.addVariable("cellRadius2",0.325);       //
@@ -91,8 +91,8 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("belljarXStep",0.0);         // Radius the beam
   Control.addVariable("belljarYStep",0.0);         // Radius the beam
   Control.addVariable("belljarZStep",0.0);         // Radius the beam
-  Control.addVariable("belljarZangle",0.0);         // Radius the beam
-  Control.addVariable("belljarXYangle",0.0);         // Radius the beam
+  Control.addVariable("belljarZAngle",0.0);         // Radius the beam
+  Control.addVariable("belljarXYAngle",0.0);         // Radius the beam
   Control.addVariable("belljarHeight",100.0);         // Radius the beam
   Control.addVariable("belljarRadius",145.0);       //
   Control.addVariable("belljarWallThick",1.0);       //
@@ -122,8 +122,8 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("detectorXStep",0.0);         // Radius the beam
   Control.addVariable("detectorYStep",0.0);         // Radius the beam
   Control.addVariable("detectorZStep",0.0);         // Radius the beam
-  Control.addVariable("detectorZangle",0.0);         // Radius the beam
-  Control.addVariable("detectorXYangle",0.0);         // Radius the beam
+  Control.addVariable("detectorZAngle",0.0);         // Radius the beam
+  Control.addVariable("detectorXYAngle",0.0);         // Radius the beam
   Control.addVariable("detectorNDetector",100);       //
   Control.addVariable("detectorInitAngle",2.0);       //
   Control.addVariable("detectorFinalAngle",165.0);       //
@@ -140,8 +140,8 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("DetBankXStep",0.0);         // Radius the beam
   Control.addVariable("DetBankYStep",0.0);         // Radius the beam
   Control.addVariable("DetBankZStep",0.0);         // Radius the beam
-  Control.addVariable("DetBankZangle",0.0);         // Radius the beam
-  Control.addVariable("DetBankXYangle",0.0);         // Radius the beam
+  Control.addVariable("DetBankZAngle",0.0);         // Radius the beam
+  Control.addVariable("DetBankXYAngle",0.0);         // Radius the beam
   Control.addVariable("DetBankNDet",8);       //
   Control.addVariable("DetBankCentreOffset",114.6);       //
   Control.addVariable("DetBankDetHeight",10.0);       //

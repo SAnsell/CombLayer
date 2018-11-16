@@ -43,8 +43,6 @@ class JawSet : public attachSystem::ContainedComp,
 {
  private:
 
-  const int jawsetIndex;             ///< SurfIndex offset
-  int cellIndex;                  ///< cell index
 
   /// JAW X Axis
   std::shared_ptr<constructSystem::Jaws> JawX;

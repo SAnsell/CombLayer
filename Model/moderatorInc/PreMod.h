@@ -40,8 +40,6 @@ class PreMod : public attachSystem::ContainedComp,
 {
  private:
   
-  const int preIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int centOrgFlag;              ///< Origin centred / at a point
 

@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,8 +84,6 @@ JawSet::JawSet(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),
-  jawsetIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(jawsetIndex+1),
   JawX(new constructSystem::Jaws(Key+"Vert")),
   JawXZ(new constructSystem::Jaws(Key+"Diag"))
   /*!
@@ -103,7 +102,6 @@ JawSet::JawSet(const JawSet& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  jawsetIndex(A.jawsetIndex),cellIndex(A.cellIndex),
   JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
   length(A.length)
   /*!
@@ -125,7 +123,6 @@ JawSet::operator=(const JawSet& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       JawX=A.JawX;
       JawXZ=A.JawXZ;
       radius=A.radius;
@@ -183,9 +180,9 @@ JawSet::createSurfaces()
   ELog::RegMethod RegA("JawSet","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,jawsetIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,jawsetIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildCylinder(SMap,jawsetIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   return;
 }
@@ -201,9 +198,9 @@ JawSet::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,jawsetIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   addOuterSurf(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   return;
@@ -220,8 +217,8 @@ JawSet::createLinks()
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(jawsetIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(jawsetIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   
   return;
 }

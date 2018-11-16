@@ -46,8 +46,6 @@ class RingSeal :
 {
  protected:
   
-  const int ringIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   size_t NSection;      ///< Divide into sections
   size_t NTrack;        ///< Track number [for find cells]

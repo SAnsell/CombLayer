@@ -32,7 +32,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Triple.h"
 #include "support.h"
 #include "Zaid.h"
 #include "IsoTable.h"

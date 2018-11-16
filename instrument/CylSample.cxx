@@ -3,7 +3,7 @@
  
  * File:   instrument/CylSample.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -73,9 +74,7 @@ namespace instrumentSystem
 {
 
 CylSample::CylSample(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  samIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(samIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,7 +83,6 @@ CylSample::CylSample(const std::string& Key) :
 
 CylSample::CylSample(const CylSample& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  samIndex(A.samIndex),cellIndex(A.cellIndex),
   nLayers(A.nLayers),radius(A.radius),
   height(A.height),mat(A.mat)
   /*!
@@ -105,7 +103,6 @@ CylSample::operator=(const CylSample& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       nLayers=A.nLayers;
       radius=A.radius;
       height=A.height;
@@ -170,7 +167,7 @@ CylSample::createSurfaces()
 {
   ELog::RegMethod RegA("CylSample","createSurfaces");
 
-  int SI(samIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
@@ -193,11 +190,11 @@ CylSample::createObjects(Simulation& System)
   ELog::RegMethod RegA("CylSample","createObjects");
 
   std::string Out,OutInner;
-  int SI(samIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+OutInner));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out+OutInner));
       OutInner=ModelSupport::getComposite(SMap,SI," (7:-5:6) ");
       SI+=10;
     }

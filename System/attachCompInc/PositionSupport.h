@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/PositionSupport.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #define attachSystem_PositionSupport_h
 
 class Rule;
+class objectGroups;
 class Simulation;
 
 namespace attachSystem
@@ -33,7 +34,8 @@ class FixedComp;
 void applyZAxisRotate(const FixedComp& FC,const double,Geometry::Vec3D&);
  
 Geometry::Vec3D
-getCntVec3D(const mainSystem::inputParam&,const std::string&,
+getCntVec3D(const objectGroups&,
+	    const mainSystem::inputParam&,const std::string&,
 	    const size_t,size_t&);
 
    

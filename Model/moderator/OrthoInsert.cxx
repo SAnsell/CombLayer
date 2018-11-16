@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -69,7 +70,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -82,9 +82,7 @@ namespace moderatorSystem
 
 OrthoInsert::OrthoInsert(const std::string& Key)  :
   attachSystem::ContainedGroup("GSide","HSide"),
-  attachSystem::FixedComp(Key,0),
-  hydIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hydIndex+1)
+  attachSystem::FixedComp(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,7 +91,6 @@ OrthoInsert::OrthoInsert(const std::string& Key)  :
 
 OrthoInsert::OrthoInsert(const OrthoInsert& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
-  hydIndex(A.hydIndex),cellIndex(A.cellIndex),
   GCent(A.GCent),grooveThick(A.grooveThick),grooveWidth(A.grooveWidth),
   grooveHeight(A.grooveHeight),HCent(A.HCent),
   HRadius(A.HRadius),hydroThick(A.hydroThick),
@@ -116,7 +113,6 @@ OrthoInsert::operator=(const OrthoInsert& A)
     {
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       GCent=A.GCent;
       grooveThick=A.grooveThick;
       grooveWidth=A.grooveWidth;
@@ -195,19 +191,19 @@ OrthoInsert::createSurfaces(const Hydrogen& HC)
   int signVal(-1);
   for(int i=1;i<7;i++)
     {
-      SMap.addMatch(hydIndex+i,signVal*HC.getLinkSurf(i));
+      SMap.addMatch(buildIndex+i,signVal*HC.getLinkSurf(i));
       signVal*=-1;
     }
 
-  ModelSupport::buildPlane(SMap,hydIndex+11,GCent+Y*grooveThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,GCent+Y*grooveThick,Y);
   
-  ModelSupport::buildCylinder(SMap,hydIndex+12,
+  ModelSupport::buildCylinder(SMap,buildIndex+12,
 			      HCent-Y*hydroThick,Z,HRadius);
 
-  ModelSupport::buildPlane(SMap,hydIndex+13,GCent-X*grooveWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,hydIndex+14,GCent+X*grooveWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,hydIndex+15,GCent-Z*grooveHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,hydIndex+16,GCent+Z*grooveHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,GCent-X*grooveWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,GCent+X*grooveWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,GCent-Z*grooveHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,GCent+Z*grooveHeight/2.0,Z);
 
   return;
 }
@@ -224,15 +220,15 @@ OrthoInsert::createObjects(Simulation& System,
   ELog::RegMethod RegA("OrthoInsert","createObjects");
   
   std::string Out;  
-  Out=ModelSupport::getComposite(SMap,hydIndex," 12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 13 -14 15 -16 ");
   addOuterSurf("HSide",Out); 
   Out+=CU.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,orthoMat,orthoTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,orthoMat,orthoTemp,Out));
   // Groove side
-  Out=ModelSupport::getComposite(SMap,hydIndex," -11 (-13:14:-15:16) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 (-13:14:-15:16) ");
   addOuterSurf("GSide",Out); 
   Out+=CU.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,orthoMat,orthoTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,orthoMat,orthoTemp,Out));
   
   return;
 }

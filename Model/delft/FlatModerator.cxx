@@ -3,7 +3,7 @@
  
  * File:   delft/FlatModerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace delftSystem
 {
 
 FlatModerator::FlatModerator(const std::string& Key)  :
-  virtualMod(Key),
-  flatIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flatIndex+1)
+  virtualMod(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +89,6 @@ FlatModerator::FlatModerator(const std::string& Key)  :
 
 FlatModerator::FlatModerator(const FlatModerator& A) : 
   virtualMod(A),
-  flatIndex(A.flatIndex),cellIndex(A.cellIndex),
   frontRadius(A.frontRadius),backRadius(A.backRadius),
   frontRoundRadius(A.frontRoundRadius),backRoundRadius(A.backRoundRadius),
   frontWallThick(A.frontWallThick),backWallThick(A.backWallThick),
@@ -116,7 +114,6 @@ FlatModerator::operator=(const FlatModerator& A)
   if (this!=&A)
     {
       virtualMod::operator=(A);
-      cellIndex=A.cellIndex;
       frontRadius=A.frontRadius;
       backRadius=A.backRadius;
       frontRoundRadius=A.frontRoundRadius;
@@ -220,12 +217,12 @@ FlatModerator::createSurfaces()
 
   // Inner on origin:
   const Geometry::Vec3D RCentre(Origin+Y*depth);
-  ModelSupport::buildSphere(SMap,flatIndex+7,RCentre,backRadius+backWallThick);
-  ModelSupport::buildSphere(SMap,flatIndex+17,RCentre,backRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+7,RCentre,backRadius+backWallThick);
+  ModelSupport::buildSphere(SMap,buildIndex+17,RCentre,backRadius);
 
   // Outer on origin:
-  ModelSupport::buildSphere(SMap,flatIndex+27,RCentre,frontRadius+frontWallThick);
-  ModelSupport::buildSphere(SMap,flatIndex+37,RCentre,frontRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+27,RCentre,frontRadius+frontWallThick);
+  ModelSupport::buildSphere(SMap,buildIndex+37,RCentre,frontRadius);
 
   // Cone Wings:
   // calculate the distance from surface of sphere  to dividing plane
@@ -254,23 +251,23 @@ FlatModerator::createSurfaces()
       const double backWShift(backWallThick/SA);
 
       
-      ModelSupport::buildCone(SMap,flatIndex+8,BConePt,Y,wingAngle);
-      ModelSupport::buildCone(SMap,flatIndex+18,BConePt+Y*backWShift,Y,wingAngle);
-      ModelSupport::buildCone(SMap,flatIndex+28,FConePt-Y*frontWShift,Y,wingAngle);
-      ModelSupport::buildCone(SMap,flatIndex+38,FConePt,Y,wingAngle);
+      ModelSupport::buildCone(SMap,buildIndex+8,BConePt,Y,wingAngle);
+      ModelSupport::buildCone(SMap,buildIndex+18,BConePt+Y*backWShift,Y,wingAngle);
+      ModelSupport::buildCone(SMap,buildIndex+28,FConePt-Y*frontWShift,Y,wingAngle);
+      ModelSupport::buildCone(SMap,buildIndex+38,FConePt,Y,wingAngle);
 
     }
   else  // cylinder join
     {
-      ModelSupport::buildCylinder(SMap,flatIndex+8,Origin,Y,backView+backWallThick);
-      ModelSupport::buildCylinder(SMap,flatIndex+18,Origin,Y,backView);
-      ModelSupport::buildCylinder(SMap,flatIndex+28,Origin,Y,frontView+frontWallThick);
-      ModelSupport::buildCylinder(SMap,flatIndex+38,Origin,Y,frontView);
+      ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,backView+backWallThick);
+      ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,Y,backView);
+      ModelSupport::buildCylinder(SMap,buildIndex+28,Origin,Y,frontView+frontWallThick);
+      ModelSupport::buildCylinder(SMap,buildIndex+38,Origin,Y,frontView);
     }
 
   // last planes
-  ModelSupport::buildPlane(SMap,flatIndex+1,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,flatIndex+11,Origin+Y*(length+frontWallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(length+frontWallThick),Y);
 
   return;
 }
@@ -298,41 +295,41 @@ FlatModerator::createObjects(Simulation& System)
 
   std::string Out;  
 
-  Out=ModelSupport::getComposite(SMap,flatIndex,"-7 -8 -1");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -8 -1");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -7 -8 17 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 -8 17 -1");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
   
-  Out=ModelSupport::getComposite(SMap,flatIndex," -17 -8 18 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -8 18 -1");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -17 -18 27 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -18 27 -1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -27 -18 28 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -27 -18 28 -1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -27 -28 37 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modMat,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -27 -28 37 -1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modMat,Out));
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -37 -28 38 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -28 38 -1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -37 -38 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -38 -1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
   // build Simple case [cylinder]:
   
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -37 -38 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,gasMat,gasTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -38 -1");
+  System.addCell(MonteCarlo::Object(cellIndex++,gasMat,gasTemp,Out));
 
   // Cap :
-  Out=ModelSupport::getComposite(SMap,flatIndex," 1 -11 -8");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -8");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   return;
 }

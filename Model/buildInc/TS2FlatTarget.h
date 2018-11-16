@@ -46,9 +46,7 @@ class TS2FlatTarget : public constructSystem::TargetBase
 {
  private:
   
-  const int protonIndex;        ///< Index of surface offset
 
-  int cellIndex;                ///< Cell index
 
   int frontPlate;               ///< Front Reflector surf
   int backPlate;                ///< Back Reflector surf

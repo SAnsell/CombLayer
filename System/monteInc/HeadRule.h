@@ -59,6 +59,7 @@ class HeadRule
  public:
 
   HeadRule();
+  explicit HeadRule(const int);
   explicit HeadRule(const std::string&);
   HeadRule(const HeadRule&);
   HeadRule(const Rule*);

@@ -21,9 +21,6 @@ class TelescopicPipe : public attachSystem::ContainedGroup,
 {
  private:
 
-  const int ptIndex;              ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   size_t nSec;                    ///< Number of tube sections
   std::vector<double> radius;     ///< Radius of inner void
   std::vector<double> length;     ///< cummolative length 

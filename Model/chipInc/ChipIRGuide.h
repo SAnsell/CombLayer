@@ -64,8 +64,6 @@ class ChipIRGuide : public attachSystem::TwinComp,
   /// layer type
   typedef std::map<std::string,int> LCTYPE;
 
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   ChipIRFilter Filter;          ///< Filter component
   

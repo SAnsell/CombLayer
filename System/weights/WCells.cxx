@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "cellValueSet.h"
 #include "WForm.h"
 #include "WItem.h"
@@ -131,22 +130,21 @@ WCells::operator==(const WCells& A) const
 }
 
 void 
-WCells::populateCells(const std::map<int,MonteCarlo::Qhull*>& Object)
+WCells::populateCells(const std::map<int,MonteCarlo::Object*>& ObjMap)
   /*!
     Populate cell types for each object
-    \param Object :: The Qhull map to integrate
+    \param Object :: The Object map to integrate
   */
 {
   ELog::RegMethod RegA("WCells","populateCells");
   
-  std::map<int,MonteCarlo::Qhull*>::const_iterator vc;
-  for(vc=Object.begin();vc!=Object.end();vc++)
+  for(const std::pair<int,MonteCarlo::Object*>& objUnit : ObjMap)
     {
-      const int cellN(vc->first);
-      const MonteCarlo::Qhull& QRef(*vc->second);
+      const int cellN(objUnit.first);
+      const MonteCarlo::Object& ORef(*(objUnit.second));
 
       ItemTYPE::iterator ac=WVal.find(cellN);
-      if (QRef.isPlaceHold())      // IF virtual remove
+      if (ORef.isPlaceHold())      // IF virtual remove
         {
 	  if (ac!=WVal.end())
 	    WVal.erase(ac);
@@ -154,16 +152,14 @@ WCells::populateCells(const std::map<int,MonteCarlo::Qhull*>& Object)
       else         // Good particle
         {
 	  if (ac!=WVal.end())
-	    {
-	      ac->second=WItem(cellN,QRef.getDensity(),QRef.getTemp());
-	    }
+	    ac->second=WItem(cellN,ORef.getDensity(),ORef.getTemp());
 	  else
 	    {
-	      WVal.emplace(cellN,
-			   WItem(cellN,QRef.getDensity(),QRef.getTemp()));
+	      WVal.emplace
+		(cellN,WItem(cellN,ORef.getDensity(),ORef.getTemp()));
 	    }
-
-	  if (!QRef.getImp())
+	  
+	  if (!ORef.getImp())
 	    maskCell(cellN);
 	}
     }

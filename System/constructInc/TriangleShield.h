@@ -43,8 +43,6 @@ class TriangleShield :
 {
  private:
   
-  const int shieldIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
   
   double length;                ///< void length [total]
   double leftAngle;             ///< angle for left wall

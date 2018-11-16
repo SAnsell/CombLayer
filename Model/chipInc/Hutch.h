@@ -3,7 +3,7 @@
  
  * File:   chipInc/Hutch.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,6 @@ class ChipIRHutch : public attachSystem::FixedGroup,
 {
  private:
   
-  const int hutchIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Index of cells
   int populated;                ///< populated or not
 
   std::shared_ptr<PreCollimator> PreColObj;      ///< PreCollimator
@@ -219,8 +217,6 @@ class ChipIRHutch : public attachSystem::FixedGroup,
   ChipIRHutch(const ChipIRHutch&);
   ChipIRHutch& operator=(const ChipIRHutch&);
   ~ChipIRHutch();
-
-  int isObjectContained(Simulation&,const int,const int);
 
   /// Set the collimator build flag [Bits ==> Pre:V:H ]
   void setCollFlag(const int F) { collActiveFlag=F; }

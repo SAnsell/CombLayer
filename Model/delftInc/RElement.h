@@ -3,7 +3,7 @@
  
  * File:   delftInc/RElement.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,10 @@ class RElement  : public attachSystem::FixedOffset,
 {
  protected:
 
+  const std::string baseName;  ///< Base block name
   const size_t XIndex;         ///< Index of block [X]
   const size_t YIndex;         ///< Index of block [Z]
 
-  const int surfIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
  
   int insertCell;               ///< Cell to insert into
 

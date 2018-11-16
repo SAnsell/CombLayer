@@ -41,20 +41,21 @@ namespace WeightSystem
   void clearWImp(physicsSystem::PhysicsCards&,const std::string&);
   void removePhysImp(physicsSystem::PhysicsCards&,const std::string&);
   void zeroImp(physicsSystem::PhysicsCards&,Simulation&,const int,const int);
-  void simulationImp(physicsSystem::PhysicsCards&,
-		     Simulation&,const mainSystem::inputParam&);
-  void EnergyCellCut(physicsSystem::PhysicsCards&,const Simulation&,
-		     const mainSystem::inputParam&);
-  void ExtField(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
-  void FCL(physicsSystem::PhysicsCards&,const Simulation&,
+  void simulationImp(SimMCNP&,const mainSystem::inputParam&);
+  void EnergyCellCut(SimMCNP&,const mainSystem::inputParam&);
+  void ExtField(const objectGroups&,physicsSystem::PhysicsCards&,
+		const mainSystem::inputParam&);
+  void FCL(const objectGroups&,physicsSystem::PhysicsCards&,
 	   const mainSystem::inputParam&);
   
-  void IMP(physicsSystem::PhysicsCards&,Simulation&,
-	   const mainSystem::inputParam&);
-  void SBias(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
+  void IMP(SimMCNP&,const mainSystem::inputParam&);
+  void SBias(const objectGroups&,physicsSystem::PhysicsCards&,
+	     const mainSystem::inputParam&);
 
-  void DXT(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
-  void PWT(physicsSystem::PhysicsCards&,const mainSystem::inputParam&);
+  void DXT(const objectGroups&,physicsSystem::PhysicsCards&,
+	   const mainSystem::inputParam&);
+  void PWT(const objectGroups&,physicsSystem::PhysicsCards&,
+	   const mainSystem::inputParam&);
 
 }
 

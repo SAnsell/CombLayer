@@ -43,13 +43,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -61,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -71,14 +70,11 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
-#include "SurInter.h"
-#include "surfDivide.h"
 
 #include "OffsetFlangePipe.h"
 
@@ -87,7 +83,7 @@ namespace constructSystem
 
 OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,11),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   frontJoin(0),backJoin(0)
   /*!
@@ -99,6 +95,70 @@ OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) :
   nameSideIndex(10,"FlangeBCentre");
 }
 
+OffsetFlangePipe::OffsetFlangePipe(const OffsetFlangePipe& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FrontBackCut(A),
+  frontJoin(A.frontJoin),FPt(A.FPt),FAxis(A.FAxis),
+  backJoin(A.backJoin),BPt(A.BPt),BAxis(A.BAxis),
+  radius(A.radius),length(A.length),feThick(A.feThick),
+  flangeAXStep(A.flangeAXStep),flangeAZStep(A.flangeAZStep),
+  flangeAXYAngle(A.flangeAXYAngle),flangeAZAngle(A.flangeAZAngle),
+  flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
+  flangeBXStep(A.flangeBXStep),flangeBZStep(A.flangeBZStep),
+  flangeBXYAngle(A.flangeBXYAngle),flangeBZAngle(A.flangeBZAngle),
+  flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
+  voidMat(A.voidMat),feMat(A.feMat),flangeAYAxis(A.flangeAYAxis),
+  flangeBYAxis(A.flangeBYAxis)
+  /*!
+    Copy constructor
+    \param A :: OffsetFlangePipe to copy
+  */
+{}
+
+OffsetFlangePipe&
+OffsetFlangePipe::operator=(const OffsetFlangePipe& A)
+  /*!
+    Assignment operator
+    \param A :: OffsetFlangePipe to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      frontJoin=A.frontJoin;
+      FPt=A.FPt;
+      FAxis=A.FAxis;
+      backJoin=A.backJoin;
+      BPt=A.BPt;
+      BAxis=A.BAxis;
+      radius=A.radius;
+      length=A.length;
+      feThick=A.feThick;
+      flangeAXStep=A.flangeAXStep;
+      flangeAZStep=A.flangeAZStep;
+      flangeAXYAngle=A.flangeAXYAngle;
+      flangeAZAngle=A.flangeAZAngle;
+      flangeARadius=A.flangeARadius;
+      flangeALength=A.flangeALength;
+      flangeBXStep=A.flangeBXStep;
+      flangeBZStep=A.flangeBZStep;
+      flangeBXYAngle=A.flangeBXYAngle;
+      flangeBZAngle=A.flangeBZAngle;
+      flangeBRadius=A.flangeBRadius;
+      flangeBLength=A.flangeBLength;
+      voidMat=A.voidMat;
+      feMat=A.feMat;
+      flangeAYAxis=A.flangeAYAxis;
+      flangeBYAxis=A.flangeBYAxis;
+    }
+  return *this;
+}
 
 OffsetFlangePipe::~OffsetFlangePipe() 
   /*!

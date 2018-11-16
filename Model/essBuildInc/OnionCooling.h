@@ -13,18 +13,9 @@ namespace essSystem
 */
 
 class OnionCooling : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
-
-  const int onionIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index. Every object has a space of about 10000 cells unless you request more.
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
 
   //  double height;                  ///< Height
   double wallThick;               ///< Wall thickness
@@ -56,7 +47,7 @@ class OnionCooling : public attachSystem::ContainedComp,
   void setBottomSurface(const attachSystem::FixedComp& FC, const long int link);
   void setUpperSurface(const attachSystem::FixedComp& FC, const long int link);
 
-  int getMainCell() const { return onionIndex+1; }
+  int getMainCell() const { return buildIndex+1; }
   virtual void addToInsertChain(attachSystem::ContainedComp&) const; // has to be there [2:1040]
   void createAll(Simulation&,const attachSystem::FixedComp&); // [2:1070]
   

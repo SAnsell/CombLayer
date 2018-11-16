@@ -3,7 +3,7 @@
  
  * File:   construct/CrystalMount.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,9 +83,7 @@ CrystalMount::CrystalMount(const std::string& Key,
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key+StrFunc::makeString(Index),8),
   attachSystem::CellMap(),attachSystem::SurfMap(),
-  baseName(Key),ID(Index),
-  xtalIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(xtalIndex+1)
+  baseName(Key),ID(Index)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -95,8 +94,8 @@ CrystalMount::CrystalMount(const std::string& Key,
 CrystalMount::CrystalMount(const CrystalMount& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  baseName(A.baseName),ID(A.ID),xtalIndex(A.xtalIndex),
-  cellIndex(A.cellIndex),active(A.active),width(A.width),
+  baseName(A.baseName),ID(A.ID),
+  active(A.active),width(A.width),
   thick(A.thick),length(A.length),gap(A.gap),wallThick(A.wallThick),
   baseThick(A.baseThick),xtalMat(A.xtalMat),wallMat(A.wallMat),
   yRotation(A.yRotation),zRotation(A.zRotation),
@@ -121,7 +120,6 @@ CrystalMount::operator=(const CrystalMount& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       active=A.active;
       width=A.width;
       thick=A.thick;
@@ -206,29 +204,29 @@ CrystalMount::createSurfaces()
 
   // main xstal
 
-  ModelSupport::buildPlane(SMap,xtalIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,xtalIndex+2,Origin+Y*thick,Y);
-  ModelSupport::buildPlane(SMap,xtalIndex+3,Origin-X*(length/2.0),X);
-  ModelSupport::buildPlane(SMap,xtalIndex+4,Origin+X*(length/2.0),X);
-  ModelSupport::buildPlane(SMap,xtalIndex+5,Origin-Z*(width/2.0),Z);
-  ModelSupport::buildPlane(SMap,xtalIndex+6,Origin+Z*(width/2.0),Z);    
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*thick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(length/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(length/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(width/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(width/2.0),Z);    
   
   // inner void
-  ModelSupport::buildPlane(SMap,xtalIndex+12,Origin+Y*(thick+gap),Y);
-  ModelSupport::buildPlane(SMap,xtalIndex+13,Origin-X*(gap+length/2.0),X);
-  ModelSupport::buildPlane(SMap,xtalIndex+14,Origin+X*(gap+length/2.0),X);
-  ModelSupport::buildPlane(SMap,xtalIndex+15,Origin-Z*(gap+width/2.0),Z);
-  ModelSupport::buildPlane(SMap,xtalIndex+16,Origin+Z*(gap+width/2.0),Z);    
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(thick+gap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(gap+length/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(gap+length/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(gap+width/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(gap+width/2.0),Z);    
 
   // inner void
-  ModelSupport::buildPlane(SMap,xtalIndex+22,Origin+Y*(thick+gap+baseThick),Y);
-  ModelSupport::buildPlane(SMap,xtalIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(thick+gap+baseThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(wallThick+gap+length/2.0),X);
-  ModelSupport::buildPlane(SMap,xtalIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(wallThick+gap+length/2.0),X);
-  ModelSupport::buildPlane(SMap,xtalIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(wallThick+gap+width/2.0),Z);
-  ModelSupport::buildPlane(SMap,xtalIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(wallThick+gap+width/2.0),Z);
   
   return; 
@@ -247,20 +245,20 @@ CrystalMount::createObjects(Simulation& System)
   if (active)
     {
       // xstal
-      Out=ModelSupport::getComposite(SMap,xtalIndex," 1 -2 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,xtalMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,xtalMat,0.0,Out));
       addCell("Xtal",cellIndex-1);
       
       
       Out=ModelSupport::getComposite
-        (SMap,xtalIndex," 1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+        (SMap,buildIndex," 1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
       Out=ModelSupport::getComposite
-        (SMap,xtalIndex," 1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+        (SMap,buildIndex," 1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       
-      Out=ModelSupport::getComposite(SMap,xtalIndex," 1 -22 23 -24 25 -26 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -22 23 -24 25 -26 ");
       addOuterSurf(Out);
     }
   return; 
@@ -275,35 +273,35 @@ CrystalMount::createLinks()
   ELog::RegMethod RegA("CrystalMount","createLinks");
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(xtalIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(gap+thick+baseThick),-Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(xtalIndex+22));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
 
   const Geometry::Vec3D MidY(Origin+Y*((thick+gap+baseThick)/2.0));
   const double T(gap+wallThick);
   
   FixedComp::setConnect(2,MidY-X*(T+width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(xtalIndex+23));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
 
   FixedComp::setConnect(3,MidY+X*(T+width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(xtalIndex+24));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
 
   FixedComp::setConnect(4,MidY-Z*(T+length/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(xtalIndex+25));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
 
   FixedComp::setConnect(5,MidY+Z*(T+length/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(xtalIndex+26));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
 
 
   const Geometry::Vec3D incomingAxis=(Origin-viewPoint).unit();
   FixedComp::setConnect(6,viewPoint,-incomingAxis);
-  FixedComp::setLinkSurf(6,SMap.realSurf(xtalIndex+1));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1));
 
   const Geometry::Vec3D outgoingAxis=
     -Y*(2.0*incomingAxis.dotProd(Y))+incomingAxis;
   FixedComp::setConnect(7,Origin,outgoingAxis);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(xtalIndex+1));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+1));
 
   return;
 }

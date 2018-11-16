@@ -43,8 +43,6 @@ class SwimingPool : public attachSystem::ContainedComp,
 {
  private:
   
-  const int poolIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double base;                  ///< Base distance 
   double surface;               ///< Surface distance

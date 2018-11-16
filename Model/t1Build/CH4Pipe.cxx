@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Pipe.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,8 +83,7 @@ namespace ts1System
 
 CH4Pipe::CH4Pipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),Central("CH4Centre")
+  Central("CH4Centre")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +92,6 @@ CH4Pipe::CH4Pipe(const std::string& Key)  :
 
 CH4Pipe::CH4Pipe(const CH4Pipe& A) : 
   attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   Central(A.Central),Xoffset(A.Xoffset),Yoffset(A.Yoffset),
   ch4Mat(A.ch4Mat),alMat(A.alMat),ch4Temp(A.ch4Temp),
   ch4InnerRadius(A.ch4InnerRadius),alInnerRadius(A.alInnerRadius),
@@ -117,7 +116,6 @@ CH4Pipe::operator=(const CH4Pipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       Central=A.Central;
       Xoffset=A.Xoffset;
       Yoffset=A.Yoffset;

@@ -39,8 +39,6 @@ class delftH2Moderator : public virtualMod
 {
  private:
   
-  const int hydIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double depth;             ///< Total depth [Max]
   double sideRadius;        ///< Side (height+width) radius

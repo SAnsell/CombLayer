@@ -3,7 +3,7 @@
  
  * File:   delft/H2Groove.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,8 +82,7 @@ namespace delftSystem
 
 H2Groove::H2Groove(const std::string& Key,const int NG)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0),
-  gIndex(NG),siIndex(ModelSupport::objectRegister::Instance().cell(Key,NG)),
-  cellIndex(siIndex+1)
+  gID(NG)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +91,7 @@ H2Groove::H2Groove(const std::string& Key,const int NG)  :
 
 H2Groove::H2Groove(const H2Groove& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  gIndex(A.gIndex),siIndex(A.siIndex),cellIndex(A.cellIndex),
+  gID(A.gID),
   face(A.face),height(A.height),xyAngleA(A.xyAngleA),xyAngleB(A.xyAngleB),
   siTemp(A.siTemp),siMat(A.siMat)
   /*!
@@ -112,7 +112,6 @@ H2Groove::operator=(const H2Groove& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       face=A.face;
       height=A.height;
       xyAngleA=A.xyAngleA;
@@ -141,7 +140,7 @@ H2Groove::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   
-  const std::string keyNum(keyName+StrFunc::makeString(gIndex));
+  const std::string keyNum(keyName+StrFunc::makeString(gID));
 
   face=Control.EvalPair<int>(keyNum+"Face",keyName+"Face");
 
@@ -189,8 +188,8 @@ H2Groove::createSurfaces()
 {
   ELog::RegMethod RegA("H2Groove","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,siIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,siIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   const Geometry::Quaternion QxyA=
     Geometry::Quaternion::calcQRotDeg(xyAngleA,Z);
@@ -203,10 +202,10 @@ H2Groove::createSurfaces()
   QxyA.rotate(PtA);
   QxyB.rotate(PtB);
 
-  ModelSupport::buildPlane(SMap,siIndex+7,Origin,
+  ModelSupport::buildPlane(SMap,buildIndex+7,Origin,
 			   Origin+PtA,
 			   Origin+PtA+Z,X);
-  ModelSupport::buildPlane(SMap,siIndex+8,Origin,
+  ModelSupport::buildPlane(SMap,buildIndex+8,Origin,
 			   Origin+PtB,
 			   Origin+PtB+Z,X);
 			   
@@ -235,10 +234,10 @@ H2Groove::createObjects(Simulation& System,
   ELog::RegMethod RegA("H2Groove","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,siIndex,"7 -8 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -8 5 -6 ");
   addOuterSurf(Out);
   Out+=CC.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,siMat,siTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,siMat,siTemp,Out));
   
   return;
 }

@@ -42,13 +42,10 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -67,7 +64,8 @@
 #include "ReadFunctions.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,9 +80,7 @@ namespace bibSystem
 {
 
 BilReflector::BilReflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,7 +89,6 @@ BilReflector::BilReflector(const std::string& Key)  :
 
 BilReflector::BilReflector(const BilReflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),
   BeHeight(A.BeHeight),BeDepth(A.BeDepth),
   BeRadius(A.BeRadius),BeMat(A.BeMat),InnerHeight(A.InnerHeight),
   InnerDepth(A.InnerDepth),InnerRadius(A.InnerRadius),
@@ -122,7 +117,6 @@ BilReflector::operator=(const BilReflector& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       BeHeight=A.BeHeight;
       BeDepth=A.BeDepth;
       BeRadius=A.BeRadius;
@@ -238,7 +232,7 @@ BilReflector::createSurfaces()
 	      OuterRadius,OuterPbRadius};
 
   const size_t nLayer(sizeof(R)/sizeof(double));
-  int RI(refIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*D[i],Z);
@@ -263,13 +257,13 @@ BilReflector::createObjects(Simulation& System)
   const int M[]={BeMat,InnerMat,PbMat,MidMat,
 		 OuterMat,OuterPbMat};
   const size_t nLayer(sizeof(M)/sizeof(int));
-  int RI(refIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7");
       if (i)
 	Out+=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,M[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,M[i],0.0,Out));
       RI+=10;
     }
 
@@ -296,13 +290,13 @@ BilReflector::createLinks()
 		    OuterRadius+OuterPbRadius);
 
   FixedComp::setConnect(0,Origin-Z*D,-Z);
-  FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+55));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+55));
 
   FixedComp::setConnect(1,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(refIndex+56));
+  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+56));
 
   FixedComp::setConnect(2,Origin+Y*R,Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+57));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+57));
 
   return;
 }

@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -70,7 +71,6 @@
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
@@ -82,8 +82,7 @@ CylPreMod::CylPreMod(const std::string& Key) :
   attachSystem::ContainedGroup("Main","BlockA","BlockB"),
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1),ExtAObj(new BlockAddition(Key+"ABlock")),
+  ExtAObj(new BlockAddition(Key+"ABlock")),
   ExtBObj(new BlockAddition(Key+"BBlock"))
 
   /*!
@@ -102,7 +101,7 @@ CylPreMod::CylPreMod(const std::string& Key) :
 CylPreMod::CylPreMod(const CylPreMod& A) : 
   attachSystem::ContainedGroup(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),  
-  modIndex(A.modIndex),cellIndex(A.cellIndex),ExtAObj(A.ExtAObj),
+  ExtAObj(A.ExtAObj),
   ExtBObj(A.ExtBObj),blockActiveA(A.blockActiveA),
   blockActiveB(A.blockActiveB),aSide(A.aSide),bSide(A.bSide),
   innerRadius(A.innerRadius),innerHeight(A.innerHeight),
@@ -130,7 +129,6 @@ CylPreMod::operator=(const CylPreMod& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       ExtAObj=A.ExtAObj;
       ExtBObj=A.ExtBObj;
       blockActiveA=A.blockActiveA;
@@ -346,13 +344,13 @@ CylPreMod::createSurfaces()
   ELog::RegMethod RegA("CylPreMod","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,Y);  
   // First surface when needed:
 
-  ModelSupport::buildCylinder(SMap,modIndex+9,Origin,Z,innerRadius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+9,Origin,Z,innerRadius);  
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
@@ -363,7 +361,7 @@ CylPreMod::createSurfaces()
   // For flight line 100
   for(size_t flIndex=0;flIndex<viewAngle.size();flIndex++)
     {
-      const int baseIndex(modIndex+static_cast<int>(100*(flIndex+1)));
+      const int baseIndex(buildIndex+static_cast<int>(100*(flIndex+1)));
       // create mid divider:
       ModelSupport::buildPlane(SMap,baseIndex+1,Origin,viewY[flIndex]);  
       
@@ -406,8 +404,8 @@ CylPreMod::createObjects(Simulation& System,
   std::string Out;
   layerCells.clear();
 
-  int SI(modIndex);
-  int CI(modIndex);  // Cut index
+  int SI(buildIndex);
+  int CI(buildIndex);  // Cut index
 
   // Process even number of surfaces:
   const size_t even(!(nLayers % 2 ) ? nLayers-2 : nLayers);
@@ -420,13 +418,13 @@ CylPreMod::createObjects(Simulation& System,
 	}
       for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
 	Out+=ModelSupport::getComposite(SMap,CI+100*static_cast<int>(viewIndex),
-					modIndex+100*static_cast<int>(viewIndex),
+					buildIndex+100*static_cast<int>(viewIndex),
 					" (-101M:103:104:105:106) ");
       if (i)
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
       else if (CMod)
 	Out+=CMod->getExclude();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       layerCells.push_back(cellIndex-1);
       SI+=10;
       if (i!=even)
@@ -437,31 +435,31 @@ CylPreMod::createObjects(Simulation& System,
   for(size_t i=0;i<(nLayers-1)/2;i++)
     {
       // Layer is between i+1 and nLayers-1-evenCut-i
-      const int SI(modIndex+10*static_cast<int>(i));
-      const int CI(modIndex+10*static_cast<int>(nLayers-2-evenCut-i));
+      const int SI(buildIndex+10*static_cast<int>(i));
+      const int CI(buildIndex+10*static_cast<int>(nLayers-2-evenCut-i));
 
       for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
 	{	  
-	  const int divideN(modIndex+100*static_cast<int>(viewIndex));
+	  const int divideN(buildIndex+100*static_cast<int>(viewIndex));
 	  Out=ModelSupport::getComposite(SMap,SI,CI," 7 -7M ");
 	  Out+=ModelSupport::getComposite
 	    (SMap,SI+100*static_cast<int>(viewIndex),
 	     divideN," 101M (103:104:105:106) -113 -114 -115 -116");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	  layerCells.push_back(cellIndex-1);
 	}
     }
   
   // Finally the void cell:
-  Out=ModelSupport::getComposite(SMap,modIndex,
-				 modIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 buildIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
 
   for(size_t viewIndex=0;viewIndex<viewAngle.size();viewIndex++)
     {	  
       std::string OComp(Out);
-      OComp+=ModelSupport::getComposite(SMap,modIndex+100*static_cast<int>(viewIndex),
+      OComp+=ModelSupport::getComposite(SMap,buildIndex+100*static_cast<int>(viewIndex),
 				 "101 -103 -104 -105 -106 " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OComp));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OComp));
     }
   return; 
 }
@@ -479,14 +477,14 @@ CylPreMod::createLinks()
 
   if (nLayers)
     {
-      const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+      const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
       FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(0,-SMap.realSurf(modIndex+2));
+      FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(1,SMap.realSurf(modIndex+2));
+      FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+2));
       
       FixedComp::setConnect(2,Origin-Z*(height[nLayers-1]/2.0),-Z);
       FixedComp::setBridgeSurf(2,-SMap.realSurf(SI+5));
@@ -496,11 +494,11 @@ CylPreMod::createLinks()
 
       FixedComp::setConnect(4,Origin-X*radius[nLayers-1],-X);
       FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(4,-SMap.realSurf(modIndex+1));
+      FixedComp::addBridgeSurf(4,-SMap.realSurf(buildIndex+1));
 
       FixedComp::setConnect(5,Origin+X*radius[nLayers-1],X);
       FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(5,SMap.realSurf(modIndex+1));
+      FixedComp::addBridgeSurf(5,SMap.realSurf(buildIndex+1));
 
     }
   else 
@@ -583,8 +581,8 @@ CylPreMod::getLayerSurf(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(!layerIndex ? modIndex :
-	       10*static_cast<int>(layerIndex-1)+modIndex);
+  const int SI(!layerIndex ? buildIndex :
+	       10*static_cast<int>(layerIndex-1)+buildIndex);
 
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
@@ -595,7 +593,7 @@ CylPreMod::getLayerSurf(const size_t layerIndex,
     case 6:
       return (layerIndex) ? 
 	SMap.realSurf(SI+7) :
-	SMap.realSurf(modIndex+9);
+	SMap.realSurf(buildIndex+9);
     case 3:
       return -SMap.realSurf(SI+5);
     case 4:
@@ -619,8 +617,8 @@ CylPreMod::getLayerString(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(!layerIndex ? modIndex :
-	       10*static_cast<int>(layerIndex-1)+modIndex);
+  const int SI(!layerIndex ? buildIndex :
+	       10*static_cast<int>(layerIndex-1)+buildIndex);
 
   std::ostringstream cx;
   const long int uSIndex(std::abs(sideIndex));
@@ -629,14 +627,14 @@ CylPreMod::getLayerString(const size_t layerIndex,
     case 1:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<< -SMap.realSurf(buildIndex+1)<<" ";
       break;
     case 2:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<<SMap.realSurf(modIndex+1)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<<SMap.realSurf(buildIndex+1)<<" ";
       break;
     case 3:
       cx<<" "<<-SMap.realSurf(SI+5)<<" ";
@@ -647,14 +645,14 @@ CylPreMod::getLayerString(const size_t layerIndex,
     case 5:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<< -SMap.realSurf(buildIndex+1)<<" ";
       break;
     case 6:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< SMap.realSurf(modIndex+1)<<" ";
+		SMap.realSurf(buildIndex+9)) <<" "
+	<< SMap.realSurf(buildIndex+1)<<" ";
       break;
     default:
       throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
@@ -686,19 +684,19 @@ CylPreMod::calcViewIntercept(const size_t viewIndex,
     throw ColErr::IndexError<long int>(sideIndex,2,"sideIndex");
 
   const size_t SI(static_cast<size_t>(std::abs(sideIndex)-1));
-  const int VI(modIndex+100*static_cast<int>(viewIndex) 
+  const int VI(buildIndex+100*static_cast<int>(viewIndex) 
 	       +static_cast<int>(SI));
 
   const Geometry::Vec3D BulkPtA=
-    SurInter::getPoint(SMap.realSurfPtr(modIndex+17),
+    SurInter::getPoint(SMap.realSurfPtr(buildIndex+17),
 		       SMap.realSurfPtr(VI+113),
-		       SMap.realSurfPtr(modIndex+15),
+		       SMap.realSurfPtr(buildIndex+15),
 		       FLpts[4*viewIndex+SI]);
 
   const Geometry::Vec3D BulkPtB=
-    SurInter::getPoint(SMap.realSurfPtr(modIndex+17),
+    SurInter::getPoint(SMap.realSurfPtr(buildIndex+17),
 		       SMap.realSurfPtr(VI+113),
-		       SMap.realSurfPtr(modIndex+16),
+		       SMap.realSurfPtr(buildIndex+16),
 		       FLpts[4*viewIndex+SI]);
 
   return (BulkPtA+BulkPtB)/2.0;
@@ -720,7 +718,7 @@ CylPreMod::updateLayers(Simulation& System,
 {
   ELog::RegMethod RegA("CylPreMod","updateLayers");
   
-  MonteCarlo::Qhull* OPtr=System.findQhull(layerCells[layerN]);
+  MonteCarlo::Object* OPtr=System.findObject(layerCells[layerN]);
   if (!OPtr)
     throw ColErr::InContainerError<int>(layerCells[layerN],"layerCells");
   if (flag=='A')
@@ -759,7 +757,7 @@ CylPreMod::createAll(Simulation& System,
   ExtAObj->setActive(blockActiveA);
   ExtAObj->setCentRotate(Origin);
   ExtAObj->setEdgeSurf
-    (SMap.realSurf(modIndex+102+static_cast<int>(aSide)));  // 103/104
+    (SMap.realSurf(buildIndex+102+static_cast<int>(aSide)));  // 103/104
 
   ExtAObj->copyInterObj(this->getCC("Main"));
   ExtAObj->createAll(System,IPt,*this,nLayers-2,4+aSide);   //5/6
@@ -769,7 +767,7 @@ CylPreMod::createAll(Simulation& System,
   IPt=calcViewIntercept(1,3-bSide);   // view : side (2/1 from 1/2)
   ExtBObj->setActive(blockActiveB);
   ExtBObj->setEdgeSurf
-    (SMap.realSurf(modIndex+205-static_cast<int>(bSide))); // 204/203
+    (SMap.realSurf(buildIndex+205-static_cast<int>(bSide))); // 204/203
 
   ExtBObj->setCentRotate(Origin);
   ExtBObj->copyInterObj(this->getCC("Main"));

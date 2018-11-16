@@ -40,8 +40,6 @@ class OrthoInsert : public attachSystem::ContainedGroup,
 {
  private:
   
-  const int hydIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   Geometry::Vec3D GCent;     ///< Groove centre
   double grooveThick;       ///< Total Width

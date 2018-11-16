@@ -161,6 +161,8 @@ getInput(const MITYPE&,const std::string&,const size_t);
 template size_t
 getInput(const MITYPE&,const std::string&,const size_t);
 
+template Geometry::Vec3D
+getInput(const MITYPE&,const std::string&,const size_t);
 
 template Geometry::Vec3D
 getDefInput(const MITYPE&,const std::string&,const size_t,
@@ -184,6 +186,9 @@ findInput(const MITYPE&,const std::string&,const size_t,double&);
 
 template bool
 findInput(const MITYPE&,const std::string&,const size_t,std::string&);
+
+template bool
+findInput(const MITYPE&,const std::string&,const size_t,Geometry::Vec3D&);
 
 /// \endcond TEMPLATE 
 

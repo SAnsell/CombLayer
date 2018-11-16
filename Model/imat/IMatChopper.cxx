@@ -66,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -76,7 +77,6 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "IMatChopper.h"
 
@@ -85,8 +85,7 @@ namespace imatSystem
 
 IMatChopper::IMatChopper(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::TwinComp(Key,6),
-  chopIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(chopIndex+1),innerVoid(0)
+  innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -188,35 +187,35 @@ IMatChopper::createSurfaces()
 {
   ELog::RegMethod RegA("IMatChopper","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,chopIndex+1,Origin,bY);
-  ModelSupport::buildPlane(SMap,chopIndex+2,Origin+bY*length,bY);
-  ModelSupport::buildPlane(SMap,chopIndex+3,Origin-bX*left,bX);
-  ModelSupport::buildPlane(SMap,chopIndex+4,Origin+bX*right,bX);
-  ModelSupport::buildPlane(SMap,chopIndex+5,Origin-bZ*depth,bZ);
-  ModelSupport::buildPlane(SMap,chopIndex+6,Origin+bZ*height,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+bY*length,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-bX*left,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+bX*right,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-bZ*depth,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+bZ*height,bZ);
 
 
 
-  ModelSupport::buildPlane(SMap,chopIndex+11,Origin-bY*feBack,bY);
-  ModelSupport::buildPlane(SMap,chopIndex+12,Origin+bY*(length+feFront),bY);
-  ModelSupport::buildPlane(SMap,chopIndex+13,Origin-bX*(left+feWidth),bX);
-  ModelSupport::buildPlane(SMap,chopIndex+14,Origin+bX*(right+feWidth),bX);
-  ModelSupport::buildPlane(SMap,chopIndex+15,Origin-bZ*(depth+feBase),bZ);
-  ModelSupport::buildPlane(SMap,chopIndex+16,Origin+bZ*(height+feTop),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-bY*feBack,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+bY*(length+feFront),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-bX*(left+feWidth),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+bX*(right+feWidth),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-bZ*(depth+feBase),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+bZ*(height+feTop),bZ);
 
 
 
-  ModelSupport::buildPlane(SMap,chopIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-bY*(feBack+wallBack),bY);
-  ModelSupport::buildPlane(SMap,chopIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+bY*(length+feFront+wallFront),bY);
-  ModelSupport::buildPlane(SMap,chopIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-bX*(left+feWidth+wallWidth),bX);
-  ModelSupport::buildPlane(SMap,chopIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+bX*(right+feWidth+wallWidth),bX);
-  ModelSupport::buildPlane(SMap,chopIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-bZ*(depth+feBase+wallBase),bZ);
-  ModelSupport::buildPlane(SMap,chopIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+bZ*(height+feTop+wallTop),bZ);
 
   return;
@@ -232,22 +231,22 @@ IMatChopper::createObjects(Simulation& System)
   ELog::RegMethod RegA("IMatChopper","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,chopIndex," 21 -22 23 -24 25 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
   addOuterSurf(Out);
 
   // Inner void cell:
-  Out=ModelSupport::getComposite(SMap,chopIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Fe layer:
-  Out=ModelSupport::getComposite(SMap,chopIndex,"11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 "(-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
-  Out=ModelSupport::getComposite(SMap,chopIndex,"21 -22 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   return;
 }
@@ -267,7 +266,7 @@ IMatChopper::createLinks()
 
   FixedComp::setConnect(0,Origin,-bY);      // Note always to the moderator
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(chopIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
 }

@@ -41,8 +41,6 @@ class boxUnit : public attachSystem::FixedComp,
 {
  private:
 
-  const int surfIndex;           ///< surface number 
-  int cellIndex;                  ///< Cell index
 
   boxUnit* prev;            ///< Previous pipe unit
   boxUnit* next;            ///< Next pipe unit

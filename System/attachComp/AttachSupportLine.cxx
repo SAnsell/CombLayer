@@ -63,12 +63,12 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "objectRegister.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SurInter.h"
 #include "Line.h"
@@ -231,11 +231,8 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const std::vector<int> CNum=
-    OR.getObjectRange(OuterFC.getKeyName());
+    System.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)
     addToInsertLineCtrl(System,InsertFC,CC,CN);
 
@@ -263,12 +260,10 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   const std::vector<int>& cellVec=
-    OR.getObjectRange(InsertFC.getKeyName());
+    System.getObjectRange(InsertFC.getKeyName());
   System.populateCells(cellVec);
-  MonteCarlo::Qhull* CRPtr=System.findQhull(cellN);
+  MonteCarlo::Object* CRPtr=System.findObject(cellN);
 
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))
     {

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/Table.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@ class Table : public attachSystem::ContainedComp,
  private:
   
   const int shapeType;          ///< Shape type [0 square : 1 triangle]
-  const int tableIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   double xyAngle;           ///< Angle of top relative to LC 

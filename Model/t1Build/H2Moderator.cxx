@@ -1,10 +1,9 @@
-
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/H2Moderator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,13 +62,15 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "t1Reflector.h"
@@ -80,9 +81,8 @@ namespace ts1System
 
 H2Moderator::H2Moderator(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(6),
-  attachSystem::FixedComp(Key,6),
-  h2Index(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(h2Index+1)
+  attachSystem::FixedOffset(Key,6)
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,9 +92,7 @@ H2Moderator::H2Moderator(const std::string& Key)  :
 
 H2Moderator::H2Moderator(const H2Moderator& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),h2Index(A.h2Index),
-  cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  attachSystem::FixedOffset(A),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),midThick(A.midThick),
@@ -120,12 +118,8 @@ H2Moderator::operator=(const H2Moderator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
+      attachSystem::FixedOffset::operator=(A);
+
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -161,12 +155,8 @@ H2Moderator::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("H2Moderator","populate");
-  
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -219,10 +209,8 @@ H2Moderator::createUnitVector(const attachSystem::FixedComp& FC)
   */
 {
   ELog::RegMethod RegA("H2Moderator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0.0);
+  attachSystem::FixedComp::createUnitVector(FC,0);
+  applyOffset();
   return;
 }
 
@@ -235,17 +223,17 @@ H2Moderator::createSurfaces()
   ELog::RegMethod RegA("H2Moderator","createSurface");
 
   // Inner surfaces
-  ModelSupport::buildPlane(SMap,h2Index+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,h2Index+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,h2Index+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,h2Index+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,h2Index+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,h2Index+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildSphere(SMap,h2Index+7,
+  ModelSupport::buildSphere(SMap,buildIndex+7,
    			    Origin-Y*(depth/2.0-viewSphere),
    			    viewSphere);
-  ModelSupport::buildSphere(SMap,h2Index+8,
+  ModelSupport::buildSphere(SMap,buildIndex+8,
    			    Origin+Y*(depth/2.0-viewSphere),
    			    viewSphere);
 
@@ -255,7 +243,7 @@ H2Moderator::createSurfaces()
 			terThick,outerThick,clearThick};
 
   std::vector<double> T(6);  // Zero size
-  int HI(h2Index+10);
+  int HI(buildIndex+10);
   for(size_t i=0;i<6;i++)
     {
       // Add the new layer +/- the modification
@@ -280,10 +268,10 @@ H2Moderator::createSurfaces()
       HI+=10;
     }
   // Special 
-  ModelSupport::buildSphere(SMap,h2Index+17,
+  ModelSupport::buildSphere(SMap,buildIndex+17,
    			    Origin-Y*(innerThick+depth/2.0-viewSphere),
    			    viewSphere);
-  ModelSupport::buildSphere(SMap,h2Index+18,
+  ModelSupport::buildSphere(SMap,buildIndex+18,
    			    Origin+Y*(innerThick+depth/2.0-viewSphere),
    			    viewSphere);
 
@@ -298,7 +286,7 @@ H2Moderator::addToInsertChain(attachSystem::ContainedComp& CC) const
     THIS IS JUNK TO BE REMOVED
   */
 {
-  for(int i=h2Index+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     CC.addInsertCell(i);
   return;
 }
@@ -313,40 +301,40 @@ H2Moderator::createObjects(Simulation& System)
   ELog::RegMethod RegA("H2Moderator","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,h2Index,"-7 -8 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,lh2Mat,h2Temp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 -8 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,lh2Mat,h2Temp,Out));
 
   // Inner al
-  Out=ModelSupport::getComposite(SMap,h2Index,"-17 -18 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 -18 13 -14 15 -16 "
 				 " (7:8:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,h2Temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,h2Temp,Out));
 
   // Vac layer
-  Out=ModelSupport::getComposite(SMap,h2Index,"21 -22 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (17:18:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Mid al
-  Out=ModelSupport::getComposite(SMap,h2Index,"31 -32 33 -34 35 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36 "
 				 " (-21:22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Tertiary Layer
-  Out=ModelSupport::getComposite(SMap,h2Index,"41 -42 43 -44 45 -46 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 -44 45 -46 "
 				 " (-31:32:-33:34:-35:36) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,h2Index,"51 -52 53 -54 55 -56 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"51 -52 53 -54 55 -56 "
 				 " (-41:42:-43:44:-45:46) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,h2Index,"61 -62 63 -64 65 -66 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"61 -62 63 -64 65 -66 "
 				 " (-51:52:-53:54:-55:56) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,h2Index," 61 -62 63 -64 65 -66 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 61 -62 63 -64 65 -66 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
@@ -369,12 +357,12 @@ H2Moderator::createLinks()
   FixedComp::setConnect(4,getSurfacePoint(5,5),-Z);
   FixedComp::setConnect(5,getSurfacePoint(5,6),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(h2Index+61));
-  FixedComp::setLinkSurf(1,SMap.realSurf(h2Index+62));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(h2Index+63));
-  FixedComp::setLinkSurf(3,SMap.realSurf(h2Index+64));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(h2Index+65));
-  FixedComp::setLinkSurf(5,SMap.realSurf(h2Index+66));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+61));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+62));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+63));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+64));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+65));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+66));
 
   return;
 }
@@ -449,12 +437,12 @@ H2Moderator::getLayerString(const size_t layerIndex,
   HeadRule HR;
   if (uSIndex>3 || layerIndex>2)
     {
-      const int surfN(h2Index+static_cast<int>(10*layerIndex)+uSIndex);
+      const int surfN(buildIndex+static_cast<int>(10*layerIndex)+uSIndex);
       HR.addIntersection(signValue*SMap.realSurf(surfN));
     }
   else
     {
-      const int surfN(h2Index+static_cast<int>(10*layerIndex)+uSIndex+6);
+      const int surfN(buildIndex+static_cast<int>(10*layerIndex)+uSIndex+6);
       HR.addIntersection(SMap.realSurf(surfN));
     }
   if (sideIndex<0)
@@ -483,11 +471,11 @@ H2Moderator::getLayerSurf(const size_t layerIndex,
   const int uSIndex(static_cast<int>(std::abs(sideIndex)));
   if (uSIndex>3 || layerIndex>2)
     {
-      const int surfN(h2Index+
+      const int surfN(buildIndex+
 		      static_cast<int>(10*layerIndex)+uSIndex);
       return signValue*SMap.realSurf(surfN);
     }
-  const int surfN(h2Index+
+  const int surfN(buildIndex+
 		  static_cast<int>(10*layerIndex)+uSIndex+6);
   return (sideIndex<0) ? -SMap.realSurf(surfN) : SMap.realSurf(surfN);
 }
@@ -501,7 +489,7 @@ H2Moderator::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,h2Index,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void

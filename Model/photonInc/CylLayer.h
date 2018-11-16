@@ -3,7 +3,7 @@
  
  * File:   photonInc/CylLayer.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ struct LInfo
   std::vector<double> Temp;    ///< Temperature
   
   void resize(const size_t);
-
 };
 
 /*!
@@ -61,8 +60,6 @@ class CylLayer : public attachSystem::ContainedComp,
 {
  private:
 
-  const int layerIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double outerRadius;                ///< Outer radius
   size_t nLayers;                    ///< Layer count

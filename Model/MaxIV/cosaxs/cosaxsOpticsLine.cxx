@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -66,9 +67,7 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -239,8 +238,7 @@ cosaxsOpticsLine::constructDiag
 {
   ELog::RegMethod RegA("cosaxOpticsLine","constructDiag");
   
-  diagBoxItem.addInsertCell(ContainedComp::getInsertCells());
-  diagBoxItem.registerSpaceCut(1,2);
+  diagBoxItem.addAllInsertCell(ContainedComp::getInsertCells());
   diagBoxItem.createAll(System,FC,linkPt);
 
   for(size_t index=0;index<2;index++)
@@ -255,11 +253,11 @@ cosaxsOpticsLine::constructDiag
       jawComp[index]->createAll
 	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
     }
-  diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
-			   diagBoxItem.getBuildCell(),{0,2});
+  // diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
+  // 			   diagBoxItem.getBuildCell(),{0,2});
 
-  diagBoxItem.splitObject(System,-11,diagBoxItem.getCell("SplitOuter",0));
-  diagBoxItem.splitObject(System,12,diagBoxItem.getCell("SplitOuter",1));
+  // diagBoxItem.splitObject(System,-11,diagBoxItem.getCell("SplitOuter",0));
+  // diagBoxItem.splitObject(System,12,diagBoxItem.getCell("SplitOuter",1));
   return;
 }
   
@@ -275,30 +273,24 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   ELog::RegMethod RegA("cosaxsOpticsLine","buildObjects");
   
   pipeInit->addInsertCell(ContainedComp::getInsertCells());
-  pipeInit->registerSpaceCut(1,2);
   pipeInit->createAll(System,*this,0);
 
   
   triggerPipe->addInsertCell(ContainedComp::getInsertCells());
-  triggerPipe->registerSpaceCut(1,2);
   triggerPipe->createAll(System,*pipeInit,2);
 
   gaugeA->addInsertCell(ContainedComp::getInsertCells());
-  gaugeA->registerSpaceCut(1,2);
   gaugeA->createAll(System,*triggerPipe,2);
 
 
   bellowA->addInsertCell(ContainedComp::getInsertCells());
-  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*gaugeA,2);
 
   bremCollA->addInsertCell(ContainedComp::getInsertCells());
-  bremCollA->registerSpaceCut(1,2);
   bremCollA->createAll(System,*bellowA,2);
 
 
-  filterBoxA->addInsertCell(ContainedComp::getInsertCells());
-  filterBoxA->registerSpaceCut(1,2);
+  filterBoxA->addAllInsertCell(ContainedComp::getInsertCells());
   filterBoxA->createAll(System,*bremCollA,2);
 
   filterBoxA->splitObject(System,1001,filterBoxA->getCell("OuterSpace"),
@@ -313,102 +305,82 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
 
 
   gateA->addInsertCell(ContainedComp::getInsertCells());
-  gateA->registerSpaceCut(1,2);
   gateA->createAll(System,*filterBoxA,2);
 
-  screenPipeA->addInsertCell(ContainedComp::getInsertCells());
-  screenPipeA->registerSpaceCut(1,2);
+  screenPipeA->addAllInsertCell(ContainedComp::getInsertCells());
   screenPipeA->createAll(System,*gateA,2);
 
 
-  screenPipeB->addInsertCell(ContainedComp::getInsertCells());
-  screenPipeB->registerSpaceCut(1,2);
+  screenPipeB->addAllInsertCell(ContainedComp::getInsertCells());
   screenPipeB->createAll(System,*screenPipeA,2);
   screenPipeB->intersectPorts(System,0,1);
 
 
   primeJawBox->addInsertCell(ContainedComp::getInsertCells());
-  primeJawBox->registerSpaceCut(1,2);
   primeJawBox->createAll(System,*screenPipeB,2);
 
   
   bellowC->addInsertCell(ContainedComp::getInsertCells());
-  bellowC->registerSpaceCut(1,2);
   bellowC->createAll(System,*primeJawBox,2);
 
 
   gateB->addInsertCell(ContainedComp::getInsertCells());
-  gateB->registerSpaceCut(1,2);
   gateB->createAll(System,*bellowC,2);
 
 
 
   monoBox->addInsertCell(ContainedComp::getInsertCells());
-  monoBox->registerSpaceCut(1,2);
   monoBox->createAll(System,*gateB,2);
   monoBox->splitObject(System,2001,monoBox->getCell("OuterSpace"),
 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
   gateC->addInsertCell(ContainedComp::getInsertCells());
-  gateC->registerSpaceCut(1,2);
   gateC->createAll(System,*monoBox,2);
 
 
   bellowD->addInsertCell(ContainedComp::getInsertCells());
-  bellowD->registerSpaceCut(1,2);
   bellowD->createAll(System,*gateC,2);
 
 
-  diagBoxA->addInsertCell(ContainedComp::getInsertCells());
-  diagBoxA->registerSpaceCut(1,2);
+  diagBoxA->addAllInsertCell(ContainedComp::getInsertCells());
   diagBoxA->createAll(System,*bellowD,2);
-  diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
-			   diagBoxA->getBuildCell(),
-			   {0,1, 1,2});
+  // diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
+  // 			   diagBoxA->getBuildCell(),
+  // 			   {0,1, 1,2});
 
-  diagBoxA->splitObject(System,-11,diagBoxA->getCell("SplitOuter",0));
-  diagBoxA->splitObject(System,12,diagBoxA->getCell("SplitOuter",2));
+  //  diagBoxA->splitObject(System,-11,diagBoxA->getCell("SplitOuter",0));
+  //  diagBoxA->splitObject(System,12,diagBoxA->getCell("SplitOuter",2));
 
   bellowE->addInsertCell(ContainedComp::getInsertCells());
-  bellowE->registerSpaceCut(1,2);
   bellowE->createAll(System,*diagBoxA,2);
 
   
   gateD->addInsertCell(ContainedComp::getInsertCells());
-  gateD->registerSpaceCut(1,2);
   gateD->createAll(System,*bellowE,2);
 
   mirrorA->addInsertCell(ContainedComp::getInsertCells());
-  mirrorA->registerSpaceCut(1,2);
   mirrorA->createAll(System,*gateD,2);
 
   gateE->addInsertCell(ContainedComp::getInsertCells());
-  gateE->registerSpaceCut(1,2);
   gateE->createAll(System,*mirrorA,2);
 
   bellowF->addInsertCell(ContainedComp::getInsertCells());
-  bellowF->registerSpaceCut(1,2);
   bellowF->createAll(System,*gateE,2);
 
   constructDiag(System,*diagBoxB,jawCompB,*bellowF,2);
   bellowG->addInsertCell(ContainedComp::getInsertCells());
-  bellowG->registerSpaceCut(1,2);
   bellowG->createAll(System,*diagBoxB,2);
 
   gateF->addInsertCell(ContainedComp::getInsertCells());
-  gateF->registerSpaceCut(1,2);
   gateF->createAll(System,*bellowG,2);
 
   mirrorB->addInsertCell(ContainedComp::getInsertCells());
-  mirrorB->registerSpaceCut(1,2);
   mirrorB->createAll(System,*gateF,2);
 
   gateG->addInsertCell(ContainedComp::getInsertCells());
-  gateG->registerSpaceCut(1,2);
   gateG->createAll(System,*mirrorB,2);
   
   bellowH->addInsertCell(ContainedComp::getInsertCells());
-  bellowH->registerSpaceCut(1,2);
   bellowH->createAll(System,*gateG,2);
 
   constructDiag(System,*diagBoxC,jawCompC,*bellowH,2);

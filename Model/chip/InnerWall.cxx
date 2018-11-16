@@ -66,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,8 +82,7 @@ namespace hutchSystem
 
 InnerWall::InnerWall(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
-  innerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(innerIndex+1),nLayers(0)
+  nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +91,6 @@ InnerWall::InnerWall(const std::string& Key)  :
 
 InnerWall::InnerWall(const InnerWall& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),  
-  innerIndex(A.innerIndex),cellIndex(A.cellIndex),
   height(A.height),width(A.width),depth(A.depth),defMat(A.defMat),
   nLayers(A.nLayers),cFrac(A.cFrac),cMat(A.cMat),
   CDivideList(A.CDivideList)
@@ -113,7 +112,6 @@ InnerWall::operator=(const InnerWall& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       height=A.height;
       width=A.width;
       depth=A.depth;
@@ -196,19 +194,19 @@ InnerWall::createSurfaces()
   // INNER PLANES
 
   // Front
-  ModelSupport::buildPlane(SMap,innerIndex+1,Origin-Y*depth/2.0,Y);
-  addLinkSurf(0,SMap.realSurf(innerIndex+1));
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  addLinkSurf(0,SMap.realSurf(buildIndex+1));
   // Back
-  ModelSupport::buildPlane(SMap,innerIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
 
-  setBridgeSurf(1,SMap.realSurf(innerIndex+2));
-  addLinkSurf(1,-SMap.realSurf(innerIndex+2));
+  setBridgeSurf(1,SMap.realSurf(buildIndex+2));
+  addLinkSurf(1,-SMap.realSurf(buildIndex+2));
 
   // Hole Inner:
-  ModelSupport::buildPlane(SMap,innerIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,innerIndex+4,Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,innerIndex+5,Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,innerIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
   return;
 }
 
@@ -222,18 +220,18 @@ InnerWall::createObjects(Simulation& System)
   ELog::RegMethod RegA("InnerWall","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,innerIndex,"1 -2");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
   addOuterSurf(Out);
 
   // HOLE:
-  Out=ModelSupport::getComposite(SMap,innerIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Main wall
-  Out=ModelSupport::getComposite(SMap,innerIndex,"1 -2 (-3:4:-5:6)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 (-3:4:-5:6)");
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   CDivideList.push_back(cellIndex-1);
 
   return;
@@ -268,9 +266,9 @@ InnerWall::layerProcess(Simulation& System)
       DA.init();
       // Cell Specific:
       DA.setCellN(CDivideList[static_cast<size_t>(i)]);
-      DA.setOutNum(cellIndex,innerIndex+201+100*i);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(innerIndex+1),
-				   SMap.realSurf(innerIndex+2));
+      DA.setOutNum(cellIndex,buildIndex+201+100*i);
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
@@ -290,12 +288,12 @@ InnerWall::exitWindow(const double Dist,
   */
 {
   window.clear();
-  window.push_back(SMap.realSurf(innerIndex+3));
-  window.push_back(SMap.realSurf(innerIndex+4));
-  window.push_back(SMap.realSurf(innerIndex+5));
-  window.push_back(SMap.realSurf(innerIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+Y*(Dist-depth/2.0);  
-  return SMap.realSurf(innerIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
   
 

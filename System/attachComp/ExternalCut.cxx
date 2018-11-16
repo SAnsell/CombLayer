@@ -43,27 +43,18 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
@@ -425,7 +416,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction of surface axis (relative to HR.Plane)
-    \param YAxis :: Direction of cylindical shift
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param length :: length to shift by
   */
 {
@@ -475,7 +466,8 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 			     const double dExtra) 
   /*!
     Support function to calculate the shifted surface based
-    on surface type and form
+    on surface type and form. Moves away from the center if dExtra
+    positive.
     \param SMap :: local surface register
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
@@ -483,7 +475,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","getExpandedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf(HR)");
   
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
@@ -497,7 +489,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
 	  int sideFlag=PPtr->side(expandCentre);
 	  if (sideFlag==0) sideFlag=1;
 	  ModelSupport::buildShiftedPlane
-	    (SMap,index,PPtr,sideFlag*dExtra);
+	    (SMap,index,PPtr, -sideFlag*dExtra);
 	  return;
 	}
       
@@ -561,11 +553,11 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param SMap :: local surface register
     \param extName :: cut unit name
     \param index :: offset index
-    \param expandCentre :: Centre for expansion
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf(string)");
 
   const cutUnit* CU=findUnit(extName);
   if (!CU)
@@ -592,7 +584,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
     \param dExtra :: displacement extra [cm]
   */
 {
-  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf");
+  ELog::RegMethod RegA("ExternalCut","makeExpandedSurf(string)");
 
   const cutUnit* CU=findUnit(extName);
   if (!CU)

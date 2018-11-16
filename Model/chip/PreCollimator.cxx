@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/PreCollimator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -85,8 +86,6 @@ namespace hutchSystem
 
 PreCollimator::PreCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::TwinComp(Key,2),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),
   populated(0),holeIndex(0),nHole(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -96,7 +95,6 @@ PreCollimator::PreCollimator(const std::string& Key)  :
 
 PreCollimator::PreCollimator(const PreCollimator& A) : 
   attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),
   populated(A.populated),Axis(A.Axis),
   XAxis(A.XAxis),ZAxis(A.ZAxis),xyAngle(A.xyAngle),zAngle(A.zAngle),
   fStep(A.fStep),xStep(A.xStep),zStep(A.zStep),Centre(A.Centre),
@@ -121,7 +119,6 @@ PreCollimator::operator=(const PreCollimator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       Axis=A.Axis;
       XAxis=A.XAxis;
@@ -191,7 +188,7 @@ PreCollimator::populate(const Simulation& System)
     {
       std::ostringstream cx;
       cx<<keyName+"Hole"<<i+1;
-      Holes.push_back(HoleUnit(SMap,cx.str(),colIndex+10*i));
+      Holes.push_back(HoleUnit(cx.str()));
       Holes.back().populate(Control);
     }
 
@@ -285,14 +282,14 @@ PreCollimator::createSurfaces()
   // INNER PLANES
   
   // Front/Back
-  ModelSupport::buildPlane(SMap,colIndex+1,Centre-Axis*depth/2.0,Axis);
-  ModelSupport::buildPlane(SMap,colIndex+2,Centre+Axis*depth/2.0,Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Centre-Axis*depth/2.0,Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Centre+Axis*depth/2.0,Axis);
 
   // Master Cylinder
-  ModelSupport::buildCylinder(SMap,colIndex+7,Centre,Axis,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Centre,Axis,radius);
 
   // Process exit:
-  setBeamExit(colIndex+2,Origin+Axis*depth,Axis);
+  setBeamExit(buildIndex+2,Origin+Axis*depth,Axis);
 
   return;
 }
@@ -307,7 +304,7 @@ PreCollimator::createObjects(Simulation& System)
   ELog::RegMethod RegA("PreCollimator","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   addOuterSurf(Out);
   //
   // Sectors
@@ -316,18 +313,18 @@ PreCollimator::createObjects(Simulation& System)
   for(size_t i=0;i<nHole;i++)
     {
       HoleUnit& HU=Holes[i];
-      HU.setFaces(SMap.realSurf(colIndex+1),SMap.realSurf(colIndex+2));
+      HU.setFaces(SMap.realSurf(buildIndex+1),SMap.realSurf(buildIndex+2));
       HU.createAll(holeAngOffset,*this);          // Use THESE Origins
       std::string OutItem=HU.createObjects();
       if (OutItem!=" ")
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutItem));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutItem));
 	  Out+=" "+HU.getExclude();
 	}
     }
 
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));            
   CDivideList.push_back(cellIndex-1);
 
   return;
@@ -372,10 +369,10 @@ PreCollimator::layerProcess(Simulation& System)
       DA.init();
       // Cell Specific:
       DA.setCellN(CDivideList[i]);
-      DA.setOutNum(cellIndex,colIndex+201+100*static_cast<int>(i));
+      DA.setOutNum(cellIndex,buildIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+1),
-				   SMap.realSurf(colIndex+2));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
@@ -395,12 +392,12 @@ PreCollimator::exitWindow(const double Dist,
   */
 {
   window.clear();
-  window.push_back(SMap.realSurf(colIndex+3));
-  window.push_back(SMap.realSurf(colIndex+4));
-  window.push_back(SMap.realSurf(colIndex+5));
-  window.push_back(SMap.realSurf(colIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+Y*(depth+Dist);  
-  return SMap.realSurf(colIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
 
 void

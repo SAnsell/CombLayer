@@ -214,6 +214,7 @@ template void PortItemGenerator::setCF<CF40>(const double);
 template void PortItemGenerator::setCF<CF50>(const double);
 template void PortItemGenerator::setCF<CF63>(const double);
 template void PortItemGenerator::setCF<CF100>(const double);
+template void PortItemGenerator::setCF<CF120>(const double);
 
 ///\endcond  TEMPLATE
   

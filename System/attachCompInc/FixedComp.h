@@ -87,7 +87,7 @@ class FixedComp
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
-  FixedComp(const std::string&,const size_t);
+  FixedComp(const std::string&,const size_t,const size_t =10000);
   FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
   FixedComp(const std::string&,const size_t,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&,
@@ -134,6 +134,11 @@ class FixedComp
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);
+
+  void setLinkComp(const size_t,const int);
+  void setLinkComp(const size_t,const std::string&);
+  void setLinkComp(const size_t,const HeadRule&);
+
   void setLinkSurf(const size_t,const HeadRule&,const bool,
 		   const HeadRule&,const bool);
 
@@ -151,7 +156,6 @@ class FixedComp
   void addBridgeSurf(const size_t,const std::string&);
 
   void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
-
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }
@@ -179,6 +183,7 @@ class FixedComp
   LinkUnit& getLU(const size_t);
   
   LinkUnit getSignedLU(const long int) const;
+  bool hasSideIndex(const std::string&) const;
   long int getSideIndex(const std::string&) const;
   
   std::vector<Geometry::Vec3D> getAllLinkPts() const;

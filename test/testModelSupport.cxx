@@ -52,7 +52,6 @@
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ModelSupport.h"
 
 #include "testFunc.h"

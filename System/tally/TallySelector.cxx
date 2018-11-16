@@ -54,6 +54,8 @@
 #include "MainProcess.h"
 #include "inputParam.h"
 #include "addInsertObj.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 

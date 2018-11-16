@@ -61,6 +61,8 @@
 #include "SecondTrack.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "masterWrite.h"
 #include "ReportSelector.h" 
@@ -78,8 +80,6 @@ reportSelection(Simulation& System,
   ELog::RegMethod RegA("ReportSelector[F]","reportSelection");
 
   masterWrite& MW=masterWrite::Instance();
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   const FuncDataBase& Control=System.getDataBase();
 
   const size_t nP=IParam.setCnt("report");
@@ -117,7 +117,7 @@ reportSelection(Simulation& System,
           const std::string FObject=IParam.outputItem<std::string>
             ("report",index,1,"objectName not given");
           const attachSystem::FixedComp* FCPtr=
-            OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+            System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
 	  const std::string linkSide=
             IParam.outputItem<std::string>

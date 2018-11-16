@@ -22,15 +22,6 @@ my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 
 ##my @modelNames= @modelLibDir;
 
-
-## GENERAL Directory 
-my @sublibdir=("src","beamline","global",
-	       "instrument","scatMat","transport","special",
-	       "test");                            
-
-
-my @libnames=@sublibdir;
-
 ## INCLUDES
 
 ## MODEL Directory
@@ -128,12 +119,12 @@ $gM->addDepUnit("maxiv", ["maxivBuild","visit","src","simMC",
 			  "transport","scatMat","endf","crystal",
 			  "source","monte","funcBase","log","monte",
                           "flukaProcess","flukaPhysics","flukaTally",
-			   "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			  "tally",
+			   "phitsProcess","phitsPhysics","phitsTally",
+			  "phitsSupport","tally",
 			  "geometry","mersenne","src","world","work",
 			  "xml","poly","support","weights",
 			  "balder","cosaxs","commonBeam","maxpeem",
-			  "insertUnit","md5","construct",
+			  "species","insertUnit","md5","construct",
 			  "global","constructVar","physics","simMC",
 			  "scatMat","endf","crystal","transport",
 			  "attachComp","visit","poly"]);

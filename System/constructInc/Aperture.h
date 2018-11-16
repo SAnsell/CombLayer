@@ -43,8 +43,6 @@ class Aperture : public attachSystem::ContainedComp,
 {  
  private:
  
-  const int appIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double innerWidth;                ///< inner width
   double innerHeight;               ///< inner height

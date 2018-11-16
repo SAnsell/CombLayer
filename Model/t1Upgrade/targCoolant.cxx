@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/targCoolant.cxx
+ * File:   t1Upgrade/targCoolant.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,9 +83,7 @@ namespace ts1System
 {
 
 targCoolant::targCoolant(const std::string& Key) : 
-  attachSystem::FixedComp(Key,0),
-  coolIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(coolIndex+1)
+  attachSystem::FixedComp(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: key for main name
@@ -94,7 +92,7 @@ targCoolant::targCoolant(const std::string& Key) :
 
 targCoolant::targCoolant(const targCoolant& A) : 
   attachSystem::FixedComp(A),
-  coolIndex(A.coolIndex),cellIndex(A.cellIndex),PCut(A.PCut),
+  PCut(A.PCut),
   SCent(A.SCent),Radius(A.Radius),SCut(A.SCut),CCut(A.CCut),
   activeCells(A.activeCells),container(A.container)
   /*!
@@ -114,7 +112,6 @@ targCoolant::operator=(const targCoolant& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       PCut=A.PCut;
       SCent=A.SCent;
       Radius=A.Radius;
@@ -155,7 +152,7 @@ targCoolant::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nPlates;i++)
     {
       plateCut Item;
-      const std::string keyIndex(StrFunc::makeString(keyName+"P",i+1));
+      const std::string keyIndex(keyName+"P"+std::to_string(i+1));
       const double PY=
 	Control.EvalPair<double>(keyIndex,keyName+"P","Dist");
       Item.centre=Y*PY;
@@ -178,7 +175,7 @@ targCoolant::populate(const FuncDataBase& Control)
     {
       sphereCut Item;
       
-      const std::string keyIndex(StrFunc::makeString(keyName+"CutSph",i+1));
+      const std::string keyIndex(keyName+"CutSph"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
 	(keyIndex,keyName+"CutSph","Cent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
@@ -198,7 +195,7 @@ targCoolant::populate(const FuncDataBase& Control)
     {
       coneCut Item;
       
-      const std::string keyIndex(StrFunc::makeString(keyName+"Cone",i+1));
+      const std::string keyIndex(keyName+"Cone"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
 	(keyIndex,keyName+"Cone","Cent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
@@ -242,7 +239,7 @@ targCoolant::createSurfaces()
   ELog::RegMethod RegA("targCoolant","createSurface");
 
   // Plates at 0 index offset:
-  int offset(coolIndex);
+  int offset(buildIndex);
   for(size_t i=0;i<PCut.size();i++)
     {
       const plateCut& Item=PCut[i];
@@ -263,7 +260,7 @@ targCoolant::createSurfaces()
     }
 
   // SpherCuts at 500 index offset:
-  offset=coolIndex+2000;
+  offset=buildIndex+2000;
   for(size_t i=0;i<SCut.size();i++)
     {
       sphereCut& Item=SCut[i];
@@ -287,7 +284,7 @@ targCoolant::createSurfaces()
     }
 
   // Cones:
-  offset=coolIndex+3000;
+  offset=buildIndex+3000;
   for(size_t i=0;i<CCut.size();i++)
     {
       coneCut& Item=CCut[i];
@@ -322,11 +319,11 @@ targCoolant::createObjects(Simulation& System)
   std::string Out;
   int offset;
   
-  std::vector<MonteCarlo::Qhull*> QPtr;
+  std::vector<MonteCarlo::Object*> QPtr;
   std::vector<int>::const_iterator vc;
   for(vc=activeCells.begin();vc!=activeCells.end();vc++)
     {
-      MonteCarlo::Qhull* QA=System.findQhull(*vc);
+      MonteCarlo::Object* QA=System.findObject(*vc);
       if (!QA)      
 	throw ColErr::InContainerError<int>(*vc,"MainBody cell not found");
       QPtr.push_back(QA);
@@ -334,7 +331,7 @@ targCoolant::createObjects(Simulation& System)
 
   if (!PCut.empty())
     {
-      offset=coolIndex;
+      offset=buildIndex;
       HeadRule ExPlate;
       for(size_t i=0;i<PCut.size();i++)
 	{
@@ -343,7 +340,7 @@ targCoolant::createObjects(Simulation& System)
 	  if (PCut[i].layerMat<0)
 	    {
 	      Out+=container;
-	      System.addCell(MonteCarlo::Qhull
+	      System.addCell(MonteCarlo::Object
 			     (cellIndex++,PCut[i].mat,0.0,Out));
 	    }
 	  else
@@ -351,15 +348,15 @@ targCoolant::createObjects(Simulation& System)
 	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
 	      Out+=container;
 	      
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
 	      Out+=container;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
 	      Out+=container;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].mat,0.0,Out));
 	    }
 	  offset+=100;
@@ -367,20 +364,20 @@ targCoolant::createObjects(Simulation& System)
       ExPlate.makeComplement();
 
       for_each(QPtr.begin(),QPtr.end(),
-	       boost::bind(&MonteCarlo::Qhull::addSurfString,_1,
+	       boost::bind(&MonteCarlo::Object::addSurfString,_1,
 			   ExPlate.display()));
     }
 
   if (!SCut.empty())
     {
       // Sphere:
-      offset=coolIndex+2000;
+      offset=buildIndex+2000;
       for(size_t i=0;i<SCut.size();i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 7 8 ");
 	  //	  addOuterUnionSurf(Out);
 	  Out+=container;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,SCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,SCut[i].mat,0.0,Out));
 	  offset+=100;
 	}
       // NOT FINISHED
@@ -390,7 +387,7 @@ targCoolant::createObjects(Simulation& System)
   if (!CCut.empty())
     {
       HeadRule ExCone;
-      offset=coolIndex+3000;
+      offset=buildIndex+3000;
       for(size_t i=0;i<CCut.size();i++)
 	{
 	  // Ta layer
@@ -400,14 +397,14 @@ targCoolant::createObjects(Simulation& System)
 	  if (CCut[i].dist<0)
 	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+container;
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 	  
 	  cx.str("");
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+container;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,CCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,CCut[i].mat,0.0,Out));
 
 	  cx.str("");
 	  cx<<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)
@@ -415,7 +412,7 @@ targCoolant::createObjects(Simulation& System)
 	  if (CCut[i].dist<0)
 	    cx<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)<<" ";
 	  Out=cx.str()+container;
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 
 	  cx.str("");
@@ -427,7 +424,7 @@ targCoolant::createObjects(Simulation& System)
       ExCone.makeComplement();
 
       for_each(QPtr.begin(),QPtr.end(),
-	       boost::bind(&MonteCarlo::Qhull::addSurfString,_1,
+	       boost::bind(&MonteCarlo::Object::addSurfString,_1,
 			   ExCone.display()));	    
     }
 

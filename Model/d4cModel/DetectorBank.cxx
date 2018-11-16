@@ -56,14 +56,14 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"
@@ -88,10 +88,8 @@ namespace d4cSystem
 
 DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(BN),6),
-  bankNumber(BN),baseName(Key),
-  detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(detIndex+1)
+  attachSystem::FixedOffset(Key+std::to_string(BN),6),
+  bankNumber(BN),baseName(Key)
   /*!
     Constructor
     \param BN :: Bank number
@@ -102,7 +100,6 @@ DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
 DetectorBank::DetectorBank(const DetectorBank& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   bankNumber(A.bankNumber),baseName(A.baseName),
-  detIndex(A.detIndex),cellIndex(A.cellIndex),
   centreOffset(A.centreOffset),
   centreAngle(A.centreAngle),detDepth(A.detDepth),
   detLength(A.detLength),detHeight(A.detHeight),
@@ -126,7 +123,6 @@ DetectorBank::operator=(const DetectorBank& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       centreOffset=A.centreOffset;
       centreAngle=A.centreAngle;
       detDepth=A.detDepth;
@@ -205,31 +201,31 @@ DetectorBank::createSurfaces()
 {
   ELog::RegMethod RegA("DetectorBank","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,detIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin-Y*(detDepth/2.0),Y);    
-  ModelSupport::buildPlane(SMap,detIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*(detDepth/2.0),Y);    
 
-  ModelSupport::buildPlane(SMap,detIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*(detLength/2.0),X);    
-  ModelSupport::buildPlane(SMap,detIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*(detLength/2.0),X);    
-  ModelSupport::buildPlane(SMap,detIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(detHeight/2.0),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(detHeight/2.0),Z);    
 
-  ModelSupport::buildPlane(SMap,detIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(detDepth/2.0+wallThick),Y);    
-  ModelSupport::buildPlane(SMap,detIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(detDepth/2.0+wallThick),Y);    
-  ModelSupport::buildPlane(SMap,detIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(detLength/2.0+wallThick),X);    
-  ModelSupport::buildPlane(SMap,detIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(detLength/2.0+wallThick),X);    
-  ModelSupport::buildPlane(SMap,detIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(detHeight/2.0+wallThick),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(detHeight/2.0+wallThick),Z);    
 
   return; 
@@ -247,14 +243,14 @@ DetectorBank::createObjects(Simulation& System)
   std::string Out;
   // First make inner/outer void/wall and top/base
 
-  Out=ModelSupport::getComposite(SMap,detIndex,"11 -12 13 -14 15 -16");	
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");	
   addOuterSurf(Out);  
 
-  Out=ModelSupport::getComposite(SMap,detIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));	
-  Out=ModelSupport::getComposite(SMap,detIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));	
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   return; 
 }
 
@@ -271,7 +267,7 @@ DetectorBank::createLinks()
   const Geometry::Vec3D XYZ[]={-Y,Y,-X,X,-Z,Z};
   for(size_t i=0;i<6;i++)
     {
-      FixedComp::setLinkSurf(i,sign*SMap.realSurf(detIndex+surfN));
+      FixedComp::setLinkSurf(i,sign*SMap.realSurf(buildIndex+surfN));
       FixedComp::setConnect(i,Origin+XYZ[i]*(T[i/2]+wallThick),XYZ[i]); 
       sign*=-1;
       surfN++;

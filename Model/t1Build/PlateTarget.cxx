@@ -65,7 +65,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,8 +85,7 @@ namespace ts1System
 
 PlateTarget::PlateTarget(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,8 +94,7 @@ PlateTarget::PlateTarget(const std::string& Key)  :
 
 PlateTarget::PlateTarget(const PlateTarget& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  ptIndex(A.ptIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  populated(A.populated),
   height(A.height),width(A.width),nBlock(A.nBlock),
   tBlock(A.tBlock),taThick(A.taThick),
   waterThick(A.waterThick),waterHeight(A.waterHeight),
@@ -119,7 +118,6 @@ PlateTarget::operator=(const PlateTarget& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       height=A.height;
       width=A.width;
@@ -225,30 +223,30 @@ PlateTarget::createSurfaces(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("PlateTarget","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,ptIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,ptIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,ptIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*height,Z);
 
   // Water Edge
-  ModelSupport::buildPlane(SMap,ptIndex+15,Origin-Z*waterHeight,Z);
-  ModelSupport::buildPlane(SMap,ptIndex+16,Origin+Z*waterHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*waterHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*waterHeight,Z);
   // W block
-  ModelSupport::buildPlane(SMap,ptIndex+23,Origin-X*WWidth,X);
-  ModelSupport::buildPlane(SMap,ptIndex+24,Origin+X*WWidth,X);
-  ModelSupport::buildPlane(SMap,ptIndex+25,Origin-Z*WHeight,Z);
-  ModelSupport::buildPlane(SMap,ptIndex+26,Origin+Z*WHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*WWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*WWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*WHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*WHeight,Z);
 
-  SMap.addMatch(ptIndex+1004,FC.getLinkSurf(1));
+  SMap.addMatch(buildIndex+1004,FC.getLinkSurf(1));
 
   Geometry::Vec3D FPt(Origin);
   for(size_t i=0;i<nBlock;i++)
     {
-      int surfNum(ptIndex+1011+10*static_cast<int>(i));
+      int surfNum(buildIndex+1011+10*static_cast<int>(i));
       // water layer
       FPt+=Y*waterThick;
       ModelSupport::buildPlane(SMap,surfNum++,FPt,Y);
@@ -261,22 +259,22 @@ PlateTarget::createSurfaces(const attachSystem::FixedComp& FC)
     }
   tBlock.push_back(backPlateThick);  // For use in connection later
   // BackPlate at 50:
-  int surfNum(ptIndex+1011+10*static_cast<int>(nBlock));
+  int surfNum(buildIndex+1011+10*static_cast<int>(nBlock));
   FPt+=Y*waterThick;
   ModelSupport::buildPlane(SMap,surfNum++,FPt,Y);
 
-  ModelSupport::buildPlane(SMap,ptIndex+51,FPt+Y*IThick,Y);  
-  ModelSupport::buildPlane(SMap,ptIndex+52,FPt+Y*backPlateThick,Y);
-  ModelSupport::buildCylinder(SMap,ptIndex+57,
+  ModelSupport::buildPlane(SMap,buildIndex+51,FPt+Y*IThick,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+52,FPt+Y*backPlateThick,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+57,
 			      Origin,Y,pinRadius);
 
   // FixedComp::setConnect(1,FPt+Y*backPlateThick,Y);
 
   // Edge voids
-  ModelSupport::buildPlane(SMap,ptIndex+53,Origin-X*(IOffset+IWidth),X);
-  ModelSupport::buildPlane(SMap,ptIndex+54,Origin-X*(IOffset-IWidth),X);
-  ModelSupport::buildPlane(SMap,ptIndex+63,Origin+X*(IOffset-IWidth),X);
-  ModelSupport::buildPlane(SMap,ptIndex+64,Origin+X*(IOffset+IWidth),X);
+  ModelSupport::buildPlane(SMap,buildIndex+53,Origin-X*(IOffset+IWidth),X);
+  ModelSupport::buildPlane(SMap,buildIndex+54,Origin-X*(IOffset-IWidth),X);
+  ModelSupport::buildPlane(SMap,buildIndex+63,Origin+X*(IOffset-IWidth),X);
+  ModelSupport::buildPlane(SMap,buildIndex+64,Origin+X*(IOffset+IWidth),X);
  
   // Back of target surface
   FixedComp::setConnect(1,FPt,Y);  
@@ -294,63 +292,63 @@ PlateTarget::createObjects(Simulation& System)
   
   std::string Out;
   const std::string WEdge=
-    ModelSupport::getComposite(SMap,ptIndex,"23 -24 25 -26");
+    ModelSupport::getComposite(SMap,buildIndex,"23 -24 25 -26");
   const std::string H2OEdge=
-    ModelSupport::getComposite(SMap,ptIndex,"3 -4 15 -16");
+    ModelSupport::getComposite(SMap,buildIndex,"3 -4 15 -16");
   const std::string TaEdge=
-    ModelSupport::getComposite(SMap,ptIndex,"3 -4 5 -6");
+    ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6");
 
   int surfNum;
   // Make plates:
   for(size_t i=0;i<nBlock;i++)
     {
-      surfNum=ptIndex+1000+10*static_cast<int>(i);
+      surfNum=buildIndex+1000+10*static_cast<int>(i);
       if (blockType[i])
 	{
 	  // W CELL Full:
 	  Out=ModelSupport::getComposite(SMap,surfNum,"12 -13 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out+WEdge));
+	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out+WEdge));
 	  
 	  // WATER CELL
 	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -11 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,
+	  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,
 					   0.0,Out+H2OEdge));
 	  std::ostringstream cx;
 	  // TA CELL Full:
 	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -14 ");
 	  cx<<" #"<<cellIndex-2<<" #"<<cellIndex-1<<" ";
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,
 					   Out+cx.str()+TaEdge));
 	}
       else   // VOID BLOCK
 	{
 	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -14 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+TaEdge));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+TaEdge));
 	}
     }
   // Add backplate
-  surfNum=ptIndex+1000+10*static_cast<int>(nBlock);
+  surfNum=buildIndex+1000+10*static_cast<int>(nBlock);
   // WATER CELL
   Out=ModelSupport::getComposite(SMap,surfNum,"4 -11 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+H2OEdge));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+H2OEdge));
   // TA BackPlate Full:
   std::ostringstream cx;
   Out=ModelSupport::getComposite(SMap,surfNum,"4 ");
-  Out+=ModelSupport::getComposite(SMap,ptIndex," (-51:-53:54) (-51:-63:64) -52 (-51:57)");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-51:-53:54) (-51:-63:64) -52 (-51:57)");
   cx<<" #"<<cellIndex-1<<" ";
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out+cx.str()+TaEdge));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out+cx.str()+TaEdge));
   
   // Void:
-  Out=ModelSupport::getComposite(SMap,ptIndex," 51 -52  53 -54 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0, Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52  53 -54 5 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
   
-  Out=ModelSupport::getComposite(SMap,ptIndex," 51 -52  63 -64 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0, Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52  63 -64 5 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
   // Steel pin
-  Out=ModelSupport::getComposite(SMap,ptIndex," 51 -52 -57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52 -57");
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,ptIndex,"1004 3 -4 5 -6 -52");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1004 3 -4 5 -6 -52");
   //  Out+=ModelSupport::getComposite(SMap,surfNum," -52");
   addOuterSurf(Out);
 
@@ -402,12 +400,12 @@ PlateTarget::createLinks()
   FixedComp::setConnect(5,Origin+Z*height,Z);
 
   // Set Connect surfaces:
-  FixedComp::setLinkSurf(0,SMap.realSurf(ptIndex+1004));
-  FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+52));
-  FixedComp::setLinkSurf(2,SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1004));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+52));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

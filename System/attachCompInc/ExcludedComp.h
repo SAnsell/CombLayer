@@ -22,6 +22,7 @@
 #ifndef attachSystem_ExcludedComp_h
 #define attachSystem_ExcludedComp_h
 
+class objectGroups;
 class Simulation;
 
 namespace Geometry
@@ -76,15 +77,13 @@ class ExcludedComp
   void addExcludeCell(const int);
   void setExcludeCell(const int);
 
-
   void addExcludeSurf(const attachSystem::FixedComp&,const long int);
-  void addExcludeSurf(const std::string&,const long int);
 
   void addExcludeSurf(const int);
   void addExcludeSurf(const std::string&);
-  void addExcludeObj(const std::string&);
+  void addExcludeObj(const objectGroups&,const std::string&);
   void addExcludeObj(const ContainedComp&);
-  void addExcludeObj(const std::string&,const std::string&);
+  void addExcludeObj(const objectGroups&,const std::string&,const std::string&);
   void addExcludeObj(const std::string&,const ContainedGroup&);
 };
 

@@ -44,8 +44,6 @@ class Linac : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
 

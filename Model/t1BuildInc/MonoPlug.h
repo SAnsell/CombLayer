@@ -40,8 +40,6 @@ class MonoPlug : public attachSystem::FixedComp,
 {
  private:
   
-  const int plugIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   size_t nPlugs;                   
   std::vector<double> plugRadii;   ///< Inner plug radii [base to top]

@@ -35,21 +35,13 @@ namespace delftSystem
   */
   
 class beamSlot : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
   const std::string baseName;  ///< Base name
-  const int surfIndex;         ///< surf number
-  int cellIndex;               ///< Cell index
   
-  double axisAngle;      ///< Angle round the centre line
-  double xyAngle;        ///< Angle round the hole
-  double zAngle;         ///< Angle round the hole
-
-  double xStep;          ///< Centre radial position
-  double zStep;          ///< Centre radial position
-  
+  double axisAngle;      ///< Angle round the centre line  
   double xSize;          ///< Size of the slot [long]    
   double zSize;          ///< Size of the slot [short]
 

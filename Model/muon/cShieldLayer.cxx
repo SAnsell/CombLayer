@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -59,7 +58,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,9 +74,7 @@ namespace muSystem
 {
 
 cShieldLayer::cShieldLayer(const std::string& Key)  : 
-  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
-  csLayerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(csLayerIndex+1)
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -85,7 +83,6 @@ cShieldLayer::cShieldLayer(const std::string& Key)  :
 
 cShieldLayer::cShieldLayer(const cShieldLayer& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  csLayerIndex(A.csLayerIndex),cellIndex(A.cellIndex),
   height(A.height),depth(A.depth),width(A.width),
   steelMat(A.steelMat),nLay(A.nLay)
   /*!
@@ -106,7 +103,6 @@ cShieldLayer::operator=(const cShieldLayer& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       height=A.height;
       depth=A.depth;
       width=A.width;
@@ -171,7 +167,7 @@ cShieldLayer::createSurfaces()
     {
       const double layThick(depth/static_cast<double>(nLay));
       double yPos(-depth/2.0);
-      int plateIndex(csLayerIndex+100);
+      int plateIndex(buildIndex+100);
       for(size_t i=0;i<nLay-1;i++)
 	{
 	  yPos+=layThick;
@@ -181,12 +177,12 @@ cShieldLayer::createSurfaces()
     }
 
   // outer layer
-  ModelSupport::buildPlane(SMap,csLayerIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,csLayerIndex+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,csLayerIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,csLayerIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,csLayerIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,csLayerIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
   return;
 }
@@ -205,32 +201,32 @@ cShieldLayer::createObjects(Simulation& System)
   std::string Out1;
 
     // Steel
-  Out=ModelSupport::getComposite(SMap,csLayerIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
   if (nLay>1)
     {
-      int plateIndex(csLayerIndex+100);
+      int plateIndex(buildIndex+100);
       // inital
-      Out=ModelSupport::getComposite(SMap,csLayerIndex,"1 -101 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 3 -4 5 -6");
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
       for(size_t i=1;i<nLay-1;i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,csLayerIndex,
+	  Out=ModelSupport::getComposite(SMap,buildIndex,
 					 plateIndex,"1M -11M 3 -4 5 -6");					 
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 	  plateIndex+=10;
 	}
       // final
-      Out=ModelSupport::getComposite(SMap,csLayerIndex,plateIndex-10,
+      Out=ModelSupport::getComposite(SMap,buildIndex,plateIndex-10,
 				     "11M -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,csLayerIndex,"1 -2 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
+      System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
     }
   return;
 }
@@ -244,12 +240,12 @@ cShieldLayer::createLinks()
 {
   ELog::RegMethod RegA("cShieldLayer","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(csLayerIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(csLayerIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(csLayerIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(csLayerIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(csLayerIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(csLayerIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   FixedComp::setConnect(0,Origin-Y*depth/2.0,-Y);
   FixedComp::setConnect(1,Origin+Y*depth/2.0,Y);

@@ -44,7 +44,6 @@ class BulletTarget :
 {
  private:
 
-  const int tIndex;                                  ///< Base number
   std::shared_ptr<BulletPlates> PlateTarObj;          ///< Plate Target
   std::shared_ptr<BulletVessel> PressVObj;            ///< Pressure vessel
   std::vector<std::shared_ptr<BulletDivider> > DObj;  ///< Internal dividers

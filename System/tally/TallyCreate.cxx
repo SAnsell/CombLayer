@@ -75,6 +75,8 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SpecialSurf.h"

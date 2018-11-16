@@ -59,8 +59,6 @@ class pipeUnit : public attachSystem::FixedComp,
 {
  private:
 
-  const int surfIndex;      ///< surface number 
-  int cellIndex;            ///< Cell index
   size_t nAngle;            ///< Angles to approximate for edge finding
 
   pipeUnit* prev;           ///< Previous pipe unit

@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,8 +79,7 @@ namespace moderatorSystem
 
 CouplePipe::CouplePipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),populated(0),
+  populated(0),
   GOuter("gOuter"),HInner("hInner")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -89,7 +89,6 @@ CouplePipe::CouplePipe(const std::string& Key)  :
 
 CouplePipe::CouplePipe(const CouplePipe& A) : 
   attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   populated(A.populated),GOuter(A.GOuter),HInner(A.HInner),
   Xoffset(A.Xoffset),Yoffset(A.Yoffset),outMat(A.outMat),
   outAlMat(A.outAlMat),outVacMat(A.outVacMat),innerAlMat(A.innerAlMat),
@@ -115,7 +114,6 @@ CouplePipe::operator=(const CouplePipe& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       GOuter=A.GOuter;
       HInner=A.HInner;

@@ -61,14 +61,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "SurInter.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -85,9 +84,7 @@ namespace pipeSystem
 
 pipeTube::pipeTube(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  tubeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tubeIndex+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -97,7 +94,6 @@ pipeTube::pipeTube(const std::string& Key) :
 pipeTube::pipeTube(const pipeTube& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),attachSystem::CellMap(A),
-  tubeIndex(A.tubeIndex),cellIndex(A.cellIndex),
   length(A.length),height(A.height),width(A.width),
   innerHeight(A.innerHeight),innerWidth(A.innerWidth),
   wallMat(A.wallMat),nWallLayers(A.nWallLayers),
@@ -121,7 +117,6 @@ pipeTube::operator=(const pipeTube& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       height=A.height;
       width=A.width;
@@ -198,17 +193,17 @@ pipeTube::createSurfaces()
 {
   ELog::RegMethod RegA("pipeTube","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,tubeIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,tubeIndex+2,Origin+Y*(length/2.0),Y);  
-  ModelSupport::buildPlane(SMap,tubeIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,tubeIndex+4,Origin+X*(width/2.0),X);  
-  ModelSupport::buildPlane(SMap,tubeIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,tubeIndex+6,Origin+Z*(height/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
 
-  ModelSupport::buildPlane(SMap,tubeIndex+13,Origin-X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,tubeIndex+14,Origin+X*(innerWidth/2.0),X);  
-  ModelSupport::buildPlane(SMap,tubeIndex+15,Origin-Z*(innerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,tubeIndex+16,Origin+Z*(innerHeight/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(innerWidth/2.0),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(innerHeight/2.0),Z);  
 
   return; 
 }
@@ -225,17 +220,17 @@ pipeTube::createObjects(Simulation& System)
   std::string Out;
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,tubeIndex," 1 -2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   CellMap::setCell("Inner",cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,tubeIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 (-13:14:-15:16) ");
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   CellMap::setCell("Outer",cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,tubeIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   return; 
 }
@@ -252,22 +247,22 @@ pipeTube::createLinks()
   ELog::RegMethod RegA("pipeTube","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(tubeIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(tubeIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(2,Origin-X*(length/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(tubeIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(tubeIndex+4));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
   
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(tubeIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(tubeIndex+6));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
 
   return;
 }
@@ -296,21 +291,21 @@ pipeTube::layerProcess(Simulation& System)
       DA.addMaterial(wallMatList.back());
       // Cell Specific:
       DA.setCellN(CellMap::getCell("Outer"));
-      DA.setOutNum(cellIndex,tubeIndex+1001);
+      DA.setOutNum(cellIndex,buildIndex+1001);
 
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
 
-      surroundRule.setSurfPair(SMap.realSurf(tubeIndex+13),
-			       SMap.realSurf(tubeIndex+3));
-      surroundRule.setSurfPair(SMap.realSurf(tubeIndex+14),
-			       SMap.realSurf(tubeIndex+4));
-      surroundRule.setSurfPair(SMap.realSurf(tubeIndex+15),
-			       SMap.realSurf(tubeIndex+5));
-      surroundRule.setSurfPair(SMap.realSurf(tubeIndex+16),
-			       SMap.realSurf(tubeIndex+6));
-      OutA=ModelSupport::getComposite(SMap,tubeIndex," (-13:14:-15:16) ");
-      OutB=ModelSupport::getComposite(SMap,tubeIndex," 3 -4 5 -6 ");
+      surroundRule.setSurfPair(SMap.realSurf(buildIndex+13),
+			       SMap.realSurf(buildIndex+3));
+      surroundRule.setSurfPair(SMap.realSurf(buildIndex+14),
+			       SMap.realSurf(buildIndex+4));
+      surroundRule.setSurfPair(SMap.realSurf(buildIndex+15),
+			       SMap.realSurf(buildIndex+5));
+      surroundRule.setSurfPair(SMap.realSurf(buildIndex+16),
+			       SMap.realSurf(buildIndex+6));
+      OutA=ModelSupport::getComposite(SMap,buildIndex," (-13:14:-15:16) ");
+      OutB=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
 
       surroundRule.setInnerRule(OutA);
       surroundRule.setOuterRule(OutB);

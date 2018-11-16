@@ -71,7 +71,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -91,8 +92,7 @@ namespace shutterSystem
 
 LeadPlate::LeadPlate(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
-  leadIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(leadIndex+1),activeFlag(0)
+  activeFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -101,7 +101,6 @@ LeadPlate::LeadPlate(const std::string& Key)  :
 
 LeadPlate::LeadPlate(const LeadPlate& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  leadIndex(A.leadIndex),cellIndex(A.cellIndex),
   activeFlag(A.activeFlag),thick(A.thick),defMat(A.defMat),
   supportMat(A.supportMat),Centre(A.Centre),radius(A.radius),
   linerThick(A.linerThick),centSpc(A.centSpc)
@@ -125,7 +124,6 @@ LeadPlate::operator=(const LeadPlate& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       activeFlag=A.activeFlag;
       thick=A.thick;
       defMat=A.defMat;
@@ -233,7 +231,7 @@ LeadPlate::calcCentre()
   
   // Initial plane
   const Geometry::Plane* DPlane=
-    SMap.realPtr<Geometry::Plane>(leadIndex+1);
+    SMap.realPtr<Geometry::Plane>(buildIndex+1);
 
   std::string Bnd=getCompContainer();
   int surfItem;
@@ -378,8 +376,8 @@ LeadPlate::createSurfaces()
   // INNER PLANES
   // Front
   const Geometry::Plane* PX=
-    ModelSupport::buildPlane(SMap,leadIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,leadIndex+2,Origin+Y*thick,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*thick,Y);
   
   // Calc a valid point in the object:
   calcCentre();
@@ -392,7 +390,7 @@ LeadPlate::createSurfaces()
   // Create actual holes :
   Geometry::Vec3D Pt,Axis;
 
-  int index(leadIndex);
+  int index(buildIndex);
   std::vector<constructSystem::tubeUnit*>::const_iterator vc;
   for(vc=HoleCentre.begin();vc!=HoleCentre.end();vc++)
     {
@@ -436,7 +434,7 @@ LeadPlate::createObjects(Simulation& System)
   std::string Out;
   // Master box: 
   const std::string PlateOut=
-    ModelSupport::getComposite(SMap,leadIndex,"1 -2 ");
+    ModelSupport::getComposite(SMap,buildIndex,"1 -2 ");
   addOuterSurf(PlateOut);
 
   //      Out+=getCompContainer(FrontPtr,CPtr);  
@@ -454,25 +452,25 @@ LeadPlate::createObjects(Simulation& System)
 	{
 	  // void in middle:
 	  Out=TUPtr->getCell(SMap,cellLayer)+Boundary;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  cellLayer++;
 
 	  // Now add liner if present:
 	  if (linerThick>Geometry::zeroTol)
 	    {
 	      Out=TUPtr->getCell(SMap,cellLayer)+Boundary;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       supportMat,0.0,Out));
 	      cellLayer++;
 	    }
 	  // Outer stuff
 	  Out=TUPtr->getCell(SMap,cellLayer)+Boundary;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 	}
       else  // EMPTY
 	{
 	  Out=TUPtr->getCell(SMap,0)+Boundary;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 	  cellLayer++;
 	}
     }

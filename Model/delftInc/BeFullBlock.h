@@ -43,8 +43,6 @@ class BeFullBlock : public attachSystem::ContainedComp,
 {
  private:
 
-  const int insertIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double width;                 ///< Width
   double height;                ///< Height

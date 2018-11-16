@@ -40,8 +40,6 @@ class BulletVessel : public attachSystem::ContainedComp,
 {
  private:
   
-  const int pvIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double frontClear;            ///< Clearance on front face
   double frontThick;            ///< Front wall thickness   

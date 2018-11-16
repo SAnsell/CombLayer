@@ -40,10 +40,7 @@ class JawUnit : public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
-  
-  const int jawIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-  
+    
   double zOpen;                 ///< Z-opening
   double zOffset;                 ///< Z-opening
   double zThick;                ///< Blade thickness [beam]

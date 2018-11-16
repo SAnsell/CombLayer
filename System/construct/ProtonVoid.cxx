@@ -65,7 +65,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -82,8 +83,7 @@ namespace ts1System
 ProtonVoid::ProtonVoid(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
-  pvIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pvIndex+1),protonVoidCell(0)
+  protonVoidCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +92,7 @@ ProtonVoid::ProtonVoid(const std::string& Key)  :
 
 ProtonVoid::ProtonVoid(const ProtonVoid& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  pvIndex(A.pvIndex),cellIndex(A.cellIndex),protonVoidCell(A.protonVoidCell),
+  protonVoidCell(A.protonVoidCell),
   viewRadius(A.viewRadius)
   /*!
     Copy constructor
@@ -112,7 +112,6 @@ ProtonVoid::operator=(const ProtonVoid& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       protonVoidCell=A.protonVoidCell;
       viewRadius=A.viewRadius;
     }
@@ -163,7 +162,7 @@ ProtonVoid::createSurfaces()
   ELog::RegMethod RegA("ProtonVoid","createSurface");
 
   // Void hole
-  ModelSupport::buildCylinder(SMap,pvIndex+7,Origin,Y,viewRadius);  
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,viewRadius);  
   return;
 }
 
@@ -182,12 +181,12 @@ ProtonVoid::createObjects(Simulation& System,
   
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,pvIndex, " -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, " -7 ");
   Out+=RefSurfBoundary+" "+TargetSurfBoundary;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   protonVoidCell=cellIndex-1;
   addOuterSurf(Out);
-  addBoundarySurf(-SMap.realSurf(pvIndex+7));    
+  addBoundarySurf(-SMap.realSurf(buildIndex+7));    
 
   return;
 }

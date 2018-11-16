@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/RingDoor.cxx
+ * File:   commonBeam/RingDoor.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -122,6 +123,7 @@ RingDoor::createUnitVector(const attachSystem::FixedComp& FC,
 				 const long int sideIndex)
   /*!
     Create the unit vectors: Note only to construct front/back surf
+    Note that Y points OUT of the ring
     \param FC :: Centre point
     \param sideIndex :: Side index
   */
@@ -129,8 +131,20 @@ RingDoor::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("RingDoor","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
+  const HeadRule& HR=ExternalCut::getRule("innerWall");
+
+  const int SN=HR.getPrimarySurface();
+  const Geometry::Plane* PPtr=
+    dynamic_cast<const Geometry::Plane*>(HR.getSurface(SN));
+
+  if (PPtr)
+    {
+      Geometry::Vec3D PAxis=PPtr->getNormal();
+      if (Y.dotProd(PAxis)*SN < 0)
+	PAxis*=-1;
+      FixedComp::reOrientate(1,PAxis);
+    }  
   applyOffset();
-  
   return;
 }
 
@@ -180,9 +194,9 @@ RingDoor::createSurfaces()
 
 
   ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+200,Origin,-innerThick);
+    (SMap,"innerWall",buildIndex+200,Origin,innerThick);
   ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+201,Origin,-(innerThick+gapSpace));
+    (SMap,"innerWall",buildIndex+201,Origin,innerThick+gapSpace);
 
   return;
 }
@@ -199,6 +213,7 @@ RingDoor::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=ExternalCut::getRuleStr("innerWall");
   const std::string outerStr=ExternalCut::getRuleStr("outerWall");
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"200 3 -4 5 -6 ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr);
 
@@ -234,6 +249,7 @@ void
 RingDoor::createLinks()
   /*!
     Construct the links for the system
+    Note that Y points OUT of the ring
   */
 {
   ELog::RegMethod RegA("RingDoor","createLinks");

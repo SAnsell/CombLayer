@@ -3,7 +3,7 @@
  
  * File:   moderator/CoolPad.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,17 +42,10 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -70,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -86,11 +80,10 @@
 namespace moderatorSystem
 {
 
-CoolPad::CoolPad(const std::string& Key,const size_t Index) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,1),
-  ID(Index),padIndex(ModelSupport::objectRegister::Instance().
-		     cell(StrFunc::makeString(Key,Index))),
-  cellIndex(padIndex+1)
+CoolPad::CoolPad(const std::string& key,const size_t Index) :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(key+std::to_string(Index),1),
+  ID(Index),baseName(key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -100,7 +93,7 @@ CoolPad::CoolPad(const std::string& Key,const size_t Index) :
 
 CoolPad::CoolPad(const CoolPad& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  ID(A.ID),padIndex(A.padIndex),cellIndex(A.cellIndex),
+  ID(A.ID),baseName(A.baseName),
   xStep(A.xStep),zStep(A.zStep),thick(A.thick),height(A.height),
   width(A.width),Mat(A.Mat)
   /*!
@@ -121,7 +114,6 @@ CoolPad::operator=(const CoolPad& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       zStep=A.zStep;
       thick=A.thick;
@@ -149,28 +141,26 @@ CoolPad::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("CoolPad","populate");
 
   // Two keys : one with a number and the default
-  const std::string keyIndex(StrFunc::makeString(keyName,ID));
-  //  fixIndex=Control.EvalPair<size_t>(keyIndex,keyName,"FixIndex");
-  xStep=Control.EvalPair<double>(keyIndex,keyName,"XStep");
-  zStep=Control.EvalPair<double>(keyIndex,keyName,"ZStep");
-  thick=Control.EvalPair<double>(keyIndex,keyName,"Thick");
-  width=Control.EvalPair<double>(keyIndex,keyName,"Width");
-  height=Control.EvalPair<double>(keyIndex,keyName,"Height");
-  Mat=ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",keyName+"Mat");
-  const size_t nZ=Control.EvalPair<size_t>(keyIndex,keyName,"NZigZag");
+  //  fixIndex=Control.EvalPair<size_t>(keyName,keyName,"FixIndex");
+  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
+  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
+  thick=Control.EvalPair<double>(keyName,baseName,"Thick");
+  width=Control.EvalPair<double>(keyName,baseName,"Width");
+  height=Control.EvalPair<double>(keyName,baseName,"Height");
+  Mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
+  const size_t nZ=Control.EvalPair<size_t>(keyName,baseName,"NZigZag");
   CPts.clear();
   for(size_t i=0;i<nZ;i++)
     {
-      const std::string tagIndex=
-	StrFunc::makeString(std::string("Cent"),i+1);
+      const std::string tagIndex="Cent"+std::to_string(i+1);
       CPts.push_back(Control.EvalPair<Geometry::Vec3D>
-		     (keyIndex,keyName,tagIndex));
+		     (keyName,baseName,tagIndex));
     }
 
-  IWidth=Control.EvalPair<double>(keyIndex,keyName,"IWidth");
-  IDepth=Control.EvalPair<double>(keyIndex,keyName,"IDepth");
+  IWidth=Control.EvalPair<double>(keyName,baseName,"IWidth");
+  IDepth=Control.EvalPair<double>(keyName,baseName,"IDepth");
 
-  IMat=ModelSupport::EvalMat<int>(Control,keyIndex+"IMat",keyName+"IMat");
+  IMat=ModelSupport::EvalMat<int>(Control,keyName+"IMat",baseName+"IMat");
   
   return;
 }
@@ -209,11 +199,11 @@ CoolPad::createSurfaces()
 {
   ELog::RegMethod RegA("CoolPad","createSurface");
 
-  ModelSupport::buildPlane(SMap,padIndex+2,Origin+Y*thick,Y);
-  ModelSupport::buildPlane(SMap,padIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,padIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,padIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,padIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*thick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   return;
 }
@@ -228,10 +218,10 @@ CoolPad::createObjects(Simulation& System)
   ELog::RegMethod RegA("CoolPad","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,padIndex," -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ");
   Out+=hotSurf.display();
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,Mat,0.0,Out));
   addOuterSurf(Out);
 
 
@@ -246,8 +236,7 @@ CoolPad::createWaterTrack(Simulation& System)
   */
 {  
   ELog::RegMethod RegA("CoolPad","createWaterTrack");
-  ModelSupport::BoxLine WaterTrack
-    (StrFunc::makeString(std::string("PadWater"),ID));
+  ModelSupport::BoxLine WaterTrack("PadWater"+std::to_string(ID));
 
   WaterTrack.setPoints(CPts);
   WaterTrack.addSection(IWidth,IDepth,IMat,0.0);

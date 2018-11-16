@@ -42,8 +42,6 @@ class BeRef : public attachSystem::ContainedComp,
 {
  private:
 
-  const int refIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
   int engActive;                  ///< Engineering active
   
   /// Inner components inside Reflector (eng detail)

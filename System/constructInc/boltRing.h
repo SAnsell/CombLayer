@@ -50,8 +50,6 @@ class boltRing :
  private:
 
   const std::string baseName;  ///< Base name
-  const int ringIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   size_t populated;             ///< Popoluated variable flag
   bool innerExclude;            ///< Construct inner void

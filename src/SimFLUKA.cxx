@@ -69,7 +69,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "Source.h"
 #include "inputSupport.h"
@@ -80,6 +79,8 @@
 #include "flukaTally.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 

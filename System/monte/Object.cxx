@@ -176,8 +176,8 @@ Object::Object() :
  */
 {}
 
-Object::Object(const int N,const int M,const double T,
-	       const std::string& Line) :
+Object::Object(const int N,const int M,
+	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
   imp(1),density(0.0),placehold(0),
   populated(0),objSurfValid(0)
@@ -192,8 +192,25 @@ Object::Object(const int N,const int M,const double T,
   HRule.procString(Line);
 }
 
+Object::Object(const std::string& FCName,const int N,const int M,
+	       const double T,const std::string& Line) :
+  FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
+  imp(1),density(0.0),placehold(0),
+  populated(0),objSurfValid(0)
+ /*!
+   Constuctor, set temperature to 300C 
+   \param N :: number
+   \param M :: material
+   \param T :: temperature (K)
+   \param Line :: Line to use
+ */
+{
+  HRule.procString(Line);
+}
+
 Object::Object(const Object& A) :
-  ObjName(A.ObjName),listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
+  FCUnit(A.FCUnit),ObjName(A.ObjName),
+  listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
   trcl(A.trcl),imp(A.imp),
   density(A.density),placehold(A.placehold),populated(A.populated),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
@@ -213,6 +230,7 @@ Object::operator=(const Object& A)
 {
   if (this!=&A)
     {
+      FCUnit=A.FCUnit;
       ObjName=A.ObjName;
       listNum=A.listNum;
       Tmp=A.Tmp;
@@ -1312,6 +1330,62 @@ Object::str() const
   return cx.str();
 }
 
+
+std::string
+Object::cellStr(const std::map<int,Object*>& MList) const
+  /*!
+    Returns just the cell string object. Processes complement
+    and self include.
+    \param MList :: List of indexable Hulls
+    \return Cell String (from TopRule)
+    \todo Break infinite recusion
+  */
+{
+  ELog::RegMethod RegA("Object","cellStr");
+
+  const char compUnit[]="%#";
+  std::string TopStr=this->topRule()->display();
+  std::string::size_type pos=TopStr.find_first_of(compUnit);
+  std::ostringstream cx;
+  while(pos!=std::string::npos)
+    {
+      const int compFlag(TopStr[pos]=='%' ? 0 : 1); 
+      pos++;
+      cx<<TopStr.substr(0,pos);            // Everything including the #
+      int cN(0);
+      const size_t nLen=StrFunc::convPartNum(TopStr.substr(pos),cN);
+      if (nLen>0)
+        {
+	  std::map<int,MonteCarlo::Object*>::const_iterator vc=MList.find(cN);
+	  if (vc==MList.end() || cN==this->getName())
+	    {
+	      ELog::EM<<"Cell:"<<getName()<<" comp unit:"
+		      <<cN<<ELog::endCrit;
+	      ELog::EM<<"full string == "
+		      <<topRule()->display()<<ELog::endCrit;
+	      cx<<compUnit[compFlag]<<cN;
+	      throw ColErr::InContainerError<int>
+		(cN,"Object::cellStr unknown complementary unit");
+	    }
+	  else
+	    {
+	      if (compFlag) cx<<"(";
+	      // Not the recusion :: This will cause no end of problems 
+	      // if there is an infinite loop.
+	      cx<<vc->second->cellStr(MList);
+	      if (compFlag) cx<<")";
+	    }
+	  cx<<" ";
+	  pos+=nLen;
+	}
+      TopStr.erase(0,pos);
+      pos=TopStr.find_first_of(compUnit);
+    }
+
+  cx<<TopStr;
+  return cx.str();
+}
+
 void 
 Object::write(std::ostream& OX) const
   /*!
@@ -1374,15 +1448,10 @@ Object::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writeFLUKA");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   if (!placehold)
     {
-      std::string objName=OR.inRenumberRange(ObjName);
-      if (objName.empty()) objName="global";
-
       std::ostringstream cx;
-      cx<<"* "<<objName<<" "<<ObjName<<std::endl;
+      cx<<"* "<<FCUnit<<" "<<ObjName<<std::endl;
       cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);
@@ -1406,16 +1475,12 @@ Object::writePOVRay(std::ostream& OX) const
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   if (!placehold && MatN>0)
     {
-      const std::string objName=OR.inRenumberRange(ObjName);
-      
       // do not render global objects (outer void and black hole)
       //      if (objName.empty())
         //	return; 
-      OX<<"// Cell "<<objName<<" "<<ObjName<<"\n";
+      OX<<"// Cell "<<FCUnit<<" "<<ObjName<<"\n";
       OX<<"intersection{\n"
 	<<HRule.displayPOVRay()<<"\n"
 	<< " texture {mat" <<MW.NameNoDot(DB.getKey(MatN)) <<"}\n"
@@ -1434,22 +1499,15 @@ Object::writePOVRaymat(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Object","writePOVRaymat");
-  return;
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   if (!placehold)
-    {
-      const std::string objName=OR.inRenumberRange(ObjName);
-      if (objName.empty())
-	return;
-      
+    {      
       OX<<"POVRay dummy material string    ";
       if (!MatN)   // are we really rendering vacuum ????
 	OX<<" VACUUM";
       else
 	OX<<"    M"<<MatN;
       
-      OX<<"    "<<objName<<"_"<<ObjName<<std::endl;
+      OX<<"    "<<FCUnit<<"_"<<ObjName<<std::endl;
     }
   
   return;

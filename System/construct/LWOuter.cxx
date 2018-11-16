@@ -62,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -130,7 +131,7 @@ LWOuter::createSurfaces()
   for(vc=surfNum.begin();vc!=surfNum.end();vc++)
     FixedComp::setLinkSurf(linkIndex++,SMap.realSurf(*vc));
 
-  int nSurf(refIndex+1);      
+  int nSurf(buildIndex+1);      
   for(size_t i=0;i<surfCent.size();i++)
     {
       const Geometry::Vec3D CP=Origin+surfCent[i];
@@ -157,7 +158,7 @@ LWOuter::createSurfaces()
   for(size_t i=0;i<nLayers;i++)
     { 
       lThick+=layerThick[i];
-      int lSurf(refIndex+101+100*static_cast<int>(i));
+      int lSurf(buildIndex+101+100*static_cast<int>(i));
 	  
       for(size_t j=0;j<SList.size();j++)
 	{
@@ -199,7 +200,7 @@ LWOuter::createObjects(Simulation& System)
     {
       cx.str("");
       control.str("");
-      int lSurf(refIndex+101+100*static_cast<int>(i));
+      int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<surfNum.size();j++)
 	{
 	  const int signV((surfNum[j]>0) ? 1 : -1);
@@ -214,7 +215,7 @@ LWOuter::createObjects(Simulation& System)
       const std::string cellStr=
 	Inner+getNotExcludeUnit()+" #( "+Outer+" ) "
 	+control.str()+exclude;
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,layerMat[i],0.0,cellStr));
       Outer=Inner;
     }

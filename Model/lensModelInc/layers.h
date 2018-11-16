@@ -42,8 +42,6 @@ class siModerator;
 {
  private:
 
-  const int surIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Index of surface offset
   int populated;                ///< populated or not
   int innerCompSurf;            ///< InnerCompSurf;
 

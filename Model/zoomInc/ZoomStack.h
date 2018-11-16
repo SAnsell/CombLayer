@@ -46,8 +46,6 @@ class ZoomStack :  public attachSystem::ContainedComp,
 {
  private:
   
-  const int stackIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   size_t nItem;                   ///< Number of items
   size_t posIndex;                ///< Position index

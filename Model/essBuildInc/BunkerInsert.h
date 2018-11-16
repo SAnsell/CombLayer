@@ -40,9 +40,6 @@ class BunkerInsert : public attachSystem::ContainedComp,
   public attachSystem::FrontBackCut
 {
  private:
-  
-  const int insIndex;            ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
 
   double backStep;               ///< Step back of dividing plane
   

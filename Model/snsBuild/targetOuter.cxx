@@ -3,7 +3,7 @@
  
  * File:   build/targetOuter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace snsSystem
 {
 
 targetOuter::targetOuter(const std::string& Key) :
-  constructSystem::TargetBase(Key,3),
-  protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1)
+  constructSystem::TargetBase(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +90,6 @@ targetOuter::targetOuter(const std::string& Key) :
 
 targetOuter::targetOuter(const targetOuter& A) : 
   constructSystem::TargetBase(A),
-  protonIndex(A.protonIndex),cellIndex(A.cellIndex),
   mainLength(A.mainLength),mainHeight(A.mainHeight),
   mainWidth(A.mainWidth),mercuryMat(A.mercuryMat),
   mercuryTemp(A.mercuryTemp),mainCell(A.mainCell)
@@ -112,7 +110,6 @@ targetOuter::operator=(const targetOuter& A)
   if (this!=&A)
     {
       constructSystem::TargetBase::operator=(A);
-      cellIndex=A.cellIndex;
       mainLength=A.mainLength;
       mainHeight=A.mainHeight;
       mainWidth=A.mainWidth;
@@ -228,14 +225,14 @@ targetOuter::createSurfaces()
   // with the corners exactly matching the length/width
   
   // front face 
-  ModelSupport::buildPlane(SMap,protonIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
 
   // Dividing planes
-  ModelSupport::buildPlane(SMap,protonIndex+13,Origin-X*(mainWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,protonIndex+14,Origin+X*(mainWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(mainWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(mainWidth/2.0),X);
 
   // Back plane
-  ModelSupport::buildPlane(SMap,protonIndex+52,Origin+Y*totalLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+52,Origin+Y*totalLength,Y);
 
 
   const double XStepAdd[]={0.0,0.0,heliumXStep,pressXStep,waterXStep,
@@ -248,7 +245,7 @@ targetOuter::createSurfaces()
 			  waterLength,outerLength};
 
   double Wall(mainHeight/2.0);
-  int offset(protonIndex);
+  int offset(buildIndex);
   double Step(0.0);
   double XStep(0.0);
   for(size_t i=0;i<6;i++)
@@ -293,7 +290,7 @@ targetOuter::createSurfaces()
 
 
   Wall=mainHeight/2.0;     // reset wall
-  offset=1000+protonIndex;
+  offset=1000+buildIndex;
   XStep=mainWidth/2.0;
   // CUTS at 1000
   for(size_t i=0;i<6;i++)
@@ -358,91 +355,91 @@ targetOuter::createObjects(Simulation& System)
   mainCell=cellIndex;
   // Main cylinder:
   
-  Out=ModelSupport::getComposite(SMap,protonIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " (1 : (-27:13) (-28:-14) -7) (-18:-14) (13:-17) -2 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mercuryMat,mercuryTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mercuryMat,mercuryTemp,Out));
 
   const double temp[]={mercuryTemp,mercuryTemp,0,0,0};
   const int mat[]={innerWallMat,heMat,pressMat,waterMat,outerMat};
-  int offset(protonIndex);
+  int offset(buildIndex);
   for(size_t i=0;i<5;i++)
     {
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"13 -14 1 -102M 105M -106M (-5M : 6M) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"-117M 17M -13 1 -102M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"-118M 18M 14 1 -102M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"-107M 7M 13 -14 -1 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out)); 
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"-127M 27M -13  -1 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"-128M 28M 14 -1 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"13 -14 1 -102M 105M -106M (-5M : 6M) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-117M 17M -13 1 -102M ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-118M 18M 14 1 -102M ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-107M 7M 13 -14 -1 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out)); 
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-127M 27M -13  -1 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-128M 28M 14 -1 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       offset+=100;
     }
 
   // Cone sections
-  Out=ModelSupport::getComposite(SMap,protonIndex," 2 -1002 1005 -1006 ((13 -14) : -1018 : -1017) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mercuryMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -1002 1005 -1006 ((13 -14) : -1018 : -1017) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,mercuryMat,0.0,Out));
   // joining straight
-  Out=ModelSupport::getComposite(SMap,protonIndex," 1002 -52 2005 -2006 ((2013 -2014) : -2018 : -2017) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mercuryMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1002 -52 2005 -2006 ((2013 -2014) : -2018 : -2017) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,mercuryMat,0.0,Out));
 
-  offset=protonIndex;
+  offset=buildIndex;
   for(size_t i=0;i<5;i++)
     {
       if (i)
 	{
-	  Out=ModelSupport::getComposite(SMap,protonIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) (-5M:6M)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) (-5M:6M)");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,protonIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"13 -14 102M -1102M 1105M -1106M (-1005M : 1006M) ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	}
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"-13 102M -1102M -1117M 1017M 17M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"14 102M -1102M -1118M 1018M 18M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"-13 102M -1102M -1117M 1017M 17M");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"14 102M -1102M -1118M 1018M 18M");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       
       // Straight section
-      Out=ModelSupport::getComposite(SMap,protonIndex,offset,"1102M -52 2105M -2106M -2014 2013 (-2005M:2006M) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 2105M -2106M -2014 2013 (-2005M:2006M) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       if (i)
 	{
-	  Out=ModelSupport::getComposite(SMap,protonIndex,offset,"1102M -52 2014 -2118M (2018M:1018M) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-	  Out=ModelSupport::getComposite(SMap,protonIndex,offset,"1102M -52 -2013 -2117M (2017M:1017M) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 2014 -2118M (2018M:1018M) ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 -2013 -2117M (2017M:1017M) ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,protonIndex,offset,"1102M -52 2014 -2118M 2018M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
-	  Out=ModelSupport::getComposite(SMap,protonIndex,offset,"1102M -52 -2013 -2117M 2017M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 2014 -2118M 2018M ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,offset,"1102M -52 -2013 -2117M 2017M ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	}
       offset+=100;
     }
 
   // SPECIAL SECTION FOR INNER PRESSURE
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1302 (1206:-1205) 2205 -2206 2013 -2014 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pressMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1302 (1206:-1205) 2205 -2206 2013 -2014 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,pressMat,0.0,Out));
 
   // SPECIAL CELL FOR HE
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1202 (1106:-1105) 2105 -2106 2013 -2014 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mercuryTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1202 (1106:-1105) 2105 -2106 2013 -2014 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,mercuryTemp,Out));
   
-  // Out=ModelSupport::getComposite(SMap,protonIndex," 2 -1302 1305 -1306 ((13 -14) : -1318 : -1317) ");
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 2 -1302 1305 -1306 ((13 -14) : -1318 : -1317) ");
   // addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,protonIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " ( 1 : (-527:13) (-528:-14) -507) (-518:-14) (13:-517) -502 505 -506 ");
   addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,protonIndex," 502 -1302 1505 -1506 ((13 -14) : -1518 : -1517) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 502 -1302 1505 -1506 ((13 -14) : -1518 : -1517) ");
   addOuterUnionSurf(Out);
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1302 2505 -2506 -52 ((2013 -2014) : -2518 : -2517)");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1302 2505 -2506 -52 ((2013 -2014) : -2518 : -2517)");
   addOuterUnionSurf(Out);
   return;
 }
@@ -455,10 +452,10 @@ targetOuter::createLinks()
   */
 {
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(protonIndex+7));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(protonIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(protonIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(0,Origin-Y*mainHeight/2.0,-Y);
   FixedComp::setConnect(1,Origin+Y*mainLength,Y);

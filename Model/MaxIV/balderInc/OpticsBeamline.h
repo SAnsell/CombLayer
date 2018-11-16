@@ -70,10 +70,14 @@ namespace xraySystem
 class OpticsBeamline :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
 
+  attachSystem::InnerZone buildZone;  
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -187,9 +191,13 @@ class OpticsBeamline :
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
 
+  double outerRadius;   /// Radius for cut cylinder
+  
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   

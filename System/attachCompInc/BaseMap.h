@@ -82,6 +82,8 @@ class BaseMap
   std::string findCell(const int) const;
 
   bool registerExtra(const int,const int);
+
+  bool changeCell(const int,const int);
   
   std::string removeItemNumber(const int,const size_t =0);
   int removeItem(const std::string&,const size_t =0);

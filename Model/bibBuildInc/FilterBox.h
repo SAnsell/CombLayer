@@ -3,7 +3,7 @@
  
  * File:   bibBuildInc/FilterBox.h
 *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@ class FilterBox : public attachSystem::ContainedComp,
 {
  private:
   
-  const int filterIndex;          ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double width;                   ///< width of filterbox
   double height;                  ///< height of filterbox
@@ -57,8 +55,6 @@ class FilterBox : public attachSystem::ContainedComp,
   int beMat;                      ///< Be filter material
   int wallMat;                    ///< Wall Be material
 
-  
-  
   // Functions:
 
   void populate(const FuncDataBase&);

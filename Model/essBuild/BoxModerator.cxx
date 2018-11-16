@@ -3,7 +3,7 @@
  
  * File:   essBuild/BoxModerator.cxx
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2018 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,8 +83,6 @@ namespace essSystem
 
 BoxModerator::BoxModerator(const std::string& Key) :
   EssModBase(Key,12),
-  flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flyIndex+1),
   MidH2(new Box(Key+"MidH2")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
@@ -102,7 +101,6 @@ BoxModerator::BoxModerator(const std::string& Key) :
 
 BoxModerator::BoxModerator(const BoxModerator& A) : 
   EssModBase(A),
-  flyIndex(A.flyIndex),cellIndex(A.cellIndex),
   MidH2(A.MidH2->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
@@ -128,7 +126,6 @@ BoxModerator::operator=(const BoxModerator& A)
   if (this!=&A)
     {
       EssModBase::operator=(A);
-      cellIndex= A.cellIndex;
       *MidH2= *A.MidH2;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
@@ -208,12 +205,12 @@ BoxModerator::createSurfaces()
 {
   ELog::RegMethod RegA("BoxModerator","createSurface");
   
-  ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
-  ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,outerRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(totalHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(totalHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
 
   return;
 }
@@ -237,22 +234,22 @@ BoxModerator::createObjects(Simulation& System)
 
   if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
     {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 5 -15 ");  
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+HR.display()));
     }
 
   if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
     {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 16 -6 ");  
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+HR.display()));
       // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
+      /*      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
       HeadRule bfHR;
       bfHR.procString(LeftUnit->getSideRule());
       bfHR.addUnion(RightUnit->getSideRule());
       bfHR.addUnion(MidH2->getSideRule());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
     }
 
   
@@ -260,8 +257,8 @@ BoxModerator::createObjects(Simulation& System)
   // getSideRule contains only side surfaces, while getExclude - also top/bottom
   const std::string Exclude=sideRule;//ContainedComp::getExclude();
 
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Exclude));
   setCell("ambientVoid", cellIndex-1);
 
   clearRules();
@@ -336,10 +333,10 @@ BoxModerator::createLinks()
   FixedComp::setConnect(1,Origin+Y*outerRadius,Y);
   FixedComp::setConnect(2,Origin-X*outerRadius,-X);
   FixedComp::setConnect(3,Origin+X*outerRadius,X);
-  FixedComp::setLinkSurf(0,SMap.realSurf(flyIndex+7));
-  FixedComp::setLinkSurf(1,SMap.realSurf(flyIndex+7));
-  FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
 
   // copy surface top/bottom from H2Wing and Orign from center
   
@@ -450,7 +447,7 @@ BoxModerator::createAll(Simulation& System,
   MidH2->createAll(System,*this,0);
     
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
+    ModelSupport::getComposite(SMap,buildIndex," -7 15 -16 ");
   LeftWater->createAll(System,*MidH2,4,Exclude); 
   RightWater->createAll(System,*MidH2,3,Exclude);
 

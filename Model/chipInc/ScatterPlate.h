@@ -39,8 +39,6 @@ class ScatterPlate : public attachSystem::ContainedComp,
 {
  private:
   
-  const int spIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
   int populated;                 ///< 1:var
 
   Geometry::Vec3D Axis;          ///< Beam  axis

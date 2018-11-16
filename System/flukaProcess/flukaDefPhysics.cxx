@@ -73,7 +73,8 @@
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimFLUKA.h"
@@ -99,17 +100,14 @@ setModelPhysics(SimFLUKA& System,
 {
   ELog::RegMethod Rega("flukaDefPhysics","setModelPhysics");
   
-  flukaSystem::flukaPhysics* PC=System.getPhysics();
-  if (!PC) return;
-
-  setXrayPhysics(*PC,IParam);
+  setXrayPhysics(System,IParam);
   
   size_t nSet=IParam.setCnt("wMAT");
   if (nSet)
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processMAT(*PC,IParam,index);
+	A.processMAT(System,IParam,index);
     }
 
   nSet=IParam.setCnt("wIMP");
@@ -117,7 +115,7 @@ setModelPhysics(SimFLUKA& System,
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processUnit(*PC,IParam,index);
+	A.processUnit(System,IParam,index);
     }
   
   nSet=IParam.setCnt("wCUT");    
@@ -125,7 +123,7 @@ setModelPhysics(SimFLUKA& System,
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processCUT(*PC,IParam,index);
+	A.processCUT(System,IParam,index);
     }
   
   nSet=IParam.setCnt("wEMF");
@@ -133,7 +131,7 @@ setModelPhysics(SimFLUKA& System,
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processEMF(*PC,IParam,index);
+	A.processEMF(System,IParam,index);
     }
   
   nSet=IParam.setCnt("wEXP");
@@ -141,7 +139,7 @@ setModelPhysics(SimFLUKA& System,
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processEXP(*PC,IParam,index);
+	A.processEXP(System,IParam,index);
     }
 
   nSet=IParam.setCnt("wLAM");    
@@ -149,7 +147,7 @@ setModelPhysics(SimFLUKA& System,
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
-	A.processLAM(*PC,IParam,index);
+	A.processLAM(System,IParam,index);
     }
   
   return; 
@@ -157,23 +155,24 @@ setModelPhysics(SimFLUKA& System,
 
   
 void 
-setXrayPhysics(flukaPhysics& PC,
+setXrayPhysics(SimFLUKA& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     Set the neutron Physics for FLUKA run on a reactor
-    \param PC :: Physcis cards
+    \param System :: Fluke sim
     \param IParam :: Input stream
   */
 {
   ELog::RegMethod RegA("DefPhysics","setXrayPhysics");
 
+  flukaPhysics& PC= *System.getPhysics();
   const std::string PModel=IParam.getValue<std::string>("physModel");
-  typedef std::tuple<size_t,std::string,std::string,
-		     std::string,std::string> unitTYPE;
+  // typedef std::tuple<size_t,std::string,std::string,
+  // 		     std::string,std::string> unitTYPE;
 
   // CELL emfs
-  const std::set<int> activeCell=getActiveUnit(0,"all");
-  const std::set<int> activeMat=getActiveUnit(1,"all");
+  const std::set<int> activeCell=getActiveUnit(System,0,"all");
+  const std::set<int> activeMat=getActiveUnit(System,1,"all");
   for(const int MN : activeMat)
     {
       //Turn pair-bremstrauhlung on 
@@ -189,7 +188,7 @@ setXrayPhysics(flukaPhysics& PC,
       PC.setTHR("photthr",MN,"1e-3","1e-3","1.0");
 	
       // Interaction threshold : Brem-e+/e- moller scatter photonuclear"
-      PC.setTHR("elpothr",MN,"0.0","1e-3","0.0");
+      PC.setTHR("elpothr",MN,"1e-2","1e-2","1.0");
 
       // Turn off multiple scattering [not a good idea]
       //      PC.setTHR("mulsopt",MN,"0","0","3");

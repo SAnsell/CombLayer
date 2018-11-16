@@ -3,7 +3,7 @@
  
  * File:   processInc/surfDivide.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ class Token;
 
 namespace MonteCarlo
 {
-  class Qhull;
+  class Object;
 }
 
 namespace ModelSupport
@@ -49,7 +49,7 @@ class surfDivide
  private:
   
   int cellNumber;                   ///< Cell number
-  MonteCarlo::Qhull* BaseObj;       ///< BaseObject
+  MonteCarlo::Object* BaseObj;       ///< BaseObject
   int outCellN;                     ///< Output cell number
   int outSurfN;                     ///< Output surfNum [incremental]
 

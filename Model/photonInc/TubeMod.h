@@ -57,8 +57,6 @@ class TubeMod : public attachSystem::ContainedComp,
 {
  private:
 
-  const int modIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double outerRadius;           ///< Outer volume
   double outerHeight;           ///< Outer height [from origin]

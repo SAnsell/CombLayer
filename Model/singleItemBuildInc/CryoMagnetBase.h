@@ -42,8 +42,6 @@ class CryoMagnetBase :  public attachSystem::FixedOffset,
 {
  private:
 
-  const int layerIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   size_t nLayers;                    ///< Layer count
 

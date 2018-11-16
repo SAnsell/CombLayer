@@ -37,7 +37,7 @@ namespace constructSystem
 
 class VacuumBox :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {

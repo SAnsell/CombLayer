@@ -41,8 +41,6 @@ class BlockAddition :  public attachSystem::ContainedComp,
 {
  private:
   
-  const int blockIndex;          ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
   int active;                    ///< Box active
 
   double length;                 ///< Length

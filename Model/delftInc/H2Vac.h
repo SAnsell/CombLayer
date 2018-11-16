@@ -43,8 +43,6 @@ class H2Vac :
 {
  private:
   
-  const int vacIndex;               ///< Index of surface offset
-  int cellIndex;                    ///< Cell index
 
   double sideRadius;        ///< Side radius 
   

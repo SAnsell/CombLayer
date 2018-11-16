@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,14 +81,60 @@ namespace xraySystem
 
 ExperimentalHutch::ExperimentalHutch(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
+
+ExperimentalHutch::ExperimentalHutch(const ExperimentalHutch& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  depth(A.depth),height(A.height),length(A.length),
+  ringWidth(A.ringWidth),outWidth(A.outWidth),innerThick(A.innerThick),
+  pbThick(A.pbThick),outerThick(A.outerThick),floorThick(A.floorThick),
+  holeXStep(A.holeXStep),holeZStep(A.holeZStep),
+  holeRadius(A.holeRadius),voidMat(A.voidMat),skinMat(A.skinMat),
+  pbMat(A.pbMat),floorMat(A.floorMat)
+  /*!
+    Copy constructor
+    \param A :: ExperimentalHutch to copy
+  */
+{}
+
+ExperimentalHutch&
+ExperimentalHutch::operator=(const ExperimentalHutch& A)
+  /*!
+    Assignment operator
+    \param A :: ExperimentalHutch to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      depth=A.depth;
+      height=A.height;
+      length=A.length;
+      ringWidth=A.ringWidth;
+      outWidth=A.outWidth;
+      innerThick=A.innerThick;
+      pbThick=A.pbThick;
+      outerThick=A.outerThick;
+      floorThick=A.floorThick;
+      holeXStep=A.holeXStep;
+      holeZStep=A.holeZStep;
+      holeRadius=A.holeRadius;
+      voidMat=A.voidMat;
+      skinMat=A.skinMat;
+      pbMat=A.pbMat;
+      floorMat=A.floorMat;
+    }
+  return *this;
+}
 
 ExperimentalHutch::~ExperimentalHutch() 
   /*!
@@ -157,18 +204,18 @@ ExperimentalHutch::createSurfaces()
   ELog::RegMethod RegA("ExperimentalHutch","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,hutIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*outWidth,X);
-  ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*ringWidth,X);
-  ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*height,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
 
-  ModelSupport::buildPlane(SMap,hutIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
 
   // Walls
   double extraThick(0.0);
-  int HI(hutIndex+10);
+  int HI(buildIndex+10);
   for(const double T : {innerThick,pbThick,outerThick})
     {
       extraThick+=T;
@@ -187,7 +234,7 @@ ExperimentalHutch::createSurfaces()
 
   if (holeRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
-      (SMap,hutIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
+      (SMap,buildIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);
   
   return;
 }
@@ -203,37 +250,37 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getSetComposite(SMap,hutIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
   setCell("Void",cellIndex-1);
 
   // walls:
-  int HI(hutIndex);
+  int HI(buildIndex);
 
   std::list<int> matList({skinMat,pbMat,skinMat});
   for(const std::string& layer : {"Inner","Lead","Outer"})
     {
       const int mat=matList.front();
       matList.pop_front();
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -2 -3M 13M 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2 -3M 13M 5 -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
 
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 					"1 -2  4M -14M 5 -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
       
       //back wall
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 					"2M -12M 33 -34 5 -6 ");
       makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out);
 
       //front wall
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 					" 11M -1M  33 -34 5 -6 107 ");
       makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out);
       
       // roof
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 					" 31 -32 33 -34 6M -16M ");
       makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
       HI+=10;
@@ -241,17 +288,17 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   if (holeRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI," 1M -1 -107 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
       makeCell("EnteranceHole",System,cellIndex++,0,0.0,Out);
     }
   
   // floor
-  Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
 				    " 1M -2M 3M -4M 15 -5 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
   
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,hutIndex,HI," 1M -2M 3M -4M 15 -6M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,HI," 1M -2M 3M -4M 15 -6M ");
   addOuterSurf(Out);      
 
   return;
@@ -271,8 +318,8 @@ ExperimentalHutch::createLinks()
   setConnect(0,Origin-Y*extraT,-Y);
   setConnect(1,Origin+Y*(length+extraT),Y);
   
-  setLinkSurf(0,-SMap.realSurf(hutIndex+31));
-  setLinkSurf(1,SMap.realSurf(hutIndex+32));
+  setLinkSurf(0,-SMap.realSurf(buildIndex+31));
+  setLinkSurf(1,SMap.realSurf(buildIndex+32));
 
   
   return;

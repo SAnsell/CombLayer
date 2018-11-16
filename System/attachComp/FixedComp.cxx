@@ -62,9 +62,10 @@
 namespace attachSystem
 {
 
-FixedComp::FixedComp(const std::string& KN,const size_t NL) :
+FixedComp::FixedComp(const std::string& KN,const size_t NL,
+		     const size_t resSize) :
   keyName(KN),
-  buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
+  buildIndex(ModelSupport::objectRegister::Instance().cell(KN,resSize)),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
@@ -380,7 +381,7 @@ FixedComp::reOrientate(const size_t index,
     \param ADir :: axis direction
    */
 {
-  ELog::RegMethod RegA("FixedComp","reorientate");
+  ELog::RegMethod RegA("FixedComp","reOrientate");
   
   if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
@@ -490,6 +491,7 @@ FixedComp::applyAngleRotate(const double xAngle,
   Qx.rotate(X);
   Qx.rotate(Y);
   Qx.rotate(Z);
+
   return;
 }
 
@@ -807,7 +809,23 @@ FixedComp::addLinkComp(const size_t Index,const HeadRule& HR)
   LU[Index].addLinkComp(HR);
   return;
 }
-  
+
+void
+FixedComp::setLinkSurf(const size_t Index,const int SN) 
+  /*!
+    Set  a surface to output
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setLinkSurf(SN);
+  return;
+}
+
 void
 FixedComp::setLinkSurf(const size_t Index,
 		       const std::string& SList) 
@@ -843,6 +861,58 @@ FixedComp::setLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setLinkComp(const size_t Index,const int SN) 
+  /*!
+    Set a surface to output (in complement)
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkComp");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setLinkSurf(-SN);
+  return;
+}
+
+void
+FixedComp::setLinkComp(const size_t Index,
+		       const std::string& SList) 
+  /*!
+    Set a surface to output inc complement
+    \param Index :: Link number
+    \param SList :: String to process
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkComp(string)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  HeadRule SRule(SList);
+  LU[Index].setLinkSurf(SRule.complement());
+  return;
+}
+
+void
+FixedComp::setLinkComp(const size_t Index,
+		       const HeadRule& HR) 
+  /*!
+    Set a surface to output in complement
+    \param Index :: Link number
+    \param HR :: HeadRule to add
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkComp(HR)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].setLinkSurf(HR.complement());
+  return;
+}
+
+
+void
 FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
 		       const bool compFlag,const HeadRule& BR,
 		       const bool bridgeCompFlag) 
@@ -876,21 +946,6 @@ FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
   return;
 }
 
-void
-FixedComp::setLinkSurf(const size_t Index,const int SN) 
-  /*!
-    Set  a surface to output
-    \param Index :: Link number
-    \param SN :: Surface number [inward looking]
-  */
-{
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
-
-  LU[Index].setLinkSurf(SN);
-  return;
-}
 
 
 void
@@ -1279,6 +1334,42 @@ FixedComp::getSideIndex(const std::string& sideName) const
         return 0;
     }
   throw ColErr::InContainerError<std::string>(sideName,"sideName");
+}
+
+bool
+FixedComp::hasSideIndex(const std::string& sideName) const
+  /*!
+    Find the object has a side ined
+    \param sideName :: Name with +/- at front if require to change 
+    \return true if possible
+  */
+{
+  ELog::RegMethod RegA("FixedComp","hasSideIndex");
+
+  if (sideName.empty()) return 0;
+
+  // return numbers:
+  long int linkPt(0);
+  size_t lp;
+  if (StrFunc::convert(sideName,linkPt))
+    {
+      if (!linkPt) return 1;      // Origin true
+      lp=std::abs(linkPt)-1;
+    }
+  else
+    {
+      const std::string partName=
+        (sideName[0]=='+' || sideName[0]=='-' || sideName[0]=='#') ?
+           sideName.substr(1) : sideName;
+
+      std::map<std::string,size_t>::const_iterator mc=
+        keyMap.find(partName);
+      
+      lp= (mc!=keyMap.end()) ?  mc->second : LU.size();      
+      if (partName=="Origin" || partName=="origin")
+        return 1;
+    }
+  return (lp<LU.size()) ? LU[lp].isComplete() : 0;
 }
   
 std::vector<Geometry::Vec3D>
