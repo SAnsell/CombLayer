@@ -1,1 +1,0 @@
-g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibtrex.so -o lib/liblibtrex.so CMakeFiles/libtrex.dir/Model/ESSBeam/trex/TREX.cxx.o CMakeFiles/libtrex.dir/Model/ESSBeam/trex/TREXvariables.cxx.o CMakeFiles/libtrex.dir/Model/ESSBeam/trex/TrexHut.cxx.o 

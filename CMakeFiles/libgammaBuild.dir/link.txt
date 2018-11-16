@@ -1,1 +1,0 @@
-g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibgammaBuild.so -o lib/liblibgammaBuild.so CMakeFiles/libgammaBuild.dir/Model/gammaBuild/NordBall.cxx.o CMakeFiles/libgammaBuild.dir/Model/gammaBuild/gammaVariables.cxx.o CMakeFiles/libgammaBuild.dir/Model/gammaBuild/makeGamma.cxx.o 

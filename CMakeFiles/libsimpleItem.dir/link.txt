@@ -1,1 +1,0 @@
-g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibsimpleItem.so -o lib/liblibsimpleItem.so CMakeFiles/libsimpleItem.dir/Model/ESSBeam/simpleItem/simpleITEM.cxx.o CMakeFiles/libsimpleItem.dir/Model/ESSBeam/simpleItem/simpleITEMvariables.cxx.o 

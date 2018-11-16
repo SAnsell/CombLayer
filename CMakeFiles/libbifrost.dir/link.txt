@@ -1,1 +1,0 @@
-g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibbifrost.so -o lib/liblibbifrost.so CMakeFiles/libbifrost.dir/Model/ESSBeam/bifrost/BIFROST.cxx.o CMakeFiles/libbifrost.dir/Model/ESSBeam/bifrost/BIFROSTvariables.cxx.o CMakeFiles/libbifrost.dir/Model/ESSBeam/bifrost/BifrostHut.cxx.o 

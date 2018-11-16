@@ -1,1 +1,0 @@
-g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,libliblongLoki.so -o lib/libliblongLoki.so CMakeFiles/liblongLoki.dir/Model/ESSBeam/longLoki/longLOKI.cxx.o CMakeFiles/liblongLoki.dir/Model/ESSBeam/longLoki/longLOKIvariables.cxx.o 
