@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibbeer.so -o lib/liblibbeer.so CMakeFiles/libbeer.dir/Model/ESSBeam/beer/BEER.cxx.o CMakeFiles/libbeer.dir/Model/ESSBeam/beer/BEERvariables.cxx.o 

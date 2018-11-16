@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibdream.so -o lib/liblibdream.so CMakeFiles/libdream.dir/Model/ESSBeam/dream/DREAM.cxx.o CMakeFiles/libdream.dir/Model/ESSBeam/dream/DREAMvariables.cxx.o CMakeFiles/libdream.dir/Model/ESSBeam/dream/DreamHut.cxx.o 

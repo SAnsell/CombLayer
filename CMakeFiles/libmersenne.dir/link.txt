@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibmersenne.so -o lib/liblibmersenne.so CMakeFiles/libmersenne.dir/System/mersenne/MersenneTwister.cxx.o 

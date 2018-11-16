@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibskadi.so -o lib/liblibskadi.so CMakeFiles/libskadi.dir/Model/ESSBeam/skadi/SKADI.cxx.o CMakeFiles/libskadi.dir/Model/ESSBeam/skadi/SKADIvariables.cxx.o CMakeFiles/libskadi.dir/Model/ESSBeam/skadi/SkadiHut.cxx.o 

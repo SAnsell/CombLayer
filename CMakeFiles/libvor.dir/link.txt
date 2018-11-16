@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibvor.so -o lib/liblibvor.so CMakeFiles/libvor.dir/Model/ESSBeam/vor/DHut.cxx.o CMakeFiles/libvor.dir/Model/ESSBeam/vor/DetectorTank.cxx.o CMakeFiles/libvor.dir/Model/ESSBeam/vor/VOR.cxx.o CMakeFiles/libvor.dir/Model/ESSBeam/vor/VORvariables.cxx.o 

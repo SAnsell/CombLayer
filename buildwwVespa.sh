@@ -3,19 +3,18 @@
 ./ess \
  -defaultConfig Single VESPA \
  -r \
- -mcnp 10 \
  -matDB shielding \
  -n 1000 \
  -angle objAxis vespaAxis 0 \
  -T tmesh FLUX free 'Vec3D(100, -136, -90.3)' 'Vec3D(1500, 136, 165.7)' 110 17 16 \
  -w -wWWG \
-  --weightEnergyType energy 10 1.0 \
+  --weightEnergyType energy 0.1 0.3 10 0.4 100 0.7 1000 0.9 2000 1 \
   --weightSource 'Vec3D(201.01, 0.0, 13.7)' \
   --weightSource 'Vec3D(1503, 0, 13.7)' \
   --wwgCalc SS0 0.0 1.0 0.9 1.0 1.5 \
   --wwgCalc TS1 0.0 1.0 0.9 1.0 1.5 \
-  --wwgCADIS TS1 \
-  --wwgXMesh 150 120 2000 \
+  --wwgCADIS SS0 TS1 \
+  --wwgXMesh 150 300 6000 \
   --wwgYMesh -198.22 100 201.78 \
   --wwgZMesh -120 100 200 \
   --wwgNorm 1 \

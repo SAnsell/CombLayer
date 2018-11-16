@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibglobal.so -o lib/liblibglobal.so CMakeFiles/libglobal.dir/global/XMLwriteVisitor.cxx.o 

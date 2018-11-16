@@ -1,0 +1,1 @@
+g++ -fPIC -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11 -O2   -shared -Wl,--start-group -Wl,-soname,liblibshortOdin.so -o lib/liblibshortOdin.so CMakeFiles/libshortOdin.dir/Model/ESSBeam/shortOdin/shortODIN.cxx.o CMakeFiles/libshortOdin.dir/Model/ESSBeam/shortOdin/shortODINvariables.cxx.o 
