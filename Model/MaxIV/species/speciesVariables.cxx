@@ -529,21 +529,27 @@ monoVariables(FuncDataBase& Control,
   PipeGen.setBFlange(17.8,1.0);
   PipeGen.generatePipe(Control,monoKey+"OffPipeA",0,3.0);
   Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
-
   
   // ystep/width/height/depth/length
   // 
   MBoxGen.setCF<CF63>();   // set ports
+  MBoxGen.setAFlange(17.8,1.0);
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,42.2,36.45,36.45);
+  //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
+  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
 
-  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.1);   //
-
-  
+ 
   Control.addVariable(monoKey+"MonoVesselNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(7.5);
   PItemGen.setPlate(0.0,"Void");
-  
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlange(17.8,1.0);
+  PipeGen.generatePipe(Control,monoKey+"OffPipeB",0,3.0);
+  Control.addVariable(monoKey+"OffPipeBFlangeBackZStep",-7.0);
+
   return;
 }
 

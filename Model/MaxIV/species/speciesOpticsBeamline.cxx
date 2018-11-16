@@ -135,7 +135,8 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   screenB(new xraySystem::PipeShield(newName+"ScreenB")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
-  monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel"))
+  monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -153,6 +154,8 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(M1Mirror);
   OR.addObject(bellowC);
   OR.addObject(pipeB);
+  OR.addObject(offPipeA);
+  OR.addObject(offPipeB);
 }
   
 speciesOpticsBeamline::~speciesOpticsBeamline()
@@ -355,8 +358,7 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
   screenA->addAllInsertCell(outerCell);
   screenA->setCutSurf("inner",*pipeB,"pipeOuterTop");
   screenA->createAll(System,*pipeB,0);
-  
-  
+    
   return;
 }
 
@@ -453,10 +455,15 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
 
+  ELog::EM<<"Mono == "<<monoVessel->getLinkPt(2)<<ELog::endDiag;
+  ELog::EM<<"Mono == "<<monoVessel->getLinkAxis(2)<<ELog::endDiag;
+  offPipeB->createAll(System,*monoVessel,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
+  offPipeB->insertInCell(System,outerCell);
+
   return;
 }
 
-  
 void
 speciesOpticsBeamline::buildObjects(Simulation& System)
   /*!
@@ -477,7 +484,6 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildSlitPackage(System,masterCellA,*pipeB,2);
   buildMono(System,masterCellA,*pipeD,2);
   lastComp=bellowB;
-
 
   return;
 }

@@ -68,6 +68,10 @@ class TankMonoVessel :
   double portBTubeLength;     ///< Port tube length
   double portBTubeRadius;     ///< Port tube radius
 
+  double flangeAXStep;         ///< Step of flange [offset]
+  double flangeAZStep;         ///< Step of flange [offset]
+  double flangeBXStep;         ///< Step of flange [offset]
+  double flangeBZStep;        ///< Step of flange [offset]
   double flangeARadius;        ///< Joining Flange radius
   double flangeALength;        ///< Joining Flange length
   double flangeBRadius;        ///< Joining Flange radius

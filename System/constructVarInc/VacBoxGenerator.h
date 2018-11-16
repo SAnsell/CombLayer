@@ -83,6 +83,8 @@ class VacBoxGenerator
   void setAPortOffset(const double,const double);
   void setBPortOffset(const double,const double);
   void setFlange(const double,const double);
+  void setAFlange(const double,const double);
+  void setBFlange(const double,const double);
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }
   /// set wall material

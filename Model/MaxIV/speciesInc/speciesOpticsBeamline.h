@@ -121,6 +121,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main mono vessel
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
+  /// Offset pipe leaving MonoTube
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
 
 
   double outerRadius;           ///< Radius for inner void
