@@ -40,8 +40,6 @@ class ZoomHutch : public attachSystem::ContainedComp,
 {
  private:
   
-  const int hutchIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var
   
   ZoomTank tank;                ///< Tank object

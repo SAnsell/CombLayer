@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/Tensor.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,13 +110,10 @@ Tensor<T>::setMem(const ITYPE a,
     return;
   
   deleteMem();
-  if (a<=0 || b<=0 || c<=0)
-    return;
-
   nx=a;
   ny=b;
   nz=c;
-  if (a*b*c)
+  if (a*b*c!=0)
     {
       T* tmpX=new T[a*b*c];
       T** tmpY=new T*[a*b];

@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,8 +83,7 @@ namespace constructSystem
 DiskChopper::DiskChopper(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  chpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(chpIndex+1),centreFlag(0),offsetFlag(0),nDisk(0)
+  centreFlag(0),offsetFlag(0),nDisk(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -93,7 +93,6 @@ DiskChopper::DiskChopper(const std::string& Key) :
 DiskChopper::DiskChopper(const DiskChopper& A) : 
   attachSystem::FixedOffsetGroup(A),
   attachSystem::ContainedComp(A),attachSystem::CellMap(A),
-  chpIndex(A.chpIndex),cellIndex(A.cellIndex),
   centreFlag(A.centreFlag),offsetFlag(A.offsetFlag),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   diskGap(A.diskGap),nDisk(A.nDisk),DInfo(A.DInfo)
@@ -116,7 +115,6 @@ DiskChopper::operator=(const DiskChopper& A)
       attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       centreFlag=A.centreFlag;
       offsetFlag=A.offsetFlag;
       innerRadius=A.innerRadius;
@@ -263,9 +261,9 @@ DiskChopper::createSurfaces()
 {
   ELog::RegMethod RegA("DiskChopper","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,chpIndex+7,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,chpIndex+17,Origin,Y,outerRadius);
-  int CI(chpIndex);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
+  int CI(buildIndex);
   Geometry::Vec3D DCent(Origin);
 
   for(const DiskBlades& DRef : DInfo)
@@ -302,33 +300,33 @@ DiskChopper::createObjects(Simulation& System)
   ELog::RegMethod RegA("DiskChopper","createObjects");
 
   std::string Out;
-  int CI(chpIndex);
+  int CI(buildIndex);
   for(const DiskBlades& DRef : DInfo)
     {
       // Gap if there is previous item
-      if (CI!=chpIndex)
+      if (CI!=buildIndex)
 	{
           // Inner :
-	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"12M -511M -7");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"12M -511M -7");
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Inner",cellIndex-1);
 	  
           // Outer
-	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"2M -501M 7 -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"2M -501M 7 -17");
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Outer",cellIndex-1);
 	}
       
       // inner layer
-      Out=ModelSupport::getComposite(SMap,chpIndex,CI,"11M -12M -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.getInnerMat(),
+      Out=ModelSupport::getComposite(SMap,buildIndex,CI,"11M -12M -7");
+      System.addCell(MonteCarlo::Object(cellIndex++,DRef.getInnerMat(),
                                        0.0,Out));
       addCell("Inner",cellIndex-1);
 
       // Chopper opening
       const size_t NPhase=DRef.getNPhase();
       const std::string Main=
-	ModelSupport::getComposite(SMap,chpIndex,CI,"1M -2M  7 -17");
+	ModelSupport::getComposite(SMap,buildIndex,CI,"1M -2M  7 -17");
       
       int PI(CI);       // current 
       int PN(CI+10);    // next
@@ -343,7 +341,7 @@ DiskChopper::createObjects(Simulation& System)
 	    Out=ModelSupport::getComposite(SMap,PI," 3 -4 ");
 	  else
 	    Out=ModelSupport::getComposite(SMap,PI," (3 : -4) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Main));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Main));
 	  addCell("Outer",cellIndex-1);
 		  
 	  // CLOSING
@@ -353,7 +351,7 @@ DiskChopper::createObjects(Simulation& System)
 	    Out=ModelSupport::getComposite(SMap,PI,PN," 4 -3M ");
 	  else
 	    Out=ModelSupport::getComposite(SMap,PI,PN," (4 : -3M) ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,DRef.getOuterMat(),0.0,Out+Main));
 	  addCell("Outer",cellIndex-1);
 	  PI+=10;
@@ -362,11 +360,11 @@ DiskChopper::createObjects(Simulation& System)
 
       if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
         {
-          Out=ModelSupport::getComposite(SMap,chpIndex,"11 -1 7 -17");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+          Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 7 -17");
+          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Outer",cellIndex-1);
-          Out=ModelSupport::getComposite(SMap,chpIndex,"2 -12 7 -17");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+          Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 7 -17");
+          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Outer",cellIndex-1);
         }
 
@@ -374,7 +372,7 @@ DiskChopper::createObjects(Simulation& System)
     }
 
   
-  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"11 -17 -12M");
+  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"11 -17 -12M");
   addOuterSurf(Out);      
 
   return;
@@ -393,9 +391,9 @@ DiskChopper::createLinks()
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
   mainFC.setConnect(0,Origin,-Y);
-  mainFC.setLinkSurf(0,-SMap.realSurf(chpIndex+1));
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
-  const int CLast(chpIndex+static_cast<int>(nDisk-1)*500);
+  const int CLast(buildIndex+static_cast<int>(nDisk-1)*500);
   double L(-diskGap);  // one less gap !
   for(const DiskBlades& DRef : DInfo)
     L+=DRef.getThick()+diskGap;
@@ -404,20 +402,20 @@ DiskChopper::createLinks()
   mainFC.setLinkSurf(1,SMap.realSurf(CLast+2));
   
   mainFC.setConnect(2,Origin+Y*(L/2.0)-X*outerRadius,-X);
-  mainFC.setLinkSurf(2,SMap.realSurf(chpIndex+17));
+  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+17));
 
   mainFC.setConnect(3,Origin+Y*(L/2.0)-Z*outerRadius,-Z);
-  mainFC.setLinkSurf(3,SMap.realSurf(chpIndex+17));
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+17));
 
   mainFC.setConnect(4,Origin+Y*(L/2.0)+Z*outerRadius,Z);
-  mainFC.setLinkSurf(4,SMap.realSurf(chpIndex+17));
+  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+17));
 
   mainFC.setConnect(5,Origin+Y*(L/2.0)+X*outerRadius,X);
-  mainFC.setLinkSurf(5,SMap.realSurf(chpIndex+17));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+17));
 
   // MAIN BEAM:
   beamFC.setConnect(0,beamOrigin,-beamAxis);
-  beamFC.setLinkSurf(0,-SMap.realSurf(chpIndex+1));
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   beamFC.setConnect(1,beamOrigin+Y*L,beamAxis);
   beamFC.setLinkSurf(1,SMap.realSurf(CLast+2));

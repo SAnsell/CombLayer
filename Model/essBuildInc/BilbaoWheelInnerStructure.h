@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BilbaoWheelInnerStructure.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@ class BilbaoWheelInnerStructure :
 {
  private:
   
-  const int insIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   // Can't rotate the wheel by itself since ProtonTube uses its coordinate system (\todo fix it)
   double xyAngle;                ///< xy angle (mainly used to place the sector with bricks in the correct place). 

@@ -40,8 +40,6 @@ class Groove : public attachSystem::ContainedComp,
 {
  private:
   
-  const int gveIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   double width;             ///< Total Width

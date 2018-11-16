@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -69,7 +70,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -80,7 +80,7 @@ namespace xraySystem
 {
 
 SqrCollimator::SqrCollimator(const std::string& Key) :
-  attachSystem::ContainedSpace(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
@@ -89,7 +89,7 @@ SqrCollimator::SqrCollimator(const std::string& Key) :
 {}
   
 SqrCollimator::SqrCollimator(const SqrCollimator& A) : 
-  attachSystem::ContainedSpace(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   radius(A.radius),length(A.length),innerAWidth(A.innerAWidth),
   innerAHeight(A.innerAHeight),minLength(A.minLength),
@@ -112,7 +112,7 @@ SqrCollimator::operator=(const SqrCollimator& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);

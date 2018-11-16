@@ -40,8 +40,6 @@ class ProtonVoid : public attachSystem::ContainedComp,
 {
  private:
   
-  const int pvIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int protonVoidCell;           ///< Inner void cell
 
   double viewRadius;            ///< Radius of proton tube

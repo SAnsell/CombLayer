@@ -41,7 +41,6 @@ class DecLayer : public Decoupled
 
   std::string lkeyName;                ///< This key
   int layerIndex;                     ///< Include index;
-  int cellIndex;                      ///< Cell index;
   
   std::vector<double> lThick;         ///< Thickness
   std::vector<int> lMat;              ///< Material

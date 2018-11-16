@@ -2,6 +2,7 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <set>
 #include <limits>
 
 #include "Exception.h"
@@ -47,7 +48,7 @@ groupRange::groupRange(const std::vector<int>& AVec)
 }
 
 groupRange::groupRange(const int LV,const int HV) :
-  LowUnit(std::min(LV,HV)),HighUnit(std::max(LV,HV))
+  LowUnit({std::min(LV,HV)}),HighUnit({std::max(LV,HV)})
   /*!
     Constructor
     \param LV :: Low values [not check]
@@ -79,6 +80,37 @@ groupRange::operator=(const groupRange& A)
   return *this;
 }
 
+
+bool
+groupRange::operator==(const groupRange& A) const
+  /*!
+    Equality operator
+    \param A :: groupRange to check
+    \return true if A==this
+  */
+{
+  if (this==&A) return 1;
+  if (LowUnit.size()!=A.LowUnit.size()) return 0;
+
+  for(size_t i=0;i<LowUnit.size();i++)
+    if (LowUnit[i]!=A.LowUnit[i] ||
+	HighUnit[i]!=A.HighUnit[i])
+      return 0;
+
+  return 1;
+}
+
+bool
+groupRange::operator!=(const groupRange& A) const
+  /*!
+    Inequality operator
+    \param A :: groupRange to check
+    \return true if A!=this
+  */
+{
+  return !(this->operator==(A));
+}
+
 size_t
 groupRange::validIndex(const int V) const
   /*!
@@ -104,17 +136,18 @@ groupRange::valueIndex(const int V) const
 {
   if (!LowUnit.empty())
     {
+      // this is next AFTER value of low
       std::vector<int>::const_iterator 
 	xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
       if (xV!=LowUnit.end())
 	{
-	  if (V >= *xV)
-	    {
-	      const size_t index=
-		static_cast<size_t>(distance(LowUnit.cbegin(),xV));
-	      if (V <= HighUnit[index])
-		return index;
-	    }
+	  if (V<*xV && xV!=LowUnit.begin())
+	    xV--;
+	  
+	  const size_t index=
+	    static_cast<size_t>(distance(LowUnit.cbegin(),xV));
+	  if (V>=*xV && V <= HighUnit[index])
+	    return index;
 	}
       else if ( V<=HighUnit.back())
 	return HighUnit.size()-1;
@@ -130,9 +163,18 @@ groupRange::valid(const int V) const
     \return true if within range
    */
 {
+  if (LowUnit.empty()) return 0;
+  
   std::vector<int>::const_iterator 
     xV=lower_bound(LowUnit.begin(),LowUnit.end(),V);
-  if (xV==LowUnit.end() ||  V < *xV) return 0;
+
+  if (xV==LowUnit.end())
+    return (V>HighUnit.back()) ? 0 : 1;
+  if (V==*xV) return 1;
+  if (xV!=LowUnit.begin())
+    xV--;
+  
+  if (V < *xV) return 0;
   const size_t index=static_cast<size_t>(distance(LowUnit.begin(),xV));
   return  (V > HighUnit[index] ) ? 0 : 1;
 }
@@ -157,9 +199,10 @@ groupRange::merge()
     {
       const int LV(LowUnit[index]);
       const int HV(HighUnit[index]);
+      
       if (LV<=hOut.back()+1 && HV>hOut.back())
 	hOut.back()=HV;
-      else 
+      else if (LV>hOut.back()+1) 
 	{
 	  lOut.push_back(LV);
 	  hOut.push_back(HV);
@@ -241,6 +284,20 @@ groupRange::combine(const groupRange& A)
 }
 
 void
+groupRange::setItems(const std::set<int>& AVec)
+  /*!
+    Set the system to be a vector
+    \param AVec :: Unordered vector
+  */
+{
+  LowUnit.clear();
+  HighUnit.clear();
+  for(const int I : AVec)
+    addItem(I);
+  return;
+}
+
+void
 groupRange::setItems(const std::vector<int>& AVec)
   /*!
     Set the system to be a vector
@@ -277,6 +334,7 @@ groupRange::addItem(const int A)
 
   const size_t indexM=valueIndex(A-1);
   const size_t indexP=valueIndex(A+1);
+    
   // special case exactly between two units
   if (indexP<LowUnit.size() && indexM<LowUnit.size())
     {
@@ -307,6 +365,24 @@ groupRange::addItem(const int A)
   HighUnit.insert(HighUnit.begin()+offset,A);
   return;
 }
+
+void
+groupRange::addItem(const int lowV,const int highV)
+  /*!
+    Add range stream
+    \param lowV :: low value
+    \param highV :: high value [inclusive]
+  */
+{
+  const int LV(std::min<int>(lowV,highV));
+  const int HV(std::max<int>(lowV,highV));
+
+  groupRange A(LV,HV);
+  combine(A);
+
+  return;
+}
+
 
 void
 groupRange::removeItem(const int A)
@@ -344,6 +420,7 @@ groupRange::removeItem(const int A)
   HighUnit[index]=A-1;
   LowUnit.insert(LowUnit.begin(),A+1);
   HighUnit.insert(HighUnit.begin(),HL);
+  pairSort(LowUnit,HighUnit);
   return;
 }
 

@@ -61,7 +61,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -77,8 +78,7 @@ namespace hutchSystem
 
 ColBox::ColBox(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,7 +87,6 @@ ColBox::ColBox(const std::string& Key)  :
 
 ColBox::ColBox(const ColBox& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),
   populated(A.populated),insertCell(A.insertCell),
   XAxis(A.XAxis),YAxis(A.YAxis),ZAxis(A.ZAxis),
   Centre(A.Centre),xStep(A.xStep),fStep(A.fStep),
@@ -115,7 +114,6 @@ ColBox::operator=(const ColBox& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       insertCell=A.insertCell;
       XAxis=A.XAxis;
@@ -160,8 +158,8 @@ ColBox::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   fStep=Control.EvalVar<double>(keyName+"FStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -225,31 +223,31 @@ ColBox::createSurfaces()
   ELog::RegMethod RegA("ColBox","createSurface");
   // Back
 
-  ModelSupport::buildPlane(SMap,colIndex+1,Origin,YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+2,Origin+YAxis*depth,YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+3,Origin-XAxis*(width/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+4,Origin+XAxis*(width/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+5,Origin-ZAxis*(depth/2.0),ZAxis);
-  ModelSupport::buildPlane(SMap,colIndex+6,Origin+ZAxis*(depth/2.0),ZAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,YAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+YAxis*depth,YAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-XAxis*(width/2.0),XAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+XAxis*(width/2.0),XAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-ZAxis*(depth/2.0),ZAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+ZAxis*(depth/2.0),ZAxis);
 
   // Front / Roof and Back planes
-  ModelSupport::buildPlane(SMap,colIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin+YAxis*backThick,YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+YAxis*(depth-frontThick),YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-ZAxis*(depth/2.0-floorThick),ZAxis);
-  ModelSupport::buildPlane(SMap,colIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+ZAxis*(depth/2.0-roofThick),ZAxis);
 
   // View Ports:
-  ModelSupport::buildPlane(SMap,colIndex+103,
+  ModelSupport::buildPlane(SMap,buildIndex+103,
 			   Origin-XAxis*(viewX/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+104,
+  ModelSupport::buildPlane(SMap,buildIndex+104,
 			   Origin+XAxis*(viewX/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+105,
+  ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-ZAxis*(viewZ/2.0),ZAxis);
-  ModelSupport::buildPlane(SMap,colIndex+106,
+  ModelSupport::buildPlane(SMap,buildIndex+106,
 			   Origin-ZAxis*(viewZ/2.0),ZAxis);
   
 
@@ -267,12 +265,12 @@ ColBox::createObjects(Simulation& System)
 
   std::string Out;
   // LEFT box: [virtual]  
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
   
   // Front plate
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -11 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,outMat,0.0,Out));
   
   
   return;
@@ -306,12 +304,12 @@ ColBox::exitWindow(const double Dist,
   ELog::RegMethod RegA("ColBox","exitWindow");
 
   window.clear();
-  window.push_back(SMap.realSurf(colIndex+3));
-  window.push_back(SMap.realSurf(colIndex+4));
-  window.push_back(SMap.realSurf(colIndex+5));
-  window.push_back(SMap.realSurf(colIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+YAxis*(depth+Dist);  
-  return SMap.realSurf(colIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
 
 void

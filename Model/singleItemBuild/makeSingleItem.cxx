@@ -58,6 +58,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -66,7 +68,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "LayerComp.h"
@@ -120,11 +121,11 @@ makeSingleItem::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeSingleItem","build");
 
-  int voidCell(74123);
+ ModelSupport::objectRegister& OR=
+   ModelSupport::objectRegister::Instance();
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
+ int voidCell(74123);
+
   std::shared_ptr<insertSystem::insertSphere> 
     Target(new insertSystem::insertSphere("Target"));
   std::shared_ptr<insertSystem::insertShell>
@@ -132,10 +133,17 @@ makeSingleItem::build(Simulation& System,
   std::shared_ptr<insertSystem::insertPlate>
     Tube(new insertSystem::insertPlate("Tube"));
 
-	    
   OR.addObject(Target);
   OR.addObject(Tube);
   OR.addObject(Surround);
+
+  Tube->addInsertCell(voidCell);
+  Tube->createAll(System,World::masterOrigin(),0);
+  
+  
+  return;
+  
+	    
 	  
   Target->addInsertCell(voidCell);
   Target->createAll(System,World::masterOrigin(),0);

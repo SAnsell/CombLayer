@@ -3,7 +3,7 @@
  
  * File:   delft/BeamInsert.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,7 +61,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,9 +78,7 @@ namespace delftSystem
 {
 
 BeamInsert::BeamInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
-  insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(insertIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +87,6 @@ BeamInsert::BeamInsert(const std::string& Key)  :
 
 BeamInsert::BeamInsert(const BeamInsert& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  insertIndex(A.insertIndex),cellIndex(A.cellIndex),
   length(A.length),radius(A.radius),
   nSlots(A.nSlots),Holes(A.Holes),
   mat(A.mat)
@@ -111,7 +108,6 @@ BeamInsert::operator=(const BeamInsert& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       radius=A.radius;
       nSlots=A.nSlots;
@@ -155,7 +151,7 @@ BeamInsert::populate(const FuncDataBase& Control)
     {
       Holes.push_back(std::shared_ptr<beamSlot>
 		      (new beamSlot(BIStr+"Slot",static_cast<int>(i+1))));
-      OR.addObject(StrFunc::makeString(BIStr+"Slot",i+1),Holes.back());
+      OR.addObject(BIStr+"Slot"+std::to_string(i+1),Holes.back());
     }
   
   return;
@@ -187,9 +183,9 @@ BeamInsert::createSurfaces()
   ELog::RegMethod RegA("BeamInsert","createSurfaces");
 
   // Outer layers
-  ModelSupport::buildPlane(SMap,insertIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,insertIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildCylinder(SMap,insertIndex+7,
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,radius);
 
   return;
@@ -205,9 +201,9 @@ BeamInsert::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeamInsert","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   addOuterSurf(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   
   return;
 }
@@ -225,9 +221,9 @@ BeamInsert::createLinks()
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setConnect(2,Origin+X*radius,X);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(insertIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(insertIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(insertIndex+7));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
 
   return;
 }

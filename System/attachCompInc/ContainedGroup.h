@@ -48,7 +48,7 @@ class ContainedGroup
  private:
 
   /// Map storage
-  typedef std::map<std::string,ContainedSpace> CTYPE;
+  typedef std::map<std::string,ContainedComp> CTYPE;
   /// Named Container
   CTYPE CMap;
 
@@ -94,6 +94,8 @@ class ContainedGroup
 
   void addAllInsertCell(const int);
   void addAllInsertCell(const ContainedComp&);
+  void addAllInsertCell(const std::vector<int>&);
+
   void addInsertCell(const std::string&,const int);
   void addInsertCell(const std::string&,const std::vector<int>&);
   void addInsertCell(const std::string&,const ContainedComp&);
@@ -103,22 +105,19 @@ class ContainedGroup
 
 
   void insertObjects(Simulation&);
+
+  virtual void insertAllInCell(Simulation&,const int);
+  
   void insertInCell(const std::string&,Simulation&,const int);
   void insertInCell(const std::string&,Simulation&,const std::vector<int>&);
 
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 
   bool hasKey(const std::string&) const;
-  ContainedSpace& addCC(const std::string&);
-  ContainedSpace& getCC(const std::string&);
-  const ContainedSpace& getCC(const std::string&) const;
+  ContainedComp& addCC(const std::string&);
+  ContainedComp& getCC(const std::string&);
+  const ContainedComp& getCC(const std::string&) const;
 
-  void clearSpace(const std::string&);
-  void setPrimaryCell(const std::string&,const int);
-  void registerSpaceCut(const std::string&,
-			const long int,const long int);
-  void registerSpaceIsolation(const std::string&,
-			      const long int,const long int);
 };
 
 }

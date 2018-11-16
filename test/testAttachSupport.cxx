@@ -54,7 +54,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
@@ -63,6 +62,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "simpleObj.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "World.h"
@@ -100,8 +101,8 @@ testAttachSupport::initSim()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   // Work Sphere :
   SurI.createSurface(100,"so 500");
-  ASim.addCell(MonteCarlo::Qhull(1,0,0.0,"100"));  // Outside void 
-  ASim.addCell(MonteCarlo::Qhull(5001,0,0.0,"-100"));  // Inside void 
+  ASim.addCell(MonteCarlo::Object(1,0,0.0,"100"));  // Outside void 
+  ASim.addCell(MonteCarlo::Object(5001,0,0.0,"-100"));  // Inside void 
   return;
 }
 

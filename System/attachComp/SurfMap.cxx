@@ -85,22 +85,22 @@ SurfMap::operator=(const SurfMap& A)
 }
 
 int
-SurfMap::getSignedSurf(const std::string& K,const long int Index) const
+SurfMap::getSignedSurf(const std::string& Key,
+		       const size_t Index) const
   /*!
     Get the rule based on a surface
-    \param K :: Keyname
-    \param Index :: Offset number [signed]
+    \param Key :: Keyname
+    \param Index :: Offset number
     \return Signed surface map
    */
 {
   ELog::RegMethod RegA("SurfMap","getSignedSurf");
 
-  if (!Index)
-    return BaseMap::getItem(K);
-  else if (Index>0)
-    return BaseMap::getItem(K,static_cast<size_t>(Index-1));
-  else
-    return -BaseMap::getItem(K,static_cast<size_t>(-Index-1));
+  if (Key.empty()) return 0;
+
+  return (Key[0]=='-' || Key[0]=='#' || 
+	  Key[0]=='*' || Key[0]=='%') ?
+    -getItem(Key.substr(1),Index) : getItem(Key,Index);
 }
   
 HeadRule
@@ -116,10 +116,13 @@ SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
 
   HeadRule Out;
 
-  const int sn=(!Key.empty() && Key[0]=='-') ?
-    -getItem(Key.substr(1),Index) : getItem(Key,Index);
-
-  Out.addIntersection(sn);  
+  if (!Key.empty())
+    {
+      const int sn=(Key[0]=='-' || Key[0]=='#' || Key[0]=='*') ?
+	-getItem(Key.substr(1),Index) : getItem(Key,Index);
+      
+      Out.addIntersection(sn);
+    }
   return Out;
 }
 
@@ -202,8 +205,8 @@ HeadRule
 SurfMap::combine(const std::set<std::string>& KeySet) const
   /*!
     Add the rules as intesection
-    \param KeySet :: Keynames
-    \return HeadRule
+    \param KeySet :: Keynames of surfaces
+    \return HeadRule [form: s1 s2 s3 ]
    */
 {
   ELog::RegMethod RegA("SurfMap","combine"); 

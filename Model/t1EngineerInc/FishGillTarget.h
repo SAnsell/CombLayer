@@ -44,7 +44,6 @@ class FishGillTarget :
 {
  private:
 
-  const int tIndex;                                  ///< Base number
   std::shared_ptr<BulletPlates> PlateTarObj;          ///< Plate Target
   std::shared_ptr<FishGillVessel> PressVObj;            ///< Pressure vessel
   std::vector<std::shared_ptr<BulletDivider> > DObj;  ///< Internal dividers

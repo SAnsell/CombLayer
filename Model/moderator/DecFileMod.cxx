@@ -3,7 +3,7 @@
  
  * File:   moderator/DecFileMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,8 @@
 #include "Vertex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -82,9 +83,7 @@ namespace moderatorSystem
 {
 
 DecFileMod::DecFileMod(const std::string& Key)  :
-  Decoupled(Key),
-  incIndex(ModelSupport::objectRegister::Instance().cell(Key+"IncFile")),
-  cellIndex(incIndex+1),RBase(3,3)
+  Decoupled(Key),RBase(3,3)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for base decoupled object
@@ -94,7 +93,7 @@ DecFileMod::DecFileMod(const std::string& Key)  :
 
 DecFileMod::DecFileMod(const DecFileMod& A) : 
   Decoupled(A),
-  incIndex(A.incIndex),cellIndex(A.cellIndex),RBase(A.RBase)
+  RBase(A.RBase)
   /*!
     Copy constructor
     \param A :: DecFileMod to copy
@@ -112,8 +111,6 @@ DecFileMod::operator=(const DecFileMod& A)
   if (this!=&A)
     {
       Decoupled::operator=(A);
-      incIndex=A.incIndex;
-      cellIndex=A.cellIndex;
       RBase=A.RBase;
     }
   return *this;
@@ -189,7 +186,7 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
     return -2;
   cellIndex+=cellCnt;
   
-  const int surfCnt=ReadFunc::readSurfaces(DB,IX,incIndex);
+  const int surfCnt=ReadFunc::readSurfaces(DB,IX,buildIndex);
   ELog::EM<<"Read "<<surfCnt<<" extra surfaces for "<<keyName<<ELog::endDebug;
  
   // REBASE and recentre
@@ -200,7 +197,7 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
   ModelSupport::surfIndex::STYPE::const_iterator sc;
   for(sc=SMap.begin();sc!=SMap.end();sc++)
     {
-      if (sc->first>incIndex && sc->first<incIndex+10000)
+      if (sc->first>buildIndex && sc->first<buildIndex+10000)
 	{
 	  sc->second->rotate(RBase);
 	  sc->second->displace(Origin);
@@ -211,7 +208,7 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
   // RE-ADJUST 
   System.setMaterialDensity(OMap);
   std::map<int,Geometry::Surface*> EQMap;
-  if (SI.findEqualSurf(incIndex,incIndex+10000,EQMap))
+  if (SI.findEqualSurf(buildIndex,buildIndex+10000,EQMap))
     ModelSupport::ObjSurfMap::removeEqualSurf(EQMap,OMap);
 
   ReadFunc::OTYPE& SysOMap=System.getCells();
@@ -224,7 +221,7 @@ void
 DecFileMod::reMapSurf(ReadFunc::OTYPE& ObjMap) const
   /*!
     Given a set of Objects, remap the surfaces so they are 
-    displaced by incIndex.
+    displaced by buildIndex.
     \param ObjMap :: Map of objects
   */
 {
@@ -234,7 +231,7 @@ DecFileMod::reMapSurf(ReadFunc::OTYPE& ObjMap) const
   for(mc=ObjMap.begin();mc!=ObjMap.end();mc++)
     {
       std::string cellStr=mc->second->cellCompStr();
-      cellStr=ModelSupport::getComposite(SMap,incIndex,cellStr);
+      cellStr=ModelSupport::getComposite(SMap,buildIndex,cellStr);
       mc->second->procString(cellStr);
     }
   return;
@@ -264,4 +261,4 @@ DecFileMod::createAllFromFile(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE moderatorSystem

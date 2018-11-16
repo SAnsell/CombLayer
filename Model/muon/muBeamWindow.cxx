@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -77,9 +77,7 @@ namespace muSystem
 {
 
 muBeamWindow::muBeamWindow(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,4),attachSystem::ContainedComp(),
-  bwinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bwinIndex+1)
+  attachSystem::FixedComp(Key,4),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -89,7 +87,6 @@ muBeamWindow::muBeamWindow(const std::string& Key)  :
 
 muBeamWindow::muBeamWindow(const muBeamWindow& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  bwinIndex(A.bwinIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
   flCylOutRadius(A.flCylOutRadius),flCylInRadius(A.flCylInRadius),
@@ -122,7 +119,6 @@ muBeamWindow::operator=(const muBeamWindow& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -263,50 +259,50 @@ muBeamWindow::createSurfaces()
 
   //  
   //  flange cylinder
-  ModelSupport::buildPlane(SMap,bwinIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,bwinIndex+2,Origin+Y*flCylThick,Y);
-  ModelSupport::buildCylinder(SMap,bwinIndex+7,Origin,Y,flCylOutRadius);
-  ModelSupport::buildCylinder(SMap,bwinIndex+8,Origin,Y,flCylInRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*flCylThick,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flCylOutRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,flCylInRadius);
      // window
-  ModelSupport::buildPlane(SMap,bwinIndex+11,Origin+Y*(flCylThick-windowThick),Y);     
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(flCylThick-windowThick),Y);     
      // small cylinder - cone         
-  ModelSupport::buildPlane(SMap,bwinIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin+Y*(flCylThick+smCylThick),Y);
-  ModelSupport::buildCylinder(SMap,bwinIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin+Y*flCylThick,Y,smCylOutRadius);  
-  ModelSupport::buildCone(SMap,bwinIndex+28,
+  ModelSupport::buildCone(SMap,buildIndex+28,
 			  Origin+Y*(flCylThick-offsetCsm),Y,angleCsm);   
      // big cone         
-  ModelSupport::buildPlane(SMap,bwinIndex+31,
+  ModelSupport::buildPlane(SMap,buildIndex+31,
 			   Origin+Y*(flCylThick+smCylThick+bgOutLengthCone),Y);
-  ModelSupport::buildCone(SMap,bwinIndex+37,
+  ModelSupport::buildCone(SMap,buildIndex+37,
 			  Origin+Y*(flCylThick+smCylThick-offsetbgOut),
 			  Y,anglebgOut); 
 
-  ModelSupport::buildCone(SMap,bwinIndex+38,
+  ModelSupport::buildCone(SMap,buildIndex+38,
 			  Origin+Y*(flCylThick+smCylThick-offsetbgIn),
 			  Y,anglebgIn);   
      // end cone         
-  ModelSupport::buildPlane(SMap,bwinIndex+41,
+  ModelSupport::buildPlane(SMap,buildIndex+41,
 			   Origin+Y*(flCylThick+smCylThick+
 				     bgOutLengthCone+endLength),Y);
-  ModelSupport::buildCylinder(SMap,bwinIndex+47,
+  ModelSupport::buildCylinder(SMap,buildIndex+47,
 			      Origin+Y*(flCylThick+smCylThick+bgOutLengthCone),
 			      Y,endRadCyl);  
 
-  ModelSupport::buildCone(SMap,bwinIndex+48,
+  ModelSupport::buildCone(SMap,buildIndex+48,
 			  Origin+Y*(flCylThick+smCylThick+
 				    bgOutLengthCone-offsetEnd),Y,angleEnd);   
   //  big cylinder
-  ModelSupport::buildPlane(SMap,bwinIndex+51,
+  ModelSupport::buildPlane(SMap,buildIndex+51,
 			   Origin+Y*(flCylThick+smCylThick+
 				     bgOutLengthCone+endLength+bigCylThick),Y);
-  ModelSupport::buildCylinder(SMap,bwinIndex+57,
+  ModelSupport::buildCylinder(SMap,buildIndex+57,
 			      Origin+Y*(flCylThick+smCylThick+
 					bgOutLengthCone+endLength),
 			      Y,bigCylOutRadius);
 
-  ModelSupport::buildCylinder(SMap,bwinIndex+58,
+  ModelSupport::buildCylinder(SMap,buildIndex+58,
 			      Origin+Y*(flCylThick+smCylThick+
 					bgOutLengthCone+endLength),
 			      Y,bigCylInRadius);
@@ -326,59 +322,59 @@ muBeamWindow::createObjects(Simulation& System)
   std::string Out;
 
      // flange cylinder
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out+=ModelSupport::getComposite(SMap,bwinIndex,"8 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"8 ");  
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
      // window
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"11 -2 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -2 -8 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
 
     // front void
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"1 -11 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 -8 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
      // small cylinder - cone  
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"2 -21 -27 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -21 -27 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,bwinIndex,"28 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"28 ");  
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"2 -21 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -21 -28 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
      // big cone  
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"21 -31 -37 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -31 -37 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,bwinIndex,"38 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"38 ");  
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"21 -31 -38 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));    
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -31 -38 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));    
   
      // end cylinder - cone  
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"31 -41 -47 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -41 -47 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,bwinIndex,"48 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"48 ");  
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"31 -41 -48 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -41 -48 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
       // big cylinder
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"41 -51 -57 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -51 -57 ");
   addOuterUnionSurf(Out);
   addBoundaryUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,bwinIndex,"58 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,vessMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"58 ");  
+  System.addCell(MonteCarlo::Object(cellIndex++,vessMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,bwinIndex,"41 -51 -58 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out)); 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"41 -51 -58 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out)); 
     
   return;
 }
@@ -400,10 +396,10 @@ muBeamWindow::createLinks()
   FixedComp::setConnect(2,Origin+Y*length/2.0-Z*flCylOutRadius,-Z);
   FixedComp::setConnect(3,Origin+Y*length/2.0+Z*flCylOutRadius,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(bwinIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(bwinIndex+51));  
-  FixedComp::setLinkSurf(2,SMap.realSurf(bwinIndex+7));  
-  FixedComp::setLinkSurf(3,SMap.realSurf(bwinIndex+7));  
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+51));  
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));  
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));  
 
   return;
 }

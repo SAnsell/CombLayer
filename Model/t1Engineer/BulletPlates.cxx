@@ -3,7 +3,7 @@
  
  * File:   t1Build/BulletPlates.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace ts1System
 {
 
 BulletPlates::BulletPlates(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -155,12 +154,12 @@ BulletPlates::createSurfaces()
   ELog::RegMethod RegA("BulletPlates","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildCylinder(SMap,ptIndex+7,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,ptIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Y,radius+taThick);
   Geometry::Vec3D FPt(Origin);
-  int SI(ptIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nBlock;i++)
     {
       if (blockType[i]=="Tungsten")
@@ -199,33 +198,33 @@ BulletPlates::createObjects(Simulation& System)
 
   std::string Out;
   
-  int SI(ptIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nBlock;i++)
     {
       if (blockType[i]=="Tungsten")
 	{
-	  Out=ModelSupport::getComposite(SMap,ptIndex,SI,"1M -11M -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -11M -17");
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,ptIndex,SI,"11M -12M -7");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"11M -12M -7");
+	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,ptIndex,SI,"11M -12M 7 -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"11M -12M 7 -17");
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,ptIndex,SI,"12M -2M -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"12M -2M -17");
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 	}
       else if (blockType[i]=="Water")
 	{
-	  Out=ModelSupport::getComposite(SMap,ptIndex,SI,"1M -2M -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -2M -17");
+	  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 	}
       SI+=100;
     }
 
   SI-=100;
-  Out=ModelSupport::getComposite(SMap,ptIndex,SI,"1 -17 -2M");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1 -17 -2M");
   addOuterSurf(Out);
   
   return;
@@ -249,13 +248,13 @@ BulletPlates::createLinks()
   FixedComp::setConnect(5,Origin+Z*(radius+taThick),Z);
 
   // Set Connect surfaces:
-  const int SI(ptIndex+static_cast<int>(nBlock-1)*100);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
+  const int SI(buildIndex+static_cast<int>(nBlock-1)*100);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(ptIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+17));
-  FixedComp::setLinkSurf(4,SMap.realSurf(ptIndex+17));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
 
   return;
 }

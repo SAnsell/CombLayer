@@ -40,8 +40,6 @@ class coneColl : public attachSystem::FixedComp,
 {
  private:
   
-  const int coneIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step

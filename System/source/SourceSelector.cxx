@@ -72,7 +72,8 @@
 #include "PhysImp.h"
 #include "PhysicsCards.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -80,9 +81,8 @@
 #include "DBMaterial.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "objectRegister.h"
+#include "vertexCalc.h"
 #include "particleConv.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
@@ -122,17 +122,18 @@ getCellsContainingZaid(Simulation& System,
   std::vector<Geometry::Vec3D> FissionVec;
   for(const int CN : fuelCells)
     {
-      MonteCarlo::Qhull* OPtr=System.findQhull(CN);
+      MonteCarlo::Object* OPtr=System.findObject(CN);
       if (OPtr)
 	{
 	  const int matN=OPtr->getMat();
 	  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
-	  if (cellMat.hasZaid(zaid,0,0) && 
-	      OPtr->calcVertex())
+	  
+	  if (cellMat.hasZaid(zaid,0,0))
 	    {
-	      const Geometry::Vec3D& CPt(OPtr->getCofM());
-	      if (OPtr->isValid(CPt))
-		FissionVec.push_back(CPt);
+	      const Geometry::Vec3D CofM=
+		ModelSupport::calcCOFM(*OPtr);
+	      if (OPtr->isValid(CofM))
+		FissionVec.push_back(CofM);
 	    }
 	}
     }
@@ -153,9 +154,6 @@ sourceSelection(Simulation& System,
 
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
   const std::string DSnd=IParam.getDefValue<std::string>("","sdefObj",1);
   const std::string Dist=IParam.getDefValue<std::string>("","sdefObj",2);
@@ -168,7 +166,7 @@ sourceSelection(Simulation& System,
   
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
-    *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
+    *(System.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
 
 
   const long int linkIndex=(DSnd.empty()) ?  0 :

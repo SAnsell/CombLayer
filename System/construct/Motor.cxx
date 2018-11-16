@@ -61,7 +61,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -71,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -87,8 +87,7 @@ Motor::Motor(const std::string& Key) :
   attachSystem::FixedOffset(Key,4),
   attachSystem::ContainedGroup("Axle","Plate","Outer"),
   attachSystem::CellMap(),attachSystem::SurfMap(),
-  motorIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(motorIndex+1),frontInner(0),backInner(0),revFlag(0),
+  frontInner(0),backInner(0),revFlag(0),
   yFront(0.0),yBack(0.0),
   frontPlate(new constructSystem::boltRing(Key,"FrontPlate")),
   backPlate(new constructSystem::boltRing(Key,"BackPlate"))
@@ -109,7 +108,6 @@ Motor::Motor(const Motor& A) :
   attachSystem::FixedOffset(A),
   attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  motorIndex(A.motorIndex),cellIndex(A.cellIndex),
   frontInner(A.frontInner),backInner(A.backInner),
   revFlag(A.revFlag),bodyLength(A.bodyLength),
   plateThick(A.plateThick),axleRadius(A.axleRadius),
@@ -140,7 +138,6 @@ Motor::operator=(const Motor& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       frontInner=A.frontInner;
       backInner=A.backInner;
       revFlag=A.revFlag;
@@ -226,18 +223,18 @@ Motor::createSurfaces()
 {
   ELog::RegMethod RegA("Motor","createSurfaces");
 
-  ModelSupport::buildCylinder(SMap,motorIndex+7,Origin,Y,axleRadius);
-  addSurf("axle",SMap.realSurf(motorIndex+7));
-  ModelSupport::buildCylinder(SMap,motorIndex+107,Origin,Y,bodyRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,axleRadius);
+  addSurf("axle",SMap.realSurf(buildIndex+7));
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,bodyRadius);
   
-  ModelSupport::buildPlane(SMap,motorIndex+1,Origin-Y*(yFront+plateThick),Y);
-  ModelSupport::buildPlane(SMap,motorIndex+2,Origin+Y*(yBack+plateThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(yFront+plateThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(yBack+plateThick),Y);
 
   if (!revFlag)
-    ModelSupport::buildPlane(SMap,motorIndex+11,
+    ModelSupport::buildPlane(SMap,buildIndex+11,
 			     Origin-Y*(yFront+plateThick+bodyLength),Y);
   else
-    ModelSupport::buildPlane(SMap,motorIndex+12,
+    ModelSupport::buildPlane(SMap,buildIndex+12,
 			     Origin+Y*(yBack+plateThick+bodyLength),Y);
 
   return;
@@ -253,16 +250,16 @@ Motor::createPlates(Simulation& System)
   ELog::RegMethod RegA("Motor","createPlates");
 
   const std::string axle=
-    ModelSupport::getComposite(SMap,motorIndex," 7 ");
+    ModelSupport::getComposite(SMap,buildIndex," 7 ");
 
   std::string Out;
   
-  frontPlate->setFront(SMap.realSurf(motorIndex+1));
+  frontPlate->setFront(SMap.realSurf(buildIndex+1));
   frontPlate->setBack(-frontInner);
   frontPlate->createAll(System,*this,0);
 
   backPlate->setFront(-backInner);
-  backPlate->setBack(-SMap.realSurf(motorIndex+2));
+  backPlate->setBack(-SMap.realSurf(buildIndex+2));
   backPlate->createAll(System,*this,0);
 
   const std::string FPlate=
@@ -271,12 +268,12 @@ Motor::createPlates(Simulation& System)
     backPlate->frontRule()+backPlate->backRule();
   
   Out=frontPlate->getSurfComplement("innerRing");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,
 				   Out+FPlate+axle));
   addCell("MotorFrontPlate",cellIndex-1);
 
   Out=backPlate->getSurfComplement("innerRing");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,
 				   Out+BPlate+axle));
   addCell("MotorBackPlate",cellIndex-1);
 
@@ -304,21 +301,21 @@ Motor::createObjects(Simulation& System)
   std::string Out;
 
   // Axle
-  Out=ModelSupport::getComposite(SMap,motorIndex," 1 -2 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,axleMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,axleMat,0.0,Out));
   addCell("Axle",cellIndex-1);
     
   // Main motor
   if (!revFlag)
-    Out=ModelSupport::getComposite(SMap,motorIndex," 11 -1 -107 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 -107 ");
   else
-    Out=ModelSupport::getComposite(SMap,motorIndex," -12 2 -107 ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," -12 2 -107 ");
       
-  System.addCell(MonteCarlo::Qhull(cellIndex++,bodyMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,bodyMat,0.0,Out));
   addCell("MotorBody",cellIndex-1);
 
   addOuterUnionSurf("Outer",Out);
-  Out=ModelSupport::getComposite(SMap,motorIndex," -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   addOuterSurf("Axle",Out);
   
   return;

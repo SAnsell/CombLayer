@@ -68,8 +68,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,7 +84,6 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "BulkShield.h"
@@ -96,8 +96,7 @@ namespace zoomSystem
 
 ZoomChopper::ZoomChopper(const std::string& Key) : 
   attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
-  chpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(chpIndex+1),nShield(0)
+  nShield(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -106,7 +105,6 @@ ZoomChopper::ZoomChopper(const std::string& Key) :
 
 ZoomChopper::ZoomChopper(const ZoomChopper& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
-  chpIndex(A.chpIndex), cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   length(A.length),depth(A.depth),height(A.height),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
@@ -139,7 +137,6 @@ ZoomChopper::operator=(const ZoomChopper& A)
     {
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -262,7 +259,7 @@ ZoomChopper::createLinks()
   ELog::RegMethod RegA("ZoomChopper","createLinks");
   
   FixedComp::setConnect(1,Origin+bY*length,bY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(chpIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   Geometry::Vec3D LNorm(X);
   Geometry::Quaternion::calcQRotDeg(-leftAngle,Z).rotate(LNorm);  
@@ -271,12 +268,12 @@ ZoomChopper::createLinks()
     
   FixedComp::setConnect(2,Origin+Y*length-X*leftWidth,LNorm);     
   FixedComp::setConnect(3,Origin+Y*length+X*rightWidth,RNorm);
-  FixedComp::setLinkSurf(2,SMap.realSurf(chpIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(chpIndex+4));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   // Link point is the join between BeamOrigin+
   // beam exit
-  setBeamExit(chpIndex+2,bEnter,bY);
+  setBeamExit(buildIndex+2,bEnter,bY);
   return;
 }
 
@@ -308,8 +305,8 @@ ZoomChopper::createSurfaces(const shutterSystem::GeneralShutter& GS)
   ELog::RegMethod RegA("ZoomChopper","createSurface");
   
   
-  SMap.addMatch(chpIndex+100,GS.getDivideSurf());
-  SMap.addMatch(chpIndex+1,monoWallSurf);
+  SMap.addMatch(buildIndex+100,GS.getDivideSurf());
+  SMap.addMatch(buildIndex+1,monoWallSurf);
   createSurfacesCommon();
   return;
 }
@@ -320,8 +317,8 @@ ZoomChopper::createSurfaces()
     Create an new effective mono-wall
   */
 {
-  ModelSupport::buildPlane(SMap,chpIndex+100,Origin+Y*outerOffset,Y);     //
-  ModelSupport::buildCylinder(SMap,chpIndex+1,Origin+Y*outerOffset,
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin+Y*outerOffset,Y);     //
+  ModelSupport::buildCylinder(SMap,buildIndex+1,Origin+Y*outerOffset,
 			      Z,outerRadius);     //
   createSurfacesCommon();
   return;
@@ -335,72 +332,72 @@ ZoomChopper::createSurfacesCommon()
 {
   ELog::RegMethod RegA("ZoomChopper","createSurfacesCommon");
   
-  ModelSupport::buildPlane(SMap,chpIndex+2,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+
 			   Y*length,Y);     // back plane
   
-  ModelSupport::buildPlaneRotAxis(SMap,chpIndex+3,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,
 				  Origin+Y*length-X*leftWidth,X,
 				  Z,-leftAngle);     
-  ModelSupport::buildPlaneRotAxis(SMap,chpIndex+4,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,
 				  Origin+Y*length+X*rightWidth,X,
 				  Z,rightAngle);     
 
-  ModelSupport::buildPlaneRotAxis(SMap,chpIndex+113,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+113,
 				  Origin+Y*length-
 				  X*(leftWidth+waxLeftSkin),X,
 				  Z,-leftWaxAngle);     
-  ModelSupport::buildPlaneRotAxis(SMap,chpIndex+114,
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+114,
 				  Origin+Y*length+
 				  X*(rightWidth+waxRightSkin),X,
 				  Z,rightWaxAngle);     
 
-  ModelSupport::buildPlane(SMap,chpIndex+5,Origin-Z*depth,Z); 
-  ModelSupport::buildPlane(SMap,chpIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   FixedComp::setConnect(4,Origin-Z*depth,Z);     
   FixedComp::setConnect(5,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(chpIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(chpIndex+6));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // Void ::
-  ModelSupport::buildPlane(SMap,chpIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*voidCut,Y);     
 
-  ModelSupport::buildPlane(SMap,chpIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*voidChanLeft,X);     
-  ModelSupport::buildPlane(SMap,chpIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*voidChanRight,X);       
-  ModelSupport::buildPlane(SMap,chpIndex+15,Origin-Z*voidChanDown,Z);
-  ModelSupport::buildPlane(SMap,chpIndex+16,Origin+Z*voidChanUp,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*voidChanDown,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*voidChanUp,Z);
 
 
-  ModelSupport::buildPlane(SMap,chpIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin+Y*(length-voidEnd),Y);     
-  ModelSupport::buildPlane(SMap,chpIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*voidLeftWidth,X);     
-  ModelSupport::buildPlane(SMap,chpIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*voidRightWidth,X);     
-  ModelSupport::buildPlane(SMap,chpIndex+25,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,chpIndex+26,Origin+Z*voidHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*voidHeight,Z);
 
   
-  ModelSupport::buildPlane(SMap,chpIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*voidEndLeft,X);     
-  ModelSupport::buildPlane(SMap,chpIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*voidEndRight,X);       
-  ModelSupport::buildPlane(SMap,chpIndex+35,Origin-Z*voidEndDown,Z);
-  ModelSupport::buildPlane(SMap,chpIndex+36,Origin+Z*voidEndUp,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*voidEndDown,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*voidEndUp,Z);
 
   // Cut through
   if (voidEndMat>0)
     {
       Geometry::Vec3D VECent=bEnter+bY*(length-voidEnd);
-      ModelSupport::buildPlane(SMap,chpIndex+1033,
+      ModelSupport::buildPlane(SMap,buildIndex+1033,
 			       VECent-bX*voidEndBeamLeft,bX);     
-      ModelSupport::buildPlane(SMap,chpIndex+1034,
+      ModelSupport::buildPlane(SMap,buildIndex+1034,
 			       VECent+bX*voidEndBeamRight,bX);       
-      ModelSupport::buildPlane(SMap,chpIndex+1035,VECent-bZ*voidEndBeamDown,bZ);
-      ModelSupport::buildPlane(SMap,chpIndex+1036,VECent+bZ*voidEndBeamUp,bZ);
+      ModelSupport::buildPlane(SMap,buildIndex+1035,VECent-bZ*voidEndBeamDown,bZ);
+      ModelSupport::buildPlane(SMap,buildIndex+1036,VECent+bZ*voidEndBeamUp,bZ);
     }
   return;
 }
@@ -419,61 +416,61 @@ ZoomChopper::createObjects(Simulation& System,
 
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,chpIndex,"100 1 -2 113 -114 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"100 1 -2 113 -114 5 -6");
   addOuterSurf(Out);      
 
   //Front steel
-  Out=ModelSupport::getComposite(SMap,chpIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "100 1 -11 3 -4 5 -6 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   //Mid Step
-  Out=ModelSupport::getComposite(SMap,chpIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -21 3 -4 5 -6 (-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Far Step
-  Out=ModelSupport::getComposite(SMap,chpIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "21 -2 3 -4 5 -6 (-33:34:-35:36) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // voids:
-  Out=ModelSupport::getComposite(SMap,chpIndex,"100 1 -11 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"100 1 -11 13 -14 15 -16");
   Out+=CObj.getExclude("B");
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,chpIndex,"11 -21 23 -24 25 -26");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -21 23 -24 25 -26");
   Out+=CObj.getExclude("D");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   voidCell=cellIndex-1;
 
 
   if (!voidEndMat)
     {
-      Out=ModelSupport::getComposite(SMap,chpIndex,"21 -2 33 -34 35 -36");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 33 -34 35 -36");
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       shieldCell=cellIndex-1;
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,chpIndex,"21 -2 33 -34 35 -36"
+      Out=ModelSupport::getComposite(SMap,buildIndex,"21 -2 33 -34 35 -36"
 				     "(-1033 : 1034 : -1035 :1036) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,voidEndMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,voidEndMat,0.0,Out));
       shieldCell=cellIndex-1;
-      Out=ModelSupport::getComposite(SMap,chpIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "21 -2 1033 -1034 1035 -1036 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
     }
 
   // WAX
-  Out=ModelSupport::getComposite(SMap,chpIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "100 1 -2 113 -3 5 -6  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,chpIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "100 1 -2 -114 4 5 -6  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waxMat,0.0,Out));
 
   return;
 }
@@ -500,18 +497,18 @@ ZoomChopper::divideMainShield(Simulation& System)
 
       DA.init();
       DA.setCellN(shieldCell);
-      DA.setOutNum(cellIndex,chpIndex+3001);
+      DA.setOutNum(cellIndex,buildIndex+3001);
 
       // Modern divider system:
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> wallRule;
-      wallRule.setSurfPair(SMap.realSurf(chpIndex+21),
-			   SMap.realSurf(chpIndex+2));
+      wallRule.setSurfPair(SMap.realSurf(buildIndex+21),
+			   SMap.realSurf(buildIndex+2));
       
       const std::string OutA=
-	ModelSupport::getComposite(SMap,chpIndex," 21 ");
+	ModelSupport::getComposite(SMap,buildIndex," 21 ");
       const std::string OutB=
-	ModelSupport::getComposite(SMap,chpIndex," -2 ");
+	ModelSupport::getComposite(SMap,buildIndex," -2 ");
       wallRule.setInnerRule(OutA);
       wallRule.setOuterRule(OutB);
   

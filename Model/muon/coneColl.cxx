@@ -3,7 +3,7 @@
  
  * File:   muon/coneColl.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,9 +62,10 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +79,7 @@ namespace muSystem
 {
 
 coneColl::coneColl(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,2),attachSystem::ContainedComp(),
-  coneIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(coneIndex+1)
+  attachSystem::FixedComp(Key,2),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -147,11 +145,11 @@ coneColl::createSurfaces()
   const double offset=radiusStartCone/tan(angleC*M_PI/180.0);
 
   //  :
-  ModelSupport::buildPlane(SMap,coneIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,coneIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildCylinder(SMap,coneIndex+7,Origin,Y,outRadius);
-  ModelSupport::buildCylinder(SMap,coneIndex+17,Origin,Y,inRadius);  
-  ModelSupport::buildCone(SMap,coneIndex+27,Origin-Y*offset,Y,angleC);   
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,inRadius);  
+  ModelSupport::buildCone(SMap,buildIndex+27,Origin-Y*offset,Y,angleC);   
 
 
   return;
@@ -169,19 +167,19 @@ coneColl::createObjects(Simulation& System)
   std::string Out;
 
      // tube material
-  Out=ModelSupport::getComposite(SMap,coneIndex,"1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out+=ModelSupport::getComposite(SMap,coneIndex,"17 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,tubeMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"17 ");  
+  System.addCell(MonteCarlo::Object(cellIndex++,tubeMat,0.0,Out));
 
      // collimator material
-  Out=ModelSupport::getComposite(SMap,coneIndex,"1 -2 -17 27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17 27 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
     // hole
-  Out=ModelSupport::getComposite(SMap,coneIndex,"1 -2 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -27 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   return;
 }
@@ -198,8 +196,8 @@ coneColl::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(coneIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(coneIndex+2));  
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
 
   return;
 }

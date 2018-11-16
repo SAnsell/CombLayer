@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4PreFlat.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -58,7 +57,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -184,41 +184,41 @@ CH4PreFlat::createSurfaces()
 
   // NOTE Origin is moved from moderator base:
 
-  ModelSupport::buildPlane(SMap,preIndex+1,Origin-Y*(depth/2.0),Y);
-  ModelSupport::buildPlane(SMap,preIndex+2,Origin+Y*(depth/2.0),Y);
-  ModelSupport::buildPlane(SMap,preIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,preIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,preIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,preIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(depth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(depth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
 
   // AL plane contacts
-  ModelSupport::buildPlane(SMap,preIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(depth/2.0+alThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(depth/2.0+alThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0+alThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0+alThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+alThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+alThick),Z);
 
 
   // VAC GAP
-  ModelSupport::buildPlane(SMap,preIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*(depth/2.0+alThick+vacThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(depth/2.0+alThick+vacThick),Y);
-  ModelSupport::buildPlane(SMap,preIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(width/2.0+alThick+vacThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(width/2.0+alThick+vacThick),X);
-  ModelSupport::buildPlane(SMap,preIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(height/2.0+alThick+vacThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(height/2.0+alThick+vacThick),Z);
 
   return;
@@ -234,21 +234,21 @@ CH4PreFlat::createObjects(Simulation& System)
   ELog::RegMethod RegA("CH4PreFlat","createObjects");
   std::string Out;
 
-  Out=ModelSupport::getSetComposite(SMap,preIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   // AL layer
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				    " 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // VAC Outer:
-  Out=ModelSupport::getSetComposite(SMap,preIndex,
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
 		       " 21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16) ");
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   //  voidCell=cellIndex-1;
   
-  Out=ModelSupport::getSetComposite(SMap,preIndex," 21 -22 23 -24 25 -26 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
 
   addOuterSurf(Out);
   return;
@@ -295,7 +295,7 @@ CH4PreFlat::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("CH4PreFlat","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return std::to_string(getLayerSurf(layerIndex,sideIndex));
 }
 
 int
@@ -316,7 +316,7 @@ CH4PreFlat::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
-  const int SI(preIndex+static_cast<int>(layerIndex*10+uSIndex));
+  const int SI(buildIndex+static_cast<int>(layerIndex*10+uSIndex));
   const int signValue((sideIndex % 2) ? -1 : 1);
   return signValue*SMap.realSurf(SI);
 }
@@ -339,12 +339,12 @@ CH4PreFlat::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+layT),Z);
 
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(preIndex+21));
-  FixedComp::setLinkSurf(1,SMap.realSurf(preIndex+22));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(preIndex+23));
-  FixedComp::setLinkSurf(3,SMap.realSurf(preIndex+24));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+25));
-  FixedComp::setLinkSurf(5,SMap.realSurf(preIndex+26));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
   return;
 }
 

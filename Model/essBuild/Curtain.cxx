@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -74,7 +75,6 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -94,9 +94,7 @@ namespace essSystem
 Curtain::Curtain(const std::string& Key)  :
   attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
   attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
-  attachSystem::CellMap(),
-  curIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(curIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -106,7 +104,6 @@ Curtain::Curtain(const std::string& Key)  :
 Curtain::Curtain(const Curtain& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  curIndex(A.curIndex),cellIndex(A.cellIndex),
   wallRadius(A.wallRadius),leftPhase(A.leftPhase),
   rightPhase(A.rightPhase),innerStep(A.innerStep),
   wallThick(A.wallThick),baseGap(A.baseGap),
@@ -136,7 +133,6 @@ Curtain::operator=(const Curtain& A)
       attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       wallRadius=A.wallRadius;
       leftPhase=A.leftPhase;
       rightPhase=A.rightPhase;
@@ -267,27 +263,27 @@ Curtain::createSurfaces()
   AWall+=Origin;
   BWall+=Origin;
   // Divider
-  ModelSupport::buildCylinder(SMap,curIndex+7,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Z,wallRadius-innerStep);
-  ModelSupport::buildCylinder(SMap,curIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Z,wallRadius-innerStep+wallThick);
-  ModelSupport::buildCylinder(SMap,curIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Z,wallRadius+wallThick);
-  ModelSupport::buildCylinder(SMap,curIndex+127,
+  ModelSupport::buildCylinder(SMap,buildIndex+127,
 			      Origin,Z,wallRadius+wallThick+outerGap);
 
   
-  ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
-  ModelSupport::buildPlane(SMap,curIndex+15,Origin+Z*topRaise,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin+Z*topRaise,Z);
 
-  ModelSupport::buildPlane(SMap,curIndex+105,Origin-Z*(depth+baseGap),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(depth+baseGap),Z);
   
-  ModelSupport::buildPlane(SMap,curIndex+3,AWall,AWallDir);
-  ModelSupport::buildPlane(SMap,curIndex+4,BWall,BWallDir);
+  ModelSupport::buildPlane(SMap,buildIndex+3,AWall,AWallDir);
+  ModelSupport::buildPlane(SMap,buildIndex+4,BWall,BWallDir);
 
-  setSurf("OuterRadius",SMap.realSurf(curIndex+127));
-  setSurf("OuterZStep",SMap.realSurf(curIndex+15));
+  setSurf("OuterRadius",SMap.realSurf(buildIndex+127));
+  setSurf("OuterZStep",SMap.realSurf(buildIndex+15));
   return;
 }
 
@@ -312,45 +308,45 @@ Curtain::createObjects(Simulation& System,
   const std::string sideSurf=FC.getLinkString(sideIndex);
   std::string Out;
   // Top section
-  Out=ModelSupport::getComposite(SMap,curIndex," 7 -17 3 -4 15 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 3 -4 15 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addOuterSurf("Top",Out);
   setCell("topWall",cellIndex-1);
   // Top section void
-  //  Out=ModelSupport::getComposite(SMap,curIndex," 17 -27 3 -4 15 -6 ");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  //  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 3 -4 15 -6 ");
+  //  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   //  addCell("topVoid",cellIndex-1);
 
   // Mid section
-  Out=ModelSupport::getComposite(SMap,curIndex," 7 -27 3 -4 -15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+topSurf));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 3 -4 -15 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+topSurf));
   setCell("midWall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 -15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topSurf));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -127 3 -4 -15 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+topSurf));
   setCell("MidGap",cellIndex-1);
 
   // Lower section
-  Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
+  Out=ModelSupport::getComposite(SMap,buildIndex," -27 3 -4 5 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,
 				   Out+topBase+sideSurf));
   setCell("baseWall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 -5 105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideSurf));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -27 3 -4 -5 105 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+sideSurf));
   setCell("BaseGap",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topBase+sideSurf));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 27 -127 3 -4 105 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+topBase+sideSurf));
   setCell("BaseGap",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,curIndex,"-127 3 -4 105 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-127 3 -4 105 ");
   addOuterSurf("Lower",Out+topBase);
 
-  Out=ModelSupport::getComposite(SMap,curIndex,"7 -127 3 -4 -15 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"7 -127 3 -4 -15 ");
   addOuterSurf("Mid",Out+topSurf);
 
-  Out=ModelSupport::getComposite(SMap,curIndex,"105 -127 3 -4 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"105 -127 3 -4 ");
   addOuterSurf("RoofCut",Out);
   return;
 }
@@ -383,14 +379,14 @@ Curtain::layerProcess(Simulation& System,
       DA.addMaterial(wallMat);
       
       DA.setCellN(getCell("topWall"));
-      DA.setOutNum(cellIndex,curIndex+1001);
+      DA.setOutNum(cellIndex,buildIndex+1001);
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
-      surroundRule.setSurfPair(SMap.realSurf(curIndex+15),
-			       SMap.realSurf(curIndex+6));
+      surroundRule.setSurfPair(SMap.realSurf(buildIndex+15),
+			       SMap.realSurf(buildIndex+6));
       
-      OutA=ModelSupport::getComposite(SMap,curIndex," 15 ");
-      OutB=ModelSupport::getComposite(SMap,curIndex," -6 ");
+      OutA=ModelSupport::getComposite(SMap,buildIndex," 15 ");
+      OutB=ModelSupport::getComposite(SMap,buildIndex," -6 ");
       
       surroundRule.setInnerRule(OutA);
       surroundRule.setOuterRule(OutB);
@@ -415,14 +411,14 @@ Curtain::layerProcess(Simulation& System,
       DA.addMaterial(baseMat.back());
       
       DA.setCellN(getCell("baseWall"));
-      DA.setOutNum(cellIndex,curIndex+1101);
+      DA.setOutNum(cellIndex,buildIndex+1101);
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
-      surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
+      surroundRule.setSurfPair(SMap.realSurf(buildIndex+5),
                                SMap.realSurf(topSurf));
 
       OutA=FC.getLinkString(-topIndex);
-      OutB=ModelSupport::getComposite(SMap,curIndex," 5 ");
+      OutB=ModelSupport::getComposite(SMap,buildIndex," 5 ");
       
       surroundRule.setInnerRule(OutB);
       surroundRule.setOuterRule(OutA);
@@ -466,8 +462,8 @@ Curtain::createLinks()
 
       baseFC.setConnect(i,OutPt,Axis);
       baseFC.setConnect(i+4,InPt,-Axis);
-      baseFC.setLinkSurf(i,SMap.realSurf(curIndex+27));
-      baseFC.setLinkSurf(i+8,SMap.realSurf(curIndex+27));   
+      baseFC.setLinkSurf(i,SMap.realSurf(buildIndex+27));
+      baseFC.setLinkSurf(i+8,SMap.realSurf(buildIndex+27));   
     }
 
   return;

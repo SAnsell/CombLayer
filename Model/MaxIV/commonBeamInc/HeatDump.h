@@ -36,27 +36,47 @@ namespace xraySystem
 */
 
 class HeatDump :
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::ContainedGroup,
+  public attachSystem::FixedOffsetGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
 
-  double height;           ///< width accross beam
+  bool upFlag;             ///< Up/down
+  
+  double radius;           ///< Radius 
+  double height;           ///< height total 
   double width;            ///< width accross beam
-  double thick;            ///< Thickness in normal direction to reflection
+  double thick;            ///< Thickness in normal direction to reflection  
+  double lift;             ///< Amount to lift [when raized]
+  
+  double cutHeight;        ///< Z from base [centre on beam axis] 
+  double cutAngle;         ///< Angle of cut
+  double cutDepth;         ///< cut distance in Y
 
-  double cutHeight;        ///< cut from base
-  double cutDepth;        ///< cut distance in Y
+  double topInnerRadius;          ///<  Flange inner radius radius 
+  double topFlangeRadius;          ///< Joining Flange radius 
+  double topFlangeLength;          ///< Joining Flange length
+
+  double bellowLength;             ///< Bellow length [compessed]
+  double bellowThick;              ///< Bellow thick
+  
+  double outRadius;                ///< Out connect radius
+  double outLength;                ///< Out connect length
+
+  double waterRadius;              ///< Water radius
+  double waterZStop;               ///< Distance in Z to stop
 
   int mat;                 ///< Base material
-
+  int flangeMat;           ///<  flange material
+  int bellowMat;           ///<  bellow material
+  int waterMat;            ///<  water material
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int,
+			const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -71,8 +91,8 @@ class HeatDump :
   virtual ~HeatDump();
 
   void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int);
   
 };
 

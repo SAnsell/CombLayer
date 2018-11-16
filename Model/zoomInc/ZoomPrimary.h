@@ -46,8 +46,6 @@ namespace zoomSystem
 {
  private:
   
-  const int colIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< populated or not
 
   double length;               ///< Full length

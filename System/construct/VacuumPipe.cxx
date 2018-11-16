@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -71,7 +71,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -87,7 +86,7 @@ namespace constructSystem
 
 VacuumPipe::VacuumPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,11),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   frontJoin(0),backJoin(0)
   /*!
@@ -101,7 +100,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 }
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   frontJoin(A.frontJoin),
@@ -132,7 +131,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -417,7 +416,9 @@ VacuumPipe::createSurfaces()
     {
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
       ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
-      ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,radius+feThick+claddingThick);
+      ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
+				  Y,radius+feThick+claddingThick);
+      addSurf("OuterRadius",SMap.realSurf(buildIndex+27));	    
     }
   else
     {
@@ -530,7 +531,7 @@ VacuumPipe::createObjects(Simulation& System)
   if (activeWindow & 1)      // FRONT
     { 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-1007 1003 -1004 1005 -1006 1001 -1002 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,windowFront.mat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,windowFront.mat,0.0,
 				       Out+frontBridgeRule()));
       addCell("Window",cellIndex-1);
 
@@ -541,7 +542,7 @@ VacuumPipe::createObjects(Simulation& System)
   if (activeWindow & 2)
     { 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-1107 1103 -1104 1105 -1106 1102 -1101 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,windowBack.mat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,windowBack.mat,0.0,
 				       Out+backBridgeRule()));
       addCell("Window",cellIndex-1);
       HeadRule WHR(Out);
@@ -553,7 +554,7 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 3 -4 5 -6");
   HeadRule InnerVoid(Out);
   InnerVoid.makeComplement();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,
 				   Out+frontStr+backStr+
 				   windowFrontExclude+windowBackExclude));
   addCell("Void",cellIndex-1);
@@ -566,7 +567,7 @@ VacuumPipe::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 ");
   Out+=WallLayer.display()+InnerVoid.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
   addCell("MainSteel",cellIndex-1);
 
@@ -575,21 +576,21 @@ VacuumPipe::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 ");
       Out+=WallLayer.complement().display()+CladdingLayer.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,claddingMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,claddingMat,0.0,Out));
       addCell("Cladding",cellIndex-1);
     }
 
   // FLANGE: 107 OR 103-106 valid 
   Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
   Out+=InnerVoid.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+
 				   frontStr+windowFrontExclude));
   addCell("Steel",cellIndex-1);
 
   // FLANGE: 207 OR 203-206 valid 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"102 -207 203 -204 205 -106 ");
   Out+=InnerVoid.display()+backStr+windowBackExclude;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   // outer boundary [flange front]

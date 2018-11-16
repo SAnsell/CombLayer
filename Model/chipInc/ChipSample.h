@@ -41,8 +41,6 @@ class ChipSample : public attachSystem::ContainedComp,
 
   const size_t ID;               ///< ID index 
   const std::string baseName;    ///< Base key name
-  const int csIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
 
   int tableNum;             ///< Table number
 

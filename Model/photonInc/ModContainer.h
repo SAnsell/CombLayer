@@ -47,8 +47,6 @@ class ModContainer : public attachSystem::ContainedComp,
 {
  private:
 
-  const int modIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double length;                ///< length of object
   double radius;                ///< radius [inneer]

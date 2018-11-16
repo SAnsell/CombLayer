@@ -61,6 +61,8 @@
 #include "LinkSupport.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -171,12 +173,10 @@ surfaceConstruct::processSurfObject(SimMCNP& System,
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfObject");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const int tNum=System.nextTallyNum(idType);
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   const long int linkPt=TPtr->getSideIndex(linkName);
   if (linkPt)
     {
@@ -207,14 +207,12 @@ surfaceConstruct::processSurfMap(SimMCNP& System,
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   const int tNum=System.nextTallyNum(idType);
   if (linkIndex)
     {
       const attachSystem::SurfMap* SPtr=
-	OR.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
+	System.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
 
       const int side=(linkIndex>0) ? 1 : -1;
       const size_t index=(linkIndex>0) ? static_cast<size_t>(linkIndex-1) :

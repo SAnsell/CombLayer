@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/VacuumVessel.cxx
+ * File:   photon/He3Tubes.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
@@ -56,7 +55,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -77,9 +77,7 @@ namespace photonSystem
       
 He3Tubes::He3Tubes(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  heIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(heIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -90,7 +88,7 @@ He3Tubes::He3Tubes(const std::string& Key) :
 He3Tubes::He3Tubes(const He3Tubes& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),  
-  heIndex(A.heIndex),cellIndex(A.cellIndex),nTubes(A.nTubes),
+  nTubes(A.nTubes),
   length(A.length),radius(A.radius),wallThick(A.wallThick),
   gap(A.gap),wallMat(A.wallMat),mat(A.mat)
   /*!
@@ -112,7 +110,6 @@ He3Tubes::operator=(const He3Tubes& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       nTubes=A.nTubes;
       length=A.length;
       radius=A.radius;
@@ -193,18 +190,18 @@ He3Tubes::createSurfaces()
   
   // boundary surfaces
   const double offset(radius+1.01*wallThick);  
-  ModelSupport::buildPlane(SMap,heIndex+1,Origin-Y*offset,Y);
-  ModelSupport::buildPlane(SMap,heIndex+2,Origin+Y*offset,Y);
-  ModelSupport::buildPlane(SMap,heIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*offset,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*offset,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+4,Origin+X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+5,Origin-Z*(length/2.0),Z);
-  ModelSupport::buildPlane(SMap,heIndex+6,Origin+Z*(length/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(length/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(length/2.0),Z);
 
   Geometry::Vec3D CentPt(Origin-X*(separation*
 				   (static_cast<double>(nTubes)-1.0)/2.0));
 
-  int tubeIndex(heIndex);
+  int tubeIndex(buildIndex);
   for(size_t i=0;i<nTubes;i++)
     {
       ModelSupport::buildCylinder(SMap,tubeIndex+7,CentPt,Z,radius);
@@ -226,22 +223,22 @@ He3Tubes::createObjects(Simulation& System)
 
   std::string Out;
 
-  int tubeIndex(heIndex);
+  int tubeIndex(buildIndex);
   std::string box;
   for(size_t i=0;i<nTubes;i++)
     {
-      Out=ModelSupport::getComposite(SMap,heIndex,tubeIndex," 5 -6 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,tubeIndex," 5 -6 -7M ");
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       addCell("He",cellIndex-1);
       
-      Out=ModelSupport::getComposite(SMap,heIndex,tubeIndex,"5 -6 7M -17M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,tubeIndex,"5 -6 7M -17M ");
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       addCell("Wall",cellIndex-1);
       box += ModelSupport::getComposite(SMap,tubeIndex," 17 ");
       tubeIndex+=100;
     }
-  Out=ModelSupport::getComposite(SMap,heIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+box));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+box));
   
   addOuterSurf(Out);
 
@@ -258,10 +255,10 @@ He3Tubes::createLinks()
   
 
   FixedComp::setConnect(4,Origin-Z*(length/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(heIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*(length/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(heIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

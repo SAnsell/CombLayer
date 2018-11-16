@@ -32,6 +32,7 @@ namespace mainSystem
   class inputParam;
 }
 
+class objectGroups;
 class Simulation;
 
 namespace tallySystem
@@ -54,14 +55,16 @@ class meshConstruct
 
   static const std::string& getDoseConversion();
   static const std::string& getPhotonDoseConversion();
-  static void calcXYZ(const std::string&,const std::string&,
+  static void calcXYZ(const objectGroups&,
+		      const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
 
 
 
  public:
 
-  static void getObjectMesh(const mainSystem::inputParam&,
+  static void getObjectMesh(const objectGroups&,
+			    const mainSystem::inputParam&,
 			    const std::string&,
 			    const size_t,const size_t,
 			    Geometry::Vec3D&,

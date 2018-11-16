@@ -114,7 +114,8 @@ buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
 
 Geometry::Plane*
 buildShiftedPlane(surfRegister& SMap,const int N,
-		  const Geometry::Plane* PN,const double Dist)
+		  const Geometry::Plane* PN,
+		  const double Dist)
   /*!
     Builds a plane that is shifted relative to a current plane
     \param SMap :: Surface Map system
@@ -134,6 +135,7 @@ buildShiftedPlane(surfRegister& SMap,const int N,
 
   PX->setPlane(*PN);
   PX->displace(PN->getNormal()*Dist);
+
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -156,7 +158,6 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
   if (!PN) return 0;
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
 
   Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);
   PX->setPlane(-PN->getNormal(),-PN->getDistance());

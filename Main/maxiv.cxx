@@ -61,12 +61,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimImportance.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h" 
 #include "SimPHITS.h"
@@ -123,7 +124,7 @@ main(int argc,char* argv[])
 
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
+
       xraySystem::makeMaxIV BObj;
       World::createOuterObjects(*SimPtr);
       BObj.build(*SimPtr,IParam);
@@ -132,7 +133,7 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
 
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   
   catch (ColErr::ExitAbort& EA)
@@ -154,7 +155,6 @@ main(int argc,char* argv[])
     }
 
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

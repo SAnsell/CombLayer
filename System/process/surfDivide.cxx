@@ -62,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "Token.h"
 #include "surfDBase.h"
@@ -324,7 +325,7 @@ surfDivide::preDivide(Simulation& System)
 {
   ELog::RegMethod RegA("surfDivide","preDivide");
 
-  BaseObj=System.findQhull(cellNumber);  
+  BaseObj=System.findObject(cellNumber);  
   if (!BaseObj)
     {
       ELog::EM<<"Unable to find "<<cellNumber<<ELog::endErr;
@@ -382,7 +383,7 @@ surfDivide::activeDivideTemplate(Simulation& System)
 	PRules[rN]->process(fA,fB,cell);
 
       // Set cell:
-      MonteCarlo::Qhull NewObj(*BaseObj);
+      MonteCarlo::Object NewObj(*BaseObj);
       NewObj.setName(outCellN++);
       NewObj.setMaterial(material[i]);
       NewObj.procString(cell.display());
@@ -466,7 +467,7 @@ surfDivide::activeDivide(Simulation& System)
   for(size_t i=0;i<=frac.size();i++)
     {      
       // Create outer object
-      MonteCarlo::Qhull NewObj(*BaseObj);
+      MonteCarlo::Object NewObj(*BaseObj);
       NewObj.setName(outCellN++);
       NewObj.setMaterial(material[i]);
       std::vector<Token> innerCell=NewObj.cellVec();

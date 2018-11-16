@@ -3,7 +3,7 @@
  
  * File:   snsBuild/RefPlug.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,13 +56,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -75,9 +75,7 @@ namespace snsSystem
 
 RefPlug::RefPlug(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
-  attachSystem::FixedOffset(Key,6),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1)
+  attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -88,7 +86,6 @@ RefPlug::RefPlug(const RefPlug& A) :
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
   attachSystem::FixedOffset(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),
   height(A.height),depth(A.depth),
   radius(A.radius),temp(A.temp),mat(A.mat)
   /*!
@@ -110,7 +107,6 @@ RefPlug::operator=(const RefPlug& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       height=A.height;
       depth=A.depth;
       radius=A.radius;
@@ -157,12 +153,13 @@ RefPlug::populate(const FuncDataBase& Control)
       if (i)
 	{
 	  R+=Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"RadGap",i));   
-	  M=ModelSupport::EvalMat<int>(Control,
-	    StrFunc::makeString(keyName+"Material",i));   
+	    (keyName+"RadGap"+std::to_string(i));   
+	  M=ModelSupport::EvalMat<int>
+	    (Control,keyName+"Material"+std::to_string(i));   
+
 	  T=(!M) ? 0.0 : 
 	    Control.EvalDefVar<double>
-	    (StrFunc::makeString(keyName+"Temp",i),T);
+	    (keyName+"Temp"+std::to_string(i),T);   
 	}
       else
 	{
@@ -202,13 +199,13 @@ RefPlug::createSurfaces()
   ELog::RegMethod RegA("RefPlug","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,refIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,refIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,Y);  
 
-  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*depth,Z);  
-  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*height,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
 
-  int SI(refIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<=nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
@@ -229,14 +226,14 @@ RefPlug::createObjects(Simulation& System)
   ELog::RegMethod RegA("RefPlug","createObjects");
 
   std::string Out;
-  int SI(refIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<=nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI,refIndex," -7 5M -6M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," -7 5M -6M ");
       if (i==nLayers) addOuterSurf(Out);
       if (i)
 	Out+=ModelSupport::getComposite(SMap,SI-10," 7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       SI+=10;
     }
   return; 
@@ -252,29 +249,29 @@ RefPlug::createLinks()
 
   if (nLayers)
     {
-      const int SI(refIndex+static_cast<int>(nLayers)*10);
+      const int SI(buildIndex+static_cast<int>(nLayers)*10);
 
       FixedComp::setConnect(0,Origin-Y*radius[nLayers],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(0,-SMap.realSurf(refIndex+2));
+      FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[nLayers],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(1,SMap.realSurf(refIndex+2));
+      FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+2));
 
       FixedComp::setConnect(2,Origin-X*radius[nLayers],-X);
       FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(2,-SMap.realSurf(refIndex+1));
+      FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
 
       FixedComp::setConnect(3,Origin+X*radius[nLayers],X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(3,SMap.realSurf(refIndex+1));
+      FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
       
       FixedComp::setConnect(4,Origin-Z*depth,-Z);
-      FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+5));
+      FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
       FixedComp::setConnect(5,Origin+Z*height,Z);
-      FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+6));
+      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
     }
   else 
     ELog::EM<<"NO Layers in RefPlug"<<ELog::endErr;
@@ -337,22 +334,22 @@ RefPlug::getLayerString(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(refIndex+static_cast<int>(layerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
   const long int uSIndex(std::abs(sideIndex));
   std::string Out;
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI,refIndex," 7 -2M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -2M ");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI,refIndex," 7 2M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 2M ");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI,refIndex," 7 -1M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -1M ");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI,refIndex," 7 -1M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -1M ");
       break;
     case 5:
       Out=ModelSupport::getComposite(SMap,SI," -5 ");
@@ -384,13 +381,13 @@ RefPlug::getCommonSurf(const long int sideIndex) const
   switch(std::abs(sideIndex))
     {
     case 1:
-      return -SMap.realSurf(refIndex+2);
+      return -SMap.realSurf(buildIndex+2);
     case 2:
-      return SMap.realSurf(refIndex+2);
+      return SMap.realSurf(buildIndex+2);
     case 3:
-      return -SMap.realSurf(refIndex+1);
+      return -SMap.realSurf(buildIndex+1);
     case 4:
-      return SMap.realSurf(refIndex+1);
+      return SMap.realSurf(buildIndex+1);
     case 5:
     case 6:
       return 0;
@@ -413,7 +410,7 @@ RefPlug::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   
-  const int SI(refIndex+static_cast<int>(layerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
   const long int uSIndex(std::abs(sideIndex));
   const int signValue((sideIndex>0) ? 1 : -1);
 
@@ -428,9 +425,9 @@ RefPlug::getLayerSurf(const size_t layerIndex,
     case 4:
       return signValue*SMap.realSurf(SI+7);
     case 5:
-      return -signValue*SMap.realSurf(refIndex+5);
+      return -signValue*SMap.realSurf(buildIndex+5);
     case 6:
-      return signValue*SMap.realSurf(refIndex+6);
+      return signValue*SMap.realSurf(buildIndex+6);
     }
   throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex ");
 }

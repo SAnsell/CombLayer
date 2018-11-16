@@ -40,8 +40,6 @@ class cShieldLayer : public attachSystem::FixedOffset,
 {
  private:
   
-  const int csLayerIndex;       ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double height;                ///< Height
   double depth;                 ///< Depth

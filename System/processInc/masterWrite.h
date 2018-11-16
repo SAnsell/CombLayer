@@ -35,7 +35,7 @@ class masterWrite
  private:
 
   double zeroTol;         ///< All numbers below this value are zero
-  int sigFig;             ///< Number of significant figures
+  size_t sigFig;             ///< Number of significant figures
   
   boost::format FMTdouble;       ///< Format statement for double output
   boost::format FMTinteger;      ///< Format statement for integer
@@ -54,9 +54,11 @@ class masterWrite
   
   static masterWrite& Instance();
 
-  void setSigFig(const int);
+  void setSigFig(const size_t);
   void setZero(const double);
 
+  /// access number of sig fig
+  size_t getSigFig() const { return sigFig; } 
 
   template<typename T>
   std::string padNum(const T&,const size_t);

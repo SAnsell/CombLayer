@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBlock.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,15 +40,12 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -57,8 +55,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -73,9 +72,9 @@ namespace shutterSystem
 {
 
 
-collInsertBlock::collInsertBlock(const int N,const int SN,
-				 const std::string& Key) :
-  collInsertBase(N,SN,Key)
+collInsertBlock::collInsertBlock(const std::string& Key,
+				 const int ID) :
+  collInsertBase(Key,ID)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param N :: Index value of block
@@ -132,7 +131,6 @@ collInsertBlock::populate(const Simulation& System,
 {
   ELog::RegMethod RegA("collInsertBlock","populate");
   const FuncDataBase& Control=System.getDataBase();
-
   const size_t Size(9);
   const size_t commonSize(7);
   const char* sndKey[Size]=
@@ -144,10 +142,10 @@ collInsertBlock::populate(const Simulation& System,
 
   for(size_t i=0;i<Size;i++)
     {
-      const std::string KN=keyName+
-	StrFunc::makeString(blockIndex+1)+sndKey[i];
-      if (Control.hasVariable(KN))
-	setVar(Control,i,KN);
+      const std::string BN=baseName+
+	std::to_string(blockID+1)+sndKey[i];
+      if (Control.hasVariable(BN))
+	setVar(Control,i,BN);
       else if (blkPtr)
 	setVar(i,blkPtr->getVar(i));
       else if (sndBase && i<=commonSize)
@@ -158,7 +156,7 @@ collInsertBlock::populate(const Simulation& System,
 	    ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
 	  ELog::EM<<"i == "<<i<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
-		  <<KN<<ELog::endErr;
+		  <<BN<<ELog::endErr;
 	}
     }
   populated|=1;
@@ -258,27 +256,27 @@ collInsertBlock::createSurfaces(const int startSurf)
   ELog::RegMethod RegA("collInsertBlock","createSurface");
 
   if (startSurf)
-    SMap.addMatch(surfIndex+1,startSurf);
+    SMap.addMatch(buildIndex+1,startSurf);
   else
-    ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   
   // Outer Surface 
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
   
   // Inner surface
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   beamOrigin-beamX*(hGap/2.0-centX),beamX);
 
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   beamOrigin+beamX*(hGap/2.0+centX),beamX);
 
-  ModelSupport::buildPlane(SMap,surfIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   beamOrigin-beamZ*(vGap/2.0-centZ),beamZ);
-  ModelSupport::buildPlane(SMap,surfIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   beamOrigin+beamZ*(vGap/2.0+centZ),beamZ);
   
   return;
@@ -298,24 +296,24 @@ collInsertBlock::createObjects(Simulation& System,
   ELog::RegMethod RegA("collInsertBlock","createObjects");
 
   std::string frontBack=fSurf.empty() ? 
-    ModelSupport::getComposite(SMap,surfIndex,"1 ") : fSurf;
+    ModelSupport::getComposite(SMap,buildIndex,"1 ") : fSurf;
   frontBack+=bSurf.empty() ? 
-    ModelSupport::getComposite(SMap,surfIndex,"-2 ") : bSurf;
+    ModelSupport::getComposite(SMap,buildIndex,"-2 ") : bSurf;
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 ");
   addOuterSurf(Out);
 
   // Centre void
-  Out=ModelSupport::getComposite(SMap,surfIndex,"13 -14 15 -16 ")+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 ")+
     frontBack;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Outer metal
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "3 -4 5 -6 (-13:14:-15:16) ")+
     frontBack;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,matN,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,matN,0.0,Out));
   
   return;
 }
@@ -335,13 +333,13 @@ collInsertBlock::exitWindow(const double Dist,
   ELog::RegMethod RegA("collInsertBlock","exitWindow");
 
   window.clear();
-  window.push_back(SMap.realSurf(surfIndex+3));
-  window.push_back(SMap.realSurf(surfIndex+4));
-  window.push_back(SMap.realSurf(surfIndex+5));
-  window.push_back(SMap.realSurf(surfIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
 
   Pt=Origin+Y*Dist;
-  return SMap.realSurf(surfIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
 std::vector<Geometry::Vec3D> 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachCompInc/ContainedSpace.h
+ * File:   processInc/vertexCalc.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,43 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef attachSystem_ContainedSpace_h
-#define attachSystem_ContainedSpace_h
-
-class Simulation;
+#ifndef ModelSupport_vertexCalc_h
+#define ModelSupport_vertexCalc_h
 
 namespace Geometry
 {
-  class Line;
+  class Surface;
 }
 
-namespace attachSystem
+namespace MonteCarlo
 {
-/*!
-  \class ContainedSpace
-  \version 1.0
-  \author S. Ansell
-  \date Febrary 2018
-  \brief Allows an object to build a divided section
-         within the Contained space
-*/
+  class Object;
+  class SurfVertex;
+}
 
-class ContainedSpace  :
-  public SpaceCut,
-  public ContainedComp
+namespace ModelSupport
 {
- public:
 
-  ContainedSpace();
-  ContainedSpace(const ContainedSpace&);
-  ContainedSpace& operator=(const ContainedSpace&);
-  virtual ~ContainedSpace();
-  
-  virtual void insertObjects(Simulation&);
-  virtual void insertObjects(Simulation&,attachSystem::FixedComp&);
-};
+int
+getIntersect(const MonteCarlo::Object&,
+	     const Geometry::Surface*,
+	     const Geometry::Surface*,
+	     const Geometry::Surface*,
+	     std::vector<MonteCarlo::SurfVertex>&);
+
+std::vector<MonteCarlo::SurfVertex>
+calcVertex(const MonteCarlo::Object&);
+
+std::vector<Geometry::Vec3D>
+calcVertexPoints(const MonteCarlo::Object&);
+
+Geometry::Vec3D
+calcCOFM(const MonteCarlo::Object&);
 
 }
 
 #endif
- 

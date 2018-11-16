@@ -45,17 +45,11 @@ namespace ModelSupport
   class ObjSurfMap;
 }
 
-namespace WeightSystem
-{
-  class WeightMesh;
-  class WeightControl;
-}
-
 namespace MonteCarlo
 {
   class Object;
   class Material;
-  class Qhull;
+  class Object;
 }
 
 /*!
@@ -67,10 +61,9 @@ namespace MonteCarlo
 
   Contains the running simulation information 
   Mainly list of maps and process information
-  Is expected to be mainly a singleton class.
 */
 
-class Simulation
+class Simulation : public objectGroups
 {
  protected:
 
@@ -79,7 +72,7 @@ class Simulation
  public:
 
   // UGLY
-  typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
+  typedef std::map<int,MonteCarlo::Object*> OTYPE;      ///< Object type
 
  protected:
 
@@ -95,7 +88,7 @@ class Simulation
   size_t cellCNF;                       ///< max size to convert into CNF
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
-  std::set<int> voidCells;              ///< List of void cells
+  //   std::set<int> voidCells;              ///< List of void cells
 
   std::string sourceName;               ///< Source name
   
@@ -104,10 +97,10 @@ class Simulation
   void deleteObjects();
   
 
-  int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
+  int checkInsert(const MonteCarlo::Object&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
-  int removeComplement(MonteCarlo::Qhull&) const;
-  void addObjSurfMap(MonteCarlo::Qhull*);
+  int removeComplement(MonteCarlo::Object&) const;
+  void addObjSurfMap(MonteCarlo::Object*);
 
   std::map<int,int> calcCellRenumber(const std::vector<int>&,
 				     const std::vector<int>&) const;
@@ -130,12 +123,17 @@ class Simulation
   void setCellDNF(const size_t C) { cellDNF=C; }
   /// set cell CNF
   void setCellCNF(const size_t C) { cellCNF=C; }
-  MonteCarlo::Qhull* findQhull(const int);         
-  const MonteCarlo::Qhull* findQhull(const int) const; 
+
+  MonteCarlo::Object* findObject(const int);         
+  const MonteCarlo::Object* findObject(const int) const; 
+
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
 			       MonteCarlo::Object*) const;
   std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
     findCellPair(const Geometry::Vec3D&,const int) const;
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+    findCellPair(const int,const groupRange&,
+		 const size_t,const size_t) const;
   
   int findCellNumber(const Geometry::Vec3D&,const int) const;  
 
@@ -170,17 +168,12 @@ class Simulation
 
   int getNextCell(int) const;
   // ADD Objects
-  int addCell(const MonteCarlo::Qhull&);         
-  int addCell(const int,const MonteCarlo::Qhull&);         
+  int addCell(const MonteCarlo::Object&);         
+  int addCell(const int,const MonteCarlo::Object&);         
   int addCell(const int,const int,const std::string&);
   int addCell(const int,const int,const double,const std::string&);
   int addCell(const int,const int,const double,const HeadRule&);
 
-  // LIST Stuff
-
-  void reZeroFromVertex(const int,const unsigned int,const unsigned int,
-			const unsigned int,const unsigned int,Geometry::Vec3D&,
-			Geometry::Matrix<double>&);
 
   /// Get values
 

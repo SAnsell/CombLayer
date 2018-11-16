@@ -59,9 +59,10 @@
 #include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "surfDBase.h"
@@ -160,19 +161,19 @@ testSurfDivide::createObjects()
   int cellIndex(1);
   const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));   // Outside void Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));   // Outside void Void
 
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16 -17");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6 -7");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16 (-3:4:-5:6)");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // # 5
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // # 5
 
   return;
 }
@@ -396,7 +397,7 @@ testSurfDivide::checkResults(const int CN,
 {
   ELog::RegMethod RegA("testSurfDivide","checkResults");
 
-  const MonteCarlo::Object* OP=ASim.findQhull(CN);
+  const MonteCarlo::Object* OP=ASim.findObject(CN);
   if (!OP)
     {
       ELog::EM<<"No cell for: "<<CN<<ELog::endCrit;

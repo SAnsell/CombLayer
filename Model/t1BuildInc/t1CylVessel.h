@@ -40,8 +40,6 @@ class t1CylVessel : public attachSystem::FixedComp,
 {
  private:
   
-  const int voidIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
   int populated;                  ///< 1:var
 
   double voidYoffset;             ///< Central offset

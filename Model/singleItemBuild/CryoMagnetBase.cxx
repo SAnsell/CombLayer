@@ -3,7 +3,7 @@
  
  * File:   singleItem/CryoMagnetBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,13 +56,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -79,9 +79,7 @@ namespace constructSystem
       
 CryoMagnetBase::CryoMagnetBase(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  layerIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(layerIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -170,26 +168,26 @@ CryoMagnetBase::createSurfaces()
 {
   ELog::RegMethod RegA("CryoMagnetBase","createSurfaces");
 
-  int SN(layerIndex+100);
+  int SN(buildIndex+100);
   for(size_t i=0;i<LRad.size();i++)
     {
       ModelSupport::buildCylinder(SMap,SN+7,Origin,Z,LRad[i]);
       ModelSupport::buildCylinder(SMap,SN+17,Origin,Z,LRad[i]+LThick[i]);
       SN+=50;
     }
-  ModelSupport::buildCylinder(SMap,layerIndex+7,Origin,Z,outerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,outerRadius);
   
-  ModelSupport::buildCone(SMap,layerIndex+9,
+  ModelSupport::buildCone(SMap,buildIndex+9,
 			  Origin-Z*baseOffset,-Z,cutBaseAngle);
   
-  ModelSupport::buildCone(SMap,layerIndex+19,
+  ModelSupport::buildCone(SMap,buildIndex+19,
 			  Origin+Z*topOffset,Z,cutTopAngle);
 
-  ModelSupport::buildPlane(SMap,layerIndex+105,Origin-Z*baseOffset,Z);
-  ModelSupport::buildPlane(SMap,layerIndex+106,Origin+Z*topOffset,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*baseOffset,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*topOffset,Z);
 
-  ModelSupport::buildPlane(SMap,layerIndex+5,Origin-Z*(baseOffset+baseThick),Z);
-  ModelSupport::buildPlane(SMap,layerIndex+6,Origin+Z*(topOffset+topThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(baseOffset+baseThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(topOffset+topThick),Z);
 
   return; 
 }
@@ -209,10 +207,10 @@ CryoMagnetBase::createObjects(Simulation& System)
     {
       
     }
-  Out=ModelSupport::getComposite(SMap,layerIndex," 5 -6 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7");
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,layerIndex," 5 -6 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7");
   addOuterSurf(Out);
   return; 
 }

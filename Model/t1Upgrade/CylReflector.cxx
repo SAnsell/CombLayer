@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CylReflector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,9 +80,7 @@ namespace ts1System
 
 CylReflector::CylReflector(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
-  attachSystem::CellMap(),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +90,6 @@ CylReflector::CylReflector(const std::string& Key)  :
 CylReflector::CylReflector(const CylReflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),
   nLayer(A.nLayer),radius(A.radius),
   height(A.height),depth(A.depth),COffset(A.COffset),
   Mat(A.Mat)
@@ -115,7 +112,6 @@ CylReflector::operator=(const CylReflector& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       nLayer=A.nLayer;
       radius=A.radius;
       height=A.height;
@@ -152,18 +148,14 @@ CylReflector::populate(const FuncDataBase& Control)
   COffset.resize(nLayer);
   for(size_t i=0;i<nLayer;i++)
     {
-      radius[i]=Control.EvalVar<double>
-	(keyName+StrFunc::makeString("Radius",i+1));
-      height[i]=Control.EvalVar<double>
-	(keyName+StrFunc::makeString("Height",i+1));
-      depth[i]=Control.EvalVar<double>
-	(keyName+StrFunc::makeString("Depth",i+1));
-      Mat[i]=ModelSupport::EvalMat<int>(Control,
-	keyName+StrFunc::makeString("Mat",i+1));
+      const std::string IStr(std::to_string(i+1));
+      radius[i]=Control.EvalVar<double>(keyName+"Radius"+IStr);
+      height[i]=Control.EvalVar<double>(keyName+"Height"+IStr);
+      depth[i]=Control.EvalVar<double>(keyName+"Depth"+IStr);
+      Mat[i]=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+IStr);
       if (i)
 	COffset[i]=Control.EvalDefVar<Geometry::Vec3D>
-	  (keyName+StrFunc::makeString("Offset",i+1),
-	   Geometry::Vec3D(0,0,0));
+	  (keyName+"Offset"+IStr,Geometry::Vec3D(0,0,0));
     }
   return;
 }
@@ -198,7 +190,7 @@ CylReflector::createSurfaces()
 
   // rotation of axis:
 
-  int RI(refIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*depth[i],Z);
@@ -221,13 +213,13 @@ CylReflector::createObjects(Simulation& System)
   ELog::RegMethod RegA("CylReflector","createObjects");
 
   std::string Out,OutX;
-  int RI(refIndex);
+  int RI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
       if (i)
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out+OutX));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
       RI+=10;
       addCell("Reflector",cellIndex-1);
       addCell("RefLayer"+std::to_string(i),cellIndex-1);
@@ -245,7 +237,7 @@ CylReflector::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,refIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void
@@ -263,7 +255,7 @@ CylReflector::createLinks()
       FixedComp::setConnect(1,Origin+COffset[i]+Z*height[i],Z);  // base
       FixedComp::setConnect(2,Origin+COffset[i]+Y*radius[i],Y);   // outer point
       
-      const int RI(static_cast<int>(nLayer-1)*10+refIndex);
+      const int RI(static_cast<int>(nLayer-1)*10+buildIndex);
       FixedComp::setLinkSurf(0,-SMap.realSurf(RI+5));
       FixedComp::setLinkSurf(1,SMap.realSurf(RI+6));
       FixedComp::setLinkSurf(2,SMap.realSurf(RI+7));
@@ -279,7 +271,7 @@ CylReflector::getCells() const
   */
 {
   std::vector<int> Out;
-  for(int i=refIndex+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     Out.push_back(i);
   return Out;
 }

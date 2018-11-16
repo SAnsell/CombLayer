@@ -82,7 +82,7 @@ class SurfMap : public BaseMap
     { return BaseMap::getItems(); }
   //@}
 
-  int getSignedSurf(const std::string&,const long int) const;
+  int getSignedSurf(const std::string&,const size_t =0) const;
 
   Geometry::Surface*
     getSurfPtr(const std::string&,const size_t =0) const;

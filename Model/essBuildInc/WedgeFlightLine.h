@@ -48,9 +48,6 @@ class WedgeFlightLine : public moderatorSystem::BasicFlightLine
 {
  private:
   
-  const int wedgeIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   size_t nWedges;                  ///< number of wedges to build
   std::vector<std::shared_ptr<WedgeItem> > wedges; ///< array of wedges
 

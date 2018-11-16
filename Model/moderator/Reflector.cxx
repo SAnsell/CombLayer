@@ -61,7 +61,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -72,7 +73,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -110,8 +110,6 @@ namespace moderatorSystem
 
 Reflector::Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1),
   TarObj(new TMRSystem::TS2target("t2Target")),
   GrooveObj(new Groove("groove")),
   HydObj(new Hydrogen("hydrogen")),
@@ -134,7 +132,6 @@ Reflector::Reflector(const std::string& Key)  :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
   OR.addObject(TarObj);
   OR.addObject(GrooveObj);
   OR.addObject(HydObj);
@@ -143,21 +140,16 @@ Reflector::Reflector(const std::string& Key)  :
   OR.addObject(FLhydro);
   OR.addObject(PMgroove);
   OR.addObject(PMhydro);
-  OR.addObject(Horn);
-
-
   OR.addObject(DVacObj);
   OR.addObject(FLwish);
   OR.addObject(FLnarrow);
   OR.addObject(PMdec);
-  OR.addObject(IRcut);
   OR.addObject(CdBucket);
 }
 
 
 Reflector::Reflector(const Reflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),
   xySize(A.xySize),zSize(A.zSize),cutSize(A.cutSize),
   defMat(A.defMat),
   TarObj(new TMRSystem::TS2target(*A.TarObj)),
@@ -283,21 +275,21 @@ Reflector::createSurfaces()
   
   // Simple box planes
 
-  ModelSupport::buildPlane(SMap,refIndex+1,Origin-Y*xySize,Y);
-  ModelSupport::buildPlane(SMap,refIndex+2,Origin+Y*xySize,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*xySize,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*xySize,Y);
 
-  ModelSupport::buildPlane(SMap,refIndex+3,Origin-X*xySize,X);
-  ModelSupport::buildPlane(SMap,refIndex+4,Origin+X*xySize,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xySize,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xySize,X);
 
-  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*zSize,Z);
-  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*zSize,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zSize,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zSize,Z);
  
   // Corner cuts:
-  ModelSupport::buildPlane(SMap,refIndex+11,Origin-YR*cutSize,YR);
-  ModelSupport::buildPlane(SMap,refIndex+12,Origin+YR*cutSize,YR);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-YR*cutSize,YR);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+YR*cutSize,YR);
 
-  ModelSupport::buildPlane(SMap,refIndex+13,Origin-XR*cutSize,XR);
-  ModelSupport::buildPlane(SMap,refIndex+14,Origin+XR*cutSize,XR);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-XR*cutSize,XR);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+XR*cutSize,XR);
 
   createLinks(XR,YR);
 
@@ -327,16 +319,16 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
   FixedComp::setConnect(8,Origin-XR*cutSize,-XR);
   FixedComp::setConnect(9,Origin+XR*cutSize,XR);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(refIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(refIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+6));
-  FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+11));
-  FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+12));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+13));
-  FixedComp::setLinkSurf(9,SMap.realSurf(refIndex+14));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+14));
 
   return;
 }
@@ -351,10 +343,10 @@ Reflector::createObjects(Simulation& System)
   ELog::RegMethod RegA("Reflector","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,refIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 11 -12 13 -14");
   addOuterSurf(Out);
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   TarObj->addInsertCell(cellIndex-1);
 
   VacObj->addInsertCell(cellIndex-1);
@@ -389,9 +381,9 @@ Reflector::processDecoupled(Simulation& System,
    */
 {
   ELog::RegMethod RegA("Reflector","processDecoupled");
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
 
   if (IParam.flag("decFile"))
     {
@@ -400,7 +392,6 @@ Reflector::processDecoupled(Simulation& System,
       DFPtr->createAllFromFile(System,*this,0,
           IParam.getValue<std::string>("decFile"));
       DMod=std::shared_ptr<Decoupled>(DFPtr);  
-      OR.addObject(DMod);
       return;
     }
 
@@ -408,14 +399,13 @@ Reflector::processDecoupled(Simulation& System,
   if (DT=="standard")  // Standard one
     {
       std::shared_ptr<Decoupled> DModPtr(new Decoupled("decoupled"));
-      OR.addObject(DModPtr);
+      //      OR.addObject(DModPtr);
       DModPtr->createAll(System,World::masterTS2Origin(),0);
       DMod=DModPtr;
     }
   else if (DT=="layer")  // layer
     {
       std::shared_ptr<Decoupled> DModPtr(new DecLayer("decoupled","decLayer")); 
-      OR.addObject(DModPtr);
       DModPtr->createAll(System,World::masterTS2Origin(),0);
       DMod=DModPtr;
     }
@@ -423,7 +413,6 @@ Reflector::processDecoupled(Simulation& System,
     {
       std::shared_ptr<insertSystem::insertPlate>
 	PPtr(new insertSystem::insertPlate("decPlate")); 
-       OR.addObject(PPtr);
        PPtr->setNoInsert();
        PPtr->addInsertCell(cellIndex-1);
        PPtr->createAll(System,World::masterTS2Origin(),0);
@@ -435,6 +424,8 @@ Reflector::processDecoupled(Simulation& System,
 	      <<DT<<ELog::endErr;
       throw ColErr::InContainerError<std::string>(DT,"DT value");
     }
+  OR.addObject(DMod);
+
   return;
 }
 
@@ -448,15 +439,13 @@ Reflector::createInternalObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createInternalObjects");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
   const std::string DT=IParam.getValue<std::string>("decType");
 
-  TarObj->setRefPlates(-SMap.realSurf(refIndex+12),
-		       -SMap.realSurf(refIndex+11));
+  TarObj->setRefPlates(-SMap.realSurf(buildIndex+12),
+		       -SMap.realSurf(buildIndex+11));
   TarObj->createAll(System,World::masterTS2Origin());
 
 
@@ -465,7 +454,6 @@ Reflector::createInternalObjects(Simulation& System,
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
 	(new TMRSystem::TS2ModifyTarget("tMoly"));
       TarObjModify->createAll(System,*TarObj);
-      OR.addObject(TarObjModify);
     }
 
   TarObj->addProtonLineInsertCell(cellIndex-1);
@@ -480,12 +468,12 @@ Reflector::createInternalObjects(Simulation& System,
     }
   VacObj->createAllPair(System,*GrooveObj,*HydObj);
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,refIndex,"-14 -2 -4");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-14 -2 -4");
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
   
-  Out=ModelSupport::getComposite(SMap,refIndex,"1 13");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 13");
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
@@ -505,19 +493,19 @@ Reflector::createInternalObjects(Simulation& System,
   
   processDecoupled(System,IParam);
   const attachSystem::ContainedComp* CMod=
-    OR.getObjectThrow<attachSystem::ContainedComp>
+    System.getObjectThrow<attachSystem::ContainedComp>
     (DMod->getKeyName(),"DMod to CC failed");
 
   if (DT!="plate")
     {
       DVacObj->createAll(System,*DMod,*CMod);
 
-      Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-2 13 3");
       FLnarrow->addBoundarySurf("inner",Out);  
       FLnarrow->addBoundarySurf("outer",Out);  
       FLnarrow->createAll(System,*DVacObj,1);
       
-      Out=ModelSupport::getComposite(SMap,refIndex,"11 -4 -14");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"11 -4 -14");
       FLwish->addBoundarySurf("inner",Out);  
       FLwish->addBoundarySurf("outer",Out);
       FLwish->createAll(System,*DVacObj,2);
@@ -527,12 +515,12 @@ Reflector::createInternalObjects(Simulation& System,
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-2 13 3");
       FLnarrow->addBoundarySurf("inner",Out);  
       FLnarrow->addBoundarySurf("outer",Out);  
       FLnarrow->createAll(System,*DMod,1);
       
-      Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"11 1 -14");
       FLwish->addBoundarySurf("inner",Out);  
       FLwish->addBoundarySurf("outer",Out);  
       FLwish->createAll(System,*DMod,2);
@@ -540,7 +528,7 @@ Reflector::createInternalObjects(Simulation& System,
       PMdec->setTargetSurf(TarObj->getLinkSurf(1));
       PMdec->createAll(System,*DMod,6,1);
     }  
-  Out=ModelSupport::getComposite(SMap,refIndex," 3 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 ");
   IRcut->addBoundarySurf(Out);  
   IRcut->createAll(System,*TarObj);
   
@@ -681,12 +669,13 @@ Reflector::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createAll");
+
   populate(System.getDataBase());
 
   createUnitVector(World::masterTS2Origin(),0);
-
   createSurfaces();
   createObjects(System);
+	
   createInternalObjects(System,IParam);
   insertObjects(System);              
 

@@ -40,8 +40,6 @@ class EPBline : public attachSystem::ContainedComp,
 {
  private:
   
-  const int epbIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double innerRad;             ///< Inner radius 
   double wallThick;            ///< Wall thick

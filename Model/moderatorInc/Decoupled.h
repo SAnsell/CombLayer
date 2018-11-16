@@ -41,8 +41,6 @@ class Decoupled : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int decIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   std::shared_ptr<VanePoison> VP;  ///< Vane poisoning

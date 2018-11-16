@@ -40,8 +40,6 @@ class muonTube : public attachSystem::FixedComp,
 {
  private:
   
-  const int tubeIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step

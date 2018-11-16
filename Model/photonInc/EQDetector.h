@@ -40,8 +40,6 @@ class EQDetector : public attachSystem::ContainedComp,
 {
  private:
 
-  const int detIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double yOffset;               ///< Outer volume
   double radius;                ///< Outer volume

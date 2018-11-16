@@ -58,7 +58,7 @@ namespace MonteCarlo
 {
   class Object;
   class Material;
-  class Qhull;
+  class Object;
 }
 
 /*!

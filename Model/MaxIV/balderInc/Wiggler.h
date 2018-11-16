@@ -41,13 +41,9 @@ class Wiggler :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
-  
 {
  private:
   
-  const int wigIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double length;                  ///< Main length
   double blockWidth;              ///< Block [quad unit] width
   double blockDepth;              ///< Depth of unit

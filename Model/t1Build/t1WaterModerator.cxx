@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1WaterModerator.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace ts1System
 {
 
 t1WaterModerator::t1WaterModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
-  waterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(waterIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +89,6 @@ t1WaterModerator::t1WaterModerator(const std::string& Key)  :
 
 t1WaterModerator::t1WaterModerator(const t1WaterModerator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  waterIndex(A.waterIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),xOutSize(A.xOutSize),yOutSize(A.yOutSize),
   zOutSize(A.zOutSize),alThickOut(A.alThickOut),alMat(A.alMat),waterMat(A.waterMat)
@@ -112,7 +110,6 @@ t1WaterModerator::operator=(const t1WaterModerator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -148,7 +145,7 @@ t1WaterModerator::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
 
   xOutSize=Control.EvalVar<double>(keyName+"XOutSize");
   yOutSize=Control.EvalVar<double>(keyName+"YOutSize");
@@ -195,24 +192,24 @@ t1WaterModerator::createSurfaces()
   ELog::RegMethod RegA("t1WaterModerator","createSurface");
 
   // Top layer out:
-  ModelSupport::buildPlane(SMap,waterIndex+1,Origin-Y*yOutSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,waterIndex+2,Origin+Y*yOutSize/2.0,Y);
-  ModelSupport::buildPlane(SMap,waterIndex+3,Origin-X*xOutSize/2.0,X);
-  ModelSupport::buildPlane(SMap,waterIndex+4,Origin+X*xOutSize/2.0,X);
-  ModelSupport::buildPlane(SMap,waterIndex+5,Origin-Z*zOutSize/2.0,Z);
-  ModelSupport::buildPlane(SMap,waterIndex+6,Origin+Z*zOutSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*yOutSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*yOutSize/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*xOutSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*xOutSize/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*zOutSize/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*zOutSize/2.0,Z);
   // Top layer in:
-  ModelSupport::buildPlane(SMap,waterIndex+11,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-
                                  Y*(yOutSize/2.0-alThickOut),Y);
-  ModelSupport::buildPlane(SMap,waterIndex+12,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+
                                  Y*(yOutSize/2.0-alThickOut),Y);
-  ModelSupport::buildPlane(SMap,waterIndex+13,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-
                                  X*(xOutSize/2.0-alThickOut),X);
-  ModelSupport::buildPlane(SMap,waterIndex+14,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+
                                  X*(xOutSize/2.0-alThickOut),X);
-  ModelSupport::buildPlane(SMap,waterIndex+15,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-
                                  Z*(zOutSize/2.0-alThickOut),Z);
-  ModelSupport::buildPlane(SMap,waterIndex+16,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+
                                  Z*(zOutSize/2.0-alThickOut),Z);
 
   return;
@@ -229,17 +226,17 @@ t1WaterModerator::createObjects(Simulation& System)
   
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,waterIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   // Al 
-  Out=ModelSupport::getComposite(SMap,waterIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	"1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
   // water 
-  Out=ModelSupport::getComposite(SMap,waterIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 	"11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
 
   return;

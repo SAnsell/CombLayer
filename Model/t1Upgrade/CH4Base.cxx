@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CH4Base.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -76,9 +77,8 @@ namespace ts1System
 {
 
 CH4Base::CH4Base(const std::string& Key,const size_t nLinks)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,nLinks),
-  ch4Index(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ch4Index+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,nLinks)
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,8 +87,7 @@ CH4Base::CH4Base(const std::string& Key,const size_t nLinks)  :
 {}
 
 CH4Base::CH4Base(const CH4Base& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  ch4Index(A.ch4Index),cellIndex(A.cellIndex)
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A)
   /*!
     Copy constructor
     \param A :: CH4Base to copy
@@ -107,7 +106,6 @@ CH4Base::operator=(const CH4Base& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
     }
   return *this;
 }

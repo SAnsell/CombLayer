@@ -61,7 +61,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -71,7 +72,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -221,7 +221,7 @@ FlangeMount::calcThreadLength()
     on the bladeCentre point [if set]
   */
 {
-  if (bladeCentreActive)
+  if (!bladeCentreActive)
     {
       const Geometry::Vec3D DVec=bladeCentre-Origin;
       threadLength=std::abs(DVec.dotProd(Y));
@@ -260,7 +260,6 @@ FlangeMount::createSurfaces()
   const Geometry::Vec3D PZ(-Y);
 
   const Geometry::Vec3D BCent(Origin+PZ*(threadLength-lift));
-
   const Geometry::Quaternion QR
     (Geometry::Quaternion::calcQRotDeg(bladeXYAngle,Y));
   QR.rotate(PX);

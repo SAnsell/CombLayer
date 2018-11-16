@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,7 +63,8 @@
 #include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -73,8 +73,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedSpace.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -268,12 +267,13 @@ PortTube::createObjects(Simulation& System)
 
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -127 (-117:-111) ");
-  addOuterUnionSurf(Out+frontSurf);
+  addOuterSurf("FlangeA",Out+frontSurf);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ( -217:212 ) ");
-  addOuterUnionSurf(Out+backSurf);
+  addOuterSurf("FlangeB",Out+backSurf);
   return;
 }
 

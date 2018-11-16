@@ -75,6 +75,8 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "ModeCard.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "localRotate.h"
 #include "activeUnit.h"

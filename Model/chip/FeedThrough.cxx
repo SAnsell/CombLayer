@@ -3,7 +3,7 @@
  
  * File:   chip/FeedThrough.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "SimProcess.h"
@@ -93,12 +93,11 @@
 namespace hutchSystem
 {
 
-FeedThrough::FeedThrough(const std::string& Key,const size_t Index)  :
+  // Note this seems wrong -- key will get repreated
+FeedThrough::FeedThrough(const std::string& Key,
+			 const size_t Index)  :
   attachSystem::FixedComp(Key,0),ID(Index),
-  pipeIndex(ModelSupport::objectRegister::Instance().
-	    cell(StrFunc::makeString(Key,Index))),
-  cellIndex(pipeIndex+1),
-  CollTrack(StrFunc::makeString(Key,Index))
+  CollTrack(Key+std::to_string(Index))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -107,7 +106,6 @@ FeedThrough::FeedThrough(const std::string& Key,const size_t Index)  :
 
 FeedThrough::FeedThrough(const FeedThrough& A) : 
   attachSystem::FixedComp(A),ID(A.ID),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   CollTrack(A.CollTrack),height(A.height),
   width(A.width),Offset(A.Offset),CPts(A.CPts)
   /*!
@@ -155,7 +153,7 @@ FeedThrough::populate(const Simulation& System)
   const FuncDataBase& Control=System.getDataBase();  
   
   // Two keys : one with a number and the default
-  const std::string keyIndex(StrFunc::makeString(keyName,ID));
+  const std::string keyIndex(keyName+std::to_string(ID));
 
   Offset=Control.EvalPair<Geometry::Vec3D>(keyIndex+"Offset",keyName+"Offset");  
   height=Control.EvalPair<double>(keyIndex+"Height",keyName+"Height"); 

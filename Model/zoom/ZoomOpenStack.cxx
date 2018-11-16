@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/ZoomOpenStack.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -65,7 +64,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +81,7 @@ namespace zoomSystem
 {
 
 ZoomOpenStack::ZoomOpenStack(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,2),
-  stackIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(stackIndex+1)
+  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +90,6 @@ ZoomOpenStack::ZoomOpenStack(const std::string& Key)  :
 
 ZoomOpenStack::ZoomOpenStack(const ZoomOpenStack& A) : 
   attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  stackIndex(A.stackIndex),cellIndex(A.cellIndex),
   nItem(A.nItem),posIndex(A.posIndex),width(A.width),
   height(A.height),length(A.length),wallThick(A.wallThick),
   windowThick(A.windowThick),wallMat(A.wallMat),
@@ -115,7 +112,6 @@ ZoomOpenStack::operator=(const ZoomOpenStack& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
       nItem=A.nItem;
       posIndex=A.posIndex;
       width=A.width;
@@ -204,36 +200,36 @@ ZoomOpenStack::createSurfaces()
 
   // Create Outer surfaces
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,stackIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,stackIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,stackIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,stackIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   // walls
-  ModelSupport::buildPlane(SMap,stackIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*windowThick,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(length+windowThick),Y);
-  ModelSupport::buildPlane(SMap,stackIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,stackIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,stackIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,stackIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);
 
   Geometry::Vec3D UnitO=bEnter-bX*(guideSep*
 				   static_cast<double>(posIndex));
   // Stack cut position
-  ModelSupport::buildPlane(SMap,stackIndex+101,
+  ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin+Y*guideOffset,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+102,
+  ModelSupport::buildPlane(SMap,buildIndex+102,
 			   Origin+Y*(length-guideOffset),Y);
 
-  int SI(stackIndex+100);
+  int SI(buildIndex+100);
   for(size_t i=0;i<nItem;i++)
     {
       ModelSupport::buildPlane(SMap,SI+3,
@@ -271,34 +267,34 @@ ZoomOpenStack::createObjects(Simulation& System)
   
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,stackIndex,"11 -12 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,stackIndex,"11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
                               " (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
 
-  int SI(stackIndex+100);
+  int SI(buildIndex+100);
   HeadRule MidVoid;
   for(size_t i=0;i<nItem;i++)
     {
       // inner void
-      Out=ModelSupport::getComposite(SMap,SI,stackIndex,
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,SI,stackIndex,
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M (-3:4:-5:6) 13 -14 15 -16 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,guideMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,SI,stackIndex,
+      System.addCell(MonteCarlo::Object(cellIndex++,guideMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M 13 -14 15 -16 ");
       MidVoid.addIntersection(Out);
     }
 
     // void for units
-  Out=ModelSupport::getComposite(SMap,stackIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   MidVoid.makeComplement();
   Out+=MidVoid.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

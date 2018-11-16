@@ -3,7 +3,7 @@
  
  * File:   bibBuild/BeFilter.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -75,9 +76,7 @@ namespace bibSystem
 {
 
 BeFilter::BeFilter(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  beFilterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(beFilterIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -86,7 +85,6 @@ BeFilter::BeFilter(const std::string& Key) :
 
 BeFilter::BeFilter(const BeFilter& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  beFilterIndex(A.beFilterIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),length(A.length),
   wallThick(A.wallThick),wallMat(A.wallMat),beMat(A.beMat),
   beTemp(A.beTemp)
@@ -108,7 +106,6 @@ BeFilter::operator=(const BeFilter& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -177,23 +174,23 @@ BeFilter::createSurfaces()
 {
   ELog::RegMethod RegA("BeFilter","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,beFilterIndex+1,Origin,Y);
-  ModelSupport::buildCylinder(SMap,beFilterIndex+2,Origin,Z,length); 
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+2,Origin,Z,length); 
   
-  ModelSupport::buildPlane(SMap,beFilterIndex+3,Origin-X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,beFilterIndex+4,Origin+X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,beFilterIndex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,beFilterIndex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);  
   
-  ModelSupport::buildPlane(SMap,beFilterIndex+11,Origin-Y*wallThick,Y);  
-  ModelSupport::buildCylinder(SMap,beFilterIndex+12,Origin,Z,
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*wallThick,Y);  
+  ModelSupport::buildCylinder(SMap,buildIndex+12,Origin,Z,
 			      length+wallThick);
   
-  ModelSupport::buildPlane(SMap,beFilterIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,beFilterIndex+14,Origin+X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,beFilterIndex+15,Origin-Z*(height/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,beFilterIndex+16,Origin+Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);  
 
 
   return; 
@@ -213,17 +210,17 @@ BeFilter::createObjects(Simulation& System,
   std::string Out;
 
   // BeFilter
-  Out=ModelSupport::getComposite(SMap,beFilterIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,beTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,beTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,beFilterIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16  (-1:2:-3:4:-5:6)");
   Out+=CC.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,beTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,beTemp,Out));
   
   
   // Hay que añadir una superficie externa
-  Out=ModelSupport::getComposite(SMap,beFilterIndex,"11 -12 13 -14 15 -16" );
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16" );
   addOuterSurf(Out);
 
   return; 
@@ -251,12 +248,12 @@ BeFilter::createLinks()
 
   //Hay que respetar el numero de superficie a la que se liga el 
   // punto de vinculado (linking point)
-  FixedComp::setLinkSurf(0,-SMap.realSurf(beFilterIndex+11)); 
-  FixedComp::setLinkSurf(1,SMap.realSurf(beFilterIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(beFilterIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(beFilterIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(beFilterIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(beFilterIndex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11)); 
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   
   return;
 }

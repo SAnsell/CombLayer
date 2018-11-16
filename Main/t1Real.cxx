@@ -64,11 +64,12 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "mainJobs.h"
@@ -132,7 +133,7 @@ main(int argc,char* argv[])
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -153,7 +154,6 @@ main(int argc,char* argv[])
     }
 
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

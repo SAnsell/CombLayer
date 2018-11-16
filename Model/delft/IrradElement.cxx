@@ -57,7 +57,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -78,7 +79,7 @@ namespace delftSystem
 
 
 IrradElement::IrradElement(const size_t XI,const size_t YI,
-			 const std::string& Key) :
+			   const std::string& Key) :
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -152,52 +153,52 @@ IrradElement::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("IrradElement","populate");
 
   Width=ReactorGrid::getElement<double>
-    (Control,keyName+"Width",XIndex,YIndex);
+    (Control,baseName+"Width",XIndex,YIndex);
   Depth=ReactorGrid::getElement<double>
-    (Control,keyName+"Depth",XIndex,YIndex);
+    (Control,baseName+"Depth",XIndex,YIndex);
 
   endStop=ReactorGrid::getElement<double>
-    (Control,keyName+"EndStop",XIndex,YIndex);
+    (Control,baseName+"EndStop",XIndex,YIndex);
   topPlug=ReactorGrid::getElement<double>
-    (Control,keyName+"TopPlug",XIndex,YIndex);
+    (Control,baseName+"TopPlug",XIndex,YIndex);
   beLen=ReactorGrid::getElement<double>
-    (Control,keyName+"BeLen",XIndex,YIndex);
+    (Control,baseName+"BeLen",XIndex,YIndex);
   topLocator=ReactorGrid::getElement<double>
-    (Control,keyName+"TopLocator",XIndex,YIndex);
+    (Control,baseName+"TopLocator",XIndex,YIndex);
   plugZOffset=ReactorGrid::getElement<double>
-    (Control,keyName+"PlugZOffset",XIndex,YIndex);
+    (Control,baseName+"PlugZOffset",XIndex,YIndex);
   plugThick=ReactorGrid::getElement<double>
-    (Control,keyName+"PlugThick",XIndex,YIndex);
+    (Control,baseName+"PlugThick",XIndex,YIndex);
   locThick=ReactorGrid::getElement<double>
-    (Control,keyName+"LocatorThick",XIndex,YIndex);
+    (Control,baseName+"LocatorThick",XIndex,YIndex);
 
   
   sampleRadius=ReactorGrid::getElement<double>
-    (Control,keyName+"SampleRad",XIndex,YIndex);
+    (Control,baseName+"SampleRad",XIndex,YIndex);
   sampleXOff=ReactorGrid::getElement<double>
-    (Control,keyName+"SampleXOffset",XIndex,YIndex);
+    (Control,baseName+"SampleXOffset",XIndex,YIndex);
   sampleZOff=ReactorGrid::getElement<double>
-    (Control,keyName+"SampleZOffset",XIndex,YIndex);
+    (Control,baseName+"SampleZOffset",XIndex,YIndex);
 
   vacRadius=ReactorGrid::getElement<double>
-    (Control,keyName+"VacRadius",XIndex,YIndex);
+    (Control,baseName+"VacRadius",XIndex,YIndex);
   caseRadius=ReactorGrid::getElement<double>
-    (Control,keyName+"CaseRadius",XIndex,YIndex);
+    (Control,baseName+"CaseRadius",XIndex,YIndex);
   coreRadius=ReactorGrid::getElement<double>
-    (Control,keyName+"CoreRadius",XIndex,YIndex);
+    (Control,baseName+"CoreRadius",XIndex,YIndex);
   outerRadius=ReactorGrid::getElement<double>
-    (Control,keyName+"OuterRadius",XIndex,YIndex);
+    (Control,baseName+"OuterRadius",XIndex,YIndex);
   waterRadius=ReactorGrid::getElement<double>
-    (Control,keyName+"WaterRadius",XIndex,YIndex);
+    (Control,baseName+"WaterRadius",XIndex,YIndex);
   
   beMat=ReactorGrid::getMatElement
-    (Control,keyName+"BeMat",XIndex,YIndex);
+    (Control,baseName+"BeMat",XIndex,YIndex);
   pipeMat=ReactorGrid::getMatElement
-    (Control,keyName+"PipeMat",XIndex,YIndex);
+    (Control,baseName+"PipeMat",XIndex,YIndex);
   sampleMat=ReactorGrid::getMatElement
-    (Control,keyName+"SampleMat",XIndex,YIndex);
+    (Control,baseName+"SampleMat",XIndex,YIndex);
   waterMat=ReactorGrid::getMatElement
-    (Control,keyName+"WaterMat",XIndex,YIndex);
+    (Control,baseName+"WaterMat",XIndex,YIndex);
   
   return;
 }
@@ -229,61 +230,61 @@ IrradElement::createSurfaces(const attachSystem::FixedComp& RG)
 {  
   ELog::RegMethod RegA("IrradElement","createSurface");
   
-  ModelSupport::buildSphere(SMap,surfIndex+7,
+  ModelSupport::buildSphere(SMap,buildIndex+7,
 	    Origin-X*sampleXOff+Z*sampleZOff,sampleRadius);
-  ModelSupport::buildSphere(SMap,surfIndex+8,
+  ModelSupport::buildSphere(SMap,buildIndex+8,
 	    Origin+X*sampleXOff+Z*sampleZOff,sampleRadius);
   
-  ModelSupport::buildCylinder(SMap,surfIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
   	    Origin-X*sampleXOff,Z,vacRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+18,
+  ModelSupport::buildCylinder(SMap,buildIndex+18,
   	    Origin+X*sampleXOff,Z,vacRadius);
 
-  ModelSupport::buildCylinder(SMap,surfIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
   	    Origin-X*sampleXOff,Z,caseRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+28,
+  ModelSupport::buildCylinder(SMap,buildIndex+28,
   	    Origin+X*sampleXOff,Z,caseRadius);
 
   // Core
-  ModelSupport::buildCylinder(SMap,surfIndex+37,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,
   	    Origin,Z,coreRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+47,
+  ModelSupport::buildCylinder(SMap,buildIndex+47,
   	    Origin,Z,outerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+57,
+  ModelSupport::buildCylinder(SMap,buildIndex+57,
   	    Origin,Z,waterRadius);
 
   // Planes [OUTER]:
   
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*Depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*Depth/2.0,Y); 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*Depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*Depth/2.0,Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*Width/2.0,X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(Depth/2.0-locThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(Depth/2.0-locThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(Width/2.0-locThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(Width/2.0-locThick),X);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
+  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
   Geometry::Vec3D BaseZ(RG.getLinkPt(5));
   
   BaseZ+=Z*endStop;
-  ModelSupport::buildPlane(SMap,surfIndex+15,BaseZ,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,BaseZ,Z);
   BaseZ+=Z*beLen;
-  ModelSupport::buildPlane(SMap,surfIndex+25,BaseZ,Z);  // top of Be
+  ModelSupport::buildPlane(SMap,buildIndex+25,BaseZ,Z);  // top of Be
   BaseZ+=Z*topPlug;
-  ModelSupport::buildPlane(SMap,surfIndex+35,BaseZ,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+35,BaseZ,Z);
   BaseZ+=Z*topLocator;
-  ModelSupport::buildPlane(SMap,surfIndex+45,BaseZ,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+45,BaseZ,Z);
 
   // Inner tube
-  ModelSupport::buildPlane(SMap,surfIndex+115,
+  ModelSupport::buildPlane(SMap,buildIndex+115,
 			   Origin+Z*plugZOffset,Z);
-  ModelSupport::buildPlane(SMap,surfIndex+125,
+  ModelSupport::buildPlane(SMap,buildIndex+125,
 			   Origin+Z*(plugZOffset+plugThick),Z);
 
   return;
@@ -299,54 +300,54 @@ IrradElement::createObjects(Simulation& System)
   ELog::RegMethod RegA("IrradElement","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -45 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -45 ");
   addOuterSurf(Out);      
 
   // Two samples:
-  Out=ModelSupport::getComposite(SMap,surfIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -8 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,surfIndex," 125 -45 -17 7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 125 -45 -18 8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 125 -45 -17 7 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 125 -45 -18 8 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // Cladding 
-  Out=ModelSupport::getComposite(SMap,surfIndex,"125 -45 17 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex,"125 -45 18 -28");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 17 -27");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 18 -28");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
     
   // -- Change to full bore:
-  Out=ModelSupport::getComposite(SMap,surfIndex,"125 -45 -37 27 28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex,"125 -45 -47 37 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 -37 27 28 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 -47 37 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   
   // Base Cape
-  Out=ModelSupport::getComposite(SMap,surfIndex,"115 -125 -47");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"115 -125 -47");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
 
   // Water Surround
-  Out=ModelSupport::getComposite(SMap,surfIndex,"5 -45 -57 (-115:47)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -45 -57 (-115:47)");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   // Be surround
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -4 -25 15 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -25 15 57");
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
   // End Cap
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -4 5 -15 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -15 57");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   // Top Cap
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -4 25 -35 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 25 -35 57");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   // Locator Inner Water
-  Out=ModelSupport::getComposite(SMap,surfIndex,"11 -12 13 -14 35 -45 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 35 -45 57");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   // Locator OuterWalls
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 3 -4 (-11:12:-13:14) 35 -45");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
 
 
   return;

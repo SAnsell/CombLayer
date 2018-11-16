@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerQuake.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -90,8 +90,7 @@ namespace essSystem
 {
 
 BunkerQuake::BunkerQuake(const std::string& bunkerName) :
-  attachSystem::FixedComp(bunkerName+"Quake",0),
-  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName))
+  attachSystem::FixedComp(bunkerName+"Quake",0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
@@ -129,7 +128,7 @@ BunkerQuake::createAll(Simulation& System,
   for(size_t i=0;i<NPath;i++)
     {
       QUnit.push_back(std::shared_ptr<BunkerQUnit>
-		      (new BunkerQUnit(keyName+StrFunc::makeString(i))));
+		      (new BunkerQUnit(keyName+std::to_string(i))));
       OR.addObject(QUnit.back());
       QUnit.back()->createAll(System,FC,orgIndex,axisIndex);
     }

@@ -42,6 +42,9 @@ struct CF40
   static constexpr double flangeLength=0.5;
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
+  static constexpr double gasketRadius=1.0;
+  static constexpr double gasketThick=1.0;
+  static constexpr double boltRadius=1.0;
   static constexpr size_t nBolts=6;
 };
 

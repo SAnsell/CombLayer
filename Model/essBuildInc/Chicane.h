@@ -92,9 +92,6 @@ class Chicane : public attachSystem::ContainedComp,
 {
  private:
 
-  const int chicaneIndex;          ///< Index of surface offset
-  int cellIndex;                   ///< Cell index
-
   size_t nBlock;                   ///< Number of segments
   std::vector<chicaneUnit> CUnits; ///< Chicane units.
 

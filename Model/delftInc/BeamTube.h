@@ -44,8 +44,6 @@ class BeamTube : public attachSystem::ContainedComp,
 {
  private:
   
-  const int flightIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double waterStep;             ///< Forward water step
   double innerStep;             ///< Forward inner linder

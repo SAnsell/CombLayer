@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/H2Wing.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,6 @@ class H2Wing :
  private:
 
   const std::string baseName; ///< Basename
-  const int wingIndex;       ///< Index of surface offset
-  int cellIndex;             ///< Cell index
 
   int engActive;             ///< Engineering active
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components

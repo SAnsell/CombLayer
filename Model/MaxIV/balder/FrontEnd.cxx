@@ -56,16 +56,17 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -117,7 +118,6 @@ FrontEnd::FrontEnd(const std::string& Key) :
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   heatBox(new constructSystem::PortTube(newName+"HeatBox")),
-  heatDumpFlange(new xraySystem::FlangeMount(newName+"HeatDumpFlange")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe")),
   shutterBox(new constructSystem::PortTube(newName+"ShutterBox")),
@@ -152,7 +152,6 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(eCutDisk);
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
-  OR.addObject(heatDumpFlange);
   OR.addObject(heatDump);    
   OR.addObject(flightPipe);
   OR.addObject(shutterBox);
@@ -209,14 +208,12 @@ FrontEnd::buildObjects(Simulation& System)
   ELog::RegMethod RegA("FrontEnd","buildObjects");
 
   wigglerBox->addInsertCell(ContainedComp::getInsertCells());
-  wigglerBox->registerSpaceCut(0,2);
   wigglerBox->createAll(System,*this,0);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);
 
   dipolePipe->addInsertCell(ContainedComp::getInsertCells());
-  dipolePipe->registerSpaceCut(1,2);
   dipolePipe->setFront(*wigglerBox,2);
   dipolePipe->createAll(System,*wigglerBox,2);
 
@@ -225,80 +222,66 @@ FrontEnd::buildObjects(Simulation& System)
   eCutDisk->createAll(System,*dipolePipe,-2);
 
   bellowA->addInsertCell(ContainedComp::getInsertCells());
-  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
 
-  collTubeA->addInsertCell(ContainedComp::getInsertCells());
+  collTubeA->addAllInsertCell(ContainedComp::getInsertCells());
   collTubeA->setFront(*bellowA,2);  // needed to allow bend if miss aligned
-  collTubeA->registerSpaceCut(1,2);
   collTubeA->createAll(System,*bellowA,2);  
 
   collA->addInsertCell(collTubeA->getCell("Void"));
   collA->createAll(System,*collTubeA,0);
 
   bellowB->addInsertCell(ContainedComp::getInsertCells());
-  bellowB->registerSpaceCut(1,2);
   bellowB->createAll(System,*collTubeA,2);
 
   collABPipe->addInsertCell(ContainedComp::getInsertCells());
-  collABPipe->registerSpaceCut(1,2);
   collABPipe->createAll(System,*bellowB,2);
 
   bellowC->addInsertCell(ContainedComp::getInsertCells());
-  bellowC->registerSpaceCut(1,2);
   bellowC->createAll(System,*collABPipe,2);
 
-  collTubeB->addInsertCell(ContainedComp::getInsertCells());
-  collTubeB->registerSpaceCut(1,2);
+  collTubeB->addAllInsertCell(ContainedComp::getInsertCells());
   collTubeB->createAll(System,*bellowC,2);
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
 
 
-  collTubeC->addInsertCell(ContainedComp::getInsertCells());
-  collTubeC->registerSpaceCut(1,2);
+  collTubeC->addAllInsertCell(ContainedComp::getInsertCells());
   collTubeC->createAll(System,*collTubeB,2);
 
   collC->addInsertCell(collTubeC->getCell("Void"));
   collC->createAll(System,*collTubeC,0);
 
+
   collExitPipe->addInsertCell(ContainedComp::getInsertCells());
-  collExitPipe->registerSpaceCut(1,2);
   collExitPipe->createAll(System,*collTubeC,2);
 
-  heatBox->addInsertCell(ContainedComp::getInsertCells());
-  heatBox->registerSpaceCut(1,2);
+
+  // FAKE insertcell:
+  heatBox->addAllInsertCell(ContainedComp::getInsertCells());
   heatBox->createAll(System,*collExitPipe,2);
 
-  const constructSystem::portItem& PI=heatBox->getPort(0);
-  heatDumpFlange->addInsertCell("Flange",heatBox->getCell("OuterSpace"));
-  heatDumpFlange->addInsertCell("Body",PI.getCell("Void"));
-  heatDumpFlange->addInsertCell("Body",heatBox->getCell("Void"));
-  heatDumpFlange->setBladeCentre(PI,0);
-  heatDumpFlange->createAll(System,PI,2);
-
-  heatDump->addInsertCell(PI.getCell("Void"));
-  heatDump->addInsertCell(heatBox->getCell("Void"));
-
-  heatDump->createAll(System,*heatDumpFlange,
-		      heatDumpFlange->getSideIndex("bladeCentre"));
+  
+  const constructSystem::portItem& PI=heatBox->getPort(0);    
+  heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+  heatDump->addInsertCell("Inner",PI.getCell("Void"));
+  heatDump->addInsertCell("Outer",heatBox->getCell("OuterSpace"));
+  heatDump->createAll(System,*heatBox,0,PI,2);
 
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
-  flightPipe->registerSpaceCut(1,2);
   flightPipe->createAll(System,*heatBox,2);
 
-  shutterBox->addInsertCell(ContainedComp::getInsertCells());
-  shutterBox->registerSpaceCut(1,2);
+  shutterBox->addAllInsertCell(ContainedComp::getInsertCells());
   shutterBox->delayPorts();
   shutterBox->createAll(System,*flightPipe,2);
 
   shutterBox->splitVoidPorts(System,"SplitVoid",1001,
   			     shutterBox->getCell("Void"),
 			     {0,1});
-  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-			     shutterBox->getBuildCell(),
-			     {0,1});
+  //  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+  //			     shutterBox->getBuildCell(),
+  //			     {0,1});
 
   shutterBox->createPorts(System);
   
@@ -313,7 +296,6 @@ FrontEnd::buildObjects(Simulation& System)
     }
 
   exitPipe->addInsertCell(ContainedComp::getInsertCells());
-  exitPipe->registerSpaceCut(1,2);
   exitPipe->createAll(System,*shutterBox,2);
   
   lastComp=exitPipe;

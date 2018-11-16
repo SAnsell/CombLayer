@@ -93,7 +93,6 @@
 #include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "ModeCard.h"
@@ -106,6 +105,8 @@
 #include "sourceDataBase.h"
 #include "phitsPhysics.h"
 #include "phitsTally.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 

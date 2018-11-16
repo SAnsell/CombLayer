@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskPreMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,8 +85,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::LayerComp(0),
   attachSystem::FixedOffset(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap(),  
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1),NWidth(0),
+  NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide")),
   onion(new OnionCooling(Key+"OnionCooling")),
   sideRule("")
@@ -103,7 +103,7 @@ DiskPreMod::DiskPreMod(const DiskPreMod& A) :
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
+  radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
   flowGuideType(A.flowGuideType),
@@ -131,7 +131,6 @@ DiskPreMod::operator=(const DiskPreMod& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
       depth=A.depth;
@@ -263,11 +262,11 @@ DiskPreMod::createSurfaces()
   ELog::RegMethod RegA("DiskPreMod","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,Y);  
 
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);
@@ -302,7 +301,7 @@ DiskPreMod::createObjects(Simulation& System)
 
   std::string Out;
 
-  int SI(modIndex);
+  int SI(buildIndex);
   // Process even number of surfaces:
   HeadRule Inner;
   HeadRule Width;
@@ -319,7 +318,7 @@ DiskPreMod::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
 
 	
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],
 				       Out+widthUnit+
 				       Inner.display()+Width.display()));
       if (!i)
@@ -336,7 +335,7 @@ DiskPreMod::createObjects(Simulation& System)
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       // For exit surface
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
     }
@@ -359,22 +358,22 @@ DiskPreMod::createLinks()
 {  
   ELog::RegMethod RegA("DiskPreMod","createLinks");
 
-  const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+  const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
   FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
+  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(4,Origin-Z*depth[nLayers-1],-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
@@ -384,13 +383,13 @@ DiskPreMod::createLinks()
   
   // inner links point inwards
   FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(modIndex+7));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
 
   FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(modIndex+5));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
 
   return;
 }
@@ -451,7 +450,7 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
   const long int uSIndex(std::abs(sideIndex));
   const int signValue((sideIndex>0) ? 1 : -1);
 	       
@@ -485,23 +484,23 @@ DiskPreMod::getLayerString(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const int SI(10*static_cast<int>(layerIndex)+buildIndex);
 
   std::string Out;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -2M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -2M ");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 2M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 2M ");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -1M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 -1M ");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 1M ");
+      Out=ModelSupport::getComposite(SMap,SI,buildIndex," 7 1M ");
       break;
     case 5:
       Out=ModelSupport::getComposite(SMap,SI," -5 ");

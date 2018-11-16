@@ -693,8 +693,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipColBoxXStep",26.0);
   Control.addVariable("chipColBoxFStep",100.0);
   Control.addVariable("chipColBoxZStep",30.0);
-  Control.addVariable("chipColBoxXYangle",1.0);
-  Control.addVariable("chipColBoxZangle",1.0);
+  Control.addVariable("chipColBoxXYAngle",1.0);
+  Control.addVariable("chipColBoxZAngle",1.0);
   Control.addVariable("chipColBoxHeight",90.0);
   Control.addVariable("chipColBoxWidth",90.0);
   Control.addVariable("chipColBoxDepth",112.0);
@@ -723,8 +723,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipJawXStep",15.6);       // Step accross [+ve to TSA]
   Control.addVariable("chipJawYStep",248.0);       // Forward step 
   Control.addVariable("chipJawZStep",19.0);        // Forward step 
-  Control.addVariable("chipJawXYangle",1.0);       // Rotation angle
-  Control.addVariable("chipJawZangle",1.0);        // Z-
+  Control.addVariable("chipJawXYAngle",1.0);       // Rotation angle
+  Control.addVariable("chipJawZAngle",1.0);        // Z-
 
   Control.addVariable("chipJawZOpen",40.0);        // Gap in middel
   Control.addVariable("chipJawZThick",50.0);       // Height away from gap

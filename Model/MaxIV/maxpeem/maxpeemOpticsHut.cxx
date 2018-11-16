@@ -43,12 +43,10 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -60,7 +58,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -71,13 +70,12 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "PortChicane.h"
+#include "SimpleChicane.h"
 
 #include "maxpeemOpticsHut.h"
 
@@ -119,6 +117,7 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   ringShortWidth=Control.EvalVar<double>(keyName+"RingShortWidth");
   ringLongWidth=Control.EvalVar<double>(keyName+"RingLongWidth");
 
+  extension=Control.EvalDefVar<double>(keyName+"Extension",0.0);
   shortLen=Control.EvalVar<double>(keyName+"ShortLen");
   fullLen=Control.EvalVar<double>(keyName+"FullLen");
 
@@ -129,15 +128,13 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerSkin=Control.EvalVar<double>(keyName+"OuterSkin");
 
-  innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
-  outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
+  innerFarVoid=Control.EvalDefVar<double>(keyName+"InnerFarVoid",0.0);
+  outerFarVoid=Control.EvalDefVar<double>(keyName+"OuterFarVoid",0.0);
 
   inletXStep=Control.EvalDefVar<double>(keyName+"InletXStep",0.0);
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
 
-  beamTubeRadius=Control.EvalDefVar<double>(keyName+"BeamTubeRadius",0.0);
-  
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
@@ -188,9 +185,13 @@ maxpeemOpticsHut::createSurfaces()
 			   Origin+X*ringLongWidth+Y*fullLen+Z,
 			   X);
 
-  if (innerOutVoid>Geometry::zeroTol)
+  SurfMap::setSurf("InnerCorner",SMap.realSurf(buildIndex+14));
+  SurfMap::setSurf("InnerShort",SMap.realSurf(buildIndex+24));
+  SurfMap::setSurf("InnerRoof",SMap.realSurf(buildIndex+6));
+  
+  if (innerFarVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
-      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
+      (SMap,buildIndex+1003,Origin-X*(outWidth-innerFarVoid),X);  
 
   const Geometry::Plane* SPtr=
     SMap.realPtr<const Geometry::Plane>(buildIndex+14);
@@ -238,19 +239,19 @@ maxpeemOpticsHut::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+324,Origin+X*(ringShortWidth+TW),X);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+314,SPtr,TW);
 
-  if (outerOutVoid>Geometry::zeroTol)
-    ModelSupport::buildPlane(SMap,buildIndex+1033,Origin-X*(outWidth+TW+innerOutVoid),X);  
 
   if (inletRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
       (SMap,buildIndex+7,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
 
-  if (beamTubeRadius>Geometry::zeroTol)
-    {
-      ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,beamTubeRadius);
-      setSurf("BeamTube",-SMap.realSurf(buildIndex+2007));
-    }
-  
+  ModelSupport::buildPlane(SMap,buildIndex+3002,
+			     Origin+Y*(length+TB+extension),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1303,
+			     Origin-X*(outWidth+TW+outerFarVoid),X);
+
+  SurfMap::setSurf("OuterCorner",SMap.realSurf(buildIndex+314));
+  SurfMap::setSurf("OuterBack",SMap.realSurf(buildIndex+302));
+  SurfMap::setSurf("OuterRoof",SMap.realSurf(buildIndex+306));
   return;
 }
 
@@ -266,25 +267,21 @@ maxpeemOpticsHut::createObjects(Simulation& System)
   const std::string floorStr=getRuleStr("Floor");
   const std::string ringWall=getRuleStr("RingWall");
   std::string Out;
-  
-  if (innerOutVoid>Geometry::zeroTol)
+
+
+  if (innerFarVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
-      makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 2007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
+      makeCell("InnerFarVoid",System,cellIndex++,0,0.0,Out+floorStr);
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 2007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6  ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
-
-  if (beamTubeRadius>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -2007");
-      makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
-    }
+    
     
   std::list<int> matList({innerMat,pbMat,outerMat});
   int HI(buildIndex);
@@ -296,7 +293,7 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       makeCell("Ring"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
       Out=ModelSupport::getComposite(SMap,HI,"1 -2 -3 103 -6 ");
-      makeCell("Outer"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
+      makeCell("Far"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
       Out=ModelSupport::getComposite(SMap,HI,"1 -2 103 -104 (-114:-124) 6 -106 ");
       makeCell("Roof"+layer,System,cellIndex++,mat,0.0,Out);
@@ -311,14 +308,30 @@ maxpeemOpticsHut::createObjects(Simulation& System)
 
       HI+=100;
     }
+
+  // back wall extension
+  if (extension>Geometry::zeroTol)
+    {
+      // note use of the 1303 surface for outerFarVoid distance
+      Out=ModelSupport::getSetComposite(SMap,HI,buildIndex," 2 1303M -4 -6 -3002M ");
+      makeCell("Extension",System,cellIndex++,0,0.0,Out+floorStr);
+    }
+
   // Front/back hole
   if (inletRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -7 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -1 -7 ");
       makeCell("InletHole",System,cellIndex++,0,0.0,Out+ringWall);
     }
+
+  // far/side wall extension
+  if (outerFarVoid>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,HI,"-2M -303 1303 -6M ");
+      makeCell("OuterFarVoid",System,cellIndex++,0,0.0,Out+floorStr+ringWall);
+    }
   
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -302 303 -304 (-314:-324) -306 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -3002 1303 -304 (-314:-324) -306 ");
   addOuterSurf(Out);  
 
   return;
@@ -341,6 +354,15 @@ maxpeemOpticsHut::createLinks()
   setConnect(1,Origin+Y*(length+extraBack),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+302));
 
+    // outer surf
+  setConnect(3,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
+  setLinkSurf(3,-SMap.realSurf(buildIndex+303));
+  nameSideIndex(3,"farWall");
+  // outer surf
+  setConnect(4,Origin-X*(extraWall+ringLongWidth)+Y*(length/2.0),X);
+  setLinkSurf(4,SMap.realSurf(buildIndex+304));
+  nameSideIndex(4,"ringWall");
+
   // inner surf front
   setConnect(7,Origin,Y);
   setLinkSurf(7,SMap.realSurf(buildIndex+1));
@@ -351,6 +373,15 @@ maxpeemOpticsHut::createLinks()
   setLinkSurf(8,-SMap.realSurf(buildIndex+2));
   nameSideIndex(8,"innerBack");
 
+    // inner surf
+  setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
+  setLinkSurf(13,SMap.realSurf(buildIndex+3));
+  nameSideIndex(13,"innerFarWall");
+
+  setConnect(14,Origin-X*ringLongWidth+Y*(length/2.0),-X);
+  setLinkSurf(14,-SMap.realSurf(buildIndex+4));
+  nameSideIndex(14,"innerRingWall");
+
   return;
 }
 
@@ -358,11 +389,25 @@ void
 maxpeemOpticsHut::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
+    Requirements:
+       - OpticsHut must provide:
+       - Cells:
+             -- InnerFarVoid : void cell inside of wall
+             -- OuteFarVoid : void cell outside of wall
+             -- FarInner : cell in wall
+             -- FarLead  : cell in wall
+             -- FarOuter : cell in wall
+       - Link Points:
+           -- innerFarWall
+           -- farWall 
+
+    Note that linkPt:farWall is used as the primary 0,0,0 centre
+
     \param System :: Simulation 
   */
 {
   ELog::RegMethod Rega("maxpeemOpticsHut","createChicane");
-  return;
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -374,39 +419,24 @@ maxpeemOpticsHut::createChicane(Simulation& System)
   for(size_t i=0;i<NChicane;i++)
     {
       const std::string NStr(std::to_string(i));
-      std::shared_ptr<PortChicane> PItem=
-	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
+      std::shared_ptr<SimpleChicane> PItem=
+	std::make_shared<SimpleChicane>(keyName+"Chicane"+NStr);
 
       OR.addObject(PItem);
-      PItem->addInsertCell("Main",getCell("WallVoid"));
-      PItem->addInsertCell("Inner",getCell("InnerWall",0));
-      PItem->addInsertCell("Inner",getCell("LeadWall",0));
-      PItem->addInsertCell("Inner",getCell("OuterWall",0));
+
+      PItem->addInsertCell("Inner",getCell("InnerFarVoid"));
+      PItem->addInsertCell("Outer",getCell("OuterFarVoid"));
+
+      PItem->addInsertCell("Middle",getCell("FarInner",0));
+      PItem->addInsertCell("Middle",getCell("FarLead",0));
+      PItem->addInsertCell("Middle",getCell("FarOuter",0));
       // set surfaces:
 
-      PItem->setCutSurf("innerWall",*this,"innerLeftWall");
-      PItem->setCutSurf("outerWall",*this,"leftWall");
+      PItem->setCutSurf("innerWall",*this,"innerFarWall");
+      PItem->setCutSurf("outerWall",*this,"farWall");
 
-      PItem->setPrimaryCell("Main",getCell("WallVoid"));
-  
-      PItem->registerSpaceCut("Main",
-			      PItem->getSideIndex("innerLeft"),
-			      PItem->getSideIndex("innerRight"));
+      PItem->createAll(System,*this,getSideIndex("farWall"));
 
-      
-      PItem->createAll(System,*this,getSideIndex("leftWall"));
-
-      PItem->clearSpace("Main");
-      PItem->addInsertCell("Main",getCell("OuterVoid",0));
-
-      PItem->setPrimaryCell("Main",getCell("OuterVoid"));
-      PItem->registerSpaceCut("Main",
-			      PItem->getSideIndex("outerLeft"),
-			      PItem->getSideIndex("outerRight"));
-      PItem->insertObjects(System);
-      PChicane.push_back(PItem);
-      //      PItem->splitObject(System,23,getCell("WallVoid"));
-      //      PItem->splitObject(System,24,getCell("SplitVoid"));      
     }
   return;
 }

@@ -49,8 +49,6 @@ class He3Tubes : public attachSystem::ContainedComp,
 {
  private:
 
-  const int heIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   size_t nTubes;               ///< Number of tubes
   double length;               ///< length of object

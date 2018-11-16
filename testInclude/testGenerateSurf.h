@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testContainedSpace.h
-*
+ * File:   testInclude/testGenerateSurf.h
+ *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,41 +19,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testContainedSpace_h
-#define testContainedSpace_h 
+#ifndef testGenerateSurf_h
+#define testGenerateSurf_h 
 
 /*!
-  \class testContainedSpace
-  \brief Tests the class Object
+  \class testGenerateSurf
+  \brief Tests the geneateSurf functions
   \author S. Ansell
-  \date November 2010
+  \date October 2018
   \version 1.0
-
-  Test the processing of object component
+  
+  Test of the generate Surf options
 */
 
-class testContainedSpace
+class testGenerateSurf 
 {
-private:
+ private:
   
-  SimMCNP ASim;       ///< Simulation object to build
-
-  void initSim();
-  void createSurfaces();
-  void createObjects();
 
   //Tests 
+  //  int testCreateWrap();
+  int testExpandedSurf();
+  int testPlane();
+ 
+ public:
 
-  int testBoundary();
-  int testInsert();
+  testGenerateSurf();
+  ~testGenerateSurf();
 
-public:
-  
-  testContainedSpace();
-  ~testContainedSpace();
-  
-  int applyTest(const int);       
-
+  int applyTest(const int);     
 };
 
 #endif

@@ -3,7 +3,7 @@
  
  * File:   construct/CylMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,13 +57,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -159,14 +159,12 @@ CylMod::populate(const FuncDataBase& Control)
     {
       if (i)
 	{
-	  H+=2.0*Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"HGap",i));   
-	  R+=Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"RadGap",i));   
-	  M=ModelSupport::EvalMat<int>
-	    (Control,StrFunc::makeString(keyName+"Material",i));   
+	  const std::string IStr(std::to_string(i));
+	  H+=2.0*Control.EvalVar<double>(keyName+"HGap"+IStr);   
+	  R+=Control.EvalVar<double>(keyName+"RadGap"+IStr);   
+	  M=ModelSupport::EvalMat<int>(Control,keyName+"Material"+IStr);   
 	  T=(!M) ? 0.0 : 
-	    Control.EvalVar<double>(StrFunc::makeString(keyName+"Temp",i)); 
+	    Control.EvalVar<double>(keyName+"Temp"+IStr); 
 	}
       else
 	{
@@ -184,7 +182,7 @@ CylMod::populate(const FuncDataBase& Control)
   nConic=Control.EvalVar<size_t>(keyName+"NConic");
   for(size_t i=0;i<nConic;i++)
     {
-      const std::string KN=keyName+StrFunc::makeString("Conic",i+1);
+      const std::string KN=keyName+"Conic"+std::to_string(i+1);
       const Geometry::Vec3D C=
 	Control.EvalVar<Geometry::Vec3D>(KN+"Cent");
       const Geometry::Vec3D A=
@@ -213,10 +211,10 @@ CylMod::createSurfaces()
   ELog::RegMethod RegA("CylMod","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,Y);  
 
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
@@ -225,7 +223,7 @@ CylMod::createSurfaces()
       SI+=10;
     }
   // CONICS
-  SI=modIndex+500;
+  SI=buildIndex+500;
   for(size_t i=0;i<nConic;i++)
     {
       const Geometry::Vec3D Pt=Conics[i].getCent(X,Y,Z);
@@ -275,22 +273,22 @@ CylMod::createObjects(Simulation& System)
 
   std::string Out;
   // First make conics:
-  int CI(modIndex+500);
+  int CI(buildIndex+500);
   HeadRule OutUnit;
 
   for(size_t i=0;i<nConic;i++)
     {
-      Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -7M 1M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      Out=ModelSupport::getComposite(SMap,buildIndex,CI," -7 5 -6 -7M 1M");
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       Conics[i].getMat(),temp[0],Out));
       if (Conics[i].getWall()>Geometry::zeroTol)
 	{
-	  Out=ModelSupport::getComposite(SMap,modIndex,CI,
+	  Out=ModelSupport::getComposite(SMap,buildIndex,CI,
 					 " -7 5 -6 (7M:-1M) -17M 11M");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,
+	  System.addCell(MonteCarlo::Object(cellIndex++,
 					   Conics[i].getWallMat(),
 					   temp[0],Out));
-	  Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -17M 11M ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex,CI," -7 5 -6 -17M 11M ");
 	}
       OutUnit.addUnion(Out);
       CI+=100;
@@ -298,7 +296,7 @@ CylMod::createObjects(Simulation& System)
   OutUnit.makeComplement();
 
   mainCell=cellIndex;
-  int SI(modIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
@@ -308,7 +306,7 @@ CylMod::createObjects(Simulation& System)
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
       else
 	Out+=OutUnit.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       CellMap::setCell(keyName,i,cellIndex-1);
       SI+=10;
     }
@@ -325,23 +323,23 @@ CylMod::createLinks()
 
   if (!nLayers) return;
   const size_t NL(nLayers-1);
-  const int SI(modIndex+static_cast<int>(NL)*10);
+  const int SI(buildIndex+static_cast<int>(NL)*10);
   
   FixedComp::setConnect(0,Origin-Y*radius[NL],-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+2));
   
   FixedComp::setConnect(1,Origin+Y*radius[NL],Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*radius[NL],-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(modIndex+1));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+1));
   
   FixedComp::setConnect(3,Origin+X*radius[NL],X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(modIndex+1));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
       
   FixedComp::setConnect(4,Origin-Z*(height[NL]/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
@@ -404,13 +402,13 @@ CylMod::getCommonSurf(const long int sideIndex) const
   switch(std::abs(sideIndex))
     {
     case 1:
-      return -SMap.realSurf(modIndex+2);
+      return -SMap.realSurf(buildIndex+2);
     case 2:
-      return SMap.realSurf(modIndex+2);
+      return SMap.realSurf(buildIndex+2);
     case 3:
-      return -SMap.realSurf(modIndex+1);
+      return -SMap.realSurf(buildIndex+1);
     case 4:
-      return SMap.realSurf(modIndex+1);
+      return SMap.realSurf(buildIndex+1);
     case 5:
     case 6:
       return 0;
@@ -434,7 +432,7 @@ CylMod::getLayerString(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int NL(static_cast<int>(layerIndex));
-  const int SI(modIndex+NL*10);
+  const int SI(buildIndex+NL*10);
   HeadRule HR;
   switch(std::abs(sideIndex))
     {
@@ -471,7 +469,7 @@ CylMod::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
   
-  const int SI(modIndex+static_cast<int>(layerIndex)*10);
+  const int SI(buildIndex+static_cast<int>(layerIndex)*10);
   switch(sideIndex)
     {
     case 1:

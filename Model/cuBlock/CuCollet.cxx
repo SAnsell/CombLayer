@@ -63,8 +63,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -216,23 +217,23 @@ CuCollet::createObjects(Simulation& System)
 
   // Ceramic
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cerMat,0.0,Out));
   // Steel
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
   if (cuGap>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"12 -21 -27");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
     }
 
   // Cu : Checked for existance of inner
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -27 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,cuMat,0.0,Out));
   if (cuGap>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"21 -22 -17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
     }
   // Outer Boundary : 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 -27 (-7:12)");

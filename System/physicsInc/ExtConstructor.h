@@ -49,7 +49,7 @@ class ExtConstructor
 
   ZoneUnit<double> ZUnits;   ///< Units of EXT scaling
 
-  bool procType(std::vector<std::string>&,ExtControl&);
+  bool procType(const objectGroups&,std::vector<std::string>&,ExtControl&);
   
   void writeHelp(std::ostream&) const;
     
@@ -60,7 +60,8 @@ class ExtConstructor
   ExtConstructor& operator=(const ExtConstructor&);
   ~ExtConstructor() {}  ///< Destructor
 
-  void processUnit(PhysicsCards&,const mainSystem::inputParam&,
+  void processUnit(const objectGroups&,
+		   PhysicsCards&,const mainSystem::inputParam&,
 		   const size_t);
 };
 

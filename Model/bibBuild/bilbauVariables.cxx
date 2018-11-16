@@ -179,8 +179,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("WatModXStep",4.0);      // 
   Control.addVariable("WatModYStep",-12.0);      // 
   Control.addVariable("WatModZStep",0.0);      // 
-  Control.addVariable("WatModXYangle",-45.0);      // 
-  Control.addVariable("WatModZangle",0.0);      // 
+  Control.addVariable("WatModXYAngle",-45.0);      // 
+  Control.addVariable("WatModZAngle",0.0);      // 
   Control.addVariable("WatModWidth",12.0);      // 
   Control.addVariable("WatModHeight",12.0);      // 
   Control.addVariable("WatModDepth",2.0);      // 
@@ -204,8 +204,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide1XStep",0.0);      //
   Control.addVariable("Guide1YStep",0.0);      //
   Control.addVariable("Guide1ZStep",0.0);      //
-  Control.addVariable("Guide1XYangle",0.0);      //
-  Control.addVariable("Guide1Zangle",0.0);      //
+  Control.addVariable("Guide1XYAngle",0.0);      //
+  Control.addVariable("Guide1ZAngle",0.0);      //
   Control.addVariable("Guide1Width",12.0); 
   Control.addVariable("Guide1Height",8.0);      //
   Control.addVariable("Guide1Length",1000.0);      //
@@ -216,8 +216,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide2XStep",0.0);      //
   Control.addVariable("Guide2YStep",0.0);      //
   Control.addVariable("Guide2ZStep",0.0);      //
-  Control.addVariable("Guide2XYangle",-20.0);      //
-  Control.addVariable("Guide2Zangle",0.0);      //
+  Control.addVariable("Guide2XYAngle",-20.0);      //
+  Control.addVariable("Guide2ZAngle",0.0);      //
   Control.addVariable("Guide2Width",12.0); 
   Control.addVariable("Guide2Height",8);      //
   Control.addVariable("Guide2Length",1000.0);      //
@@ -229,8 +229,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide3XStep",0.0);      //
   Control.addVariable("Guide3YStep",0.0);      //
   Control.addVariable("Guide3ZStep",0.0);      //
-  Control.addVariable("Guide3XYangle",-20.0);      //
-  Control.addVariable("Guide3Zangle",0.0);      //
+  Control.addVariable("Guide3XYAngle",-20.0);      //
+  Control.addVariable("Guide3ZAngle",0.0);      //
   Control.addVariable("Guide3Width",12.0); 
   Control.addVariable("Guide3Height",8);      //
   Control.addVariable("Guide3Length",1000.0);      //
@@ -241,8 +241,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide4XStep",0.0);      //
   Control.addVariable("Guide4YStep",0.0);      //
   Control.addVariable("Guide4ZStep",0.0);      //
-  Control.addVariable("Guide4XYangle",0.0);      //
-  Control.addVariable("Guide4Zangle",0.0);      //
+  Control.addVariable("Guide4XYAngle",0.0);      //
+  Control.addVariable("Guide4ZAngle",0.0);      //
   Control.addVariable("Guide4Width",12.0); 
   Control.addVariable("Guide4Height",8);      //
   Control.addVariable("Guide4Length",1000.0);      //
@@ -253,8 +253,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide5XStep",0.0);      //
   Control.addVariable("Guide5YStep",0.0);      //
   Control.addVariable("Guide5ZStep",0.0);      //
-  Control.addVariable("Guide5XYangle",20.0);      //
-  Control.addVariable("Guide5Zangle",0.0);      //
+  Control.addVariable("Guide5XYAngle",20.0);      //
+  Control.addVariable("Guide5ZAngle",0.0);      //
   Control.addVariable("Guide5Width",12.0); 
   Control.addVariable("Guide5Height",8);      //
   Control.addVariable("Guide5Length",1000.0);      //
@@ -269,8 +269,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ColdModXStep",0.0);      //
   Control.addVariable("ColdModYStep",7.5);      //
   Control.addVariable("ColdModZStep",0.0);      //
-  Control.addVariable("ColdModXYangle",0.0);      //
-  Control.addVariable("ColdModZangle",0.0);      //
+  Control.addVariable("ColdModXYAngle",0.0);      //
+  Control.addVariable("ColdModZAngle",0.0);      //
   Control.addVariable("ColdModWidth",12.0);      //
   Control.addVariable("ColdModHeight",12.0);      //
   Control.addVariable("ColdModDepth",2.0);      //
@@ -292,8 +292,8 @@ BilbauVariables(FuncDataBase& Control)
   
   // GUIDE  1
   
-  Control.addVariable("GuideObj_1XYangle",0.0);      //
-  Control.addVariable("GuideObj_1Zangle",0.0);      //
+  Control.addVariable("GuideObj_1XYAngle",0.0);      //
+  Control.addVariable("GuideObj_1ZAngle",0.0);      //
   Control.addVariable("GuideObj_1Niquel_Thickness",1);      //Donde empieza de verdad la guia
   Control.addVariable("GuideObj_1Mat_Guia","Nickel");
   
@@ -310,8 +310,8 @@ BilbauVariables(FuncDataBase& Control)
   
   // GUIDE 2
   
-  Control.addVariable("GuideObj_2XYangle",-20.0);      // Tiene que ser menor que -18
-  Control.addVariable("GuideObj_2Zangle",0.0);      //
+  Control.addVariable("GuideObj_2XYAngle",-20.0);      // Tiene que ser menor que -18
+  Control.addVariable("GuideObj_2ZAngle",0.0);      //
   Control.addVariable("GuideObj_2Niquel_Thickness",1);      //Donde empieza de verdad la guia
   Control.addVariable("GuideObj_2Mat_Guia","Nickel");
   
@@ -348,8 +348,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ColdMod2XStep",-12.5);      //
   Control.addVariable("ColdMod2YStep",-12.5);      //
   Control.addVariable("ColdMod2ZStep",0.0);      //
-  Control.addVariable("ColdMod2XYangle",-225.0);      //
-  Control.addVariable("ColdMod2Zangle",0.0);      //
+  Control.addVariable("ColdMod2XYAngle",-225.0);      //
+  Control.addVariable("ColdMod2ZAngle",0.0);      //
   Control.addVariable("ColdMod2Width",12.0);      //
   Control.addVariable("ColdMod2Height",12.0);      //
   Control.addVariable("ColdMod2Depth",2.0);      //

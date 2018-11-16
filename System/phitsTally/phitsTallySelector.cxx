@@ -52,6 +52,8 @@
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 

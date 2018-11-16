@@ -40,8 +40,6 @@ class ColdH2Mod : public attachSystem::ContainedComp,
 {
  private:
   
-  const int coldIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double width;                   ///< width of moderator
   double height;                  ///< height of moderator

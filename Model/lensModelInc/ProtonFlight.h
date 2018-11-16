@@ -39,8 +39,6 @@ class ProtonFlight :  public attachSystem::ContainedGroup,
 {
  private:
   
-  const int protonIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   Geometry::Vec3D boxX;         ///< Box X
   Geometry::Vec3D boxY;         ///< Box Y

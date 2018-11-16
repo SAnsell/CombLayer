@@ -41,8 +41,6 @@ class BeamStop : public attachSystem::ContainedComp,
 {
  private:
   
-  const int stopIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double xStep;             ///< Offset on XAxis of centre
   double yStep;             ///< origin forward step

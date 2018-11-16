@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -231,8 +231,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomDiskXStep",-25.0);
   Control.addVariable("zoomDiskYStep",4.0);
   Control.addVariable("zoomDiskZStep",0.0);
-  Control.addVariable("zoomDiskXYangle",0.0);
-  Control.addVariable("zoomDiskZangle",0.0);
+  Control.addVariable("zoomDiskXYAngle",0.0);
+  Control.addVariable("zoomDiskZAngle",0.0);
 
   Control.addVariable("zoomDiskGap",3.0);
   Control.addVariable("zoomDiskInnerRadius",3.0);
@@ -503,8 +503,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomTankXStep",0.0);          // Step accross beam
   Control.addVariable("zoomTankYStep",300.0);
   Control.addVariable("zoomTankZStep",0.0);
-  Control.addVariable("zoomTankXYangle",0.0);
-  Control.addVariable("zoomTankZangle",0.0);
+  Control.addVariable("zoomTankXYAngle",0.0);
+  Control.addVariable("zoomTankZAngle",0.0);
 
   Control.addVariable("zoomTankNCylinder",3);
   Control.addVariable("zoomTankRadius1",15.0);
@@ -532,8 +532,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomHutchXStep",-25.0);          ///< Step accross beam
   Control.addVariable("zoomHutchYStep",0.0);
   Control.addVariable("zoomHutchZStep",0.0);
-  Control.addVariable("zoomHutchXYangle",0.0);          ///< Step accross beam
-  Control.addVariable("zoomHutchZangle",0.0);
+  Control.addVariable("zoomHutchXYAngle",0.0);          ///< Step accross beam
+  Control.addVariable("zoomHutchZAngle",0.0);
 
   Control.addVariable("zoomHutchFrontLeftWidth",122.5);
   Control.addVariable("zoomHutchFrontRightWidth",137.5);

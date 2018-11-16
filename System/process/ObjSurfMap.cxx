@@ -54,7 +54,6 @@
 #include "surfEqual.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 
 #include "debugMethod.h"
@@ -64,7 +63,7 @@ namespace ModelSupport
 
 void
 ObjSurfMap::removeEqualSurf(const std::map<int,Geometry::Surface*>& EQMap,
-			    std::map<int,MonteCarlo::Qhull*>& OMap)
+			    std::map<int,MonteCarlo::Object*>& OMap)
   /*!
     Exchanges the surface on the OMap object
     \param EQMap :: Equal map of surface pairs
@@ -74,7 +73,7 @@ ObjSurfMap::removeEqualSurf(const std::map<int,Geometry::Surface*>& EQMap,
   ELog::RegMethod RegA("ObjSurfMap","removeEqualSurf"); 
   
   ELog::EM<<ELog::endErr;
-  std::map<int,MonteCarlo::Qhull*>::iterator mc;
+  std::map<int,MonteCarlo::Object*>::iterator mc;
   std::map<int,Geometry::Surface*>::const_iterator ec;
   for(mc=OMap.begin();mc!=OMap.end();mc++)
     {

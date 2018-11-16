@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   pipeInc/pipeTube.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ namespace pipeSystem
   \author S. Ansell
   \version 1.0
   \date May 2015
-  \brief Simple pipe with layers
+  \brief Simple pipe with layers [rectangular xsec]
 
   Constructed from the front point
 */
@@ -42,15 +42,12 @@ class pipeTube : public attachSystem::ContainedComp,
 {
  private:
   
-  const int tubeIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
   double length;            ///< Total length
   double height;            ///< Total height 
   double width;             ///< Total width
 
-  double innerHeight;       ///< innerHeight
-  double innerWidth;        ///< innerWidth
+  double innerHeight;       ///< innerHeight of rectangule void
+  double innerWidth;        ///< innerWidth of rectangle void
 
   int wallMat;              ///< wall material
 

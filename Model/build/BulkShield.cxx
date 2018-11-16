@@ -70,10 +70,11 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
@@ -83,11 +84,12 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "InsertComp.h"
 #include "LinearComp.h"
@@ -114,8 +116,7 @@ const size_t BulkShield::letShutter(6);
 
 BulkShield::BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,0),attachSystem::ContainedComp(),
-  bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bulkIndex+1),populated(0),
+  populated(0),
   numberBeamLines(18)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -125,7 +126,6 @@ BulkShield::BulkShield(const std::string& Key)  :
 
 BulkShield::BulkShield(const BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   populated(A.populated),numberBeamLines(A.numberBeamLines),
   TData(A.TData),GData(A.GData),BData(A.BData),vXoffset(A.vXoffset),
   torpedoRadius(A.torpedoRadius),shutterRadius(A.shutterRadius),
@@ -152,7 +152,6 @@ BulkShield::operator=(const BulkShield& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       TData=A.TData;
       GData=A.GData;
@@ -230,17 +229,17 @@ BulkShield::createSurfaces()
   //
   // Top/Base
   //
-  ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*totalDepth,Z);
-  ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*totalHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*totalDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*totalHeight,Z);
 
   // Layers:
-  ModelSupport::buildCylinder(SMap,bulkIndex+7,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,
 			      Origin,Z,torpedoRadius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Z,shutterRadius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Z,innerRadius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+37,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,
 			      Origin,Z,outerRadius);
   
   return;
@@ -269,13 +268,13 @@ BulkShield::createTorpedoes(Simulation& System,
       OR.addObject(TData.back());
     }
 
-  MonteCarlo::Qhull* torpedoObj=System.findQhull(torpedoCell);
+  MonteCarlo::Object* torpedoObj=System.findObject(torpedoCell);
   if (!torpedoObj)
     throw ColErr::InContainerError<int>(torpedoCell,"torpedoObject");
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      TData[i]->setExternal(SMap.realSurf(bulkIndex+7));
+      TData[i]->setExternal(SMap.realSurf(buildIndex+7));
       TData[i]->createAll(System,*GData[i],CC);          
       torpedoObj->addSurfString(TData[i]->getExclude());
 
@@ -336,16 +335,16 @@ BulkShield::createShutters(Simulation& System,
       //      GData.back());
     }
 
-  MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
+  MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
   if (!shutterObj)
     throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      GData[i]->setExternal(SMap.realSurf(bulkIndex+7),
-			    SMap.realSurf(bulkIndex+17),
-			    SMap.realSurf(bulkIndex+6),
-			    SMap.realSurf(bulkIndex+5));
+      GData[i]->setExternal(SMap.realSurf(buildIndex+7),
+			    SMap.realSurf(buildIndex+17),
+			    SMap.realSurf(buildIndex+6),
+			    SMap.realSurf(buildIndex+5));
       GData[i]->setDivide(40000);
       GData[i]->createAll(System,0.0,0);
       shutterObj->addSurfString(GData[i]->getExclude());
@@ -390,9 +389,9 @@ BulkShield::createBulkInserts(Simulation& System,
 
 
       BItem->setLayers(innerCell,outerCell);
-      BItem->setExternal(SMap.realSurf(bulkIndex+17),
-			 SMap.realSurf(bulkIndex+27),
-			 SMap.realSurf(bulkIndex+37) );
+      BItem->setExternal(SMap.realSurf(buildIndex+17),
+			 SMap.realSurf(buildIndex+27),
+			 SMap.realSurf(buildIndex+37) );
       BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
       OR.addObject(BItem->getKeyName(),BItem);
       BData.push_back(BItem);
@@ -413,23 +412,23 @@ BulkShield::createObjects(Simulation& System,
   
   // Torpedo
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -7")+CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -7")+CC.getExclude();
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   torpedoCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -17 7")+CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   shutterCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -27 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   innerCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -37 27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   outerCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -37");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
   addOuterSurf(Out);
 
   return;
@@ -444,11 +443,11 @@ BulkShield::processVoid(Simulation& System)
 {
   ELog::RegMethod RegA("BulkShield","processVoid");
   // Add void
-  MonteCarlo::Qhull* Obj=System.findQhull(74123);
+  MonteCarlo::Object* Obj=System.findObject(74123);
   if (Obj)
     Obj->procString("-1 "+getExclude());
   else
-    System.addCell(MonteCarlo::Qhull(74123,0,0.0,"-1 "+getExclude()));
+    System.addCell(MonteCarlo::Object(74123,0,0.0,"-1 "+getExclude()));
   return;
 }
 

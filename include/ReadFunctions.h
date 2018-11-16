@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/ReadFunctions.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,14 @@ class FuncDataBase;
 */
 namespace ReadFunc
 {
-  typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
+  typedef std::map<int,MonteCarlo::Object*> OTYPE;      ///< Object type
 
   void removeDollarComment(std::string&);
   void processDollarString(FuncDataBase&,std::string&);
   int processSurface(const std::string&,const int);
   int readSurfaces(FuncDataBase&,std::istream&,const int);
 
-  int checkInsert(const MonteCarlo::Qhull&,const int,OTYPE&);
+  int checkInsert(const MonteCarlo::Object&,const int,OTYPE&);
   int mapInsert(const OTYPE&,OTYPE&);
 
   int readCells(FuncDataBase&,std::istream&,const int,OTYPE&);

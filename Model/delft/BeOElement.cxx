@@ -3,7 +3,7 @@
  
  * File:   delft/BeOElement.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -58,8 +56,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -79,7 +78,7 @@ namespace delftSystem
 {
 
 BeOElement::BeOElement(const size_t XI,const size_t YI,
-			 const std::string& Key) :
+		       const std::string& Key) :
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -100,23 +99,23 @@ BeOElement::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeOElement","populate");
 
   Width=ReactorGrid::getElement<double>
-    (Control,keyName+"Width",XIndex,YIndex);
+    (Control,baseName+"Width",XIndex,YIndex);
   Depth=ReactorGrid::getElement<double>
-    (Control,keyName+"Depth",XIndex,YIndex);
+    (Control,baseName+"Depth",XIndex,YIndex);
   TopHeight=ReactorGrid::getElement<double>
-    (Control,keyName+"TopHeight",XIndex,YIndex);
+    (Control,baseName+"TopHeight",XIndex,YIndex);
 
   wallThick=ReactorGrid::getElement<double>
-    (Control,keyName+"WallThick",XIndex,YIndex);
+    (Control,baseName+"WallThick",XIndex,YIndex);
   coolThick=ReactorGrid::getElement<double>
-    (Control,keyName+"CoolThick",XIndex,YIndex);
+    (Control,baseName+"CoolThick",XIndex,YIndex);
 
   beMat=ReactorGrid::getMatElement
-    (Control,keyName+"Mat",XIndex,YIndex);
+    (Control,baseName+"Mat",XIndex,YIndex);
   coolMat=ReactorGrid::getMatElement
-    (Control,keyName+"CoolMat",XIndex,YIndex);
+    (Control,baseName+"CoolMat",XIndex,YIndex);
   wallMat=ReactorGrid::getMatElement
-    (Control,keyName+"WallMat",XIndex,YIndex);
+    (Control,baseName+"WallMat",XIndex,YIndex);
   
   return;
 }
@@ -149,28 +148,28 @@ BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
 
   // Planes [OUTER]:
   
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*Depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*Depth/2.0,Y); 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Z*TopHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*Depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*Depth/2.0,Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*Width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Z*TopHeight,Z);
 
   double T(wallThick);
 
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(Depth/2.0-T),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(Depth/2.0-T),Y); 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+15,RG.getLinkPt(5)+Z*T,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(Depth/2.0-T),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(Depth/2.0-T),Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,RG.getLinkPt(5)+Z*T,Z);
 
   T+=coolThick;
-  ModelSupport::buildPlane(SMap,surfIndex+21,Origin-Y*(Depth/2.0-T),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(Depth/2.0-T),Y); 
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(Width/2.0-T),X);
-  ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(5)+Z*T,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-Y*(Depth/2.0-T),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(Depth/2.0-T),Y); 
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,RG.getLinkPt(5)+Z*T,Z);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(5));
+  SMap.addMatch(buildIndex+5,RG.getLinkSurf(5));
 
   return;
 }
@@ -186,18 +185,18 @@ BeOElement::createObjects(Simulation& System)
 
   std::string Out;
   // Outer Layers
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
 
-  Out+=ModelSupport::getComposite(SMap,surfIndex,"(-11:12:-13:14:-15)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15)");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -6 "
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -6 "
 				  " (-21 : 22 : -23 : 24 : -25)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,coolMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 23 -24 25 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
 
   return;
 }

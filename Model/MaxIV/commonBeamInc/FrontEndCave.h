@@ -41,10 +41,10 @@ namespace xraySystem
 
 class FrontEndCave :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
-    
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 

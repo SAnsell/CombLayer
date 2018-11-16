@@ -128,7 +128,7 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
-  Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
+  Control.addVariable("BilbaoWheelShaftHoleXYAngle",-1.0);  // value not known=>approx to put a hole
   
   Control.addVariable("BilbaoWheelShaftBaseDepth",33.8); // TSV32IS
 
@@ -148,8 +148,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYangle",0.0);
-  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelXYAngle",0.0);
+  Control.addVariable("BilbaoWheelZAngle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
   // TSV31-TargetUpdate02
@@ -174,7 +174,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelInnerRadius",45); // TSM141108V3000
   Control.addVariable("BilbaoWheelInnerHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelInnerHoleSize",0.25); // value not known=>approx
-  Control.addVariable("BilbaoWheelInnerHoleXYangle",-1.0);  // value not known=>approx to put a hole on the Y-axis (0,65,0) to increase high-energy noise for conservative reasons
+  Control.addVariable("BilbaoWheelInnerHoleXYAngle",-1.0);  // value not known=>approx to put a hole on the Y-axis (0,65,0) to increase high-energy noise for conservative reasons
 
   Control.addVariable("BilbaoWheelCoolantRadiusIn",64.575); // TSM141108V3000
   Control.addVariable("BilbaoWheelCoolantRadiusOut",130.8); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
@@ -253,8 +253,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("WheelXStep",0.0);  
   Control.addVariable("WheelYStep",113.0);  
   Control.addVariable("WheelZStep",0.0);
-  Control.addVariable("WheelXYangle",0.0); 
-  Control.addVariable("WheelZangle",0.0);
+  Control.addVariable("WheelXYAngle",0.0); 
+  Control.addVariable("WheelZAngle",0.0);
   Control.addVariable("WheelTargetHeight",8.0);
   Control.addVariable("WheelTemp",600.0);
   Control.addVariable("WheelCoolantThickIn",0.65);
@@ -361,8 +361,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePipeXStep",0.0);  
   Control.addVariable("ProtonTubePipeYStep",0.0);  
   Control.addVariable("ProtonTubePipeZStep",0.0);
-  Control.addVariable("ProtonTubePipeXYangle",0.0); 
-  Control.addVariable("ProtonTubePipeZangle",0.0);
+  Control.addVariable("ProtonTubePipeXYAngle",0.0); 
+  Control.addVariable("ProtonTubePipeZAngle",0.0);
 
   Control.addVariable("ProtonTubePipeNSection",4);
 
@@ -399,8 +399,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("BeamMonitorXStep",0.0);
   Control.addVariable("BeamMonitorYStep",450.0);
   Control.addVariable("BeamMonitorZStep",0.0);
-  Control.addVariable("BeamMonitorXYangle",0.0);
-  Control.addVariable("BeamMonitorZangle",0.0);
+  Control.addVariable("BeamMonitorXYAngle",0.0);
+  Control.addVariable("BeamMonitorZAngle",0.0);
   
   Control.addVariable("BeamMonitorBoxSide",70.0);
   Control.addVariable("BeamMonitorBoxNSections",5); //other are symmetric
@@ -497,8 +497,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWShieldXStep",0);
   Control.addVariable("ProtonTubePBWShieldYStep",0);
   Control.addVariable("ProtonTubePBWShieldZStep",0);
-  Control.addVariable("ProtonTubePBWShieldXYangle",0);
-  Control.addVariable("ProtonTubePBWShieldZangle",0);
+  Control.addVariable("ProtonTubePBWShieldXYAngle",0);
+  Control.addVariable("ProtonTubePBWShieldZAngle",0);
 
   Control.addVariable("ProtonTubePBWShieldNSection",5);
   Control.addVariable("ProtonTubePBWShieldLength1",21.5); // void

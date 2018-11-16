@@ -63,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,8 +83,7 @@ namespace delftSystem
 
 SphereModerator::SphereModerator(const std::string& Key)  :
   virtualMod(Key),
-  hydIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hydIndex+1),HCell(0),
+  HCell(0),
   InnerA("SphereA"),InnerB("SphereB")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -93,7 +93,6 @@ SphereModerator::SphereModerator(const std::string& Key)  :
 
 SphereModerator::SphereModerator(const SphereModerator& A) : 
   virtualMod(A),
-  hydIndex(A.hydIndex),cellIndex(A.cellIndex),
   innerRadius(A.innerRadius),
   innerAl(A.innerAl),outerRadius(A.outerRadius),
   outerAl(A.outerAl),outYShift(A.outYShift),fYShift(A.fYShift),
@@ -116,7 +115,6 @@ SphereModerator::operator=(const SphereModerator& A)
   if (this!=&A)
     {
       virtualMod::operator=(A);
-      cellIndex=A.cellIndex;
       innerRadius=A.innerRadius;
       innerAl=A.innerAl;
       outerRadius=A.outerRadius;
@@ -205,29 +203,29 @@ SphereModerator::createSurfaces()
 {
   ELog::RegMethod RegA("SphereModerator","createSurfaces");
 
-  ModelSupport::buildSphere(SMap,hydIndex+7,Origin,innerRadius-innerAl);
-  ModelSupport::buildSphere(SMap,hydIndex+17,Origin,innerRadius);
-  ModelSupport::buildSphere(SMap,hydIndex+27,Origin+Y*outYShift,
+  ModelSupport::buildSphere(SMap,buildIndex+7,Origin,innerRadius-innerAl);
+  ModelSupport::buildSphere(SMap,buildIndex+17,Origin,innerRadius);
+  ModelSupport::buildSphere(SMap,buildIndex+27,Origin+Y*outYShift,
 			    outerRadius);
-  ModelSupport::buildSphere(SMap,hydIndex+37,Origin+Y*outYShift,
+  ModelSupport::buildSphere(SMap,buildIndex+37,Origin+Y*outYShift,
 			    outerRadius+innerAl);
 
-  ModelSupport::buildCylinder(SMap,hydIndex+107,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,
 			      Y,innerRadius-innerAl);
-  ModelSupport::buildCylinder(SMap,hydIndex+117,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,
 			      Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,hydIndex+127,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,
 			      Y,outerRadius);
-  ModelSupport::buildCylinder(SMap,hydIndex+137,Origin,
+  ModelSupport::buildCylinder(SMap,buildIndex+137,Origin,
 			      Y,outerRadius+outerAl);
 
   // Front divide plane:
-  ModelSupport::buildPlane(SMap,hydIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
 
   // Front divide plane:
-  ModelSupport::buildPlane(SMap,hydIndex+101,Origin+Y*fYShift,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*fYShift,Y);
   // Front divide plane:
-  ModelSupport::buildPlane(SMap,hydIndex+111,
+  ModelSupport::buildPlane(SMap,buildIndex+111,
 			   Origin+Y*(fYShift+capThick),Y);
   
   return;
@@ -241,12 +239,12 @@ SphereModerator::createLinks()
 {
   ELog::RegMethod RegA("SphereModerator","createLinks");
 
-  FixedComp::addLinkSurf(0,SMap.realSurf(hydIndex+37));
-  FixedComp::addLinkSurf(1,-SMap.realSurf(hydIndex+111));
-  FixedComp::addLinkSurf(2,SMap.realSurf(hydIndex+37));
-  FixedComp::addLinkSurf(3,SMap.realSurf(hydIndex+37));
-  FixedComp::addLinkSurf(4,SMap.realSurf(hydIndex+37));
-  FixedComp::addLinkSurf(5,SMap.realSurf(hydIndex+37));
+  FixedComp::addLinkSurf(0,SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+111));
+  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf(4,SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+37));
 
   // // set Links:
   FixedComp::setConnect(0,Origin+Y*(outYShift-outerRadius-innerAl),-Y);
@@ -272,47 +270,47 @@ SphereModerator::createObjects(Simulation& System)
   std::string Out;  
 
   // ARRANGEMENT FOR POSITIVE Radius:
-  Out=ModelSupport::getComposite(SMap,hydIndex," -37 -1 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -37 -1 ");
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,hydIndex,"1 -111 -137 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -111 -137 ");
   addOuterUnionSurf(Out);
 
   // void
-  Out=ModelSupport::getComposite(SMap,hydIndex,"-1 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -7 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // al
-  Out=ModelSupport::getComposite(SMap,hydIndex,"-1 7 -17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 7 -17");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Hydrogen
-  Out=ModelSupport::getComposite(SMap,hydIndex,"-1 17 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 17 -27");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,hydIndex,"-1 27 -37");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 27 -37");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
   
   // CYCLINDERS
 
-  Out=ModelSupport::getComposite(SMap,hydIndex,"1 -111 -107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -111 -107 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // al
-  Out=ModelSupport::getComposite(SMap,hydIndex,"1 -101 107 -117");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 107 -117");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Hydrogen
-  Out=ModelSupport::getComposite(SMap,hydIndex,"1 -101 117 -127");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 117 -127");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,hydIndex,"1 -101 127 -137");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -101 127 -137");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Outer Al
-  Out=ModelSupport::getComposite(SMap,hydIndex,"101 -111 107 -137");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -111 107 -137");
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   return;
 }
@@ -324,7 +322,7 @@ SphereModerator::getDividePlane() const
     \return Dividing plane [pointing out]
   */
 {
-  return SMap.realSurf(hydIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
 int
@@ -334,7 +332,7 @@ SphereModerator::viewSurf() const
     \return view surface [pointing out]
    */
 {
-  return SMap.realSurf(hydIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
 
 void 

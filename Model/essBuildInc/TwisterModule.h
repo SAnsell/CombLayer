@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/TwisterModule.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,6 @@ class TwisterModule : public attachSystem::ContainedGroup,
   public attachSystem::CellMap
 {
  private:
-
-  const int tIndex;               ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double shaftRadius;             ///< Shaft radius
   double shaftHeight;             ///< Shaft height

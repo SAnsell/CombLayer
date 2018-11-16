@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,8 +61,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,9 +78,7 @@ namespace muSystem
 {
 
 profileMon::profileMon(const std::string& Key)  : 
-  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
-  profMonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(profMonIndex+1)
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -89,7 +87,6 @@ profileMon::profileMon(const std::string& Key)  :
 
 profileMon::profileMon(const profileMon& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  profMonIndex(A.profMonIndex),cellIndex(A.cellIndex),
   height(A.height),depth(A.depth),
   width(A.width),steelMat(A.steelMat)
   /*!
@@ -110,7 +107,6 @@ profileMon::operator=(const profileMon& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       height=A.height;
       depth=A.depth;
       width=A.width;
@@ -170,12 +166,12 @@ profileMon::createSurfaces()
   ELog::RegMethod RegA("profileMon","createSurface");
 
   // steel box
-  ModelSupport::buildPlane(SMap,profMonIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,profMonIndex+2,Origin+Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,profMonIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,profMonIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,profMonIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,profMonIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
   return;
 }
@@ -192,8 +188,8 @@ profileMon::createObjects(Simulation& System)
   std::string Out;
 
     // Steel
-  Out=ModelSupport::getComposite(SMap,profMonIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 
   addOuterSurf(Out);
   addBoundarySurf(Out);
@@ -210,12 +206,12 @@ profileMon::createLinks()
 {
   ELog::RegMethod RegA("profileMon","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(profMonIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(profMonIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(profMonIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(profMonIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(profMonIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(profMonIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(0,Origin-Y*depth/2.0,-Y);
   FixedComp::setConnect(1,Origin+Y*depth/2.0,Y);

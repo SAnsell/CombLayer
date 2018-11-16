@@ -56,14 +56,14 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
 #include "BoundOuter.h"
@@ -158,7 +158,7 @@ makePhoton::build(Simulation* SimPtr,
 
   
   OuterObj->addInsertCell(voidCell);
-  OuterObj->createAll(*SimPtr,World::masterOrigin());
+  OuterObj->createAll(*SimPtr,World::masterOrigin(),0);
   return;
   CatcherObj->addInsertCell(voidCell);
   CatcherObj->createAll(*SimPtr,*OuterObj,-1);

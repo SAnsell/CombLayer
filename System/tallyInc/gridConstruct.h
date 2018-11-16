@@ -27,7 +27,7 @@ namespace attachSystem
   class FixedComp;
 }
 
-
+class objectGroups;
 class Simulation;
 class SimMCNP;
 
@@ -52,7 +52,8 @@ class gridConstruct
 		      const Geometry::Vec3D&,
 		      const Geometry::Vec3D&);
 
-  static int calcGlobalCXY(const std::string&,const std::string&,
+  static int calcGlobalCXY(const objectGroups&,
+			   const std::string&,const std::string&,
 			   Geometry::Vec3D&,Geometry::Vec3D&,
 			   Geometry::Vec3D&);
 

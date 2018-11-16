@@ -37,15 +37,14 @@ namespace shutterSystem
   */
 
 class Torpedo : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  protected:
 
   const std::string baseName;         ///< Base Keyname 
   const size_t shutterNumber;         ///< number of the shutter
 
-  const int surfIndex;                ///< Index of the surface
-  int cellIndex;                      ///< Index of the cells
   Geometry::Convex vBox;              ///< Convex box of torpedo
 
   double voidXoffset;                 ///< Main void vessel offset 
@@ -58,8 +57,6 @@ class Torpedo : public attachSystem::FixedComp,
 
   std::set<int> innerSurf;            ///< Inner surfaces
   
-  // Cells:
-  int voidCell;                 ///< Main void cell 
 
   //--------------
   // FUNCTIONS:

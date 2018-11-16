@@ -3,7 +3,7 @@
  
  * File:   lensModel/ProtonFlight.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -68,7 +69,6 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "ProtonFlight.h"
 
@@ -78,9 +78,8 @@ namespace lensSystem
 
 ProtonFlight::ProtonFlight(const std::string& Key)  :
   attachSystem::ContainedGroup("box","line"),
-  attachSystem::FixedComp(Key,2),
-  protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1)
+  attachSystem::FixedComp(Key,2)
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +88,6 @@ ProtonFlight::ProtonFlight(const std::string& Key)  :
 
 ProtonFlight::ProtonFlight(const ProtonFlight& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
-  protonIndex(A.protonIndex),cellIndex(A.cellIndex),
   boxX(A.boxX),boxY(A.boxY),boxZ(A.boxZ),
   backSurf(A.backSurf),targetCell(A.targetCell),Angle(A.Angle),
   YOffset(A.YOffset),width(A.width),
@@ -224,61 +222,61 @@ ProtonFlight::createSurfaces()
 {
   ELog::RegMethod RegA("ProtonFlight","createSurface");
 
-  ModelSupport::buildPlane(SMap,protonIndex+1,Origin,boxY);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,boxY);
 
-  SMap.addMatch(protonIndex+2,-backSurf);
+  SMap.addMatch(buildIndex+2,-backSurf);
 
-  ModelSupport::buildPlane(SMap,protonIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,protonIndex+4,Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,protonIndex+5,Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,protonIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
   // Inner layer :
 
-  ModelSupport::buildPlane(SMap,protonIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width-wallThick),X);
-  ModelSupport::buildPlane(SMap,protonIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width-wallThick),X);
-  ModelSupport::buildPlane(SMap,protonIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height-wallThick),Z);
-  ModelSupport::buildPlane(SMap,protonIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height-wallThick),Z);
   // Proton Target:
   // BE:
-  ModelSupport::buildPlane(SMap,protonIndex+102,
+  ModelSupport::buildPlane(SMap,buildIndex+102,
 			   Origin+boxY*targetBeThick,boxY);
-  ModelSupport::buildPlane(SMap,protonIndex+103,
+  ModelSupport::buildPlane(SMap,buildIndex+103,
 			   Origin-boxX*targetBeWidth/2,boxX);
-  ModelSupport::buildPlane(SMap,protonIndex+104,
+  ModelSupport::buildPlane(SMap,buildIndex+104,
 			   Origin+boxX*targetBeWidth/2,boxX);
-  ModelSupport::buildPlane(SMap,protonIndex+105,
+  ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-boxZ*targetBeHeight/2,boxZ);
-  ModelSupport::buildPlane(SMap,protonIndex+106,
+  ModelSupport::buildPlane(SMap,buildIndex+106,
 			   Origin+boxZ*targetBeHeight/2,boxZ);
 
   // WATER:  
-  ModelSupport::buildPlane(SMap,protonIndex+112,
+  ModelSupport::buildPlane(SMap,buildIndex+112,
 			   Origin+boxY*targetWaterThick,boxY);
-  ModelSupport::buildPlane(SMap,protonIndex+113,
+  ModelSupport::buildPlane(SMap,buildIndex+113,
 			   Origin-boxX*targetWaterWidth/2,boxX);
-  ModelSupport::buildPlane(SMap,protonIndex+114,
+  ModelSupport::buildPlane(SMap,buildIndex+114,
 			   Origin+boxX*targetWaterWidth/2,boxX);
-  ModelSupport::buildPlane(SMap,protonIndex+115,
+  ModelSupport::buildPlane(SMap,buildIndex+115,
 			   Origin-boxZ*targetWaterHeight/2,boxZ);
-  ModelSupport::buildPlane(SMap,protonIndex+116,
+  ModelSupport::buildPlane(SMap,buildIndex+116,
 			   Origin+boxZ*targetWaterHeight/2,boxZ);
   
   // AL:
-  ModelSupport::buildPlane(SMap,protonIndex+121,
+  ModelSupport::buildPlane(SMap,buildIndex+121,
 			   Origin-boxY*targetThick,boxY);
-  ModelSupport::buildPlane(SMap,protonIndex+122,
+  ModelSupport::buildPlane(SMap,buildIndex+122,
 			   Origin+boxY*targetThick,boxY);
-  ModelSupport::buildPlane(SMap,protonIndex+123,
+  ModelSupport::buildPlane(SMap,buildIndex+123,
 			   Origin-boxX*targetWidth/2,boxX);
-  ModelSupport::buildPlane(SMap,protonIndex+124,
+  ModelSupport::buildPlane(SMap,buildIndex+124,
 			   Origin+boxX*targetWidth/2,boxX);
-  ModelSupport::buildPlane(SMap,protonIndex+125,
+  ModelSupport::buildPlane(SMap,buildIndex+125,
 			   Origin-boxZ*targetHeight/2,boxZ);
-  ModelSupport::buildPlane(SMap,protonIndex+126,
+  ModelSupport::buildPlane(SMap,buildIndex+126,
 			   Origin+boxZ*targetHeight/2,boxZ);
   return;
 }
@@ -294,16 +292,16 @@ ProtonFlight::createObjects(Simulation& System)
 
   std::string Out;
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,protonIndex,"-1 2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 2 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Al - Layer
-  Out=ModelSupport::getComposite(SMap,protonIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-1 2 3 -4 5 -6 (-13 : 14 : -15 : 16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Make exclude unit
-  Out=ModelSupport::getComposite(SMap,protonIndex,"-1 2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-1 2 3 -4 5 -6");
   addOuterSurf("line",Out);
   return;
 }
@@ -319,25 +317,25 @@ ProtonFlight::createTarget(Simulation& System)
 
   std::string Out;
   // Be slab
-  Out=ModelSupport::getComposite(SMap,protonIndex,"1 -102 103 -104 105 -106");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targetMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -102 103 -104 105 -106");
+  System.addCell(MonteCarlo::Object(cellIndex++,targetMat,0.0,Out));
   
   // Water coolant
-  Out=ModelSupport::getComposite(SMap,protonIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(102 : -103 : 104 : -105 : 106) "
 				 "1 -112 113 -114 115 -116");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targetCoolant,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,targetCoolant,0.0,Out));
 
   // Al - Layer
-  Out=ModelSupport::getComposite(SMap,protonIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-1 : 112 : -113 : 114 : -115 : 116) "
 				 "121 -122 123 -124 125 -126"
 				 "(1 : -3 : 4 : -5 : 6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targetSurround,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,targetSurround,0.0,Out));
 
 
   // Make exclude unit
-  Out=ModelSupport::getComposite(SMap,protonIndex,"121 -122 123 -124 125 -126");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"121 -122 123 -124 125 -126");
   addOuterSurf("box",Out);  
   return;
 }
@@ -355,12 +353,12 @@ ProtonFlight::exitWindow(const double Dist,
   */
 {
   window.clear();
-  window.push_back(SMap.realSurf(protonIndex+3));
-  window.push_back(SMap.realSurf(protonIndex+4));
-  window.push_back(SMap.realSurf(protonIndex+5));
-  window.push_back(SMap.realSurf(protonIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+Y*Dist;  
-  return SMap.realSurf(protonIndex+1);
+  return SMap.realSurf(buildIndex+1);
 }
 
   

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/InnerLayer.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,9 +82,7 @@ namespace ts1System
 {
 
 InnerLayer::InnerLayer(const std::string& Key,const std::string& LKey) :
-  ts1System::CH4Layer(LKey),IKeyName(Key),
-  innerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(innerIndex+1)
+  ts1System::CH4Layer(LKey),IKeyName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,8 +94,8 @@ InnerLayer::InnerLayer(const std::string& Key,const std::string& LKey) :
 
 InnerLayer::InnerLayer(const InnerLayer& A) : 
   ts1System::CH4Layer(A),
-  IKeyName(A.IKeyName),innerIndex(A.innerIndex),
-  cellIndex(A.cellIndex),nPoison(A.nPoison),poisonYStep(A.poisonYStep),
+  IKeyName(A.IKeyName),
+  nPoison(A.nPoison),poisonYStep(A.poisonYStep),
   poisonThick(A.poisonThick),poisonMat(A.poisonMat),
   pCladThick(A.pCladThick),pCladMat(A.pCladMat)
   /*!
@@ -117,7 +115,6 @@ InnerLayer::operator=(const InnerLayer& A)
   if (this!=&A)
     {
       ts1System::CH4Layer::operator=(A);
-      cellIndex=A.cellIndex;
       nPoison=A.nPoison;
       poisonYStep=A.poisonYStep;
       poisonThick=A.poisonThick;
@@ -165,7 +162,7 @@ InnerLayer::populate(const FuncDataBase& Control)
       for(size_t i=0;i<nPoison;i++)
 	{
 	  value=Control.EvalVar<double>
-	    (IKeyName+StrFunc::makeString("PYStep",i+1));
+	    (IKeyName+"PYStep"+std::to_string(i+1));
 	  poisonYStep.push_back(value);
 	}
       poisonThick=Control.EvalVar<double>(IKeyName+"PGdThick");
@@ -187,7 +184,7 @@ InnerLayer::createSurfaces()
 {
   ELog::RegMethod RegA("InnerLayer","createSurface");
   
-   int ch4Layer(innerIndex+500);
+   int ch4Layer(buildIndex+500);
    for(size_t i=0;i<nPoison;i++)
     {
       ModelSupport::buildPlane(SMap,ch4Layer+1,
@@ -219,15 +216,15 @@ InnerLayer::createObjects(Simulation& System)
 
   // Poison layers [negative side first]:
   const std::string Edge=
-    ModelSupport::getComposite(SMap,modIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   const double ch4Temp=LVec[0].getTemp();
   const int ch4Mat=LVec[0].getMat();
-  int nextPoisLayer(innerIndex+500);
+  int nextPoisLayer(buildIndex+500);
 
   // front / back:
   HeadRule frontX,backX;
-  createFrontRule(LVec[0],modIndex,0,frontX);
-  createBackRule(LVec[0],modIndex,0,backX);
+  createFrontRule(LVec[0],buildIndex,0,frontX);
+  createBackRule(LVec[0],buildIndex,0,backX);
   for(size_t i=0;i<nPoison;i++)
     {
       if (i)
@@ -237,37 +234,37 @@ InnerLayer::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,nextPoisLayer," -11 ")
 	    +frontX.display();
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
+      System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 11 -1 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
+      System.addCell(MonteCarlo::Object(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       
       // Poisoning 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 1 -2");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,
+      System.addCell(MonteCarlo::Object(cellIndex++,poisonMat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 2 -12 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
+      System.addCell(MonteCarlo::Object(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       nextPoisLayer+=20;
     }
   // Final (or total segment)
-  //  Out=ModelSupport::getComposite(SMap,prevPLayer,innerIndex," 2 -2M ");
+  //  Out=ModelSupport::getComposite(SMap,prevPLayer,buildIndex," 2 -2M ");
   if (nPoison)
     Out=ModelSupport::getComposite
       (SMap,nextPoisLayer-10," 2 ")+backX.display();
   else
     Out=backX.display()+" "+frontX.display();
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
+  System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,
 				   ch4Temp,Out+Edge));
   innerCells.push_back(cellIndex-1);
   

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerRoof.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -92,8 +93,7 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(bunkerName+"Roof",6),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
-  roofIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
-  cellIndex(roofIndex+1),baseSurf(0),topSurf(0),innerSurf(0),outerSurf(0)
+  baseSurf(0),topSurf(0),innerSurf(0),outerSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
@@ -104,7 +104,7 @@ BunkerRoof::BunkerRoof(const BunkerRoof& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  baseName(A.baseName),roofIndex(A.roofIndex),cellIndex(A.cellIndex),
+  baseName(A.baseName),
   roofThick(A.roofThick),roofMat(A.roofMat),activeRoof(A.activeRoof),
   nVert(A.nVert),nRadial(A.nRadial),nMedial(A.nMedial),
   vert(A.vert),radial(A.radial),medial(A.medial),
@@ -132,7 +132,6 @@ BunkerRoof::operator=(const BunkerRoof& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       roofThick=A.roofThick;
       roofMat=A.roofMat;
       activeRoof=A.activeRoof;

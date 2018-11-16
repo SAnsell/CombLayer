@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/ZoomStack.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,7 +63,8 @@
 #include "varBlock.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +81,7 @@ namespace zoomSystem
 {
 
 ZoomStack::ZoomStack(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0),
-  stackIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(stackIndex+1)
+  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +90,6 @@ ZoomStack::ZoomStack(const std::string& Key)  :
 
 ZoomStack::ZoomStack(const ZoomStack& A) : 
   attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  stackIndex(A.stackIndex),cellIndex(A.cellIndex),
   nItem(A.nItem),posIndex(A.posIndex),length(A.length),
   height(A.height),Items(A.Items),voidCell(A.voidCell)
   /*!
@@ -113,7 +110,6 @@ ZoomStack::operator=(const ZoomStack& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
       nItem=A.nItem;
       posIndex=A.posIndex;
       length=A.length;
@@ -158,7 +154,7 @@ ZoomStack::populate(const Simulation& System)
       for(size_t j=0;j<DSize+ISize;j++)
 	{
 	  const std::string KX=
-	    StrFunc::makeString(keyName+sndKey[j],i);
+	    keyName+sndKey[j]+std::to_string(i);
 	  std::ostringstream cx;
 	  if (Control.hasVariable(KX))
 	    {
@@ -214,12 +210,12 @@ ZoomStack::createSurfaces()
 
   // Create Outer surfaces
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,stackIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,stackIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
-  int offset(stackIndex);
+  int offset(buildIndex);
   Geometry::Vec3D OE(Origin);
   for(size_t i=0;i<nItem;i++)
     {
@@ -283,22 +279,22 @@ ZoomStack::createObjects(Simulation& System)
   ELog::RegMethod RegA("ZoomStack","createObjects");
   
   std::string Out;
-  const std::string FB=ModelSupport::getComposite(SMap,stackIndex,"1 -2 ");
-  const std::string Sides=ModelSupport::getComposite(SMap,stackIndex,
+  const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2 ");
+  const std::string Sides=ModelSupport::getComposite(SMap,buildIndex,
 						     "1 -2 5 -6 ");
-  std::string basePlate=ModelSupport::getComposite(SMap,stackIndex,
+  std::string basePlate=ModelSupport::getComposite(SMap,buildIndex,
 						   "3 (13 : -12) ");
-  int index(stackIndex);
+  int index(buildIndex);
   for(size_t i=0;i<nItem;i++)
     {
       // Path Void
       Out=FB+ModelSupport::getComposite(SMap,index," 503 -504 505 -506 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       // Main material
       Out=Sides+basePlate;
       Out+=ModelSupport::getComposite(SMap,index," -14 (-4 : 22) ");
       Out+=ModelSupport::getComposite(SMap,index," (-503:504:-505:506) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       Items[i].getVar<int>("Mat"),0.0,Out));
       
       
@@ -306,7 +302,7 @@ ZoomStack::createObjects(Simulation& System)
       Out=Sides+ModelSupport::getComposite(SMap,index," 4 (14 : -22) ");
       Out+=ModelSupport::getComposite(SMap,index," -34 (-24 : 32) ");
       basePlate=ModelSupport::getComposite(SMap,index," 24 (34 : -32) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
       index+=50;
     }
@@ -314,7 +310,7 @@ ZoomStack::createObjects(Simulation& System)
 
   if( nItem)
     {
-      Out=Sides+ModelSupport::getComposite(SMap,stackIndex," 3 (13 : -12) ");
+      Out=Sides+ModelSupport::getComposite(SMap,buildIndex," 3 (13 : -12) ");
       Out+=ModelSupport::getComposite(SMap,index-50," -34 (-24 : 32) ");
       addOuterSurf(Out);
     }

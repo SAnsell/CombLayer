@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheelCassette.cxx
  *
- * Copyright (c) 2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -86,16 +86,14 @@
 namespace essSystem
 {
 
-  BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
+BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
 					   const std::string& extraKey,
 					   const size_t& Index)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),40),
   baseName(baseKey),
-  commonName(baseKey+extraKey),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
-  /*!
+  commonName(baseKey+extraKey)
+    /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
@@ -106,7 +104,6 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
   commonName(A.commonName),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   bricksActive(A.bricksActive),
   wallThick(A.wallThick),delta(A.delta),temp(A.temp),
@@ -149,7 +146,6 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       engActive=A.engActive;
       bricksActive=A.bricksActive;
       wallThick=A.wallThick;
@@ -206,18 +202,17 @@ BilbaoWheelCassette::getSegWallArea() const
 
   // for the innermost segment without bricks:
   // get segmented wall area:
-  // it's a sum of rectangle (s1) and triangle (s2)
-  double s(0.0);
-  double h1(wallSegThick); // downstream thick
-  double h2(0.0); // upstream thick
-  double h3(0.0); // leg of triangle: h2=h1+h3
+
+
+  //  double h1(wallSegThick); // downstream thick
 
   // for the inner segment with  no bricks
-  h3 = std::abs(wallSegLength[0])*tan(wallSegDelta*M_PI/180.0);
-  h2 = h1+h3;
-  const double s1 = h1*std::abs(wallSegLength[0]); // rectangle
+  const double h3 = std::abs(wallSegLength[0])*tan(wallSegDelta*M_PI/180.0);
+  const double s1 = wallSegThick*std::abs(wallSegLength[0]); // rectangle
   const double s2 = wallSegLength[0]*h3/2.0; // triangle
-  s += s1+s2;
+
+  // it's a sum of rectangle (s1) and triangle (s2)
+  double s(s1+s2);
 
   // for the segments with bricks:
   double R(innerCylRadius);
@@ -226,9 +221,6 @@ BilbaoWheelCassette::getSegWallArea() const
       R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       const double L = 2*R*sin(wallSegDelta*M_PI/180.0);
       const double bg(getBrickGapThick(j));
-
-      //      ELog::EM << j << " " << R << " " << L-bg << ELog::endDiag;
-
       s += (L-bg)*std::abs(wallSegLength[j])/2;
     }
 
@@ -269,14 +261,15 @@ BilbaoWheelCassette::getBrickGapThick(const size_t& j) const
   if (j==0)
     throw ColErr::RangeError<size_t>(j, 1, nWallSeg-1, "segment index");
 
-  return nBricks[j]*brickWidth + (nBricks[j]-1)*brickGap;
+  return static_cast<double>(nBricks[j])*brickWidth +
+    static_cast<double>(nBricks[j]-1)*brickGap;
 }
 
 void
 BilbaoWheelCassette::buildBricks()
   /*!
     Build the bricks for the given segment
-   */
+  */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","buildBricks");
   return;
@@ -366,34 +359,34 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfaces");
 
   // divider
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   // outer sides
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,Origin,X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,Origin,X,Z,delta/2.0);
 
   const double dw = getSegWallThick()+wallThick;
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*(dw),X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*(dw),X,Z,delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+13,Origin+X*(dw),X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+14,Origin-X*(dw),X,Z,delta/2.0);
 
   const double R(innerCylRadius);
 
   // bircks start from this cylinder:
-  ModelSupport::buildCylinder(SMap, surfIndex+7, Origin, Z,
+  ModelSupport::buildCylinder(SMap, buildIndex+7, Origin, Z,
 			      R+std::abs(wallSegLength[0]));
 
   double rSteel(R+std::abs(wallSegLength[0])); // outer radius of steel bricks
   for (size_t i=0; i<nSteelRows; i++)
     rSteel += std::abs(wallSegLength[i+1]);
-  ModelSupport::buildCylinder(SMap, surfIndex+17, Origin, Z, rSteel);
+  ModelSupport::buildCylinder(SMap, buildIndex+17, Origin, Z, rSteel);
 
   // front plane
   const double d = FC.getLinkDistance(back, front);
 
   Geometry::Vec3D offset = Origin-Y*(R+d);
-  ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,offset,Y);
 
   offset += Y*pipeCellThick;
-  ModelSupport::buildPlane(SMap,surfIndex+12,offset,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,offset,Y);
 
   return;
 }
@@ -408,13 +401,13 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfacesBricks");
 
   // divider
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
   // outer sides
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+3,Origin,X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+4,Origin,X,Z,delta/2.0);
 
-  int SI(surfIndex+100);
+  int SI(buildIndex+100);
 
   // // detailed wall
   // Geometry::Cylinder *backCyl =
@@ -491,33 +484,33 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   const std::string outer = tb + FC.getLinkString(back) + FC.getLinkString(front);
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 -1");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));
 
   if (nSteelRows>0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,homoWMat,temp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 12 17 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,homoWMat,temp,Out+tb));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -17 7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,homoSteelMat,temp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -17 7 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,homoSteelMat,temp,Out+tb));
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,homoWMat,temp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 12 7 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,homoWMat,temp,Out+tb));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -7 ") + FC.getLinkString(back);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -7 ") + FC.getLinkString(back);
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -12 ") + FC.getLinkString(front);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -12 ") + FC.getLinkString(front);
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeCellMat,temp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 -1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);
 
   return;
@@ -537,7 +530,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
   const std::string tb = FC.getLinkString(floor) + FC.getLinkString(roof);
 
   std::string Out;
-  int SI(surfIndex+100);
+  int SI(buildIndex+100);
   int SJ(SI);
 
   std::string backFront; // back-front surfaces of each segment
@@ -547,10 +540,10 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
       if (j==0)
 	{
-	  backFront = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
+	  backFront = ModelSupport::getComposite(SMap,buildIndex,SJ," 11M -1 ") +
 	    FC.getLinkString(back);
 	  Out=ModelSupport::getComposite(SMap,SJ," 13 -14 ") + backFront;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+	  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
 	} else
 	{
 	  if (j==nWallSeg-1)
@@ -561,7 +554,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 -21M ") +
 		FC.getLinkString(front);
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,
+	      System.addCell(MonteCarlo::Object(cellIndex++,pipeCellMat,temp,
 					       Out+tb));
 	    } else
 	    {
@@ -577,7 +570,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 		{
 		  // gap
 		  Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
-		  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,
+		  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,
 						   Out+backFrontBrick+tb));
 		  // brick
 		  Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
@@ -585,7 +578,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	      else // build only brick
 		Out=ModelSupport::getComposite(SMap,SJ," -14 ") + prev;
 
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       j<=nSteelRows?brickSteelMat:brickWMat,
 					       temp,Out+backFrontBrick+tb));
 
@@ -595,22 +588,22 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	    }
 	  // gap b/w bricks in y-direction
 	  Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 12M -11M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+	  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
 	}
 
       /// create side walls
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + backFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,buildIndex,SJ," 3 -13M ") + backFront;
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+tb));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + backFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,buildIndex,SJ," 14M -4 ") + backFront;
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+tb));
 
       SJ += 1000;
     }
 
   const std::string outer = tb + FC.getLinkString(front) + FC.getLinkString(back);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);
 
   return;
@@ -627,13 +620,13 @@ BilbaoWheelCassette::createLinks()
 
   if (bricksActive)
     {
-      int SJ(surfIndex+100);
+      int SJ(buildIndex+100);
       size_t i(0);
       for (size_t j=0; j<nWallSeg; j++)
 	{
 	  Geometry::Vec3D p = SurInter::getPoint(SMap.realSurfPtr(SJ+11),
 						 SMap.realSurfPtr(SJ+13),
-						 SMap.realSurfPtr(surfIndex+5));
+						 SMap.realSurfPtr(buildIndex+5));
 	  p += Y*std::abs(wallSegLength[j]/2.0);
 	  FixedComp::setConnect(i,p,X);
 	  FixedComp::setLinkSurf(i,SMap.realSurf(SJ+13));
@@ -642,7 +635,7 @@ BilbaoWheelCassette::createLinks()
 
 	  p = SurInter::getPoint(SMap.realSurfPtr(SJ+11),
 				 SMap.realSurfPtr(SJ+14),
-				 SMap.realSurfPtr(surfIndex+5));
+				 SMap.realSurfPtr(buildIndex+5));
 	  p += Y*std::abs(wallSegLength[j]/2.0);
 	  FixedComp::setConnect(i,p,-X);
 	  FixedComp::setLinkSurf(i,-SMap.realSurf(SJ+14));

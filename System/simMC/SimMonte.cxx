@@ -23,7 +23,8 @@
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
+#include <memory>
 #include <vector>
 #include <map> 
 #include <list> 
@@ -65,7 +66,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "neutMaterial.h"
 #include "DBNeutMaterial.h"
@@ -74,6 +74,8 @@
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 #include "SimMonte.h"
@@ -186,7 +188,7 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
   ModelSupport::LineTrack LT(N.Pos,N.Pos+N.uVec*Dist);
   LT.calculate(*this);
 
-  const std::vector<double>& tLen=LT.getTrack();
+  const std::vector<double>& tLen=LT.getSegmentLen();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
 
   for(size_t i=0;i<oVec.size();i++)

@@ -45,10 +45,8 @@ class VacVessel :
 {
  private:
   
-  const int vacIndex;               ///< Index of surface offset
   const std::string grooveKeyName;  ///< KeyName [Groove]
   const std::string hydKeyName;     ///< KeyName [Hydrogen]
-  int cellIndex;                    ///< Cell index
   int populated;                    ///< 1:var
   
   std::array<Geometry::Vec3D,6> BVec;     ///< Boundary Points

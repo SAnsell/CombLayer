@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "ObjSurfMap.h"
@@ -61,6 +60,8 @@
 #include "surfRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimValid.h"
 
@@ -226,6 +227,7 @@ SimValid::runPoint(const Simulation& System,
 	      ELog::EM<<"Fail on Pts==1 and aDist INF"<<ELog::endDiag;
 	      ELog::EM<<"Index == "<<Pts.size()-2<<ELog::endDiag;
 	      ELog::EM<<"Pts[0] == "<<Pts[0].Pt<<ELog::endDiag;
+	      ELog::EM<<"Pts[0] == "<<Pts[0].Dir<<ELog::endDiag;
 	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
 	      aDist=1e-5;
 	    }
@@ -239,6 +241,8 @@ SimValid::runPoint(const Simulation& System,
       if (!OPtr)
 	{
 	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
+	  if (!InitObj)
+	    ELog::EM<<"Failed to calculate INITIAL cell correctly: "<<ELog::endCrit;
 	  diagnostics(System,Pts);
 	  return 0;
 	}
@@ -258,13 +262,11 @@ SimValid::runFixedComp(const Simulation& System,
 {
   ELog::RegMethod RegA("SimValid","runFixedComp");
   
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   typedef std::map<std::string,CTYPE> cMapTYPE;
 
-  const cMapTYPE& CM=OR.getComponents();
+  const cMapTYPE& CM=System.getComponents();
 
   for(const cMapTYPE::value_type& FCitem : CM)
     {

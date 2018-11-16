@@ -64,13 +64,14 @@
 #include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "DefPhysics.h"
 #include "neutron.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 
@@ -150,22 +151,22 @@ testSimulation::createObjects()
   int cellIndex(1);
   const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
   Out=ModelSupport::getComposite(surIndex,"11 -12 (-17:-14) 13 -34 15 -16 "
 				 " (-1:2:-3:4:-5:6) ");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
+  ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
+  ASim.addCell(MonteCarlo::Object(cellIndex++,8,0.0,Out));      // Gd box 
 
   Out=ModelSupport::getComposite
     (surIndex,"-100 (-11:12:-13:34:-15:16:(17 14)) #4");
 
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
 

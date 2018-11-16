@@ -28,6 +28,7 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <set>
 #include <map>
 #include <tuple>
 #include <algorithm>
@@ -59,6 +60,39 @@ testGroupRange::~testGroupRange()
   */
 {}
 
+groupRange
+testGroupRange::makeGrp(std::string Line) 
+  /*!
+    Bulid a group
+    \param Line :: line to build from 
+    \return Group range
+   */
+{
+  ELog::RegMethod RegA("testGroupRange","makeGrp");
+
+  groupRange AGrp;
+  int A,B;
+  while(!StrFunc::isEmpty(Line))
+    {
+      std::string Units=StrFunc::getDelimUnit("[","]",Line);
+      if (StrFunc::section(Units,A) &&
+	  StrFunc::section(Units,B))
+	{
+	  AGrp.addItem(A,B);
+	}
+      else if (StrFunc::section(Line,A))
+	{
+	  AGrp.addItem(A);
+	}
+      else
+	{
+	  ELog::EM<<"Failed to read line "<<ELog::endDiag;
+	  return AGrp;
+	}
+    }
+  return AGrp;
+}
+
 int 
 testGroupRange::applyTest(const int extra)
   /*!
@@ -74,15 +108,21 @@ testGroupRange::applyTest(const int extra)
   typedef int (testGroupRange::*testPtr)();
   testPtr TPtr[]=
     {
+      &testGroupRange::testAddItem,
       &testGroupRange::testGetNext,
       &testGroupRange::testInsert,
-      &testGroupRange::testMerge
+      &testGroupRange::testMerge,
+      &testGroupRange::testRemove,
+      &testGroupRange::testValid
     };
   const std::vector<std::string> TestName=
     {
+      "AddItem",
       "GetNext",
       "Insert",
-      "Merge"
+      "Merge",
+      "Remove",
+      "Valid"
     };
   
   const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -106,6 +146,46 @@ testGroupRange::applyTest(const int extra)
 
 
 int
+testGroupRange::testAddItem()
+  /*!
+    Tests the adding of items to a range
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testAddItem");
+
+  const std::vector<std::vector<int>> TVec
+    ({
+      {-3,-4,-5,3,4,5,7,21},
+      {-3,-4,-5,2,3,4,5,7,21},
+      {-3,-4,-5,2,3,4,5,7,21}
+
+    });
+  typedef std::tuple<int,int> TTYPE;
+
+  std::vector<TTYPE> Tests
+    ({{1,4}});
+
+  for(size_t i=0;i<Tests.size();i++)
+    {
+      const TTYPE& tc=Tests[i];
+
+      groupRange A(TVec[i]);
+      groupRange B(TVec[i+1]);
+      A.addItem(std::get<0>(tc),std::get<1>(tc));
+      if (A!=B)
+	{
+	  ELog::EM<<"A == "<<A<<ELog::endDiag;
+	  ELog::EM<<"B == "<<B<<ELog::endDiag;
+	  ELog::EM<<"Add == "<<std::get<0>(tc)<<":"
+		  <<std::get<1>(tc)<<ELog::endDiag;
+	}
+    }
+  return 0;
+}
+
+int
 testGroupRange::testGetNext()
   /*!
     Tests the get Next functoin
@@ -113,7 +193,7 @@ testGroupRange::testGetNext()
     \retval 0 :: success 
   */
 {
-  ELog::RegMethod RegA("testGroupRange","testMerge");
+  ELog::RegMethod RegA("testGroupRange","testGetNext");
 
   const std::vector<int> testVec({3,4,5,7,21,1,2,-3,-4,-5,7});
   
@@ -205,6 +285,7 @@ testGroupRange::testInsert()
 }
 
 
+
 int
 testGroupRange::testMerge()
   /*!
@@ -215,26 +296,162 @@ testGroupRange::testMerge()
 {
   ELog::RegMethod RegA("testGroupRange","testMerge");
 
-  const std::vector<int> testVecA({3,4,5,7,9,21,1});
-  const std::vector<int> testVecB({1,4,5,8,21,1});
-  const std::vector<int> testVecC({1,3,4,5,7,8,9,21});
-  
-  groupRange A(testVecA);
-  groupRange APrime(A);
-  groupRange B(testVecB);
+  const std::vector<std::vector<int>> TVec
+    ({
+      {std::vector<int>({3,4,5,7,9,21,1}) },
+      {std::vector<int>({1,4,5,8,21,1}) },
+      {std::vector<int>({1,3,4,5,7,9,10,11,40}) },
+	{std::vector<int>({4,5,6,7,8,9,10,11,12,13,14})},
+      {std::vector<int>({4,5,6,7,8,9,10})}
+    });     
 
-  A.combine(B);
-  const std::vector<int> outVec=A.getAllCells();
+  const std::vector<std::vector<int>> AVec
+    ({
+      {std::vector<int>({1,3,4,5,7,8,9,21}) },
+      {std::vector<int>({1,3,4,5,6,7,8,9,10,11,12,13,14,40})},
+      {std::vector<int>({1,3,4,5,6,7,8,9,10,11,12,13,14})},
+      {std::vector<int>({1,3,4,5,6,7,8,9,10,11,40})}
+    });     
 
-  if (testVecC!=outVec)
+  typedef std::tuple<size_t,size_t,size_t> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+        TTYPE(0,1,0),
+	  TTYPE(2,3,1),
+	  TTYPE(3,2,1),
+	  TTYPE(2,4,3),
+	  TTYPE(4,2,3)
+     });
+      
+	
+  for(const TTYPE& tc : Tests)
     {
-      ELog::EM<<"Failed :"<<ELog::endDiag;
-      ELog::EM<<"A    = "<<APrime<<ELog::endDiag;;
-      ELog::EM<<"B    = "<<B<<ELog::endDiag;;
-      ELog::EM<<"Comb = "<<A<<ELog::endDiag;;
-      return -1;
-    }
+      groupRange A(TVec[std::get<0>(tc)]);
+      groupRange APrime(A);
+      groupRange B(TVec[std::get<1>(tc)]);
+      groupRange Res(AVec[std::get<2>(tc)]);
 
+      A.combine(B);
+      const std::vector<int> outVec=A.getAllCells();
+      const std::vector<int>& ansVec=AVec[std::get<2>(tc)];
+
+      
+      if (ansVec!=outVec)
+	{
+	  ELog::EM<<"Failed :"<<ELog::endDiag;
+	  ELog::EM<<"A    = "<<APrime<<ELog::endDiag;;
+	  ELog::EM<<"B    = "<<B<<ELog::endDiag;;
+	  ELog::EM<<"Comb = "<<A<<ELog::endDiag;;
+	  ELog::EM<<"Res  = "<<Res<<ELog::endDiag;;
+	  return -1;
+	}
+    }
+  
+  return 0;
+}
+
+int
+testGroupRange::testRemove()
+  /*!
+    Tests the removal of units
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testRemoval");
+
+  typedef std::tuple<std::string,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+        TTYPE("[100 200] [300 400]",101,"100 [102 200] [300 400]"),
+      	TTYPE("[100 200] [300 400]",201,"[100 200] [300 400]"),
+      	TTYPE("[100 200] [300 400]",200,"[100 199] [300 400]"),
+	TTYPE("[100 200] [300 400]",100,"[101 200] [300 400]"),
+	TTYPE("[100 200] [300 400]",300,"[100 200] [301 400]"),
+	TTYPE("[100 200] [300 400]",301,"[100 200] 300 [302 400]")
+    });
+
+  int tCnt(0);
+  for(const TTYPE& tc : Tests)
+    {
+      tCnt++;
+      const int cellN=std::get<1>(tc);
+      groupRange AGrp=makeGrp(std::get<0>(tc));
+      AGrp.removeItem(cellN);
+      groupRange BGrp=makeGrp(std::get<2>(tc));
+      
+      if (AGrp!=BGrp)
+	{
+	  ELog::EM<<"TEST = "<<tCnt<<ELog::endDiag;
+	  ELog::EM<<"AGrp = "<<AGrp<<ELog::endDiag;
+	  ELog::EM<<"BGrp = "<<BGrp<<ELog::endDiag;
+	  return -1;
+	}
+    }
+      
+	      
+  return 0;
+}
+
+int
+testGroupRange::testValid()
+  /*!
+    Tests the valid units
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testGroupRange","testMerge");
+
+  typedef std::tuple<std::string,int,bool> TTYPE;
+  const std::vector<TTYPE> Tests
+    ({
+      	TTYPE("[100 200] [300 400]",101,1),
+        TTYPE("[100 200]",101,1),
+	TTYPE("[100 200]",99,0),
+	TTYPE("[100 200]",201,0),
+	TTYPE("[100 200] [300 400]",201,0),
+	TTYPE("[100 200] [300 400]",401,0),
+	TTYPE("[100 200] [300 400]",301,1),
+	  TTYPE("[100 200] [300 400]",99,0),
+	  TTYPE("[100 200] [300 400]",100,1),
+	  TTYPE("[100 200] [300 400]",300,1),
+	  TTYPE("[100 200] [300 400]",400,1)
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      groupRange AGrp;
+      int A,B;
+      std::string Line=std::get<0>(tc);
+      while(!StrFunc::isEmpty(Line))
+	{
+	  std::string Units=StrFunc::getDelimUnit("[","]",Line);
+	  if (StrFunc::section(Units,A) &&
+	      StrFunc::section(Units,B))
+	    {
+	      AGrp.addItem(A,B);
+	    }
+	  else if (StrFunc::section(Line,A))
+	    {
+	      AGrp.addItem(A);
+	    }
+	  else
+	    {
+	      ELog::EM<<"Failed to read line "<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      if (AGrp.valid(std::get<1>(tc))!=std::get<2>(tc))
+	{
+	  ELog::EM<<"AGrp = "<<AGrp<<ELog::endDiag;
+	  ELog::EM<<"cell = "<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"RET  = "<<AGrp.valid(std::get<1>(tc))<<ELog::endDiag;
+	  return -1;
+	}
+    }
+      
+	      
   return 0;
 }
 

@@ -46,9 +46,13 @@ class PipeTubeGenerator
   double flangeARadius;       ///< Flange radius
   double flangeBLen;          ///< Flange length
   double flangeBRadius;       ///< Flange radius
+
+  double ACap;                ///< Flange Cap A
+  double BCap;                ///< Flange Cap B
     
   std::string voidMat;          ///< Primary default mat
   std::string wallMat;          ///< Primary default mat
+  std::string capMat;          ///< Primary default mat
 
  public:
 
@@ -62,11 +66,17 @@ class PipeTubeGenerator
   template<typename CF> void setAFlangeCF();
   template<typename CF> void setBFlangeCF();
 
+  void setPipe(const double,const double,
+	       const double,const double);
   /// set wall thickness  
   void setWallThick(const double T) { wallThick=T; }
 
   void setAFlange(const double,const double);
   void setBFlange(const double,const double);
+  void setFlangeCap(const double,const double);
+  void setCap(const bool =1,const bool= 1);
+
+  
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }
   /// set wall material

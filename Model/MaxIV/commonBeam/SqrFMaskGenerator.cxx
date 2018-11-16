@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,7 +63,11 @@ SqrFMaskGenerator::SqrFMaskGenerator() :
   aFInRadius(4.0),aFOutRadius(6.0),
   aFLength(1.0),bFInRadius(4.0),
   bFOutRadius(6.0),bFLength(1.0),
-  flangeMat("Stainless304")
+  pipeRadius(0.3),pipeXWidth(4.0),
+  pipeZDepth(1.8),
+  pipeYStart(2.5),pipeYStep(3.0),
+  flangeMat("Stainless304"),
+  waterMat("H2O")
   /*!
     Constructor and defaults
   */
@@ -143,6 +146,16 @@ SqrFMaskGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBackOutRadius",bFOutRadius);
   Control.addVariable(keyName+"FlangeBackLength",bFLength);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
+
+
+  Control.addVariable(keyName+"PipeRadius",pipeRadius);
+  Control.addVariable(keyName+"PipeXWidth",pipeXWidth);
+  Control.addVariable(keyName+"PipeZDepth",pipeZDepth);
+  Control.addVariable(keyName+"PipeYStep0",pipeYStart);
+  Control.addVariable(keyName+"PipeYStep1",pipeYStart+pipeYStep);
+  Control.addVariable(keyName+"PipeYStep2",pipeYStart+2*pipeYStep);
+  Control.addVariable(keyName+"PipeYStep3",pipeYStart+3*pipeYStep);
+  Control.addVariable(keyName+"WaterMat",waterMat);
   
   return;
 

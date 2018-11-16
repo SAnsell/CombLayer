@@ -63,27 +63,28 @@ void addToInsertControl(Simulation&,const FixedComp&,
 			const FixedComp&,const std::string&);
 void addToInsertControl(Simulation&,const std::string&,
 			 const FixedComp&,ContainedComp&);
-void addToInsertControl(Simulation&,const int,const int,
-			 const FixedComp&,const ContainedComp&);
+void addToInsertControl(Simulation&,const std::vector<int>&,
+			const FixedComp&,const ContainedComp&);
 
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const CellMap&,const std::string&,
 			 ContainedComp&);
-void addToInsertSurfCtrl(Simulation&,const int,const int,
-			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const std::vector<int>&,
+			 ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
+ 
 void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,
-			      const int,const int,
+			      const std::vector<int>&,
 			      const ContainedComp&,ContainedComp&);
 
 // Brutal forced option!!
 void addToInsertForced(Simulation&,const FixedComp&,
 			ContainedComp&);
-void addToInsertForced(Simulation&,const int,const int,
+void addToInsertForced(Simulation&,const std::vector<int>&,
 		       ContainedComp&);
 
 // External check system

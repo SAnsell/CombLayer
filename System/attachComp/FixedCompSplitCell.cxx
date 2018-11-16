@@ -62,7 +62,8 @@
 #include "HeadRule.h"
 #include "SurInter.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -107,6 +108,7 @@ FixedComp::splitObject(Simulation& System,
     System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
 
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
+	
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);
 
@@ -189,7 +191,7 @@ FixedComp::splitObject(Simulation& System,
       OutCell.push_back(CN);
       
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
-      if (CMapPtr)
+      if (CMapPtr)	
 	CMapPtr->registerExtra(cellN,CN);
       SN++;
     }

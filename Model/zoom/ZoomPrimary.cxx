@@ -68,7 +68,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,8 +88,7 @@ namespace zoomSystem
 
 ZoomPrimary::ZoomPrimary(const std::string& Key) : 
   attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),populated(0),
+  populated(0),
   nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -98,7 +98,6 @@ ZoomPrimary::ZoomPrimary(const std::string& Key) :
 
 ZoomPrimary::ZoomPrimary(const ZoomPrimary& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),
   populated(A.populated),length(A.length),height(A.height),
   depth(A.depth),leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   cutX(A.cutX),cutZ(A.cutZ),cutWidth(A.cutWidth),
@@ -122,7 +121,6 @@ ZoomPrimary::operator=(const ZoomPrimary& A)
     {
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       length=A.length;
       height=A.height;
@@ -204,23 +202,23 @@ ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
 {
   ELog::RegMethod RegA("ZoomPrimary","createSurface");
 
-  SMap.addMatch(colIndex+1,LC.getLinkSurf(2));   // back plane
-  ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,colIndex+3,Origin-X*leftWidth,X);
-  ModelSupport::buildPlane(SMap,colIndex+4,Origin+X*rightWidth,X);
-  ModelSupport::buildPlane(SMap,colIndex+5,Origin-Z*depth,Z);
-  SMap.addMatch(colIndex+6,LC.getLinkSurf(6));   // right plane
+  SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*leftWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*rightWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  SMap.addMatch(buildIndex+6,LC.getLinkSurf(6));   // right plane
 
-  //  ModelSupport::buildPlane(SMap,colIndex+6,Origin+Z*height,Z);
+  //  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   // inner void
-  ModelSupport::buildPlane(SMap,colIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   bEnter+X*(cutX-cutWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,colIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   bEnter+X*(cutX+cutWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,colIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   bEnter+Z*(cutZ-cutHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,colIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   bEnter+Z*(cutZ+cutHeight/2.0),Z);
     
   return;
@@ -237,15 +235,15 @@ ZoomPrimary::createObjects(Simulation& System)
 
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
-  Out+=ModelSupport::getComposite(SMap,colIndex," (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-13:14:-15:16) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   CDivideList.push_back(cellIndex-1);
 
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 13 -14 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
 
   return;
@@ -268,9 +266,9 @@ ZoomPrimary::createLinks()
   
   for(int i=0;i<6;i++)
     FixedComp::setLinkSurf(static_cast<size_t>(i),
-			   SMap.realSurf(colIndex+i+1));
+			   SMap.realSurf(buildIndex+i+1));
 
-  setBeamExit(colIndex+2,bExit,bY);
+  setBeamExit(buildIndex+2,bExit,bY);
 
   return;
 }
@@ -303,24 +301,24 @@ ZoomPrimary::layerProcess(Simulation& System)
       // Cell Specific:
       DA.setCellN(CDivideList[i]);
       DA.setOutNum(cellIndex,
-		   colIndex+201+100*static_cast<int>(i));
+		   buildIndex+201+100*static_cast<int>(i));
 
       // Modern divider system:
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> wallRule;
-      wallRule.setSurfPair(SMap.realSurf(colIndex+3),
-			   SMap.realSurf(colIndex+13));
-      wallRule.setSurfPair(SMap.realSurf(colIndex+4),
-			   SMap.realSurf(colIndex+14));
-      wallRule.setSurfPair(SMap.realSurf(colIndex+5),
-			   SMap.realSurf(colIndex+15));
-      wallRule.setSurfPair(SMap.realSurf(colIndex+6),
-			   SMap.realSurf(colIndex+16));
+      wallRule.setSurfPair(SMap.realSurf(buildIndex+3),
+			   SMap.realSurf(buildIndex+13));
+      wallRule.setSurfPair(SMap.realSurf(buildIndex+4),
+			   SMap.realSurf(buildIndex+14));
+      wallRule.setSurfPair(SMap.realSurf(buildIndex+5),
+			   SMap.realSurf(buildIndex+15));
+      wallRule.setSurfPair(SMap.realSurf(buildIndex+6),
+			   SMap.realSurf(buildIndex+16));
 
       const std::string OutA=
-	ModelSupport::getComposite(SMap,colIndex," 3 -4 5 -6 ");
+	ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
       const std::string OutB=
-	ModelSupport::getComposite(SMap,colIndex," (-13:14:-15:16) ");
+	ModelSupport::getComposite(SMap,buildIndex," (-13:14:-15:16) ");
       wallRule.setInnerRule(OutA);
       wallRule.setOuterRule(OutB);
 
@@ -345,14 +343,14 @@ ZoomPrimary::exitWindow(const double Dist,
 {
   window.clear();
   // Not valid numbers:
-  window.push_back(SMap.realSurf(colIndex+23));
-  window.push_back(SMap.realSurf(colIndex+24));
-  window.push_back(SMap.realSurf(colIndex+25));
-  window.push_back(SMap.realSurf(colIndex+26));
+  window.push_back(SMap.realSurf(buildIndex+23));
+  window.push_back(SMap.realSurf(buildIndex+24));
+  window.push_back(SMap.realSurf(buildIndex+25));
+  window.push_back(SMap.realSurf(buildIndex+26));
   // Note cant rely on exit point because that is the 
   // virtual 46 degree exit point.
   Pt=Origin+Y*(length+Dist); 
-  return SMap.realSurf(colIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
 
 void
