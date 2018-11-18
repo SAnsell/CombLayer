@@ -194,6 +194,11 @@ TwinPipe::createSurfaces()
   QBz.rotate(BYAxis);
   QBxy.rotate(BYAxis);
 
+  ELog::EM<<"AANGLE == "<<pipeAXYAngle<<ELog::endDiag;
+  ELog::EM<<"AANGLE == "<<pipeAZAngle<<ELog::endDiag;
+  ELog::EM<<"AANGLE == "<<Y<<ELog::endDiag;
+  ELog::EM<<"AYAxis == "<<AYAxis<<ELog::endDiag;
+  ELog::EM<<"BYAxis == "<<BYAxis<<ELog::endDiag;
   // Inner void
   if (!ExternalCut::isActive("front"))
     {

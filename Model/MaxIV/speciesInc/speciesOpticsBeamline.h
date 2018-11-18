@@ -123,6 +123,54 @@ class speciesOpticsBeamline :
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
   /// Offset pipe leaving MonoTube
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
+  /// Bellow leaving Mono
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Small Pipe between mono/m3 bellow
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// Bellow to M3Mirror
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// Small Pipe apperature converted
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
+  /// Slits for mirror [uncooled]
+  std::shared_ptr<constructSystem::JawValve> mirrorJaws;
+  /// Mirror tube
+  std::shared_ptr<constructSystem::PipeTube> M3Tube;
+  /// Splitter
+  std::shared_ptr<xraySystem::TwinPipe> splitter;
+
+  // PIPE A :: LEFT SIDE
+  // bellowA on left split
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  // simple tube + port
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeAA;
+  /// Gate valve for left
+  std::shared_ptr<constructSystem::GateValve> gateAA;
+  // bellowB on left split
+  std::shared_ptr<constructSystem::Bellows> bellowAB;
+  /// Gate valve for left
+  std::shared_ptr<constructSystem::GateValve> gateAB;
+  // bellowA on left split
+  std::shared_ptr<constructSystem::Bellows> bellowAC;
+
+  // PIPE B :: RIGHT SIDE
+  // bellowA on left split
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  // simple tube + port
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeBA;
+  /// Gate valve for left
+  std::shared_ptr<constructSystem::GateValve> gateBA;
+  // bellowB on left split
+  std::shared_ptr<constructSystem::Bellows> bellowBB;
+  /// Gate valve for left
+  std::shared_ptr<constructSystem::GateValve> gateBB;
+  // bellowA on left split
+  std::shared_ptr<constructSystem::Bellows> bellowBC;
+
+
+  /// Pipe to exit
+  std::shared_ptr<constructSystem::VacuumPipe> outPipeA;
+  /// Pipe to exit
+  std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
 
 
   double outerRadius;           ///< Radius for inner void

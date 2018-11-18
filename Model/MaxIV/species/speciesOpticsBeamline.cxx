@@ -136,7 +136,14 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   screenB(new xraySystem::PipeShield(newName+"ScreenB")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
-  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB"))
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  mirrorJaws(new constructSystem::JawValve(newName+"MirrorJaws")),
+  M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
+  splitter(new xraySystem::TwinPipe(newName+"Splitter"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -156,6 +163,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(offPipeA);
   OR.addObject(offPipeB);
+  OR.addObject(mirrorJaws);
 }
   
 speciesOpticsBeamline::~speciesOpticsBeamline()
@@ -443,7 +451,7 @@ speciesOpticsBeamline::buildMono(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("speciesOpticsBeamline","buildSlitPackage");
+  ELog::RegMethod RegA("speciesOpticsBeamline","buildMono");
 
   int outerCell;
 
@@ -455,13 +463,107 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
 
-  ELog::EM<<"Mono == "<<monoVessel->getLinkPt(2)<<ELog::endDiag;
-  ELog::EM<<"Mono == "<<monoVessel->getLinkAxis(2)<<ELog::endDiag;
   offPipeB->createAll(System,*monoVessel,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
 
   return;
+}
+
+void
+speciesOpticsBeamline::buildM3Mirror(Simulation& System,
+				     MonteCarlo::Object* masterCell,
+				     const attachSystem::FixedComp& initFC, 
+				     const long int sideIndex)
+  /*!
+    Sub build of the m3-mirror unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("speciesOpticsBeamline","buildM3Mirror");
+
+  int outerCell;
+
+  bellowD->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
+  bellowD->insertInCell(System,outerCell);
+
+  pipeE->createAll(System,*bellowD,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeE,2);
+  pipeE->insertInCell(System,outerCell);
+
+  bellowE->createAll(System,*pipeE,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
+  bellowE->insertInCell(System,outerCell);
+  
+  pipeF->createAll(System,*bellowE,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
+  pipeF->insertInCell(System,outerCell);
+
+  mirrorJaws->createAll(System,*pipeF,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorJaws,2);
+  mirrorJaws->insertInCell(System,outerCell);
+
+  // FAKE insertcell: reqruired
+  M3Tube->addAllInsertCell(masterCell->getName());
+  M3Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  M3Tube->createAll(System,*mirrorJaws,2);
+
+  const constructSystem::portItem& API=M3Tube->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,API,API.getSideIndex("OuterPlate"));
+  M3Tube->insertAllInCell(System,outerCell);
+
+  return;
+}
+
+void
+speciesOpticsBeamline::buildSplitter(Simulation& System,
+				     MonteCarlo::Object* masterCellA,
+				     MonteCarlo::Object* masterCellB,
+				     const attachSystem::FixedComp& initFC,
+				     const long int sideIndex)
+  /*!
+    Sub build of the spliter package
+    \param System :: Simulation to use
+    \param masterCellA :: Current master cell			
+    \param masterCellB :: Secondary master cell		
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+
+{
+  ELog::RegMethod RegA("speciesOpticsBeamLine","buildSplitter");
+
+  int cellA(0),cellB(0);
+  
+
+  buildZone.constructMiddleSurface(SMap,buildIndex+10,initFC,sideIndex);
+
+  attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
+  attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
+
+  // No need for insert -- note removal of old master cell
+  System.removeCell(masterCellA->getName());
+  
+  masterCellA=leftZone.constructMasterCell(System);
+  masterCellB=rightZone.constructMasterCell(System);
+  splitter->createAll(System,initFC,sideIndex);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
+
+  splitter->insertInCell("Flange",System,cellA);
+  splitter->insertInCell("PipeA",System,cellA);
+
+  splitter->insertInCell("Flange",System,cellB);
+  splitter->insertInCell("PipeB",System,cellB);
+
+  return;
+
+
 }
 
 void
@@ -483,6 +585,13 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
   buildMono(System,masterCellA,*pipeD,2);
+  buildM3Mirror(System,masterCellA,*offPipeB,2);
+
+  MonteCarlo::Object* masterCellB(0);
+  const constructSystem::portItem& API=M3Tube->getPort(1);
+  const long int sideIndex=API.getSideIndex("OuterPlate");
+  buildSplitter(System,masterCellA,masterCellB,API,sideIndex);
+
   lastComp=bellowB;
 
   return;

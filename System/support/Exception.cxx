@@ -325,7 +325,7 @@ EmptyValue<T>::setOutLine()
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: EmptyValud< "<<typeIDName<T>()<<" > \n";
+  cx<<"\nEXCEPTION TYPE :: EmptyValue< "<<typeIDName<T>()<<" > \n";
   cx<<getErr();
   OutLine=cx.str();
   return;

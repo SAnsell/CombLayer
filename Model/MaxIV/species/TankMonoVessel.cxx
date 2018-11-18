@@ -119,6 +119,10 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   baseGap=Control.EvalVar<double>(keyName+"BaseGap");
   topGap=Control.EvalVar<double>(keyName+"TopGap");
 
+  lidOffset=Control.EvalVar<double>(keyName+"LidOffset");
+  lidRadius=Control.EvalVar<double>(keyName+"LidRadius");
+  lidDepth=Control.EvalVar<double>(keyName+"LidDepth");
+
   portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
   portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
   portAWallThick=Control.EvalPair<double>(keyName+"PortAWallThick",
@@ -276,6 +280,12 @@ TankMonoVessel::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,voidRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
 
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,lidRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+25,
+			      Origin+Z*(voidHeight-lidOffset-lidDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,
+			      Origin+Z*(voidHeight-lidOffset),Z);
+
   // Top plate
   const double xPlus=
     (voidRadius*voidRadius-topGap*topGap)/(2.0*topGap);
@@ -341,6 +351,9 @@ TankMonoVessel::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"  -17 6 -118 108 ");
   CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  17 -27 25 -26 ");
+  CellMap::makeCell("TopFlange",System,cellIndex++,wallMat,0.0,Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "  5 -6 7 -17 (507:1000) (607:-1000)");
   CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
@@ -380,21 +393,25 @@ TankMonoVessel::createObjects(Simulation& System)
   // OUTER VOID SPACE
   const std::string fbCut=FPortStr+BPortStr;
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "527 1013 -1014 5 -6 17 -1000 ");
+				 "527 1013 -1014 5 -25 17 -1000 ");
   CellMap::makeCell("OuterFrontVoid",System,cellIndex++,0,0.0,Out+FPortStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 627 1013 -1014 5 -6 17 1000");
+				 " 627 1013 -1014 5 -25 17 1000");
   CellMap::makeCell("OuterBackVoid",System,cellIndex++,0,0.0,Out+BPortStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1013 5 -6 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1013 5 -25 17 ");
   CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,Out+fbCut);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1004 1014 5 -6 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1004 1014 5 -25 17 ");
   CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,Out+fbCut);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1003 -1004 6 (118:17) -1006 ");
+				 " 1003 -1004 1005 -1006 25 -26 27 ");
+  CellMap::makeCell("OuterFlangeVoid",System,cellIndex++,0,0.0,Out+fbCut);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 1003 -1004 26 (118:17) -1006 ");
   CellMap::makeCell("OuterTopVoid",System,cellIndex++,0,0.0,Out+fbCut);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,

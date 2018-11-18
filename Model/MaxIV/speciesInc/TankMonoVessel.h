@@ -53,6 +53,7 @@ class TankMonoVessel :
   double topGap;                ///< Extra at top for curve
   
   double wallThick;             ///< Thick of side walls
+  double lidOffset;               ///< Lid flange step from voidHeight line
   double lidRadius;             ///< Lid flange radius
   double lidDepth;              ///< Lid flange depth
 
