@@ -345,7 +345,7 @@ PipeTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PipeTube","createPorts");
-
+  
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
@@ -354,7 +354,7 @@ PipeTube::createPorts(Simulation& System)
 
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
-      
+
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System);
     }
@@ -468,7 +468,6 @@ PipeTube::applyPortRotation()
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
 	Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
-      
       // Now move QV into the main basis set origin:
       const Geometry::Vec3D& QVvec=QV.getVec();
       const Geometry::Vec3D QAxis=X*QVvec.X()+

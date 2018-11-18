@@ -143,7 +143,27 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   mirrorJaws(new constructSystem::JawValve(newName+"MirrorJaws")),
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
-  splitter(new xraySystem::TwinPipe(newName+"Splitter"))
+  splitter(new xraySystem::TwinPipe(newName+"Splitter")),
+
+  bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
+  pumpTubeAA(new constructSystem::PipeTube(newName+"PumpTubeAA")),
+  gateAA(new constructSystem::GateValve(newName+"GateAA")),
+  bellowAB(new constructSystem::Bellows(newName+"BellowAB")),
+  gateAB(new constructSystem::GateValve(newName+"GateAB")),
+  bellowAC(new constructSystem::Bellows(newName+"BellowAC")),
+  
+  bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
+  pumpTubeBA(new constructSystem::PipeTube(newName+"PumpTubeBA")),
+  gateBA(new constructSystem::GateValve(newName+"GateBA")),
+  bellowBB(new constructSystem::Bellows(newName+"BellowBB")),
+  gateBB(new constructSystem::GateValve(newName+"GateBB")),
+  bellowBC(new constructSystem::Bellows(newName+"BellowBC")),
+
+
+  outPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
+  outPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))
+
+  
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -345,8 +365,10 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
   M1Tube->addAllInsertCell(masterCell->getName());
   M1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   M1Tube->createAll(System,*pipeA,2);
+
   
   const constructSystem::portItem& API=M1Tube->getPort(1);
+
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,API,API.getSideIndex("OuterPlate"));
   M1Tube->insertAllInCell(System,outerCell);
@@ -354,6 +376,8 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
   M1Mirror->addInsertCell(M1Tube->getCell("Void"));
   M1Mirror->createAll(System,*M1Tube,0);
 
+
+  bellowC->setAxisControl(3,pipeA->getZ());
   bellowC->createAll(System,API,API.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,*bellowC,2);
@@ -561,9 +585,62 @@ speciesOpticsBeamline::buildSplitter(Simulation& System,
   splitter->insertInCell("Flange",System,cellB);
   splitter->insertInCell("PipeB",System,cellB);
 
+    // now build left/ right
+  // LEFT
+  bellowAA->createAll(System,*splitter,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*bellowAA,2);
+  bellowAA->insertInCell(System,cellA);
+
+  // make build necessary
+  pumpTubeAA->addAllInsertCell(masterCellA->getName());
+  pumpTubeAA->createAll(System,*bellowAA,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*pumpTubeAA,2);
+  pumpTubeAA->insertAllInCell(System,cellA);
+
+  gateAA->createAll(System,*pumpTubeAA,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*gateAA,2);
+  gateAA->insertInCell(System,cellA);
+
+  bellowAB->createAll(System,*gateAA,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*bellowAB,2);
+  bellowAB->insertInCell(System,cellA);
+
+  gateAB->createAll(System,*bellowAB,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*gateAB,2);
+  gateAB->insertInCell(System,cellA);
+
+  bellowAC->createAll(System,*gateAB,2);
+  cellA=leftZone.createOuterVoidUnit(System,masterCellA,*bellowAC,2);
+  bellowAC->insertInCell(System,cellA);
+
+  // RIGHT
+  bellowBA->createAll(System,*splitter,3);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBA,2);
+  bellowBA->insertInCell(System,cellB);  
+
+  // make build necessary
+  pumpTubeBA->addAllInsertCell(masterCellB->getName());
+  pumpTubeBA->createAll(System,*bellowBA,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*pumpTubeBA,2);
+  pumpTubeBA->insertAllInCell(System,cellB);
+
+  gateBA->createAll(System,*pumpTubeBA,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*gateBA,2);
+  gateBA->insertInCell(System,cellB);
+
+  bellowBB->createAll(System,*gateBA,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBB,2);
+  bellowBB->insertInCell(System,cellB);
+
+  gateBB->createAll(System,*bellowBB,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*gateBB,2);
+  gateBB->insertInCell(System,cellB);
+
+  bellowBC->createAll(System,*gateBB,2);
+  cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBC,2);
+  bellowBC->insertInCell(System,cellB);
+
   return;
-
-
 }
 
 void

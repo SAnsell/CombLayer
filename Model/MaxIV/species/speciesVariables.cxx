@@ -185,7 +185,7 @@ splitterVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeShieldGenerator ShieldGen;
 
-    TwinGen.setCF<CF40>();
+  TwinGen.setCF<CF40>();
   TwinGen.setJoinFlangeCF<CF100>();
   TwinGen.setAPos(-2.7,0);
   TwinGen.setBPos(2.7,0);
@@ -196,13 +196,14 @@ splitterVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,splitKey+"BellowAA",0,10.0);
   BellowGen.generateBellow(Control,splitKey+"BellowBA",0,10.0);
 
-  const std::string gateNameA=frontKey+"pumpTubeAA";
-  const std::string gateNameB=frontKey+"pumpTubeBA";
+  const std::string gateNameA=splitKey+"PumpTubeAA";
+  const std::string gateNameB=splitKey+"PumpTubeBA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,gateNameA,0.0,30.0);
   SimpleTubeGen.generateTube(Control,gateNameB,0.0,30.0);
-  Control.addVariable(gateName+"NPorts",1);   // beam ports
+  Control.addVariable(gateNameA+"NPorts",1);   // beam ports
+  Control.addVariable(gateNameB+"NPorts",1);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF40>(0.45);
   PItemGen.setPlate(0.0,"Void");  
@@ -409,13 +410,13 @@ slitPackageVariables(FuncDataBase& Control,
 
   // Jaw units:
   BeamMGen.setThread(1.0,"Nickel");
-  BeamMGen.setLift(0.0,8.5);
+  BeamMGen.setLift(0.0,2.5);
   BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Stainless304");    
   const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
   for(size_t i=0;i<4;i++)
     {
       const std::string fname=slitKey+jawKey[i];
-      BeamMGen.generateMount(Control,fname,0);  // in beam
+      BeamMGen.generateMount(Control,fname,1);  // in beam
     }		       
 
   PipeGen.setCF<setVariable::CF63>();

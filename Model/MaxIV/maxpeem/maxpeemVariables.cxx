@@ -414,7 +414,7 @@ slitPackageVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D PStep(0,tLen/10.0,0);
   Geometry::Vec3D CPt(0.0,-tLen/2.0,0.0);
-  CPt+=PStep*1.5;
+  CPt+=PStep*3.5;
   PItemGen.generatePort(Control,sName+"Port0",CPt,-XVec);
   CPt+=PStep*2.0;
   PItemGen.generatePort(Control,sName+"Port1",CPt,XVec);
@@ -426,13 +426,13 @@ slitPackageVariables(FuncDataBase& Control,
 
   // Jaw units:
   BeamMGen.setThread(1.0,"Nickel");
-  BeamMGen.setLift(0.0,8.5);
+  BeamMGen.setLift(0.0,2.5);
   BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Stainless304");    
   const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
   for(size_t i=0;i<4;i++)
     {
       const std::string fname=slitKey+jawKey[i];
-      BeamMGen.generateMount(Control,fname,0);  // in beam
+      BeamMGen.generateMount(Control,fname,1);  // outer of beam
     }		       
 
   PipeGen.setCF<setVariable::CF63>();
