@@ -181,9 +181,34 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(M1Mirror);
   OR.addObject(bellowC);
   OR.addObject(pipeB);
+  OR.addObject(screenA);
+  OR.addObject(gateA);
+  OR.addObject(pipeC);
+  OR.addObject(slitTube);
+  OR.addObject(pipeD);
+  OR.addObject(screenB);
   OR.addObject(offPipeA);
+  OR.addObject(monoVessel);
   OR.addObject(offPipeB);
+  OR.addObject(bellowD);
+  OR.addObject(pipeE);
+  OR.addObject(bellowE);
+  OR.addObject(pipeF);
   OR.addObject(mirrorJaws);
+  OR.addObject(M3Tube);
+  OR.addObject(splitter);
+  OR.addObject(bellowAA);
+  OR.addObject(pumpTubeAA);
+  OR.addObject(gateAA);
+  OR.addObject(bellowAB);
+  OR.addObject(gateAB);
+  OR.addObject(bellowAC);
+  OR.addObject(bellowBA);
+  OR.addObject(pumpTubeBA);
+  OR.addObject(gateBA);
+  OR.addObject(bellowBB);
+  OR.addObject(gateBB);
+  OR.addObject(bellowBC);
 }
   
 speciesOpticsBeamline::~speciesOpticsBeamline()
