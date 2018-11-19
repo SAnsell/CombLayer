@@ -650,7 +650,7 @@ opticsHutVariables(FuncDataBase& Control,
   // THIS IS WRONG but the diagram is a mess.
   Control.addVariable(hutName+"InnerSkin",0.3);
   Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"PbRoofThick",0.4);
+  Control.addVariable(hutName+"PbRoofThick",0.2);
   Control.addVariable(hutName+"PbFrontThick",0.4);
   Control.addVariable(hutName+"PbBackThick",0.4);
   Control.addVariable(hutName+"OuterSkin",0.3);
