@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -198,12 +199,12 @@ HorseCollar::createObjects(Simulation& System)
   std::string Out;
   // Void
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
   addCell("Hole",cellIndex-1);
   
   // Steel wrapper
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 7 -17 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
   addCell("Wall",cellIndex-1);
   
   // Outer boundary

@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 /****************************************************************************
  * CombLayer : MCNP(X) Input builder
  *
  * File:   construct/TwinChopperFlat.cxx
-=======
-/********************************************************************* 
-  CombLayer : MCNP(X) Input builder
- 
- * File:   essConstruct/TwinChopperFlat.cxx
->>>>>>> 17120d3efa73183b4d39190b1ff3a2863e058fa1
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

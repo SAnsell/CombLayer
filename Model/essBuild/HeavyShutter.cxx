@@ -64,7 +64,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -242,7 +243,7 @@ HeavyShutter::createObjects(Simulation& System)
     word=" "+std::to_string(i*2+2)+" -"+std::to_string(i*2+3);
     word+=" +101 -102 +201 -202";
     Out=ModelSupport::getComposite(SMap,heavyIndex,word);
-    System.addCell(MonteCarlo::Qhull(cellIndex++,slabMat[i],0.0,Out));
+    System.addCell(MonteCarlo::Object(cellIndex++,slabMat[i],0.0,Out));
 
     // Separators    
     if (i!=slabThick.size()-1)
@@ -250,7 +251,7 @@ HeavyShutter::createObjects(Simulation& System)
       word=" "+std::to_string(i*2+3)+" -"+std::to_string(i*2+4);
       word+=" +101 -102 +201 -202";
       Out=ModelSupport::getComposite(SMap,heavyIndex,word);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
     }
   }
   
@@ -258,8 +259,8 @@ HeavyShutter::createObjects(Simulation& System)
   word+=" 1101 -1102 +1201 -1202";
   word+=" (-2 : "+std::to_string((slabThick.size()+1)*2-1)+" : -101 : 102 : -201 : 202 )";
   Out=ModelSupport::getComposite(SMap,heavyIndex,word);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addCell("Casing",cellIndex--);
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
+  addCell("Casing",cellIndex-1);
   
   word=" 1 -"+std::to_string((slabThick.size()+1)*2)+" 1101 -1102 1201 -1202";
   Out=ModelSupport::getComposite(SMap,heavyIndex,word);
