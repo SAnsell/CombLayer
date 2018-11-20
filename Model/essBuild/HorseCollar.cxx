@@ -199,7 +199,7 @@ HorseCollar::createObjects(Simulation& System)
   std::string Out;
   // Void
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -2");
-  System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Hole",cellIndex-1);
   
   // Steel wrapper
