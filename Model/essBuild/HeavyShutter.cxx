@@ -91,9 +91,7 @@ namespace essSystem
 HeavyShutter::HeavyShutter(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),
-  heavyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(heavyIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -103,7 +101,6 @@ HeavyShutter::HeavyShutter(const std::string& Key) :
 HeavyShutter::HeavyShutter(const HeavyShutter& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  heavyIndex(A.heavyIndex),cellIndex(A.cellIndex),
   width(A.height),height(A.height),
   wallThick(A.wallThick),guideLodging(A.guideLodging),separatorThick(A.separatorThick),slabThick(A.slabThick),
   mainMat(A.mainMat),slabMat(A.slabMat)
@@ -126,7 +123,6 @@ HeavyShutter::operator=(const HeavyShutter& A)
     attachSystem::ContainedComp::operator=(A);
     attachSystem::FixedOffset::operator=(A);
     attachSystem::CellMap::operator=(A);
-    cellIndex=A.cellIndex;
     width=A.width;
     height=A.height;
     wallThick=A.wallThick;
@@ -201,26 +197,26 @@ HeavyShutter::createSurfaces()
   length+=separatorThick*static_cast<double>(slabThick.size()-1);
   
   // Casing: internal walls
-  ModelSupport::buildPlane(SMap,heavyIndex+101,Origin-X*(width/2),X);
-  ModelSupport::buildPlane(SMap,heavyIndex+102,Origin+X*(width/2),X);
-  ModelSupport::buildPlane(SMap,heavyIndex+201,Origin-Z*(height/2),Z);
-  ModelSupport::buildPlane(SMap,heavyIndex+202,Origin+Z*(height/2),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-X*(width/2),X);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+X*(width/2),X);
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Z*(height/2),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Z*(height/2),Z);
     
   // Casing: external walls
-  ModelSupport::buildPlane(SMap,heavyIndex+1101,Origin-X*(width/2+wallThick),X);
-  ModelSupport::buildPlane(SMap,heavyIndex+1102,Origin+X*(width/2+wallThick),X);
-  ModelSupport::buildPlane(SMap,heavyIndex+1201,Origin-Z*(height/2+wallThick+guideLodging),Z);
-  ModelSupport::buildPlane(SMap,heavyIndex+1202,Origin+Z*(height/2+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1101,Origin-X*(width/2+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1102,Origin+X*(width/2+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1201,Origin-Z*(height/2+wallThick+guideLodging),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1202,Origin+Z*(height/2+wallThick),Z);
 
-  ModelSupport::buildPlane(SMap,heavyIndex+1,Origin-Y*(length/2+wallThick),Y);  // external wall casing - first
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2+wallThick),Y);  // external wall casing - first
   double thick = 0;
   for (size_t i=0;i<slabThick.size();i++)
   {
-    ModelSupport::buildPlane(SMap,heavyIndex+static_cast<int>(i*2+2),Origin-Y*(length/2)+Y*(thick),Y);
-    ModelSupport::buildPlane(SMap,heavyIndex+static_cast<int>(i*2+3),Origin-Y*(length/2)+Y*(slabThick[i]+thick),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+static_cast<int>(i*2+2),Origin-Y*(length/2)+Y*(thick),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+static_cast<int>(i*2+3),Origin-Y*(length/2)+Y*(slabThick[i]+thick),Y);
     thick+=slabThick[i]+separatorThick;
   }
-  ModelSupport::buildPlane(SMap,heavyIndex+static_cast<int>((slabThick.size()+1)*2),Origin+Y*(length/2+wallThick),Y);  // external wall casing - last
+  ModelSupport::buildPlane(SMap,buildIndex+static_cast<int>((slabThick.size()+1)*2),Origin+Y*(length/2+wallThick),Y);  // external wall casing - last
   
   return;
 }
@@ -242,7 +238,7 @@ HeavyShutter::createObjects(Simulation& System)
   {
     word=" "+std::to_string(i*2+2)+" -"+std::to_string(i*2+3);
     word+=" +101 -102 +201 -202";
-    Out=ModelSupport::getComposite(SMap,heavyIndex,word);
+    Out=ModelSupport::getComposite(SMap,buildIndex,word);
     System.addCell(MonteCarlo::Object(cellIndex++,slabMat[i],0.0,Out));
 
     // Separators    
@@ -250,7 +246,7 @@ HeavyShutter::createObjects(Simulation& System)
     {
       word=" "+std::to_string(i*2+3)+" -"+std::to_string(i*2+4);
       word+=" +101 -102 +201 -202";
-      Out=ModelSupport::getComposite(SMap,heavyIndex,word);
+      Out=ModelSupport::getComposite(SMap,buildIndex,word);
       System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
     }
   }
@@ -258,12 +254,12 @@ HeavyShutter::createObjects(Simulation& System)
   word=" 1 -"+std::to_string((slabThick.size()+1)*2);
   word+=" 1101 -1102 +1201 -1202";
   word+=" (-2 : "+std::to_string((slabThick.size()+1)*2-1)+" : -101 : 102 : -201 : 202 )";
-  Out=ModelSupport::getComposite(SMap,heavyIndex,word);
+  Out=ModelSupport::getComposite(SMap,buildIndex,word);
   System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
   addCell("Casing",cellIndex-1);
   
   word=" 1 -"+std::to_string((slabThick.size()+1)*2)+" 1101 -1102 1201 -1202";
-  Out=ModelSupport::getComposite(SMap,heavyIndex,word);
+  Out=ModelSupport::getComposite(SMap,buildIndex,word);
   addOuterSurf(Out);
   
   return;
@@ -284,8 +280,8 @@ HeavyShutter::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2+wallThick+guideLodging),-Z);
   FixedComp::setConnect(5,Origin+Z*(height/2+wallThick),Z);
   
-  FixedComp::setLinkSurf(0,-SMap.realSurf(heavyIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(heavyIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
   
   return;
 }

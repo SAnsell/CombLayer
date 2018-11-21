@@ -41,9 +41,6 @@ class HeavyShutter : public attachSystem::ContainedComp,
 {
  private:
    
-  const int heavyIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-  
   double length;                  ///< Total length without casing
   double width;                   ///< Total width without casing
   double height;                  ///< Total height without casing
