@@ -533,7 +533,7 @@ setDefaultPhysics(SimMCNP& System,
 
   setGenericPhysics(System,PModel);
   
-  PC.setNPS(IParam.getValue<size_t>("nps"));
+  PC.setNPS(static_cast<size_t>(IParam.getValue<double>("nps")));
   PC.setRND(IParam.getValue<long int>("random"));	
   PC.setVoidCard(IParam.flag("void"));
   // Default:   10 20 40 50 110 120"
