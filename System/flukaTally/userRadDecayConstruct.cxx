@@ -69,108 +69,70 @@
 #include "flukaGenParticle.h"
 #include "TallySelector.h"
 #include "flukaTally.h"
-#include "userRadDecay.h"
+#include "radDecay.h"
 #include "userRadDecayConstruct.h" 
 
 
 namespace flukaSystem
 {
 
-
-
-void 
-userRadDecayConstruct::createTally
-   (SimFLUKA& System,
-    const double activeTime,const double activeFlux,
-    const double decayTime,
-    const std::map<size_t,std::string>& tallyMap)
-  /*!
-    An amalgamation of values to determine what sort of mesh to put
-    in the system.
-    \param System :: SimFLUKA to add tallies
-    \param activeTime :: Time to have main beam on [sec]
-    \param activeFlux :: number of initial particles / sec
-    \param decayTime :: Time for decay [sec]
-  */
-{
-  ELog::RegMethod RegA("userRadDecayConstruct","createTally");
-
-  userRadDecay UD();
-  UD.setActiveTime(activeFlux,{activeTime});
-  UD.setDecayTime({decayTime});
-  
-  System.addTally(UD);
-
-  return;
-}
-
-
 void
-userRadDecayConstruct::processBDX(SimFLUKA& System,
-			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+userRadDecayConstruct::processRadDecay(SimFLUKA& System,
+				       const mainSystem::inputParam& IParam,
+				       const size_t Index) 
   /*!
-    Add BDX tally (s) as needed
+    Add radiaoactive tally (s) as needed
     - Input:
-    -- particle FixedComp index
-    -- particle cellA  cellB
-    -- particle SurfMap name
+    -- active time flux :: time and flux for activation in particles/sec
+    -- decay [time1 time2] :: time bins [-ve for addition of time] 
+
+    \note SUPPORT ONLY ONE DECAY TIME AT CURRENT
+
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("userRadDecayConstruct","processBdx");
+  ELog::RegMethod RegA("userRadDecayConstruct","processRadDecay");
 
   
-  const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
-  const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-  const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
+  std::map<size_t,std::string> tallyMap;
 
-  size_t itemIndex(4);
-  int cellA(0);
-  int cellB(0);
-  if (
-      (!StrFunc::convert(FCname,cellA) ||
-       !StrFunc::convert(FCindex,cellB) ||
-       !checkLinkCells(System,cellA,cellB) ) &&
-      
-      !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
-      )
-    
+  radDecay* RadPtr=System.getRadDecay();
+  
+  const std::string keyName=
+    IParam.getValueError<std::string>("tally",Index,1,"tally:keyName");
+
+  if (keyName=="decay")
     {
-      // special class because must give regions
-      itemIndex+=2;
-      const size_t regionIndexA=IParam.getDefValue(0,"tally",Index,4);
-      const size_t regionIndexB=IParam.getDefValue(0,"tally",Index,5);
-
-      if (!constructSurfRegion(System,FCname,FCindex,
-			       regionIndexA,regionIndexB,cellA,cellB))
-	throw ColErr::InContainerError<std::string>
-	  (FCname+":"+FCindex,"No connecting surface on regions");
+      const double decayTime=
+	IParam.getValueError<double>("tally",Index,2,"tally:decayTime");
+      RadPtr->setDecayTime({decayTime});
     }
-  
-  ELog::EM<<"Regions connected from "<<cellA<<" "<<cellB<<ELog::endDiag;  
-
-  // This needs to be more sophisticated
-  const int nextId=System.getNextFTape();
-  
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
-
-  const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
-  const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
-  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
-
-  
-  userRadDecayConstruct::createTally(System,particleType,nextId,
-				cellA,cellB,
-				1,EA,EB,NE,
-				0,AA,AB,NA);
+  else if (keyName=="active")
+    {
+      const double activeFlux=
+	IParam.getValueError<double>("tally",Index,2,"tally:activeFlux");
+      const double activeTime=
+	IParam.getValueError<double>("tally",Index,3,"tally:activeTime");
+     RadPtr->setIradTime(activeFlux,{activeTime});
+    }
+  else if (keyName=="NR")
+    {
+      const size_t NR=
+	IParam.getValueError<size_t>("tally",Index,2,"tally:NReplica");
+      
+      RadPtr->setNReplica(NR);
+    }
+  else if (keyName=="tallyName")
+    {
+      const size_t timeIndex=
+	IParam.getValueError<size_t>("tally",Index,2,"tally:timeIndex");
+      const std::string tallyName=
+	IParam.getValueError<std::string>("tally",Index,3,"tally:tally-name");
+      
+      RadPtr->addDetectors(tallyName,timeIndex);
+    }
   
   return;      
 }  

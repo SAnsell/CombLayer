@@ -77,10 +77,12 @@
 #include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
+#include "radDecay.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
 #include "groupRange.h"
 #include "objectGroups.h"
+
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
@@ -89,7 +91,8 @@ SimFLUKA::SimFLUKA() :
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
   defType("PRECISION"),writeVariable(1),lowEnergyNeutron(1),
   nps(1000),rndSeed(2374891),
-  PhysPtr(new flukaSystem::flukaPhysics())
+  PhysPtr(new flukaSystem::flukaPhysics()),
+  RadDecayPtr(new flukaSystem::radDecay())
   /*!
     Constructor
   */
@@ -101,7 +104,8 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
   nps(A.nps),rndSeed(A.rndSeed),sourceExtraName(A.sourceExtraName),
-  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
+  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr)),
+  RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -129,6 +133,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
       for(const FTallyTYPE::value_type& TM : A.FTItem)
 	FTItem.emplace(TM.first,TM.second->clone());
       *PhysPtr= *A.PhysPtr;
+      *RadDecayPtr = *A.RadDecayPtr;
     }
   return *this;
 }

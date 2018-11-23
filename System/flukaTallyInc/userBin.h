@@ -54,6 +54,8 @@ class userBin : public flukaTally
   userBin& operator=(const userBin&);
   virtual ~userBin();
 
+  /// return fluke name
+  virtual std::string getType() const { return "USRBIN"; };
   
   void setPointMesh() { meshType=0; }  ///< Set as a point mesh
   void setGridMesh() { meshType=10; }  ///< Set as a grid [default] mesh

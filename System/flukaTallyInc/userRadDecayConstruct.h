@@ -52,13 +52,13 @@ class userRadDecayConstruct
   /// Private constructor
   userRadDecayConstruct() {}
   
-  static void createTally(SimFLUKA&,const int,
-			  const double,const double,const double,
+  static void createTally(SimFLUKA&,const double,const double,
+			  const double,
 			  const std::map<size_t,std::string>&);
   
  public:
 
-  static void processRADDECAY(SimFLUKA&,const mainSystem::inputParam&,
+  static void processRadDecay(SimFLUKA&,const mainSystem::inputParam&,
 			      const size_t);
   
   static void writeHelp(std::ostream&);

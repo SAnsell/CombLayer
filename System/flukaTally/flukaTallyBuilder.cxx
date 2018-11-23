@@ -101,7 +101,7 @@ tallySelection(SimFLUKA& System,
       else if (TType=="surface")
 	userBdxConstruct::processBDX(System,IParam,i);
       else if (TType=="raddecay")
-	userRadDecayonstruct::processRADDECAY(System,IParam,i);
+	userRadDecayConstruct::processRadDecay(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
@@ -127,11 +127,11 @@ helpTallyType(const std::string& HType)
   else
     {
       ELog::EM<<"Tally Types:\n\n"
-      <<"-- mesh : \n"
-      <<"-- dump : \n"
-      <<"-- surface : \n"
-      <<"-- cell : \n"
-      <<"-- raddecay : \n"
+	      <<"-- mesh : \n"
+	      <<"-- dump : \n"
+	      <<"-- surface : \n"
+	      <<"-- cell : \n"
+	      <<"-- raddecay : \n";
     }
   
   ELog::EM<<ELog::endBasic;

@@ -29,7 +29,7 @@ namespace flukaSystem
 {
 
   std::set<flukaTally*>
-    getActiveTally(SimFLUKA&,const std::string&);
+    getActiveTally(const SimFLUKA&,const std::string&);
 
   
   int setBinaryOutput(SimFLUKA&,const std::string&);
@@ -48,7 +48,6 @@ namespace flukaSystem
 	       const double,const double,
 	       const size_t,const bool);
   
-  int setParticleType(SimFLUKA&,const int,const std::string&);
 
   int setBinaryOutput(SimFLUKA&,const int);
 

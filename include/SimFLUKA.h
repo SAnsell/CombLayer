@@ -22,15 +22,18 @@
 #ifndef SimFLUKA_h
 #define SimFLUKA_h
 
+
 namespace flukaSystem
 {
   class flukaTally;
   class flukaPhysics;
+  class radDecay;
 }
+
 
 /*!
   \class SimFLUKA
-  \brief Modifides Simulation to output a Fluka input file
+  \brief Modifides Scimulation to output a Fluka input file
   \author S. Ansell
   \version 1.0
   \date September 2015
@@ -57,6 +60,7 @@ class SimFLUKA : public Simulation
   FTallyTYPE FTItem;              ///< Fluka tally map
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
+  flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification
 
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -81,7 +85,10 @@ class SimFLUKA : public Simulation
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
 
+  /// get Physics ptr
   flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
+  /// get RadDecay ptr
+  flukaSystem::radDecay* getRadDecay() { return RadDecayPtr; }
     
   // TALLY Processing 
   void addTally(const flukaSystem::flukaTally&);

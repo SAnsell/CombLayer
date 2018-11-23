@@ -58,6 +58,9 @@ class userTrack : public flukaTally
   virtual userTrack* clone() const; 
   userTrack& operator=(const userTrack&);
   virtual ~userTrack();
+
+    /// return fluke name
+  virtual std::string getType() const { return "USRTRACK"; };
   
   void setParticle(const std::string&);
   void setCell(const int);

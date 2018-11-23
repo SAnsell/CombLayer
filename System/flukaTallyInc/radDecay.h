@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTallyInc/userRadDecay.h
+ * File:   flukaTallyInc/radDecay.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,24 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_userRadDecay_h
-#define flukaSystem_userRadDecay_h
+#ifndef flukaSystem_radDecay_h
+#define flukaSystem_radDecay_h
+
+class SimFLUKA;
 
 namespace flukaSystem
 {
 /*!
-  \class userRadDecay
+  \class radDecay
   \version 1.0
-  \date Ferbruary 2018
+  \date November 2018
   \author S. Ansell
-  \brief userbin for fluka
+  \brief Modification system to allow activation calc.
 */
 
-class userRadDecay : public flukaTally
+class radDecay 
 {
  private:
 
-  size_t nReplica;                  ///< Radioactive decay repead
+  size_t nReplica;                    ///< Radioactive decay repead
 
   std::map<std::string,int> biasCard; ///< Which biases to apply
 
@@ -51,19 +53,19 @@ class userRadDecay : public flukaTally
   
  public:
 
-  userRadDecay();
-  userRadDecay(const std::string&,const int);
-  userRadDecay(const userRadDecay&);
-  virtual userRadDecay* clone() const; 
-  userRadDecay& operator=(const userRadDecay&);
-  virtual ~userRadDecay();
+  radDecay();
+  radDecay(const std::string&,const int);
+  radDecay(const radDecay&);
+  virtual radDecay* clone() const; 
+  radDecay& operator=(const radDecay&);
+  virtual ~radDecay();
 
   void setNReplica(const size_t NR) { nReplica=NR; }
   void setIradTime(const double,const std::vector<double>&);
   void setDecayTime(const std::vector<double>&);
-  void addDetectors(const std::map<size_t,std::string>&);
+  void addDetectors(const std::string&,const size_t);
   
-  virtual void write(std::ostream&) const;  
+  virtual void write(const SimFLUKA&,std::ostream&) const;  
 };
 
 }
