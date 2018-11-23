@@ -145,6 +145,7 @@ SimFLUKA::~SimFLUKA()
 {
   clearTally();
   delete PhysPtr;
+  delete RadDecayPtr;
 }
 
 void
@@ -643,6 +644,7 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"GEOEND"<<std::endl;
   writeWeights(OX);
   writeMaterial(OX);
+  RadDecayPtr->write(*this,OX);
   writeTally(OX);
   writeSource(OX);
   writePhysics(OX);

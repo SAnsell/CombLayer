@@ -187,7 +187,8 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
       StrFunc::writeFLUKA(cx.str(),OX);
       
       size_t index(0);
-      cx.str("IRRPROFI ");
+      cx.str("");
+      cx<<"IRRPROFI ";
       for(const std::pair<double,double> IR : iradTime)
 	{
 	  cx<<IR.first<<" "<<IR.second;
@@ -195,7 +196,8 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
 	  if ((index % 3)==0)
 	    {
 	      StrFunc::writeFLUKA(cx.str(),OX);
-	      cx.str("IRRPROFI ");
+	      cx.str("");
+	      cx<<"IRRPROFI ";
 	    }
 	}
       if (index % 3)
@@ -203,7 +205,8 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
       
       
       index=0;
-      cx.str("DCYTIMES ");
+      cx.str("");
+      cx<<"DCYTIMES ";
       for(const double DT : decayTime)
 	{
 	  cx<<DT<<" ";
@@ -211,7 +214,8 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
 	  if ((index % 6)==0)
 	    {
 	      StrFunc::writeFLUKA(cx.str(),OX);
-	      cx.str("DCYTIMES ");
+	      cx.str("");
+	      cx<<"DCYTIMES ";
 	    }
 	}
       if (index % 6)
