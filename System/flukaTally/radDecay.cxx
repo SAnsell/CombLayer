@@ -57,7 +57,8 @@ namespace flukaSystem
 {
 
 radDecay::radDecay() :
-  nReplica(10),gammaTransCut(1.0)
+  nReplica(10),gammaTransCut(1.0),
+  iradFlux(1.0)
   /*!
     Constructor
   */
@@ -87,6 +88,7 @@ radDecay::operator=(const radDecay& A)
       nReplica=A.nReplica;
       biasCard=A.biasCard;
       gammaTransCut=A.gammaTransCut;
+      iradFlux=A.iradFlux;
       iradTime=A.iradTime;
       decayTime=A.decayTime;
       detectors=A.detectors;
@@ -111,8 +113,7 @@ radDecay::~radDecay()
 {}
 
 void
-radDecay::setIradTime(const double Flux,
-			  const std::vector<double>& timeVec)
+radDecay::setIradTime(const std::vector<double>& timeVec)
   /*!
     Sets the decay time based on a given flux of primary particle
     for alternating Value : 0 : Value : 0 etc..
@@ -125,12 +126,13 @@ radDecay::setIradTime(const double Flux,
   int current(1);
   for(const double DT : timeVec)
     {
-      iradTime.push_back(std::pair<double,double>(DT,Flux * current));
+      iradTime.push_back(std::pair<double,double>(DT,iradFlux * current));
       current= 1-current;
     }
   
   return;
 }
+
 
 void
 radDecay::setDecayTime(const std::vector<double>& timeVec)
@@ -166,9 +168,6 @@ radDecay::addDetectors(const std::string& TName,
   detectors.emplace(TName,Index);
   return;
 }
-
-  
-
   
 void
 radDecay::write(const SimFLUKA& System,std::ostream& OX) const
@@ -178,7 +177,6 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-
   if (!decayTime.empty())
     {
       std::ostringstream cx;

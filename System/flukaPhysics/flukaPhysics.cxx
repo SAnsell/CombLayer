@@ -63,7 +63,9 @@ flukaPhysics::flukaPhysics() :
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
       { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
-      { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
+      { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") },
+      { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
+      { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") }
     }),
 
   impValue({
@@ -119,11 +121,14 @@ flukaPhysics::flukaPhysics() :
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
 
+      { "coalescence", unitTYPE(1,"1.0 - - - - - ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
       { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
-      { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },	
+      { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },
+      { "evaporation", unitTYPE(1,"3.0 - - - - - ") },
+
       { "prodcut", unitTYPE(1,"%2 %3 1.0 M0 M1 1.0") },
       { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
       { "pho2thr", unitTYPE(1,"%2 %3 -  M0 M1 1.0") },

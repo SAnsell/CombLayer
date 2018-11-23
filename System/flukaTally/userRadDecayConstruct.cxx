@@ -109,13 +109,22 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
 	IParam.getValueError<double>("tally",Index,2,"tally:decayTime");
       RadPtr->setDecayTime({decayTime});
     }
-  else if (keyName=="active")
+  else if (keyName=="activeFlux")
     {
       const double activeFlux=
 	IParam.getValueError<double>("tally",Index,2,"tally:activeFlux");
-      const double activeTime=
-	IParam.getValueError<double>("tally",Index,3,"tally:activeTime");
-     RadPtr->setIradTime(activeFlux,{activeTime});
+      RadPtr->setIradFlux(activeFlux);
+    }
+  else if (keyName=="activeTime")
+    {
+      std::vector<double> Atime;
+      const size_t NItems=IParam.itemCnt("tally",Index);
+      for(size_t i=3;i<NItems;i++)
+	{
+	  const double activeTime=
+	    IParam.getValueError<double>("tally",Index,3,"tally:activeTime");
+	  RadPtr->setIradTime(activeFlux,{activeTime});
+	}
     }
   else if (keyName=="NR")
     {

@@ -41,9 +41,10 @@ class radDecay
   size_t nReplica;                    ///< Radioactive decay repead
 
   std::map<std::string,int> biasCard; ///< Which biases to apply
-
   double gammaTransCut;             ///< Transport cut off value [1.0 default]
 
+
+  double iradFlux;           ///< Flux on general irradiation
   /// Irradiation decay times / intensity
   std::vector<std::pair<double,double>> iradTime;
   std::vector<double> decayTime;    ///< Different decay times
@@ -60,8 +61,11 @@ class radDecay
   radDecay& operator=(const radDecay&);
   virtual ~radDecay();
 
+  /// Set number of gamma to sample per unit
   void setNReplica(const size_t NR) { nReplica=NR; }
-  void setIradTime(const double,const std::vector<double>&);
+  /// Set total flux during beam
+  void setIradFlux(const double F) { iradFlux=F; }
+  void setIradTime(const std::vector<double>&);
   void setDecayTime(const std::vector<double>&);
   void addDetectors(const std::string&,const size_t);
   
