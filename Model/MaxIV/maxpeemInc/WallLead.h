@@ -44,7 +44,8 @@ class WallLead :
  private:
 
 
-  double frontLength;              ///< Front length
+  double frontLength;          ///< Front length
+  double backLength;           ///< Back length
 
   double frontWidth;           ///< Front width of hole
   double frontHeight;          ///< Front height of hole

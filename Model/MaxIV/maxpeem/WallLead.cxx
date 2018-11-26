@@ -119,7 +119,7 @@ WallLead::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  midMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidMat".wallMat);
+  midMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidMat",wallMat);
 
   return;
 }
@@ -155,7 +155,7 @@ WallLead::createSurfaces()
 
   FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,frontLength);
 
-  if (backLength>Geometry::ZeroTol)
+  if (backLength>Geometry::zeroTol)
     FrontBackCut::getShiftedBack(SMap,buildIndex+12,1,Y,backLength);
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(frontWidth/2.0),X);
@@ -190,7 +190,7 @@ WallLead::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6 7 ");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,frontSurf+Out);
 
-  if (backLength>Geometry::ZeroTol)
+  if (backLength>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex," 11 -12 13 -14 15 -16 7 ");
