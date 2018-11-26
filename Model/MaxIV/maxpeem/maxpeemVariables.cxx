@@ -980,6 +980,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FrontHeight",40.0);
   Control.addVariable(wallKey+"FrontWidth",60.0);
   Control.addVariable(wallKey+"FrontLength",20.0);
+  Control.addVariable(wallKey+"BackLength",20.0);
   
   Control.addVariable(wallKey+"BackWidth",20.0);
   Control.addVariable(wallKey+"BackHeight",20.0);

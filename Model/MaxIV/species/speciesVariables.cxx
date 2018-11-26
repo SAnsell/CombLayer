@@ -190,7 +190,7 @@ splitterVariables(FuncDataBase& Control,
   TwinGen.setAPos(-2.7,0);
   TwinGen.setBPos(2.7,0);
   TwinGen.setXYAngle(4.0,-4.0);
-  TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);  
+  TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,8.0);  
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,splitKey+"BellowAA",0,10.0);
@@ -198,10 +198,10 @@ splitterVariables(FuncDataBase& Control,
 
   const std::string gateNameA=splitKey+"PumpTubeAA";
   const std::string gateNameB=splitKey+"PumpTubeBA";
-  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,gateNameA,0.0,30.0);
-  SimpleTubeGen.generateTube(Control,gateNameB,0.0,30.0);
+  SimpleTubeGen.generateTube(Control,gateNameA,0.0,79.4);
+  SimpleTubeGen.generateTube(Control,gateNameB,0.0,107.5);
   Control.addVariable(gateNameA+"NPorts",1);   // beam ports
   Control.addVariable(gateNameB+"NPorts",1);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
@@ -229,11 +229,12 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
-  PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
+  PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,102.5);
+  PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,102.5);
 
-  ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
-  
+  ShieldGen.setPlate(120.0,60.0,7.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenC",3-0.0,0.0);
+
   return;
 }
   
@@ -243,7 +244,8 @@ void
 preOpticsVariables(FuncDataBase& Control,
 		   const std::string& frontKey)
   /*!
-    Builds the variables for the M1 Mirror
+    Builds the variables for the optics going to the M1-Mirror
+    in the optics hutch
     \param Control :: Database
     \param frontKey :: prename
   */
@@ -335,8 +337,9 @@ m1MirrorVariables(FuncDataBase& Control,
   // mirror in M1Tube 
   MirrGen.setPlate(28.0,1.0,9.0);  //guess
   // y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, -2.0, 0.0,0.0);
   Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
+  Control.addVariable(mirrorKey+"M1MirrorZAngle",-90.0);
 
   
   BellowGen.setCF<setVariable::CF63>();
@@ -374,7 +377,7 @@ slitPackageVariables(FuncDataBase& Control,
   setVariable::PipeShieldGenerator ShieldGen;
 
   // joined and open
-  GateGen.setLength(7.5);
+  GateGen.setLength(3.5);
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,slitKey+"GateA",0.0,0);
 
@@ -525,14 +528,13 @@ m3MirrorVariables(FuncDataBase& Control,
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.generateTube(Control,mName,0.0,36.0);
 
-
   Control.addVariable(mName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
   PItemGen.setCF<setVariable::CF100>(5.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,mName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF100>(15.0);
+  PItemGen.setCF<setVariable::CF100>(27.0);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,mName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
@@ -552,7 +554,9 @@ opticsBeamVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("speciesVariables[F]","opticsBeamVariables");
 
 
-  Control.addVariable(opticKey+"OuterRadius",110.0);
+  Control.addVariable(opticKey+"OuterLeft",90.0);
+  Control.addVariable(opticKey+"OuterRight",110.0);
+  Control.addVariable(opticKey+"OuterTop",110.0);
 
   preOpticsVariables(Control,opticKey);
   m1MirrorVariables(Control,opticKey);

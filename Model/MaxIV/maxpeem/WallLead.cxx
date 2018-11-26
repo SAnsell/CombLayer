@@ -111,12 +111,15 @@ WallLead::populate(const FuncDataBase& Control)
   frontHeight=Control.EvalVar<double>(keyName+"FrontHeight");  
   backWidth=Control.EvalVar<double>(keyName+"BackWidth");
   backHeight=Control.EvalVar<double>(keyName+"BackHeight");
+
+  backLength=Control.EvalDefVar<double>(keyName+"BackLength",0.0);
   
   // Void 
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  midMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidMat".wallMat);
 
   return;
 }
@@ -150,7 +153,10 @@ WallLead::createSurfaces()
   if (!frontActive() || !backActive())
     throw ColErr::EmptyContainer("back/front not set for:"+keyName);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,20.0);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,frontLength);
+
+  if (backLength>Geometry::ZeroTol)
+    FrontBackCut::getShiftedBack(SMap,buildIndex+12,1,Y,backLength);
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(frontWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(frontWidth/2.0),X);
@@ -184,9 +190,21 @@ WallLead::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6 7 ");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,frontSurf+Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 13 -14 15 -16 7 ");
-  makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
-
+  if (backLength>Geometry::ZeroTol)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 11 -12 13 -14 15 -16 7 ");
+      makeCell("MidWall",System,cellIndex++,midMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," 12 13 -14 15 -16 7 ");
+      makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 13 -14 15 -16 7 ");
+      makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
+    }
+  
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,frontSurf+backSurf+Out);
 

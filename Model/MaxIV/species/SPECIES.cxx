@@ -164,8 +164,6 @@ SPECIES::build(Simulation& System,
   joinPipe->addInsertCell(opticsHut->getCell("InletHole"));
   joinPipe->createAll(System,*frontBeam,2);
 
-
-  
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
@@ -175,13 +173,13 @@ SPECIES::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
-  /*
+  
   std::vector<int> cells(opticsHut->getCells("Back"));
   cells.emplace_back(opticsHut->getCell("Extension"));
   opticsBeam->buildOutGoingPipes(System,opticsBeam->getCell("LeftVoid"),
 				 opticsBeam->getCell("RightVoid"),
 				 cells);
-  */  
+
   return;
 }
 

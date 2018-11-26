@@ -166,6 +166,8 @@ class speciesOpticsBeamline :
   // bellowA on left split
   std::shared_ptr<constructSystem::Bellows> bellowBC;
 
+  /// First screen
+  std::shared_ptr<xraySystem::PipeShield> screenC;
 
   /// Pipe to exit
   std::shared_ptr<constructSystem::VacuumPipe> outPipeA;
@@ -173,7 +175,9 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> outPipeB;
 
 
-  double outerRadius;           ///< Radius for inner void
+  double outerLeft;            ///< Left dist for inner void
+  double outerRight;           ///< Right for inner void
+  double outerTop;             ///< top for inner void
   
 
   int constructDivideCell(Simulation&,const bool,
@@ -200,8 +204,9 @@ class speciesOpticsBeamline :
 		 const attachSystem::FixedComp&,const long int);
   void buildSlitPackage(Simulation&,MonteCarlo::Object*,
 		       const attachSystem::FixedComp&,const long int);
-  void buildSplitter(Simulation&,MonteCarlo::Object*,MonteCarlo::Object*,
-		     const attachSystem::FixedComp&,const long int);
+  std::pair<MonteCarlo::Object*,MonteCarlo::Object*>
+    buildSplitter(Simulation&,MonteCarlo::Object*,
+		  const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

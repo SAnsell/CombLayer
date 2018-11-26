@@ -774,8 +774,9 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
   /*!
     Construct outgoing tracks
     \param System :: Simulation
-    \parma hutCell :: Cells for construction in hut
-    \parma outCell :: Final out cell
+    \param leftCell :: additional left cell for insertion
+    \param rightCell :: additional right cell for insertion
+    \param hutCell :: Cells for construction in hut [common to both pipes]
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");

@@ -55,6 +55,7 @@ class WallLead :
   double voidRadius;          ///< Radius in middle
   
   int voidMat;                ///< void material
+  int midMat;                ///< void material
   int wallMat;                ///< main material
 
   void populate(const FuncDataBase&);

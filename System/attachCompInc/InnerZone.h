@@ -38,7 +38,7 @@ namespace attachSystem
   \class InnerZone
   \version 1.0
   \author S. Ansell
-  \date October 2019
+  \date October 2018
   \brief Builds an inner unit within an object
 
   This object is for objects that contain an inner space.
@@ -69,8 +69,7 @@ class InnerZone
   InnerZone(attachSystem::FixedComp&,int&);
   InnerZone(const InnerZone&);
   InnerZone& operator=(const InnerZone&);
-  ~InnerZone() {}
-
+  ~InnerZone() {}         ///< Destructor
 
   void setSurround(const HeadRule&);
   void addMiddleToSurround(const int);

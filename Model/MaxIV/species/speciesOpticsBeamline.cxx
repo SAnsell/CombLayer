@@ -159,7 +159,8 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   gateBB(new constructSystem::GateValve(newName+"GateBB")),
   bellowBC(new constructSystem::Bellows(newName+"BellowBC")),
 
-
+  screenC(new xraySystem::PipeShield(newName+"ScreenC")),
+  
   outPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
   outPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))
 
@@ -209,6 +210,9 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(bellowBB);
   OR.addObject(gateBB);
   OR.addObject(bellowBC);
+  OR.addObject(screenC);
+  OR.addObject(outPipeA);
+  OR.addObject(outPipeB);
 }
   
 speciesOpticsBeamline::~speciesOpticsBeamline()
@@ -227,7 +231,9 @@ speciesOpticsBeamline::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("speciesOpticsBeamline","populate");
   FixedOffset::populate(Control);
 
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
   return;
 }
 
@@ -258,33 +264,19 @@ speciesOpticsBeamline::createSurfaces()
   */
 {
   ELog::RegMethod RegA("speciesOpticsBeamline","createSurfaces");
-  if (outerRadius>Geometry::zeroTol)
-    {
 
-      if (isActive("floor"))
-	{
-	  std::string Out;
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+3,Origin-X*outerRadius,X);
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+4,Origin+X*outerRadius,X);
-	  ModelSupport::buildPlane
-	    (SMap,buildIndex+6,Origin+Z*outerRadius,Z);
-	  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
-	  const HeadRule HR(Out+getRuleStr("floor"));
-	  buildZone.setSurround(HR);
-	}
-      else
-	{
-	  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-	  buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
-	}
-    }
-
-  if (!isActive("front"))
+  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
-      setCutSurf("front",SMap.realSurf(buildIndex+1));
+      std::string Out;
+      ModelSupport::buildPlane
+	(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("floor"));
+      buildZone.setSurround(HR);
     }
   return;
 }
@@ -569,10 +561,9 @@ speciesOpticsBeamline::buildM3Mirror(Simulation& System,
   return;
 }
 
-void
+std::pair<MonteCarlo::Object*,MonteCarlo::Object*>
 speciesOpticsBeamline::buildSplitter(Simulation& System,
-				     MonteCarlo::Object* masterCellA,
-				     MonteCarlo::Object* masterCellB,
+				     MonteCarlo::Object* masterCell,
 				     const attachSystem::FixedComp& initFC,
 				     const long int sideIndex)
   /*!
@@ -589,17 +580,21 @@ speciesOpticsBeamline::buildSplitter(Simulation& System,
 
   int cellA(0),cellB(0);
   
-
+  
   buildZone.constructMiddleSurface(SMap,buildIndex+10,initFC,sideIndex);
 
   attachSystem::InnerZone leftZone=buildZone.buildMiddleZone(-1);
   attachSystem::InnerZone rightZone=buildZone.buildMiddleZone(1);
 
   // No need for insert -- note removal of old master cell
-  System.removeCell(masterCellA->getName());
+  System.removeCell(masterCell->getName());
+
+
+  MonteCarlo::Object* masterCellA=
+    leftZone.constructMasterCell(System);
+  MonteCarlo::Object* masterCellB=
+    rightZone.constructMasterCell(System);
   
-  masterCellA=leftZone.constructMasterCell(System);
-  masterCellB=rightZone.constructMasterCell(System);
   splitter->createAll(System,initFC,sideIndex);
   cellA=leftZone.createOuterVoidUnit(System,masterCellA,*splitter,2);
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*splitter,3);
@@ -665,8 +660,45 @@ speciesOpticsBeamline::buildSplitter(Simulation& System,
   cellB=rightZone.createOuterVoidUnit(System,masterCellB,*bellowBC,2);
   bellowBC->insertInCell(System,cellB);
 
+  return std::pair<MonteCarlo::Object*,MonteCarlo::Object*>
+    (masterCellA,masterCellB);
+}
+
+
+void
+speciesOpticsBeamline::buildOutGoingPipes(Simulation& System,
+					  const int leftCell,
+					  const int rightCell,
+					  const std::vector<int>& hutCells)
+  /*!
+    Construct outgoing tracks
+    \param System :: Simulation
+    \param leftCell :: additional left cell for insertion
+    \param rightCell :: additional right cell for insertion
+    \param hutCell :: Cells for construction in hut [common to both pipes]
+  */
+{
+  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
+
+  outPipeA->addInsertCell(hutCells);
+  outPipeA->addInsertCell(leftCell);
+  outPipeA->createAll(System,*bellowAC,2);
+  
+  outPipeB->addInsertCell(hutCells);
+  outPipeB->addInsertCell(rightCell);
+  outPipeB->createAll(System,*bellowBC,2);
+
+  screenC->addAllInsertCell(leftCell);
+  screenC->addAllInsertCell(rightCell);
+
+  screenC->setCutSurf("inner",outPipeA->getSurfRule("OuterRadius"));
+  screenC->setCutSurf("innerTwo",outPipeB->getSurfRule("OuterRadius"));
+
+  screenC->createAll(System,*outPipeA,0);
+
   return;
 }
+
 
 void
 speciesOpticsBeamline::buildObjects(Simulation& System)
@@ -692,8 +724,12 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCellB(0);
   const constructSystem::portItem& API=M3Tube->getPort(1);
   const long int sideIndex=API.getSideIndex("OuterPlate");
-  buildSplitter(System,masterCellA,masterCellB,API,sideIndex);
+  std::tie(masterCellA,masterCellB)=
+    buildSplitter(System,masterCellA,API,sideIndex);
 
+  // Get last two cells
+  setCell("LeftVoid",masterCellA->getName());
+  setCell("RightVoid",masterCellB->getName());
   lastComp=bellowB;
 
   return;

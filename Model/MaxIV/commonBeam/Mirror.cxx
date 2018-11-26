@@ -182,7 +182,8 @@ Mirror::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("Mirror","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
+  applyOffset();
+
   return;
 }
 

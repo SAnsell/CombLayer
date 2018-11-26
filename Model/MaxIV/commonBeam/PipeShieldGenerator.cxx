@@ -108,14 +108,13 @@ PipeShieldGenerator::~PipeShieldGenerator()
 
 void
 PipeShieldGenerator::setPlate(const double W,const double H,
-			  const double L)
+			      const double L)
 
   /*!
     Set the shield plate
     \param W :: Width [X]  shield plate
     \param H :: Height [Z] of shield plate
     \param L :: Length of shield [Y]
-
    */
 {
   length=L;

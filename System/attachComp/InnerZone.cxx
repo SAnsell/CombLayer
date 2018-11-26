@@ -321,7 +321,7 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
 MonteCarlo::Object*
 InnerZone::constructMasterCell(Simulation& System)
  /*!
-    Construct outer void object main pipe
+    Construct outer void object 
     \param System :: Simulation
     \return cell object
   */
