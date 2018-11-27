@@ -668,19 +668,33 @@ objectGroups::getObjectRange(const std::string& objName) const
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
   
-  std::string::size_type pos=objName.find(":");
-  // CELLMAP Range ::  objectName:cellName
-  if (pos!=0 && pos!=std::string::npos)
-    {
-      const std::string itemName=objName.substr(0,pos);
-      const std::string cellName=objName.substr(pos+1);
+  const std::vector<std::string> Units=
+    StrFunc::StrSeparate(objName,":");
 
+  // CELLMAP Range ::  objectName:cellName
+  if (Units.size()==2 || Units.size()==3
+      !Units[0].empty() && Units[1].empty())
+    {
+      const std::string& itemName=Units[0];
+      const std::string& cellName=Units[1];
+      
       const attachSystem::CellMap* CPtr=
         getObject<attachSystem::CellMap>(itemName);
       if (!CPtr)
-        throw ColErr::InContainerError<std::string>(itemName,"objectName:");
+        throw ColErr::InContainerError<std::string>
+	  (itemName,"objectName: in "+objName);
+
+      if (Units.size()==3)
+	{
+	  size_t cellIndex;
+	  if(!StrFunc::convert(Units[2],cellIndex))
+	    throw ColErr::InContainerError<std::string>
+	      (objName,"CellMap:cellName:Index");
+	  return std::vector({CPtr->getCell(cellName,cellIndex)});
+	}
+      // case 2:
+      const std::vector<int> Out=CPtr->getCells(cellName);
       
-      std::vector<int> Out=CPtr->getCells(cellName);
       if (Out.empty())
         {
           ELog::EM<<"EMPTY NAME::Possible names["<<itemName

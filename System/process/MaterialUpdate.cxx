@@ -46,11 +46,18 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "surfRegister.h"
+#include "Rules.h"
+#include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -69,13 +76,11 @@ materialUpdateHelp()
 {
   ELog::EM<<"voidObject Help "<<ELog::endBasic;
   ELog::EM<<
-    " -- FixedComp :: voids all cells in FixedComp \n"
-    ELog::EM<<
+    " -- FixedComp :: voids all cells in FixedComp \n "
     " -- FixedName::CellMap :: voids all CellMap Name \n"
-    ELog::EM<<
     " -- FixedName::CellMap::<Index> ::  "
     "  voids all CellMap Name at index \n"
-    ELog::EM<<ELog::endBasic;
+	  <<ELog::endBasic;
   ELog::EM<<ELog::endErr;
   return;
 }
@@ -99,30 +104,14 @@ materialUpdate(Simulation& System,
 	{
 	  const std::string key=
 	    IParam.getValue<std::string>("voidObject",index,iName);
+	  
 	  if (!iName && key=="help")
 	    {
 	      materialUpdateHelp();
 	      return;
 	    }
-	  const std::vector<std::string> Units=
-	    StrFunc::StrSeparate(key,"::");
-	  size_t cellIndex;
-	  std::string FCName,cellName;
-	  if (Units.size()==2 || Units.size()==3)  // CellMap::Name::Index
-	    {
-	      const attachSystem::CellMap* CMPtr=
-		getObjectThrow<const attachSystem::CellMap>
-		(Units[0],"CellMap");
-	      if (!CMPtr->hasItem(Units[1]))
-		throw ColErr::InContainerError(Units[1],"CellMap::KeyName");
-	      size_t index(0);
-	      if (Units.size()==3 && !StrFunc::convert(Units[2],index))
-		throw ColErr::InContainerError
-		  (Units[2],"CellMap::KeyName:Index");
-	      std::vector<int> cellSN
-		
-	      }
-	    
+	  const std::vector<int> cellN=
+	    System.getObjectRange(objName);
 
       std::string FName,LName;
       Geometry::Vec3D VPos,YAxis,ZAxis;
