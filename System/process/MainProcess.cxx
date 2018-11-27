@@ -82,6 +82,7 @@
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
+#include "MaterialUpdate.h"
 #include "World.h"
 
 #include "MainProcess.h"
@@ -684,6 +685,7 @@ buildFullSimulation(Simulation* SimPtr,
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
 
   ModelSupport::objectAddition(*SimPtr,IParam);
+  ModelSupport::materialUpdate(*SimPtr,IParam);
   
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
@@ -693,6 +695,7 @@ buildFullSimulation(Simulation* SimPtr,
 
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
+
   
   if (createVTK(IParam,SimPtr,OName))
     return;

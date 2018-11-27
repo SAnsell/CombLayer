@@ -910,6 +910,37 @@ StrParts(std::string Ln)
   return Out;
 }
 
+std::vector<std::string>
+StrSeparate(const std::string& Line,
+	    const std::string& splitUnit)
+/*!
+  Splits the sting into parts that are space delminated.
+  Note that the part can be zero length.
+
+  \param Ln :: line component to strip
+  \param splitUnit :: Unit to find and split on [discarding]
+  \returns vector of components [ Always size>0 ]
+*/
+{
+  std::vector<std::string> Out;
+
+
+  const size_t suLen=splitUnit.size();
+  if (suLen)
+    {
+      size_t pos=0;
+      do
+	{
+	  const std::string cutLine=Line.substr(pos+suLen);
+	  pos=cutLine.find(splitUnit);
+	  Out.push_back(cutLine.substr(0,pos));
+	} while (pos!=std::string::npos);
+    }
+  else
+    Out.push_back(Line);
+  return Out;
+}
+
 template<typename T>
 size_t
 convPartNum(const std::string& A,T& out)

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   supportInc/stringSearch.h
+ * File:   processInc/MaterialUpdate.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,49 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef StrFunc_stringSearch_h
-#define StrFunc_stringSearch_h
+#ifndef ModelSupport_MaterialUpdate_h
+#define ModelSupport_MaterialUpdate_h
 
-namespace StrFunc
+class Simulation;
+
+namespace ModelSupport
 {
- /*!
-   \class stringSearch
-   \brief Facilitator for finding a short string beginning a longer string
-   \author S. Ansell
-   \date November 2014
-   \version 1.0
- */
-
-class stringSearch
-{
- private:
   
-  const size_t shortLen;
-  std::string shortName;
+void materialUpdate(Simulation&,const mainSystem::inputParam&);
 
- public:
-
-  /// default constructor
- stringSearch() : shortLen(0) {}  
-
- stringSearch(const std::string& S) :
-    shortLen(S.size()),shortName(S) {}
-    
-  stringSearch(const stringSearch& A) :
-    shortLen(A.shortLen),shortName(A.shortName) {}
-  
-  
-  bool operator()(const std::string& B) const
-  {
-    return (shortName<B.substr(0,shortLen));
-  }
-
-  bool operator()(const std::string& shortA,const std::string& B) const
-  {
-    return (shortA<B.substr(0,shortA.size()));
-  }
-};
-  
 }
 
 #endif
+

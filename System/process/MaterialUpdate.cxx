@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectAddition.cxx
+ * File:   process/Materialupdate.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -51,64 +51,78 @@
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
-#include "addInsertObj.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "objectRegister.h"
 
-#include "ObjectAddition.h"
+#include "MaterialUpdate.h"
 
 namespace ModelSupport
 {
 
 void
-objectAddition(Simulation& System,
+materialUpdateHelp()
+  /*!
+    Write out the material update help
+   */
+{
+  ELog::EM<<"voidObject Help "<<ELog::endBasic;
+  ELog::EM<<
+    " -- FixedComp :: voids all cells in FixedComp \n"
+    ELog::EM<<
+    " -- FixedName::CellMap :: voids all CellMap Name \n"
+    ELog::EM<<
+    " -- FixedName::CellMap::<Index> ::  "
+    "  voids all CellMap Name at index \n"
+    ELog::EM<<ELog::endBasic;
+  ELog::EM<<ELog::endErr;
+  return;
+}
+
+void
+materialUpdate(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*
-    Adds components to the model -- should NOT be here
-    \param System :: Simulation to add object to
+    Sets a component to all void if set
+    \param System :: Simulation to get objects from
     \param IParam :: Parameters
   */
 {
-  ELog::RegMethod RegA("ObjectAddtion[F]","objectAddition");
-
-const size_t nP=IParam.setCnt("OAdd");
+  ELog::RegMethod RegA("MaterialUpdate[F]","materialUpdate");
+  
+  const size_t nP=IParam.setCnt("voidObject");
   for(size_t index=0;index<nP;index++)
     {
-      const std::string eMess
-	("Insufficient item for OAdd["+std::to_string(index)+"]");
-      const std::string key=
-	IParam.getValueError<std::string>("OAdd",index,0,eMess);
-      
-      if(key=="help")
+      const size_t nItem=IParam.itemCnt("voidObject",index);
+      for(size_t iName=0;iName<nItem;iName++)
 	{
-	  ELog::EM<<"OAdd Help "<<ELog::endBasic;
-	  ELog::EM<<
-	    " -- cylinder object FixedComp linkPt +Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- cylinder free Vec3D(x,y,z) Vec3D(nx,ny,nz) radius \n";
-	  ELog::EM<<
-	    " -- plate object fixedComp linkPt +Vec3D(x,y,z) "
-	    "xSize zSize {ySize=0.1} {mat=Void}\n";
-	  ELog::EM<<
-	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
-	    "xSize zSize {ySize=0.1} {mat=Void}\n";
-	  ELog::EM<<
-	    " -- sphere object FixedComp linkPt +Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- sphere free Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- grid object FixedComp linkPt +Vec3D(x,y,z) "
-	    " NL length thick gap mat \n";
-	  ELog::EM<<
-	    " -- grid free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis)"
-	    " NL length thick gap mat \n";
-	  ELog::EM<<ELog::endBasic;
-	  ELog::EM<<ELog::endErr;
-          return;
-	}
-      const std::string PType=
-	IParam.getValueError<std::string>("OAdd",index,1,eMess);
+	  const std::string key=
+	    IParam.getValue<std::string>("voidObject",index,iName);
+	  if (!iName && key=="help")
+	    {
+	      materialUpdateHelp();
+	      return;
+	    }
+	  const std::vector<std::string> Units=
+	    StrFunc::StrSeparate(key,"::");
+	  size_t cellIndex;
+	  std::string FCName,cellName;
+	  if (Units.size()==2 || Units.size()==3)  // CellMap::Name::Index
+	    {
+	      const attachSystem::CellMap* CMPtr=
+		getObjectThrow<const attachSystem::CellMap>
+		(Units[0],"CellMap");
+	      if (!CMPtr->hasItem(Units[1]))
+		throw ColErr::InContainerError(Units[1],"CellMap::KeyName");
+	      size_t index(0);
+	      if (Units.size()==3 && !StrFunc::convert(Units[2],index))
+		throw ColErr::InContainerError
+		  (Units[2],"CellMap::KeyName:Index");
+	      std::vector<int> cellSN
+		
+	      }
+	    
 
       std::string FName,LName;
       Geometry::Vec3D VPos,YAxis,ZAxis;
