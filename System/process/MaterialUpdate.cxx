@@ -62,6 +62,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "objectRegister.h"
+#include "Object.h"
 
 #include "MaterialUpdate.h"
 
@@ -95,179 +96,33 @@ materialUpdate(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MaterialUpdate[F]","materialUpdate");
-  
+
   const size_t nP=IParam.setCnt("voidObject");
   for(size_t index=0;index<nP;index++)
     {
+
       const size_t nItem=IParam.itemCnt("voidObject",index);
+
       for(size_t iName=0;iName<nItem;iName++)
 	{
-	  const std::string key=
+	  const std::string objName=
 	    IParam.getValue<std::string>("voidObject",index,iName);
-	  
-	  if (!iName && key=="help")
+      
+	  if (!iName && objName=="help")
 	    {
 	      materialUpdateHelp();
 	      return;
 	    }
-	  const std::vector<int> cellN=
-	    System.getObjectRange(objName);
-
-      std::string FName,LName;
-      Geometry::Vec3D VPos,YAxis,ZAxis;
-      if (key=="Plate" || key=="plate")
-	{
-	  size_t ptI;
-	  const std::string PName="insertPlate"+std::to_string(index);
-	  if (PType=="object")
+	  const std::vector<int> cellN=System.getObjectRange(objName);
+		
+	  for(const int CN : cellN)
 	    {
-	      ptI=4;
-	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
+	      MonteCarlo::Object* OPtr=System.findObject(CN);
+	      if (OPtr)
+		OPtr->setMaterial(0);
 	    }
-	  else if (PType=="free")
-	    {
-	      ptI=2;
-              VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-              YAxis=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-              ZAxis=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"plate type");
-	  
-	  const double XW=
-	    IParam.getValueError<double>("OAdd",index,ptI,eMess);
-	  const double ZH=
-	    IParam.getValueError<double>("OAdd",index,ptI+1,eMess);
-	  const double YT=
-	    IParam.getDefValue<double>(0.1,"OAdd",index,ptI+2);
-	  const std::string mat=
-            IParam.getDefValue<std::string>("Void","OAdd",index,ptI+3);
-	  
-	  if (PType=="object")
-	    constructSystem::addInsertPlateCell
-	      (System,PName,FName,LName,VPos,XW,YT,ZH,mat);
-	  else
-	    constructSystem::addInsertPlateCell
-	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
-	  
 	}
-      else if (key=="Grid" || key=="Grid")
-	{
-	  size_t ptI;
-	  const std::string PName="insertGrid"+std::to_string(index);
-	  if (PType=="object")
-	    {
-	      ptI=4;
-	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-	    }
-	  else if (PType=="free")
-	    {
-	      ptI=2;
-              VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-              YAxis=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-              ZAxis=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"plate type");
-	  
-	  const size_t NL=
-	    IParam.getValueError<size_t>("OAdd",index,ptI,eMess);
-	  const double length=
-	    IParam.getValueError<double>("OAdd",index,ptI+1,eMess);
-	  const double thick=
-	    IParam.getDefValue<double>(0.1,"OAdd",index,ptI+2);
-	  const double gap=
-	    IParam.getDefValue<double>(0.1,"OAdd",index,ptI+3);
-	  const std::string mat=
-            IParam.getDefValue<std::string>("Void","OAdd",index,ptI+4);
-	  
-	  if (PType=="object")
-	    constructSystem::addInsertGridCell
-	      (System,PName,FName,LName,VPos,NL,length,thick,gap,mat);
-	  else
-	    constructSystem::addInsertGridCell
-	      (System,PName,VPos,YAxis,ZAxis,NL,length,thick,gap,mat);
-	  
-	}
-      else if (key=="Sphere" || key=="sphere")
-	{
-	  const std::string PName="insertSphere"+std::to_string(index);
-	  size_t ptI;
-	  if (PType=="object")
-	    {
-	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess);
-	      ptI=4;
-	    }
-	  else
-	    ptI=2;
-	  
-	  VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-	  const double radius=
-	    IParam.getValueError<double>("OAdd",index,ptI,eMess);
-	  const std::string mat=
-	    IParam.getDefValue<std::string>("Void","OAdd",index,ptI+1);
-
-	  if (PType=="object")
-	    constructSystem::addInsertSphereCell
-	      (System,PName,FName,LName,VPos,radius,mat);
-	  else if (PType=="free")
-	    {
-	      constructSystem::addInsertSphereCell
-		(System,PName,VPos,radius,mat);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
-	}
-
-      else if (key=="Cylinder" || key=="cylinder")
-	{
-	  const std::string PName="insertCylinder"+std::to_string(index);
-
-          size_t ptI;
-	  if (PType=="object")
-	    {
-	      ptI=4;
-	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess);
-	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-	    }
-	  else if (PType=="free")
-	    {
-	      ptI=2;
-              VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-              YAxis=IParam.getCntVec3D("OAdd",index,ptI,eMess);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"cylinder type");
-	  
-	  const double radius=
-	    IParam.getValueError<double>("OAdd",index,ptI,eMess);
-	  const double length=
-	    IParam.getValueError<double>("OAdd",index,ptI+1,eMess);
-	  const std::string mat=
-	    IParam.getDefValue<std::string>("Void","OAdd",index,ptI+2);
-          
-	  if (PType=="object")
-	    constructSystem::addInsertCylinderCell
-	      (System,PName,FName,LName,VPos,radius,length,mat);
-	  else if (PType=="free")
-	    {
-	      constructSystem::addInsertCylinderCell
-		(System,PName,VPos,YAxis,radius,length,mat);
-	    }
-	  else
-	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
-	}
-      else
-        throw ColErr::InContainerError<std::string>
-          (key,"key not known in OAdd");
-    }
-  
+    }  
   return;
 }
 

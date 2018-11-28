@@ -74,6 +74,7 @@ public:
   int getFirst() const;
   int getLast() const;
   int getNext(const int) const;
+  int getCellIndex(const size_t) const;
   
   void write(std::ostream&) const;
 }; 

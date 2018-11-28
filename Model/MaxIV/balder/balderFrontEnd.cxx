@@ -572,6 +572,7 @@ balderFrontEnd::buildObjects(Simulation& System)
   wigglerBox->insertInCell(System,outerCell);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
+  wiggler->createAll(System,*wigglerBox,0);
   wiggler->insertInCell(System,outerCell);
 
   dipolePipe->setFront(*wigglerBox,2);

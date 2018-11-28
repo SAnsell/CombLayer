@@ -924,14 +924,15 @@ StrSeparate(const std::string& Line,
 {
   std::vector<std::string> Out;
 
-
   const size_t suLen=splitUnit.size();
   if (suLen)
     {
       size_t pos=0;
+      std::string cutLine(Line);
       do
 	{
-	  const std::string cutLine=Line.substr(pos+suLen);
+	  if (pos)
+	    cutLine=cutLine.substr(pos+suLen);
 	  pos=cutLine.find(splitUnit);
 	  Out.push_back(cutLine.substr(0,pos));
 	} while (pos!=std::string::npos);

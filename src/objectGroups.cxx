@@ -123,8 +123,6 @@ objectGroups::reset()
   return;
 }
 
-
-
 bool
 objectGroups::hasCell(const std::string& Name,
 		      const int cellN) const
@@ -667,49 +665,61 @@ objectGroups::getObjectRange(const std::string& objName) const
   */
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
-  
+
+  ELog::EM<<"HERE "<<ELog::endDiag;
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
-
+  ELog::EM<<"HERE "<<ELog::endDiag;
   // CELLMAP Range ::  objectName:cellName
-  if (Units.size()==2 || Units.size()==3
+  if ((Units.size()==2 || Units.size()==3) &&
       !Units[0].empty() && Units[1].empty())
     {
       const std::string& itemName=Units[0];
       const std::string& cellName=Units[1];
       
       const attachSystem::CellMap* CPtr=
-        getObject<attachSystem::CellMap>(itemName);
-      if (!CPtr)
-        throw ColErr::InContainerError<std::string>
-	  (itemName,"objectName: in "+objName);
-
-      if (Units.size()==3)
+	getObject<attachSystem::CellMap>(itemName);
+      if (CPtr)
 	{
-	  size_t cellIndex;
-	  if(!StrFunc::convert(Units[2],cellIndex))
-	    throw ColErr::InContainerError<std::string>
-	      (objName,"CellMap:cellName:Index");
-	  return std::vector({CPtr->getCell(cellName,cellIndex)});
+	  if (Units.size()==3)
+	    {
+	      size_t cellIndex;
+	      if(!StrFunc::convert(Units[2],cellIndex))
+		throw ColErr::InContainerError<std::string>
+		  (objName,"CellMap:cellName:Index");
+	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
+	    }
+	  // case 2:
+	  const std::vector<int> Out=CPtr->getCells(cellName);
+	  
+	  if (Out.empty())
+	    {
+	      ELog::EM<<"EMPTY NAME::Possible names["<<itemName
+		      <<"] == "<<ELog::endDiag;
+	      std::vector<std::string> NameVec=CPtr->getNames();
+	      for(const std::string CName : NameVec)
+		ELog::EM<<"  "<<CName<<ELog::endDiag;
+	      throw ColErr::InContainerError<std::string>
+		(objName,"Object empty");
+	    }
+	  return Out;
 	}
-      // case 2:
-      const std::vector<int> Out=CPtr->getCells(cellName);
-      
-      if (Out.empty())
-        {
-          ELog::EM<<"EMPTY NAME::Possible names["<<itemName
-		  <<"] == "<<ELog::endDiag;
-          std::vector<std::string> NameVec=CPtr->getNames();
-          for(const std::string CName : NameVec)
-            ELog::EM<<"  "<<CName<<ELog::endDiag;
-          throw ColErr::InContainerError<std::string>
-            (objName,"Object empty");
-        }
-      return Out;
+    }
+  // FIXED COMP and number
+  if (Units.size()==2)
+    {
+      const std::string& itemName=Units[0];
+      size_t index;
+      if (StrFunc::convert(Units[1],index) &&
+	  hasObject(itemName))
+	{
+	  const groupRange& fcGroup=getGroup(itemName);
+	  return std::vector<int>({ fcGroup.getCellIndex(index) });
+	}
     }
   
   // SIMPLE NUMBER RANGE  M - N
-  pos=objName.find("-");
+  size_t pos=objName.find("-");
   if (pos!=std::string::npos)
     {
       int ANum,BNum;
@@ -743,7 +753,7 @@ void
 objectGroups::rotateMaster()
   /*!
     Apply the rotation to the object component
-   */
+  */
 {
   ELog::RegMethod RegA("objectGroups","rotateMaster");
   const masterRotate& MR=masterRotate::Instance();
@@ -757,6 +767,12 @@ objectGroups::rotateMaster()
 std::ostream&
 objectGroups::writeRange(std::ostream& OX,
 			 const std::string& gName) const
+  /*!
+    Write out a set of object names based on the keyName
+    \param OX :: Output stream
+    \param gName :: group name to search for
+    \return OX Stream
+   */
 {
   ELog::RegMethod RegA("objectGroups","writeRange");
 

@@ -279,7 +279,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("u","Units in cm");
   IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
-  IParam.setDesc("voidObejct","Sets material of FC-object by name");
+  IParam.setDesc("voidObject","Sets material of FC-object by name");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");

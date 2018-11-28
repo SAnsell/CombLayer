@@ -105,23 +105,12 @@ pointConstruct::processPoint(SimMCNP& System,
 
   const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
 
-  const masterRotate& MR=masterRotate::Instance();
-  std::string revStr;
-
   if (PType=="free" || PType=="Free")
     {
       std::vector<Geometry::Vec3D> EmptyVec;
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=IParam.getCntVec3D
 	("tally",Index,itemIndex,"Point for point detector");
-      const std::string revStr=
-	IParam.getDefValue<std::string>("","tally",Index,itemIndex);
-
-      if (revStr=="r" || revStr=="R")
-	{
-	  PPoint=MR.forceReverseRotate(PPoint);
-	  ELog::EM<<"Remapped point == "<<PPoint<<ELog::endDiag;
-	}
       processPointFree(System,PPoint,EmptyVec);
     }
 
@@ -130,22 +119,11 @@ pointConstruct::processPoint(SimMCNP& System,
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Point for point detector");
-      int flag=IParam.checkItem<std::string>
-	("tally",Index,itemIndex,revStr);
-      if (flag && (revStr=="r" || revStr=="R"))
-	{
-	  itemIndex++;
-	  PPoint=MR.forceReverseRotate(PPoint);
-	}
       
       std::vector<Geometry::Vec3D> WindowPts(4);
       for(size_t i=0;i<4;i++)
 	WindowPts[i]=IParam.getCntVec3D
-	  ("tally",Index,itemIndex,"Window point "+StrFunc::makeString(i+1));
-
-      revStr=IParam.getDefValue<std::string>("","tally",Index,5);
-      if (revStr=="r" || revStr=="R")
-	PPoint=MR.forceReverseRotate(PPoint);
+	  ("tally",Index,itemIndex,"Window point "+std::to_string(i+1));
       
       processPointFree(System,PPoint,WindowPts);
     }

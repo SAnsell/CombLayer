@@ -297,7 +297,6 @@ Wiggler::createAll(Simulation& System,
   
   createSurfaces();    
   createObjects(System);
-  
   createLinks();
   insertObjects(System);   
   
