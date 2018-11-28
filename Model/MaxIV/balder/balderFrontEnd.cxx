@@ -579,12 +579,17 @@ balderFrontEnd::buildObjects(Simulation& System)
   dipolePipe->createAll(System,*wigglerBox,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
-
   
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
 
+  if (stopPoint=="Dipole")
+    {
+      lastComp=dipolePipe;
+      return;
+    }
+  
   bellowA->createAll(System,*dipolePipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);

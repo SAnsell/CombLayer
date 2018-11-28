@@ -171,7 +171,8 @@ BALDER::build(Simulation& System,
   ELog::RegMethod RControl("BALDER","build");
 
   const int voidCell(74123);
- 
+  frontBeam->setStopPoint(stopPoint);
+  
   ringCaveA->addInsertCell(voidCell);
   ringCaveA->createAll(System,FCOrigin,sideIndex);
 
@@ -192,7 +193,7 @@ BALDER::build(Simulation& System,
   wallLead->setBack(-ringCaveA->getSurf("BeamOuter"));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  if (stopPoint=="frontEnd") return;
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   opticsHut->addInsertCell(voidCell);
   opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");

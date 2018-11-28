@@ -122,6 +122,7 @@ class BALDER : public attachSystem::CopiedComp
   BALDER& operator=(const BALDER&);
   ~BALDER();
 
+  // set stop point(s)
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);

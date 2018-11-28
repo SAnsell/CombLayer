@@ -987,6 +987,7 @@ wallVariables(FuncDataBase& Control,
   
   Control.addVariable(wallKey+"VoidRadius",3.0);
   Control.addVariable(wallKey+"WallMat","Lead");
+  Control.addVariable(wallKey+"MidMat","Concrete");
   Control.addVariable(wallKey+"VoidMat","Void");
   return;
 }

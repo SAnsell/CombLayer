@@ -666,10 +666,9 @@ objectGroups::getObjectRange(const std::string& objName) const
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
 
-  ELog::EM<<"HERE "<<ELog::endDiag;
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
-  ELog::EM<<"HERE "<<ELog::endDiag;
+
   // CELLMAP Range ::  objectName:cellName
   if ((Units.size()==2 || Units.size()==3) &&
       !Units[0].empty() && Units[1].empty())

@@ -156,7 +156,7 @@ WallLead::createSurfaces()
   FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,frontLength);
 
   if (backLength>Geometry::zeroTol)
-    FrontBackCut::getShiftedBack(SMap,buildIndex+12,1,Y,backLength);
+    FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,backLength);
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(frontWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(frontWidth/2.0),X);

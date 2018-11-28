@@ -79,6 +79,8 @@ class balderFrontEnd :
 {
  private:
 
+  /// point to stop [normal none]
+  std::string stopPoint;          
   /// Inner buildzone
   attachSystem::InnerZone buildZone;
   
@@ -200,7 +202,9 @@ class balderFrontEnd :
   balderFrontEnd(const balderFrontEnd&);
   balderFrontEnd& operator=(const balderFrontEnd&);
   ~balderFrontEnd();
-  
+
+  /// set stop point
+  void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
