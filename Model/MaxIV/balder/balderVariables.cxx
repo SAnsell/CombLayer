@@ -676,8 +676,6 @@ monoVariables(FuncDataBase& Control,const double YStep)
     
   const std::string preName("BalderOpticsLine");
 
-  Control.addVariable(preName+"OuterRadius",50.0);
-
   Control.addVariable(preName+"MonoVacYStep",YStep);
   Control.addVariable(preName+"MonoVacZStep",2.0);
   Control.addVariable(preName+"MonoVacRadius",33.0);
@@ -741,7 +739,11 @@ opticsVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
 
   const std::string opticsName(beamName+"OpticsLine");
-  
+
+  Control.addVariable(opticsName+"OuterLeft",70.0);
+  Control.addVariable(opticsName+"OuterRight",50.0);
+  Control.addVariable(opticsName+"OuterTop",60.0);
+
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;

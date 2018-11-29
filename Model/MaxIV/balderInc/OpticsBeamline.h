@@ -191,7 +191,9 @@ class OpticsBeamline :
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
 
-  double outerRadius;   /// Radius for cut cylinder
+  double outerLeft;   /// Radius for cut rectangle
+  double outerRight;   /// Radius for cut rectangle
+  double outerTop;   /// Radius for cut rectangle
   
 
   void populate(const FuncDataBase&);

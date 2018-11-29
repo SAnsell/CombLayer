@@ -75,6 +75,7 @@
 #include "ExternalCut.h"
 #include "InnerZone.h"
 #include "generateSurf.h"
+#include "ModelSupport.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -228,7 +229,9 @@ OpticsBeamline::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("OpticsBeamline","populate");
   FixedOffset::populate(Control);
 
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
   
   return;
 }
@@ -259,10 +262,18 @@ OpticsBeamline::createSurfaces()
     Create surfaces for outer void
    */
 {
-  if (outerRadius>Geometry::zeroTol)
+  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
-      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+      std::string Out;
+      ModelSupport::buildPlane
+	(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("floor"));
+      buildZone.setSurround(HR);
     }
   return;
 }

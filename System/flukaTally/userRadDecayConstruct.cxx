@@ -86,7 +86,7 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
     -- active time flux :: time and flux for activation in particles/sec
     -- decay [time1 time2] :: time bins [-ve for addition of time] 
 
-    \note SUPPORT ONLY ONE DECAY TIME AT CURRENT
+    \note SUPPORTS ONLY ONE DECAY TIME AT CURRENT
 
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters

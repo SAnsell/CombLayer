@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/Materialupdate.cxx
+ * File:   process/MaterialUpdate.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

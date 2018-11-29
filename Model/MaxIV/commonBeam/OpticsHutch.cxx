@@ -249,6 +249,8 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+  
   if (innerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
@@ -401,10 +403,7 @@ OpticsHutch::createObjects(Simulation& System)
     // ring wall
   const std::string ringWall=ExternalCut::getRuleStr("ringWall");
 
-  //  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1M -2M 4M 104M 15 -6M ");
-  //  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out+ringWall);
-  // Outer void for chicanes etc
-
+  // Outer void for pipe
   if (inletRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");

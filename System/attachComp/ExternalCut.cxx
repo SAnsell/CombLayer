@@ -553,6 +553,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param SMap :: local surface register
     \param extName :: cut unit name
     \param index :: offset index
+    \param dFlag :: direction of surface axis (relative to HR.Plane) [-1/1]
     \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param dExtra :: displacement extra [cm]
   */
@@ -589,7 +590,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   const cutUnit* CU=findUnit(extName);
   if (!CU)
     throw ColErr::InContainerError<std::string>(extName,"Unit not named");
-  
+
   makeExpandedSurf(SMap,CU->main,index,expandCentre,dExtra);
 
   return;
