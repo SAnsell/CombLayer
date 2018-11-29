@@ -668,16 +668,17 @@ objectGroups::getObjectRange(const std::string& objName) const
 
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
-
+  
   // CELLMAP Range ::  objectName:cellName
   if ((Units.size()==2 || Units.size()==3) &&
-      !Units[0].empty() && Units[1].empty())
+      !Units[0].empty() && !Units[1].empty())
     {
       const std::string& itemName=Units[0];
       const std::string& cellName=Units[1];
       
       const attachSystem::CellMap* CPtr=
 	getObject<attachSystem::CellMap>(itemName);
+
       if (CPtr)
 	{
 	  if (Units.size()==3)
