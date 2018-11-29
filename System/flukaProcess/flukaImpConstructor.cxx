@@ -43,9 +43,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-// #include "Triple.h"
-// #include "NList.h"
-// #include "NRange.h"
 #include "support.h"
 #include "Rules.h"
 #include "varList.h"
@@ -81,9 +78,10 @@ flukaImpConstructor::insertPair(flukaPhysics& PC,
 				const std::string* VV) const
  /*!
    Process the actual insert 
-   \param PC :: Physcis to insert to
+   \param PC :: Physics card to insert into 
+   \param cellSize :: Size of additional parameters
    \param pName :: particle name
-   \param cellName :: cell name
+   \param cellName :: cell name/material name to apply to
    \param keyName :: component keyname
    \param VV :: variables
  */
@@ -311,7 +309,7 @@ flukaImpConstructor::processUnit(SimFLUKA& System,
 				 const mainSystem::inputParam& IParam,
 				 const size_t setIndex)
   /*!
-    Set individual IMP based on Iparam
+    Set individual IMP based on IParam
     \param System :: Simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
@@ -452,7 +450,7 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processEMF");
 
-  // cell/mat : tag name /  scale V1 / scale V2 [if used]
+  // V[Size] : particle[-1]/cell[0]/mat[1] : tag name 
   typedef std::tuple<size_t,bool,std::string> emfTYPE;
 
   static const std::map<std::string,emfTYPE> EMap
@@ -467,13 +465,16 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
       { "pho2thr",emfTYPE(2,1,"pho2thr") },  // photo-nuclear
       { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
 
-      { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
-      { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
-      { "emffluo",emfTYPE(0,1,"emffluo") },      // mat
-      { "mulsopt",emfTYPE(3,1,"mulsopt") },       // mat
+      { "photonuc",emfTYPE(0,1,"photonuc") },      // none
+      { "muphoton",emfTYPE(0,1,"muphoton") },      // none
+      { "emffluo",emfTYPE(0,1,"emffluo") },        // mat
+      { "mulsopt",emfTYPE(3,1,"mulsopt") },        // mat
       { "lpb",emfTYPE(2,0,"lpb") },        // regions
       { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
-      { "lambemf",emfTYPE(2,1,"lambemf") }      // mat
+      { "lambemf",emfTYPE(2,1,"lambemf") },        // mat
+
+      { "evaporation",emfTYPE(0,-1,"evaporation") },      // none
+      { "coalescence",emfTYPE(0,-1,"coalescence") }      // none
 
     });
   
