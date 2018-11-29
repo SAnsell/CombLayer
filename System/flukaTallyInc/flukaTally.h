@@ -44,7 +44,7 @@ class flukaTally
   int outputUnit;                   ///< Fortran output number
   std::string comments;             ///< comment line
 
-  std::string auxParticle;          ///< Auxillary particle
+  std::string auxParticle;          ///< Auxillary particles
   std::string doseType;             ///< Auxillary dose type if used
   
  public:
