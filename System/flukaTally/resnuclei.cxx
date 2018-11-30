@@ -56,6 +56,15 @@
 namespace flukaSystem
 {
 
+resnuclei::resnuclei(const int outID) :
+  flukaTally("resn",std::to_string(outID),outID),
+  cellA(0)
+  /*!
+    Constructor
+    \param outID :: Identity number of tally [fortranOut]
+  */
+{}
+
 resnuclei::resnuclei(const std::string& KN,const int outID) :
   flukaTally(KN,outID),cellA(0)
   /*!

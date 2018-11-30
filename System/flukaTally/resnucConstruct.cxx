@@ -78,32 +78,23 @@ namespace flukaSystem
 
 void 
 resnucConstruct::createTally(SimFLUKA& System,
-				const std::string& PType,const int fortranTape,
-				const int cellA,
-				const bool eLog,const double Emin,
-				const double Emax,const size_t nE)
+			     const int fortranTape,
+			     const int cellA)
+
 /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
     \param fortranTape :: output stream
     \param CellA :: initial region
-    \param eLog :: energy in log bins
-    \param aLog :: angle in log bins
-    \param Emin :: Min energy 
-    \param Emax :: Max energy 
   */
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
   const flukaGenParticle& FG=flukaGenParticle::Instance();
     
-  userTrack UD(fortranTape);
-  UD.setParticle(FG.nameToFLUKA(PType));
-
+  resnuclei UD(fortranTape);
   UD.setCell(cellA);
-  UD.setEnergy(eLog,Emin,Emax,nE);
-  
   System.addTally(UD);
 
   return;
@@ -111,49 +102,33 @@ resnucConstruct::createTally(SimFLUKA& System,
 
 
 void
-resnucConstruct::processTrack(SimFLUKA& System,
+resnucConstruct::processResNuc(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
 			     const size_t Index) 
   /*!
     Add TRACK tally (s) as needed
     - Input:
-    -- particle FixedComp index
-    -- particle cellA  
-    -- particle SurfMap name
+    -- FixedComp/CellMap name 
+    -- cellA  
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("resnucConstruct","processTrack");
+  ELog::RegMethod RegA("resnucConstruct","processResNuc");
 
-  
-  const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
-  const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-  const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
+  const std::string objectName=
+    IParam.getValueError<std::string>("tally",Index,1,"tally:objectName");
 
-  size_t itemIndex(4);
-  int cellA(0);
-  if (!StrFunc::convert(FCname,cellA))
+  const std::vector<int> cellVec=
+    System.getObjectRange(objectName);
+
+  for(const int CN : cellVec)
     {
-      throw ColErr::InContainerError<std::string>
-	(FCname+":"+FCindex,"No regions");
+      // This needs to be more sophisticated
+      const int nextId=System.getNextFTape();
+      resnucConstruct::createTally(System,nextId,CN);
     }
-  
-  ELog::EM<<"Regions connected from "<<cellA<<ELog::endDiag;  
-
-  // This needs to be more sophisticated
-  const int nextId=System.getNextFTape();
-  
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
-  
-  resnucConstruct::createTally(System,particleType,nextId,
-				  cellA,1,EA,EB,NE);
   
   return;      
 }  

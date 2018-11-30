@@ -167,7 +167,6 @@ BALDER::build(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  // For output stream
   ELog::RegMethod RControl("BALDER","build");
 
   const int voidCell(74123);
@@ -208,6 +207,7 @@ BALDER::build(Simulation& System,
   ringCaveB->insertComponent
     (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
 
+  if (stopPoint=="opticsHut") return;
   
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));

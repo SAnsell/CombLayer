@@ -102,6 +102,8 @@ tallySelection(SimFLUKA& System,
 	userBdxConstruct::processBDX(System,IParam,i);
       else if (TType=="raddecay")
 	userRadDecayConstruct::processRadDecay(System,IParam,i);
+      else if (TType=="resnuc")
+	resnucConstruct::processResNuc(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
@@ -131,7 +133,8 @@ helpTallyType(const std::string& HType)
 	      <<"-- dump : \n"
 	      <<"-- surface : \n"
 	      <<"-- cell : \n"
-	      <<"-- raddecay : \n";
+	      <<"-- raddecay : \n"
+	      <<"-- resnuc : \n";
     }
   
   ELog::EM<<ELog::endBasic;
