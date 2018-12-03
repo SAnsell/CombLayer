@@ -62,6 +62,7 @@
 #include "userDumpConstruct.h"
 #include "userBdxConstruct.h"
 #include "userRadDecayConstruct.h"
+#include "resnucConstruct.h"
 #include "flukaTallyBuilder.h"
 
 namespace flukaSystem

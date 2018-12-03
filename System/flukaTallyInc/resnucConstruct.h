@@ -1,4 +1,4 @@
-!/********************************************************************* 
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   flukaTallyInc/resnucConstruct.h
@@ -52,8 +52,7 @@ class resnucConstruct
   /// Private constructor
   resnucConstruct() {}
 
-  static void createTally(SimFLUKA&,const std::string&,const int,
-			  const int);
+  static void createTally(SimFLUKA&,const int,const int);
   
  public:
 

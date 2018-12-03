@@ -69,7 +69,8 @@
 #include "flukaGenParticle.h"
 #include "TallySelector.h"
 #include "flukaTally.h"
-#include "userTrack.h"
+
+#include "resnuclei.h"
 #include "resnucConstruct.h" 
 
 
@@ -91,8 +92,6 @@ resnucConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("resnucConstruct","createTally");
 
-  const flukaGenParticle& FG=flukaGenParticle::Instance();
-    
   resnuclei UD(fortranTape);
   UD.setCell(cellA);
   System.addTally(UD);

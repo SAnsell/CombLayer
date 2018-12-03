@@ -38,18 +38,20 @@ class resnuclei : public flukaTally
 {
  private:
 
-  int cellN;           ///< Cell number
+  int cellA;           ///< Cell number
 
   
  public:
 
+  explicit resnuclei(const int);
   resnuclei(const std::string&,const int);
   resnuclei(const resnuclei&);
   virtual resnuclei* clone() const; 
   resnuclei& operator=(const resnuclei&);
   virtual ~resnuclei();
-  
-  virtual void write(const SimFLUKA&,std::ostream&) const;  
+
+  void setCell(const int CN) { cellA=CN; }
+  virtual void write(std::ostream&) const;  
 };
 
 }

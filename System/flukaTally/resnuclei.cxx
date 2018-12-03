@@ -57,7 +57,7 @@ namespace flukaSystem
 {
 
 resnuclei::resnuclei(const int outID) :
-  flukaTally("resn",std::to_string(outID),outID),
+  flukaTally("resn"+std::to_string(outID),outID),
   cellA(0)
   /*!
     Constructor
@@ -114,17 +114,6 @@ resnuclei::~resnuclei()
   */
 {}
 
-
-void
-resnuclei::setCell(const int RA)
-  /*!
-    Set the cells/regions
-    \param RA :: Region A
-  */
-{
-  cellA=RA;
-  return;
-}
   
 void
 resnuclei::write(std::ostream& OX) const
@@ -134,15 +123,13 @@ resnuclei::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  if (!decayTime.empty())
-    {
-      std::ostringstream cx;
-      
-      cx<<"RESNUCLEI  3.0 "<<outputUnit<<" 0.0 0.0"
-	<<" R"<<cellA;
-      cx<<" resn"<<std::to_string(std::abs(outputUnit));
-      StrFunc::writeFLUKA(cx.str(),OX);
-    }
+
+  std::ostringstream cx;
+  
+  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" 0.0 0.0"
+    <<" R"<<cellA;
+  cx<<" resn"<<std::to_string(std::abs(outputUnit));
+  StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 
