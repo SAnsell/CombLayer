@@ -101,7 +101,7 @@ class speciesOpticsBeamline :
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
   /// Bellow to first connect line
   std::shared_ptr<constructSystem::Bellows> bellowC;
-    /// Pipe to some stuff
+  /// Pipe to some stuff
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   /// First screen
   std::shared_ptr<xraySystem::PipeShield> screenA;
@@ -121,6 +121,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main mono vessel
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
+  /// Mono Crystals
+  std::shared_ptr<xraySystem::GratingMono> monoXtal;
   /// Offset pipe leaving MonoTube
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Bellow leaving Mono

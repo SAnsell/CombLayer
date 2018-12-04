@@ -136,6 +136,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   screenB(new xraySystem::PipeShield(newName+"ScreenB")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
+  monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),

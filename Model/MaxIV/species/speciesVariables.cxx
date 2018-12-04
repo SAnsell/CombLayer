@@ -446,6 +446,7 @@ monoVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::TankMonoVesselGenerator MBoxGen;
+  setVariable::GratingMonoGenerator MXtalGen;
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow(); 
@@ -471,6 +472,9 @@ monoVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF63>(7.5);
   PItemGen.setPlate(0.0,"Void");
 
+  // crystals
+  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
+  
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlange(17.8,1.0);
   PipeGen.generatePipe(Control,monoKey+"OffPipeB",0,3.0);
