@@ -60,8 +60,8 @@ namespace setVariable
 GratingMonoGenerator::GratingMonoGenerator() :
   rotCent(0,63.0,12.0),theta(0.0),
   mOffset(0,0,0),
-  mWidth(11.0),mThick(4.0),mLength(64.0),
-  gOffset(0,42.0,3.2),
+  mWidth(11.0),mThick(4.0),mLength(56.0),
+  gOffset(0,30.5,3.2),
   gWidth(4.0),gThick(2.0),gLength(12.0),
   mBaseThick(0.6),mBaseWidth(6.0),mBaseLength(6.18),
   gBaseThick(0.5),gBaseWidth(2.0),gBaseLength(11.8),
@@ -141,10 +141,8 @@ GratingMonoGenerator::generateGrating(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"ZStep",zStep);
 
-  Control.addVariable(keyName+"RotCentre",rotCent);
-  Control.addVariable(keyName+"Theta",theta);
-
-
+  Control.addVariable(keyName+"MTheta",thetaMirror);
+  Control.addVariable(keyName+"GTheta",thetaGrate);
   
   Control.addVariable(keyName+"MirrorOffset",mOffset);
   Control.addVariable(keyName+"MirrorWidth",mWidth);

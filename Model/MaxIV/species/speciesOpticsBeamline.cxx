@@ -191,6 +191,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(screenB);
   OR.addObject(offPipeA);
   OR.addObject(monoVessel);
+  OR.addObject(monoXtal);
   OR.addObject(offPipeB);
   OR.addObject(bellowD);
   OR.addObject(pipeE);
@@ -505,6 +506,9 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
 
+  monoXtal->addInsertCell(monoVessel->getCell("Void"));
+  monoXtal->createAll(System,*monoVessel,0);
+
   offPipeB->createAll(System,*monoVessel,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);
@@ -679,7 +683,7 @@ speciesOpticsBeamline::buildOutGoingPipes(Simulation& System,
     \param hutCell :: Cells for construction in hut [common to both pipes]
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
+  ELog::RegMethod RegA("speciesOpticsBeamline","buildOutgoingPipes");
 
   outPipeA->addInsertCell(hutCells);
   outPipeA->addInsertCell(leftCell);

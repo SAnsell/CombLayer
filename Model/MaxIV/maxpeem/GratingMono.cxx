@@ -163,30 +163,32 @@ GratingMono::createSurfaces()
   ELog::RegMethod RegA("GratingMono","createSurfaces");
 
   // Construct true rotCent:
-  const Geometry::Vec3D RC=Origin+X*rotCent.X()+
-    Y*rotCent.Y()+Z*rotCent.Z();
   MCentre=Origin+X*mOffset.X()+
     Y*mOffset.Y()+Z*mOffset.Z();
   GCentre=Origin+X*gOffset.X()+
     Y*gOffset.Y()+Z*gOffset.Z();
 
-  // main xstal CENTRE AT ORIGIN 
-  const Geometry::Quaternion QXA
-    (Geometry::Quaternion::calcQRotDeg(theta,X));
+  // mirror/grating xstal CENTRE AT ORIGIN 
+  const Geometry::Quaternion QMX
+    (Geometry::Quaternion::calcQRotDeg(mirrorTheta,X));
 
-  Geometry::Vec3D PX(X);
-  Geometry::Vec3D PY(Y);
-  Geometry::Vec3D PZ(Z);
+  const Geometry::Quaternion QGX
+    (Geometry::Quaternion::calcQRotDeg(grateTheta,X));
 
-  QXA.rotate(PY);
-  QXA.rotate(PZ);
+
+  Geometry::Vec3D GX(X);
+  Geometry::Vec3D GY(Y);
+  Geometry::Vec3D GZ(Z);
+
+  Geometry::Vec3D MX(X);
+  Geometry::Vec3D MY(Y);
+  Geometry::Vec3D MZ(Z);
+
+  QXG.rotate(PY);
+  QXG.rotate(PZ);
   
-  MCentre-=RC;
-  GCentre-=RC;
   QXA.rotate(MCentre);
   QXA.rotate(GCentre);
-  MCentre+=RC;
-  GCentre+=RC;
   
   ModelSupport::buildPlane(SMap,buildIndex+101,MCentre-PY*(mLength/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+102,MCentre+PY*(mLength/2.0),PY);
@@ -201,7 +203,8 @@ GratingMono::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+204,GCentre+PX*(gWidth/2.0),PX);
   ModelSupport::buildPlane(SMap,buildIndex+205,GCentre,PZ);
   ModelSupport::buildPlane(SMap,buildIndex+206,GCentre+PZ*gThick,PZ);
-  
+
+  ELog::EM<<"PCenter = "<<MCentre<<" :: "<<GCentre<<ELog::endDiag;
   return; 
 }
 

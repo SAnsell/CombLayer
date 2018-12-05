@@ -43,8 +43,8 @@ class GratingMono :
 {
  private:
 
-  Geometry::Vec3D rotCent;  ///< Rotation centre
-  double theta;             ///< Theta angle
+  double grateTheta;             ///< Theta angle for grateing
+  double mirrorTheta;             ///< Theta angle for mirror
 
   Geometry::Vec3D mOffset;  ///< mirror offset [at zero theta]
   double mWidth;            ///< Width of lower mirror

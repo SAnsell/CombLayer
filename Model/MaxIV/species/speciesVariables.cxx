@@ -233,7 +233,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,102.5);
 
   ShieldGen.setPlate(120.0,60.0,7.0);
-  ShieldGen.generateShield(Control,splitKey+"ScreenC",3-0.0,0.0);
+  ShieldGen.generateShield(Control,splitKey+"ScreenC",34.0,0.0);
 
   return;
 }
