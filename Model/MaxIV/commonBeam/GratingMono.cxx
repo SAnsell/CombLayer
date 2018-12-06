@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/GratingMono.cxx
+ * File:   commonBeam/GratingMono.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -110,10 +110,11 @@ GratingMono::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  rotCent=Control.EvalVar<Geometry::Vec3D>(keyName+"RotCentre");
-  theta=Control.EvalVar<double>(keyName+"Theta");
+  grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
+  mirrorTheta=Control.EvalVar<double>(keyName+"MirrorTheta");
 
   mOffset=Control.EvalVar<Geometry::Vec3D>(keyName+"MirrorOffset");
+  mRotPt=Control.EvalVar<Geometry::Vec3D>(keyName+"MirrorRotate");
     
   mWidth=Control.EvalVar<double>(keyName+"MirrorWidth");
   mThick=Control.EvalVar<double>(keyName+"MirrorThick");
@@ -163,10 +164,9 @@ GratingMono::createSurfaces()
   ELog::RegMethod RegA("GratingMono","createSurfaces");
 
   // Construct true rotCent:
-  MCentre=Origin+X*mOffset.X()+
-    Y*mOffset.Y()+Z*mOffset.Z();
-  GCentre=Origin+X*gOffset.X()+
-    Y*gOffset.Y()+Z*gOffset.Z();
+  MCentre=Origin+X*mOffset.X()+Y*mOffset.Y()+Z*mOffset.Z();
+  MRotate=Origin+X*mRotPt.X()+Y*mRotPt.Y()+Z*mRotPt.Z();
+  GCentre=Origin+X*gOffset.X()+Y*gOffset.Y()+Z*gOffset.Z();
 
   // mirror/grating xstal CENTRE AT ORIGIN 
   const Geometry::Quaternion QMX
@@ -184,27 +184,32 @@ GratingMono::createSurfaces()
   Geometry::Vec3D MY(Y);
   Geometry::Vec3D MZ(Z);
 
-  QXG.rotate(PY);
-  QXG.rotate(PZ);
-  
-  QXA.rotate(MCentre);
-  QXA.rotate(GCentre);
-  
-  ModelSupport::buildPlane(SMap,buildIndex+101,MCentre-PY*(mLength/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+102,MCentre+PY*(mLength/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+103,MCentre-PX*(mWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+104,MCentre+PX*(mWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+105,MCentre-PZ*mThick,PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+106,MCentre,PZ);
-  
-  ModelSupport::buildPlane(SMap,buildIndex+201,GCentre-PY*(gLength/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+202,GCentre+PY*(gLength/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+203,GCentre-PX*(gWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+204,GCentre+PX*(gWidth/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+205,GCentre,PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+206,GCentre+PZ*gThick,PZ);
 
-  ELog::EM<<"PCenter = "<<MCentre<<" :: "<<GCentre<<ELog::endDiag;
+  QGX.rotate(GY);
+  QGX.rotate(GZ);
+
+  QMX.rotate(MY);
+  QMX.rotate(MZ);
+
+  // Now rotate centre of mirror about mRotate
+  MCentre-=MRotate;
+  QMX.rotate(MCentre);
+  MCentre+=MRotate;
+  
+  ModelSupport::buildPlane(SMap,buildIndex+101,MCentre-MY*(mLength/2.0),MY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,MCentre+MY*(mLength/2.0),MY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,MCentre-MX*(mWidth/2.0),MX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,MCentre+MX*(mWidth/2.0),MX);
+  ModelSupport::buildPlane(SMap,buildIndex+105,MCentre-MZ*mThick,MZ);
+  ModelSupport::buildPlane(SMap,buildIndex+106,MCentre,MZ);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+201,GCentre-GY*(gLength/2.0),GY);
+  ModelSupport::buildPlane(SMap,buildIndex+202,GCentre+GY*(gLength/2.0),GY);
+  ModelSupport::buildPlane(SMap,buildIndex+203,GCentre-GX*(gWidth/2.0),GX);
+  ModelSupport::buildPlane(SMap,buildIndex+204,GCentre+GX*(gWidth/2.0),GX);
+  ModelSupport::buildPlane(SMap,buildIndex+205,GCentre,GZ);
+  ModelSupport::buildPlane(SMap,buildIndex+206,GCentre+GZ*gThick,GZ);
+
   return; 
 }
 

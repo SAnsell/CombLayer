@@ -47,6 +47,7 @@ class GratingMono :
   double mirrorTheta;             ///< Theta angle for mirror
 
   Geometry::Vec3D mOffset;  ///< mirror offset [at zero theta]
+  Geometry::Vec3D mRotPt;   ///< mirror rotation point
   double mWidth;            ///< Width of lower mirror
   double mThick;            ///< 
   double mLength;           ///< Outer wall thickness
@@ -68,6 +69,7 @@ class GratingMono :
   int baseMat;             ///< Base material
 
   Geometry::Vec3D MCentre;      ///< Mirror centre
+  Geometry::Vec3D MRotate;      ///< Mirror rotation centre
   Geometry::Vec3D GCentre;      ///< Grating centre
   
   // Functions:

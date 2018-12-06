@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GratingMonoGenerator.h
+ * File:   commonBeamInc/GratingMonoGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -39,10 +39,12 @@ class GratingMonoGenerator
 {
  private:
   
-  Geometry::Vec3D rotCent;  ///< Rotation centre
-  double theta;             ///< Theta angle
+  double grateTheta;             ///< Theta angle [grating]
+  double mirrorTheta;            ///< Theta angle [mirror]
 
   Geometry::Vec3D mOffset;  ///< mirror offset [at zero theta]
+  Geometry::Vec3D mRotate;  ///< mirror Rotation offset [from mirror END]
+  
   double mWidth;            ///< Width of lower mirror
   double mThick;            ///< Thickness of lower mirror
   double mLength;           ///< Length of lower mirror
