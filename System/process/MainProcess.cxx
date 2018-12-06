@@ -629,7 +629,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   tallyModification(*SimMCPtr,IParam);
 
   SDef::sourceSelection(*SimMCPtr,IParam);
-  //  SimMCPtr->masterSourceRotation();
+  SimMCPtr->masterSourceRotation();
   // Ensure we done loop
   do
     {
