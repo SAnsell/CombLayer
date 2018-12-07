@@ -193,10 +193,10 @@ RingDoor::createSurfaces()
 			   Origin+Z*(outerTopGap+outerHeight/2.0),Z);
 
 
-  ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+200,Origin,innerThick);
-  ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+201,Origin,innerThick+gapSpace);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerWall",buildIndex+200,-1,Y,innerThick);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerWall",buildIndex+201,-1,Y,innerThick+gapSpace);
 
   return;
 }

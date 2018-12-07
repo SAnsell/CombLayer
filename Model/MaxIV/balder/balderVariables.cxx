@@ -92,7 +92,7 @@ frontCaveVariables(FuncDataBase& Control,
     \param Control :: Database
     \param preName :: Name to describe system
     \param mazeFlag :: maze is present
-    \param mazeFlag :: door is present
+    \param doorFlag :: door is present
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
@@ -132,7 +132,7 @@ frontCaveVariables(FuncDataBase& Control,
   if (mazeFlag)
     MGen.generateMaze(Control,preName+"Maze",0.0);
   if (doorFlag)
-    RGen.generateDoor(Control,preName+"RingDoor",800.0);
+    RGen.generateDoor(Control,preName+"RingDoor",-800.0);
   return;
 }
 

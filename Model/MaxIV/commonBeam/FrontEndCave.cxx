@@ -313,7 +313,7 @@ FrontEndCave::createLinks()
   setConnect(1,Origin+Y*(frontWallThick+length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
-  setConnect(2,Origin+X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
+  setConnect(2,Origin-X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
   setLinkSurf(2,-SMap.realSurf(buildIndex+13));
 
   setConnect(3,Origin+X*(ringGap+ringWallThick)+Y*(segmentLength/2.0),X);
@@ -409,6 +409,7 @@ FrontEndCave::createDoor(Simulation& System)
       doorPtr->setCutSurf("innerWall",-SMap.realSurf(buildIndex+3));
       doorPtr->setCutSurf("outerWall",SMap.realSurf(buildIndex+13));
 
+      doorPtr->setAxisControl(-3,Z);
       doorPtr->addInsertCell(getCell("OuterWall"));
       doorPtr->createAll(System,*this,3);
     }

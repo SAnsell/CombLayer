@@ -119,7 +119,7 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
     {
       std::vector<double> ATime;
       const size_t NItems=IParam.itemCnt("tally",Index);
-      for(size_t i=3;i<NItems;i++)
+      for(size_t i=2;i<NItems;i++)
 	{
 	  const double activeTime=
 	    IParam.getValueError<double>("tally",Index,i,"tally:activeTime");
@@ -143,6 +143,8 @@ userRadDecayConstruct::processRadDecay(SimFLUKA& System,
       
       RadPtr->addDetectors(tallyName,timeIndex);
     }
+  else
+    throw ColErr::InContainerError<std::string>(keyName," RadDecy type");
   
   return;      
 }  

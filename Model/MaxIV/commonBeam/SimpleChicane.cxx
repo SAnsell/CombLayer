@@ -200,8 +200,6 @@ SimpleChicane::createObjects(Simulation& System)
   const std::string innerOut=getRuleStr("innerWall");
   const std::string outerOut=getRuleStr("outerWall");
 
-  ELog::EM<<"ORG == "<<Origin<<ELog::endDiag;
-  
   // inner clearance gap
   Out=ModelSupport::getComposite(SMap,buildIndex,"-101 12 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);

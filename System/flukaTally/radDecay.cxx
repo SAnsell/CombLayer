@@ -187,6 +187,8 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
       size_t index(0);
       cx.str("");
       cx<<"IRRPROFI ";
+      if (iradTime.empty())
+	ELog::EM<<"Empty IRRAD "<<ELog::endDiag;
       for(const std::pair<double,double> IR : iradTime)
 	{
 	  cx<<IR.first<<" "<<IR.second;
