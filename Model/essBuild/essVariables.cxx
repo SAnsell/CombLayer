@@ -528,28 +528,47 @@ EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   if (lowMod=="None")
     {
       Control.addVariable("LowAFlightXYAngle",-90.0);
-      Control.addVariable("LowAFlightZStep",-14.95);
-
       Control.addVariable("LowBFlightXYAngle",90.0);
+
+      Control.addVariable("LowAFlightZStep",-22.6);
+
+      Control.addVariable("LowAFlightHeight", 26.8);
+      Control.addVariable("LowAFlightTapSurf", "plane");
+
+      Control.addVariable("LowAFlightAngleZBase", 0.0);
+      Control.addVariable("LowAFlightAngleZTop",  0.0);
+
       Control.addParse<double>("LowBFlightZStep","LowAFlightZStep");
+      Control.addParse<double>("LowBFlightHeight", "LowAFlightHeight");
+      Control.addVariable("LowBFlightTapSurf", "plane");
+      Control.addParse<double>("LowBFlightAngleZBase", "LowAFlightAngleZBase");
+      Control.addParse<double>("LowBFlightAngleZTop", "LowAFlightAngleZTop");
     }
   else
     {
       Control.addVariable("LowAFlightXYAngle",0.0);
+      Control.addVariable("LowBFlightXYAngle",180.0);
+
       Control.addVariable("LowAFlightZStep",0.0);
 
-      Control.addVariable("LowBFlightXYAngle",180.0);
+      Control.addVariable("LowAFlightHeight",6.1);     // Full height = LowFlyTotalHeight
+      Control.addVariable("LowAFlightTapSurf", "cone");
+
+      Control.addVariable("LowAFlightAngleZBase",0.9); // Step up angle ESS-0032315.3
+      Control.addVariable("LowAFlightAngleZTop",0.9);  // Step down angle ESS-0032315.3
+
       Control.addParse<double>("LowBFlightZStep","LowAFlightZStep");
+      Control.addParse<double>("LowBFlightHeight", "LowAFlightHeight");
+      Control.addVariable("LowBFlightTapSurf", "cone");
+      Control.addParse<double>("LowBFlightAngleZBase", "LowAFlightAngleZBase");
+      Control.addParse<double>("LowBFlightAngleZTop", "LowAFlightAngleZTop");
     }
 
-  Control.addVariable("LowAFlightTapSurf", "cone");
   Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZAngle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("LowAFlightAngleZTop",0.9);  // Step down angle ESS-0032315.3
-  Control.addVariable("LowAFlightAngleZBase",0.9); // Step up angle ESS-0032315.3
-  Control.addVariable("LowAFlightHeight",6.1);     // Full height = LowFlyTotalHeight
+
   Control.addVariable("LowAFlightWidth",10.7);     // Full width
   Control.addVariable("LowAFlightNLiner",0);      // TSV32IS
   //  Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
@@ -561,14 +580,10 @@ EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
-  Control.addVariable("LowBFlightTapSurf", "cone");
   Control.addVariable("LowBFlightXStep",0.0);     // Angle
   Control.addVariable("LowBFlightZAngle",0.0);     // Angle out
   Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("LowBFlightAngleZTop",0.9);  // Step down angle
-  Control.addVariable("LowBFlightAngleZBase",0.9); // Step up angle
-  Control.addVariable("LowBFlightHeight",6.1);     // Full height = LowFlyTotalHeight
   Control.addVariable("LowBFlightWidth",10.7);     // Full width
   Control.addParse<double>("LowBFlightNLiner","LowAFlightNLiner");      // TSV32IS
   //  Control.addVariable("LowBFlightLinerThick1",0.4);
