@@ -467,10 +467,15 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
 
- 
-  Control.addVariable(monoKey+"MonoVesselNPorts",0);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(7.5);
-  PItemGen.setPlate(0.0,"Void");
+
+  const std::string portName=monoKey+"MonoVessel";
+  Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF120>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,portName+"Port0",
+			Geometry::Vec3D(0,5.0,10.0),
+			Geometry::Vec3D(1,0,0));
+
 
   // crystals
   MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);

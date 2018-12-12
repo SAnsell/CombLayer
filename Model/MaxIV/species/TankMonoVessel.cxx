@@ -84,7 +84,7 @@ TankMonoVessel::TankMonoVessel(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::ExternalCut(),
-  centreOrigin(0)
+  centreOrigin(0),delayPortBuild(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -122,6 +122,7 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   lidOffset=Control.EvalVar<double>(keyName+"LidOffset");
   lidRadius=Control.EvalVar<double>(keyName+"LidRadius");
   lidDepth=Control.EvalVar<double>(keyName+"LidDepth");
+
 
   portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
   portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
@@ -170,6 +171,9 @@ TankMonoVessel::populate(const FuncDataBase& Control)
       (flangeBRadius,portBWallThick+portBTubeRadius,
        "Flange to small for "+keyName+" port B");
 
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
   
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
@@ -208,8 +212,6 @@ TankMonoVessel::populate(const FuncDataBase& Control)
     }					    
 
   
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   outerSize=Control.EvalDefVar<double>(keyName+"OuterSize",voidRadius+20.0);
   
@@ -449,6 +451,31 @@ TankMonoVessel::createLinks()
 }
 
 void
+TankMonoVessel::createPorts(Simulation& System)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+   */
+{
+   ELog::RegMethod RegA("TankMonoVessel","createPorts");
+  
+  for(size_t i=0;i<Ports.size();i++)
+    {
+
+      for(const int CN : portCells)
+	Ports[i].addOuterCell(CN);
+
+
+      Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
+      ELog::EM<<"DEA"<<ELog::endDiag;
+	    
+      Ports[i].constructTrack(System);
+    }
+  return;
+}
+
+
+void
 TankMonoVessel::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
@@ -468,6 +495,9 @@ TankMonoVessel::createAll(Simulation& System,
   
   createLinks();
   insertObjects(System);   
+
+  if (!delayPortBuild)
+    createPorts(System);
   
   return;
 }

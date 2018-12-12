@@ -344,7 +344,6 @@ monoVariables(FuncDataBase& Control,
   // 
   MBoxGen.generateBox(Control,monoKey+"MonoBox",0.0,41.2,12.8,12.8,117.1);
   Control.addVariable(monoKey+"MonoBoxPortBZStep",3.1);   //
-
   
   Control.addVariable(monoKey+"MonoBoxNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(7.5);

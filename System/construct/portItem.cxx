@@ -519,7 +519,6 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
-
   AIndex=0;
   BIndex=0;
   // no point checking first value
@@ -580,10 +579,10 @@ portItem::constructTrack(Simulation& System)
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();
- 
+
+  
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
-
   size_t AIndex,BIndex;
 
   calcBoundaryCrossing(System,LT,AIndex,BIndex);

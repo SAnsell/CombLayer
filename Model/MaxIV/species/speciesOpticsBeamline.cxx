@@ -501,11 +501,13 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   offPipeA->createAll(System,initFC,sideIndex);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
   offPipeA->insertInCell(System,outerCell);
-  
+
+  // FAKE insertcell: required
+  monoVessel->addInsertCell(masterCell->getName());
   monoVessel->createAll(System,*offPipeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
-
+  
   monoXtal->addInsertCell(monoVessel->getCell("Void"));
   monoXtal->createAll(System,*monoVessel,0);
 

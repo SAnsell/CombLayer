@@ -84,8 +84,10 @@ class TankMonoVessel :
   /// Vector of ports FixedComp
   std::vector<constructSystem::portItem> Ports;  
 
-  int voidMat;                ///< void material
+  int voidMat;                  ///< void material
   int wallMat;                  ///< Fe material layer
+
+  bool delayPortBuild;        ///< Delay port to manual construct
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -99,6 +101,10 @@ class TankMonoVessel :
   TankMonoVessel(const TankMonoVessel&);
   TankMonoVessel& operator=(const TankMonoVessel&);
   virtual ~TankMonoVessel();
+
+  /// Set a port delay
+  void delayPorts() { delayPortBuild=1; }
+  void createPorts(Simulation&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -83,7 +83,7 @@ class PipeTube :
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
 
-    /// Set a port delay
+  /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
   int splitVoidPorts(Simulation&,const std::string&,
 		     const int,const int);
