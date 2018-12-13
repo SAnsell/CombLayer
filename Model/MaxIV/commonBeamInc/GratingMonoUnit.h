@@ -43,16 +43,16 @@ class GratingMonoUnit :
 {
  private:
 
-  double grateTheta;             ///< Theta angle for grateing
+  double grateTheta;        ///< Theta angle for grating
 
   double gWidth;            ///< Radius of from centre
   double gThick;            ///< Radius of detector
   double gLength;           ///< Outer wall thickness
 
   double mainGap;           ///< Void gap between bars
-  double mainBarXLen;
-  double mainBarDepth;
-  double mainBarYWidth;      ///< Size in main ba
+  double mainBarXLen;       ///< X length of bars (to side support)
+  double mainBarDepth;      ///< Depth Z direction
+  double mainBarYWidth;     ///< Bar extent in beam direction
 
   double slidePlateThick;
   double slidePlateLength;

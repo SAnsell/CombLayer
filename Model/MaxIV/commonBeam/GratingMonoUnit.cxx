@@ -105,24 +105,24 @@ GratingMonoUnit::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("GratingMonoUnit","populate");
 
   FixedOffset::populate(Control);
-
-   grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
-   gWidth=Control.EvalVar<double>(keyName+"GWidth");
-   gThick=Control.EvalVar<double>(keyName+"GThick");
-   gLength=Control.EvalVar<double>(keyName+"GLength");
-
-   mainGap=Control.EvalVar<double>(keyName+"MainGap");
-   mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
-   mainBarDepth=Control.EvalVar<double>(keyName+"MainBarDepth");
-   mainBarYWidth=Control.EvalVar<double>(keyName+"MainBarYWidth");
-
-   slidePlateThick=Control.EvalVar<double>(keyName+"SlidePlateThick");
-   slidePlateLength=Control.EvalVar<double>(keyName+"SlidePlateLength");
-   slidePlateGapWidth=Control.EvalVar<double>(keyName+"SlidePlateGapWidth");
-   slidePlateGapLength=Control.EvalVar<double>(keyName+"SlidePlateGapLength");
-
-   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-   slideMat=ModelSupport::EvalMat<int>(Control,keyName+"SlideMat");
+  
+  grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
+  gWidth=Control.EvalVar<double>(keyName+"GWidth");
+  gThick=Control.EvalVar<double>(keyName+"GThick");
+  gLength=Control.EvalVar<double>(keyName+"GLength");
+  
+  mainGap=Control.EvalVar<double>(keyName+"MainGap");
+  mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
+  mainBarDepth=Control.EvalVar<double>(keyName+"MainBarDepth");
+  mainBarYWidth=Control.EvalVar<double>(keyName+"MainBarYWidth");
+  
+  slidePlateThick=Control.EvalVar<double>(keyName+"SlidePlateThick");
+  slidePlateLength=Control.EvalVar<double>(keyName+"SlidePlateLength");
+  slidePlateGapWidth=Control.EvalVar<double>(keyName+"SlidePlateGapWidth");
+  slidePlateGapLength=Control.EvalVar<double>(keyName+"SlidePlateGapLength");
+  
+  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  slideMat=ModelSupport::EvalMat<int>(Control,keyName+"SlideMat");
 
 
   return;
@@ -152,7 +152,22 @@ GratingMonoUnit::createSurfaces()
 {
   ELog::RegMethod RegA("GratingMonoUnit","createSurfaces");
 
-   
+
+  // Front Bar:
+  ModelSupport::buildPlane(SMap,buildIndex+1,
+			   Origin-Y*(mainGap/2.0+mainbarYWidth));
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin-Y*(mainGap/2.0));
+
+
+  
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(gLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(gWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(gWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*gThick,Z);
+
+
+  
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(gLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(gLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(gWidth/2.0),X);
