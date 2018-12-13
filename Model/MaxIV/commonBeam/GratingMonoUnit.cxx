@@ -70,7 +70,9 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "ContainedComp.h"
+#include "GrateHolder.h"
 #include "GratingMonoUnit.h"
 
 
@@ -80,7 +82,13 @@ namespace xraySystem
 GratingMonoUnit::GratingMonoUnit(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,8),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  grateArray({
+        std::make_shared<xraySystem::GrateHolder>(keyName+"Grate0"),
+	std::make_shared<xraySystem::GrateHolder>(keyName+"Grate1"),
+	std::make_shared<xraySystem::GrateHolder>(keyName+"Grate2")})
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -107,9 +115,6 @@ GratingMonoUnit::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   
   grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
-  gWidth=Control.EvalVar<double>(keyName+"GWidth");
-  gThick=Control.EvalVar<double>(keyName+"GThick");
-  gLength=Control.EvalVar<double>(keyName+"GLength");
   
   mainGap=Control.EvalVar<double>(keyName+"MainGap");
   mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
@@ -152,28 +157,22 @@ GratingMonoUnit::createSurfaces()
 {
   ELog::RegMethod RegA("GratingMonoUnit","createSurfaces");
 
+  setCutSurf("innerFront",grateArray[0]->getSurf("Front"));
+  setCutSurf("innerBack",grateArray[0]->getSurf("Back"));
+  setCutSurf("innerLeft",grateArray[0]->getSurf("Left"));
+  setCutSurf("innerRight",grateArray[2]->getSurf("Right"));
 
-  // Front Bar:
-  ModelSupport::buildPlane(SMap,buildIndex+1,
-			   Origin-Y*(mainGap/2.0+mainbarYWidth));
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin-Y*(mainGap/2.0));
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerFront",buildIndex+101,-1,-Y,mainBarYWidth);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerBack",buildIndex+201,-1,Y,mainBarYWidth);
 
-
-  
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(gLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(gWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(gWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+205,Origin,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*gThick,Z);
-
-
-  
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(gLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(gLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(gWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(gWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+205,Origin,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*gThick,Z);
+ 
+  // bar common:
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(mainBarXLen/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(mainBarXLen/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(mainBarDepth),Z);
 
   return; 
 }
@@ -181,22 +180,36 @@ GratingMonoUnit::createSurfaces()
 void
 GratingMonoUnit::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the mono unit
     \param System :: Simulation to add results
    */
 {
   ELog::RegMethod RegA("GratingMonoUnit","createObjects");
 
+  const std::string front=getComplementStr("innerFront");
+  const std::string back=getComplementStr("innerBack");
   std::string Out;
-  // xstal A
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 101 -102 103 -104 105 -106 ");
-  makeCell("XtalA",System,cellIndex++,0,0.0,Out);
+  ELog::EM<<"Front == "<<front<<ELog::endDiag;
+  ELog::EM<<"Back  == "<<back<<ELog::endDiag;
+  ELog::EM<<"FR == "<<SMap.realSurf(buildIndex+101)<<Elog::endDiag;
+  // main bars
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 3 -4 5 -6 ");
+  makeCell("FBar",System,cellIndex++,mainMat,0.0,Out + front);
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 201 -202 203 -204 205 -206 ");
-  makeCell("XtalB",System,cellIndex++,0,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -201 3 -4 5 -6 ");
+  makeCell("BBar",System,cellIndex++,mainMat,0.0,Out + back);
   addOuterUnionSurf(Out);
+
+  //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
+  //  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
+
+  // support:
+ 
+  // Out=ModelSupport::getComposite(SMap,buildIndex,"101 -202 3 -4 5 -6");
+  // addOuterSurf(Out);
+
+
   
   return; 
 }
@@ -210,13 +223,13 @@ GratingMonoUnit::createLinks()
   ELog::RegMethod RegA("GratingMonoUnit","createLinks");
 
 
-  // top surface going back down beamline to ring
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
+  // // top surface going back down beamline to ring
+  // FixedComp::setConnect(0,Origin,-Y);
+  // FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
 
-  // top surface going to experimental area
-  FixedComp::setConnect(1,Origin,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+205));
+  // // top surface going to experimental area
+  // FixedComp::setConnect(1,Origin,Y);
+  // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+205));
 
   return;
 }
@@ -233,6 +246,11 @@ GratingMonoUnit::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("GratingMonoUnit","createAll");
+
+  /// insert later
+  for(size_t i=0;i<3;i++)
+    grateArray[i]->createAll(System,FC,sideIndex);
+  
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
@@ -241,6 +259,7 @@ GratingMonoUnit::createAll(Simulation& System,
   createLinks();
   insertObjects(System);       
 
+  
   return;
 }
 

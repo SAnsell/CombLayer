@@ -55,6 +55,7 @@ namespace xraySystem
   class OpticsHutch;
   class GrateMonoBox;
   class GratingMono;
+  class GratingMonoUnit;
   class BeamMount;
   class Mirror;
   class PipeShield;
@@ -123,6 +124,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
   /// Mono Crystals
   std::shared_ptr<xraySystem::GratingMono> monoXtal;
+  /// Grating
+  std::shared_ptr<xraySystem::GratingMonoUnit> grating;
   /// Offset pipe leaving MonoTube
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Bellow leaving Mono

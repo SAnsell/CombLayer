@@ -57,12 +57,15 @@ namespace setVariable
 {
 
 GratingMonoUnitGenerator::GratingMonoUnitGenerator() :
-  grateTheta(0.0),gWidth(4.0),gThick(2.0),gLength(12.0),
+  gWidth(4.0),gThick(2.0),gLength(12.0),
   mainGap(12.5),mainBarXLen(36.0),mainBarDepth(6.0),
   mainBarYWidth(2.0),
   slidePlateThick(1.0),slidePlateLength(16.5),
-  slidePlateGapWidth(4.0),slidePlateGapLength(1.0)
-  mainMat("Stainless304"),slideMat("Aluminium")
+  slidePlateGapWidth(4.0),slidePlateGapLength(1.0),
+  sideThick(2.0),sideHeight(3.0),endWidth(3.0),
+  endHeight(10.0),endThick(3.0),
+  xstalMat("Silicon80K"), mainMat("Stainless304"),
+  slideMat("Aluminium")
  /*!
     Constructor and defaults
   */
@@ -89,6 +92,28 @@ GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("GratingMonoUnitGenerator","generateBox");
+
+  for(size_t i=0;i<3;i++)
+    {
+      const std::string GKey=keyName+"Grate"+std::to_string(i);
+
+
+      Control.addVariable(GKey+"XStep",
+			  static_cast<double>(i)*(sideThick*3.0+gWidth));
+      Control.addVariable(GKey+"Width",gWidth);
+      Control.addVariable(GKey+"Thick",gThick);
+      Control.addVariable(GKey+"Length",gLength);
+      
+      Control.addVariable(GKey+"SideThick",sideThick);
+      Control.addVariable(GKey+"SideHeight",sideHeight);
+
+      Control.addVariable(GKey+"EndWidth",endWidth);
+      Control.addVariable(GKey+"EndThick",endThick);
+      Control.addVariable(GKey+"EndHeight",endHeight);
+      Control.addVariable(GKey+"XstalMat",xstalMat);
+      Control.addVariable(GKey+"MainMat",mainMat);
+      Control.addVariable(GKey+"SideMat",slideMat);
+    }
   
   Control.addVariable(keyName+"YStep",yStep);
 
@@ -103,13 +128,13 @@ GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
   Control.addVariable(keyName+"MainBarDepth",mainBarDepth);
   Control.addVariable(keyName+"MainBarYWidth",mainBarYWidth);
 
-  Control.addVariable(keyName+"SlidePlateBarThick",slidePlateBarThick);
-  Control.addVariable(keyName+"SlidePlateBarLength",slidePlateBarLength);
+  Control.addVariable(keyName+"SlidePlateThick",slidePlateThick);
+  Control.addVariable(keyName+"SlidePlateLength",slidePlateLength);
   Control.addVariable(keyName+"SlidePlateGapWidth",slidePlateGapWidth);
   Control.addVariable(keyName+"SlidePlateGapLength",slidePlateGapLength);
 
-  Control.addVariable(keyName+"mainMat",mainMat);
-  Control.addVariable(keyName+"slideMat",slideMat);
+  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"SlideMat",slideMat);
        
   return;
 

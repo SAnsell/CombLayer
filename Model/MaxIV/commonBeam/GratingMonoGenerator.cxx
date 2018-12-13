@@ -92,6 +92,7 @@ GratingMonoGenerator::generateGrating(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("GratingMonoGenerator","generateBox");
+
   
   Control.addVariable(keyName+"YStep",yStep);
 

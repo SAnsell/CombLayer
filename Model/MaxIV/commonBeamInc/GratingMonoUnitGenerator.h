@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GratingMonoUnit.h
-*
+ * File:   commonBeamInc/GratingMonoUnitGenerator.h
+ *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,36 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_GratingMonoUnit_h
-#define xraySystem_GratingMonoUnit_h
+#ifndef setVariable_GratingMonoUnitGenerator_h
+#define setVariable_GratingMonoUnitGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace xraySystem
+namespace setVariable
 {
-  class GrateHolder;
 
 /*!
-  \class GratingMonoUnit
-  \author S. Ansell
+  \class GratingMonoUnitGenerator
   \version 1.0
-  \date September 2018
-  \brief Paired Mono-crystal mirror constant exit gap
+  \author S. Ansell
+  \date July 2018
+  \brief GratingMonoUnitGenerator for variables
 */
 
-class GratingMonoUnit :
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class GratingMonoUnitGenerator
 {
  private:
-
-  double grateTheta;        ///< Theta angle for grating
-
-  std::array<std::shared_ptr<GrateHolder>,3> grateArray;
   
+    
+  double gWidth;            ///< Radius of from centre
+  double gThick;            ///< Radius of detector
+  double gLength;           ///< Outer wall thickness
+
   double mainGap;           ///< Void gap between bars
   double mainBarXLen;       ///< X length of bars (to side support)
   double mainBarDepth;      ///< Depth Z direction
@@ -59,30 +54,29 @@ class GratingMonoUnit :
   double slidePlateGapWidth;
   double slidePlateGapLength;  
 
-  int mainMat;            ///< Main metal
-  int slideMat;           ///< slide material
+  double sideThick;
+  double sideHeight;
+
+  double endWidth;
+  double endHeight;
+  double endThick;
   
-  // Functions:
+  std::string xstalMat;            ///< Xtal metal
+  std::string mainMat;            ///< Main metal
+  std::string slideMat;           ///< slide material
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
 
  public:
 
-  GratingMonoUnit(const std::string&);
-  GratingMonoUnit(const GratingMonoUnit&);
-  GratingMonoUnit& operator=(const GratingMonoUnit&);
-  virtual ~GratingMonoUnit();
+  GratingMonoUnitGenerator();
+  GratingMonoUnitGenerator(const GratingMonoUnitGenerator&);
+  GratingMonoUnitGenerator& operator=(const GratingMonoUnitGenerator&);
+  ~GratingMonoUnitGenerator();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
-  
+
+  void generateGrating(FuncDataBase&,const std::string&,
+		       const double,const double) const;
+
 };
 
 }

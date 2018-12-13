@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GratingMonoUnit.h
+ * File:   maxpeemInc/GrateHolder.h
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,49 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_GratingMonoUnit_h
-#define xraySystem_GratingMonoUnit_h
+#ifndef xraySystem_GrateHolder_h
+#define xraySystem_GrateHolder_h
 
 class Simulation;
 
 namespace xraySystem
 {
-  class GrateHolder;
 
 /*!
-  \class GratingMonoUnit
+  \class GrateHolder
   \author S. Ansell
   \version 1.0
-  \date September 2018
-  \brief Paired Mono-crystal mirror constant exit gap
+  \date December 2018
+  \brief Grating and holder
 */
 
-class GratingMonoUnit :
+class GrateHolder :
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
 
-  double grateTheta;        ///< Theta angle for grating
+  double fullLength;        ///< Length + ends
+    
+  double gWidth;            ///< Radius of from centre
+  double gThick;            ///< Radius of detector
+  double gLength;           ///< Outer wall thickness
 
-  std::array<std::shared_ptr<GrateHolder>,3> grateArray;
   
-  double mainGap;           ///< Void gap between bars
-  double mainBarXLen;       ///< X length of bars (to side support)
-  double mainBarDepth;      ///< Depth Z direction
-  double mainBarYWidth;     ///< Bar extent in beam direction
+  double sideThick;         ///< Width of sides
+  double sideHeight;        ///< height of side
 
-  double slidePlateThick;
-  double slidePlateLength;
-  double slidePlateGapWidth;
-  double slidePlateGapLength;  
+  double endThick;           ///< end thick (y)
+  double endWidth;           ///< end widht (x)
+  double endHeight;         ///< end length
 
+  int xstalMat;           ///< slide material
   int mainMat;            ///< Main metal
-  int slideMat;           ///< slide material
-  
+  int sideMat;            ///< slide material
+
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -74,10 +73,10 @@ class GratingMonoUnit :
 
  public:
 
-  GratingMonoUnit(const std::string&);
-  GratingMonoUnit(const GratingMonoUnit&);
-  GratingMonoUnit& operator=(const GratingMonoUnit&);
-  virtual ~GratingMonoUnit();
+  GrateHolder(const std::string&);
+  GrateHolder(const GrateHolder&);
+  GrateHolder& operator=(const GrateHolder&);
+  virtual ~GrateHolder();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

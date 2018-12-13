@@ -98,6 +98,7 @@
 #include "BeamMount.h"
 #include "TankMonoVessel.h"
 #include "GratingMono.h"
+#include "GratingMonoUnit.h"
 #include "TwinPipe.h"
 #include "Mirror.h"
 #include "speciesOpticsBeamline.h"
@@ -137,6 +138,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
   monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
+  grating(new xraySystem::GratingMonoUnit(newName+"Grating")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
@@ -192,6 +194,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(offPipeA);
   OR.addObject(monoVessel);
   OR.addObject(monoXtal);
+  OR.addObject(grating);
   OR.addObject(offPipeB);
   OR.addObject(bellowD);
   OR.addObject(pipeE);
@@ -508,9 +511,15 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
   
-  monoXtal->addInsertCell(monoVessel->getCell("Void"));
-  monoXtal->createAll(System,*monoVessel,0);
+  //  monoXtal->addInsertCell(monoVessel->getCell("Void"));
+  //  monoXtal->createAll(System,*monoVessel,0);
 
+  grating->addInsertCell(monoVessel->getCell("Void"));
+  grating->createAll(System,*monoVessel,0);
+
+  
+
+  
   offPipeB->createAll(System,*monoVessel,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
   offPipeB->insertInCell(System,outerCell);

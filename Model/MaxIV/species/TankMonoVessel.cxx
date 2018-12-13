@@ -467,8 +467,6 @@ TankMonoVessel::createPorts(Simulation& System)
 
 
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
-      ELog::EM<<"DEA"<<ELog::endDiag;
-	    
       Ports[i].constructTrack(System);
     }
   return;
