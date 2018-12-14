@@ -151,7 +151,6 @@ GrateHolder::createSurfaces()
 {
   ELog::RegMethod RegA("GrateHolder","createSurfaces");
 
-
   // Outer
   ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(gLength/2.0+endThick),Y);
@@ -165,7 +164,6 @@ GrateHolder::createSurfaces()
   
 
   // end points
-  ELog::EM<<"End == "<<endWidth<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(endWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+24,
@@ -247,21 +245,27 @@ GrateHolder::createLinks()
 {
   ELog::RegMethod RegA("GrateHolder","createLinks");
 
-  // // top surface going back down beamline to ring
-  // FixedComp::setConnect(0,Origin,-Y);
-  // FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect(0,Origin-Y*(gLength/2.0+endThick),-Y);
+  FixedComp::setConnect(1,Origin+Y*(gLength/2.0+endThick),Y);
+  FixedComp::setConnect(2,Origin-X*(gWidth/2.0+sideThick),-X);
+  FixedComp::setConnect(3,Origin+X*(gWidth/2.0+sideThick),X);
+  FixedComp::setConnect(4,Origin,-Z);
+  FixedComp::setConnect(5,Origin+Z*endHeight,Z);
 
-  // // top surface going to experimental area
-  // FixedComp::setConnect(1,Origin,Y);
-  // FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+205));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
 
   return;
 }
 
 void
 GrateHolder::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC,
-			const long int sideIndex)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation

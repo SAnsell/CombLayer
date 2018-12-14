@@ -735,6 +735,8 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
   buildMono(System,masterCellA,*pipeD,2);
+  lastComp=bellowB;
+  return;
   buildM3Mirror(System,masterCellA,*offPipeB,2);
 
   MonteCarlo::Object* masterCellB(0);

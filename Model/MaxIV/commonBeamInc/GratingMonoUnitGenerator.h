@@ -49,10 +49,10 @@ class GratingMonoUnitGenerator
   double mainBarDepth;      ///< Depth Z direction
   double mainBarYWidth;     ///< Bar extent in beam direction
 
-  double slidePlateThick;
-  double slidePlateLength;
-  double slidePlateGapWidth;
-  double slidePlateGapLength;  
+  double slidePlateZGap;       ///< lift from the mirror surface
+  double slidePlateThick;      ///< slide bar
+  double slidePlateWidth;      ///< slide bar extra width 
+  double slidePlateLength;     ///< slide bar extra length
 
   double sideThick;
   double sideHeight;

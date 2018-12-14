@@ -171,7 +171,8 @@ SPECIES::build(Simulation& System,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r1Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
-
+  ELog::EM<<"Early return"<<ELog::endDiag;
+  return;
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
   
   std::vector<int> cells(opticsHut->getCells("Back"));

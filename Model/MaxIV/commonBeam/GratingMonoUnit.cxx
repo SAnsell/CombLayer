@@ -120,11 +120,11 @@ GratingMonoUnit::populate(const FuncDataBase& Control)
   mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
   mainBarDepth=Control.EvalVar<double>(keyName+"MainBarDepth");
   mainBarYWidth=Control.EvalVar<double>(keyName+"MainBarYWidth");
-  
+
+  slidePlateZGap=Control.EvalVar<double>(keyName+"SlidePlateZGap");
   slidePlateThick=Control.EvalVar<double>(keyName+"SlidePlateThick");
+  slidePlateWidth=Control.EvalVar<double>(keyName+"SlidePlateWidth");
   slidePlateLength=Control.EvalVar<double>(keyName+"SlidePlateLength");
-  slidePlateGapWidth=Control.EvalVar<double>(keyName+"SlidePlateGapWidth");
-  slidePlateGapLength=Control.EvalVar<double>(keyName+"SlidePlateGapLength");
   
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   slideMat=ModelSupport::EvalMat<int>(Control,keyName+"SlideMat");
@@ -157,22 +157,28 @@ GratingMonoUnit::createSurfaces()
 {
   ELog::RegMethod RegA("GratingMonoUnit","createSurfaces");
 
-  setCutSurf("innerFront",grateArray[0]->getSurf("Front"));
-  setCutSurf("innerBack",grateArray[0]->getSurf("Back"));
-  setCutSurf("innerLeft",grateArray[0]->getSurf("Left"));
-  setCutSurf("innerRight",grateArray[2]->getSurf("Right"));
+  //  setCutSurf("innerFront",grateArray[0]->getSurf("Front"));
+  //  setCutSurf("innerBack",grateArray[0]->getSurf("Back"));
+  setCutSurf("innerFront",*grateArray[0],-1);
+  setCutSurf("innerBack",*grateArray[0],-2);
+  setCutSurf("innerLeft",*grateArray[0],-3);
+  setCutSurf("innerRight",*grateArray[2],-4);
+  setCutSurf("innerBase",*grateArray[0],-5);
+  setCutSurf("innerTop",*grateArray[0],-6);
 
   ExternalCut::makeShiftedSurf
-    (SMap,"innerFront",buildIndex+101,-1,-Y,mainBarYWidth);
+    (SMap,"innerFront",buildIndex+101,1,Y,-slidePlateLength);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerBack",buildIndex+201,-1,Y,mainBarYWidth);
+    (SMap,"innerBack",buildIndex+201,-1,Y,-slidePlateLength);
 
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerLeft",buildIndex+3,1,X,-slidePlateWidth);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerRight",buildIndex+4,-1,X,-slidePlateWidth);
  
-  // bar common:
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(mainBarXLen/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(mainBarXLen/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(mainBarDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*slidePlateZGap,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,
+			   Origin+Z*(slidePlateZGap+slidePlateThick),Z);
 
   return; 
 }
@@ -186,21 +192,36 @@ GratingMonoUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GratingMonoUnit","createObjects");
 
-  const std::string front=getComplementStr("innerFront");
-  const std::string back=getComplementStr("innerBack");
-  std::string Out;
-  ELog::EM<<"Front == "<<front<<ELog::endDiag;
-  ELog::EM<<"Back  == "<<back<<ELog::endDiag;
-  ELog::EM<<"FR == "<<SMap.realSurf(buildIndex+101)<<Elog::endDiag;
-  // main bars
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 3 -4 5 -6 ");
-  makeCell("FBar",System,cellIndex++,mainMat,0.0,Out + front);
-  addOuterSurf(Out);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -201 3 -4 5 -6 ");
-  makeCell("BBar",System,cellIndex++,mainMat,0.0,Out + back);
-  addOuterUnionSurf(Out);
+  HeadRule innerHR=getRule("innerFront");
+  innerHR.addIntersection(getRule("innerBack"));
+  innerHR.addIntersection(getRule("innerLeft"));
+  innerHR.addIntersection(getRule("innerRight"));
 
+  HeadRule baseHR=getRule("innerBase");
+  HeadRule topHR=getRule("innerTop");
+  ELog::EM<<"To == "<<topHR.display()<<ELog::endDiag;
+  std::string Out;
+  
+
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,
+	   baseHR.display() + innerHR.display()+ topHR.display());
+  innerHR.makeComplement();
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -201 3 -4 5 -6 ");
+  makeCell("FBar",System,cellIndex++,mainMat,0.0,Out + innerHR.display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 6 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,
+	   Out+innerHR.display()+topHR.display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 -5 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,
+	   Out+innerHR.display()+baseHR.display());
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 ");
+  addOuterSurf(Out+baseHR.display()+topHR.display());
+  
+  
   //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
   //  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
 
@@ -250,6 +271,7 @@ GratingMonoUnit::createAll(Simulation& System,
   /// insert later
   for(size_t i=0;i<3;i++)
     grateArray[i]->createAll(System,FC,sideIndex);
+
   
   populate(System.getDataBase());
 
@@ -258,6 +280,13 @@ GratingMonoUnit::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);       
+
+  /// insert later
+  for(size_t i=0;i<3;i++)
+    {
+      ELog::EM<<"Cell == "<<getCell("InnerVoid")<<ELog::endDiag;
+      grateArray[i]->insertInCell(System,getCell("InnerVoid"));
+    }
 
   
   return;

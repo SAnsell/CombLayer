@@ -58,10 +58,10 @@ namespace setVariable
 
 GratingMonoUnitGenerator::GratingMonoUnitGenerator() :
   gWidth(4.0),gThick(2.0),gLength(12.0),
-  mainGap(12.5),mainBarXLen(36.0),mainBarDepth(6.0),
-  mainBarYWidth(2.0),
-  slidePlateThick(1.0),slidePlateLength(16.5),
-  slidePlateGapWidth(4.0),slidePlateGapLength(1.0),
+  mainGap(12.5),mainBarXLen(3.0),mainBarDepth(6.0),
+  mainBarYWidth(2.0),slidePlateZGap(1.0),
+  slidePlateThick(1.0),slidePlateLength(4.0),
+  slidePlateWidth(1.0),
   sideThick(2.0),sideHeight(3.0),endWidth(3.0),
   endHeight(10.0),endThick(3.0),
   xstalMat("Silicon80K"), mainMat("Stainless304"),
@@ -97,7 +97,6 @@ GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
     {
       const std::string GKey=keyName+"Grate"+std::to_string(i);
 
-
       Control.addVariable(GKey+"XStep",
 			  static_cast<double>(i)*(sideThick*3.0+gWidth));
       Control.addVariable(GKey+"Width",gWidth);
@@ -128,10 +127,11 @@ GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
   Control.addVariable(keyName+"MainBarDepth",mainBarDepth);
   Control.addVariable(keyName+"MainBarYWidth",mainBarYWidth);
 
+  Control.addVariable(keyName+"SlidePlateZGap",slidePlateZGap);
   Control.addVariable(keyName+"SlidePlateThick",slidePlateThick);
   Control.addVariable(keyName+"SlidePlateLength",slidePlateLength);
-  Control.addVariable(keyName+"SlidePlateGapWidth",slidePlateGapWidth);
-  Control.addVariable(keyName+"SlidePlateGapLength",slidePlateGapLength);
+  Control.addVariable(keyName+"SlidePlateWidth",slidePlateWidth);
+
 
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"SlideMat",slideMat);
