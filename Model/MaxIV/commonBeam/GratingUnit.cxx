@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/GratingMonoUnit.cxx
+ * File:   commonBeam/GratingUnit.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -67,21 +67,22 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "ContainedComp.h"
 #include "GrateHolder.h"
-#include "GratingMonoUnit.h"
+#include "GratingUnit.h"
 
 
 namespace xraySystem
 {
 
-GratingMonoUnit::GratingMonoUnit(const std::string& Key) :
+GratingUnit::GratingUnit(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -97,25 +98,26 @@ GratingMonoUnit::GratingMonoUnit(const std::string& Key) :
 {}
 
 
-GratingMonoUnit::~GratingMonoUnit()
+GratingUnit::~GratingUnit()
   /*!
     Destructor
    */
 {}
 
 void
-GratingMonoUnit::populate(const FuncDataBase& Control)
+GratingUnit::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("GratingMonoUnit","populate");
+  ELog::RegMethod RegA("GratingUnit","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
+
+  grateIndex=Control.EvalDefVar<int>(keyName+"GrateIndex",0);
   
   grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
-  
   mainGap=Control.EvalVar<double>(keyName+"MainGap");
   mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
   mainBarDepth=Control.EvalVar<double>(keyName+"MainBarDepth");
@@ -134,7 +136,7 @@ GratingMonoUnit::populate(const FuncDataBase& Control)
 }
 
 void
-GratingMonoUnit::createUnitVector(const attachSystem::FixedComp& FC,
+GratingUnit::createUnitVector(const attachSystem::FixedComp& FC,
 				  const long int sideIndex)
   /*!
     Create the unit vectors.
@@ -143,19 +145,22 @@ GratingMonoUnit::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: direction for link
   */
 {
-  ELog::RegMethod RegA("GratingMonoUnit","createUnitVector");
+  ELog::RegMethod RegA("GratingUnit","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
+  applyOffset();
+  // rotate about X axis
+  FixedComp::applyAngleRotate(grateTheta,0.0,0.0);
+  
   return;
 }
 
 void
-GratingMonoUnit::createSurfaces()
+GratingUnit::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
   */
 {
-  ELog::RegMethod RegA("GratingMonoUnit","createSurfaces");
+  ELog::RegMethod RegA("GratingUnit","createSurfaces");
 
   //  setCutSurf("innerFront",grateArray[0]->getSurf("Front"));
   //  setCutSurf("innerBack",grateArray[0]->getSurf("Back"));
@@ -165,6 +170,7 @@ GratingMonoUnit::createSurfaces()
   setCutSurf("innerRight",*grateArray[2],-4);
   setCutSurf("innerBase",*grateArray[0],-5);
   setCutSurf("innerTop",*grateArray[0],-6);
+
 
   ExternalCut::makeShiftedSurf
     (SMap,"innerFront",buildIndex+101,1,Y,-slidePlateLength);
@@ -180,28 +186,45 @@ GratingMonoUnit::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(slidePlateZGap+slidePlateThick),Z);
 
+  // Main support bars
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerFront",buildIndex+1001,1,Y,-mainBarYWidth);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerBack",buildIndex+1002,-1,Y,-mainBarYWidth);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(mainBarXLen/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(mainBarXLen/2.0),X);
+    
+  ModelSupport::buildPlane(SMap,buildIndex+1005,
+			   Origin+Z*(slidePlateZGap-mainBarDepth),Z);
+
+  
   return; 
 }
 
 void
-GratingMonoUnit::createObjects(Simulation& System)
+GratingUnit::createObjects(Simulation& System)
   /*!
     Create the mono unit
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("GratingMonoUnit","createObjects");
+  ELog::RegMethod RegA("GratingUnit","createObjects");
 
-  HeadRule innerHR=getRule("innerFront");
-  innerHR.addIntersection(getRule("innerBack"));
+  const HeadRule frontHR=getRule("innerFront");
+  const HeadRule frontOutHR=frontHR.complement();
+  const HeadRule backHR=getRule("innerBack");
+  const HeadRule backOutHR=backHR.complement();
+  const HeadRule baseHR=getRule("innerBase");
+  const HeadRule topHR=getRule("innerTop");
+
+  HeadRule innerHR(frontHR);
+  innerHR.addIntersection(backHR);
   innerHR.addIntersection(getRule("innerLeft"));
   innerHR.addIntersection(getRule("innerRight"));
 
-  HeadRule baseHR=getRule("innerBase");
-  HeadRule topHR=getRule("innerTop");
-  ELog::EM<<"To == "<<topHR.display()<<ELog::endDiag;
   std::string Out;
-  
+
 
   makeCell("InnerVoid",System,cellIndex++,0,0.0,
 	   baseHR.display() + innerHR.display()+ topHR.display());
@@ -210,19 +233,39 @@ GratingMonoUnit::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -201 3 -4 5 -6 ");
   makeCell("FBar",System,cellIndex++,mainMat,0.0,Out + innerHR.display());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -201 3 -4 6 ");
   makeCell("OuterVoid",System,cellIndex++,0,0.0,
 	   Out+innerHR.display()+topHR.display());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 -5 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,
-	   Out+innerHR.display()+baseHR.display());
+  // outer void on edges
+  HeadRule cutHR(getRule("innerLeft"));
+  cutHR.addIntersection(getRule("innerRight"));
+  cutHR.makeComplement();
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -5 ");
+  Out+=cutHR.display()+frontHR.display()+backHR.display()+baseHR.display();
 
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+
+  // support bars
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 1001  1003 -1004 1005 -5");
+  makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,Out+frontOutHR.display());
+  addOuterSurf(Out+frontOutHR.display());
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " -1002 1003 -1004 1005 -5");
+  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,Out+backOutHR.display());
+  addOuterUnionSurf(Out+backOutHR.display());
+
+  // inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 ");
-  addOuterSurf(Out+baseHR.display()+topHR.display());
+  addOuterUnionSurf(Out+baseHR.display()+topHR.display());
   
-  
-  //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
+
+    //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
   //  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
 
   // support:
@@ -236,12 +279,12 @@ GratingMonoUnit::createObjects(Simulation& System)
 }
 
 void
-GratingMonoUnit::createLinks()
+GratingUnit::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("GratingMonoUnit","createLinks");
+  ELog::RegMethod RegA("GratingUnit","createLinks");
 
 
   // // top surface going back down beamline to ring
@@ -256,7 +299,7 @@ GratingMonoUnit::createLinks()
 }
 
 void
-GratingMonoUnit::createAll(Simulation& System,
+GratingUnit::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
@@ -266,14 +309,17 @@ GratingMonoUnit::createAll(Simulation& System,
     \param sideIndex :: Side point
    */
 {
-  ELog::RegMethod RegA("GratingMonoUnit","createAll");
+  ELog::RegMethod RegA("GratingUnit","createAll");
 
+  populate(System.getDataBase());
   /// insert later
   for(size_t i=0;i<3;i++)
-    grateArray[i]->createAll(System,FC,sideIndex);
+    {
+      ELog::EM<<"Grate Index == "<<grateIndex<<ELog::endDiag;
+      grateArray[i]->setIndexPosition(static_cast<int>(i)-grateIndex);
+      grateArray[i]->createAll(System,FC,sideIndex);
+    }  
 
-  
-  populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
@@ -283,11 +329,8 @@ GratingMonoUnit::createAll(Simulation& System,
 
   /// insert later
   for(size_t i=0;i<3;i++)
-    {
-      ELog::EM<<"Cell == "<<getCell("InnerVoid")<<ELog::endDiag;
-      grateArray[i]->insertInCell(System,getCell("InnerVoid"));
-    }
-
+    grateArray[i]->insertInCell(System,getCell("InnerVoid"));
+  
   
   return;
 }

@@ -74,7 +74,7 @@
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "TankMonoVesselGenerator.h"
-#include "GratingMonoUnitGenerator.h"
+#include "GratingUnitGenerator.h"
 
 namespace setVariable
 {
@@ -448,7 +448,7 @@ monoVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::TankMonoVesselGenerator MBoxGen;
   setVariable::GratingMonoGenerator MXtalGen;
-  setVariable::GratingMonoUnitGenerator MUnitGen;
+  setVariable::GratingUnitGenerator MUnitGen;
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow(); 

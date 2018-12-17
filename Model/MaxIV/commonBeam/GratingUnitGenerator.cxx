@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/GratingMonoUnitGenerator.cxx
+ * File:   maxpeem/GratingUnitGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -51,15 +51,15 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "GratingMonoUnitGenerator.h"
+#include "GratingUnitGenerator.h"
 
 namespace setVariable
 {
 
-GratingMonoUnitGenerator::GratingMonoUnitGenerator() :
+GratingUnitGenerator::GratingUnitGenerator() :
   gWidth(4.0),gThick(2.0),gLength(12.0),
-  mainGap(12.5),mainBarXLen(3.0),mainBarDepth(6.0),
-  mainBarYWidth(2.0),slidePlateZGap(1.0),
+  mainGap(12.5),mainBarXLen(60.0),mainBarDepth(6.0),
+  mainBarYWidth(8.0),slidePlateZGap(1.0),
   slidePlateThick(1.0),slidePlateLength(4.0),
   slidePlateWidth(1.0),
   sideThick(2.0),sideHeight(3.0),endWidth(3.0),
@@ -72,14 +72,14 @@ GratingMonoUnitGenerator::GratingMonoUnitGenerator() :
 {}
 
   
-GratingMonoUnitGenerator::~GratingMonoUnitGenerator() 
+GratingUnitGenerator::~GratingUnitGenerator() 
  /*!
    Destructor
  */
 {}
 				  
 void
-GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
+GratingUnitGenerator::generateGrating(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const double yStep,
 				      const double angle) const
@@ -91,14 +91,12 @@ GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
     \param angle :: theta angle
   */
 {
-  ELog::RegMethod RegA("GratingMonoUnitGenerator","generateBox");
+  ELog::RegMethod RegA("GratingUnitGenerator","generateBox");
 
   for(size_t i=0;i<3;i++)
     {
       const std::string GKey=keyName+"Grate"+std::to_string(i);
-
-      Control.addVariable(GKey+"XStep",
-			  static_cast<double>(i)*(sideThick*3.0+gWidth));
+      
       Control.addVariable(GKey+"Width",gWidth);
       Control.addVariable(GKey+"Thick",gThick);
       Control.addVariable(GKey+"Length",gLength);
@@ -115,6 +113,7 @@ GratingMonoUnitGenerator::generateGrating(FuncDataBase& Control,
     }
   
   Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"GrateIndex",0);
 
   Control.addVariable(keyName+"GrateTheta",angle);
   

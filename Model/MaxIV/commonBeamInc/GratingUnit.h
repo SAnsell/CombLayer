@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GratingMonoUnit.h
+ * File:   commonBeamInc/GratingUnit.h
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_GratingMonoUnit_h
-#define xraySystem_GratingMonoUnit_h
+#ifndef xraySystem_GratingUnit_h
+#define xraySystem_GratingUnit_h
 
 class Simulation;
 
@@ -29,16 +29,16 @@ namespace xraySystem
   class GrateHolder;
 
 /*!
-  \class GratingMonoUnit
+  \class GratingUnit
   \author S. Ansell
   \version 1.0
   \date September 2018
   \brief Paired Mono-crystal mirror constant exit gap
 */
 
-class GratingMonoUnit :
+class GratingUnit :
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -46,6 +46,7 @@ class GratingMonoUnit :
  private:
 
   double grateTheta;        ///< Theta angle for grating
+  int grateIndex;           ///< Offset position of grating
 
   std::array<std::shared_ptr<GrateHolder>,3> grateArray;
   
@@ -75,10 +76,10 @@ class GratingMonoUnit :
 
  public:
 
-  GratingMonoUnit(const std::string&);
-  GratingMonoUnit(const GratingMonoUnit&);
-  GratingMonoUnit& operator=(const GratingMonoUnit&);
-  virtual ~GratingMonoUnit();
+  GratingUnit(const std::string&);
+  GratingUnit(const GratingUnit&);
+  GratingUnit& operator=(const GratingUnit&);
+  virtual ~GratingUnit();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

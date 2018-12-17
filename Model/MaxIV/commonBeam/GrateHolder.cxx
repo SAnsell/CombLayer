@@ -81,7 +81,8 @@ GrateHolder::GrateHolder(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,8),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  indexPoint(-100)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -106,8 +107,10 @@ GrateHolder::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("GrateHolder","populate");
 
   FixedOffset::populate(Control);
-  
+
+  indexPoint=Control.EvalDefVar<int>(keyName+"IndexPoint",indexPoint);  
   gWidth=Control.EvalVar<double>(keyName+"Width");
+  
   gThick=Control.EvalVar<double>(keyName+"Thick");
   gLength=Control.EvalVar<double>(keyName+"Length");
 
@@ -139,7 +142,15 @@ GrateHolder::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("GrateHolder","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
+  applyOffset();
+  if (indexPoint && indexPoint>-10)
+    {
+      ELog::EM<<"Shift == "<<indexPoint<<ELog::endDiag;
+      const double xShift=
+	static_cast<double>(indexPoint)*(sideThick*3.0+gWidth);
+      FixedComp::applyShift(-xShift,0,0);
+    }
+    
   return;
 }
 

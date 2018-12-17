@@ -98,7 +98,7 @@
 #include "BeamMount.h"
 #include "TankMonoVessel.h"
 #include "GratingMono.h"
-#include "GratingMonoUnit.h"
+#include "GratingUnit.h"
 #include "TwinPipe.h"
 #include "Mirror.h"
 #include "speciesOpticsBeamline.h"
@@ -138,7 +138,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
   monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
-  grating(new xraySystem::GratingMonoUnit(newName+"Grating")),
+  grating(new xraySystem::GratingUnit(newName+"Grating")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/GrateHolder.h
+ * File:   commonBeamInc/GrateHolder.h
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -43,6 +43,7 @@ class GrateHolder :
 {
  private:
 
+  int indexPoint;           ///< Extra X step for index shift
   double fullLength;        ///< Length + ends
     
   double gWidth;            ///< Radius of from centre
@@ -78,6 +79,8 @@ class GrateHolder :
   GrateHolder& operator=(const GrateHolder&);
   virtual ~GrateHolder();
 
+  /// Index Position
+  void setIndexPosition(const int I) { indexPoint=I; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

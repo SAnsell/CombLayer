@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/GratingMonoUnitGenerator.h
+ * File:   commonBeamInc/GratingUnitGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_GratingMonoUnitGenerator_h
-#define setVariable_GratingMonoUnitGenerator_h
+#ifndef setVariable_GratingUnitGenerator_h
+#define setVariable_GratingUnitGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class GratingMonoUnitGenerator
+  \class GratingUnitGenerator
   \version 1.0
   \author S. Ansell
   \date July 2018
-  \brief GratingMonoUnitGenerator for variables
+  \brief GratingUnitGenerator for variables
 */
 
-class GratingMonoUnitGenerator
+class GratingUnitGenerator
 {
  private:
   
@@ -68,10 +68,10 @@ class GratingMonoUnitGenerator
 
  public:
 
-  GratingMonoUnitGenerator();
-  GratingMonoUnitGenerator(const GratingMonoUnitGenerator&);
-  GratingMonoUnitGenerator& operator=(const GratingMonoUnitGenerator&);
-  ~GratingMonoUnitGenerator();
+  GratingUnitGenerator();
+  GratingUnitGenerator(const GratingUnitGenerator&);
+  GratingUnitGenerator& operator=(const GratingUnitGenerator&);
+  ~GratingUnitGenerator();
 
 
   void generateGrating(FuncDataBase&,const std::string&,
