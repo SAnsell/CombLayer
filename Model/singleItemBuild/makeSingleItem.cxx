@@ -79,6 +79,7 @@
 #include "insertObject.h"
 #include "insertPlate.h"
 #include "insertSphere.h"
+#include "insertCylinder.h"
 #include "insertShell.h"
 
 #include "Cryostat.h"
@@ -130,8 +131,8 @@ makeSingleItem::build(Simulation& System,
     Target(new insertSystem::insertSphere("Target"));
   std::shared_ptr<insertSystem::insertShell>
     Surround(new insertSystem::insertShell("Shield"));
-  std::shared_ptr<insertSystem::insertPlate>
-    Tube(new insertSystem::insertPlate("Tube"));
+  std::shared_ptr<insertSystem::insertCylinder>
+    Tube(new insertSystem::insertCylinder("Tube"));
 
   OR.addObject(Target);
   OR.addObject(Tube);

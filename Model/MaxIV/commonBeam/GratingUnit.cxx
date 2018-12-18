@@ -63,6 +63,7 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
+#include "polySupport.h"
 #include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -159,6 +160,54 @@ GratingUnit::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+Geometry::Vec3D
+GratingUnit::calcMirrorOffset(const double theta) const
+  /*!
+    Calculate the two lever arm motion of the mirror
+    Solve equation [quadratic] of form:
+
+    (c^2-1.0) y^2 + (2(G-A)c-2Hc)y + (G-A)^2-P^2-H^2c^2 = 0 
+    
+    t=tan(2theta)
+    c=cos(theta)
+    H=40.0
+    z0=40.0
+    G=3.2*t^2-H*c
+    L=22.25
+    P=22.25
+    A=19.05+L sin(theta)
+    \param theta :: Theta [primary angle in degrees]
+  */
+{
+  ELog::RegMethod RegA("GratingUnit","calcMirrorOffset");
+
+  const double t  = tan(2.0*M_PI*theta/180.0);
+  const double c  = cos(M_PI*theta/180.0);
+  const double H=40.0;
+  const double L=22.25;
+  const double P=22.25;
+  const double A=19.05+L*sin(M_PI*theta/180.0);
+  const double G=3.2*t-H*c;
+  
+  const double aCoeff=c*c-1.0;
+  const double bCoeff=2*(G-A)*c-2*H;
+
+  const double cCoeff=(G-A)*(G-A)-P*P+H*H*c*c;
+  std::pair<std::complex<double>,std::complex<double> > SQ;
+
+  // solve for z
+  const size_t ix=solveQuadratic(aCoeff,bCoeff,cCoeff,SQ);
+
+  ELog::EM<<"SQ == "<<SQ.first<<ELog::endDiag;
+  ELog::EM<<"SQ == "<<SQ.second<<ELog::endDiag;
+  // reduce to z' and y':
+  const double zReal=(SQ.first.real()>0.0) ? SQ.first.real() : SQ.second.real();
+  const double zShift=zReal-L;
+  const double yShift=G+c*zReal;
+  ELog::EM<<"Y == "<<yShift<<ELog::endDiag;
+  return Geometry::Vec3D(0,zShift,yShift);
+}
+
 void
 GratingUnit::createSurfaces()
   /*!
@@ -176,7 +225,6 @@ GratingUnit::createSurfaces()
   setCutSurf("innerBase",*grateArray[0],-5);
   setCutSurf("innerTop",*grateArray[0],-6);
 
-  ELog::EM<<"Theta == "<<grateTheta<<ELog::endDiag;
   // Rotate grating structure based on angle
   const Geometry::Quaternion QGX
     (Geometry::Quaternion::calcQRotDeg(grateTheta,X));
@@ -215,11 +263,14 @@ GratingUnit::createSurfaces()
 			   Origin+GZ*(slidePlateZGap-mainBarDepth),GZ);
 
 
-  // Compute the mirror centre
-  const double mAngle=std::min(std::abs(mirrorTheta),0.5);
-  const double mDist=zLift/tan(M_PI*mAngle/180.0);
+  // Compute the mirror centre [reflection double angle]
+  const double mAngle=std::max(std::abs(mirrorTheta),2.0);
+  const double mDist=zLift/tan(2.0*M_PI*mAngle/180.0); 
   const Geometry::Vec3D MCentre=Origin-Y*mDist-Z*zLift;
-
+  
+  calcMirrorOffset(0.0);
+  calcMirrorOffset(1.0);
+  return;
   const Geometry::Quaternion QMX
     (Geometry::Quaternion::calcQRotDeg(mirrorTheta,X));
   Geometry::Vec3D MX(X);

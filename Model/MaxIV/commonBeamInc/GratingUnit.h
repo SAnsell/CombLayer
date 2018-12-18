@@ -73,7 +73,8 @@ class GratingUnit :
   int slideMat;           ///< slide material
   
   // Functions:
-
+  Geometry::Vec3D calcMirrorOffset(const double) const;
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

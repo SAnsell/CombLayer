@@ -87,10 +87,12 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("ShieldMat","Stainless304");
 
   Control.addVariable("TubeYStep",10.0);
+  Control.addVariable("TubeRadius",5.0);
+  Control.addVariable("TubeLength",30.0);
   Control.addVariable("TubeDepth",10.0);
   Control.addVariable("TubeWidth",20.0);
   Control.addVariable("TubeHeight",20.0);
-  Control.addVariable("TubeMat","Void");
+  Control.addVariable("TubeMat","Stainless304");
   
   
 
