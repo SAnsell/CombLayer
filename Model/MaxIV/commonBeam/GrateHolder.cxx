@@ -145,10 +145,9 @@ GrateHolder::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   if (indexPoint && indexPoint>-10)
     {
-      ELog::EM<<"Shift == "<<indexPoint<<ELog::endDiag;
       const double xShift=
 	static_cast<double>(indexPoint)*(sideThick*3.0+gWidth);
-      FixedComp::applyShift(-xShift,0,0);
+      FixedComp::applyShift(xShift,0,0);
     }
     
   return;

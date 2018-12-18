@@ -115,8 +115,14 @@ GratingUnit::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  grateIndex=Control.EvalDefVar<int>(keyName+"GrateIndex",0);
+  zLift=Control.EvalVar<double>(keyName+"ZLift");
+
+  mirrorTheta=Control.EvalVar<double>(keyName+"MirrorTheta");
+  mWidth=Control.EvalVar<double>(keyName+"MirrorWidth");
+  mThick=Control.EvalVar<double>(keyName+"MirrorThick");
+  mLength=Control.EvalVar<double>(keyName+"MirrorLength");
   
+  grateIndex=Control.EvalDefVar<int>(keyName+"GrateIndex",0);
   grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
   mainGap=Control.EvalVar<double>(keyName+"MainGap");
   mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
@@ -127,7 +133,8 @@ GratingUnit::populate(const FuncDataBase& Control)
   slidePlateThick=Control.EvalVar<double>(keyName+"SlidePlateThick");
   slidePlateWidth=Control.EvalVar<double>(keyName+"SlidePlateWidth");
   slidePlateLength=Control.EvalVar<double>(keyName+"SlidePlateLength");
-  
+
+  mirrorMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   slideMat=ModelSupport::EvalMat<int>(Control,keyName+"SlideMat");
 
@@ -148,8 +155,6 @@ GratingUnit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("GratingUnit","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  // rotate about X axis
-  FixedComp::applyAngleRotate(grateTheta,0.0,0.0);
   
   return;
 }
@@ -171,34 +176,66 @@ GratingUnit::createSurfaces()
   setCutSurf("innerBase",*grateArray[0],-5);
   setCutSurf("innerTop",*grateArray[0],-6);
 
+  ELog::EM<<"Theta == "<<grateTheta<<ELog::endDiag;
+  // Rotate grating structure based on angle
+  const Geometry::Quaternion QGX
+    (Geometry::Quaternion::calcQRotDeg(grateTheta,X));
+  
+  Geometry::Vec3D GX(X);
+  Geometry::Vec3D GY(Y);
+  Geometry::Vec3D GZ(Z);
+  QGX.rotate(GY);
+  QGX.rotate(GZ);
+
+  
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerFront",buildIndex+101,1,GY,-slidePlateLength);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerBack",buildIndex+201,-1,GY,-slidePlateLength);
 
   ExternalCut::makeShiftedSurf
-    (SMap,"innerFront",buildIndex+101,1,Y,-slidePlateLength);
+    (SMap,"innerLeft",buildIndex+3,1,GX,-slidePlateWidth);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerBack",buildIndex+201,-1,Y,-slidePlateLength);
-
-  ExternalCut::makeShiftedSurf
-    (SMap,"innerLeft",buildIndex+3,1,X,-slidePlateWidth);
-  ExternalCut::makeShiftedSurf
-    (SMap,"innerRight",buildIndex+4,-1,X,-slidePlateWidth);
+    (SMap,"innerRight",buildIndex+4,-1,GX,-slidePlateWidth);
  
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+Z*slidePlateZGap,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin+GZ*slidePlateZGap,GZ);
   ModelSupport::buildPlane(SMap,buildIndex+6,
-			   Origin+Z*(slidePlateZGap+slidePlateThick),Z);
+			   Origin+GZ*(slidePlateZGap+slidePlateThick),GZ);
 
   // Main support bars
   ExternalCut::makeShiftedSurf
-    (SMap,"innerFront",buildIndex+1001,1,Y,-mainBarYWidth);
+    (SMap,"innerFront",buildIndex+1001,1,GY,-mainBarYWidth);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerBack",buildIndex+1002,-1,Y,-mainBarYWidth);
+    (SMap,"innerBack",buildIndex+1002,-1,GY,-mainBarYWidth);
   
-  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(mainBarXLen/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(mainBarXLen/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-GX*(mainBarXLen/2.0),GX);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+GX*(mainBarXLen/2.0),GX);
     
   ModelSupport::buildPlane(SMap,buildIndex+1005,
-			   Origin+Z*(slidePlateZGap-mainBarDepth),Z);
+			   Origin+GZ*(slidePlateZGap-mainBarDepth),GZ);
 
+
+  // Compute the mirror centre
+  const double mAngle=std::min(std::abs(mirrorTheta),0.5);
+  const double mDist=zLift/tan(M_PI*mAngle/180.0);
+  const Geometry::Vec3D MCentre=Origin-Y*mDist-Z*zLift;
+
+  const Geometry::Quaternion QMX
+    (Geometry::Quaternion::calcQRotDeg(mirrorTheta,X));
+  Geometry::Vec3D MX(X);
+  Geometry::Vec3D MY(Y);
+  Geometry::Vec3D MZ(Z);
+  QMX.rotate(MY);
+  QMX.rotate(MZ);
   
+  
+  ModelSupport::buildPlane(SMap,buildIndex+301,MCentre-MY*(mLength/2.0),MY);
+  ModelSupport::buildPlane(SMap,buildIndex+302,MCentre+MY*(mLength/2.0),MY);
+  ModelSupport::buildPlane(SMap,buildIndex+303,MCentre-MX*(mWidth/2.0),MX);
+  ModelSupport::buildPlane(SMap,buildIndex+304,MCentre+MX*(mWidth/2.0),MX);
+  ModelSupport::buildPlane(SMap,buildIndex+305,MCentre-MZ*mThick,MZ);
+  ModelSupport::buildPlane(SMap,buildIndex+306,MCentre,MZ);
+
   return; 
 }
 
@@ -220,13 +257,14 @@ GratingUnit::createObjects(Simulation& System)
 
   HeadRule innerHR(frontHR);
   innerHR.addIntersection(backHR);
+
   innerHR.addIntersection(getRule("innerLeft"));
   innerHR.addIntersection(getRule("innerRight"));
 
   std::string Out;
 
-
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 ");  
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+
 	   baseHR.display() + innerHR.display()+ topHR.display());
   innerHR.makeComplement();
 
@@ -247,7 +285,6 @@ GratingUnit::createObjects(Simulation& System)
 
   makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
 
-
   // support bars
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -263,9 +300,14 @@ GratingUnit::createObjects(Simulation& System)
   // inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 ");
   addOuterUnionSurf(Out+baseHR.display()+topHR.display());
-  
 
-    //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
+  return;
+  // Mirror:
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 301 -302 303 -304 305 -306 ");
+  makeCell("Mirror",System,cellIndex++,mirrorMat,0.0,Out);
+  addOuterUnionSurf(Out);  
+  //  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -201 3 -4 5 -6 ");
   //  makeCell("MidVoid",System,cellIndex++,0,0.0,Out);
 
   // support:
@@ -315,12 +357,11 @@ GratingUnit::createAll(Simulation& System,
   /// insert later
   for(size_t i=0;i<3;i++)
     {
-      ELog::EM<<"Grate Index == "<<grateIndex<<ELog::endDiag;
       grateArray[i]->setIndexPosition(static_cast<int>(i)-grateIndex);
+      grateArray[i]->setRotation(0.0,grateTheta);
       grateArray[i]->createAll(System,FC,sideIndex);
-    }  
-
-
+    }
+  
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);

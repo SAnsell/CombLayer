@@ -57,14 +57,15 @@ namespace setVariable
 {
 
 GratingUnitGenerator::GratingUnitGenerator() :
-  gWidth(4.0),gThick(2.0),gLength(12.0),
+  mirrorTheta(0.0),mWidth(11.0),mThick(4.0),mLength(56.0),
+  zLift(3.2),gWidth(4.0),gThick(2.0),gLength(12.0),
   mainGap(12.5),mainBarXLen(60.0),mainBarDepth(6.0),
   mainBarYWidth(8.0),slidePlateZGap(1.0),
   slidePlateThick(1.0),slidePlateLength(4.0),
   slidePlateWidth(1.0),
   sideThick(2.0),sideHeight(3.0),endWidth(3.0),
   endHeight(10.0),endThick(3.0),
-  xstalMat("Silicon80K"), mainMat("Stainless304"),
+  xstalMat("Silicon300K"), mainMat("Stainless304"),
   slideMat("Aluminium")
  /*!
     Constructor and defaults
@@ -113,6 +114,15 @@ GratingUnitGenerator::generateGrating(FuncDataBase& Control,
     }
   
   Control.addVariable(keyName+"YStep",yStep);
+
+
+  Control.addVariable(keyName+"MirrorTheta",mirrorTheta);
+  Control.addVariable(keyName+"MirrorWidth",mWidth);
+  Control.addVariable(keyName+"MirrorThick",mThick);
+  Control.addVariable(keyName+"MirrorLength",mLength);
+
+  Control.addVariable(keyName+"ZLift",zLift);
+  
   Control.addVariable(keyName+"GrateIndex",0);
 
   Control.addVariable(keyName+"GrateTheta",angle);
@@ -131,7 +141,7 @@ GratingUnitGenerator::generateGrating(FuncDataBase& Control,
   Control.addVariable(keyName+"SlidePlateLength",slidePlateLength);
   Control.addVariable(keyName+"SlidePlateWidth",slidePlateWidth);
 
-
+  Control.addVariable(keyName+"MirrorMat",xstalMat);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"SlideMat",slideMat);
        

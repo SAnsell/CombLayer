@@ -45,6 +45,13 @@ class GratingUnit :
 {
  private:
 
+  double zLift;             ///< Size of beam lift
+  
+  double mirrorTheta;        ///< Mirror angle
+  double mWidth;             ///< Mirror width
+  double mThick;             ///< Mirror thick
+  double mLength;            ///< Mirror length
+  
   double grateTheta;        ///< Theta angle for grating
   int grateIndex;           ///< Offset position of grating
 
@@ -61,6 +68,7 @@ class GratingUnit :
   double slidePlateLength;     ///< slide bar extra length
 
 
+  int mirrorMat;          ///< Mirror xstal
   int mainMat;            ///< Main metal
   int slideMat;           ///< slide material
   

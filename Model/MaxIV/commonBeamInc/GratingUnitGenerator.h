@@ -38,8 +38,15 @@ namespace setVariable
 class GratingUnitGenerator
 {
  private:
-  
-    
+
+  double mirrorTheta;       ///< Mirror angle [independent of grating]
+ 
+  double mWidth;            ///< Mirror width
+  double mThick;            ///< Mirror thick
+  double mLength;           ///< Mirror length
+
+  double zLift;             ///< Size of beam lift
+	
   double gWidth;            ///< Radius of from centre
   double gThick;            ///< Radius of detector
   double gLength;           ///< Outer wall thickness
@@ -61,7 +68,7 @@ class GratingUnitGenerator
   double endHeight;
   double endThick;
   
-  std::string xstalMat;            ///< Xtal metal
+  std::string xstalMat;           ///< Xtal material
   std::string mainMat;            ///< Main metal
   std::string slideMat;           ///< slide material
 
