@@ -52,6 +52,7 @@ class GratingUnitGenerator
   double gLength;           ///< Outer wall thickness
 
   double mainGap;           ///< Void gap between bars
+  double mainBarCut;       ///< Cut gap for beam to travel
   double mainBarXLen;       ///< X length of bars (to side support)
   double mainBarDepth;      ///< Depth Z direction
   double mainBarYWidth;     ///< Bar extent in beam direction

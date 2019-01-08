@@ -478,11 +478,10 @@ monoVariables(FuncDataBase& Control,
 			Geometry::Vec3D(0,5.0,10.0),
 			Geometry::Vec3D(1,0,0));
 
-
   // crystals
   MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
   // monounit
-  MUnitGen.generateGrating(Control,monoKey+"Grating",10.0,0.0);
+  MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,0.0);
   
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlange(17.8,1.0);
@@ -512,7 +511,6 @@ m3MirrorVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow(); 
-
   
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preKey+"BellowD",0,9.0);

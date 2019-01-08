@@ -515,6 +515,7 @@ speciesOpticsBeamline::buildMono(Simulation& System,
   //  monoXtal->createAll(System,*monoVessel,0);
 
   grating->addInsertCell(monoVessel->getCell("Void"));
+  grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   grating->createAll(System,*monoVessel,0);
 
   

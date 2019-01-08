@@ -280,6 +280,7 @@ TankMonoVessel::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,voidRadius);
+  setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
 
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,lidRadius);
@@ -445,7 +446,8 @@ TankMonoVessel::createLinks()
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
 
   ExternalCut::createLink("front",*this,0,ACentre,Y);
-  ExternalCut::createLink("back",*this,1,BCentre,-Y); 
+  ExternalCut::createLink("back",*this,1,BCentre,-Y);
+
   
   return;
 }
@@ -464,7 +466,6 @@ TankMonoVessel::createPorts(Simulation& System)
 
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
-
 
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System);

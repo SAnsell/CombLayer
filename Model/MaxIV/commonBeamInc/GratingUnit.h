@@ -45,6 +45,9 @@ class GratingUnit :
 {
  private:
 
+  double HArm;              ///< Rotation arm [flat]
+  double PArm;              ///< rotation arm [vertical]
+  
   double zLift;             ///< Size of beam lift
   
   double mirrorTheta;        ///< Mirror angle
@@ -58,6 +61,7 @@ class GratingUnit :
   std::array<std::shared_ptr<GrateHolder>,3> grateArray;
   
   double mainGap;           ///< Void gap between bars
+  double mainBarCut;        ///< Gap to allow beam
   double mainBarXLen;       ///< X length of bars (to side support)
   double mainBarDepth;      ///< Depth Z direction
   double mainBarYWidth;     ///< Bar extent in beam direction
@@ -72,8 +76,6 @@ class GratingUnit :
   int mainMat;            ///< Main metal
   int slideMat;           ///< slide material
   
-  // Functions:
-  Geometry::Vec3D calcMirrorOffset(const double) const;
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

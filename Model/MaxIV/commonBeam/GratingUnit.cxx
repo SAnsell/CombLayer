@@ -116,6 +116,9 @@ GratingUnit::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  HArm=Control.EvalDefVar<double>(keyName+"HArm",40.0);
+  PArm=Control.EvalDefVar<double>(keyName+"PArm",22.25);
+  
   zLift=Control.EvalVar<double>(keyName+"ZLift");
 
   mirrorTheta=Control.EvalVar<double>(keyName+"MirrorTheta");
@@ -126,6 +129,7 @@ GratingUnit::populate(const FuncDataBase& Control)
   grateIndex=Control.EvalDefVar<int>(keyName+"GrateIndex",0);
   grateTheta=Control.EvalVar<double>(keyName+"GrateTheta");
   mainGap=Control.EvalVar<double>(keyName+"MainGap");
+  mainBarCut=Control.EvalVar<double>(keyName+"MainBarCut");
   mainBarXLen=Control.EvalVar<double>(keyName+"MainBarXLen");
   mainBarDepth=Control.EvalVar<double>(keyName+"MainBarDepth");
   mainBarYWidth=Control.EvalVar<double>(keyName+"MainBarYWidth");
@@ -145,7 +149,7 @@ GratingUnit::populate(const FuncDataBase& Control)
 
 void
 GratingUnit::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors.
     Note that it also set the view point that neutrons come from
@@ -156,56 +160,8 @@ GratingUnit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("GratingUnit","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  
+  FixedComp::applyShift(0.0,HArm/2.0,zLift);
   return;
-}
-
-Geometry::Vec3D
-GratingUnit::calcMirrorOffset(const double theta) const
-  /*!
-    Calculate the two lever arm motion of the mirror
-    Solve equation [quadratic] of form:
-
-    (c^2-1.0) y^2 + (2(G-A)c-2Hc)y + (G-A)^2-P^2-H^2c^2 = 0 
-    
-    t=tan(2theta)
-    c=cos(theta)
-    H=40.0
-    z0=40.0
-    G=3.2*t^2-H*c
-    L=22.25
-    P=22.25
-    A=19.05+L sin(theta)
-    \param theta :: Theta [primary angle in degrees]
-  */
-{
-  ELog::RegMethod RegA("GratingUnit","calcMirrorOffset");
-
-  const double t  = tan(2.0*M_PI*theta/180.0);
-  const double c  = cos(M_PI*theta/180.0);
-  const double H=40.0;
-  const double L=22.25;
-  const double P=22.25;
-  const double A=19.05+L*sin(M_PI*theta/180.0);
-  const double G=3.2*t-H*c;
-  
-  const double aCoeff=c*c-1.0;
-  const double bCoeff=2*(G-A)*c-2*H;
-
-  const double cCoeff=(G-A)*(G-A)-P*P+H*H*c*c;
-  std::pair<std::complex<double>,std::complex<double> > SQ;
-
-  // solve for z
-  const size_t ix=solveQuadratic(aCoeff,bCoeff,cCoeff,SQ);
-
-  ELog::EM<<"SQ == "<<SQ.first<<ELog::endDiag;
-  ELog::EM<<"SQ == "<<SQ.second<<ELog::endDiag;
-  // reduce to z' and y':
-  const double zReal=(SQ.first.real()>0.0) ? SQ.first.real() : SQ.second.real();
-  const double zShift=zReal-L;
-  const double yShift=G+c*zReal;
-  ELog::EM<<"Y == "<<yShift<<ELog::endDiag;
-  return Geometry::Vec3D(0,zShift,yShift);
 }
 
 void
@@ -216,8 +172,6 @@ GratingUnit::createSurfaces()
 {
   ELog::RegMethod RegA("GratingUnit","createSurfaces");
 
-  //  setCutSurf("innerFront",grateArray[0]->getSurf("Front"));
-  //  setCutSurf("innerBack",grateArray[0]->getSurf("Back"));
   setCutSurf("innerFront",*grateArray[0],-1);
   setCutSurf("innerBack",*grateArray[0],-2);
   setCutSurf("innerLeft",*grateArray[0],-3);
@@ -258,19 +212,24 @@ GratingUnit::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-GX*(mainBarXLen/2.0),GX);
   ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+GX*(mainBarXLen/2.0),GX);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1013,Origin-GX*(mainBarCut/2.0),GX);
+  ModelSupport::buildPlane(SMap,buildIndex+1014,Origin+GX*(mainBarCut/2.0),GX);
     
   ModelSupport::buildPlane(SMap,buildIndex+1005,
 			   Origin+GZ*(slidePlateZGap-mainBarDepth),GZ);
 
 
   // Compute the mirror centre [reflection double angle]
-  const double mAngle=std::max(std::abs(mirrorTheta),2.0);
-  const double mDist=zLift/tan(2.0*M_PI*mAngle/180.0); 
-  const Geometry::Vec3D MCentre=Origin-Y*mDist-Z*zLift;
+
+  const double yZero(8.0);
+  const double G=sqrt(PArm*PArm+HArm*HArm);
+  const double alpha=std::atan(PArm/HArm);
   
-  calcMirrorOffset(0.0);
-  calcMirrorOffset(1.0);
-  return;
+  const double mAngle=std::max(std::abs(mirrorTheta),2.0)*M_PI/180.0;
+  const double deltaX=G*sin(alpha-mAngle);
+
+  const Geometry::Vec3D MCentre=Origin-Z*zLift-Y*(deltaX+yZero);
   const Geometry::Quaternion QMX
     (Geometry::Quaternion::calcQRotDeg(mirrorTheta,X));
   Geometry::Vec3D MX(X);
@@ -306,6 +265,8 @@ GratingUnit::createObjects(Simulation& System)
   const HeadRule baseHR=getRule("innerBase");
   const HeadRule topHR=getRule("innerTop");
 
+  const HeadRule cylinderHR=getRule("innerCylinder");
+  
   HeadRule innerHR(frontHR);
   innerHR.addIntersection(backHR);
 
@@ -338,21 +299,31 @@ GratingUnit::createObjects(Simulation& System)
 
   // support bars
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1001  1003 -1004 1005 -5");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1003 -1013 1005 -5");
   makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,Out+frontOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1013 -1014 1005 -5");
+  makeCell("OuterFBarVoid",System,cellIndex++,0,0.0,Out+frontOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1014 -1004 1005 -5");
+  makeCell("OuterFBar",System,cellIndex++,mainMat,0.0,Out+frontOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1001  1003 -1004 1005 -5");
   addOuterSurf(Out+frontOutHR.display());
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -1002 1003 -1004 1005 -5");
-  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,Out+backOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1003 -1013 1005 -5");
+  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,Out+
+	   cylinderHR.display()+backOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1013 -1014 1005 -5");
+  makeCell("OuterBBarVoid",System,cellIndex++,0,0.0,Out+backOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1014 -1004 1005 -5");
+  makeCell("OuterBBar",System,cellIndex++,mainMat,0.0,Out+
+  	   cylinderHR.display()+backOutHR.display());
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1002 1003 -1004 1005 -5");
   addOuterUnionSurf(Out+backOutHR.display());
 
   // inner
   Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -201 3 -4 ");
   addOuterUnionSurf(Out+baseHR.display()+topHR.display());
 
-  return;
+
   // Mirror:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 301 -302 303 -304 305 -306 ");
@@ -405,15 +376,17 @@ GratingUnit::createAll(Simulation& System,
   ELog::RegMethod RegA("GratingUnit","createAll");
 
   populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  
   /// insert later
   for(size_t i=0;i<3;i++)
     {
       grateArray[i]->setIndexPosition(static_cast<int>(i)-grateIndex);
       grateArray[i]->setRotation(0.0,grateTheta);
-      grateArray[i]->createAll(System,FC,sideIndex);
+      grateArray[i]->createAll(System,*this,0);
     }
   
-  createUnitVector(FC,sideIndex);
+
   createSurfaces();
   createObjects(System);
   createLinks();

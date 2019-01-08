@@ -132,14 +132,19 @@ makeSingleItem::build(Simulation& System,
   std::shared_ptr<insertSystem::insertShell>
     Surround(new insertSystem::insertShell("Shield"));
   std::shared_ptr<insertSystem::insertCylinder>
-    Tube(new insertSystem::insertCylinder("Tube"));
+    TubeA(new insertSystem::insertCylinder("TubeA"));
+  std::shared_ptr<insertSystem::insertCylinder>
+    TubeB(new insertSystem::insertCylinder("TubeB"));
 
   OR.addObject(Target);
-  OR.addObject(Tube);
+  OR.addObject(TubeA);
+  OR.addObject(TubeB);
   OR.addObject(Surround);
 
-  Tube->addInsertCell(voidCell);
-  Tube->createAll(System,World::masterOrigin(),0);
+  TubeA->addInsertCell(voidCell);
+  TubeA->createAll(System,World::masterOrigin(),0);
+  TubeB->addInsertCell(voidCell);
+  TubeB->createAll(System,*TubeA,2);
   
   
   return;
@@ -152,9 +157,9 @@ makeSingleItem::build(Simulation& System,
   Surround->addInsertCell(voidCell);
   Surround->createAll(System,World::masterOrigin(),0);
 
-  Tube->addInsertCell(voidCell);
-  Tube->addInsertCell(Surround->getCell("Main"));
-  Tube->createAll(System,World::masterOrigin(),0);
+  TubeA->addInsertCell(voidCell);
+  TubeA->addInsertCell(Surround->getCell("Main"));
+  TubeA->createAll(System,World::masterOrigin(),0);
 
 
   //  constructSystem::SingleChopper AS("singleChopper");

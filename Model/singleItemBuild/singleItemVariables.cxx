@@ -94,8 +94,13 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("TubeHeight",20.0);
   Control.addVariable("TubeMat","Stainless304");
   
+  Control.addVariable("TubeARadius",5.0);
+  Control.addVariable("TubeALength",25.0);
+  Control.addVariable("TubeBRadius",5.0);
+  Control.addVariable("TubeBLength",5.0);
+  Control.addVariable("TubeAMat","Stainless304");
+  Control.addVariable("TubeBMat","Lead");
   
-
   Control.addVariable("CryoBOuterRadius",20.0);
   
   Control.addVariable("CryoBNLayers",0);

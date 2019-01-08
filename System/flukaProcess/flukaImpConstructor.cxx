@@ -615,7 +615,6 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
   OX<<"wEMF help :: \n"
     " -- type : Mat/Cell : Values \n\n";
   OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL \n"
-      "    lpbbias[LeadParticleBias] - type e+/e-thresh photon-thresh  CELL \n"
       "    prodcut - e+/e-prod  gamma-prod  MAT \n"
       "    emffluo - [FLAG] turns off x-ray fluorescence MAT \n"
       "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT \n"
@@ -626,7 +625,7 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
       "    muphoton - [FLAG] mu-interaction MAT \n"  
       "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]\n"
       "    lpb - (e+/e-) top Energy for e/e+  : \n"
-      "               top Energy for photon \n"
+      "               top Energy for photon CELL \n"
       "    lambbrem - brem-bias weight (e+/e-) [0.0 - 1.0] : \n"
       "               number of collisions\n"
       "    lambemf - brem-bias-weight (e+/e-) [0.0 - 1.0] : \n"

@@ -59,10 +59,9 @@ namespace setVariable
 GratingUnitGenerator::GratingUnitGenerator() :
   mirrorTheta(0.0),mWidth(11.0),mThick(4.0),mLength(56.0),
   zLift(3.2),gWidth(4.0),gThick(2.0),gLength(12.0),
-  mainGap(12.5),mainBarXLen(60.0),mainBarDepth(6.0),
+  mainGap(12.5),mainBarCut(4.0),mainBarXLen(60.0),mainBarDepth(3.0),
   mainBarYWidth(8.0),slidePlateZGap(1.0),
-  slidePlateThick(1.0),slidePlateLength(4.0),
-  slidePlateWidth(1.0),
+  slidePlateThick(1.0),slidePlateWidth(1.0),slidePlateLength(4.0),
   sideThick(2.0),sideHeight(3.0),endWidth(3.0),
   endHeight(10.0),endThick(3.0),
   xstalMat("Silicon300K"), mainMat("Stainless304"),
@@ -133,6 +132,7 @@ GratingUnitGenerator::generateGrating(FuncDataBase& Control,
 
   Control.addVariable(keyName+"MainGap",mainGap);
   Control.addVariable(keyName+"MainBarXLen",mainBarXLen);
+  Control.addVariable(keyName+"MainBarCut",mainBarCut);
   Control.addVariable(keyName+"MainBarDepth",mainBarDepth);
   Control.addVariable(keyName+"MainBarYWidth",mainBarYWidth);
 
