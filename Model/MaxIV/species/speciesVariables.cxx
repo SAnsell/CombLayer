@@ -353,6 +353,13 @@ m1MirrorVariables(FuncDataBase& Control,
   // ystep : wing
   ShieldGen.generateShield(Control,mirrorKey+"ScreenA",0.0,0.0);
 
+  // Extra lead brick
+  Control.addVariable(mirrorKey+"LeadBrickXStep",12.0);
+  Control.addVariable(mirrorKey+"LeadBrickWidth",5.0);
+  Control.addVariable(mirrorKey+"LeadBrickHeight",5.0);
+  Control.addVariable(mirrorKey+"LeadBrickDepth",8.0);
+  Control.addVariable(mirrorKey+"LeadBrickMat","Lead");
+    
 
   return;
 }

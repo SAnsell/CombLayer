@@ -106,6 +106,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   /// First screen
   std::shared_ptr<xraySystem::PipeShield> screenA;
+  /// First screen
+  std::shared_ptr<insertSystem::insertPlate> leadBrick;
   /// Gate valve [after screen]
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// Small Pipe to slit section

@@ -125,6 +125,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
+  leadBrick(new insertSystem::insertPlate(newName+"LeadBrick")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
@@ -186,6 +187,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(pipeB);
   OR.addObject(screenA);
+  OR.addObject(leadBrick);
   OR.addObject(gateA);
   OR.addObject(pipeC);
   OR.addObject(slitTube);
@@ -412,7 +414,12 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
   screenA->addAllInsertCell(outerCell);
   screenA->setCutSurf("inner",*pipeB,"pipeOuterTop");
   screenA->createAll(System,*pipeB,0);
-    
+
+  leadBrick->addInsertCell(outerCell);
+  ELog::EM<<"O == "<<screenA->getLinkPt(1)<<ELog::endDiag;
+  ELog::EM<<"O == "<<screenA->getLinkPt(2)<<ELog::endDiag;
+  ELog::EM<<"Y == "<<screenA->getLinkAxis(2)<<ELog::endDiag;
+  leadBrick->createAll(System,*screenA,2);
   return;
 }
 
