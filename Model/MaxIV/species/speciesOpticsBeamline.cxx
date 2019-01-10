@@ -726,7 +726,7 @@ speciesOpticsBeamline::addLeadBrick(Simulation& System)
   leadBrick->createAll(System,*screenA,2);
   //  screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
   //  screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
-  return
+  return;
 }
 
 void
