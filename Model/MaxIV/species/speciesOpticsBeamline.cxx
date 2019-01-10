@@ -415,11 +415,6 @@ speciesOpticsBeamline::buildM1Mirror(Simulation& System,
   screenA->setCutSurf("inner",*pipeB,"pipeOuterTop");
   screenA->createAll(System,*pipeB,0);
 
-  leadBrick->addInsertCell(outerCell);
-  ELog::EM<<"O == "<<screenA->getLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"O == "<<screenA->getLinkPt(2)<<ELog::endDiag;
-  ELog::EM<<"Y == "<<screenA->getLinkAxis(2)<<ELog::endDiag;
-  leadBrick->createAll(System,*screenA,2);
   return;
 }
 
@@ -717,6 +712,22 @@ speciesOpticsBeamline::buildOutGoingPipes(Simulation& System,
   return;
 }
 
+void
+speciesOpticsBeamline::addLeadBrick(Simulation& System)
+  /*!
+    Build lead brick additon
+    point.
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("speciesOpticsBeamline","addLeadBrick");
+  
+  leadBrick->addInsertCell();
+  leadBrick->createAll(System,*screenA,2);
+  //  screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
+  //  screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
+  return
+}
 
 void
 speciesOpticsBeamline::buildObjects(Simulation& System)
@@ -736,6 +747,8 @@ speciesOpticsBeamline::buildObjects(Simulation& System)
   buildFrontTable(System,masterCellA,*this,0);
   buildM1Mirror(System,masterCellA,*bellowB,2);
   buildSlitPackage(System,masterCellA,*pipeB,2);
+  addLeadBrick(System);
+  
   buildMono(System,masterCellA,*pipeD,2);
 
   buildM3Mirror(System,masterCellA,*offPipeB,2);

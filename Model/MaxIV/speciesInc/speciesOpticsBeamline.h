@@ -214,6 +214,8 @@ class speciesOpticsBeamline :
   std::pair<MonteCarlo::Object*,MonteCarlo::Object*>
     buildSplitter(Simulation&,MonteCarlo::Object*,
 		  const attachSystem::FixedComp&,const long int);
+
+  void addLeadBrick(Simulation&);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -219,6 +219,7 @@ insertPlate::createLinks()
     {
       FixedComp::setLinkSurf(1,getBackRule());
       FixedComp::setBridgeSurf(1,getBackBridgeRule());
+      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
       FixedComp::setConnect
         (1,SurInter::getLinePoint(Origin,Y,getBackRule(),
 				  getBackBridgeRule()),Y);  
@@ -227,6 +228,7 @@ insertPlate::createLinks()
     {
       FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+      ELog::EM<<"YY == "<<Y<<ELog::endDiag;
     }
   
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
