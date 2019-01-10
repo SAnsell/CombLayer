@@ -355,7 +355,7 @@ m1MirrorVariables(FuncDataBase& Control,
 
   // Extra lead brick
   Control.addVariable(mirrorKey+"LeadBrickXStep",12.0);
-  Control.addVariable(mirrorKey+"LeadBrickXStep",4.0);  // half depth
+  Control.addVariable(mirrorKey+"LeadBrickYStep",4.0);  // half depth
   Control.addVariable(mirrorKey+"LeadBrickWidth",5.0);
   Control.addVariable(mirrorKey+"LeadBrickHeight",5.0);
   Control.addVariable(mirrorKey+"LeadBrickDepth",8.0);

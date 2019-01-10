@@ -252,7 +252,7 @@ InnerZone::createOuterVoidUnit(Simulation& System,
     \return cell nubmer
   */
 {
-  ELog::RegMethod RegA("InnerZone","createOuterVoidUnit");
+  ELog::RegMethod RegA("InnerZone","createOuterVoidUnit(HR)");
 
     // construct an cell based on previous cell:
   std::string Out;
@@ -294,8 +294,53 @@ InnerZone::createOuterVoidUnit(Simulation& System,
   return createOuterVoidUnit(System,masterCell,frontDivider,FC,sideIndex);
 }
 
+int
+InnerZone::createNamedOuterVoidUnit(Simulation& System,
+				    const std::string& extraName,
+				    MonteCarlo::Object* masterCell,
+				    HeadRule& FDivider,
+				    const attachSystem::FixedComp& FC,
+				    const long int sideIndex)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param extraName :: Name for outer void [in-addition to OuterVoid]
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createNamedOuterVoidUnit(HR)");
+  const int cellN=
+    createOuterVoidUnit(System,masterCell,FDivider,FC,sideIndex);
+  CellPtr->addCell(extraName,cellN);
+  return cellN;
+}
 
-
+int
+InnerZone::createNamedOuterVoidUnit(Simulation& System,
+				    const std::string& extraName,
+				    MonteCarlo::Object* masterCell,
+				    const attachSystem::FixedComp& FC,
+				    const long int sideIndex)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param extraName :: Name for outer void [in-addition to OuterVoid]
+    \param masterCell :: full master cell
+    \param FC :: FixedComp
+    \param sideIndex :: link point
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createNamedOuterVoidUnit");
+  const int cellN=
+    createOuterVoidUnit(System,masterCell,frontDivider,FC,sideIndex);
+  CellPtr->addCell(extraName,cellN);
+  return cellN;
+}
   
 void
 InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,

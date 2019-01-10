@@ -437,11 +437,13 @@ speciesOpticsBeamline::buildSlitPackage(Simulation& System,
   int outerCell;
   
   gateA->createAll(System,initFC,sideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  outerCell=buildZone.createNamedOuterVoidUnit
+    (System,"GateAOuterVoid",masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
   pipeC->createAll(System,*gateA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
+  outerCell=buildZone.createNamedOuterVoidUnit
+    (System,"PipeCOuterVoid",masterCell,*pipeC,2);
   pipeC->insertInCell(System,outerCell);
 
   // FAKE insertcell: required
@@ -721,8 +723,9 @@ speciesOpticsBeamline::addLeadBrick(Simulation& System)
   */
 {
   ELog::RegMethod RegA("speciesOpticsBeamline","addLeadBrick");
-  
-  leadBrick->addInsertCell();
+
+  leadBrick->addInsertCell(getCell("GateAOuterVoid"));
+  leadBrick->addInsertCell(getCell("PipeCOuterVoid"));
   leadBrick->createAll(System,*screenA,2);
   //  screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
   //  screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));

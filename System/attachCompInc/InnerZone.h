@@ -57,9 +57,9 @@ class InnerZone
   attachSystem::CellMap* CellPtr;      ///< Pointer to cell map 
 
   HeadRule surroundHR;               ///< Rule of surround
-  HeadRule frontHR;                  ///< Rule of back
+  HeadRule frontHR;                  ///< Rule of front
   HeadRule backHR;                   ///< Rule of back
-  HeadRule middleHR;                 ///< Rule of middel 
+  HeadRule middleHR;                 ///< Rule of middle 
 
   HeadRule frontDivider;             ///< Local front divider [if needed]
   
@@ -92,6 +92,15 @@ class InnerZone
 			  MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,
 			  const long int);
+  int createNamedOuterVoidUnit(Simulation&,const std::string&,
+			  MonteCarlo::Object*,
+			  HeadRule&,
+			  const attachSystem::FixedComp&,
+			  const long int);
+  int createNamedOuterVoidUnit(Simulation&,const std::string&,
+			       MonteCarlo::Object*,
+			       const attachSystem::FixedComp&,
+			       const long int);
 
   
   void refrontMasterCell(MonteCarlo::Object*,
