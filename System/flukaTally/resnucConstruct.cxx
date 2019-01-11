@@ -140,11 +140,7 @@ resnucConstruct::writeHelp(std::ostream& OX)
   */
 {
   OX<<
-    "recordType filename \n"
-    "  --recordType avaiable:\n"
-    "    source : trajectory : local : continuous\n"
-    "    sourceLoss : trajLoss : user";
-
+    "resnuc objectName \n";
   return;
 }
 

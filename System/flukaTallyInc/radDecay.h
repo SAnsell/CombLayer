@@ -41,8 +41,8 @@ class radDecay
   size_t nReplica;                    ///< Radioactive decay repead
 
   std::map<std::string,int> biasCard; ///< Which biases to apply
-  double gammaTransCut;             ///< Transport cut off value [1.0 default]
-
+  double gammaTransCut;              ///< Transport cut off value [1.0 default]
+  
 
   double iradFlux;           ///< Flux on general irradiation
   /// Irradiation decay times / intensity
@@ -51,6 +51,7 @@ class radDecay
 
   /// map of detectors to use: [previous named detectors]
   std::map<std::string,size_t> detectors;
+
   
  public:
 

@@ -191,7 +191,7 @@ radDecay::write(const SimFLUKA& System,std::ostream& OX) const
 	ELog::EM<<"Empty IRRAD "<<ELog::endDiag;
       for(const std::pair<double,double> IR : iradTime)
 	{
-	  cx<<IR.first<<" "<<IR.second;
+	  cx<<IR.first<<" "<<IR.second*iradFlux;
 	  index++;
 	  if ((index % 3)==0)
 	    {
