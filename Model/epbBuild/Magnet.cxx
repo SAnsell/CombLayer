@@ -3,7 +3,7 @@
  
  * File:   epbBuild/Magnet.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ Magnet::Magnet(const std::string& Key,const size_t Index) :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
-    \parma Index :: ID number
+    \param Index :: ID number
   */
 {}
 

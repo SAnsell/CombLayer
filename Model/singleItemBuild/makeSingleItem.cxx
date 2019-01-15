@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,10 +66,12 @@
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
+#include "ExternalCut.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -91,6 +93,7 @@
 #include "VacuumPipe.h"
 
 #include "CryoMagnetBase.h"
+#include "Quadrupole.h"
 
 #include "makeSingleItem.h"
 
@@ -122,12 +125,20 @@ makeSingleItem::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeSingleItem","build");
 
- ModelSupport::objectRegister& OR=
-   ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  int voidCell(74123);
+  
+  std::shared_ptr<xraySystem::Quadrupole>
+    Quad(new xraySystem::Quadrupole("Quad","Quad"));
+  OR.addObject(Quad);
+  Quad->addInsertCell(voidCell);
+  Quad->createAll(System,World::masterOrigin(),0);
+  return;
+   
 
- int voidCell(74123);
-
-  std::shared_ptr<insertSystem::insertSphere> 
+   std::shared_ptr<insertSystem::insertSphere> 
     Target(new insertSystem::insertSphere("Target"));
   std::shared_ptr<insertSystem::insertShell>
     Surround(new insertSystem::insertShell("Shield"));

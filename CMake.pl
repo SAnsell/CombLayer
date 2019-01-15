@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 ## use lib "/home/ansell/exe/getMk";
+use lib "./";
 
 use CMakeList;
 use strict;
@@ -310,7 +311,7 @@ $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 
 $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src",
 			       "construct","physics","input","process",
-			       "transport","scatMat",
+			       "transport","scatMat","commonBeam",
 			       "source","monte","funcBase","log","monte",
 			       "flukaProcess","flukaPhysics","flukaTally",
 			       "phitsProcess","phitsPhysics","phitsTally","phitsSupport",

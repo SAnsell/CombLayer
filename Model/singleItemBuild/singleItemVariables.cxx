@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
+#include "QuadrupoleGenerator.h"
 
 namespace setVariable
 {
@@ -158,7 +159,8 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
-
+  setVariable::QuadrupoleGenerator QGen;
+  QGen.generateQuad(Control,"Quad",0.0);
   
   
   return;
