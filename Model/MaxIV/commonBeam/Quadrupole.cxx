@@ -386,7 +386,15 @@ Quadrupole::createObjects(Simulation& System)
 				 "-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
   makeCell("VoidPole",System,cellIndex++,0,0.0,Out);
 
-  
+  if (poleLength<coilLength-Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"105 -106 202 -102 103 -104 ");
+      makeCell("ExtraPoleVoid",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
+      makeCell("ExtraPoleVoid",System,cellIndex++,0,0.0,Out);
+    }
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
   addOuterSurf(Out);      
 
