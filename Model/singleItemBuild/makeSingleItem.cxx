@@ -94,6 +94,7 @@
 
 #include "CryoMagnetBase.h"
 #include "Quadrupole.h"
+#include "EPSeparator.h"
 
 #include "makeSingleItem.h"
 
@@ -130,13 +131,20 @@ makeSingleItem::build(Simulation& System,
   
   int voidCell(74123);
   
+  std::shared_ptr<xraySystem::EPSeparator>
+    EPSep(new xraySystem::EPSeparator("EPSep"));
+  OR.addObject(EPSep);
+  EPSep->addInsertCell(voidCell);
+  EPSep->createAll(System,World::masterOrigin(),0);
+  return;
+
   std::shared_ptr<xraySystem::Quadrupole>
     Quad(new xraySystem::Quadrupole("Quad","Quad"));
   OR.addObject(Quad);
   Quad->addInsertCell(voidCell);
   Quad->createAll(System,World::masterOrigin(),0);
   return;
-   
+
 
    std::shared_ptr<insertSystem::insertSphere> 
     Target(new insertSystem::insertSphere("Target"));

@@ -59,6 +59,7 @@
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
 #include "QuadrupoleGenerator.h"
+#include "EPSeparatorGenerator.h"
 
 namespace setVariable
 {
@@ -161,6 +162,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"Quad",0.0);
+
+  setVariable::EPSeparatorGenerator EPGen;
+  EPGen.generatePipe(Control,"EPSep",0.0);
   
   
   return;

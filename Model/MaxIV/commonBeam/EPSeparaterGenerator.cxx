@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/QuadrupoleGenerator.cxx
+ * File:   commonBeam/EPSeparatorGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -51,68 +51,61 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "QuadrupoleGenerator.h"
+#include "CFFlanges.h"
+#include "EPSeparatorGenerator.h"
 
 namespace setVariable
 {
 
-QuadrupoleGenerator::QuadrupoleGenerator() :
-  vertGap(3.0),length(5.0),
-  width(20.0),height(20.0),
-  coilLength(7.0),coilCornerRad(2.0),
-  coilWidth(8.0),frameThick(2.0),
-  poleLength(6.0),poleRadius(0.7),
-  poleZStep(0.5),poleYAngle(20.0),
-  poleStep(0.3),poleWidth(1.0),
-  poleMat("Stainless304"),coreMat("Iron"),
-  coilMat("Copper"),frameMat("Aluminium")
+EPSeparatorGenerator::EPSeparatorGenerator() :
+  length(73.5),photonOuterGap(0.25),
+  photonRadius(0.35),
+  photonAGap(0.5),photonBGap(0.7),
+  electronRadius(1.1),initEPSeparation(2.8),   // guess
+  electronAngle(1.54),wallPhoton(0.3),
+  wallElectron(4.1),wallHeight(2.4),
+  voidMat("Void"),wallMat("Copper")
   /*!
     Constructor and defaults
   */
 {}
   
-QuadrupoleGenerator::~QuadrupoleGenerator() 
+EPSeparatorGenerator::~EPSeparatorGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-QuadrupoleGenerator::generateQuad(FuncDataBase& Control,
-				  const std::string& keyName,
-				  const double yStep) const
-/*!
+EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
+				   const std::string& keyName,
+				   const double yStep) const
+  /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
-    \param len :: length
   */
 {
-  ELog::RegMethod RegA("QuadrupoleGenerator","generateColl");
+  ELog::RegMethod RegA("EPSeparatorGenerator","generateColl");
 
   Control.addVariable(keyName+"YStep",yStep);
   
-  Control.addVariable(keyName+"VertGap",vertGap);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"CoilLength",coilLength);
-  Control.addVariable(keyName+"CoilCornerRad",coilCornerRad);
-  Control.addVariable(keyName+"CoilWidth",coilWidth);
-  Control.addVariable(keyName+"FrameThick",frameThick);
-  
-  Control.addVariable(keyName+"PoleLength",poleLength);
-  Control.addVariable(keyName+"PoleRadius",poleRadius);
-  Control.addVariable(keyName+"PoleZStep",poleZStep);
-  Control.addVariable(keyName+"PoleYAngle",poleYAngle);
-  Control.addVariable(keyName+"PoleStep",poleStep);
-  Control.addVariable(keyName+"PoleWidth",poleWidth);
-  
-  Control.addVariable(keyName+"PoleMat",poleMat);
-  Control.addVariable(keyName+"CoreMat",coreMat);
-  Control.addVariable(keyName+"CoilMat",coilMat);
-  Control.addVariable(keyName+"FrameMat",frameMat);
+  Control.addVariable(keyName+"PhotonOuterGap",photonOuterGap);
+  Control.addVariable(keyName+"PhotonRadius",photonRadius);
+  Control.addVariable(keyName+"PhotonAGap",photonAGap);
+  Control.addVariable(keyName+"PhotonBGap",photonBGap);
+  Control.addVariable(keyName+"ElectronRadius",electronRadius);
+  Control.addVariable(keyName+"InitEPSeparation",initEPSeparation);
+  Control.addVariable(keyName+"ElectronAngle",electronAngle);
+
+  Control.addVariable(keyName+"WallPhoton",wallPhoton);
+  Control.addVariable(keyName+"WallElectron",wallElectron);
+  Control.addVariable(keyName+"WallHeight",wallHeight);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
   
   return;
 

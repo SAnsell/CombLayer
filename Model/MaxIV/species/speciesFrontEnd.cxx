@@ -3,7 +3,7 @@
  
  * File: species/speciesFrontEnd.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,6 +99,7 @@
 #include "BeamMount.h"
 #include "HeatDump.h"
 #include "BremBlock.h"
+#include "Quadrupole.h"
 
 #include "LCollimator.h"
 #include "R1FrontEnd.h"

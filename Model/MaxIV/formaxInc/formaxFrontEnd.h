@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R1Inc/R1FrontEnd.h
+ * File:   balderInc/balderbalderFrontEnd.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_R1FrontEnd_h
-#define xraySystem_R1FrontEnd_h
+#ifndef xraySystem_balderFrontEnd_h
+#define xraySystem_balderFrontEnd_h
 
 namespace insertSystem
 {
@@ -53,57 +53,72 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class BremBlock;
-  class BeamMount;
-  class FlangeMount;
+
   class HeatDump;
   class LCollimator;
-  class Quadrupole;
+  class SqrCollimator;
   class SquareFMask;
-  class UTubePipe;
-  class Undulator;
+  class Wiggler;
 
     
   /*!
-    \class R1FrontEnd
+    \class balderFrontEnd
     \version 1.0
     \author S. Ansell
     \date March 2018
     \brief General constructor front end optics
   */
 
-class R1FrontEnd :
+class balderFrontEnd :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::FrontBackCut,
-  public attachSystem::CellMap  
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
- protected:   
+ private:
 
-  /// construction of fluka cutting space
+  /// point to stop [normal none]
+  std::string stopPoint;          
+  /// Inner buildzone
   attachSystem::InnerZone buildZone;
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
-
+  
+  /// Wiggler in vacuum box
+  std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
+  /// Wiggler in vacuum box
+  std::shared_ptr<Wiggler> wiggler;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
-  /// electron cut cell
-  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// FixedMask 1
-  std::shared_ptr<xraySystem::SquareFMask> collA;
-  /// bellow after FixedMask
+  /// box for collimator
+  std::shared_ptr<constructSystem::PipeTube> collTubeA;
+  /// collimator A
+  std::shared_ptr<xraySystem::SqrCollimator> collA;
+  /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// Real Ion pump (KF40) 26cm vertioal
-  std::shared_ptr<constructSystem::CrossPipe> ionPA;
-  /// bellow after Ion Pump
+  /// Mask1:2 connection pipe
+  std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
+  /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// Pipe to heat dump
-  std::shared_ptr<constructSystem::VacuumPipe> heatPipe;
-  /// Heat dump container
+  /// box for collimator
+  std::shared_ptr<constructSystem::PipeTube> collTubeB;
+  /// collimator B
+  std::shared_ptr<xraySystem::SqrCollimator> collB;
+  /// box for collimator C (joined to B)
+  std::shared_ptr<constructSystem::PipeTube> collTubeC;
+  /// collimator C
+  std::shared_ptr<xraySystem::SqrCollimator> collC;
+  /// electron cut cell
+  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
+  /// Pipe from collimator B to heat dump
+  std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
+
+  /// head dump port
   std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Heat dump container
   std::shared_ptr<xraySystem::HeatDump> heatDump;
@@ -115,8 +130,9 @@ class R1FrontEnd :
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  
-  /// bellows for third table
+
+
+    /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Variable Apperature pipe
   std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
@@ -126,7 +142,6 @@ class R1FrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPC;
-
   /// bellows for second movable aperature
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// Variable Apperature pipe B
@@ -138,7 +153,8 @@ class R1FrontEnd :
   /// Exit of movables
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
-  /// Exit of movables
+   
+  /// Exit of movables [?]
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowI;
@@ -156,40 +172,39 @@ class R1FrontEnd :
   std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
-  /// Brem-block
-  std::shared_ptr<xraySystem::BremBlock> bremBlock;
-  /// Front port connection for shutterbox
+  /// Front port connection for shutterbox exit
   std::shared_ptr<constructSystem::Bellows> bellowK;
+  
+  std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   double outerRadius;   ///< radius of tube for divisions
-    
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
 
-  virtual void buildUndulator(Simulation&,
-			      MonteCarlo::Object*,
-			      const attachSystem::FixedComp&,
-			      const long int) =0;
+  
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   void buildHeatTable(Simulation&,MonteCarlo::Object*,
 		      const attachSystem::FixedComp&,const long int);
   void buildApertureTable(Simulation&,MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,MonteCarlo::Object*,
-			 const attachSystem::FixedComp&,const long int);
+			 const attachSystem::FixedComp&,const long int);  
 
-  virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  virtual void createSurfaces();
-  virtual void buildObjects(Simulation&);
-  virtual void createLinks() =0;
+  
+  void createSurfaces();
+  void buildObjects(Simulation&);
+  void createLinks();
   
  public:
   
-  R1FrontEnd(const std::string&);
-  R1FrontEnd(const R1FrontEnd&);
-  R1FrontEnd& operator=(const R1FrontEnd&);
-  virtual ~R1FrontEnd();
+  balderFrontEnd(const std::string&);
+  balderFrontEnd(const balderFrontEnd&);
+  balderFrontEnd& operator=(const balderFrontEnd&);
+  ~balderFrontEnd();
 
+  /// set stop point
+  void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
