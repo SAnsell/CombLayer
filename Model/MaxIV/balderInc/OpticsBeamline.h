@@ -3,7 +3,7 @@
  
  * File:   balderInc/OpticsBeamline.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,9 +191,9 @@ class OpticsBeamline :
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
 
-  double outerLeft;   /// Radius for cut rectangle
+  double outerLeft;    /// Radius for cut rectangle
   double outerRight;   /// Radius for cut rectangle
-  double outerTop;   /// Radius for cut rectangle
+  double outerTop;     /// Radius for cut rectangle
   
 
   void populate(const FuncDataBase&);

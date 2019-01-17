@@ -262,6 +262,8 @@ OpticsBeamline::createSurfaces()
     Create surfaces for outer void
    */
 {
+  ELog::RegMethod RegA("OpticsBeamLine","createSurface");
+  
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
       std::string Out;

@@ -99,7 +99,7 @@
 #include "FrontEndCave.h"
 #include "WallLead.h"
 #include "formaxFrontEnd.h"
-#include "OpticsBeamline.h"
+#include "formaxOpticsLine.h"
 #include "ConnectZone.h"
 #include "PipeShield.h"
 #include "ExptBeamline.h"
@@ -116,7 +116,7 @@ FORMAX::FORMAX(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new OpticsBeamline(newName+"OpticsLine"))
+  opticsBeam(new formaxOpticsLine(newName+"OpticsLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -199,8 +199,7 @@ FORMAX::build(Simulation& System,
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
   
-
-    // new
+  // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
