@@ -127,8 +127,32 @@ EPSeparator::populate(const FuncDataBase& Control)
   wallElectron=Control.EvalVar<double>(keyName+"WallElectron");
   wallHeight=Control.EvalVar<double>(keyName+"WallHeight");
 
+    
+  portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
+  portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
+  
+  portAPipeRadius=Control.EvalPair<double>(keyName+"PortAPipeRadius",
+					   keyName+"PortPipeRadius");
+  portAFlangeRadius=Control.EvalPair<double>(keyName+"PortAFlangeRadius",
+					     keyName+"PortFlangeRadius");
+  portAThick=Control.EvalPair<double>(keyName+"PortAThick",
+				      keyName+"PortThick");
+  
+  portBXStep=Control.EvalDefVar<double>(keyName+"PortBXStep",0.0);
+  portBZStep=Control.EvalDefVar<double>(keyName+"PortBZStep",0.0);
+
+  portBPipeRadius=Control.EvalPair<double>(keyName+"PortBPipeRadius",
+					   keyName+"PortPipeRadius");
+  portBFlangeRadius=Control.EvalPair<double>(keyName+"PortBFlangeRadius",
+					     keyName+"PortFlangeRadius");
+  portBWall=Control.EvalPair<double>(keyName+"PortBWall",keyName+"PortWall");
+  portBLen=Control.EvalPair<double>(keyName+"PortBLen",keyName+"PortLen");
+  portBThick=Control.EvalPair<double>(keyName+"PortBThick",
+				      keyName+"PortThick");
+  
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  portMat=ModelSupport::EvalMat<int>(Control,keyName+"PortMat");
 
   return;
 }
@@ -169,7 +193,6 @@ EPSeparator::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   
   const Geometry::Vec3D photonCent(Origin+X*(photonRadius-photonOuterGap));
-  ELog::EM<<"Photo == "<<photonCent<<ELog::endDiag;
   // photon cylinder is offset:
   ModelSupport::buildCylinder(SMap,buildIndex+7,photonCent,Y,photonRadius);
   // dividing plane

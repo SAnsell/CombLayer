@@ -54,11 +54,20 @@ class EPSeparatorGenerator
 
   double electronAngle;         ///< XY angle of electron beam to proton
   
+  double portAPipeRadius;   ///< Front port pipe radius
+  double portAFlangeRadius; ///< Front port flange radius
+  double portAThick;        ///< In Port
+
+  double portBPipeRadius;   ///< Out Port inner radius
+  double portBWall;         ///< Out Port wall thickness
+  double portBFlangeRadius; ///< Out Port inner radius
+  double portBLen;          ///< Out Port in step length
+  double portBThick;        ///< Out Port y-thick
 
   
   std::string voidMat;                     ///< void material
   std::string wallMat;                     ///< wall material
-
+  std::string portMat;                     ///< Pipe/flange material
   
  public:
 

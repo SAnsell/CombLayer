@@ -42,7 +42,8 @@ namespace setVariable
   // MAXIV Beamlines 3.0GeV Ring
   void BALDERvariables(FuncDataBase&);
   void COSAXSvariables(FuncDataBase&);
-
+  void FORMAXvariables(FuncDataBase&);
+  
 }
 
 

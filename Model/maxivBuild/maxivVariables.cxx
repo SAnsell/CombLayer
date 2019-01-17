@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/maxivVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ MaxIVVariables(FuncDataBase& Control,
 
 void
 maxivInstrumentVariables(const std::set<std::string>& BL,
-                       FuncDataBase& Control)
+			 FuncDataBase& Control)
   /*!
     Construct the variables for the beamlines if required
     for MaxIV
@@ -104,6 +104,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
      {"COSAXS",    &COSAXSvariables},
+     {"FORMAX",    &FORMAXvariables},
      {"MAXPEEM",   &MAXPEEMvariables},
      {"SPECIES",   &SPECIESvariables}
    });

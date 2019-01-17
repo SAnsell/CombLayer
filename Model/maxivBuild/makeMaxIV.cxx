@@ -82,6 +82,7 @@
 #include "BALDER.h"
 #include "COSAXS.h"
 #include "MAXPEEM.h"
+#include "FORMAX.h"
 #include "SPECIES.h"
 
 #include "makeMaxIV.h"
@@ -170,7 +171,7 @@ makeMaxIV::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeMaxIV","makeBeamLine");
 
   static const std::set<std::string> beamNAMES
-    ({"BALDER","COSAXS"});
+    ({"BALDER","COSAXS","FORMAX"});
 
   bool outFlag(0);  
 
@@ -228,6 +229,18 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	      BL.build(System,*FCOrigin,linkIndex);
 	      outFlag=1;
 	    }
+	  else if (BL=="FORMAX")
+	    {
+	      FORMAX BL("Formax");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
+	      BL.build(System,*FCOrigin,linkIndex);
+	      outFlag=1;
+	    }
+
 	}
     }
 

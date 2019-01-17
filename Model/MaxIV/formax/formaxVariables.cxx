@@ -432,7 +432,7 @@ wallVariables(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","wallVariables");
+  ELog::RegMethod RegA("formaxVariables[F]","wallVariables");
 
   Control.addVariable(wallKey+"FrontHeight",40.0);
   Control.addVariable(wallKey+"FrontWidth",60.0);
@@ -510,7 +510,8 @@ frontEndVariables(FuncDataBase& Control,
 
   CollGen.setFrontGap(2.62,1.86);  //1033.8
   CollGen.setBackGap(1.54,1.42);
-  CollGen.setMinSize(29.0,1.2,1.24);
+  CollGen.setMinSize(29.0,0.95,0.95);  // Approximated to get 1mrad x 1mrad
+
   CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
 
   BellowGen.setCF<setVariable::CF63>();
@@ -548,7 +549,9 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setMain(1.20,"Copper","Void");
   CollGen.setFrontGap(0.84,0.582);
   CollGen.setBackGap(0.750,0.357);
-  CollGen.setMinSize(12.0,0.730,0.16);
+  // approx for 100uRad x 100uRad
+  CollGen.setMinSize(12.0,0.150,0.15);
+  
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setCF<setVariable::CF40>(); 
@@ -589,10 +592,10 @@ opticsHutVariables(FuncDataBase& Control,
   
   Control.addVariable(hutName+"InnerThick",0.3);
   
-  Control.addVariable(hutName+"PbWallThick",2.0);
-  Control.addVariable(hutName+"PbRoofThick",2.0);
-  Control.addVariable(hutName+"PbFrontThick",2.0);
-  Control.addVariable(hutName+"PbBackThick",10.0);
+  Control.addVariable(hutName+"PbWallThick",1.2);
+  Control.addVariable(hutName+"PbRoofThick",1.2);
+  Control.addVariable(hutName+"PbFrontThick",1.2);
+  Control.addVariable(hutName+"PbBackThick",5.0);
 
   Control.addVariable(hutName+"OuterThick",0.3);
 

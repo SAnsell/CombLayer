@@ -259,7 +259,7 @@ collimatorVariables(FuncDataBase& Control,
     \param collKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","collimatorVariables");
+  ELog::RegMethod RegA("balderVariables[F]","collimatorVariables");
 
   Control.addVariable(collKey+"Width",4.0);
   Control.addVariable(collKey+"Height",4.0);
@@ -283,7 +283,7 @@ moveApertureTable(FuncDataBase& Control,
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("balderVariables[F]","moveAperatureTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -432,7 +432,7 @@ wallVariables(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","wallVariables");
+  ELog::RegMethod RegA("balderVariables[F]","wallVariables");
 
   Control.addVariable(wallKey+"FrontHeight",40.0);
   Control.addVariable(wallKey+"FrontWidth",60.0);

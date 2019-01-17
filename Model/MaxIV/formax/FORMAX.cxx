@@ -3,7 +3,7 @@
  
  * File: formax/FORMAX.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,15 +116,7 @@ FORMAX::FORMAX(const std::string& KN) :
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
-  opticsBeam(new OpticsBeamline(newName+"OpticsLine")),
-  joinPipeB(new constructSystem::LeadPipe(newName+"JoinPipeB")),
-  pShield(new xraySystem::PipeShield(newName+"PShield")),
-  nShield(new xraySystem::PipeShield(newName+"NShield")),
-  outerShield(new xraySystem::PipeShield(newName+"OuterShield")),
-  connectZone(new ConnectZone(newName+"Connect")),
-  joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
-  exptHut(new ExperimentalHutch(newName+"Expt")),
-  exptBeam(new ExptBeamline(newName+"ExptLine"))
+  opticsBeam(new OpticsBeamline(newName+"OpticsLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -141,13 +133,6 @@ FORMAX::FORMAX(const std::string& KN) :
   
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
-  OR.addObject(joinPipeB);
-  OR.addObject(pShield);
-  OR.addObject(nShield);
-  OR.addObject(outerShield);
-  OR.addObject(joinPipeC);
-  OR.addObject(exptHut);
-  OR.addObject(exptBeam);
 }
 
 FORMAX::~FORMAX()

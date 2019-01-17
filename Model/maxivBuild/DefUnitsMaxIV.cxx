@@ -113,6 +113,7 @@ setMaxIVSingle(defaultConfig& A,
     {
       { "BALDER", "World 0"},
       { "COSAXS", "World 0"},
+      { "FORMAX", "World 0"},
       { "MAXPEEM", "World 0"},
       { "SPECIES", "World 0"},
       { "RING1", "World 0"}

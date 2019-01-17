@@ -60,9 +60,25 @@ class EPSeparator : public attachSystem::FixedOffset,
   double wallElectron;          ///< Extra on elextron side
   double wallHeight;            ///< Extra above/below 
 
+  double portAXStep;        ///< In Port
+  double portAZStep;        ///< In Port
+  double portAPipeRadius;   ///< Front port pipe radius
+  double portAFlangeRadius; ///< Front port flange radius
+  double portAThick;        ///< In Port
+
+  double portBXStep;        ///< Out Port offset from mid point
+  double portBZStep;        ///< Out Port offset from mid point
+  double portBPipeRadius;   ///< Out Port inner radius
+  double portBWall;         ///< Out Port wall thickness
+  double portBFlangeRadius; ///< Out Port inner radius
+  double portBLen;          ///< Out Port in step length
+  double portBThick;        ///< Out Port y-thick
+
+  
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
-
+  int portMat;                  ///< Port material
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   

@@ -62,9 +62,18 @@ EPSeparatorGenerator::EPSeparatorGenerator() :
   photonRadius(0.35),
   photonAGap(0.5),photonBGap(0.7),
   electronRadius(1.1),initEPSeparation(2.8),   // guess
-  electronAngle(1.54),wallPhoton(0.3),
-  wallElectron(4.1),wallHeight(2.4),
-  voidMat("Void"),wallMat("Copper")
+  wallPhoton(0.3),wallElectron(4.1),wallHeight(2.4),
+  electronAngle(1.54),
+  portAPipeRadius(CF63::innerRadius),
+  portAFlangeRadius(CF63::flangeRadius),
+  portAThick(CF63::flangeLength),  
+  portBPipeRadius(CF63::innerRadius),
+  portBFlangeRadius(CF63::flangeRadius),
+  portBThick(CF63::flangeLength),  
+  portBWall(CF63::wallThick),
+  portBLen(8.0),
+  voidMat("Void"),wallMat("Copper"),
+  portMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -103,12 +112,21 @@ EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"WallPhoton",wallPhoton);
   Control.addVariable(keyName+"WallElectron",wallElectron);
   Control.addVariable(keyName+"WallHeight",wallHeight);
-
+  
+  Control.addVariable(keyName+"PortAPipeRadius",portAPipeRadius);
+  Control.addVariable(keyName+"PortAFlangeRadius",portAFlangeRadius);
+  Control.addVariable(keyName+"PortAThick",portAThick);
+  Control.addVariable(keyName+"PortBPipeRadius",portBPipeRadius);
+  Control.addVariable(keyName+"PortBWall",portBWall);
+  Control.addVariable(keyName+"PortBFlangeRadius",portBFlangeRadius);
+  Control.addVariable(keyName+"PortBLen",portBLen);
+  Control.addVariable(keyName+"PortBThick",portBThick);
+  
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"PortMat",portMat);
   
   return;
-
 }
 
   
