@@ -390,8 +390,9 @@ formaxOpticsLine::buildObjects(Simulation& System)
   primeJawBox->insertInCell(System,outerCell);
 
   bellowC->setFront(*primeJawBox,2);
-  bellow C->createAll(System,*screenPipeB,2);
   bellowC->createAll(System,*primeJawBox,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*primeJawBox,2);
+  bellowC->insertInCell(System,outerCell);
 
   lastComp=gateA;
   return;
