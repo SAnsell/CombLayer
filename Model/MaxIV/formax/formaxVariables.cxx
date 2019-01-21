@@ -484,6 +484,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"FrontHeight",40.0);
   Control.addVariable(wallKey+"FrontWidth",60.0);
   Control.addVariable(wallKey+"FrontLength",20.0);
+  Control.addVariable(wallKey+"BackLength",20.0);
   
   Control.addVariable(wallKey+"BackWidth",20.0);
   Control.addVariable(wallKey+"BackHeight",20.0);
@@ -491,6 +492,7 @@ wallVariables(FuncDataBase& Control,
   Control.addVariable(wallKey+"VoidRadius",3.0);
   Control.addVariable(wallKey+"WallMat","Lead");
   Control.addVariable(wallKey+"VoidMat","Void");
+  Control.addVariable(wallKey+"MidMat","Concrete");
   return;
 }
 
@@ -610,7 +612,7 @@ opticsHutVariables(FuncDataBase& Control,
   
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",1034.6);
+  Control.addVariable(hutName+"Length",834.6);
   Control.addVariable(hutName+"OutWidth",250.0);
   Control.addVariable(hutName+"RingWidth",60.0);
   Control.addVariable(hutName+"RingWallLen",105.0);
@@ -646,7 +648,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",470.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
 
 
