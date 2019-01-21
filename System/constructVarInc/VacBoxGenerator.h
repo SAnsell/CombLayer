@@ -41,8 +41,8 @@ class VacBoxGenerator
 
   double wallThick;          ///< Wall thick [generic]
 
-  double portAXStep;
-  double portAZStep;
+  double portAXStep;         ///< X offset
+  double portAZStep;         ///< Z offset
   double portAWallThick;     ///< Flange wall thickness
   double portATubeLength;    ///< Port tube
   double portATubeRadius;    ///< Port tube length

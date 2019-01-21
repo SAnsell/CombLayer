@@ -3,7 +3,7 @@
  
  * File: balder/BALDER.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,12 +88,6 @@
 
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
-#include "CrossPipe.h"
-#include "MonoVessel.h"
-#include "MonoCrystals.h"
-#include "GateValve.h"
-#include "JawUnit.h"
-#include "JawValve.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
 #include "FrontEndCave.h"

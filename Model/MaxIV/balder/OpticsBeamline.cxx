@@ -400,6 +400,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   
   driftB->createAll(System,*driftA,2);
   monoV->createAll(System,*driftA,2);
+  
   monoXtal->addInsertCell(monoV->getCell("Void"));
   monoXtal->createAll(System,*monoV,0);
 

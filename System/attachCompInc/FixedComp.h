@@ -245,6 +245,9 @@ class FixedComp
   std::vector<int> splitObjectAbsolute
     (Simulation&,const int,const int, const std::vector<Geometry::Vec3D>&,
      const std::vector<Geometry::Vec3D>&);
+
+  virtual void createAll(Simulation&,const FixedComp&,const long int)
+  { };
 };
 
 }

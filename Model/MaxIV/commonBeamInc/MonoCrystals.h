@@ -37,7 +37,7 @@ namespace xraySystem
 
 class MonoCrystals :
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedRotate,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -46,8 +46,8 @@ class MonoCrystals :
   double gap;              ///< Gap thickness
   double theta;            ///< Theta angle
 
-  double phiA;            ///< phi angle
-  double phiB;            ///< Theta angle
+  double phiA;            ///< phi angle of first 
+  double phiB;            ///< pho angle of second
   
   double widthA;            ///< Radius of from centre
   double thickA;            ///< Radius of detector

@@ -117,7 +117,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(*this,cellIndex),
-  //  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
+
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   bellowA(new constructSystem::Bellows(newName+"BellowA")),

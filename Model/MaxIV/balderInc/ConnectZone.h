@@ -51,8 +51,6 @@ namespace xraySystem
   class FlangeMount;
   class LeadBox;
   class Mirror;
-  class MonoVessel;
-  class MonoCrystals;
   class OpticsHutch;
 
     

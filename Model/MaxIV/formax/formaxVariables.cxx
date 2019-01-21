@@ -3,7 +3,7 @@
  
  * File:   formax/formaxVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -454,7 +454,7 @@ void
 frontEndVariables(FuncDataBase& Control,
 		  const std::string& frontKey)
 /*!
-    Set the variables for the mono
+    Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
   */
@@ -633,14 +633,17 @@ opticsHutVariables(FuncDataBase& Control,
 
   return;
 }
+
 void
 mirrorBox(FuncDataBase& Control,const std::string& Name)
   /*!
-    Construct variables for the diagnostic units
+    Construct variables for the mirror boxes
     \param Control :: Database
     \param Name :: component name
   */
 {
+  ELog::RegMethod RegA("formaxVariables[F]","mirrorBox");
+  
   setVariable::MonoBoxGenerator VBoxGen;
 
   VBoxGen.setMat("Stainless304");
@@ -648,9 +651,11 @@ mirrorBox(FuncDataBase& Control,const std::string& Name)
   VBoxGen.setCF<CF63>();
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
+  VBoxGen.setBPortOffset(2.5,0); // X/Z
 
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,Name,0.0,53.1,23.6,29.5,124.0);
+
 
   return;
 }
@@ -663,7 +668,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","diagUnit");
+  ELog::RegMethod RegA("formaxVariables[F]","diagUnit");
 
 
   const double DLength(55.0);         // diag length [checked]
@@ -725,7 +730,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
     \param Name :: component name
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","diagUnit");
+  ELog::RegMethod RegA("formaxVariables[F]","diagUnit");
 
 
   const double DLength(35.0);         // diag length [checked]
@@ -780,14 +785,16 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
 }
   
 void
-monoVariables(FuncDataBase& Control)
+monoVariables(FuncDataBase& Control,
+	      const std::string& Name)
   /*!
     Set the variables for the mono
     \param Control :: DataBase to use
+    \param Name :: component name
   */
 {
   ELog::RegMethod RegA("formaxVariables[F]","monoVariables");
-  const std::string preName("FormaxOpticsLine");
+  
   
   setVariable::MonoBoxGenerator VBoxGen;
 
@@ -796,11 +803,30 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setCF<CF63>();
   VBoxGen.setAPortCF<CF40>();
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  VBoxGen.setBPortOffset(2.5,0); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
+  VBoxGen.generateBox(Control,Name+"MonoBox",0.0,77.2,11.0,34.20,95.1);
+
+    // CRYSTALS:
+  Control.addVariable(Name+"MonoXtalYAngle",90.0);
+  Control.addVariable(Name+"MonoXtalZStep",-1.25);
+  Control.addVariable(Name+"MonoXtalGap",4.0);
+  Control.addVariable(Name+"MonoXtalTheta",10.0);
+  Control.addVariable(Name+"MonoXtalPhiA",0.0);
+  Control.addVariable(Name+"MonoXtalPhiA",0.0);
+  Control.addVariable(Name+"MonoXtalWidth",10.0);
+  Control.addVariable(Name+"MonoXtalLengthA",8.0);
+  Control.addVariable(Name+"MonoXtalLengthB",12.0);
+  Control.addVariable(Name+"MonoXtalThickA",4.0);
+  Control.addVariable(Name+"MonoXtalThickB",3.0);
+  Control.addVariable(Name+"MonoXtalBaseThick",5.0);
+  Control.addVariable(Name+"MonoXtalBaseExtra",2.0);
+  
+  Control.addVariable(Name+"MonoXtalMat","Silicon80K");
+  Control.addVariable(Name+"MonoXtalBaseMat","Copper");
 
   return;
 }
@@ -932,7 +958,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
-  formaxVar::monoVariables(Control);
+  formaxVar::monoVariables(Control,preName);
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);

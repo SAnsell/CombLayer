@@ -116,6 +116,8 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
+  /// Mono box
+  std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
   // ate
   std::shared_ptr<constructSystem::GateValve> gateC;
   /// Bellow to diagnositics
@@ -157,15 +159,18 @@ class formaxOpticsLine :
   /// Bellow to end station
   std::shared_ptr<constructSystem::Bellows> bellowI;
 
-  double outerLeft;    /// Radius for cut rectangle
-  double outerRight;   /// Radius for cut rectangle
-  double outerTop;     /// Radius for cut rectangle
-
-
+  double outerLeft;    ///< Left Width for cut rectangle
+  double outerRight;   ///< Right width for cut rectangle
+  double outerTop;     ///< Top lift for cut rectangle
   
-  void constructDiag(Simulation&,constructSystem::PortTube&,
-		     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-		     const attachSystem::FixedComp&,const long int);
+  int constructDiag
+    (Simulation&,
+     MonteCarlo::Object**,
+     constructSystem::PortTube&,
+     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
+     const attachSystem::FixedComp&,
+     const long int);
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

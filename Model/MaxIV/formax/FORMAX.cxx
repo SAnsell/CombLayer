@@ -88,12 +88,6 @@
 
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
-#include "CrossPipe.h"
-#include "MonoVessel.h"
-#include "MonoCrystals.h"
-#include "GateValve.h"
-#include "JawUnit.h"
-#include "JawValve.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
 #include "FrontEndCave.h"
