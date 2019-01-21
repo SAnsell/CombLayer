@@ -3,7 +3,7 @@
  
  * File:   construct/PipeTube.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -399,7 +399,7 @@ PipeTube::intersectPorts(Simulation& System,
     Currently does not check that they don't intersect.
     \param System :: Simulation
     \param aIndex :: Inner port
-    \param aIndex :: Outer port
+    \param bIndex :: Outer port
    */
 {
   ELog::RegMethod RegA("PipeTube","intersectPorts");
@@ -412,6 +412,32 @@ PipeTube::intersectPorts(Simulation& System,
 				     "Port does not exist");
 
   Ports[aIndex].intersectPair(System,Ports[bIndex]);
+  
+  return;
+}
+
+void
+PipeTube::intersectVoidPorts(Simulation& System,
+			     const size_t aIndex,
+			     const size_t bIndex) const
+/*!
+    Overlaps two ports if the intersect because of size
+    Currently does not check that they don't intersect.
+    \param System :: Simulation
+    \param aIndex :: Inner port
+    \param bIndex :: Outer port
+   */
+{
+  ELog::RegMethod RegA("PipeTube","intersectPorts");
+
+  if (aIndex==bIndex || aIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(aIndex,Ports.size(),
+				     "Port does not exist");
+  if (bIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(bIndex,Ports.size(),
+				     "Port does not exist");
+
+  Ports[aIndex].intersectVoidPair(System,Ports[bIndex]);
   
   return;
 }

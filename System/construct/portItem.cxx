@@ -85,7 +85,7 @@ namespace constructSystem
 
 portItem::portItem(const std::string& baseKey,
 		   const std::string& Key) :
-  attachSystem::FixedComp(Key,5),
+  attachSystem::FixedComp(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(baseKey),
   statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
@@ -98,7 +98,7 @@ portItem::portItem(const std::string& baseKey,
 {}
 
 portItem::portItem(const std::string& Key) :
-  attachSystem::FixedComp(Key,5),
+  attachSystem::FixedComp(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(keyName),
   statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
@@ -384,6 +384,11 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
   FixedComp::setConnect(4,exitPoint+Y*externalLength,-Y);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
 
+  FixedComp::nameSideIndex(5,"VoidRadius");
+  FixedComp::setConnect(5,exitPoint+Y*externalLength,-Y);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+27));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+1));
+
   return;
 }
 
@@ -557,6 +562,26 @@ portItem::intersectPair(Simulation& System,
   const HeadRule outerWallComp(Outer.getFullRule(4).complement());
   this->insertComponent(System,"Wall",outerWallComp);
   this->insertComponent(System,"Void",outerComp);
+  return;
+}
+
+void
+portItem::intersectVoidPair(Simulation& System,
+			    const portItem& Outer) const
+  /*!
+    Intersect two ports outer only
+    \param Simulation :: Simulation to use
+    \param Outer :: second port to intersect
+  */
+{
+  ELog::RegMethod RegA("portItem","intersectPair");
+
+  if (CellMap::hasItem("OutVoid"))
+    {
+      const HeadRule outerComp(Outer.getFullRule("VoidRadius").complement());
+      this->insertComponent(System,"OutVoid",outerComp);
+    }
+
   return;
 }
   

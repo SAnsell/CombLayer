@@ -96,6 +96,7 @@ class PipeTube :
 
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
+  void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
   void createPorts(Simulation&);

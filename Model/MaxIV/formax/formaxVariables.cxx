@@ -71,6 +71,7 @@
 #include "LeadBoxGenerator.h"
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
+#include "PipeShieldGenerator.h"
 
 namespace setVariable
 {
@@ -621,10 +622,10 @@ opticsHutVariables(FuncDataBase& Control,
   
   Control.addVariable(hutName+"InnerThick",0.3);
   
-  Control.addVariable(hutName+"PbWallThick",1.2);
-  Control.addVariable(hutName+"PbRoofThick",1.2);
+  Control.addVariable(hutName+"PbWallThick",1.6);
+  Control.addVariable(hutName+"PbRoofThick",1.6);
   Control.addVariable(hutName+"PbFrontThick",1.2);
-  Control.addVariable(hutName+"PbBackThick",5.0);
+  Control.addVariable(hutName+"PbBackThick",9.0);
 
   Control.addVariable(hutName+"OuterThick",0.3);
 
@@ -639,7 +640,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"HoleXStep",0.0);
   Control.addVariable(hutName+"HoleZStep",5.0);
-  Control.addVariable(hutName+"HoleRadius",3.5);
+  //Control.addVariable(hutName+"HoleRadius",3.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
@@ -650,6 +651,7 @@ opticsHutVariables(FuncDataBase& Control,
   PortChicaneGenerator PGen;
   PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+
 
 
   return;
@@ -1021,7 +1023,12 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
 
   formaxVar::diagUnit2(Control,preName+"DiagBoxC");
-  
+
+  // ystep : wing
+  setVariable::PipeShieldGenerator ShieldGen;
+  ShieldGen.setPlate(100.0,100,9.0);
+  ShieldGen.generateShield(Control,preName+"ScreenA",60.0,0.0);
+
   return;
 }
 

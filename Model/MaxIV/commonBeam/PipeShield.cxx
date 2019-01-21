@@ -208,8 +208,9 @@ PipeShield::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(wallThick+height/2.0),Z);
 
+  if (isActive("inner"))
+    ExternalCut::makeExpandedSurf(SMap,"inner",buildIndex+7,Origin,clearGap);
   
-  ExternalCut::makeExpandedSurf(SMap,"inner",buildIndex+7,Origin,clearGap);
   if (isActive("innerTwo"))
     ExternalCut::makeExpandedSurf(SMap,"innerTwo",
 				  buildIndex+17,Origin,clearGap);
@@ -243,9 +244,12 @@ PipeShield::createObjects(Simulation& System)
   const std::string rBStr(getRuleStr("innerTwo"));
 
   // inner clearance gap
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
-  Out+=fStr+bStr+rAStr;
-  makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+  if (!rAStr.empty())
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
+      Out+=fStr+bStr+rAStr;
+      makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+    }
 
   if (!rBStr.empty())
     {

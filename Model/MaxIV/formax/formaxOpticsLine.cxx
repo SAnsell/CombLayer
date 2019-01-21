@@ -88,6 +88,7 @@
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "PipeShield.h"
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
@@ -153,7 +154,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   jawCompC({
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
-	})
+	}),
+  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
+  leadBrick(new insertSystem::insertPlate(newName+"LeadBrick"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -278,9 +281,9 @@ formaxOpticsLine::constructDiag
       jawComp[index]->createAll
 	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
     }
+  
   diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
 			     diagBoxItem.getCell("Void"),{0,2});
-
   diagBoxItem.splitObject(System,-11,outerCell);
   diagBoxItem.splitObject(System,12,outerCell);
   diagBoxItem.splitObject(System,2001,outerCell);
@@ -308,7 +311,6 @@ formaxOpticsLine::createSurfaces()
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
       Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
       const HeadRule HR(Out+getRuleStr("floor"));
-      ELog::EM<<"HR == "<<HR<<ELog::endDiag;
       buildZone.setSurround(HR);
     }
   return;
@@ -448,6 +450,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagBoxA,2);
   diagBoxA->insertAllInCell(System,outerCell);
 
+  
   diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
      			   diagBoxA->getCell("Void"),
    			   {0,1, 1,2});
@@ -455,6 +458,9 @@ formaxOpticsLine::buildObjects(Simulation& System)
   diagBoxA->splitObject(System,12,outerCell);
   diagBoxA->splitObject(System,-2001,outerCell);
   diagBoxA->splitObject(System,-2002,outerCell);
+
+  //  diagBoxA->intersectPorts(System,3,6);
+  diagBoxA->intersectVoidPorts(System,6,3);
   cellIndex+=4;
   
   
@@ -512,11 +518,12 @@ formaxOpticsLine::buildObjects(Simulation& System)
   bellowH->createAll(System,*gateG,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   bellowH->insertInCell(System,outerCell);
-
-  
-  
+   
   constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
 
+  screenA->addAllInsertCell(masterCell->getName());  
+  screenA->createAll(System,*diagBoxC,2);
+  
   lastComp=diagBoxC;
   return;
 }
