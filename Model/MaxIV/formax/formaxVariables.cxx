@@ -78,6 +78,7 @@ namespace setVariable
 namespace formaxVar
 {
 
+void undulatorVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
@@ -427,6 +428,49 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 }
 
 void
+undulatorVariables(FuncDataBase& Control,
+		   const std::string& undKey)
+  /*!
+    Builds the variables for the collimator
+    \param Control :: Database
+    \param undKey :: prename
+  */
+{
+  ELog::RegMethod RegA("formaxVariables[F]","undulatorVariables");
+  setVariable::PipeGenerator PipeGen;
+
+  const double L(400.0);
+  PipeGen.setMat("Aluminium");
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
+
+  Control.addVariable(undKey+"UPipeWidth",6.0);
+  Control.addVariable(undKey+"UPipeHeight",0.6);
+  Control.addVariable<double>(undKey+"UPipeYStep",20.0);
+  Control.addVariable(undKey+"UPipeFeThick",0.2);
+
+  // undulator  
+  Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
+  Control.addVariable(undKey+"UndulatorLength",370.0);   // 46.2mm*30*2
+  Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
+  Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
+  Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
+  Control.addVariable(undKey+"UndulatorSupportThick",8.0);
+  Control.addVariable(undKey+"UndulatorSupportLength",4.0);  // extra
+  Control.addVariable(undKey+"UndulatorSupportVOffset",2.0);
+  Control.addVariable(undKey+"UndulatorStandWidth",6.0);
+  Control.addVariable(undKey+"UndulatorStandHeight",8.0);
+  Control.addVariable(undKey+"UndulatorVoidMat","Void");
+  Control.addVariable(undKey+"UndulatorMagnetMat","NbFeB");
+  Control.addVariable(undKey+"UndulatorSupportMat","Copper");
+  Control.addVariable(undKey+"UndulatorStandMat","Aluminium");
+
+    
+  return;
+}
+
+void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
 /*!
@@ -474,34 +518,9 @@ frontEndVariables(FuncDataBase& Control,
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
+
+  undulatorVariables(Control,frontKey);
   
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF40>();
-  VBoxGen.setPortLength(5.0,5.0); // La/Lb
-
-  //
-  // Rachet wall 2180cm from centre:
-  // -- length 2400cm so off set 320
-  //
-  // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      220.0,30.0,15.0,15.0,400.0);
-
-  // Wiggler
-  Control.addVariable(frontKey+"WigglerLength",370.0);
-  Control.addVariable(frontKey+"WigglerBlockWidth",8.0);
-  Control.addVariable(frontKey+"WigglerBlockHeight",8.0);
-  Control.addVariable(frontKey+"WigglerBlockDepth",8.0);
-  Control.addVariable(frontKey+"WigglerBlockHGap",0.2);
-  Control.addVariable(frontKey+"WigglerBlockVGap",0.96);
-
-  Control.addVariable(frontKey+"WigglerBlockVCorner",1.0);
-  Control.addVariable(frontKey+"WigglerBlockHCorner",2.0);
-
-  
-  Control.addVariable(frontKey+"WigglerVoidMat",0);
-  Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
 
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,911.0);

@@ -92,6 +92,7 @@
 #include "BeamMount.h"
 #include "FrontEndCave.h"
 #include "WallLead.h"
+#include "R3FrontEnd.h"
 #include "formaxFrontEnd.h"
 #include "formaxOpticsLine.h"
 #include "ConnectZone.h"

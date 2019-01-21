@@ -278,11 +278,14 @@ formaxOpticsLine::constructDiag
       jawComp[index]->createAll
 	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
     }
-  // diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
-  // 			   diagBoxItem.getBuildCell(),{0,2});
+  diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
+			     diagBoxItem.getCell("Void"),{0,2});
 
-  // diagBoxItem.splitObject(System,-11,diagBoxItem.getCell("SplitOuter",0));
-  // diagBoxItem.splitObject(System,12,diagBoxItem.getCell("SplitOuter",1));
+  diagBoxItem.splitObject(System,-11,outerCell);
+  diagBoxItem.splitObject(System,12,outerCell);
+  diagBoxItem.splitObject(System,2001,outerCell);
+  cellIndex+=3;
+    
   return outerCell;
 }
   
@@ -437,6 +440,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
+
   // fake insert
   diagBoxA->addAllInsertCell(masterCell->getName());
   diagBoxA->setFront(*bellowD,2);
@@ -444,14 +448,15 @@ formaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagBoxA,2);
   diagBoxA->insertAllInCell(System,outerCell);
 
-  // diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
+  diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
+     			   diagBoxA->getCell("Void"),
+   			   {0,1, 1,2});
+  diagBoxA->splitObject(System,-11,outerCell);
+  diagBoxA->splitObject(System,12,outerCell);
+  diagBoxA->splitObject(System,-2001,outerCell);
+  diagBoxA->splitObject(System,-2002,outerCell);
+  cellIndex+=4;
   
-  // 			   diagBoxA->getBuildCell(),
-  // 			   {0,1, 1,2});
-
-  //  diagBoxA->splitObject(System,-11,diagBoxA->getCell("SplitOuter",0));
-  //  diagBoxA->splitObject(System,12,diagBoxA->getCell("SplitOuter",2));
-
   
   bellowE->setFront(*diagBoxA,2);  
   bellowE->createAll(System,*diagBoxA,2);
@@ -511,8 +516,6 @@ formaxOpticsLine::buildObjects(Simulation& System)
   
   
   constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
-  lastComp=gateA;
-  return;
 
   lastComp=diagBoxC;
   return;

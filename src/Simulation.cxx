@@ -1576,7 +1576,10 @@ Simulation::splitObject(const int CA,const int SN)
 
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
-  
+
+  // ELog::EM<<"Ax == "<<CHead<<ELog::endDiag;
+  // for(auto XX : IP)
+  //   ELog::EM<<"P == "<<XX.first<<" "<<XX.second<<ELog::endDiag;
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
     CPtr->procString(AX.writeMCNPX());

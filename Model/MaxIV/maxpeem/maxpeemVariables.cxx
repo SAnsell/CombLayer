@@ -127,7 +127,7 @@ undulatorVariables(FuncDataBase& Control,
     \param undKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","collimatorVariables");
+  ELog::RegMethod RegA("maxpeemVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
   const double L(280.0);
