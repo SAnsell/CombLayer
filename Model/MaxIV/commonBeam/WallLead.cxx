@@ -207,7 +207,7 @@ WallLead::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(backHeight/2.0),Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,voidRadius);
-  
+
   return;
 }
 

@@ -293,9 +293,9 @@ buildCylinder(surfRegister& SMap,const int N,
   Geometry::Cylinder* CX=SurI.createUniqSurf<Geometry::Cylinder>(N);  
   if (CX->setCylinder(O,D,R))
     throw ColErr::ConstructionError("setCylinder","CX",
-				 StrFunc::makeString(O),
-				 StrFunc::makeString(D),
-				 StrFunc::makeString(R));
+				 "Origin = "+StrFunc::makeString(O),
+				 "Dir    = "+StrFunc::makeString(D),
+				 "Radius = "+StrFunc::makeString(R));
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cylinder>(NFound);

@@ -3,7 +3,7 @@
  
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@ void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
 void heatDumpTable(FuncDataBase&,const std::string&);
 void heatDumpVariables(FuncDataBase&,const std::string&);
+void monoShutterVariables(FuncDataBase&,const std::string&);
 void shutterTable(FuncDataBase&,const std::string&);
   
 void
@@ -427,18 +428,17 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
-/*!
-    Set the variables for the frontend wall
+ /*!
+    Set the variables for the frontend lead wall
     \param Control :: DataBase to use
-    \param frontKey :: name before part names
+    \param wallKey :: name before part names
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","wallVariables");
-
-  
+ 
   WallLeadGenerator LGen;
-  LGen.setWidth(140,70);
-  LGen.generateWall(Control,wallKey);
+  LGen.setWidth(140.0,70.0);
+  LGen.generateWall(Control,wallKey,3.0);
   return;
 }
 
@@ -624,17 +624,29 @@ monoShutterVariables(FuncDataBase& Control,
   /*!
     Construct Mono Shutter variables
     \param Control :: Database for variables
-    
+    \param preName :: Control ssytem
    */
 {
   ELog::RegMethod RegA("balderVariables","monoShutterVariables");
 
-  
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::BellowGenerator BellowGen;
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF63>();
+  PTubeGen.setPortLength(3.0,3.0);
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,9.0,54.0);
+  Control.addVariable(preName+"ShutterPiperNPorts",2);
+    
     // Shutter pipe
-  CrossGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
-  CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
-  CrossGen.generateCF<setVariable::CF63>
-    (Control,preName+"ShutterPipe",0.0,8.0,13.5,13.5);
+  // PTubeGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
+  // CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
+  // CrossGen.generateCF<setVariable::CF63>
+  //   (Control,preName+"ShutterPipe",0.0,8.0,13.5,13.5);
   
   FlangeGen.setCF<setVariable::CF63>();
   FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
@@ -654,7 +666,7 @@ monoShutterVariables(FuncDataBase& Control,
     // joined and open
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
-return;
+  return;
 }
 
 void

@@ -3,7 +3,7 @@
  
  * File: balder/balderFrontEnd.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -332,13 +332,11 @@ balderFrontEnd::buildHeatTable(Simulation& System,
     (System,masterCell,PIA,PIA.getSideIndex("OuterPlate"));
   heatBox->insertAllInCell(System,outerCell);
   
-
   // cant use heatbox here because of port rotation
   
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
   heatDump->addInsertCell("Outer",outerCell);
   heatDump->createAll(System,PIA,0,*heatBox,2);
-
 
   //  const constructSystem::portItem& PI=heatBox->getPort(1);  
   bellowD->createAll(System,PIA,PIA.getSideIndex("OuterPlate"));

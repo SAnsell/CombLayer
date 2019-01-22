@@ -979,7 +979,7 @@ wallVariables(FuncDataBase& Control,
 
   WallLeadGenerator LGen;
 
-  LGen.generateWall(Control,wallKey);
+  LGen.generateWall(Control,wallKey,3.0);
   return;
 }
   

@@ -61,8 +61,6 @@ class WallLeadGenerator
   double extraLeadDepth;      ///< Depth of lead
   double extraLeadXCut;       ///< Cut out
   
-  double voidRadius;          ///< Radius in middle
-  
   std::string voidMat;                 ///< void material
   std::string midMat;                  ///< mid material
   std::string wallMat;                 ///< main lead material
@@ -77,7 +75,7 @@ class WallLeadGenerator
 
   void setWidth(const double,const double);
 
-  void generateWall(FuncDataBase&,const std::string&) const;
+  void generateWall(FuncDataBase&,const std::string&,const double) const;
 
 };
 

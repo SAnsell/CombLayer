@@ -72,6 +72,7 @@
 #include "JawFlangeGenerator.h"
 #include "BremCollGenerator.h"
 #include "PipeShieldGenerator.h"
+#include "WallLeadGenerator.h"
 
 namespace setVariable
 {
@@ -477,23 +478,15 @@ wallVariables(FuncDataBase& Control,
 /*!
     Set the variables for the frontend wall
     \param Control :: DataBase to use
-    \param frontKey :: name before part names
+    \param wallKey :: name before part names
   */
 {
   ELog::RegMethod RegA("formaxVariables[F]","wallVariables");
 
-  Control.addVariable(wallKey+"FrontHeight",40.0);
-  Control.addVariable(wallKey+"FrontWidth",60.0);
-  Control.addVariable(wallKey+"FrontLength",20.0);
-  Control.addVariable(wallKey+"BackLength",20.0);
-  
-  Control.addVariable(wallKey+"BackWidth",20.0);
-  Control.addVariable(wallKey+"BackHeight",20.0);
-  
-  Control.addVariable(wallKey+"VoidRadius",3.0);
-  Control.addVariable(wallKey+"WallMat","Lead");
-  Control.addVariable(wallKey+"VoidMat","Void");
-  Control.addVariable(wallKey+"MidMat","Concrete");
+  WallLeadGenerator LGen;
+  LGen.setWidth(140.0,70.0);
+  LGen.generateWall(Control,wallKey,3.0);
+
   return;
 }
 

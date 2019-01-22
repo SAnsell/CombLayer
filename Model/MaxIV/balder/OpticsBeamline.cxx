@@ -3,7 +3,7 @@
  
  * File: balder/OpticsBeamline.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,7 +150,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
-  shutterPipe(new constructSystem::PipeTube(newName+"ShutterPipe")),
+  shutterPipe(new constructSystem::PortTube(newName+"ShutterPipe")),
   monoShutterA(new xraySystem::FlangeMount(newName+"MonoShutterB")),
   monoShutterB(new xraySystem::FlangeMount(newName+"MonoShutterA")),
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
@@ -209,7 +209,8 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(viewPipe);
   OR.addObject(pipeF);
   OR.addObject(shutterPipe);
-  OR.addObject(monoShutter);
+  OR.addObject(monoShutterA);
+  OR.addObject(monoShutterB);
   OR.addObject(pipeG);
   OR.addObject(gateE);
 }
@@ -545,16 +546,15 @@ OpticsBeamline::buildObjects(Simulation& System)
   shutterPipe->setFront(*pipeF,2);
   shutterPipe->createAll(System,*pipeF,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterPipe,2);
-  shutterPipe->insertInCell(System,outerCell);
+  shutterPipe->insertAllInCell(System,outerCell);
 
   
-  
-  monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
-  monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
-  monoShutter->setBladeCentre(*shutterPipe,0);
+  // monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
+  // monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
+  // monoShutter->setBladeCentre(*shutterPipe,0);
 
-  monoShutter->createAll
-    (System,*shutterPipe,shutterPipe->getSideIndex("topFlange"));
+  // monoShutter->createAll
+  //   (System,*shutterPipe,shutterPipe->getSideIndex("topFlange"));
 
   pipeG->addInsertCell(ContainedComp::getInsertCells());
   pipeG->setFront(*shutterPipe,2);

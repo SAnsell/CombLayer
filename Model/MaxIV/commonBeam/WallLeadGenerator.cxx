@@ -96,11 +96,13 @@ WallLeadGenerator::setWidth(const double OW,const double RW)
   
 void
 WallLeadGenerator::generateWall(FuncDataBase& Control,
-				  const std::string& keyName) const
+				const std::string& keyName,
+				const double VR) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
+    \param VR :: void radius						
   */
 {
   ELog::RegMethod RegA("WallLeadGenerator","generateWall");
@@ -122,7 +124,7 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
   Control.addVariable(keyName+"ExtraLeadXCut",extraLeadXCut);
-  Control.addVariable(keyName+"VoidRadius",voidRadius);
+  Control.addVariable(keyName+"VoidRadius",VR);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MidMat",midMat);

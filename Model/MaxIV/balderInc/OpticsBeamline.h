@@ -177,10 +177,12 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeF;
 
   /// Shutter pipe
-  std::shared_ptr<constructSystem::CrossPipe> shutterPipe;
+  std::shared_ptr<constructSystem::PortTube> shutterPipe;
 
   /// shutter to stop beam
-  std::shared_ptr<xraySystem::FlangeMount> monoShutter;
+  std::shared_ptr<xraySystem::FlangeMount> monoShutterA;
+  /// shutter to stop beam
+  std::shared_ptr<xraySystem::FlangeMount> monoShutterB;
     
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeG;
