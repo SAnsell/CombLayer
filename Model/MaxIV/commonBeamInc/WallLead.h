@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/WallLead.h
+ * File:   commonBeamInc/WallLead.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,10 @@ namespace xraySystem
   \version 1.0
   \author S. Ansell
   \date May 2018
-  \brief Bremsstralung Collimator unit  
+  \brief Extra wall lead/concrete/lead + steel/lead front
+
+  The lead wall is a lead/concrete/lead unit with a beampipe
+  through
 */
 
 class WallLead :
@@ -43,7 +46,6 @@ class WallLead :
 {
  private:
 
-
   double frontLength;          ///< Front length
   double backLength;           ///< Back length
 
@@ -53,12 +55,26 @@ class WallLead :
   double backWidth;           ///< Front width of hole
   double backHeight;          ///< Front height of hole
 
+  double steelOutWidth;       ///< Thickness of steel wall side
+  double steelRingWidth;      ///< Thickness of steel ring side
+  double steelHeight;         ///< Height of steel
+  double steelDepth;          ///< Depth of steel
+  double steelXCut;           ///< Central hole size
+  double steelZCut;           ///< Central hole size 
+
+  double extraLeadOutWidth;   ///< Width of lead wall side
+  double extraLeadRingWidth;  ///< Width of lead ring side
+  double extraLeadHeight;     ///< Height of lead
+  double extraLeadDepth;      ///< Depth of lead
+  double extraLeadXCut;       ///< Cut out
+  
   double voidRadius;          ///< Radius in middle
   
-  int voidMat;                ///< void material
-  int midMat;                ///< void material
-  int wallMat;                ///< main material
-
+  int voidMat;                 ///< void material
+  int midMat;                  ///< mid material
+  int wallMat;                 ///< main lead material
+  int steelMat;                ///< steel material
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

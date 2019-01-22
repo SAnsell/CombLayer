@@ -150,8 +150,9 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
-  shutterPipe(new constructSystem::CrossPipe(newName+"ShutterPipe")),
-  monoShutter(new xraySystem::FlangeMount(newName+"MonoShutter")),
+  shutterPipe(new constructSystem::PipeTube(newName+"ShutterPipe")),
+  monoShutterA(new xraySystem::FlangeMount(newName+"MonoShutterB")),
+  monoShutterB(new xraySystem::FlangeMount(newName+"MonoShutterA")),
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
   neutShield({

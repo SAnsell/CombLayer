@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/WallLead.cxx
+ * File:   commonBeam/WallLead.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,12 +113,25 @@ WallLead::populate(const FuncDataBase& Control)
   backHeight=Control.EvalVar<double>(keyName+"BackHeight");
 
   backLength=Control.EvalDefVar<double>(keyName+"BackLength",0.0);
-  
+
+  steelOutWidth=Control.EvalVar<double>(keyName+"SteelOutWidth");
+  steelRingWidth=Control.EvalVar<double>(keyName+"SteelRingWidth");
+  steelHeight=Control.EvalVar<double>(keyName+"SteelHeight");
+  steelDepth=Control.EvalVar<double>(keyName+"SteelDepth");
+  steelXCut=Control.EvalVar<double>(keyName+"SteelXCut");
+  steelZCut=Control.EvalVar<double>(keyName+"SteelZCut");
+
+  extraLeadOutWidth=Control.EvalVar<double>(keyName+"ExtraLeadOutWidth");
+  extraLeadRingWidth=Control.EvalVar<double>(keyName+"ExtraLeadRingWidth");
+  extraLeadHeight=Control.EvalVar<double>(keyName+"ExtraLeadHeight");
+  extraLeadDepth=Control.EvalVar<double>(keyName+"ExtraLeadDepth");
+  extraLeadXCut=Control.EvalVar<double>(keyName+"ExtraLeadXCut");
   // Void 
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   midMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MidMat",wallMat);
 
   return;
@@ -153,20 +166,45 @@ WallLead::createSurfaces()
   if (!frontActive() || !backActive())
     throw ColErr::EmptyContainer("back/front not set for:"+keyName);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,frontLength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,extraLeadDepth);
+
+  FrontBackCut::getShiftedFront(SMap,buildIndex+21,1,Y,
+				extraLeadDepth+steelDepth);
+
+  FrontBackCut::getShiftedFront(SMap,buildIndex+31,1,Y,
+				extraLeadDepth+steelDepth+frontLength);
 
   if (backLength>Geometry::zeroTol)
     FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,backLength);
   
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(frontWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(frontWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(frontHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(frontHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*extraLeadOutWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*extraLeadRingWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(extraLeadHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(extraLeadHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(backWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(backWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(backHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(backHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(extraLeadXCut/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(extraLeadXCut/2.0),X);
+
+  // steel
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*steelOutWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*steelRingWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(steelHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(steelHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+113,Origin-X*(steelXCut/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+114,Origin+X*(steelXCut/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+115,Origin-Z*(steelZCut/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(steelZCut/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(frontWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(frontWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(frontHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(frontHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*(backWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*(backWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*(backHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*(backHeight/2.0),Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,voidRadius);
   
@@ -186,31 +224,59 @@ WallLead::createObjects(Simulation& System)
   const std::string backSurf(backRule());
 
   std::string Out;
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6 7 ");
-  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,frontSurf+Out);
 
+  // extra Lead
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 13 -14 5 -6 7");
+  makeCell("ExtraVoid",System,cellIndex++,0,0.0,frontSurf+Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 (-13 : 14) 5 -6");
+  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,frontSurf+Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " -11 103 -104 105 -106 (-3:4:-5:6)");
+  makeCell("ExtraOut",System,cellIndex++,0,0.0,frontSurf+Out);
+  
+  // steel wall
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 113 -114 115 -116 7");
+  makeCell("SteelVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+	 " 11 -21 103 -104 105 -106 (-113 : 114 : -115 : 116)");
+  makeCell("SteelWall",System,cellIndex++,steelMat,0.0,Out);
+
+  // front wall
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 21 -31 203 -204 205 -206 7 ");
+  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+
+  
   if (backLength>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
-	(SMap,buildIndex," 11 -12 13 -14 15 -16 7 ");
+	(SMap,buildIndex," 31 -12 1003 -1004 1005 -1006 7 ");
       makeCell("MidWall",System,cellIndex++,midMat,0.0,Out);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex," 12 13 -14 15 -16 7 ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 12 1003 -1004 1005 -1006 7 ");
       makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 13 -14 15 -16 7 ");
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 31 1003 -1004 1005 -1006 7 ");
       makeCell("BackWall",System,cellIndex++,wallMat,0.0,backSurf+Out);
     }
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,frontSurf+backSurf+Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6 ");
-  addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 13 -14 15 -16 ");
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -21 103 -104  105 -106");
+  addOuterUnionSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 203 -204  205 -206");
+  addOuterUnionSurf(Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 1003 -1004 1005 -1006 ");
   addOuterUnionSurf(Out);
 
   return;

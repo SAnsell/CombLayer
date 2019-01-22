@@ -68,6 +68,7 @@
 #include "MazeGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
+#include "WallLeadGenerator.h"
 
 namespace setVariable
 {
@@ -434,16 +435,10 @@ wallVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables[F]","wallVariables");
 
-  Control.addVariable(wallKey+"FrontHeight",40.0);
-  Control.addVariable(wallKey+"FrontWidth",60.0);
-  Control.addVariable(wallKey+"FrontLength",20.0);
   
-  Control.addVariable(wallKey+"BackWidth",20.0);
-  Control.addVariable(wallKey+"BackHeight",20.0);
-  
-  Control.addVariable(wallKey+"VoidRadius",3.0);
-  Control.addVariable(wallKey+"WallMat","Lead");
-  Control.addVariable(wallKey+"VoidMat","Void");
+  WallLeadGenerator LGen;
+  LGen.setWidth(140,70);
+  LGen.generateWall(Control,wallKey);
   return;
 }
 
@@ -623,6 +618,44 @@ opticsHutVariables(FuncDataBase& Control,
   return;
 }
 
+void
+monoShutterVariables(FuncDataBase& Control,
+		     const std::string& preName)
+  /*!
+    Construct Mono Shutter variables
+    \param Control :: Database for variables
+    
+   */
+{
+  ELog::RegMethod RegA("balderVariables","monoShutterVariables");
+
+  
+    // Shutter pipe
+  CrossGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
+  CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
+  CrossGen.generateCF<setVariable::CF63>
+    (Control,preName+"ShutterPipe",0.0,8.0,13.5,13.5);
+  
+  FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
+  FlangeGen.setNoPlate();
+  FlangeGen.generateMount(Control,preName+"MonoShutterA",0); 
+
+  FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
+  FlangeGen.setNoPlate();
+  FlangeGen.generateMount(Control,preName+"MonoShutterB",0); 
+
+  // bellows on shield block
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
+
+    // joined and open
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+return;
+}
 
 void
 shieldVariables(FuncDataBase& Control)
@@ -753,6 +786,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::MirrorGenerator MirrGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -958,26 +992,6 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
   BellowGen.generateBellow(Control,opticsName+"BellowF",0,23.0);
 
-  // Shutter pipe
-  CrossGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
-  CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
-  CrossGen.generateCF<setVariable::CF63>
-    (Control,opticsName+"ShutterPipe",0.0,8.0,13.5,13.5);
-
-  FlangeGen.setCF<setVariable::CF63>();
-  FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
-  FlangeGen.setNoPlate();
-  FlangeGen.generateMount(Control,opticsName+"MonoShutter",0); 
-
-
-  // bellows on shield block
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,opticsName+"BellowG",0,10.0);    
-
-    // joined and open
-  GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,opticsName+"GateE",0.0,0);
 
   // pipe shield
   for(size_t i=0;i<4;i++)
