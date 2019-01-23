@@ -73,10 +73,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "IMatGuide.h"
 #include "IMatPrimGuide.h"
@@ -129,7 +127,13 @@ IMatPrimGuide::createSurfaces()
   */
 {
   ELog::RegMethod RegA("IMatPrimGuide","createSurfaces");
-  
+
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D bX(beamFC.getX());
+  const Geometry::Vec3D bY(beamFC.getY());
+  const Geometry::Vec3D bZ(beamFC.getZ());
+
   IMatGuide::createSurfaces();
 
   // Inner void layers
@@ -215,7 +219,8 @@ IMatPrimGuide::createLinks()
 }
 
 void
-IMatPrimGuide::createAll(Simulation& System,const attachSystem::TwinComp& TC)
+IMatPrimGuide::createAll(Simulation& System,
+			 const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to

@@ -118,7 +118,7 @@ FixedComp::FixedComp(const FixedComp& A) :
   cellIndex(A.cellIndex),
   keyMap(A.keyMap),
   X(A.X),Y(A.Y),Z(A.Z),
-  Origin(A.Origin),beamAxis(A.beamAxis),
+  Origin(A.Origin),
   orientateAxis(A.orientateAxis),primeAxis(A.primeAxis),
   LU(A.LU)
   /*!
@@ -144,7 +144,6 @@ FixedComp::operator=(const FixedComp& A)
       Y=A.Y;
       Z=A.Z;
       Origin=A.Origin;
-      beamAxis=A.beamAxis;
       orientateAxis=A.orientateAxis;
       primeAxis=A.primeAxis;
       LU=A.LU;
@@ -187,8 +186,6 @@ FixedComp::createUnitVector(const FixedComp& FC)
   Y=FC.Y;
   X=FC.X;
   Origin=FC.Origin;
-  beamOrigin=FC.beamOrigin;
-  beamAxis=FC.beamAxis;
 
   if (primeAxis>0)
     reOrientate();
@@ -211,8 +208,6 @@ FixedComp::createUnitVector(const FixedComp& FC,
   Y=FC.Y;
   X=FC.X;
   Origin=POrigin;
-  beamOrigin=FC.beamOrigin;
-  beamAxis=FC.beamAxis;
 
   if (primeAxis>0) reOrientate();
   
@@ -305,8 +300,6 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   
   makeOrthogonal();
   Origin=OG;
-  beamOrigin=OG;
-  beamAxis=Y;
   if (primeAxis>0) reOrientate();
   return;
 }
@@ -1598,28 +1591,6 @@ FixedComp::setExit(const Geometry::Vec3D& C,
   return;
 }
 
-const Geometry::Vec3D&
-FixedComp::getExit() const
-  /*!
-    Get Exit if set / Default to Origin
-    \return Exit point
-  */
-{
-  return (LU.size()>1 && LU[1].hasConnectPt())  ? 
-    LU[1].getConnectPt() : Origin;
-}
-
-const Geometry::Vec3D&
-FixedComp::getExitNorm() const
-  /*!
-    Get exit normal if set / Default to Beam axis
-    \return Exit direction
-  */
-{
-  return (LU.size()>1 && LU[1].hasAxis())  ? 
-    LU[1].getAxis() : beamAxis;
-}
-
 size_t
 FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
   /*!
@@ -1689,7 +1660,6 @@ FixedComp::applyRotation(const Geometry::Vec3D& Axis,
   
   Qrot.rotate(X);
   Qrot.rotate(Y);
-  Qrot.rotate(beamAxis);
   Qrot.rotate(Z);
   return;
 }
@@ -1867,11 +1837,7 @@ FixedComp::applyRotation(const localRotate& LR)
   LR.applyFullAxis(X);
   LR.applyFullAxis(Y);
   LR.applyFullAxis(Z);
-  LR.applyFullAxis(beamAxis);
   
-  LR.applyFull(Origin);
-  LR.applyFull(beamOrigin);
-
   for(LinkUnit& linkItem : LU)
     linkItem.applyRotation(LR);
   

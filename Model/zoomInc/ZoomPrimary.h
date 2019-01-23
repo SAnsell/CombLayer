@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoomInc/ZoomPrimary.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace zoomSystem
   line impacts the 40000 outer surface
 */
 
-  class ZoomPrimary : public attachSystem::TwinComp,
+  class ZoomPrimary : public attachSystem::FixedGroup,
     public attachSystem::ContainedComp
 {
  private:
@@ -69,7 +69,7 @@ namespace zoomSystem
 
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
   
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
@@ -83,7 +83,7 @@ namespace zoomSystem
   ZoomPrimary& operator=(const ZoomPrimary&);
   virtual ~ZoomPrimary();
 
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createAll(Simulation&,const attachSystem::FixedGroup&);
 
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;

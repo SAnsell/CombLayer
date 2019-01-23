@@ -634,14 +634,23 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::HeatDumpGenerator HeatGen;
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();
   PTubeGen.setPortLength(3.0,3.0);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,9.0,54.0);
-  Control.addVariable(preName+"ShutterPiperNPorts",2);
-    
+  PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,5.0,20.0);
+  Control.addVariable(preName+"ShutterPipeNPorts",2);
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,preName+"ShutterPipePort0",
+			Geometry::Vec3D(0,-6,0),ZVec);
+  PItemGen.generatePort(Control,preName+"ShutterPipePort1",
+			Geometry::Vec3D(0,6,0),ZVec);
+
     // Shutter pipe
   // PTubeGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
   // CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
@@ -658,6 +667,13 @@ monoShutterVariables(FuncDataBase& Control,
   FlangeGen.setNoPlate();
   FlangeGen.generateMount(Control,preName+"MonoShutterB",0); 
 
+
+  const std::string hDump(preName+"MonoHeatA");
+  HeatGen.setCF<CF40>();
+  HeatGen.setTopCF<CF100>();
+  HeatGen.generateHD(Control,hDump,1);
+
+  
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
@@ -1002,9 +1018,9 @@ opticsVariables(FuncDataBase& Control,
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
-  BellowGen.generateBellow(Control,opticsName+"BellowF",0,23.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowF",0,13.0);
 
-
+  monoShutterVariables(Control,opticsName);
   // pipe shield
   for(size_t i=0;i<4;i++)
     {

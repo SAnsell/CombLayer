@@ -3,7 +3,7 @@
  
  * File:   constructInc/DiskChopper.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,6 @@
 #define constructSystem_DiskChopper_h
 
 class Simulation;
-
-namespace attachSystem
-{
-  class TwinComp;
-}
 
 namespace constructSystem
 {
@@ -56,6 +51,9 @@ class DiskChopper : public attachSystem::FixedOffsetGroup,
   size_t nDisk;                   ///< Number of disks
   std::vector<DiskBlades> DInfo;  ///< Info on each disk
   double totalThick;              ///< total thickness
+
+  Geometry::Vec3D beamOrigin;     ///< Orginal beam centre [before offset]
+  Geometry::Vec3D beamAxis;       ///< Orginal beam axis [before offset]
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,6 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
@@ -822,12 +820,6 @@ template const attachSystem::ContainedComp*
 template const attachSystem::ContainedGroup* 
   objectGroups::getObject(const std::string&) const;
 
-template const attachSystem::TwinComp* 
-  objectGroups::getObject(const std::string&) const;
-
-template const attachSystem::SecondTrack* 
-  objectGroups::getObject(const std::string&) const;
-
 template const attachSystem::LayerComp* 
   objectGroups::getObject(const std::string&) const;
 
@@ -847,12 +839,6 @@ template attachSystem::ContainedComp*
   objectGroups::getObject(const std::string&);
 
 template attachSystem::ContainedGroup* 
-  objectGroups::getObject(const std::string&);
-
-template attachSystem::TwinComp* 
-  objectGroups::getObject(const std::string&);
-
-template attachSystem::SecondTrack* 
   objectGroups::getObject(const std::string&);
 
 template attachSystem::CellMap* 
@@ -872,12 +858,6 @@ template const attachSystem::ContainedComp*
 template const attachSystem::ContainedGroup* 
   objectGroups::getObjectThrow(const std::string&,const std::string&) const;
 
-template const attachSystem::TwinComp* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&) const;
-
-template const attachSystem::SecondTrack* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&) const;
-
 template const attachSystem::LayerComp* 
   objectGroups::getObjectThrow(const std::string&,const std::string&) const;
 
@@ -899,11 +879,6 @@ template attachSystem::ContainedComp*
 template attachSystem::ContainedGroup* 
   objectGroups::getObjectThrow(const std::string&,const std::string&);
 
-template attachSystem::TwinComp* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&);
-
-template attachSystem::SecondTrack* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&);
 
 template attachSystem::LayerComp* 
   objectGroups::getObjectThrow(const std::string&,const std::string&);

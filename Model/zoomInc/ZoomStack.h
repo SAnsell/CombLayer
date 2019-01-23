@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoomInc/ZoomStack.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ namespace zoomSystem
 */
 
 class ZoomStack :  public attachSystem::ContainedComp,
-  public attachSystem::TwinComp
+  public attachSystem::FixedGroup
 {
  private:
   
@@ -57,7 +57,7 @@ class ZoomStack :  public attachSystem::ContainedComp,
   int voidCell;                ///< Cell to insert to.
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -69,7 +69,7 @@ class ZoomStack :  public attachSystem::ContainedComp,
   ZoomStack& operator=(const ZoomStack&);
   virtual ~ZoomStack();
 
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createAll(Simulation&,const attachSystem::FixedGroup&);
 
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;

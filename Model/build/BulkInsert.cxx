@@ -3,7 +3,7 @@
  
  * File:   build/BulkInsert.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,12 +74,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
-#include "TwinComp.h"
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
 
@@ -87,7 +85,7 @@ namespace shutterSystem
 {
 
 BulkInsert::BulkInsert(const size_t ID,const std::string& Key) : 
-  attachSystem::TwinComp(Key+StrFunc::makeString(ID+1),6),
+  attachSystem::FixedGroup(Key+std::to_string(ID+1),"Main",6,"Beam",2),
   attachSystem::ContainedGroup("inner","outer"),
   baseName(Key),
   shutterNumber(ID),
@@ -100,7 +98,7 @@ BulkInsert::BulkInsert(const size_t ID,const std::string& Key) :
 {}
 
 BulkInsert::BulkInsert(const BulkInsert& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedGroup(A),
   shutterNumber(A.shutterNumber),
   populated(A.populated),
   divideSurf(A.divideSurf),DPlane(A.DPlane),
@@ -129,7 +127,7 @@ BulkInsert::operator=(const BulkInsert& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       populated=A.populated;
       divideSurf=A.divideSurf;
@@ -232,12 +230,19 @@ BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
     - Z is gravity 
     - Y is beam XY-axis
     - X is perpendicular to XY-Axis
-    \param GS :: General shutter
+    Note use the exit point of the GS to construct the 
+    bulk insert start point [I think]
+    \param GS :: General shutter :
   */
 {
   ELog::RegMethod RegA("BulkInsert","createUnitVector");
 
-  attachSystem::TwinComp::createUnitVector(GS);
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.createUnitVector(GS.getKey("Main"),2);
+  beamFC.createUnitVector(GS.getKey("Beam"),2);
+
   divideSurf=GS.getDivideSurf();
   DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
   Origin=GS.getTargetPoint();
@@ -369,32 +374,44 @@ BulkInsert::createLinks()
 {
   ELog::RegMethod RegA("BulkInsert","createLinks");
 
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   // Inner link
   
   const int angleFlag((xyAngle>0) ? -1 : 1);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));
-  FixedComp::addLinkSurf(0,-angleFlag*divideSurf);
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
+  mainFC.addLinkSurf(0,-angleFlag*divideSurf);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+27));
-  FixedComp::addLinkSurf(1,angleFlag*divideSurf);
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+27));
+  mainFC.addLinkSurf(1,angleFlag*divideSurf);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,bExit,Y);
-  FixedComp::setConnect(2,Origin-X*(outerWidth/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(outerWidth/2.0),X);
-  FixedComp::setConnect(4,Origin-Y*(outerHeight/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Y*(outerHeight/2.0),Z);
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setConnect(1,beamFC.getLinkPt(2),Y);
+  mainFC.setConnect(2,Origin-X*(outerWidth/2.0),-X);
+  mainFC.setConnect(3,Origin+X*(outerWidth/2.0),X);
+  mainFC.setConnect(4,Origin-Y*(outerHeight/2.0),-Z);
+  mainFC.setConnect(5,Origin+Y*(outerHeight/2.0),Z);
   
   // Exit processed by calculating centre line to exit curve
 
-  MonteCarlo::LineIntersectVisit BeamLine(bEnter,bY);
-  bExit=BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+27),
-			  bEnter);
+  MonteCarlo::LineIntersectVisit BeamLine(beamFC.getCentre(),beamFC.getY());
+  
+  const Geometry::Vec3D bExit=
+    BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+27),
+		      beamFC.getCentre());
+  beamFC.setConnect(0,beamFC.getLinkPt(2),-beamFC.getY());
+  beamFC.setConnect(1,bExit,beamFC.getY());
+
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
+  beamFC.addLinkSurf(0,-angleFlag*divideSurf);
+  
+  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+27));
+  beamFC.addLinkSurf(1,angleFlag*divideSurf);
   return;
 }
 

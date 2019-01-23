@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/HeatDump.cxx
+ * File:   commonBeam/ShutterUnit.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -74,13 +74,13 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
-#include "HeatDump.h"
+#include "ShutterUnit.h"
 
 
 namespace xraySystem
 {
 
-HeatDump::HeatDump(const std::string& Key) :
+ShutterUnit::ShutterUnit(const std::string& Key) :
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
@@ -92,33 +92,28 @@ HeatDump::HeatDump(const std::string& Key) :
 {}
 
 
-HeatDump::~HeatDump()
+ShutterUnit::~ShutterUnit()
   /*!
     Destructor
    */
 {}
 
 void
-HeatDump::populate(const FuncDataBase& Control)
+ShutterUnit::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("HeatDump","populate");
+  ELog::RegMethod RegA("ShutterUnit","populate");
 
   FixedOffsetGroup::populate(Control);
   
-  radius=Control.EvalVar<double>(keyName+"Radius");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   thick=Control.EvalVar<double>(keyName+"Thick");
   lift=Control.EvalVar<double>(keyName+"Lift");
   upFlag=Control.EvalDefVar<int>(keyName+"UpFlag",1);
-
-  cutHeight=Control.EvalVar<double>(keyName+"CutHeight");
-  cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
-  cutDepth=Control.EvalVar<double>(keyName+"CutDepth");
 
   topInnerRadius=Control.EvalVar<double>(keyName+"TopInnerRadius");
   topFlangeRadius=Control.EvalVar<double>(keyName+"TopFlangeRadius");
@@ -130,59 +125,67 @@ HeatDump::populate(const FuncDataBase& Control)
   outLength=Control.EvalVar<double>(keyName+"OutLength");
   outRadius=Control.EvalVar<double>(keyName+"OutRadius");
 
-  waterRadius=Control.EvalVar<double>(keyName+"WaterRadius");
-  waterZStop=Control.EvalVar<double>(keyName+"WaterZStop");
-
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   bellowMat=ModelSupport::EvalMat<int>(Control,keyName+"BellowMat");
-  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   
   return;
 }
 
 void
-HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
-			   const long int cIndex,
-			   const attachSystem::FixedComp& flangeFC,
-			   const long int fIndex)
+ShutterUnit::createUnitVector(const attachSystem::FixedComp& beamFC,
+			      const long int cIndex,
+			      const attachSystem::FixedComp& flangeFC,
+			      const long int fIndex)
   /*!
     Create the unit vectors.
     The first beamFC is to set the X,Y,Z relative to the beam
     and the origin at the beam centre position.
+    The origin is corrected so that the flange centre + alpha*Y'
+    where Y' is its primary direction is closeest to 
+    beamCenter + Y'*beta. The flange centre point is taken.
 
-    \param centreFC :: FixedComp for origin
+    \param beamFC :: FixedComp for origin
     \param cIndex :: link point of centre [and axis]
     \param flangeFC :: link point of flange centre
-    \param fIndex :: direction for links
+    \param fIndex :: direction for flange axis
   */
 {
-  ELog::RegMethod RegA("HeatDump","createUnitVector");
+  ELog::RegMethod RegA("ShutterUnit","createUnitVector");
 
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  beamFC.createUnitVector(centreFC,cIndex);
+  beamFC.createUnitVector(beamFC,cIndex);
   mainFC.createUnitVector(flangeFC,fIndex);
-  
   applyOffset();
+
+  // Now construct new centre point:
+  Geometry::LineBeam(beamFC.)
+  
+  
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
+  
   ELog::EM<<"BEAM == "<<centreFC.getLinkAxis(cIndex)<<ELog::endDiag;
+
   ELog::EM<<"FLANGE == "<<flangeFC.getLinkAxis(fIndex)<<ELog::endDiag;
+  
   ELog::EM<<"Beam Z == "<<beamFC.getZ()<<ELog::endDiag;
   ELog::EM<<"Main Z == "<<mainFC.getZ()<<ELog::endDiag;
+  
   setDefault("Main");
+
   return;
 }
 
 void
-HeatDump::createSurfaces()
+ShutterUnit::createSurfaces()
   /*!
     Create planes for mirror block and support
   */
 {
-  ELog::RegMethod RegA("HeatDump","createSurfaces");
+  ELog::RegMethod RegA("ShutterUnit","createSurfaces");
 
 
   const attachSystem::FixedComp& beamFC=getKey("Beam");
@@ -197,8 +200,9 @@ HeatDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,beamOrg-beamZ*cutHeight,beamZ);
   ModelSupport::buildPlane(SMap,buildIndex+6,beamOrg+beamZ*
 			   (height-cutHeight),beamZ);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,beamOrg,beamZ,radius);
 
+
+  
   const Geometry::Vec3D ZCut(beamOrg+beamY*cutDepth); 
 
   ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,beamZ);
@@ -236,13 +240,13 @@ HeatDump::createSurfaces()
 }
 
 void
-HeatDump::createObjects(Simulation& System)
+ShutterUnit::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("HeatDump","createObjects");
+  ELog::RegMethod RegA("ShutterUnit","createObjects");
 
   const std::string mountSurf
     (ExternalCut::getRuleStr("mountSurf"));
@@ -296,13 +300,13 @@ HeatDump::createObjects(Simulation& System)
 }
 
 std::vector<Geometry::Vec3D>
-HeatDump::calcEdgePoints() const
+ShutterUnit::calcEdgePoints() const
   /*!
     Get points to test for ContainedComp
     \return Points
    */
 {
-  ELog::RegMethod RegA("HeatDump","calcEdgePoints");
+  ELog::RegMethod RegA("ShutterUnit","calcEdgePoints");
   
   std::vector<Geometry::Vec3D> Out;
   Out.push_back(Origin);
@@ -312,18 +316,18 @@ HeatDump::calcEdgePoints() const
 }
   
 void
-HeatDump::createLinks()
+ShutterUnit::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("HeatDump","createLinks");
+  ELog::RegMethod RegA("ShutterUnit","createLinks");
   
   return;
 }
 
 void
-HeatDump::createAll(Simulation& System,
+ShutterUnit::createAll(Simulation& System,
 		    const attachSystem::FixedComp& centreFC,
 		    const long int cIndex,
 		    const attachSystem::FixedComp& flangeFC,
@@ -337,7 +341,7 @@ HeatDump::createAll(Simulation& System,
     \param fIndex :: direction for links
    */
 {
-  ELog::RegMethod RegA("HeatDump","createAll");
+  ELog::RegMethod RegA("ShutterUnit","createAll");
   populate(System.getDataBase());
 
   createUnitVector(centreFC,cIndex,flangeFC,fIndex);

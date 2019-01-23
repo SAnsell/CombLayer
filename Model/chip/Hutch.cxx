@@ -83,8 +83,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -1112,7 +1110,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
     
 void
 ChipIRHutch::addCollimators(Simulation& System,
-			    const attachSystem::TwinComp& GI)
+			    const attachSystem::FixedGroup& GI)
   /*!
     Add collimator objects if defined
     \param System :: Simulation item to build
@@ -1287,7 +1285,7 @@ ChipIRHutch::createLinks()
 void
 ChipIRHutch::createAll(Simulation& System,
 		       const shutterSystem::GeneralShutter& ShutterPort,
-		       const attachSystem::TwinComp& Guide,
+		       const attachSystem::FixedGroup& Guide,
 		       const attachSystem::ContainedComp& IC)
   /*!
     Generic function to create everything
@@ -1308,7 +1306,7 @@ ChipIRHutch::createAll(Simulation& System,
 void
 ChipIRHutch::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const attachSystem::TwinComp& Guide,
+		       const attachSystem::FixedGroup& Guide,
 		       const attachSystem::ContainedComp& IC)
   /*!
     Generic function to create everything
@@ -1329,7 +1327,7 @@ ChipIRHutch::createAll(Simulation& System,
 
 void
 ChipIRHutch::createCommonAll(Simulation& System,
-			     const attachSystem::TwinComp& Guide,
+			     const attachSystem::FixedGroup& Guide,
 			     const attachSystem::ContainedComp& IC)
   /*!
     Generic function to create everything

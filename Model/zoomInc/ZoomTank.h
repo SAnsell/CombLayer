@@ -3,7 +3,7 @@
  
  * File:   zoomInc/ZoomTank.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace zoomSystem
 */
 
 class ZoomTank : public attachSystem::ContainedComp,
-    public attachSystem::TwinComp
+    public attachSystem::FixedGroup
 {
  private:
   
@@ -68,7 +68,7 @@ class ZoomTank : public attachSystem::ContainedComp,
   int windowMat;                  ///< Material for walls
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
 
   void createSurfaces();
   void createLinks();
@@ -81,7 +81,7 @@ class ZoomTank : public attachSystem::ContainedComp,
   ZoomTank& operator=(const ZoomTank&);
   ~ZoomTank();
 
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createAll(Simulation&,const attachSystem::FixedGroup&);
 
 };
 

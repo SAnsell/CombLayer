@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoomInc/ZoomHutch.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace zoomSystem
 */
 
 class ZoomHutch : public attachSystem::ContainedComp,
-    public attachSystem::TwinComp
+    public attachSystem::FixedGroup
 {
  private:
   
@@ -78,7 +78,7 @@ class ZoomHutch : public attachSystem::ContainedComp,
   int innerVoid;                ///< Inner void cell
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
 
   void createSurfaces();
   void createLinks();
@@ -91,7 +91,7 @@ class ZoomHutch : public attachSystem::ContainedComp,
   ZoomHutch& operator=(const ZoomHutch&);
   virtual ~ZoomHutch();
 
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createAll(Simulation&,const attachSystem::FixedGroup&);
 
 };
 

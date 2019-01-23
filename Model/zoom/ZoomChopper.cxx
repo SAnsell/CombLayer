@@ -79,11 +79,9 @@
 #include "surfDBase.h"
 #include "mergeTemplate.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedComp.h"
+#include "FixedGroup.h" 
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "BulkShield.h"
@@ -95,7 +93,8 @@ namespace zoomSystem
 {
 
 ZoomChopper::ZoomChopper(const std::string& Key) : 
-  attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::ContainedComp(),
   nShield(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -104,7 +103,7 @@ ZoomChopper::ZoomChopper(const std::string& Key) :
 {}
 
 ZoomChopper::ZoomChopper(const ZoomChopper& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   length(A.length),depth(A.depth),height(A.height),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
@@ -135,7 +134,7 @@ ZoomChopper::operator=(const ZoomChopper& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       xStep=A.xStep;
       yStep=A.yStep;
@@ -258,6 +257,10 @@ ZoomChopper::createLinks()
 {
   ELog::RegMethod RegA("ZoomChopper","createLinks");
   
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D& bY(beamFC.getY());
+
   FixedComp::setConnect(1,Origin+bY*length,bY);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
@@ -273,7 +276,7 @@ ZoomChopper::createLinks()
 
   // Link point is the join between BeamOrigin+
   // beam exit
-  setBeamExit(buildIndex+2,bEnter,bY);
+  //setBeamExit(buildIndex+2,bEnter,bY);
   return;
 }
 
@@ -284,14 +287,16 @@ ZoomChopper::createUnitVector(const zoomSystem::ZoomBend& ZB)
     \param ZB :: Zoom Bender
   */
 {
-  ELog::RegMethod RegA("ZoomChopper","createUnitVector");
-  
-  TwinComp::createUnitVector(ZB);
-  // X is wrong from bender:
-  X*=-1.0;
-  bX*=-1.0;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  mainFC.createUnitVector(ZB.getKey("Main"));
+  beamFC.createUnitVector(ZB.getKey("Beam"));
+
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+
   return;
 }
 
@@ -388,7 +393,15 @@ ZoomChopper::createSurfacesCommon()
   ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*voidEndDown,Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*voidEndUp,Z);
 
+  
   // Cut through
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D& bEnter(beamFC.getCentre());
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bY(beamFC.getX());
+  const Geometry::Vec3D& bZ(beamFC.getZ());
+  
   if (voidEndMat>0)
     {
       Geometry::Vec3D VECent=bEnter+bY*(length-voidEnd);

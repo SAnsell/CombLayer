@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomStack.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ZoomStack.h"
 
@@ -81,7 +80,8 @@ namespace zoomSystem
 {
 
 ZoomStack::ZoomStack(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",0,"Beam",2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +89,7 @@ ZoomStack::ZoomStack(const std::string& Key)  :
 {}
 
 ZoomStack::ZoomStack(const ZoomStack& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   nItem(A.nItem),posIndex(A.posIndex),length(A.length),
   height(A.height),Items(A.Items),voidCell(A.voidCell)
   /*!
@@ -109,7 +109,7 @@ ZoomStack::operator=(const ZoomStack& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       nItem=A.nItem;
       posIndex=A.posIndex;
       length=A.length;
@@ -182,7 +182,7 @@ ZoomStack::populate(const Simulation& System)
 }
   
 void
-ZoomStack::createUnitVector(const attachSystem::TwinComp& TT)
+ZoomStack::createUnitVector(const attachSystem::FixedGroup& TT)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -190,13 +190,20 @@ ZoomStack::createUnitVector(const attachSystem::TwinComp& TT)
   */
 {
   ELog::RegMethod RegA("ZoomStack","createUnitVector");
-  TwinComp::createUnitVector(TT);
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.createUnitVector(TT.getKey("Main"));
+  beamFC.createUnitVector(TT.getKey("Beam"));
+
   
-  Origin=bEnter+Y*10.0;
+  Origin=beamFC.getCentre()+Y*10.0;
   for(size_t i=0;i<posIndex;i++)
     Origin+=X*(Items[i].getVar<double>("Width")+
 	       Items[i].getVar<double>("Clear"));
-
+  mainFC.setCentre(Origin);
+  beamFC.setCentre(Origin);
   return;
 }
 
@@ -320,7 +327,7 @@ ZoomStack::createObjects(Simulation& System)
 }
 
 void
-ZoomStack::createAll(Simulation& System,const attachSystem::TwinComp& FC)
+ZoomStack::createAll(Simulation& System,const attachSystem::FixedGroup& FC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -340,4 +347,4 @@ ZoomStack::createAll(Simulation& System,const attachSystem::TwinComp& FC)
 }
 
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE zoomSystem

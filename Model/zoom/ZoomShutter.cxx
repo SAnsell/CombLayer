@@ -73,8 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -247,7 +246,7 @@ ZoomShutter::createInsert(Simulation& System)
       ItemZB.createAll(System,iBlock.back());
       iBlock.push_back(ItemZB);
        // Nasty code to force using the system:
-      if (OuterCell && OuterCell->isValid(ItemZB.getExit()))
+      if (OuterCell && OuterCell->isValid(ItemZB.getLinkPt(2)))
 	{
 	  OuterCell=0;
 	  ItemZB.insertObjects(System);
@@ -489,18 +488,16 @@ ZoomShutter::setTwinComp()
   const double zCShift=(closed % 2) ? 
     closedZShift-openZShift : 0;
 
-  bEnter=ac->getWindowCentre()-Z*zCShift;
-  bExit=bc->getWindowCentre()-Z*zCShift;
-  bY=bExit-bEnter;
-  bY.makeUnit();
-  bZ=Z;
-
-  Geometry::Quaternion::calcQRot(zAngle,X).rotate(bZ);
-  bX=bZ*bY;
-  if (X.dotProd(bX)<0)
-    bX*=-1;
-  // Only amount to add is closed shutter offset:
+  attachSystem::FixedComp& beamFC=getKey("Beam");
   
+  Geometry::Vec3D bEnter=(*ac).getWindowCentre()-Z*zCShift;
+  Geometry::Vec3D bExit=(*bc).getWindowCentre()-Z*zCShift;
+  beamFC.createUnitVector(bEnter,X,(bExit-bEnter).unit(),Z);
+  beamFC.applyAngleRotate(0,zAngle);
+
+  beamFC.setConnect(0,bEnter,beamFC.getY());
+  beamFC.setConnect(1,bExit,beamFC.getY());
+
   return;
 }
 
@@ -513,7 +510,7 @@ ZoomShutter::createAll(Simulation& System,const double,
   */
 {
   ELog::RegMethod RegA("ZoomShutter","createAll");
-  GeneralShutter::populate(System);
+  GeneralShutter::populate(System.getDataBase());
   populate(System);  
   GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
 

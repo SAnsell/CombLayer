@@ -62,6 +62,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
@@ -97,7 +99,9 @@
 #include "JawValve.h"
 #include "FlangeMount.h"
 #include "Mirror.h"
+#include "HeatDump.h"
 #include "OpticsBeamline.h"
+
 
 namespace xraySystem
 {
@@ -151,8 +155,10 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
   shutterPipe(new constructSystem::PortTube(newName+"ShutterPipe")),
+  monoHeatA(new xraySystem::HeatDump(newName+"MonoHeatA")),
   monoShutterA(new xraySystem::FlangeMount(newName+"MonoShutterB")),
   monoShutterB(new xraySystem::FlangeMount(newName+"MonoShutterA")),
+
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
   neutShield({
@@ -332,8 +338,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   filterBox->createAll(System,*pipeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBox,2);
   filterBox->insertAllInCell(System,outerCell);
-
-
 
   // split on both inner void 
   filterBox->splitVoidPorts(System,"SplitVoid",1001,
@@ -542,13 +546,20 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
   pipeF->insertInCell(System,outerCell);
 
-
+    // fake inser for ports
+  shutterPipe->addAllInsertCell(masterCell->getName());
   shutterPipe->setFront(*pipeF,2);
   shutterPipe->createAll(System,*pipeF,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterPipe,2);
   shutterPipe->insertAllInCell(System,outerCell);
 
-  
+  const constructSystem::portItem& PIA=shutterPipe->getPort(0);
+  monoHeatA->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoHeatA->addInsertCell("Outer",outerCell);
+  for(long int i=0;i<5;i++)
+    ELog::EM<<"PIA - "<<PIA.getLinkAxis(i)<<" :: "<<PIA.getLinkPt(i)<<ELog::endDiag;
+  monoHeatA->createAll(System,*shutterPipe,0,PIA,2);
+ 
   // monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
   // monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
   // monoShutter->setBladeCentre(*shutterPipe,0);

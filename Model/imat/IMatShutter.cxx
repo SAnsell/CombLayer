@@ -3,7 +3,7 @@
  
  * File:   imat/IMatShutter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,8 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -189,20 +188,13 @@ IMatShutter::createUnitVector()
 {
   ELog::RegMethod RegA("IMatShutter","createUnitVector");
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  frontPt+=X*xStep+Z*zStep;
-  bEnter+=X*xStep+Z*zStep;
+  mainFC.applyShift(xStep,0,zStep);
+  beamFC.applyShift(xStep,0,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-
-  Qz.rotate(bY);
-  Qz.rotate(bZ);
-  Qxy.rotate(bY);
-  Qxy.rotate(bX);
-  Qxy.rotate(bZ);
 
   return;
 }
@@ -214,6 +206,11 @@ IMatShutter::createSurfaces()
   */
 {
   ELog::RegMethod RegA("IMatShutter","createSurfaces");
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D bX(beamFC.getX());
+  const Geometry::Vec3D bY(beamFC.getY());
+  const Geometry::Vec3D bZ(beamFC.getZ());
 
   // Void Walls:                                                                                                  
   ModelSupport::buildPlane(SMap,insIndex+3,
@@ -359,16 +356,20 @@ IMatShutter::createLinks()
 {
   ELog::RegMethod RegA("IMatShutter","createLinks");
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  FixedComp::addLinkSurf(0,SMap.realSurf(insIndex+51));
+  mainFC.addLinkSurf(0,SMap.realSurf(insIndex+51));
   std::string Out=ModelSupport::getComposite(SMap,buildIndex," -17 100 ");
-  FixedComp::addLinkSurf(1,Out);
-  FixedComp::addLinkSurf(2,SMap.realSurf(insIndex+3));
-  FixedComp::addLinkSurf(3,SMap.realSurf(insIndex+4));
-  FixedComp::addLinkSurf(4,SMap.realSurf(insIndex+5));
-  FixedComp::addLinkSurf(5,SMap.realSurf(insIndex+6));
+  mainFC.addLinkSurf(1,Out);
+  beamFC.setLinkSurf(1,Out);
+  mainFC.addLinkSurf(2,SMap.realSurf(insIndex+3));
+  mainFC.addLinkSurf(3,SMap.realSurf(insIndex+4));
+  mainFC.addLinkSurf(4,SMap.realSurf(insIndex+5));
+  mainFC.addLinkSurf(5,SMap.realSurf(insIndex+6));
 
-  setBeamExit(buildIndex+17,bEnter,bY);
+  beamFC.setLineConnect(1,beamFC.getCentre(),beamFC.getY());
+
   return;
 }
 
@@ -400,7 +401,7 @@ IMatShutter::createAll(Simulation& System,const double,
 {
   ELog::RegMethod RegA("IMatShutter","createAll");
 
-  GeneralShutter::populate(System);
+  GeneralShutter::populate(System.getDataBase());
   populate(System);  
   GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
 

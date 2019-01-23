@@ -180,6 +180,8 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::PortTube> shutterPipe;
 
   /// shutter to stop beam
+  std::shared_ptr<xraySystem::HeatDump> monoHeatA;
+  /// shutter to stop beam
   std::shared_ptr<xraySystem::FlangeMount> monoShutterA;
   /// shutter to stop beam
   std::shared_ptr<xraySystem::FlangeMount> monoShutterB;

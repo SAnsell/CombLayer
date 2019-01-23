@@ -72,7 +72,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ZoomTank.h"
 
@@ -80,7 +80,8 @@ namespace zoomSystem
 {
 
 ZoomTank::ZoomTank(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",0,"Beam",2),
   populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -89,7 +90,7 @@ ZoomTank::ZoomTank(const std::string& Key)  :
 {}
 
 ZoomTank::ZoomTank(const ZoomTank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   populated(A.populated),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   nCylinder(A.nCylinder),cylThickness(A.cylThickness),
@@ -116,7 +117,7 @@ ZoomTank::operator=(const ZoomTank& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -199,7 +200,7 @@ ZoomTank::populate(const Simulation& System)
 }
   
 void
-ZoomTank::createUnitVector(const attachSystem::TwinComp& TC)
+ZoomTank::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -207,26 +208,19 @@ ZoomTank::createUnitVector(const attachSystem::TwinComp& TC)
   */
 {
   ELog::RegMethod RegA("ZoomTank","createUnitVector");
-  TwinComp::createUnitVector(TC);
 
-  // // Reverse X
-  // X*=-1;
-  Origin=bEnter;
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  // SAMPLE Position
-  // const masterRotate& MR=masterRotate::Instance();
-  // ELog::EM<<"Zoom Sample postion == "
-  // 	  <<MR.calcRotate(bEnter+bY*200.0)<<ELog::endDebug;
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
+
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  mainFC.applyAngleRotate(xyAngle,zAngle);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
+
   return;
 }
 
@@ -395,7 +389,7 @@ ZoomTank::createLinks()
 }
 
 void
-ZoomTank::createAll(Simulation& System,const attachSystem::TwinComp& FC)
+ZoomTank::createAll(Simulation& System,const attachSystem::FixedGroup& FC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

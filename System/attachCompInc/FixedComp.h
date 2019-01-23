@@ -66,8 +66,6 @@ class FixedComp
   Geometry::Vec3D Z;            ///< Z-coordinate 
   Geometry::Vec3D Origin;       ///< Origin  
 
-  Geometry::Vec3D beamOrigin;    ///< Neutron origin [if different]
-  Geometry::Vec3D beamAxis;      ///< Neutron direction [if different]
   Geometry::Vec3D orientateAxis; ///< Axis for reorientation
   long int primeAxis;            ///< X/Y/Z Axis for reorientation 
 
@@ -167,9 +165,6 @@ class FixedComp
   const Geometry::Vec3D& getZ() const { return Z; }
   /// Access centre
   virtual const Geometry::Vec3D& getCentre() const  { return Origin; }  
-  /// Access beamOrigin
-  virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
-
   virtual int getExitWindow(const long int,std::vector<int>&) const;
 
   void nameSideIndex(const size_t,const std::string&);
@@ -216,8 +211,7 @@ class FixedComp
   /// access next cell as neede
   int getNextCell() const { return cellIndex; }
 
-  const Geometry::Vec3D& getExit() const;
-  const Geometry::Vec3D& getExitNorm() const;
+  
   void selectAltAxis(const long int,Geometry::Vec3D&,
 		     Geometry::Vec3D&,Geometry::Vec3D&) const;
   void calcLinkAxis(const long int,Geometry::Vec3D&,

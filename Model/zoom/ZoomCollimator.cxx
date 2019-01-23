@@ -75,11 +75,9 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedComp.h"
+#include "FixedGroup.h" 
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ZoomChopper.h"
 #include "ZoomStack.h"
@@ -90,7 +88,8 @@ namespace zoomSystem
 {
 
 ZoomCollimator::ZoomCollimator(const std::string& Key) : 
-  attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::ContainedComp(),
   cStack("zoomColStack"),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -99,7 +98,7 @@ ZoomCollimator::ZoomCollimator(const std::string& Key) :
 {}
 
 ZoomCollimator::ZoomCollimator(const ZoomCollimator& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
   cStack(A.cStack),xStep(A.xStep),zStep(A.zStep),
   length(A.length),height(A.height),depth(A.depth),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
@@ -123,7 +122,7 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cStack=A.cStack;
       xStep=A.xStep;
@@ -200,7 +199,7 @@ ZoomCollimator::populate(const Simulation& System)
 }
 
 void
-ZoomCollimator::createUnitVector(const attachSystem::TwinComp& TC)
+ZoomCollimator::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     \param TC :: TwinComp to attach to
@@ -208,8 +207,15 @@ ZoomCollimator::createUnitVector(const attachSystem::TwinComp& TC)
 {
   ELog::RegMethod RegA("ZoomCollimator","createUnitVector");
   
-  TwinComp::createUnitVector(TC);
-  Origin+=X*xStep+Z*zStep;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
+
+  mainFC.applyShift(xStep,0,zStep);
+  beamFC.applyShift(xStep,0,zStep);
+
   return;
 }
 
@@ -221,7 +227,9 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
   */
 {
   ELog::RegMethod RegA("ZoomCollimator","createSurface");
-
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& bEnter=beamFC.getCentre();
+  
   SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
   //  SMap.addMatch(buildIndex+14,LC.getLinkSurf(4));   // right plane
 
@@ -322,7 +330,7 @@ ZoomCollimator::createLinks()
     FixedComp::setLinkSurf
       (i,SMap.realSurf(buildIndex+static_cast<int>(i)+1));
 
-  setBeamExit(buildIndex+2,bEnter,bY);
+  //  setBeamExit(buildIndex+2,bEnter,bY);
 
   return;
 }

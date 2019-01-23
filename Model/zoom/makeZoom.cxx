@@ -66,8 +66,6 @@
 #include "FixedOffsetGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
