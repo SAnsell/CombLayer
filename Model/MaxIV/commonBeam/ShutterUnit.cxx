@@ -254,7 +254,7 @@ ShutterUnit::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 3 -4 -7 5 -6 (-15:16) (307:-305) " );
-  makeCell("Dump",System,cellIndex++,mat,0.0,Out);
+  makeCell("Dump",System,cellIndex++,blockMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"305 -307 -6");
   makeCell("Water",System,cellIndex++,waterMat,0.0,Out);
 
