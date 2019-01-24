@@ -98,10 +98,10 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "ShutterUnit.h"
 #include "Mirror.h"
 #include "HeatDump.h"
 #include "OpticsBeamline.h"
-
 
 namespace xraySystem
 {
@@ -155,9 +155,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
   shutterPipe(new constructSystem::PortTube(newName+"ShutterPipe")),
-  monoHeatA(new xraySystem::HeatDump(newName+"MonoHeatA")),
-  monoShutterA(new xraySystem::FlangeMount(newName+"MonoShutterB")),
-  monoShutterB(new xraySystem::FlangeMount(newName+"MonoShutterA")),
+  monoShutterA(new xraySystem::ShutterUnit(newName+"MonoShutterA")),
 
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
@@ -216,7 +214,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(pipeF);
   OR.addObject(shutterPipe);
   OR.addObject(monoShutterA);
-  OR.addObject(monoShutterB);
+
   OR.addObject(pipeG);
   OR.addObject(gateE);
 }
@@ -554,13 +552,11 @@ OpticsBeamline::buildObjects(Simulation& System)
   shutterPipe->insertAllInCell(System,outerCell);
 
   const constructSystem::portItem& PIA=shutterPipe->getPort(0);
-  monoHeatA->addInsertCell("Inner",shutterPipe->getCell("Void"));
-  monoHeatA->addInsertCell("Outer",outerCell);
-  for(long int i=0;i<5;i++)
-    ELog::EM<<"PIA - "<<PIA.getLinkAxis(i)<<" :: "<<PIA.getLinkPt(i)<<ELog::endDiag;
-  monoHeatA->createAll(System,*shutterPipe,0,PIA,2);
- 
-  // monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
+  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterA->addInsertCell("Outer",outerCell);
+  ELog::EM<<"OUTER == "<<outerCell<<ELog::endDiag;
+  monoShutterA->createAll(System,*shutterPipe,0,PIA,2);
+
   // monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
   // monoShutter->setBladeCentre(*shutterPipe,0);
 

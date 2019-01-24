@@ -63,6 +63,7 @@
 #include "FlangeMountGenerator.h"
 #include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
+#include "MonoShutterGenerator.h"
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
@@ -634,13 +635,13 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::HeatDumpGenerator HeatGen;
+  setVariable::MonoShutterGenerator MSGen;
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();
   PTubeGen.setPortLength(3.0,3.0);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,5.0,20.0);
+  PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,7.50,20.0);
   Control.addVariable(preName+"ShutterPipeNPorts",2);
 
   const Geometry::Vec3D ZVec(0,0,1);
@@ -656,7 +657,8 @@ monoShutterVariables(FuncDataBase& Control,
   // CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
   // CrossGen.generateCF<setVariable::CF63>
   //   (Control,preName+"ShutterPipe",0.0,8.0,13.5,13.5);
-  
+
+  /*
   FlangeGen.setCF<setVariable::CF63>();
   FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
   FlangeGen.setNoPlate();
@@ -666,12 +668,12 @@ monoShutterVariables(FuncDataBase& Control,
   FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
   FlangeGen.setNoPlate();
   FlangeGen.generateMount(Control,preName+"MonoShutterB",0); 
+  */
 
-
-  const std::string hDump(preName+"MonoHeatA");
-  HeatGen.setCF<CF40>();
-  HeatGen.setTopCF<CF100>();
-  HeatGen.generateHD(Control,hDump,1);
+  const std::string mDump(preName+"MonoShutterA");
+  MSGen.setCF<CF40>();
+  MSGen.setTopCF<CF40>();
+  MSGen.generateHD(Control,mDump,1);
 
   
   // bellows on shield block

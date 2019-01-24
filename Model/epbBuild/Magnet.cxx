@@ -161,7 +161,6 @@ Magnet::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("Magnet","createUnitVector");
 
-  
   Geometry::Vec3D Axis;
   for(size_t i=0;i<segLen;i++)
     Axis+=FC.getLU(segIndex+i).getAxis();

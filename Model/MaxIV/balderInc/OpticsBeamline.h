@@ -58,6 +58,7 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class PipeShield;
+  class ShutterUnit;
     
   /*!
     \class OpticsBeamline
@@ -180,11 +181,7 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::PortTube> shutterPipe;
 
   /// shutter to stop beam
-  std::shared_ptr<xraySystem::HeatDump> monoHeatA;
-  /// shutter to stop beam
-  std::shared_ptr<xraySystem::FlangeMount> monoShutterA;
-  /// shutter to stop beam
-  std::shared_ptr<xraySystem::FlangeMount> monoShutterB;
+  std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
     
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeG;
