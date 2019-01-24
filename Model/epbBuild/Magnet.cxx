@@ -167,7 +167,7 @@ Magnet::createUnitVector(const attachSystem::FixedComp& FC)
     Axis+=FC.getLU(segIndex+i).getAxis();
   Axis/=static_cast<double>(segLen);
 
-  beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
+  //  beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
 
   FixedComp::createUnitVector(FC,static_cast<long int>(segIndex+1));
   applyOffset();

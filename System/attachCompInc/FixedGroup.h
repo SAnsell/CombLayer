@@ -43,6 +43,11 @@ class FixedGroup : public FixedComp
   /// Named Container
   FTYPE FMap;
 
+  Geometry::Vec3D bX;          ///< Secondary X
+  Geometry::Vec3D bY;          ///< Secondary Y
+  Geometry::Vec3D bZ;          ///< Secondary Z
+  Geometry::Vec3D bOrigin;     ///< Secondary origin
+  
   void registerKey(const std::string&,const size_t);
 
  public:
@@ -64,6 +69,7 @@ class FixedGroup : public FixedComp
 
 		   
   void setDefault(const std::string&);
+  void setSecondary(const std::string&);
 
   /// Size accessor
   size_t nGroups() const { return FMap.size(); } 

@@ -374,7 +374,7 @@ objectGroups::renumberCell(const int oldCellN,
 
   
 int
-objectGroups::cell(const std::string& Name,const int size)
+objectGroups::cell(const std::string& Name,const size_t size)
   /*!
     Add a component and get a new cell number 
     This is called via FixedComp and creates an active range

@@ -166,7 +166,8 @@ class FixedComp
   /// Access centre
   virtual const Geometry::Vec3D& getCentre() const  { return Origin; }  
   virtual int getExitWindow(const long int,std::vector<int>&) const;
-
+  virtual const Geometry::Vec3D& getExit() const;
+  
   void nameSideIndex(const size_t,const std::string&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
@@ -208,7 +209,7 @@ class FixedComp
 
   /// access next cell if need
   int nextCell() { return cellIndex++; }
-  /// access next cell as neede
+  /// access next cell as needed
   int getNextCell() const { return cellIndex; }
 
   
@@ -222,7 +223,10 @@ class FixedComp
   void setAxisControl(const long int,const Geometry::Vec3D&);
   virtual void applyRotation(const localRotate&);
   virtual void applyRotation(const Geometry::Vec3D&,const double);
+
+  void setExit(const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
+
 
   std::vector<int> splitObject(Simulation&,const int,const int);
 

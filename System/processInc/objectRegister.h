@@ -65,7 +65,7 @@ class objectRegister
 
   void setObjectGroup(objectGroups&);
   
-  int cell(const std::string&,const int = 10000);
+  int cell(const std::string&,const size_t = 10000);
 
   // to be removed:
     /// Storage of component pointers

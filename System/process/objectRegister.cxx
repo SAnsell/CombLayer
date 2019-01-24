@@ -144,7 +144,7 @@ objectRegister::addObject(const std::string& Name,
 
   
 int
-objectRegister::cell(const std::string& Name,const int size)
+objectRegister::cell(const std::string& Name,const size_t size)
   /*!
     Add a component and get a new cell number 
     \param Name :: Name of the unit

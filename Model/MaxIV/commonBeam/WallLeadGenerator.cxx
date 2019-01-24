@@ -58,9 +58,9 @@ namespace setVariable
 
 WallLeadGenerator::WallLeadGenerator() :
   frontLength(10.0),backLength(10.0),
-  frontWidth(80.0),frontHeight(80),
+  frontWidth(40.0),frontHeight(40.0),
   backWidth(20.0),backHeight(20),
-  steelOutWidth(140.0),steelRingWidth(140.0),
+  steelOutWidth(145.0),steelRingWidth(140.0),
   steelHeight(180.0),steelDepth(5.0),
   steelXCut(90.0),steelZCut(90.0),
   extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),

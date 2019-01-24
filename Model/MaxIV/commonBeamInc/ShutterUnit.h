@@ -60,9 +60,6 @@ class ShutterUnit :
   double outRadius;                ///< Out connect radius
   double outLength;                ///< Out connect length
 
-  double waterRadius;              ///< Water radius
-  double waterZStop;               ///< Distance in Z to stop
-
   int blockMat;            ///<  Base material
   int flangeMat;           ///<  flange material
   int bellowMat;           ///<  bellow material

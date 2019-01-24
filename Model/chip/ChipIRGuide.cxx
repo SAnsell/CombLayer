@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -385,34 +385,37 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector");
-  const masterRotate& MR=masterRotate::Instance();
 
-  
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
   Geometry::Vec3D bZ=Z=Geometry::Vec3D(-1,0,0);        // Gravity axis [up]
   Geometry::Vec3D bY=Y=GS.getXYAxis();                 // forward axis [centre line]  
   Geometry::Vec3D bX=X=Z*GS.getXYAxis();               // horrizontal axis [across]
 
   // Change so that not dependent on the angle of the shutter:
 
+
+  mainFC.createUnitVector(GS.getKey("Main"));
+  
   Origin=GS.getOrigin()+Y*BS.getORadius();
+
   Geometry::Vec3D bEnter=Origin;
   Origin+=Z*zShift+X*xShift;
   bEnter+=Z*zBeamShift+X*xBeamShift;
 
-  // Rotate beamAxis to the final angle
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bZ);
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bY);
 
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bX);
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
+  mainFC.setCentre(Origin);
+  beamFC.createUnitVector(bEnter,bX,bY,bZ);
+  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
 
   // Now calculate Cent
   gLen=hYStart-BS.getORadius();
-
+  beamFC.setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
   //  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
   //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
   
@@ -430,7 +433,6 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector(Fixed)");
 
-  const masterRotate& MR=masterRotate::Instance();
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
@@ -438,13 +440,19 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
   mainFC.createUnitVector(WO);
   beamFC.createUnitVector(WO);
 
-  beamRC.applyAngleRotate(sideBeamAngle,beamAngle);
+  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
+
+  setDefault("Main");
+  setSecondary("Beam");
+  
   // Now calculate Cent
   gLen=hYStart-ORadius; 
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  beamFC.setExit(beamFC.getCentre()+bY*(hYStart/std::abs(bY.dotProd(Y))),beamFC.getY());
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+
+  beamFC.setExit(bOrigin+bY*(hYStart/std::abs(bY.dotProd(Y))),
+		 bY);
+  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
   //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
   
@@ -461,26 +469,24 @@ ChipIRGuide::createLiner(const int index,const double offset)
 {
   ELog::RegMethod RegA("ChipIRGuide","createLiner");
 
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-
   const int GI(buildIndex+index);
   // INNER VOID CORE [+ve X : +ve z]
   ModelSupport::buildPlane(SMap,GI+3,
-			   bEnter-bX*(innerALWall+offset),
-			   bEnter-bX*(innerALWall+offset)+bY*gLen,
-			   bEnter-bX*(innerALWall+offset)+bZ,X);
+			   bOrigin-bX*(innerALWall+offset),
+			   bOrigin-bX*(innerALWall+offset)+bY*gLen,
+			   bOrigin-bX*(innerALWall+offset)+bZ,X);
   ModelSupport::buildPlane(SMap,GI+4,
-			   bEnter+bX*(innerARWall+offset),
-			   bEnter+bX*(innerBRWall+offset)+bY*gLen,
-			   bEnter+bX*(innerARWall+offset)+bZ,X);
+			   bOrigin+bX*(innerARWall+offset),
+			   bOrigin+bX*(innerBRWall+offset)+bY*gLen,
+			   bOrigin+bX*(innerARWall+offset)+bZ,X);
   ModelSupport::buildPlane(SMap,GI+5,
-			   bEnter-bZ*(innerAFloorZ+offset),
-			   bEnter-bZ*(innerBFloorZ+offset)+bY*gLen,
-			   bEnter-bZ*(innerAFloorZ+offset)+bX,Z);
+			   bOrigin-bZ*(innerAFloorZ+offset),
+			   bOrigin-bZ*(innerBFloorZ+offset)+bY*gLen,
+			   bOrigin-bZ*(innerAFloorZ+offset)+bX,Z);
   ModelSupport::buildPlane(SMap,GI+6,
-			   bEnter+bZ*(innerARoofZ+offset),
-			   bEnter+bZ*(innerBRoofZ+offset)+bY*gLen,
-			   bEnter+bZ*(innerARoofZ+offset)+bX,Z);
+			   bOrigin+bZ*(innerARoofZ+offset),
+			   bOrigin+bZ*(innerBRoofZ+offset)+bY*gLen,
+			   bOrigin+bZ*(innerARoofZ+offset)+bX,Z);
 
   return;
 }

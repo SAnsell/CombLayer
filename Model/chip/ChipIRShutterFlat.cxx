@@ -76,8 +76,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "chipDataStore.h"
@@ -140,14 +139,15 @@ ChipIRShutterFlat::~ChipIRShutterFlat()
 {}
 
 void
-ChipIRShutterFlat::populate(const Simulation& System)
+ChipIRShutterFlat::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
-  GeneralShutter::populate(System);
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("ChipIRShutterFlat","populate");
+  
+  GeneralShutter::populate(Control);
 
   forwardStep=Control.EvalVar<double>(chipKey+"FStep");
   midStep=Control.EvalVar<double>(chipKey+"MFStep");
@@ -358,8 +358,8 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 		     MR.calcRotate(Pt));
 	  backPt+=Pt;
 	}
-      FixedComp::setConnect(0,frontPt/4.0,-beamAxis);
-      FixedComp::setConnect(1,backPt/4.0,beamAxis);
+      FixedComp::setConnect(0,frontPt/4.0,-bY);
+      FixedComp::setConnect(1,backPt/4.0,bY);
     }
   else
     {
@@ -392,7 +392,7 @@ ChipIRShutterFlat::createAll(Simulation& System,const double ZOffset,
 {
   ELog::RegMethod RegA("ChipIRShutterFlat","createAll");
   GeneralShutter::createAll(System,ZOffset,FCPtr);
-  populate(System);
+  populate(System.getDataBase());
   createCInfoTable(System);
   createShutterInsert(System);  
   createShinePipe(System);

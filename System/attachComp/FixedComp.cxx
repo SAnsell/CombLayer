@@ -1021,6 +1021,7 @@ FixedComp::setConnect(const size_t Index,
  */
 {
   ELog::RegMethod RegA("FixedComp","setConnect");
+
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU.size/index");
 
@@ -1572,6 +1573,39 @@ FixedComp::setCentre(const Geometry::Vec3D& C)
   return;
 }
 
+const Geometry::Vec3D&
+FixedComp::getExit() const 
+  /*!
+    User Interface to LU[1] to get Point 
+    \return connect point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setExit(int)");
+
+  if (LU.size()<2)
+    throw ColErr::IndexError<size_t>(2,LU.size(),"LU.size/index");
+
+  return LU[1].getConnectPt();
+}
+
+void 
+FixedComp::setExit(const int surfN,
+		   const Geometry::Vec3D& C,
+		   const Geometry::Vec3D& A) 
+  /*!
+    User Interface to LU[1] to set Point + Axis
+    \param C :: Connect point
+    \param A :: Axis
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setExit(int)");
+
+  setLinkSurf(1,surfN);
+  setConnect(1,C,A);
+
+  return;
+}
+
 void 
 FixedComp::setExit(const Geometry::Vec3D& C,
 		   const Geometry::Vec3D& A) 
@@ -1582,12 +1616,7 @@ FixedComp::setExit(const Geometry::Vec3D& C,
   */
 {
   ELog::RegMethod RegA("FixedComp","setExit");
-  if (LU.size()<2)
-    throw ColErr::IndexError<size_t>(2,LU.size(),"2/LU.size");
-
-  LU[1].setAxis(A);
-  LU[1].setConnectPt(C);
-
+  setConnect(1,C,A);
   return;
 }
 

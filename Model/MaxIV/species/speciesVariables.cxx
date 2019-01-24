@@ -932,7 +932,7 @@ transferVariables(FuncDataBase& Control,
 void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
-/*!
+  /*!
     Set the variables for the frontend wall
     \param Control :: DataBase to use
     \param frontKey :: name before part names

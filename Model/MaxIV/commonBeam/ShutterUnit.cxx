@@ -50,6 +50,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
+#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -133,7 +134,7 @@ ShutterUnit::populate(const FuncDataBase& Control)
 }
 
 void
-ShutterUnit::createUnitVector(const attachSystem::FixedComp& beamFC,
+ShutterUnit::createUnitVector(const attachSystem::FixedComp& centreFC,
 			      const long int cIndex,
 			      const attachSystem::FixedComp& flangeFC,
 			      const long int fIndex)
@@ -145,7 +146,7 @@ ShutterUnit::createUnitVector(const attachSystem::FixedComp& beamFC,
     where Y' is its primary direction is closeest to 
     beamCenter + Y'*beta. The flange centre point is taken.
 
-    \param beamFC :: FixedComp for origin
+    \param centreFC :: FixedComp for origin at beam height
     \param cIndex :: link point of centre [and axis]
     \param flangeFC :: link point of flange centre
     \param fIndex :: direction for flange axis
@@ -156,26 +157,35 @@ ShutterUnit::createUnitVector(const attachSystem::FixedComp& beamFC,
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  beamFC.createUnitVector(beamFC,cIndex);
+  beamFC.createUnitVector(centreFC,cIndex);
   mainFC.createUnitVector(flangeFC,fIndex);
   applyOffset();
-
-  // Now construct new centre point:
-  Geometry::LineBeam(beamFC.)
+  setDefault("Main");
+  setSecondary("Beam");
   
+  // Now construct new centre point:
+  const Geometry::Line beamL(bOrigin,bY);
+  const Geometry::Line mainL(Origin,Y);
+  const std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
+    beamL.closestPoints(mainL);
+
+  beamFC.setCentre(CP.second);
+
   
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
-  
-  ELog::EM<<"BEAM == "<<centreFC.getLinkAxis(cIndex)<<ELog::endDiag;
 
+
+  
+  ELog::EM<<"BEAM == "<<beamFC.getLinkAxis(cIndex)<<ELog::endDiag;
   ELog::EM<<"FLANGE == "<<flangeFC.getLinkAxis(fIndex)<<ELog::endDiag;
   
   ELog::EM<<"Beam Z == "<<beamFC.getZ()<<ELog::endDiag;
   ELog::EM<<"Main Z == "<<mainFC.getZ()<<ELog::endDiag;
   
   setDefault("Main");
-
+  setSecondary("Beam");
+  
   return;
 }
 
@@ -188,29 +198,12 @@ ShutterUnit::createSurfaces()
   ELog::RegMethod RegA("ShutterUnit","createSurfaces");
 
 
-  const attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  const Geometry::Vec3D& beamOrg=beamFC.getCentre();
-  const Geometry::Vec3D& beamX=beamFC.getX();
-  const Geometry::Vec3D& beamY=beamFC.getY();
-  const Geometry::Vec3D& beamZ=beamFC.getZ();
+  ModelSupport::buildPlane(SMap,buildIndex+3,bOrigin-bX*(width/2.0),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+4,bOrigin+bX*(width/2.0),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+5,bOrigin-bZ*(height/2.0),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+5,bOrigin-bZ*(height/2.0),bZ);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,beamOrg-beamX*(width/2.0),beamX);
-  ModelSupport::buildPlane(SMap,buildIndex+4,beamOrg+beamX*(width/2.0),beamX);
-  ModelSupport::buildPlane(SMap,buildIndex+5,beamOrg-beamZ*cutHeight,beamZ);
-  ModelSupport::buildPlane(SMap,buildIndex+6,beamOrg+beamZ*
-			   (height-cutHeight),beamZ);
-
-
-  
-  const Geometry::Vec3D ZCut(beamOrg+beamY*cutDepth); 
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,beamZ);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,beamZ,
-				  beamX,-cutAngle);
-  // water cut
-  ModelSupport::buildPlane(SMap,buildIndex+305,ZCut+beamZ*waterZStop,beamZ);
-  ModelSupport::buildCylinder(SMap,buildIndex+307,beamOrg,beamZ,waterRadius);
   // construct surround [Y is upwards]
   if (!isActive("mountSurf"))
     {
@@ -252,18 +245,11 @@ ShutterUnit::createObjects(Simulation& System)
     (ExternalCut::getRuleStr("mountSurf"));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 3 -4 -7 5 -6 (-15:16) (307:-305) " );
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 -6  " );
   makeCell("Dump",System,cellIndex++,blockMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"305 -307 -6");
-  makeCell("Water",System,cellIndex++,waterMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 15 -16 " );
-  makeCell("Cut",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -7 5 -6 " );
   addOuterSurf("Inner",Out);
-
 
   // create Flange:
   Out=ModelSupport::getComposite(SMap,buildIndex," -102 -117 107 " );
