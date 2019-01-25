@@ -59,6 +59,7 @@
 #include "ChopperGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
+#include "PreDipoleGenerator.h"
 
 namespace setVariable
 {
