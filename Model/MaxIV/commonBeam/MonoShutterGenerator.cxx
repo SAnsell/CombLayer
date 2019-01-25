@@ -3,7 +3,7 @@
  
  * File:   commonBeam/MonoShutterGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,14 +59,16 @@ namespace setVariable
 
 MonoShutterGenerator::MonoShutterGenerator() :
   height(5.0),width(5.0),
-  thick(5.0),lift(3.0),
+  thick(5.0),lift(3.0),liftScrewRadius(1.0),
+  threadLength(30.0),
   topInnerRadius(CF100::innerRadius),
   topFlangeRadius(CF100::flangeRadius),
   topFlangeLength(CF100::flangeLength),
   bellowLength(2.0),bellowThick(CF100::bellowThick),
   outRadius(CF100::flangeRadius),
   outLength(CF100::flangeLength),
-  mat("Copper"),flangeMat("Stainless304"),
+  mat("Tungsten"),threadMat("Copper"),
+  flangeMat("Stainless304"),
   bellowMat("Stainless304%Void%10.0")
   /*!
     Constructor and defaults
@@ -154,6 +156,8 @@ MonoShutterGenerator::generateHD(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Thick",thick);
   Control.addVariable(keyName+"Lift",lift);
+  Control.addVariable(keyName+"LiftScrewRadius",liftScrewRadius);
+  Control.addVariable(keyName+"ThreadLength",threadLength);
 
   Control.addVariable(keyName+"UpFlag",static_cast<int>(upFlag));
   
@@ -169,6 +173,7 @@ MonoShutterGenerator::generateHD(FuncDataBase& Control,
 
   
   Control.addVariable(keyName+"BlockMat",mat);
+  Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   Control.addVariable(keyName+"BellowMat",bellowMat);
        

@@ -156,6 +156,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
   shutterPipe(new constructSystem::PortTube(newName+"ShutterPipe")),
   monoShutterA(new xraySystem::ShutterUnit(newName+"MonoShutterA")),
+  monoShutterB(new xraySystem::ShutterUnit(newName+"MonoShutterB")),
 
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
@@ -553,9 +554,15 @@ OpticsBeamline::buildObjects(Simulation& System)
 
   const constructSystem::portItem& PIA=shutterPipe->getPort(0);
   monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterA->addInsertCell("Inner",PIA.getCell("Void"));
   monoShutterA->addInsertCell("Outer",outerCell);
-  ELog::EM<<"OUTER == "<<outerCell<<ELog::endDiag;
   monoShutterA->createAll(System,*shutterPipe,0,PIA,2);
+
+  const constructSystem::portItem& PIB=shutterPipe->getPort(1);
+  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterB->addInsertCell("Inner",PIB.getCell("Void"));
+  monoShutterB->addInsertCell("Outer",outerCell);
+  monoShutterB->createAll(System,*shutterPipe,1,PIB,2);
 
   // monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
   // monoShutter->setBladeCentre(*shutterPipe,0);

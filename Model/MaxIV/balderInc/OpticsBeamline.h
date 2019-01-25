@@ -182,6 +182,9 @@ class OpticsBeamline :
 
   /// shutter to stop beam
   std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
+
+  /// shutter to stop beam [second for redundency
+  std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;
     
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeG;

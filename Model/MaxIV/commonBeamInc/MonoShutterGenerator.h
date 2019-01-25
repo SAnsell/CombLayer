@@ -43,7 +43,9 @@ class MonoShutterGenerator
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection  
   double lift;             ///< Amount to lift [when raized]
-  
+  double liftScrewRadius;  ///< Radius of lifting thread
+  double threadLength;     ///< Total length of thread
+    
   double topInnerRadius;          ///<  Flange inner radius radius 
   double topFlangeRadius;          ///< Joining Flange radius 
   double topFlangeLength;          ///< Joining Flange length
@@ -55,6 +57,7 @@ class MonoShutterGenerator
   double outLength;                ///< Out connect length
   
   std::string mat;                 ///< Base material
+  std::string threadMat;           ///< Thread material
   std::string flangeMat;           ///<  flange material
   std::string bellowMat;           ///<  bellow material 
 

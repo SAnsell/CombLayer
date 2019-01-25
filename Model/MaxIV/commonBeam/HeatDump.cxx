@@ -168,10 +168,6 @@ HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   applyOffset();
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
-  ELog::EM<<"BEAM == "<<centreFC.getLinkAxis(cIndex)<<ELog::endDiag;
-  ELog::EM<<"FLANGE == "<<flangeFC.getLinkAxis(fIndex)<<ELog::endDiag;
-  ELog::EM<<"Beam Z == "<<beamFC.getZ()<<ELog::endDiag;
-  ELog::EM<<"Main Z == "<<mainFC.getZ()<<ELog::endDiag;
   setDefault("Main");
   return;
 }

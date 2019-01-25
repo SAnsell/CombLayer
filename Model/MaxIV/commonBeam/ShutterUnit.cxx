@@ -114,6 +114,8 @@ ShutterUnit::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   thick=Control.EvalVar<double>(keyName+"Thick");
   lift=Control.EvalVar<double>(keyName+"Lift");
+  liftScrewRadius=Control.EvalVar<double>(keyName+"LiftScrewRadius");
+  threadLength=Control.EvalVar<double>(keyName+"ThreadLength");
   upFlag=Control.EvalDefVar<int>(keyName+"UpFlag",1);
 
   topInnerRadius=Control.EvalVar<double>(keyName+"TopInnerRadius");
@@ -129,6 +131,7 @@ ShutterUnit::populate(const FuncDataBase& Control)
   blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   bellowMat=ModelSupport::EvalMat<int>(Control,keyName+"BellowMat");
+  threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   
   return;
 }
@@ -159,6 +162,7 @@ ShutterUnit::createUnitVector(const attachSystem::FixedComp& centreFC,
 
   beamFC.createUnitVector(centreFC,cIndex);
   mainFC.createUnitVector(flangeFC,fIndex);
+
   applyOffset();
   setDefault("Main");
   setSecondary("Beam");
@@ -176,8 +180,6 @@ ShutterUnit::createUnitVector(const attachSystem::FixedComp& centreFC,
   
   setDefault("Main");
   setSecondary("Beam");
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"BOrigin == "<<bOrigin<<ELog::endDiag;
   return;
 }
 
@@ -199,8 +201,8 @@ ShutterUnit::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,bOrigin+bZ*(height/2.0),bZ);
 
   // bellow outer 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,bOrigin,Z,
-			      liftScrew);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,bOrigin,Y,liftScrewRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+16,bOrigin+Y*threadLength,Y);
 
   // construct surround [Y is upwards]
   if (!isActive("mountSurf"))
@@ -248,21 +250,18 @@ ShutterUnit::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4  5 -6 " );
   addOuterSurf("Inner",Out);
+  
   // create Flange:
   Out=ModelSupport::getComposite(SMap,buildIndex," -102 -117 107 " );
   makeCell("MountFlange",System,cellIndex++,flangeMat,0.0,Out+mountSurf);
-  addOuterSurf("Outer",mountSurf+Out);
-
+  
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -127 107 -201");
   makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
-  addOuterUnionSurf("Outer",Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-207 201 -202 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-207 201 -202 7 ");
   makeCell("Topflange",System,cellIndex++,flangeMat,0.0,Out);
-  addOuterUnionSurf("Outer",Out);
-  return;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 (-1:2:-3:4) -201");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-107 7 -201");
   makeCell("LiftVoid",System,cellIndex++,0,0.0,Out+mountSurf);
 
   // Add outer voids
@@ -274,13 +273,17 @@ ShutterUnit::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -117 207");
       makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,"202 -6 -117 (-1:2:-3:4)");
-  makeCell("OutVoid",System,cellIndex++,0,0.0,Out);
 
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," -16 6 -7");
+  makeCell("Thread",System,cellIndex++,threadMat,0.0,Out);
+  addOuterSurf("Outer",Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 6");
+  addOuterUnionSurf("Inner",Out);
+  
   // final exclude:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -6");
-  addOuterSurf("Outer",mountSurf+Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -202");
+  addOuterUnionSurf("Outer",mountSurf+Out);
   
   
   return; 
