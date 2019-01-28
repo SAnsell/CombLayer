@@ -79,10 +79,9 @@ class formaxFrontEnd :
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
 
-  virtual void buildUndulator(Simulation&,
-			      MonteCarlo::Object*,
-			      const attachSystem::FixedComp&,
-			      const long int);
+  virtual const attachSystem::FixedComp&
+    buildUndulator(Simulation&,MonteCarlo::Object*,
+		   const attachSystem::FixedComp&,const long int);
 			      
   void createSurfaces();
   void buildObjects(Simulation&);

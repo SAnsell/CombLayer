@@ -3,7 +3,7 @@
  
  * File: R1/R1FrontEnd.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,9 @@
 #include "BeamMount.h"
 #include "HeatDump.h"
 #include "BremBlock.h"
-
+#include "Quadrupole.h"
+#include "PreDipole.h"
+#include "DipoleChamber.h"
 #include "LCollimator.h"
 
 #include "R1FrontEnd.h"
@@ -118,6 +120,8 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
+  preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
+  dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
@@ -164,6 +168,8 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(preDipole);
+  OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
   OR.addObject(bellowA);
@@ -553,8 +559,29 @@ R1FrontEnd::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-  buildUndulator(System,masterCell,*this,0);
-  
+  const attachSystem::FixedComp& undulatorFC=
+    buildUndulator(System,masterCell,*this,0);
+
+  preDipole->setCutSurf("front",undulatorFC,2);
+  preDipole->createAll(System,undulatorFC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
+  preDipole->insertInCell(System,outerCell);
+
+  dipoleChamber->setCutSurf("front",*preDipole,2);
+  dipoleChamber->createAll(System,*preDipole,2);
+  // two splits [main / exit]
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
+  dipoleChamber->insertInCell("Main",System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
+  dipoleChamber->insertInCell("Exit",System,outerCell);
+
+  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
+  dipolePipe->createAll(System,*dipoleChamber,
+			dipoleChamber->getSideIndex("exit"));
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  dipolePipe->insertInCell(System,outerCell);
+
+
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
@@ -584,6 +611,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
 
+  
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);

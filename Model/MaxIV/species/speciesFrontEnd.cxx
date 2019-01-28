@@ -100,6 +100,8 @@
 #include "HeatDump.h"
 #include "BremBlock.h"
 #include "Quadrupole.h"
+#include "DipoleChamber.h"
+#include "PreDipole.h"
 
 #include "LCollimator.h"
 #include "R1FrontEnd.h"
@@ -132,7 +134,7 @@ speciesFrontEnd::~speciesFrontEnd()
   */
 {}
 
-void
+const attachSystem::FixedComp&
 speciesFrontEnd::buildUndulator(Simulation& System,
 				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
@@ -144,6 +146,7 @@ speciesFrontEnd::buildUndulator(Simulation& System,
     \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
+    \return fixed object for link point
   */
 {
   ELog::RegMethod RegA("speciesFrontEnd","buildObjects");
@@ -161,12 +164,7 @@ speciesFrontEnd::buildUndulator(Simulation& System,
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  dipolePipe->setFront(*undulatorPipe,2);
-  dipolePipe->createAll(System,*undulatorPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
-
-  return;
+  return *undulatorPipe;
 }
 
 void

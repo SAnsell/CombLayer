@@ -143,7 +143,7 @@ makeSingleItem::build(Simulation& System,
   std::shared_ptr<xraySystem::DipoleChamber>
     DCSep(new xraySystem::DipoleChamber("DipoleChamber"));
   OR.addObject(DCSep);
-  DCSep->addInsertCell(voidCell);
+  DCSep->addAllInsertCell(voidCell);
   DCSep->createAll(System,*PDipole,2);
   return;
 

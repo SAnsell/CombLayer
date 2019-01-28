@@ -58,16 +58,18 @@ namespace setVariable
 {
 
 DipoleChamberGenerator::DipoleChamberGenerator() :
-  length(40.0),outWidth(3.6),
+  length(40.0),outWidth(4.6),
   ringWidth(3.6),curveRadius(379.77),
   curveAngle(15.0),height(1.9),
   exitWidth(4.6),exitHeight(1.47),
   exitLength(15.0),
   flangeRadius(CF120::innerRadius),
   flangeLength(CF120::flangeLength),
-  wallThick(0.5),
+  wallThick(0.5),innerXFlat(1.0),
+  innerXOut(3.2),elecXFlat(1.0),
+  elecXCut(3.2),elecXFull(1.2),
   voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304")
+  innerMat("Copper"),flangeMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -111,9 +113,19 @@ DipoleChamberGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   
   Control.addVariable(keyName+"WallThick",wallThick);
-    
+
+  Control.addVariable(keyName+"WallThick",wallThick);
+
+  Control.addVariable(keyName+"InnerXFlat",innerXFlat);
+  Control.addVariable(keyName+"InnerXOut",innerXOut);
+
+  Control.addVariable(keyName+"ElecXFlat",elecXFlat);
+  Control.addVariable(keyName+"ElecXCut",elecXCut);
+  Control.addVariable(keyName+"ElecXFull",elecXFull);
+
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"InnerMat",innerMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   
   return;

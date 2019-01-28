@@ -3,7 +3,7 @@
  
  * File:   maxpeemInc/maxpeemFrontEnd.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,10 +80,9 @@ class maxpeemFrontEnd :  public R1FrontEnd
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
 
-  virtual void buildUndulator(Simulation&,
-			      MonteCarlo::Object*,
-			      const attachSystem::FixedComp&,
-			      const long int);
+  virtual const attachSystem::FixedComp&
+    buildUndulator(Simulation&,MonteCarlo::Object*,
+		   const attachSystem::FixedComp&,const long int);
 			      
   virtual void createLinks();
   

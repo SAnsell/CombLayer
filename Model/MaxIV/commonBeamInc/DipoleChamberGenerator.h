@@ -40,10 +40,10 @@ class DipoleChamberGenerator
  private:
 
   double length;                ///< frame length
-  double outWidth;               ///< Step 
+  double outWidth;              ///< Step out side
   double ringWidth;             ///< Step ring side at start
   double curveRadius;           ///< Radius of ring side curve
-  double curveAngle;           ///< Total angle [deb]
+  double curveAngle;            ///< Total angle [deb]
   double height;                ///< Inner height [straight]
 
   double exitWidth;              ///< Cut in exit channel
@@ -55,9 +55,16 @@ class DipoleChamberGenerator
 
   double wallThick;             ///< Wall thickness
   
+  double innerXFlat;            ///< First X flat inside
+  double innerXOut;             ///< First X out side
+
+  double elecXFlat;             ///< Flat cut
+  double elecXCut;              ///< Curve on phon side
+  double elecXFull;             ///< Curve on electron side
 
   std::string voidMat;                   ///< void material
   std::string wallMat;                   ///< wall material
+  std::string innerMat;                   ///< wall material
   std::string flangeMat;                  ///< Pipe/flange material
  
  public:

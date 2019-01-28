@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class DipoleChamber : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -60,9 +60,19 @@ class DipoleChamber : public attachSystem::FixedOffset,
   double flangeLength;          ///< Joining Flange length
 
   double wallThick;             ///< Wall thickness
+
+
+  double innerXFlat;            ///< First X flat inside
+  double innerXOut;             ///< First X out side
+
+  double elecXFlat;             ///< Flat cut
+  double elecXCut;              ///< Curve on phon side
+  double elecXFull;             ///< Curve on electron side
+  
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
+  int innerMat;                 ///< inner material
   int flangeMat;                ///< flange material
   
   void populate(const FuncDataBase&);

@@ -130,7 +130,7 @@ formaxFrontEnd::~formaxFrontEnd()
 {}
 
 
-void
+const attachSystem::FixedComp&
 formaxFrontEnd::buildUndulator(Simulation& System,
 				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
@@ -142,9 +142,10 @@ formaxFrontEnd::buildUndulator(Simulation& System,
     \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
+    \return link object 
   */
 {
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildObjects");
+  ELog::RegMethod RegA("formaxFrontEnd","buildUndulator");
 
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
@@ -164,7 +165,7 @@ formaxFrontEnd::buildUndulator(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-  return;
+  return *dipolePipe;
 }
 
 void

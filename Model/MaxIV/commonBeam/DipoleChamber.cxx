@@ -75,6 +75,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -87,7 +88,7 @@ namespace xraySystem
 
 DipoleChamber::DipoleChamber(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main","Exit"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -129,12 +130,16 @@ DipoleChamber::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  =Control.EvalVar<double>(keyName+"FlangeRadius");
-  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  innerXFlat=Control.EvalVar<double>(keyName+"InnerXFlat");
+  innerXOut=Control.EvalVar<double>(keyName+"InnerXOut");
+
+  elecXFlat=Control.EvalVar<double>(keyName+"ElecXFlat");
+  elecXCut=Control.EvalVar<double>(keyName+"ElecXCut");
+  elecXFull=Control.EvalVar<double>(keyName+"ElecXFull");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
 
@@ -177,18 +182,19 @@ DipoleChamber::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   const double cAng(M_PI*curveAngle/180.0);
-
+  // all curve +/- to this one
+  const Geometry::Vec3D curvePt(Origin+X*(curveRadius+ringWidth));
   
-  ModelSupport::buildCylinder(SMap,buildIndex+7,
-			      Origin+X*(curveRadius+ringWidth),Z,curveRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,curvePt,Z,curveRadius);
   // construct cut plane
   const double xVal=curveRadius*(1.0-cos(cAng));
   const double yVal=curveRadius*sin(cAng);
   const Geometry::Vec3D CPt(Origin+X*(ringWidth+xVal)+Y*yVal);
   const Geometry::Vec3D BAxis(X*sin(cAng)+Y*cos(cAng));
+  
   ModelSupport::buildPlane(SMap,buildIndex+2,CPt,BAxis);
   ModelSupport::buildPlane(SMap,buildIndex+12,CPt+BAxis*wallThick,BAxis);
-
+  setCutSurf("back",-SMap.realSurf(buildIndex+12));
   // Walls
 
   // low/left counter clockwise points (starting from
@@ -202,8 +208,7 @@ DipoleChamber::createSurfaces()
 			   Origin+Z*(wallThick+height/2.0),Z);
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,
-     Origin+X*(curveRadius+ringWidth+wallThick),Z,curveRadius);  
+    (SMap,buildIndex+17,curvePt+X*wallThick,Z,curveRadius);  
 
 
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(exitWidth/2.0),X);
@@ -220,12 +225,27 @@ DipoleChamber::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+116,
 			   Origin+Z*(wallThick+exitHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(yVal+length),Y);
   ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin+Y*(yVal+length-flangeLength),Y);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,
-			      Origin,Y,flangeRadius);
-  
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(yVal+length),Y);
+  setCutSurf("exit",-SMap.realSurf(buildIndex+102));
+
+
+  // Inner objects:
+  ModelSupport::buildPlane
+    (SMap,buildIndex+204,Origin-X*innerXFlat,X);  
+  ModelSupport::buildCylinder                          // Outside of 204
+    (SMap,buildIndex+207,Origin-X*(innerXOut-curveRadius),Z,curveRadius);  
+
+  // electron cut objects
+    ModelSupport::buildPlane
+    (SMap,buildIndex+304,Origin+X*elecXFlat,X);  
+  ModelSupport::buildCylinder                          // Outside of 204
+    (SMap,buildIndex+307,Origin-X*(elecXCut-curveRadius),Z,curveRadius);  
+  ModelSupport::buildCylinder                          // Outside of 204
+    (SMap,buildIndex+317,Origin-X*(elecXFull-curveRadius),Z,curveRadius);  
+
   
   return;
 }
@@ -243,7 +263,7 @@ DipoleChamber::createObjects(Simulation& System)
   //
   std::string Out;
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  3 -2 7 5 -6");
+    (SMap,buildIndex,"  3 -2 7 5 -6 (207 : 204) (-304:307:-317) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite
@@ -265,17 +285,27 @@ DipoleChamber::createObjects(Simulation& System)
     (SMap,buildIndex," -107 101 -102 (-113:114:-115:116) ");
   makeCell("Flange",System,cellIndex++,wallMat,0.0,Out);
 
+  // Inner components
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -207 -204 5 -6");
+  makeCell("InnerCut",System,cellIndex++,innerMat,0.0,Out+frontStr);
+
+  // electorn inner componnents
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -2 304 -307 317 5 -6");
+  makeCell("ElectCut",System,cellIndex++,innerMat,0.0,Out+frontStr);
+  
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"  13 -12 17 15 -16 ");
-  addOuterUnionSurf(Out+frontStr);
+  addOuterSurf("Main",Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -101 113 -114 115 -116 ");
-  addOuterUnionSurf(Out);
+  addOuterSurf("Exit",Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"  101 -102 -107 ");
-  addOuterUnionSurf(Out+frontStr);
+  addOuterUnionSurf("Exit",Out);
 
 
   return;
@@ -289,6 +319,10 @@ DipoleChamber::createLinks()
 {
   ELog::RegMethod RegA("DipoleChamber","createLinks");
   ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("exit",*this,2,Origin,Y);
+  
+  FixedComp::nameSideIndex(2,"exit");
   //  ExternalCut::createLink("back",*this,1,Origin,Y);
   return;
 }

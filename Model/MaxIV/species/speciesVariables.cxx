@@ -76,6 +76,8 @@
 #include "TankMonoVesselGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "WallLeadGenerator.h"
+#include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
@@ -977,10 +979,17 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskRadius",0.11);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
+  setVariable::PreDipoleGenerator PGen;
+  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+
+  setVariable::DipoleChamberGenerator DCGen;
+  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
+
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,291.1+7.5);
+  //  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,291.1+7.5);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,88.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
