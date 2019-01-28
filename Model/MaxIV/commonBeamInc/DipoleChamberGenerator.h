@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/PreDipoleGenerator.h
+ * File:   commonBeamInc/DipoleChamberGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_PreDipoleGenerator_h
-#define setVariable_PreDipoleGenerator_h
+#ifndef setVariable_DipoleChamberGenerator_h
+#define setVariable_DipoleChamberGenerator_h
 
 class FuncDataBase;
 
@@ -28,41 +28,44 @@ namespace setVariable
 {
 
 /*!
-  \class PreDipoleGenerator
+  \class DipoleChamberGenerator
   \version 1.0
   \author S. Ansell
   \date January 2019
-  \brief PreDipoleGenerator for variables
+  \brief DipoleChamberGenerator for variables
 */
 
-class PreDipoleGenerator 
+class DipoleChamberGenerator 
 {
  private:
 
   double length;                ///< frame length
-  double inWidth;               ///< Inner width [flats]
-  double ringWidth;             ///< Inner width [to divide not point]
-  double outPointWidth;         ///< Outer [wall side] half-width
+  double outWidth;               ///< Step 
+  double ringWidth;             ///< Step ring side at start
+  double curveRadius;           ///< Radius of ring side curve
+  double curveAngle;           ///< Total angle [deb]
   double height;                ///< Inner height [straight]
 
-  double endGap;                ///< Inner width
-  double endLength;            ///< Inner height [straight]
+  double exitWidth;              ///< Cut in exit channel
+  double exitHeight;             ///< Cut in exit channel
+  double exitLength;             ///< Length of exit channel
+
+  double flangeRadius;          ///< Joining Flange radius
+  double flangeLength;          ///< Joining Flange length
 
   double wallThick;             ///< Wall thickness
-
-  double flangeRadius;          ///< Joining Flange radius 
-  double flangeLength;          ///< Joining Flange length
   
+
   std::string voidMat;                   ///< void material
   std::string wallMat;                   ///< wall material
   std::string flangeMat;                  ///< Pipe/flange material
  
  public:
 
-  PreDipoleGenerator();
-  PreDipoleGenerator(const PreDipoleGenerator&);
-  PreDipoleGenerator& operator=(const PreDipoleGenerator&);
-  virtual ~PreDipoleGenerator();
+  DipoleChamberGenerator();
+  DipoleChamberGenerator(const DipoleChamberGenerator&);
+  DipoleChamberGenerator& operator=(const DipoleChamberGenerator&);
+  virtual ~DipoleChamberGenerator();
   
   
   virtual void generatePipe(FuncDataBase&,const std::string&,

@@ -115,12 +115,24 @@ PreDipole::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  inWidth=Control.EvalVar<double>(keyName+"InWidth");
+  ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
+  outPointWidth=Control.EvalVar<double>(keyName+"OutPointWidth");
   height=Control.EvalVar<double>(keyName+"Height");
-  angle=Control.EvalVar<double>(keyName+"Angle");  
 
-  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
-  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  endGap=Control.EvalVar<double>(keyName+"EndGap");
+  endLength=Control.EvalVar<double>(keyName+"EndLength");
+
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  
+  flangeARadius=
+    Control.EvalPair<double>(keyName,"FlangeARadius","FlangeRadius");
+  flangeBRadius=
+    Control.EvalPair<double>(keyName,"FlangeBRadius","FlangeRadius");
+  flangeALength=
+    Control.EvalPair<double>(keyName,"FlangeALength","FlangeLength");
+  flangeBLength=
+    Control.EvalPair<double>(keyName,"FlangeBLength","FlangeLength");
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -161,32 +173,49 @@ PreDipole::createSurfaces()
   if (!ExternalCut::isActive("back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-      setCutSurf("back",SMap.realSurf(buildIndex+2));
+      setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  // corners
-
-  Geometry::Vec3D AX(X);
-  Geometry::Vec3D BX(X);
-  const Geometry::Quaternion QR=
-    Geometry::Quaternion::calcQRot(angle,Y);
   
-  QR.rotate(AX);
-  QR.invRotate(BX);
+  // low/left counter clockwise points (starting from
+  // outer point
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(width/2.0)-Z*height/2.0,AX);
-  ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin-X*(width/2.0)+Z*height/2.0,BX);
+  const Geometry::Vec3D AX(Origin-X*outPointWidth);
+  const Geometry::Vec3D BX(Origin-X*inWidth+Z*(height/2.0));
+  const Geometry::Vec3D CX(Origin+X*inWidth+Z*(height/2.0));
+  const Geometry::Vec3D DX(Origin+X*ringWidth+Z*(endGap/2.0));
+  const Geometry::Vec3D EX(Origin+X*ringWidth-Z*(endGap/2.0));
+  const Geometry::Vec3D FX(Origin+X*inWidth-Z*(height/2.0));
+  const Geometry::Vec3D GX(Origin-X*inWidth-Z*(height/2.0));
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,
-			   Origin+X*(width/2.0)-Z*height/2.0,-AX);
-  ModelSupport::buildPlane(SMap,buildIndex+24,
-			   Origin+X*(width/2.0)+Z*height/2.0,-BX);
+  
+  
+  // all inward
+  ModelSupport::buildPlane(SMap,buildIndex+11,AX,AX+Y*length,BX,X);
+  ModelSupport::buildPlane(SMap,buildIndex+12,BX,BX+Y*length,CX,-Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,CX,CX+Y*length,DX,-X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,DX,DX+Y*length,EX,-X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,EX,EX+Y*length,FX,-X);
+  ModelSupport::buildPlane(SMap,buildIndex+16,FX,FX+Y*length,GX,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+17,GX,GX+Y*length,AX,X);
 
+  int BI(buildIndex+11);
+  for(size_t i=0;i<7;i++)			     
+    {
+      ModelSupport::buildExpandedSurf(SMap,BI,BI+10,
+				      Origin+Y*(length/2.0),wallThick);
+      BI++;      
+    }
+
+  // front flange:
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+101,1,Y,flangeALength);
+  ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+102,-1,Y,flangeBLength);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
+
+  
   return;
 }
 
@@ -199,17 +228,38 @@ PreDipole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PreDipole","createObjects");
 
-  const std::string fbStr=getRuleStr("front")+
-    getRuleStr("back");
-    
+  const std::string frontStr=getRuleStr("front");
+  const std::string backStr=getRuleStr("back");
+  const std::string fbStr=frontStr+backStr;
+  //
   std::string Out;
-  // Outer steel
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  3 -4 13 14 23 24 ");
+    (SMap,buildIndex,"  11 12 13 14 15 16 17 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+fbStr);
-  
 
-  addOuterSurf(Out+fbStr);
+  // not cutting at 14.
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 21 22 23 14 25 26 27 (-11:-12:-13:-15:-16:-17) ");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+fbStr);
+
+  // Flanges
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " -101 -107 (-21:-22:-23:-14:-25:-26:-27) ");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 102 -207 (-21:-22:-23:-14:-25:-26:-27) ");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out+backStr);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"  21 22 23 14 25 26 27 ");
+  addOuterUnionSurf(Out+fbStr);
+
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
+  addOuterUnionSurf(Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
+  addOuterUnionSurf(Out+backStr);
+
 
   return;
 }
@@ -221,7 +271,9 @@ PreDipole::createLinks()
    */
 {
   ELog::RegMethod RegA("PreDipole","createLinks");
-  
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
+
   return;
 }
 

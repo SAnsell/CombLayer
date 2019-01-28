@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/PreDipoleGenerator.cxx
+ * File:   commonBeam/DipoleChamberGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -52,18 +52,20 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
 
-PreDipoleGenerator::PreDipoleGenerator() :
-  length(73.5),inWidth(0.915),
-  ringWidth(1.89),outPointWidth(2.2),
-  height(1.9),endGap(0.5),endLength(1.75),
-  wallThick(0.3),
-  flangeRadius(CF63::innerRadius),
-  flangeLength(CF63::flangeLength),
+DipoleChamberGenerator::DipoleChamberGenerator() :
+  length(40.0),outWidth(3.6),
+  ringWidth(3.6),curveRadius(379.77),
+  curveAngle(15.0),height(1.9),
+  exitWidth(4.6),exitHeight(1.47),
+  exitLength(15.0),
+  flangeRadius(CF120::innerRadius),
+  flangeLength(CF120::flangeLength),
+  wallThick(0.5),
   voidMat("Void"),wallMat("Copper"),
   flangeMat("Stainless304")
   /*!
@@ -71,14 +73,14 @@ PreDipoleGenerator::PreDipoleGenerator() :
   */
 {}
   
-PreDipoleGenerator::~PreDipoleGenerator() 
+DipoleChamberGenerator::~DipoleChamberGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-PreDipoleGenerator::generatePipe(FuncDataBase& Control,
+DipoleChamberGenerator::generatePipe(FuncDataBase& Control,
 				 const std::string& keyName,
 				 const double yStep) const
   /*!
@@ -88,19 +90,23 @@ PreDipoleGenerator::generatePipe(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("PreDipoleGenerator","generatePipe");
+  ELog::RegMethod RegA("DipoleChamberGenerator","generatePipe");
 
   Control.addVariable(keyName+"YStep",yStep);
   
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"InWidth",inWidth);
+  Control.addVariable(keyName+"OutWidth",outWidth);
   Control.addVariable(keyName+"RingWidth",ringWidth);
-  Control.addVariable(keyName+"OutPointWidth",outPointWidth);
+  Control.addVariable(keyName+"CurveRadius",curveRadius);
+  Control.addVariable(keyName+"CurveAngle",curveAngle);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"EndGap",endGap);
-  Control.addVariable(keyName+"EndLength",endLength);
-
   
+  Control.addVariable(keyName+"ExitWidth",exitWidth);
+  Control.addVariable(keyName+"ExitHeight",exitHeight);
+  Control.addVariable(keyName+"ExitLength",exitLength);
+
+
+
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   

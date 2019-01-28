@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/PreDipole.h
+ * File:   commonBeamInc/DipoleChamber.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_PreDipole_h
-#define xraySystem_PreDipole_h
+#ifndef xraySystem_DipoleChamber_h
+#define xraySystem_DipoleChamber_h
 
 class Simulation;
 
@@ -28,17 +28,17 @@ class Simulation;
 namespace xraySystem
 {
 /*!
-  \class PreDipole
+  \class DipoleChamber
   \version 1.0
   \author S. Ansell
   \date January 2019
 
-  \brief PreDipole for Max-IV 
+  \brief DipoleChamber for Max-IV 
 
   This is built relative to the proton channel
 */
 
-class PreDipole : public attachSystem::FixedOffset,
+class DipoleChamber : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
@@ -46,21 +46,20 @@ class PreDipole : public attachSystem::FixedOffset,
  private:
   
   double length;                ///< frame length
-  double inWidth;               ///< Inner width [flats]
-  double ringWidth;             ///< Inner width [to divide not point]
-  double outPointWidth;         ///< Outer [wall side] half-width
+  double outWidth;               ///< Step 
+  double ringWidth;             ///< Step ring side at start
+  double curveRadius;           ///< Radius of ring side curve
+  double curveAngle;           ///< Total angle [deb]
   double height;                ///< Inner height [straight]
 
-  double endGap;                ///< Inner width
-  double endLength;            ///< Inner height [straight]
+  double exitWidth;              ///< Cut in exit channel
+  double exitHeight;             ///< Cut in exit channel
+  double exitLength;             ///< Length of exit channel
+
+  double flangeRadius;          ///< Joining Flange radius
+  double flangeLength;          ///< Joining Flange length
 
   double wallThick;             ///< Wall thickness
-    
-  double flangeARadius;          ///< Joining Flange radius
-  double flangeBRadius;          ///< Joining Flange radius 
-  double flangeALength;          ///< Joining Flange length
-  double flangeBLength;          ///< Joining Flange length
-
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
@@ -75,10 +74,10 @@ class PreDipole : public attachSystem::FixedOffset,
 
  public:
 
-  PreDipole(const std::string&);
-  PreDipole(const PreDipole&);
-  PreDipole& operator=(const PreDipole&);
-  virtual ~PreDipole();
+  DipoleChamber(const std::string&);
+  DipoleChamber(const DipoleChamber&);
+  DipoleChamber& operator=(const DipoleChamber&);
+  virtual ~DipoleChamber();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

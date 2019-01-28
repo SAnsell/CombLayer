@@ -60,6 +60,7 @@
 #include "QuadrupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
@@ -165,6 +166,12 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EPSeparatorGenerator EPGen;
   EPGen.generatePipe(Control,"EPSep",0.0);
+
+  setVariable::PreDipoleGenerator PDGen;
+  PDGen.generatePipe(Control,"PreDipole",0.0);
+
+  setVariable::DipoleChamberGenerator DCGen;
+  DCGen.generatePipe(Control,"DipoleChamber",0.0);
   
   
   return;
