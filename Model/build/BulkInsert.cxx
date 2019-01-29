@@ -377,6 +377,13 @@ BulkInsert::createLinks()
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   // Inner link
+
+  
+
+  MonteCarlo::LineIntersectVisit BeamLine(beamFC.getCentre(),beamFC.getY());
+  const Geometry::Vec3D bExit=
+    BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+27),
+		      beamFC.getCentre());
   
   const int angleFlag((xyAngle>0) ? -1 : 1);
   mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
@@ -385,26 +392,24 @@ BulkInsert::createLinks()
   mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+27));
   mainFC.addLinkSurf(1,angleFlag*divideSurf);
 
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setConnect(1,bExit,Y);
+
   mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+3));
   mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
   mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+5));
   mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
-  mainFC.setConnect(0,Origin,-Y);
-  mainFC.setConnect(1,beamFC.getLinkPt(2),Y);
   mainFC.setConnect(2,Origin-X*(outerWidth/2.0),-X);
   mainFC.setConnect(3,Origin+X*(outerWidth/2.0),X);
   mainFC.setConnect(4,Origin-Y*(outerHeight/2.0),-Z);
   mainFC.setConnect(5,Origin+Y*(outerHeight/2.0),Z);
-  
+
   // Exit processed by calculating centre line to exit curve
 
-  MonteCarlo::LineIntersectVisit BeamLine(beamFC.getCentre(),beamFC.getY());
+
   
-  const Geometry::Vec3D bExit=
-    BeamLine.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+27),
-		      beamFC.getCentre());
-  beamFC.setConnect(0,beamFC.getLinkPt(2),-beamFC.getY());
+  beamFC.setConnect(0,beamFC.getCentre(),-beamFC.getY());
   beamFC.setConnect(1,bExit,beamFC.getY());
 
   beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
@@ -412,6 +417,8 @@ BulkInsert::createLinks()
   
   beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+27));
   beamFC.addLinkSurf(1,angleFlag*divideSurf);
+
+  
   return;
 }
 

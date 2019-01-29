@@ -3,7 +3,7 @@
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -585,6 +585,7 @@ BulkShield::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,CC);
   processVoid(System);
+  ELog::EM<<"ASDFSADFS A FSD"<<ELog::endErr;
   createShutters(System,IParam);
   createBulkInserts(System,IParam);
   createTorpedoes(System,CC);

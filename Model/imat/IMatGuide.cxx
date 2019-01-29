@@ -239,9 +239,7 @@ IMatGuide::createSurfaces()
 
   const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  const Geometry::Vec3D bX(beamFC.getX());
-  const Geometry::Vec3D bY(beamFC.getY());
-  const Geometry::Vec3D bZ(beamFC.getZ());
+  setSecondary("Beam");
 
   // Inner void layers
   double xside(width/2.0);

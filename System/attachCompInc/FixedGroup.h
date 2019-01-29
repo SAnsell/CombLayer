@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedGroup.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ class FixedGroup : public FixedComp
   Geometry::Vec3D bY;          ///< Secondary Y
   Geometry::Vec3D bZ;          ///< Secondary Z
   Geometry::Vec3D bOrigin;     ///< Secondary origin
+  Geometry::Vec3D bExit;     ///< Secondary origin
   
   void registerKey(const std::string&,const size_t);
 
@@ -70,6 +71,7 @@ class FixedGroup : public FixedComp
 		   
   void setDefault(const std::string&);
   void setSecondary(const std::string&);
+  void setDefault(const std::string&,const std::string&);
 
   /// Size accessor
   size_t nGroups() const { return FMap.size(); } 

@@ -306,13 +306,31 @@ FixedGroup::setDefault(const std::string& defKey)
 }
 
 void
+FixedGroup::setDefault(const std::string& defKey,
+		       const std::string& beamKey)
+  /*!
+    Sets the default origin/XYZ basis 
+    \param defKey :: Keyname to find
+    \param beamKey :: Keyname for secondary beam
+   */
+{
+  ELog::RegMethod RegA("FixedGroup","setDefault(key,key)");
+
+  setDefault(defKey);
+  setSecondary(beamKey); 
+
+  return;
+  
+}
+
+void
 FixedGroup::setSecondary(const std::string& defKey)
   /*!
     Sets the default origin/XYZ basis 
     \param defKey :: Keyname to find
    */
 {
-  ELog::RegMethod RegA("FixedGroup","setDefault");
+  ELog::RegMethod RegA("FixedGroup","setSecondary");
   
   FTYPE::iterator mc=FMap.find(defKey);
   if (mc==FMap.end())
@@ -322,7 +340,9 @@ FixedGroup::setSecondary(const std::string& defKey)
   bY=mc->second->getY();
   bZ=mc->second->getZ();
   bOrigin=mc->second->getCentre();
-
+  bExit= (mc->second->hasLinkPt(2)) ?
+    mc->second->getLinkPt(2) : bOrigin;
+    
   return;
   
 }

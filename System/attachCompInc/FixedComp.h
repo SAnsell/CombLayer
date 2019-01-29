@@ -184,6 +184,9 @@ class FixedComp
   
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
 
+  bool hasLinkPt(const long int) const;
+  bool hasLinkPt(const std::string&) const;
+  
   Geometry::Vec3D getLinkPt(const std::string&) const;
   Geometry::Vec3D getLinkAxis(const std::string&) const;
   int getLinkSurf(const std::string&) const;

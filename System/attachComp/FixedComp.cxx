@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1415,6 +1415,42 @@ FixedComp::getLinkDistance(const long int AIndex,
 
   return getLinkPt(AIndex).Distance(FC.getLinkPt(BIndex));
 }
+
+bool
+FixedComp::hasLinkPt(const std::string& sideName) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return True if link poni tset
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkPt[str]:"+keyName);
+
+  const long int sideIndex=getSideIndex(sideName);
+  return hasLinkPt(sideIndex);
+}
+
+bool
+FixedComp::hasLinkPt(const long int sideIndex) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return True if link poni tset
+  */
+{
+  ELog::RegMethod RegA("FixedComp","hasLinkPt[LI]:"+keyName);
+
+  if (sideIndex)
+    {
+      const size_t linkIndex=
+	(sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+	static_cast<size_t>(-sideIndex-1) ;
+      if (linkIndex<LU.size())
+	return LU[linkIndex].hasConnectPt();
+    }
+  return 1;   // orgin always true
+}
+
 
 Geometry::Vec3D
 FixedComp::getLinkPt(const std::string& sideName) const
