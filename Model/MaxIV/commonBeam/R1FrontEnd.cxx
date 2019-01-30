@@ -122,7 +122,8 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
-  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
+  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
+  eCutDiskMag(new insertSystem::insertCylinder(newName+"ECutDiskMag")),  
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -171,6 +172,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
+  OR.addObject(eCutDiskMag);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);
@@ -584,6 +586,10 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipoleChamber->getCell("Void"));
   eCutDisk->createAll(System,*dipoleChamber,-2);
+
+  eCutDiskMag->setNoInsert();
+  eCutDiskMag->addInsertCell(dipoleChamber->getCell("Void"));
+  eCutDiskMag->createAll(System,*dipoleChamber,-3);
 
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);

@@ -95,8 +95,10 @@ class R1FrontEnd :
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
-  /// electron cut cell
+  /// electron cut cell [straight line]
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertCylinder> eCutDiskMag;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1

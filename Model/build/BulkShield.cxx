@@ -585,7 +585,7 @@ BulkShield::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,CC);
   processVoid(System);
-  ELog::EM<<"ASDFSADFS A FSD"<<ELog::endErr;
+
   createShutters(System,IParam);
   createBulkInserts(System,IParam);
   createTorpedoes(System,CC);

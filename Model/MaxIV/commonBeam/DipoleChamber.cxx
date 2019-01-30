@@ -79,7 +79,8 @@
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "LineIntersectVisit.h" 
 
 #include "DipoleChamber.h"
 
@@ -191,7 +192,7 @@ DipoleChamber::createSurfaces()
   const double yVal=curveRadius*sin(cAng);
   const Geometry::Vec3D CPt(Origin+X*(ringWidth+xVal)+Y*yVal);
   const Geometry::Vec3D BAxis(X*sin(cAng)+Y*cos(cAng));
-  ELog::EM<<"CP -= "<<CPt<<ELog::endDiag;
+
   
   ModelSupport::buildPlane(SMap,buildIndex+2,CPt,BAxis);
   ModelSupport::buildPlane(SMap,buildIndex+12,CPt+BAxis*wallThick,BAxis);
@@ -322,20 +323,32 @@ DipoleChamber::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
   ExternalCut::createLink("exit",*this,2,Origin,Y);
-  // dipole exit
-  ExternalCut::createLink("back",*this,3,Origin,Y);
-  
-  FixedComp::nameSideIndex(2,"exit");
-  FixedComp::nameSideIndex(3,"dipoleExit");
   //  ExternalCut::createLink("back",*this,1,Origin,Y);
 
-  // construct cut plane
+  // construct from Surface 12:
+
+
   const double cAng(M_PI*curveAngle/180.0);
   const double xVal=curveRadius*(1.0-cos(cAng));
   const double yVal=curveRadius*sin(cAng);
-  const Geometry::Vec3D CPt(Origin+X*(elecXFull+ringWidth+xVal)+Y*yVal);
+
   const Geometry::Vec3D BAxis(X*sin(cAng)+Y*cos(cAng));
-  ELog::EM<<"CP == "<<CPt<<ELog::endDiag;
+  const Geometry::Vec3D CAxis(Y*sin(cAng)+X*cos(cAng));
+  const Geometry::Vec3D CPt(Origin+X*(ringWidth+xVal)+Y*yVal);
+
+  // Line goes along plane (build+12):
+  MonteCarlo::LineIntersectVisit LI(CPt+BAxis*wallThick,CAxis);
+  const Geometry::Vec3D CPA=
+    LI.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+7));
+  const Geometry::Vec3D CPB=
+    LI.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+317));
+  
+  // dipole exit
+  Fixedcomp::setConnectPt(3,(CPA+CPB)/2.0,BAxis);
+  Fixedcomp::setLineSurf(3,SMap.realSurf(buildIndex+12));
+  
+  FixedComp::nameSideIndex(2,"exit");
+  FixedComp::nameSideIndex(3,"dipoleExit");
   return;
 }
 
