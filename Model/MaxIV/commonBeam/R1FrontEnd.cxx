@@ -66,7 +66,6 @@
 #include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -567,6 +566,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
   preDipole->insertInCell(System,outerCell);
 
+
   dipoleChamber->setCutSurf("front",*preDipole,2);
   dipoleChamber->createAll(System,*preDipole,2);
   // two splits [main / exit]
@@ -581,10 +581,9 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-
   eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
-  eCutDisk->createAll(System,*dipolePipe,-2);
+  eCutDisk->addInsertCell(dipoleChamber->getCell("Void"));
+  eCutDisk->createAll(System,*dipoleChamber,-2);
 
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);

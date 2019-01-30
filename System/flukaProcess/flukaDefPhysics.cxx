@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaDefPhysics.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,17 +90,66 @@ namespace flukaSystem
 {  
 
 void
+setMagneticPhysics(SimFLUKA& System,
+		   const mainSystem::inputParam& IParam)
+  /*!
+    Currently very simple but expect to get complex.
+    \param System :: Simulation
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
+
+  if (IParam.flag("MAG"))
+    {
+      const Geometry::Vec3D MF=
+	IParam.getValue<Geometry::Vec3D>("MAG",0);  
+      System.setMagField(MF);
+    }
+
+  const size_t nSet=IParam.setCnt("MagField");
+  for(size_t setIndex=0;setIndex<nSet;setIndex++)
+    {
+      const size_t NIndex=IParam.itemCnt("MagField",setIndex);
+      
+      for(size_t index=0;index<NIndex;index++)
+	{
+	  const std::string objName=
+	    IParam.getValueError<std::string>
+	    ("MagField",setIndex,index,"No objName for MagField");
+	  const std::vector<int> Cells=System.getObjectRange(objName);
+	  if (Cells.empty())
+	    throw ColErr::InContainerError<std::string>
+	      (objName,"Empty cell");
+	  
+	  Simulation::OTYPE& CellObjects=System.getCells();
+	  // Special to set cells in OBJECT  [REMOVE]
+	  for(const int CN : Cells)
+	    {
+	      Simulation::OTYPE::iterator mc=
+		CellObjects.find(CN);
+	      if (mc!=CellObjects.end())
+		mc->second->setMagFlag();
+	    }
+	}
+    }
+  return;
+}
+
+  
+void
 setModelPhysics(SimFLUKA& System,
 		const mainSystem::inputParam& IParam)
   /*!
     Set the physics that needs a model
     \param System :: Simulation
-    \param IParam :: Input parameter
+    \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod Rega("flukaDefPhysics","setModelPhysics");
+  ELog::RegMethod RegA("flukaDefPhysics","setModelPhysics");
   
   setXrayPhysics(System,IParam);
+  setMagneticPhysics(System,IParam);
   
   size_t nSet=IParam.setCnt("wMAT");
   if (nSet)

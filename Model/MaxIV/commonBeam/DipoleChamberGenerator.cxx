@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 DipoleChamberGenerator::DipoleChamberGenerator() :
-  length(40.0),outWidth(4.6),
+  length(40.0),outWidth(5.0),
   ringWidth(3.6),curveRadius(379.77),
   curveAngle(15.0),height(1.9),
   exitWidth(4.6),exitHeight(1.47),
@@ -66,7 +66,7 @@ DipoleChamberGenerator::DipoleChamberGenerator() :
   flangeRadius(CF120::innerRadius),
   flangeLength(CF120::flangeLength),
   wallThick(0.5),innerXFlat(1.0),
-  innerXOut(3.2),elecXFlat(1.0),
+  innerXOut(4.64),elecXFlat(1.0),
   elecXCut(3.2),elecXFull(1.2),
   voidMat("Void"),wallMat("Copper"),
   innerMat("Copper"),flangeMat("Stainless304")

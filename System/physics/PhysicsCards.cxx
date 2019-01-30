@@ -535,7 +535,7 @@ PhysicsCards::addPhysCard(const std::string& Key,
     \param Key :: KeyName
     \param Particle :: Particle to add [n,p,e] etc
 
-    \return PhysCard
+    \return PhysCard<T>
   */
 {
   ELog::RegMethod RegA("PhysicsCards","addPhysCard");
@@ -1086,7 +1086,7 @@ PhysicsCards::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("PhyiscsCards","write");
+  ELog::RegMethod RegA("PhysicsCards","write");
 
   dbCard->write(OX);
 

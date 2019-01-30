@@ -976,7 +976,7 @@ frontEndVariables(FuncDataBase& Control,
    
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
   setVariable::PreDipoleGenerator PGen;

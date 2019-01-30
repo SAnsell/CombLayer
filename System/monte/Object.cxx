@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,17 +170,17 @@ Object::startLine(const std::string& Line)
 Object::Object() :
   ObjName(0),listNum(-1),Tmp(300),MatN(-1),trcl(0),
   imp(1),density(0.0),placehold(0),populated(0),
-  objSurfValid(0)
- /*!
-   Defaut constuctor, set temperature to 300C and material to vacuum
- */
+  activeMag(0),objSurfValid(0)
+   /*!
+     Defaut constuctor, set temperature to 300C and material to vacuum
+   */
 {}
 
 Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
   imp(1),density(0.0),placehold(0),
-  populated(0),objSurfValid(0)
+  populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -196,7 +196,7 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
   imp(1),density(0.0),placehold(0),
-  populated(0),objSurfValid(0)
+  populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -213,6 +213,7 @@ Object::Object(const Object& A) :
   listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
   trcl(A.trcl),imp(A.imp),
   density(A.density),placehold(A.placehold),populated(A.populated),
+  activeMag(A.activeMag),magVec(A.magVec),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
@@ -240,6 +241,8 @@ Object::operator=(const Object& A)
       density=A.density;
       placehold=A.placehold;
       populated=A.populated;
+      activeMag=A.activeMag;
+      magVec=A.magVec;
       HRule=A.HRule;
       objSurfValid=0;
       SurList=A.SurList;
@@ -539,6 +542,17 @@ Object::addSurfString(const std::string& XE)
   return flag;
 }
 
+void
+Object::setMagField(const Geometry::Vec3D& M)
+  /*!
+    Simple setter for magnetic field in an object
+    \param M :: Magnetic vector
+  */
+{
+  magVec=M;
+  activeMag=1;
+  return;
+}
 
 int
 Object::isOnSide(const Geometry::Vec3D& Pt) const
@@ -1432,6 +1446,10 @@ Object::writeFLUKAmat(std::ostream& OX) const
 	cx<<"VACUUM";
 
       cx<<" R"+std::to_string(ObjName);
+      if (imp && activeMag)
+	cx<<" - - 1 ";
+
+      
       StrFunc::writeFLUKA(cx.str(),OX);
     }
   
