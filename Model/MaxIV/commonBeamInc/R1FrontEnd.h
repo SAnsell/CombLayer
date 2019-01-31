@@ -25,6 +25,7 @@
 namespace insertSystem
 {
   class insertCylinder;
+  class insertPlate;
 }
 
 namespace constructSystem
@@ -98,7 +99,9 @@ class R1FrontEnd :
   /// electron cut cell [straight line]
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertCylinder> eCutDiskMag;
+  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1

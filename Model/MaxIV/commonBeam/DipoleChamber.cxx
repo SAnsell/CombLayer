@@ -265,15 +265,19 @@ DipoleChamber::createObjects(Simulation& System)
   //
   std::string Out;
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  3 -2 7 5 -6 (207 : 204) (-304:307:-317) ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr);
+    (SMap,buildIndex,"  204 -2 7 5 -6 -317 ");
+  makeCell("MagVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"  3 -2 5 -6 (207 : 204) (-304:307) 317 ");
+  makeCell("NonMagVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"  13 -2 17 15 -16 (-3:-7:-5:6)");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -12 2 13 17 15 -16 (-113:114:-115:116)");
+    (SMap,buildIndex," -12 2 13 17 15 -16 (-113:114:-115:116) ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -102 103 -104 105 -106 ");
@@ -344,8 +348,8 @@ DipoleChamber::createLinks()
     LI.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+317));
   
   // dipole exit
-  Fixedcomp::setConnectPt(3,(CPA+CPB)/2.0,BAxis);
-  Fixedcomp::setLineSurf(3,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect(3,(CPA+CPB)/2.0,BAxis);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+12));
   
   FixedComp::nameSideIndex(2,"exit");
   FixedComp::nameSideIndex(3,"dipoleExit");

@@ -83,6 +83,7 @@
 #include "OffsetFlangePipe.h"
 #include "insertObject.h"
 #include "insertCylinder.h"
+#include "insertPlate.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValve.h"
@@ -123,7 +124,8 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
-  eCutDiskMag(new insertSystem::insertCylinder(newName+"ECutDiskMag")),  
+  eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
+  eCutWallDisk(new insertSystem::insertPlate(newName+"ECutWallDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -172,7 +174,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
-  OR.addObject(eCutDiskMag);
+  OR.addObject(eCutMagDisk);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);
@@ -577,6 +579,11 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
   dipoleChamber->insertInCell("Exit",System,outerCell);
 
+  eCutWallDisk->setNoInsert();
+  eCutWallDisk->addInsertCell(outerCell);
+  eCutWallDisk->createAll(System,*dipoleChamber,
+			 dipoleChamber->getSideIndex("dipoleExit"));
+
   dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
   dipolePipe->createAll(System,*dipoleChamber,
 			dipoleChamber->getSideIndex("exit"));
@@ -584,12 +591,13 @@ R1FrontEnd::buildObjects(Simulation& System)
   dipolePipe->insertInCell(System,outerCell);
 
   eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipoleChamber->getCell("Void"));
+  eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
   eCutDisk->createAll(System,*dipoleChamber,-2);
 
-  eCutDiskMag->setNoInsert();
-  eCutDiskMag->addInsertCell(dipoleChamber->getCell("Void"));
-  eCutDiskMag->createAll(System,*dipoleChamber,-3);
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  eCutMagDisk->createAll(System,*dipoleChamber,
+			 -dipoleChamber->getSideIndex("dipoleExit"));
 
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
