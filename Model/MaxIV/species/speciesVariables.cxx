@@ -266,7 +266,7 @@ preOpticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowA",0,12.5);
 
     // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);       // wall/Top/base
