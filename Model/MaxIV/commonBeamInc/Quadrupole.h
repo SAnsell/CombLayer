@@ -78,6 +78,7 @@ class Quadrupole : public attachSystem::FixedRotate,
 
  public:
 
+  Quadrupole(const std::string&);
   Quadrupole(const std::string&,const std::string&);
   Quadrupole(const Quadrupole&);
   Quadrupole& operator=(const Quadrupole&);

@@ -27,6 +27,8 @@ class Simulation;
 
 namespace xraySystem
 {
+  class Quadrupole;
+  
 /*!
   \class PreDipole
   \version 1.0
@@ -61,6 +63,10 @@ class PreDipole : public attachSystem::FixedOffset,
   double flangeALength;          ///< Joining Flange length
   double flangeBLength;          ///< Joining Flange length
 
+  /// X Direction quad
+  std::shared_ptr<xraySystem::Quadrupole> quadX;
+  /// Z Direction quad
+  std::shared_ptr<xraySystem::Quadrupole> quadZ;
   
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
@@ -80,6 +86,7 @@ class PreDipole : public attachSystem::FixedOffset,
   PreDipole& operator=(const PreDipole&);
   virtual ~PreDipole();
 
+  void createQuads(Simulation&,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

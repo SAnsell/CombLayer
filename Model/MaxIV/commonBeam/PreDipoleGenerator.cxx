@@ -52,6 +52,7 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
+#include "QuadrupoleGenerator.h"
 #include "PreDipoleGenerator.h"
 
 namespace setVariable
@@ -65,7 +66,8 @@ PreDipoleGenerator::PreDipoleGenerator() :
   flangeRadius(CF63::innerRadius),
   flangeLength(CF63::flangeLength),
   voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304")
+  flangeMat("Stainless304"),
+  QGen(new QuadrupoleGenerator)
   /*!
     Constructor and defaults
   */
@@ -110,6 +112,9 @@ PreDipoleGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
   
+
+  QGen->generateQuad(Control,keyName+"QuadX",-12.0,18.5);
+  QGen->generateQuad(Control,keyName+"QuadZ",12.0,18.5);
   return;
 }
 

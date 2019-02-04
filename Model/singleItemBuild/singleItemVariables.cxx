@@ -162,7 +162,7 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
   setVariable::QuadrupoleGenerator QGen;
-  QGen.generateQuad(Control,"Quad",0.0);
+  QGen.generateQuad(Control,"Quad",0.0,10.0);
 
   setVariable::EPSeparatorGenerator EPGen;
   EPGen.generatePipe(Control,"EPSep",0.0);

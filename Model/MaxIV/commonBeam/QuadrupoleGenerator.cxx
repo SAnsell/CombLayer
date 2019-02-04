@@ -57,13 +57,13 @@ namespace setVariable
 {
 
 QuadrupoleGenerator::QuadrupoleGenerator() :
-  vertGap(3.0),length(5.0),
+  vertGap(4.0),
   width(20.0),height(20.0),
-  coilLength(7.0),coilCornerRad(2.0),
+  coilLength(2.0),coilCornerRad(2.0),
   coilWidth(8.0),frameThick(2.0),
-  poleLength(6.0),poleRadius(0.7),
-  poleZStep(0.5),poleYAngle(20.0),
-  poleStep(0.3),poleWidth(1.0),
+  poleLength(6.0),poleRadius(1.2),
+  poleZStep(0.5),poleYAngle(30.0),
+  poleStep(1.5),poleWidth(1.5),
   poleMat("Stainless304"),coreMat("Iron"),
   coilMat("Copper"),frameMat("Aluminium")
   /*!
@@ -80,13 +80,14 @@ QuadrupoleGenerator::~QuadrupoleGenerator()
 void
 QuadrupoleGenerator::generateQuad(FuncDataBase& Control,
 				  const std::string& keyName,
-				  const double yStep) const
+				  const double yStep,
+				  const double length) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Step along beam centre
-    \param len :: length
+    \param length :: length
   */
 {
   ELog::RegMethod RegA("QuadrupoleGenerator","generateColl");
@@ -97,7 +98,7 @@ QuadrupoleGenerator::generateQuad(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"CoilLength",coilLength);
+  Control.addVariable(keyName+"CoilLength",coilLength+length);
   Control.addVariable(keyName+"CoilCornerRad",coilCornerRad);
   Control.addVariable(keyName+"CoilWidth",coilWidth);
   Control.addVariable(keyName+"FrameThick",frameThick);

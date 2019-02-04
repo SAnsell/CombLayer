@@ -103,6 +103,7 @@
 #include "PreDipole.h"
 #include "DipoleChamber.h"
 #include "LCollimator.h"
+#include "Quadrupole.h"
 
 #include "R1FrontEnd.h"
 
@@ -570,7 +571,8 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
   preDipole->insertInCell(System,outerCell);
 
-
+  preDipole->createQuads(System,outerCell);
+  
   dipoleChamber->setCutSurf("front",*preDipole,2);
   dipoleChamber->createAll(System,*preDipole,2);
   // two splits [main / exit]

@@ -41,7 +41,6 @@ class QuadrupoleGenerator
 
   double vertGap;               ///< Inner vertical space
 
-  double length;                ///< frame length
   double width;                 ///< horrizontal width [inner]
   double height;                ///< vertical width [inner]
 
@@ -73,7 +72,7 @@ class QuadrupoleGenerator
   
   
   virtual void generateQuad(FuncDataBase&,const std::string&,
-			    const double) const;
+			    const double,const double) const;
 
 };
 

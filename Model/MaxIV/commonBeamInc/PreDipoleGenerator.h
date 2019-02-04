@@ -24,9 +24,12 @@
 
 class FuncDataBase;
 
+
 namespace setVariable
 {
 
+  class QuadrupoleGenerator;
+  
 /*!
   \class PreDipoleGenerator
   \version 1.0
@@ -56,7 +59,10 @@ class PreDipoleGenerator
   std::string voidMat;                   ///< void material
   std::string wallMat;                   ///< wall material
   std::string flangeMat;                  ///< Pipe/flange material
- 
+
+  /// accessable generator
+  std::unique_ptr<QuadrupoleGenerator> QGen;
+  
  public:
 
   PreDipoleGenerator();

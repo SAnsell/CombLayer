@@ -85,6 +85,18 @@
 namespace xraySystem
 {
 
+Quadrupole::Quadrupole(const std::string& Key) :
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  baseName(Key)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: KeyName
+  */
+{}
+
 Quadrupole::Quadrupole(const std::string& Base,
 		       const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
@@ -363,37 +375,37 @@ Quadrupole::createObjects(Simulation& System)
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
-  makeCell("VoidPole",System,cellIndex++,0,0.0,Out);
-
+  makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out);
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 201 -202 303 -304 (306:-307) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
-  makeCell("VoidPole",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 201 -202 403 -404 (406:-407) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
-  makeCell("VoidPole",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 201 -202 503 -504 (506:-507) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
-  makeCell("VoidPole",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out);
 
   if (poleLength<coilLength-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"105 -106 202 -102 103 -104 ");
-      makeCell("ExtraPoleVoid",System,cellIndex++,0,0.0,Out);
+      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,Out);
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
-      makeCell("ExtraPoleVoid",System,cellIndex++,0,0.0,Out);
+      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out);
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
   addOuterSurf(Out);      

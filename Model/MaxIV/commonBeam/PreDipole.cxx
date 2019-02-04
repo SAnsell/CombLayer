@@ -80,6 +80,7 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
+#include "Quadrupole.h"
 #include "PreDipole.h"
 
 namespace xraySystem
@@ -89,12 +90,22 @@ PreDipole::PreDipole(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  quadX(new xraySystem::Quadrupole(Key+"QuadX")),
+  quadZ(new xraySystem::Quadrupole(Key+"QuadZ"))
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(quadX);
+  OR.addObject(quadZ);
+
+}
 
 
 PreDipole::~PreDipole() 
@@ -253,7 +264,6 @@ PreDipole::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"  21 22 23 14 25 26 27 ");
   addOuterUnionSurf(Out+fbStr);
-
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
   addOuterUnionSurf(Out+frontStr);
@@ -274,9 +284,57 @@ PreDipole::createLinks()
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
 
+  const Geometry::Vec3D midPt((getLinkPt(1)+getLinkPt(2))/2.0);
+
+  // note : no surface
+  FixedComp::setConnect(2,midPt,Y);
+  FixedComp::nameSideIndex(2,"midPoint");
+  
   return;
 }
 
+void
+PreDipole::createQuads(Simulation& System,const int cellN)
+  /*!
+    Separate function [will be joined later as the full 
+    shell is completed.
+    \param System :: Simulation :: System to insert
+    \param cellN :: Cell for insertion
+   */
+{
+  ELog::RegMethod RegA("PreDipole","createAll");
+  std::string Out;
+  
+  for(const std::shared_ptr<Quadrupole>& QItem : {quadX,quadZ})
+    {
+      QItem->addInsertCell(cellN);
+      QItem->createAll(System,*this,3);
+
+      // Insert Quad Cut into void space
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-26:-25:-14) "); 
+      QItem->insertComponent(System,"VoidPoleA",Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-26 : -27) "); 
+      QItem->insertComponent(System,"VoidPoleB",Out);
+      
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:-14) "); 
+      QItem->insertComponent(System,"VoidPoleC",Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-22) "); 
+      QItem->insertComponent(System,"VoidPoleD",Out);
+      
+      if (QItem->hasItem("ExtraPoleVoidA"))
+	{
+	  Out=ModelSupport::getComposite(SMap,buildIndex,
+					 "(-21:-22:-23:-14:-25:-26:-27)");
+	  QItem->insertComponent(System,"ExtraPoleVoidA",Out);
+	  QItem->insertComponent(System,"ExtraPoleVoidB",Out);
+	}
+    }
+  return;
+}
 
 void
 PreDipole::createAll(Simulation& System,
