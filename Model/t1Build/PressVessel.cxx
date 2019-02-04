@@ -71,7 +71,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -236,14 +235,13 @@ PressVessel::populate(const FuncDataBase& Control)
 
   // Number of channels:
   nBwch=Control.EvalVar<size_t>(keyName+"NBwch");
-  begXstep=SimProcess::getVarVec<double>(Control,keyName+"BegXstep");
-  if (begXstep.size()!=nBwch)
-    throw ColErr::MisMatch<size_t>(nBwch,begXstep.size(),
-				"Incorrect number of channels");
-  endXstep=SimProcess::getVarVec<double>(Control,keyName+"EndXstep");
-  if (endXstep.size()!=nBwch)
-    throw ColErr::MisMatch<size_t>(nBwch,endXstep.size(),
-				"Incorrect number of channels");  				        
+  for(size_t index=0;index<nBwch;index++)
+    {
+      begXstep.push_back(Control.EvalVar<double>
+			 (keyName+"BigXstep"+std::to_string(index)));
+      endXstep.push_back(Control.EvalVar<double>
+			 (keyName+"EndXstep"+std::to_string(index)));
+    }		        
     
   bigWchbegThick=Control.EvalVar<double>(keyName+"BigWchbegThick");
   bigWchbegZstep=Control.EvalVar<double>(keyName+"BigWchbegZstep"); 

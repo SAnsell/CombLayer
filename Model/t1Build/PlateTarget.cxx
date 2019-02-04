@@ -71,7 +71,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -158,11 +157,13 @@ PlateTarget::populate(const Simulation& System)
   width=Control.EvalVar<double>(keyName+"Width");
   // Blocks:
   nBlock=Control.EvalVar<size_t>(keyName+"NBlocks");
-  tBlock=SimProcess::getVarVec<double>(Control,keyName+"Thick");
-  if (tBlock.size()!=nBlock)
-    throw ColErr::MisMatch<size_t>(nBlock,tBlock.size(),
-				"Incorrect thicknesses");
-  
+
+  for(size_t index=0;index<nBlock;index++)
+    {
+      tBlock.push_back(Control.EvalVar<double>
+		       (keyName+"Thick"+std::to_string(index)));
+    }
+	  
   // Master Ta dimensions:
   taThick=Control.EvalVar<double>(keyName+"TaThick");
   waterThick=Control.EvalVar<double>(keyName+"WaterThick");

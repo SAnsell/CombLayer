@@ -383,7 +383,7 @@ BulkShield::createBulkInserts(Simulation& System,
 	}
       else if (i==imatShutter && imatFlag)
 	BItem=std::shared_ptr<BulkInsert>
-	  (new IMatBulkInsert(i,"bulkInsert","imatInsert"));
+	  (new BulkInsert(i,"bulkInsert"));
       else
 	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 

@@ -3,7 +3,7 @@
  
  * File:   imat/IMatBulkInsert.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,8 @@ namespace shutterSystem
 
 IMatBulkInsert::IMatBulkInsert(const size_t ID,const std::string& BKey,
 			       const std::string& IKey)  : 
-  BulkInsert(ID,BKey),compName(IKey),insIndex(buildIndex+5000)
+  BulkInsert(ID,BKey),compName(IKey),
+  insIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -149,13 +150,13 @@ IMatBulkInsert::populate(const Simulation& System)
 
   const FuncDataBase& Control=System.getDataBase();
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
-  frontGap=Control.EvalVar<double>(keyName+"FrontGap");
+  frontGap=Control.EvalPair<double>(keyName,baseName,"FrontGap");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   

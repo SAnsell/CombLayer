@@ -3,7 +3,7 @@
  
  * File:   moderator/DecouplePipe.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,9 +184,16 @@ DecouplePipe::populate(const FuncDataBase& Control)
   heRadius=Control.EvalVar<double>(keyName+"HeRad"); 
   heAlRadius=Control.EvalVar<double>(keyName+"HeAlRad"); 
 
-  HeTrack=SimProcess::getVarVec<Geometry::Vec3D>(Control,keyName+"HeTrack");
-  if (HeTrack.empty())
-    ELog::EM<<"He Track empty : "<<ELog::endErr;
+
+  size_t index(0);
+  while(Control.hasVariable(keyName+"HeTrack"+std::to_string(index)))
+    {
+      HeTrack.emplace_back(Control.EvalVar<Geometry::Vec3D>
+			   (keyName+"HeTrack"+std::to_string(index)));
+      index++;
+    }
+  if (!index)
+    ColErr::EmptyContainer(keyName+" HeTrack::TrackPts");
 
   outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat"); 
   outAlMat=ModelSupport::EvalMat<int>(Control,keyName+"OutAlMat"); 

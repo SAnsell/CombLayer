@@ -48,7 +48,7 @@ class makeChipIR
 
   std::shared_ptr<ChipIRGuide> GObj;   ///< Guide 
   std::shared_ptr<ChipIRHutch> HObj;   ///< Hutch object
-  std::vector<FeedThrough> FeedVec;   ///< Feed though if used
+  std::vector<std::shared_ptr<FeedThrough>> FeedVec;   
   FBBlock FB;                         ///< FeedBlock
 
  public:

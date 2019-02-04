@@ -241,7 +241,7 @@ BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
   divideSurf=GS.getDivideSurf();
   DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
   Origin=GS.getTargetPoint();
-
+  
   return;
 }
 

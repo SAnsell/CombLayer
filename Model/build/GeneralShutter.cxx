@@ -314,7 +314,6 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createUnitVector");
-
   // Initial system down to TSA
   if (FCPtr)
     attachSystem::FixedComp::createUnitVector(*FCPtr);
@@ -365,6 +364,7 @@ GeneralShutter::applyRotations(const double ZOffset)
   bZ=Z;
   bEnter=frontPt+Z*ZOffset;
   bExit=frontPt+bY*(outerRadius-innerRadius)+Z*ZOffset;
+
   // Now shift : frontPt:  
   const double zShift=(closed % 2) ? 
     closedZShift+ZOffset : openZShift+ZOffset;
