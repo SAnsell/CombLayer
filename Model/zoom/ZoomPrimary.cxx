@@ -76,11 +76,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
-#include "SecondTrack.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "BulkShield.h"
-#include "ChipIRFilter.h"
 #include "ZoomPrimary.h"
 
 namespace zoomSystem
