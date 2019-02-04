@@ -3,7 +3,7 @@
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,8 +75,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 
@@ -84,7 +83,8 @@ namespace shutterSystem
 {
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
-  TwinComp(Key+std::to_string(ID),8),ContainedComp(),
+  FixedGroup(Key+std::to_string(ID),"Main",8,"Beam",2),
+  ContainedComp(),
   shutterNumber(ID),baseName(Key),
   populated(0),divideSurf(0),
   DPlane(0),closed(0),reversed(0),upperCell(0),
@@ -97,7 +97,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 {}
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
   populated(A.populated),divideSurf(A.divideSurf),
   DPlane(A.DPlane),voidXoffset(A.voidXoffset),
@@ -135,7 +135,7 @@ GeneralShutter::operator=(const GeneralShutter& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       populated=A.populated;
       divideSurf=A.divideSurf;
@@ -210,14 +210,13 @@ GeneralShutter::setGlobalVariables(const double IRad,
 }
 				
 void
-GeneralShutter::populate(const Simulation& System)
+GeneralShutter::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to us
   */
 {
   ELog::RegMethod RegA("GeneralShutter","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   voidXoffset=Control.EvalPair<double>("voidYoffset","voidXoffset");
 
@@ -314,17 +313,32 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
   */
 {
   ELog::RegMethod RegA("GeneralShutter","createUnitVector");
+  
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
   // Initial system down to TSA
   if (FCPtr)
-    attachSystem::FixedComp::createUnitVector(*FCPtr);
+    {
+      mainFC.createUnitVector(*FCPtr,0);
+      beamFC.createUnitVector(*FCPtr,0);
+      ELog::EM<<"Origin "<<mainFC.getCentre()<<ELog::endErr;
+    }
   else
     {
-      attachSystem::FixedComp::createUnitVector
+      mainFC.createUnitVector
+	(Y*voidXoffset,
+         Geometry::Vec3D(0,1,0),
+         Geometry::Vec3D(0,0,-1),
+         Geometry::Vec3D(-1,0,0));
+      beamFC.createUnitVector
 	(Y*voidXoffset,
          Geometry::Vec3D(0,1,0),
          Geometry::Vec3D(0,0,-1),
          Geometry::Vec3D(-1,0,0));
     }
+  setDefault("Main");
+  setSecondary("Beam");
   return;
 }
 
@@ -336,14 +350,18 @@ GeneralShutter::applyRotations(const double ZOffset)
    */
 {
   ELog::RegMethod RegA("GeneralShutter","applyRotations");
-  // Now do rotation:
-  XYAxis=Y;
-  Geometry::Quaternion::calcQRotDeg(xyAngle,Z).rotate(XYAxis);
-  // Create X 
-  attachSystem::FixedComp::createUnitVector(Y*voidXoffset,
-                                            XYAxis*Z,XYAxis,Z);
 
-  BeamAxis=XYAxis;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
+  // Now do rotation:
+
+  mainFC.setCentre(Y*voidXoffset);
+  mainFC.applyAngleRotate(xyAngle,0);
+		
+  BeamAxis=mainFC.getY();
+  XYAxis=BeamAxis;
+  
   zSlope=Z;
   Geometry::Quaternion::calcQRotDeg(zAngle,X).rotate(BeamAxis);
   Geometry::Quaternion::calcQRotDeg(zAngle,X).rotate(zSlope);
@@ -351,19 +369,20 @@ GeneralShutter::applyRotations(const double ZOffset)
   // Special note [close == 2: open imp =-1]
   //              [close == 3: close imp =-1]
 
-  targetPt=Origin+XYAxis*outerRadius;
-  frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
-  endPt=frontPt+XYAxis*(outerRadius-innerRadius);
+  targetPt=Origin+BeamAxis*outerRadius;
+  frontPt=Origin+BeamAxis*innerRadius+Z*openZShift;
+  endPt=frontPt+BeamAxis*(outerRadius-innerRadius);
 
   // OUTPUT
-  FixedComp::setConnect(0,frontPt,-XYAxis);
-  FixedComp::setConnect(1,endPt,XYAxis);
-    // TWIN STATUS [UN Modified direction]:
-  bX=XYAxis*Z;
-  bY=XYAxis;
-  bZ=Z;
-  bEnter=frontPt+Z*ZOffset;
-  bExit=frontPt+bY*(outerRadius-innerRadius)+Z*ZOffset;
+  mainFC.setConnect(0,frontPt,-XYAxis);
+  mainFC.setConnect(1,endPt,XYAxis);
+
+  // TWIN STATUS [UN Modified direction]:
+  beamFC.createUnitVector(frontPt+Z*ZOffset,XYAxis*Z,XYAxis,Z);
+  beamFC.setConnect(0,frontPt+Z*ZOffset,-beamFC.getY());
+  beamFC.setConnect(1,frontPt+beamFC.getY()*
+		    (outerRadius-innerRadius)+Z*ZOffset,beamFC.getY());
+
 
   // Now shift : frontPt:  
   const double zShift=(closed % 2) ? 
@@ -373,8 +392,11 @@ GeneralShutter::applyRotations(const double ZOffset)
   endPt=frontPt+BeamAxis*(outerRadius-innerRadius);
 
   // These are the modified output numbers:
-  FixedComp::setConnect(6,frontPt,-XYAxis);
-  FixedComp::setConnect(7,endPt,XYAxis);
+  mainFC.setConnect(6,frontPt,-XYAxis);
+  mainFC.setConnect(7,endPt,XYAxis);
+
+  setDefault("Main","Beam");
+  
   return;
 }
 
@@ -837,20 +859,22 @@ GeneralShutter::createLinks()
   ELog::RegMethod RegA("GeneralShutter","createLinks");
   std::string Out;
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"7 -100 ");
-  FixedComp::addLinkSurf(0,Out);
+  mainFC.addLinkSurf(0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"17 100 ");
-  FixedComp::addLinkSurf(1,Out);
+  mainFC.addLinkSurf(1,Out);
 
-  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+113));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+114));
-  FixedComp::addLinkSurf(4,SMap.realSurf(buildIndex+225));
-  FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+226));
+  mainFC.addLinkSurf(2,SMap.realSurf(buildIndex+113));
+  mainFC.addLinkSurf(3,SMap.realSurf(buildIndex+114));
+  mainFC.addLinkSurf(4,SMap.realSurf(buildIndex+225));
+  mainFC.addLinkSurf(5,SMap.realSurf(buildIndex+226));
 
 
-  FixedComp::setConnect(4,frontPt+Z*
+  mainFC.setConnect(4,frontPt+Z*
 			(voidZOffset+voidHeightOuter/2.0-centZOffset),-zSlope);
-  FixedComp::setConnect(5,frontPt-Z*
+  mainFC.setConnect(5,frontPt-Z*
 			(-voidZOffset+voidHeightOuter/2.0-centZOffset),zSlope);
 
 
@@ -871,7 +895,8 @@ GeneralShutter::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("GeneralShutter","createAll");
 
-  populate(System);
+  
+  populate(System.getDataBase());
   createUnitVector(FCPtr);
   applyRotations(ZOffset);
   createSurfaces();

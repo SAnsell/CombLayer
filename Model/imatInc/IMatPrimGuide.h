@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   imatInc/IMatPrimGuide.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ class IMatPrimGuide : public IMatGuide
   IMatPrimGuide& operator=(const IMatPrimGuide&);
   virtual ~IMatPrimGuide();
 
-  virtual void createAll(Simulation&,const attachSystem::TwinComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedGroup&);
 		 
 };
 

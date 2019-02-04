@@ -72,7 +72,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "HeatDump.h"
@@ -89,7 +88,6 @@ HeatDump::HeatDump(const std::string& Key) :
   /*!
     Constructor
     \param Key :: Name of construction key
-    \param Index :: Index number
   */
 {}
 
@@ -170,7 +168,6 @@ HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   applyOffset();
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
-
   setDefault("Main");
   return;
 }

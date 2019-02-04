@@ -3,7 +3,7 @@
  
  * File:   R1Inc/R1FrontEnd.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace insertSystem
 {
   class insertCylinder;
+  class insertPlate;
 }
 
 namespace constructSystem
@@ -55,9 +56,11 @@ namespace xraySystem
 {
   class BremBlock;
   class BeamMount;
+  class DipoleChamber;
   class FlangeMount;
   class HeatDump;
   class LCollimator;
+  class PreDipole;
   class Quadrupole;
   class SquareFMask;
   class UTubePipe;
@@ -86,11 +89,23 @@ class R1FrontEnd :
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
-
+  
+  /// dipole connection pipe
+  std::shared_ptr<xraySystem::PreDipole> preDipole;
+  /// Quad for X shaping of beam
+  std::shared_ptr<xraySystem::Quadrupole> quadX;
+  /// Quad for Z shaping of beam
+  std::shared_ptr<xraySystem::Quadrupole> quadZ;
+  /// dipole connection pipe
+  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
-  /// electron cut cell
+  /// electron cut cell [straight line]
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// FixedMask 1
@@ -165,10 +180,10 @@ class R1FrontEnd :
     
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
 
-  virtual void buildUndulator(Simulation&,
-			      MonteCarlo::Object*,
-			      const attachSystem::FixedComp&,
-			      const long int) =0;
+  virtual const attachSystem::FixedComp&
+    buildUndulator(Simulation&,MonteCarlo::Object*,
+		   const attachSystem::FixedComp&,const long int) =0;
+  
   void buildHeatTable(Simulation&,MonteCarlo::Object*,
 		      const attachSystem::FixedComp&,const long int);
   void buildApertureTable(Simulation&,MonteCarlo::Object*,

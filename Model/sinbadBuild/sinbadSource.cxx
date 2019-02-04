@@ -25,9 +25,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -40,8 +37,6 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "WorkData.h"
 #include "sinbadSource.h"
 

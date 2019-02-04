@@ -52,7 +52,6 @@ class HoleUnit : public attachSystem::ContainedComp,
 
   void setShape(const int);
   void createUnitVector(const double,const attachSystem::FixedComp&);
-  void createUnitVector(const double,const attachSystem::SecondTrack&);
   void createSurfaces();
 
   void createCircleSurfaces();

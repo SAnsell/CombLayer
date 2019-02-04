@@ -72,10 +72,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BulkInsert.h"
 #include "IMatBulkInsert.h"
@@ -168,27 +166,14 @@ IMatBulkInsert::populate(const Simulation& System)
 void
 IMatBulkInsert::createUnitVector()
   /*!
-    Create the unit vectors
+    Create the unit vectors: After BulkInsert built!!
   */
 {
   ELog::RegMethod RegA("IMatBulkInsert","createUnitVector");
 
-  bEnter+=bX*xStep+bY*yStep+bZ*zStep;
-  if (fabs(xyAngle)>Geometry::zeroTol ||
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      // ADDITIONAL ROTATIONS TO 
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,bX);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,bZ);
-
-      Qz.rotate(bY);
-      Qz.rotate(bZ);
-      Qxy.rotate(bX);
-      Qxy.rotate(bY);
-      Qxy.rotate(bZ);
-    }
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  beamFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
   return;
 }
@@ -201,6 +186,12 @@ IMatBulkInsert::createSurfaces()
 {
   ELog::RegMethod RegA("IMatBulkInsert","createSurface");
 
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bY(beamFC.getX());
+  const Geometry::Vec3D& bZ(beamFC.getX());
+  const Geometry::Vec3D& bEnter(beamFC.getCentre());
+  
   ModelSupport::buildPlane(SMap,insIndex+3,
 			   bEnter-bX*width/2.0,bX);
   ModelSupport::buildPlane(SMap,insIndex+4,

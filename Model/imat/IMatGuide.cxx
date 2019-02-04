@@ -3,7 +3,7 @@
  
  * File:   imat/IMatGuide.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,8 +74,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
@@ -86,7 +85,7 @@ namespace imatSystem
 
 IMatGuide::IMatGuide(const std::string& Key)  :
   attachSystem::ContainedGroup("Inner","Steel","Wall"),
-  attachSystem::TwinComp(Key,6),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
   innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -95,7 +94,7 @@ IMatGuide::IMatGuide(const std::string& Key)  :
 {}
 
 IMatGuide::IMatGuide(const IMatGuide& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
   height(A.height),width(A.width),glassThick(A.glassThick),
@@ -121,7 +120,7 @@ IMatGuide::operator=(const IMatGuide& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -204,7 +203,7 @@ IMatGuide::populate(const Simulation& System)
 }
   
 void
-IMatGuide::createUnitVector(const attachSystem::TwinComp& TC)
+IMatGuide::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -214,25 +213,18 @@ IMatGuide::createUnitVector(const attachSystem::TwinComp& TC)
   */
 {
   ELog::RegMethod RegA("IMatGuide","createUnitVector");
-  attachSystem::TwinComp::createUnitVector(TC);
-  Origin+=bEnter+X*xStep+Y*yStep+Z*zStep;
-  bEnter=Origin;
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  if (fabs(xyAngle)>Geometry::zeroTol || 
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,bX);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,bZ);
-  
-      Qz.rotate(bY);
-      Qz.rotate(bZ);
-      Qxy.rotate(bY);
-      Qxy.rotate(bX);
-      Qxy.rotate(bZ); 
-    }
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
+
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
+
   return;
 }
 
@@ -245,6 +237,9 @@ IMatGuide::createSurfaces()
 {
   ELog::RegMethod RegA("IMatGuide","createSurfaces");
 
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  setSecondary("Beam");
 
   // Inner void layers
   double xside(width/2.0);
@@ -367,18 +362,23 @@ IMatGuide::createLinks()
 {
   ELog::RegMethod RegA("IMatGuide","createLinks");
 
-  SecondTrack::setBeamExit(Origin+bY*length,bY);
-  setExit(Origin+bY*length,bY);
+  
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(0,Origin,-Y);      // Note always to the reactor
+  const Geometry::Vec3D bY(beamFC.getY());
 
+  mainFC.setConnect(1,Origin+bY*length,bY);
+  beamFC.setConnect(1,Origin+bY*length,bY);
+
+  mainFC.setConnect(0,Origin,-bY);      // Note always to the moderator
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
 }
 
 void
-IMatGuide::createAll(Simulation& System,const attachSystem::TwinComp& TC)
+IMatGuide::createAll(Simulation& System,const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to

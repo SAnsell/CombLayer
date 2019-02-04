@@ -91,6 +91,7 @@ flukaPhysics::flukaPhysics() :
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
       { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
       { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
+      { "stepsize",cellValueSet<2>("stepsize","STEPSIZE","",{1.0,1}) }
     }),
 
   threeFlag({
@@ -148,7 +149,10 @@ flukaPhysics::flukaPhysics() :
       { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
       { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
 
-      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") }
+      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") },
+
+      { "stepsize", unitTYPE(0,"%2 %3 M0 M1 1.0 - ") }
+
     })
   /*!
     Constructor

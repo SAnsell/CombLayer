@@ -3,7 +3,7 @@
  
  * File:   chip/Table.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,8 +74,6 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "Table.h"
 
@@ -83,7 +81,8 @@ namespace hutchSystem
 {
 
 Table::Table(const int T,const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,6),
   shapeType(T),populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -94,8 +93,7 @@ Table::Table(const int T,const std::string& Key)  :
 
 Table::Table(const Table& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  shapeType(A.shapeType),
-  populated(A.populated),
+  shapeType(A.shapeType),populated(A.populated),
   xyAngle(A.xyAngle),zAngle(A.zAngle),
   fStep(A.fStep),xStep(A.xStep),Centre(A.Centre),
   height(A.height),width(A.width),length(A.length),surThick(A.surThick),

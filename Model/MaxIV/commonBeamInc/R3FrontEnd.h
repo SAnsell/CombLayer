@@ -173,10 +173,10 @@ class R3FrontEnd :
   double outerRadius;   ///< radius of tube for divisions
 
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
-  virtual void buildUndulator(Simulation&,
-			      MonteCarlo::Object*,
-			      const attachSystem::FixedComp&,
-			      const long int) =0;
+  virtual const attachSystem::FixedComp&
+    buildUndulator(Simulation&,MonteCarlo::Object*,
+		   const attachSystem::FixedComp&,
+		   const long int) =0;
 
 
   void buildHeatTable(Simulation&,MonteCarlo::Object*,

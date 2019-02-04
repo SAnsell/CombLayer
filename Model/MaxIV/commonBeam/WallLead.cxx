@@ -118,6 +118,7 @@ WallLead::populate(const FuncDataBase& Control)
   steelRingWidth=Control.EvalVar<double>(keyName+"SteelRingWidth");
   steelHeight=Control.EvalVar<double>(keyName+"SteelHeight");
   steelDepth=Control.EvalVar<double>(keyName+"SteelDepth");
+  steelThick=Control.EvalVar<double>(keyName+"SteelThick");
   steelXCut=Control.EvalVar<double>(keyName+"SteelXCut");
   steelZCut=Control.EvalVar<double>(keyName+"SteelZCut");
 
@@ -169,10 +170,10 @@ WallLead::createSurfaces()
   FrontBackCut::getShiftedFront(SMap,buildIndex+11,1,Y,extraLeadDepth);
 
   FrontBackCut::getShiftedFront(SMap,buildIndex+21,1,Y,
-				extraLeadDepth+steelDepth);
+				extraLeadDepth+steelThick);
 
   FrontBackCut::getShiftedFront(SMap,buildIndex+31,1,Y,
-				extraLeadDepth+steelDepth+frontLength);
+				extraLeadDepth+steelThick+frontLength);
 
   if (backLength>Geometry::zeroTol)
     FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,backLength);
@@ -188,8 +189,8 @@ WallLead::createSurfaces()
   // steel
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*steelOutWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*steelRingWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(steelHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(steelHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*steelDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*steelHeight,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+113,Origin-X*(steelXCut/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+114,Origin+X*(steelXCut/2.0),X);

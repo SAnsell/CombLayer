@@ -57,8 +57,9 @@ class WallLead :
 
   double steelOutWidth;       ///< Thickness of steel wall side
   double steelRingWidth;      ///< Thickness of steel ring side
-  double steelHeight;         ///< Height of steel
-  double steelDepth;          ///< Depth of steel
+  double steelHeight;         ///< Height of steel [up]
+  double steelDepth;          ///< Height of steel [down]
+  double steelThick;          ///< Depth of steel
   double steelXCut;           ///< Central hole size
   double steelZCut;           ///< Central hole size 
 

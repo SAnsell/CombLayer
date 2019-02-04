@@ -70,8 +70,6 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "PositionSupport.h"
 #include "LinkSupport.h"
 #include "groupRange.h"

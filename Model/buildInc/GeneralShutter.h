@@ -3,7 +3,7 @@
  
  * File:   buildInc/GeneralShutter.h
  * 
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,8 @@ namespace shutterSystem
     Improved to not require shutter system
 */
 
-class GeneralShutter : public attachSystem::TwinComp,
+class GeneralShutter :
+  public attachSystem::FixedGroup,
   public attachSystem::ContainedComp
 {
  protected:
@@ -115,7 +116,7 @@ class GeneralShutter : public attachSystem::TwinComp,
   // FUNCTIONS:
   //--------------
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp*);
   void createSurfaces();
   void createObjects(Simulation&);
@@ -150,12 +151,12 @@ class GeneralShutter : public attachSystem::TwinComp,
   Geometry::Vec3D getViewOrigin() const;
 
   /// Access FrontPoint
-  Geometry::Vec3D getFrontPt() const 
-    { return getLinkPt(1); }
+  //  Geometry::Vec3D getFrontPt() const 
+  //    { return getLinkPt(1); }
 
   /// Access BackPoint
-  virtual Geometry::Vec3D getBackPt() const 
-    { return getLinkPt(2); }
+  //  virtual Geometry::Vec3D getBackPt() const 
+  //    { return getLinkPt(2); }
   
   /// Access flat-angle
   double getAngle() const { return xyAngle; }

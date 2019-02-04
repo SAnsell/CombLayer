@@ -58,7 +58,6 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "groupRange.h"
@@ -70,7 +69,7 @@
 
 void
 reportSelection(Simulation& System,
-		  const mainSystem::inputParam& IParam)
+		const mainSystem::inputParam& IParam)
   /*!
     A system for reporting values 
     \param System :: Simulation to add tallies

@@ -3,7 +3,7 @@
  
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ class SimFLUKA : public Simulation
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
+  Geometry::Vec3D BVec;           ///< Magnetic field
 
   std::string sourceExtraName;    ///< Extra name if using combined sources
   
@@ -65,6 +66,7 @@ class SimFLUKA : public Simulation
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
+  void writeMagField(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
   void writeElements(std::ostream&) const;
   void writeWeights(std::ostream&) const;
@@ -115,6 +117,8 @@ class SimFLUKA : public Simulation
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
   void setNoThermal() { lowEnergyNeutron=0; }
+  /// Set the vector field
+  void setMagField(const Geometry::Vec3D& B) { BVec=B; }
   void setDefaultPhysics(const std::string&);
   void setForCinder();
   void processActiveMaterials() const;

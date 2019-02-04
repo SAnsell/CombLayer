@@ -60,7 +60,7 @@ class ChipIRShutterFlat : public GeneralShutter
   //--------------
   // FUNCTIONS:
   //--------------
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createCInfoTable(Simulation&);
   void createShutterInsert(Simulation&);  
   void createShinePipe(Simulation&);

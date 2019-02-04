@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,11 +77,9 @@
 #include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "surfDBase.h"
@@ -96,7 +94,7 @@ namespace hutchSystem
 {
 
 ChipIRGuide::ChipIRGuide(const std::string& Key) : 
-  attachSystem::TwinComp(Key,12),
+  attachSystem::FixedGroup(Key,"Main",12,"Beam",2),
   attachSystem::ContainedGroup("inner","outer","leftwall","rightwall"),
   Filter("chipFilter"),nLayers(0),
   nConcLayers(0)
@@ -107,7 +105,7 @@ ChipIRGuide::ChipIRGuide(const std::string& Key) :
 {}
 
 ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedGroup(A),
   Filter(A.Filter),beamAngle(A.beamAngle),sideBeamAngle(A.sideBeamAngle),
   shutterAngle(A.shutterAngle),gLen(A.gLen),hYStart(A.hYStart),
   hFWallThick(A.hFWallThick),xShift(A.xShift),zShift(A.zShift),
@@ -151,7 +149,7 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       Filter=A.Filter;
       beamAngle=A.beamAngle;
@@ -387,35 +385,39 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector");
-  const masterRotate& MR=masterRotate::Instance();
-  
-  bZ=Z=Geometry::Vec3D(-1,0,0);         // Gravity axis [up]
-  bY=Y=GS.getXYAxis();                 // forward axis [centre line]  
-  bX=X=Z*GS.getXYAxis();               // horrizontal axis [across]
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  Geometry::Vec3D bZ=Z=Geometry::Vec3D(-1,0,0);        // Gravity axis [up]
+  Geometry::Vec3D bY=Y=GS.getXYAxis();                 // forward axis [centre line]  
+  Geometry::Vec3D bX=X=Z*GS.getXYAxis();               // horrizontal axis [across]
 
   // Change so that not dependent on the angle of the shutter:
 
+
+  mainFC.createUnitVector(GS.getKey("Main"));
+  
   Origin=GS.getOrigin()+Y*BS.getORadius();
-  bEnter=Origin;
+
+  Geometry::Vec3D bEnter=Origin;
   Origin+=Z*zShift+X*xShift;
   bEnter+=Z*zBeamShift+X*xBeamShift;
 
-  // Rotate beamAxis to the final angle
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bZ);
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bY);
 
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bX);
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
+  mainFC.setCentre(Origin);
+  beamFC.createUnitVector(bEnter,bX,bY,bZ);
+  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
 
   // Now calculate Cent
   gLen=hYStart-BS.getORadius();
-
+  beamFC.setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
-  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
+  //  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
+  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
+  //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
   
   return;
 }
@@ -431,31 +433,28 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector(Fixed)");
 
-  const masterRotate& MR=masterRotate::Instance();
 
-  FixedComp::createUnitVector(WO);
-  bEnter=Origin;
-  Z*=-1.0;
-  bZ=Z;
-  bY=Y;
-  bX=X;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.createUnitVector(WO);
+  beamFC.createUnitVector(WO);
+
+  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
+
+  setDefault("Main");
+  setSecondary("Beam");
   
-  // Rotate beamAxis to the final angle
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bZ);
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bY);
-
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bX);
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
-
   // Now calculate Cent
   gLen=hYStart-ORadius; 
-
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  setExit(bEnter+bY*(hYStart/std::abs(bY.dotProd(Y))),bY);
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
-  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
+
+  beamFC.setExit(bOrigin+bY*(hYStart/std::abs(bY.dotProd(Y))),
+		 bY);
+  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
+  //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
   
   return;
 }
@@ -473,21 +472,21 @@ ChipIRGuide::createLiner(const int index,const double offset)
   const int GI(buildIndex+index);
   // INNER VOID CORE [+ve X : +ve z]
   ModelSupport::buildPlane(SMap,GI+3,
-			   bEnter-bX*(innerALWall+offset),
-			   bEnter-bX*(innerALWall+offset)+bY*gLen,
-			   bEnter-bX*(innerALWall+offset)+bZ,X);
+			   bOrigin-bX*(innerALWall+offset),
+			   bOrigin-bX*(innerALWall+offset)+bY*gLen,
+			   bOrigin-bX*(innerALWall+offset)+bZ,X);
   ModelSupport::buildPlane(SMap,GI+4,
-			   bEnter+bX*(innerARWall+offset),
-			   bEnter+bX*(innerBRWall+offset)+bY*gLen,
-			   bEnter+bX*(innerARWall+offset)+bZ,X);
+			   bOrigin+bX*(innerARWall+offset),
+			   bOrigin+bX*(innerBRWall+offset)+bY*gLen,
+			   bOrigin+bX*(innerARWall+offset)+bZ,X);
   ModelSupport::buildPlane(SMap,GI+5,
-			   bEnter-bZ*(innerAFloorZ+offset),
-			   bEnter-bZ*(innerBFloorZ+offset)+bY*gLen,
-			   bEnter-bZ*(innerAFloorZ+offset)+bX,Z);
+			   bOrigin-bZ*(innerAFloorZ+offset),
+			   bOrigin-bZ*(innerBFloorZ+offset)+bY*gLen,
+			   bOrigin-bZ*(innerAFloorZ+offset)+bX,Z);
   ModelSupport::buildPlane(SMap,GI+6,
-			   bEnter+bZ*(innerARoofZ+offset),
-			   bEnter+bZ*(innerBRoofZ+offset)+bY*gLen,
-			   bEnter+bZ*(innerARoofZ+offset)+bX,Z);
+			   bOrigin+bZ*(innerARoofZ+offset),
+			   bOrigin+bZ*(innerBRoofZ+offset)+bY*gLen,
+			   bOrigin+bZ*(innerARoofZ+offset)+bX,Z);
 
   return;
 }
@@ -1036,7 +1035,7 @@ ChipIRGuide::exitWindow(const double Dist,
   window.push_back(SMap.realSurf(buildIndex+26));
   // Note cant rely on exit point because that is the 
   // virtual 46 degree exit point.
-  Pt=getExit()+bY*Dist; 
+  //  Pt=getExit()+bY*Dist; 
   return SMap.realSurf(buildIndex+2);
 }
 

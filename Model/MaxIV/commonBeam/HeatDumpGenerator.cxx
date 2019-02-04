@@ -238,14 +238,20 @@ HeatDumpGenerator::generateHD(FuncDataBase& Control,
   return;
 }
 
+template void HeatDumpGenerator::setCF<CF40>();
+template void HeatDumpGenerator::setCF<CF63>();
 template void HeatDumpGenerator::setCF<CF100>();
 template void HeatDumpGenerator::setCF<CF120>();
 template void HeatDumpGenerator::setCF<CF150>();
 
+template void HeatDumpGenerator::setOutCF<CF40>();
+template void HeatDumpGenerator::setOutCF<CF63>();
 template void HeatDumpGenerator::setOutCF<CF100>();
 template void HeatDumpGenerator::setOutCF<CF120>();
 template void HeatDumpGenerator::setOutCF<CF150>();
 
+template void HeatDumpGenerator::setTopCF<CF40>();
+template void HeatDumpGenerator::setTopCF<CF63>();
 template void HeatDumpGenerator::setTopCF<CF100>();
 template void HeatDumpGenerator::setTopCF<CF120>();
 template void HeatDumpGenerator::setTopCF<CF150>();

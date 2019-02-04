@@ -202,7 +202,7 @@ class ChipIRHutch : public attachSystem::FixedGroup,
 
   void createWallObjects(Simulation&,const attachSystem::ContainedComp&);
 
-  void addCollimators(Simulation&,const attachSystem::TwinComp&);
+  void addCollimators(Simulation&,const attachSystem::FixedGroup&);
   void addOuterVoid();
   void addExtraWalls(Simulation&,const attachSystem::FixedComp&);
   Geometry::Vec3D calcCentroid(const int,const int,const int,
@@ -248,15 +248,15 @@ class ChipIRHutch : public attachSystem::FixedGroup,
   void writeMasterPoints() const;
 
   void createAll(Simulation&,const shutterSystem::GeneralShutter&,
-		 const attachSystem::TwinComp&,		 
+		 const attachSystem::FixedGroup&,		 
 		 const attachSystem::ContainedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::TwinComp&,		 
+		 const attachSystem::FixedGroup&,		 
 		 const attachSystem::ContainedComp&);
 
   void createCommonAll(Simulation&,
-		 const attachSystem::TwinComp&,		 
+		 const attachSystem::FixedGroup&,		 
 		 const attachSystem::ContainedComp&);
 
 };

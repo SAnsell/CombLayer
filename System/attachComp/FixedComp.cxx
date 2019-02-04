@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ FixedComp::FixedComp(const FixedComp& A) :
   cellIndex(A.cellIndex),
   keyMap(A.keyMap),
   X(A.X),Y(A.Y),Z(A.Z),
-  Origin(A.Origin),beamAxis(A.beamAxis),
+  Origin(A.Origin),
   orientateAxis(A.orientateAxis),primeAxis(A.primeAxis),
   LU(A.LU)
   /*!
@@ -144,7 +144,6 @@ FixedComp::operator=(const FixedComp& A)
       Y=A.Y;
       Z=A.Z;
       Origin=A.Origin;
-      beamAxis=A.beamAxis;
       orientateAxis=A.orientateAxis;
       primeAxis=A.primeAxis;
       LU=A.LU;
@@ -187,8 +186,6 @@ FixedComp::createUnitVector(const FixedComp& FC)
   Y=FC.Y;
   X=FC.X;
   Origin=FC.Origin;
-  beamOrigin=FC.beamOrigin;
-  beamAxis=FC.beamAxis;
 
   if (primeAxis>0)
     reOrientate();
@@ -211,8 +208,6 @@ FixedComp::createUnitVector(const FixedComp& FC,
   Y=FC.Y;
   X=FC.X;
   Origin=POrigin;
-  beamOrigin=FC.beamOrigin;
-  beamAxis=FC.beamAxis;
 
   if (primeAxis>0) reOrientate();
   
@@ -305,8 +300,6 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   
   makeOrthogonal();
   Origin=OG;
-  beamOrigin=OG;
-  beamAxis=Y;
   if (primeAxis>0) reOrientate();
   return;
 }
@@ -1028,6 +1021,7 @@ FixedComp::setConnect(const size_t Index,
  */
 {
   ELog::RegMethod RegA("FixedComp","setConnect");
+
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU.size/index");
 
@@ -1422,6 +1416,42 @@ FixedComp::getLinkDistance(const long int AIndex,
   return getLinkPt(AIndex).Distance(FC.getLinkPt(BIndex));
 }
 
+bool
+FixedComp::hasLinkPt(const std::string& sideName) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return True if link poni tset
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkPt[str]:"+keyName);
+
+  const long int sideIndex=getSideIndex(sideName);
+  return hasLinkPt(sideIndex);
+}
+
+bool
+FixedComp::hasLinkPt(const long int sideIndex) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return True if link poni tset
+  */
+{
+  ELog::RegMethod RegA("FixedComp","hasLinkPt[LI]:"+keyName);
+
+  if (sideIndex)
+    {
+      const size_t linkIndex=
+	(sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+	static_cast<size_t>(-sideIndex-1) ;
+      if (linkIndex<LU.size())
+	return LU[linkIndex].hasConnectPt();
+    }
+  return 1;   // orgin always true
+}
+
+
 Geometry::Vec3D
 FixedComp::getLinkPt(const std::string& sideName) const
   /*!
@@ -1579,6 +1609,39 @@ FixedComp::setCentre(const Geometry::Vec3D& C)
   return;
 }
 
+const Geometry::Vec3D&
+FixedComp::getExit() const 
+  /*!
+    User Interface to LU[1] to get Point 
+    \return connect point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setExit(int)");
+
+  if (LU.size()<2)
+    throw ColErr::IndexError<size_t>(2,LU.size(),"LU.size/index");
+
+  return LU[1].getConnectPt();
+}
+
+void 
+FixedComp::setExit(const int surfN,
+		   const Geometry::Vec3D& C,
+		   const Geometry::Vec3D& A) 
+  /*!
+    User Interface to LU[1] to set Point + Axis
+    \param C :: Connect point
+    \param A :: Axis
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setExit(int)");
+
+  setLinkSurf(1,surfN);
+  setConnect(1,C,A);
+
+  return;
+}
+
 void 
 FixedComp::setExit(const Geometry::Vec3D& C,
 		   const Geometry::Vec3D& A) 
@@ -1589,35 +1652,8 @@ FixedComp::setExit(const Geometry::Vec3D& C,
   */
 {
   ELog::RegMethod RegA("FixedComp","setExit");
-  if (LU.size()<2)
-    throw ColErr::IndexError<size_t>(2,LU.size(),"2/LU.size");
-
-  LU[1].setAxis(A);
-  LU[1].setConnectPt(C);
-
+  setConnect(1,C,A);
   return;
-}
-
-const Geometry::Vec3D&
-FixedComp::getExit() const
-  /*!
-    Get Exit if set / Default to Origin
-    \return Exit point
-  */
-{
-  return (LU.size()>1 && LU[1].hasConnectPt())  ? 
-    LU[1].getConnectPt() : Origin;
-}
-
-const Geometry::Vec3D&
-FixedComp::getExitNorm() const
-  /*!
-    Get exit normal if set / Default to Beam axis
-    \return Exit direction
-  */
-{
-  return (LU.size()>1 && LU[1].hasAxis())  ? 
-    LU[1].getAxis() : beamAxis;
 }
 
 size_t
@@ -1689,7 +1725,6 @@ FixedComp::applyRotation(const Geometry::Vec3D& Axis,
   
   Qrot.rotate(X);
   Qrot.rotate(Y);
-  Qrot.rotate(beamAxis);
   Qrot.rotate(Z);
   return;
 }
@@ -1867,11 +1902,7 @@ FixedComp::applyRotation(const localRotate& LR)
   LR.applyFullAxis(X);
   LR.applyFullAxis(Y);
   LR.applyFullAxis(Z);
-  LR.applyFullAxis(beamAxis);
   
-  LR.applyFull(Origin);
-  LR.applyFull(beamOrigin);
-
   for(LinkUnit& linkItem : LU)
     linkItem.applyRotation(LR);
   

@@ -3,7 +3,7 @@
  
  * File: R1/R1FrontEnd.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,6 @@
 #include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -84,6 +83,7 @@
 #include "OffsetFlangePipe.h"
 #include "insertObject.h"
 #include "insertCylinder.h"
+#include "insertPlate.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValve.h"
@@ -99,8 +99,11 @@
 #include "BeamMount.h"
 #include "HeatDump.h"
 #include "BremBlock.h"
-
+#include "Quadrupole.h"
+#include "PreDipole.h"
+#include "DipoleChamber.h"
 #include "LCollimator.h"
+#include "Quadrupole.h"
 
 #include "R1FrontEnd.h"
 
@@ -118,8 +121,12 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
+  preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
+  dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
-  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
+  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
+  eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
+  eCutWallDisk(new insertSystem::insertPlate(newName+"ECutWallDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -164,8 +171,11 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(preDipole);
+  OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
+  OR.addObject(eCutMagDisk);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);
@@ -553,11 +563,43 @@ R1FrontEnd::buildObjects(Simulation& System)
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
 
-  buildUndulator(System,masterCell,*this,0);
+  const attachSystem::FixedComp& undulatorFC=
+    buildUndulator(System,masterCell,*this,0);
+
+  preDipole->setCutSurf("front",undulatorFC,2);
+  preDipole->createAll(System,undulatorFC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
+  preDipole->insertInCell(System,outerCell);
+
+  preDipole->createQuads(System,outerCell);
   
+  dipoleChamber->setCutSurf("front",*preDipole,2);
+  dipoleChamber->createAll(System,*preDipole,2);
+  // two splits [main / exit]
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
+  dipoleChamber->insertInCell("Main",System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
+  dipoleChamber->insertInCell("Exit",System,outerCell);
+
+  eCutWallDisk->setNoInsert();
+  eCutWallDisk->addInsertCell(outerCell);
+  eCutWallDisk->createAll(System,*dipoleChamber,
+			 dipoleChamber->getSideIndex("dipoleExit"));
+
+  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
+  dipolePipe->createAll(System,*dipoleChamber,
+			dipoleChamber->getSideIndex("exit"));
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  dipolePipe->insertInCell(System,outerCell);
+
   eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
-  eCutDisk->createAll(System,*dipolePipe,-2);
+  eCutDisk->addInsertCell(dipoleChamber->getCell("NonMagVoid"));
+  eCutDisk->createAll(System,*dipoleChamber,-2);
+
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  eCutMagDisk->createAll(System,*dipoleChamber,
+			 -dipoleChamber->getSideIndex("dipoleExit"));
 
   //  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,*dipolePipe,2);
@@ -584,6 +626,7 @@ R1FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
 
+  
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);

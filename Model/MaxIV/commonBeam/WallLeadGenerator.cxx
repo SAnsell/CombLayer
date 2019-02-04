@@ -58,11 +58,11 @@ namespace setVariable
 
 WallLeadGenerator::WallLeadGenerator() :
   frontLength(10.0),backLength(10.0),
-  frontWidth(80.0),frontHeight(80),
-  backWidth(20.0),backHeight(20),
-  steelOutWidth(140.0),steelRingWidth(140.0),
-  steelHeight(180.0),steelDepth(5.0),
-  steelXCut(90.0),steelZCut(90.0),
+  frontWidth(80.0),frontHeight(80.0),
+  backWidth(40.0),backHeight(40.0),
+  steelOutWidth(145.0),steelRingWidth(140.0),
+  steelHeight(70.0),steelDepth(40.0),
+  steelThick(5.0),steelXCut(90.0),steelZCut(70.0),
   extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),
   extraLeadHeight(52.0),extraLeadDepth(8.0),extraLeadXCut(50.0),
   voidMat("Void"),midMat("Concrete"),wallMat("Lead"),
@@ -117,6 +117,7 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"SteelRingWidth",steelRingWidth);
   Control.addVariable(keyName+"SteelHeight",steelHeight);
   Control.addVariable(keyName+"SteelDepth",steelDepth);
+  Control.addVariable(keyName+"SteelThick",steelThick);
   Control.addVariable(keyName+"SteelXCut",steelXCut);
   Control.addVariable(keyName+"SteelZCut",steelZCut);
   Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth);

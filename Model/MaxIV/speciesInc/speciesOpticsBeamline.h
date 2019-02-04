@@ -3,7 +3,7 @@
  
  * File:   speciesInc/speciesOpticsBeamline.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,6 +90,8 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Real Ion pump (KF40) 24.4cm vertical
   std::shared_ptr<constructSystem::CrossPipe> ionPA;
+  /// Gate block
+  std::shared_ptr<constructSystem::GateValve> gateRing;
   /// Gate block
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Bellow to first connect line

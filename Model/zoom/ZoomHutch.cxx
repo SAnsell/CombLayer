@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomHutch.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,8 +74,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ZoomTank.h"
@@ -85,7 +84,8 @@ namespace zoomSystem
 {
 
 ZoomHutch::ZoomHutch(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
   populated(0),
   tank("zoomTank"),innerVoid(0)
   /*!
@@ -95,7 +95,7 @@ ZoomHutch::ZoomHutch(const std::string& Key)  :
 {}
 
 ZoomHutch::ZoomHutch(const ZoomHutch& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   populated(A.populated),tank(A.tank),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   frontLeftWidth(A.frontLeftWidth),
@@ -124,7 +124,7 @@ ZoomHutch::operator=(const ZoomHutch& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       populated=A.populated;
       tank=A.tank;
       xStep=A.xStep;
@@ -213,7 +213,7 @@ ZoomHutch::populate(const Simulation& System)
 } 
   
 void
-ZoomHutch::createUnitVector(const attachSystem::TwinComp& TC)
+ZoomHutch::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -222,19 +222,17 @@ ZoomHutch::createUnitVector(const attachSystem::TwinComp& TC)
 {
   ELog::RegMethod RegA("ZoomHutch","createUnitVector");
 
-  TwinComp::createUnitVector(TC);
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
 
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  mainFC.applyAngleRotate(xyAngle,zAngle);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
   return;
 }
@@ -267,8 +265,9 @@ ZoomHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
 
   // Port:
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   ModelSupport::buildCylinder(SMap,buildIndex+77,
-			      bEnter,bY,portRadius);
+			      beamFC.getCentre(),beamFC.getY(),portRadius);
   
   // INNER WALLS:
 
@@ -395,7 +394,7 @@ ZoomHutch::createLinks()
       FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+1+ii));
     }
   
-  setBeamExit(buildIndex+2,bEnter,bY);
+  //  setBeamExit(buildIndex+2,bEnter,bY);
 
 
   return;
@@ -403,7 +402,7 @@ ZoomHutch::createLinks()
 
 void
 ZoomHutch::createAll(Simulation& System,
-		     const attachSystem::TwinComp& TC)
+		     const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

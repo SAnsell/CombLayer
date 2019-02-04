@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoomInc/ZoomCollimator.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ namespace zoomSystem
   line impacts the 40000 outer surface
 */
 
-class ZoomCollimator : public attachSystem::TwinComp,
+class ZoomCollimator : public attachSystem::FixedGroup,
     public attachSystem::ContainedComp
 {
  private:
@@ -80,7 +80,7 @@ class ZoomCollimator : public attachSystem::TwinComp,
   std::vector<int> CDivideList;   ///< Cell divide List for 
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
   
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);

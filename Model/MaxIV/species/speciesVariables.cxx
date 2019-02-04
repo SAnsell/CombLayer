@@ -76,6 +76,8 @@
 #include "TankMonoVesselGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "WallLeadGenerator.h"
+#include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
@@ -264,7 +266,7 @@ preOpticsVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
   
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowA",0,12.5);
 
     // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);       // wall/Top/base
@@ -932,7 +934,7 @@ transferVariables(FuncDataBase& Control,
 void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
-/*!
+  /*!
     Set the variables for the frontend wall
     \param Control :: DataBase to use
     \param frontKey :: name before part names
@@ -974,13 +976,32 @@ frontEndVariables(FuncDataBase& Control,
    
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
+  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
+  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutWallDiskWidth",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskHeight",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
+
+  setVariable::PreDipoleGenerator PGen;
+  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+
+  setVariable::DipoleChamberGenerator DCGen;
+  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
 
   // this reaches 454.5cm from the middle of the undulator
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,291.1+7.5);
+  //  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,291.1+7.5);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,88.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();

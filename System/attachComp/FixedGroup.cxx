@@ -99,6 +99,7 @@ FixedGroup::FixedGroup(const std::string& mainKey,
   registerKey(BKey,BNL);
 
   setDefault(AKey);
+  setSecondary(BKey);
 }
 
 FixedGroup::FixedGroup(const std::string& mainKey,
@@ -127,6 +128,7 @@ FixedGroup::FixedGroup(const std::string& mainKey,
   registerKey(CKey,CNL);
 
   setDefault(AKey);
+  setSecondary(BKey);
 }
 
 FixedGroup::FixedGroup(const std::string& mainKey,
@@ -160,10 +162,12 @@ FixedGroup::FixedGroup(const std::string& mainKey,
   registerKey(DKey,DNL);
 
   setDefault(AKey);
+  setSecondary(BKey);
 }
 
 FixedGroup::FixedGroup(const FixedGroup& A) : 
-  FixedComp(A),FMap(A.FMap)
+  FixedComp(A),FMap(A.FMap),
+  bX(A.bX),bY(A.bY),bZ(A.bZ),bOrigin(A.bOrigin)
   /*!
     Copy constructor
     \param A :: FixedGroup to copy
@@ -182,6 +186,10 @@ FixedGroup::operator=(const FixedGroup& A)
     {
       FixedComp::operator=(A);
       FMap=A.FMap;
+      bX=A.bX;
+      bY=A.bY;
+      bZ=A.bZ;
+      bOrigin=A.bOrigin;
     }
   return *this;
 }
@@ -293,6 +301,48 @@ FixedGroup::setDefault(const std::string& defKey)
   Z=mc->second->getZ();
   Origin=mc->second->getCentre();
 
+  return;
+  
+}
+
+void
+FixedGroup::setDefault(const std::string& defKey,
+		       const std::string& beamKey)
+  /*!
+    Sets the default origin/XYZ basis 
+    \param defKey :: Keyname to find
+    \param beamKey :: Keyname for secondary beam
+   */
+{
+  ELog::RegMethod RegA("FixedGroup","setDefault(key,key)");
+
+  setDefault(defKey);
+  setSecondary(beamKey); 
+
+  return;
+  
+}
+
+void
+FixedGroup::setSecondary(const std::string& defKey)
+  /*!
+    Sets the default origin/XYZ basis 
+    \param defKey :: Keyname to find
+   */
+{
+  ELog::RegMethod RegA("FixedGroup","setSecondary");
+  
+  FTYPE::iterator mc=FMap.find(defKey);
+  if (mc==FMap.end())
+    throw ColErr::InContainerError<std::string>(defKey,"Key in FMap");
+
+  bX=mc->second->getX();
+  bY=mc->second->getY();
+  bZ=mc->second->getZ();
+  bOrigin=mc->second->getCentre();
+  bExit= (mc->second->hasLinkPt(2)) ?
+    mc->second->getLinkPt(2) : bOrigin;
+    
   return;
   
 }
