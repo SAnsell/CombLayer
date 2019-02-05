@@ -251,8 +251,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTLIntertankWallThick", 0.2); // MARS
 
 
-  ELog::EM << "LinacDTL1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
-
   std::string strtmp;
   for (size_t i=1; i<=nDTL; i++)
     {
@@ -269,7 +267,7 @@ EssLinacVariables(FuncDataBase& Control)
       Control.addVariable("LinacDTL"+strtmp+"Radius3", 2.9);
       Control.addVariable("LinacDTL"+strtmp+"Mat3", "SS304L");
       Control.addVariable("LinacDTL"+strtmp+"Radius4", 4.5);
-      Control.addVariable("LinacDTL"+strtmp+"Mat4", "SS304L");
+      Control.addVariable("LinacDTL"+strtmp+"Mat4", "SS304L"); // MARS: STST
       Control.addVariable("LinacDTL"+strtmp+"Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
       Control.addVariable("LinacDTL"+strtmp+"Mat5", "Void");
       Control.addVariable("LinacDTL"+strtmp+"Radius6", 26);  // MARS
