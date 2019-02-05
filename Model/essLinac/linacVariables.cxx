@@ -106,11 +106,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacNTSW", 1);
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight");
   // To be optimised
-  Control.addVariable("LinacTSW0Width", 70.0);
+  Control.addVariable("LinacTSW0Width", 150.0); // Wolfgang Hees 25.01.2019
   Control.addVariable("LinacTSW0XStep", 4760.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
-  Control.addVariable("LinacTSW0NLayers", 1); // for biasing
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);
