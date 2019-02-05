@@ -46,14 +46,9 @@ class TSW : public attachSystem::ContainedComp,
 
   double length;                ///< Total length including void
   double width;                 ///< Width
-  size_t nLayers;               ///< Number of layers for variance reduction
 
   int wallMat;                  ///< Wall material
   int airMat;                   ///< Air material
-
-  void layerProcess(Simulation& System, const std::string& cellName,
-		    const long int& lpS, const long int& lsS, const size_t&,
-		    const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
