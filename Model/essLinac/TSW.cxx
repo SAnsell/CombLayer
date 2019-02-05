@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -93,9 +93,7 @@ namespace essSystem
   attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),7),
   attachSystem::CellMap(),
   baseName(baseKey),
-  Index(index),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
+  Index(index)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -108,7 +106,6 @@ TSW::TSW(const TSW& A) :
   attachSystem::CellMap(A),
   baseName(A.baseName),
   Index(A.Index),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),nLayers(A.nLayers),
   wallMat(A.wallMat),
   airMat(A.airMat)
@@ -186,7 +183,7 @@ TSW::layerProcess(Simulation& System, const std::string& cellName,
     if (CM)
       {
 	wallCell=CM->getCell(cellName);
-	wallObj=System.findQhull(wallCell);
+	wallObj=System.findObject(wallCell);
       }
 
     if (!wallObj)
@@ -204,7 +201,7 @@ TSW::layerProcess(Simulation& System, const std::string& cellName,
     DA.addMaterial(mat);
 
     DA.setCellN(wallCell);
-    DA.setOutNum(cellIndex, surfIndex+10000);
+    DA.setOutNum(cellIndex, buildIndex+10000);
 
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;
@@ -275,11 +272,11 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,X);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+X*(width),X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+X*(width),X);
 
   const int w1 = FC.getLinkSurf(wall1);
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+4,
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+4,
 				  SMap.realPtr<Geometry::Plane>(w1),
 				  length);
   return;
@@ -301,12 +298,12 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("TSW","createObjects");
 
   const std::string tb(FC.getLinkString(floor) + FC.getLinkString(roof));
-  const std::string side(ModelSupport::getComposite(SMap,surfIndex," 1 -2 "));
+  const std::string side(ModelSupport::getComposite(SMap,buildIndex," 1 -2 "));
   const std::string common(side+tb);
 
   std::string Out = common+FC.getLinkString(wall1) +
-    ModelSupport::getComposite(SMap,surfIndex," -4 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    ModelSupport::getComposite(SMap,buildIndex," -4 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
   layerProcess(System, "wall", 3, 7, nLayers, wallMat);
@@ -316,8 +313,8 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   if (linacWidth-length>Geometry::zeroTol)
     {
       Out = common+FC.getLinkString(wall2) +
-	ModelSupport::getComposite(SMap,surfIndex," 4 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+	ModelSupport::getComposite(SMap,buildIndex," 4 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
     }
 
   Out=common+FC.getLinkString(wall1) + FC.getLinkString(wall2);
@@ -341,16 +338,16 @@ TSW::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkSignedCopy(1,FC,-wall2);
 
   FixedComp::setConnect(2,Origin-Y*(length/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(3,Origin-Y*(length/2.0)+X*(width),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+2));
 
   FixedComp::setLinkSignedCopy(4,FC,-floor);
   FixedComp::setLinkSignedCopy(5,FC,-roof);
 
   FixedComp::setConnect(6,Origin-Y*(length/2.0)+X*(width),X);
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+2));
 
   ELog::EM << "check the links" << ELog::endCrit;
 

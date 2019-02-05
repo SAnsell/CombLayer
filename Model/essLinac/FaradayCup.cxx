@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -91,7 +90,7 @@ FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Base+Key,7),
   attachSystem::CellMap(),
-  baseName(Base),
+  baseName(Base)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -212,7 +211,7 @@ FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
     if (CM)
       {
 	wallCell=CM->getCell(cellName);
-	wallObj=System.findQhull(wallCell);
+	wallObj=System.findObject(wallCell);
       }
 
     if (!wallObj)
@@ -230,7 +229,7 @@ FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
     DA.addMaterial(mat);
 
     DA.setCellN(wallCell);
-    DA.setOutNum(cellIndex, surfIndex+10000);
+    DA.setOutNum(cellIndex, buildIndex+10000);
 
     ModelSupport::mergeTemplate<Geometry::Plane,
 				Geometry::Plane> surroundRule;
@@ -335,8 +334,8 @@ FaradayCup::createSurfaces()
   ELog::RegMethod RegA("FaradayCup","createSurfaces");
 
   // dividers
-  ModelSupport::buildPlane(SMap,surfIndex+300,Origin,X);
-  ModelSupport::buildPlane(SMap,surfIndex+500,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+300,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+500,Origin,Z);
 
   double dy(0.0);
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*dy,Y);
@@ -355,7 +354,7 @@ FaradayCup::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,faceRadius);
 
-  int SI(surfIndex+100);
+  int SI(buildIndex+100);
   for (size_t i=0; i<nShieldLayers; i++)
     {
       ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength),Y);
@@ -385,56 +384,56 @@ FaradayCup::createObjects(Simulation& System)
 
   std::string Out;
   // collimator
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 27 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // absorber
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
 
   // base
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -31 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -41 7 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // collector
-  Out=ModelSupport::getComposite(SMap,surfIndex," 31 -41 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
 
   // back plane
-  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
 
-  int SI(surfIndex+100);
+  int SI(buildIndex+100);
   for (size_t i=0; i<nShieldLayers; i++)
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,surfIndex,
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 " 1M -2 17M 3 -4 5 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,shieldMat[0],0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -2M -17 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 2 -2M -17 ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,shieldMat[0],0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,SI,surfIndex,
+	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 					 " 1 -1M 3 -4 5 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,shieldMat[0],0.0,Out));
 	} else
 	{
 	  Out=ModelSupport::getComposite(SMap,SI,SI-10,
 					 " 1 -2M 3 -4 5 -6 (-3M:4M:-5M:6M)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[i],0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,shieldMat[i],0.0,Out));
 	  setCell("LateralShield" + std::to_string(i),cellIndex-1);
 
 	  Out=ModelSupport::getComposite(SMap,SI,SI-10," 2M -2 3 -4 5 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[i],0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,shieldMat[i],0.0,Out));
 	  setCell("ForwardShield" + std::to_string(i),cellIndex-1);
 	}
       SI += 10;
@@ -443,7 +442,7 @@ FaradayCup::createObjects(Simulation& System)
   if (nShieldLayers>0)
       Out=ModelSupport::getComposite(SMap,SI-10," 1 -2 3 -4 5 -6 ");
   else
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -17 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 ");
 
   addOuterSurf(Out);
 
@@ -462,7 +461,7 @@ FaradayCup::createLinks()
   if (nShieldLayers>0)
     {
       const size_t n = nShieldLayers-1;
-      const int SI(surfIndex+100+static_cast<int>(n)*10);
+      const int SI(buildIndex+100+static_cast<int>(n)*10);
 
       FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
@@ -488,26 +487,26 @@ FaradayCup::createLinks()
     } else
     {
       FixedComp::setConnect(0,Origin,-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
       FixedComp::setConnect(1,Origin+Y*(length),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
       FixedComp::setConnect(2,Origin-X*(outerRadius)+Y*(length/2.0),-X);
-      FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+17));
-      FixedComp::setBridgeSurf(2,-SMap.realSurf(surfIndex+300));
+      FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+300));
 
       FixedComp::setConnect(3,Origin+X*(outerRadius)+Y*(length/2.0),X);
-      FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+17));
-      FixedComp::setBridgeSurf(3,SMap.realSurf(surfIndex+300));
+      FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+300));
 
       FixedComp::setConnect(4,Origin-Z*(outerRadius)+Y*(length/2.0),-Z);
-      FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+17));
-      FixedComp::setBridgeSurf(4,-SMap.realSurf(surfIndex+500));
+      FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(4,-SMap.realSurf(buildIndex+500));
 
       FixedComp::setConnect(5,Origin+Z*(outerRadius)+Y*(length/2.0),Z);
-      FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+17));
-      FixedComp::setBridgeSurf(5,SMap.realSurf(surfIndex+500));
+      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+      FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+500));
     }
 
   return;

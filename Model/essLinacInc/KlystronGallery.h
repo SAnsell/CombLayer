@@ -35,13 +35,11 @@ namespace essSystem
   \brief Klystron gallery
 */
 
-class KlystronGallery : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class KlystronGallery :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp
 {
  private:
-
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double lengthBack;            ///< length backward the proton beam direction
   double lengthFront;           ///< length forward to the proton beam direction

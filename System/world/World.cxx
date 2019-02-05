@@ -120,7 +120,7 @@ createOuterObjects(Simulation& System)
 
   // Create object 1
   SurI.createSurface(1,"so 60000");
-  MonteCarlo::Qhull tmpCell(1,0,0.0," 1 ");
+  MonteCarlo::Object tmpCell(1,0,0.0," 1 ");
   tmpCell.setImp(0);
   System.addCell(tmpCell);
 

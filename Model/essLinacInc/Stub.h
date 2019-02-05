@@ -41,9 +41,6 @@ class Stub : public attachSystem::ContainedGroup,
 {
  private:
 
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   std::vector<double> length;        ///< Length of each length
   double width;                 ///< Width
   double height;                ///< height

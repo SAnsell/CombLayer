@@ -35,13 +35,11 @@ namespace essSystem
   \brief Radio-frequency quadrupole
 */
 
-class RFQ : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+class RFQ :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp
 {
  private:
-
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
 

@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -206,7 +207,7 @@ StubWall::layerProcess(Simulation& System, const std::string& cellName,
     if (CM)
       {
 	wallCell=CM->getCell(cellName);
-	wallObj=System.findQhull(wallCell);
+	wallObj=System.findObject(wallCell);
       }
 
     if (!wallObj)
@@ -335,7 +336,7 @@ StubWall::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   std::string Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 -6");
   Out += FC.getLinkString(floor);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   setCell("wall", cellIndex-1);
 
   if (gapActive)

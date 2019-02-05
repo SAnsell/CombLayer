@@ -68,7 +68,6 @@
 #include "LinkUnit.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -134,7 +133,7 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -155,7 +154,6 @@ main(int argc,char* argv[])
     }
 
   delete SimPtr;
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }

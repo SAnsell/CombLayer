@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "AttachSupport.h"
@@ -75,7 +75,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "surfDBase.h"
@@ -92,9 +91,7 @@ namespace essSystem
 Stub::Stub(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup(),
   attachSystem::FixedOffset(Key+std::to_string(Index),15),
-  attachSystem::FrontBackCut(),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
+  attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -105,7 +102,6 @@ Stub::Stub(const Stub& A) :
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
@@ -212,44 +208,44 @@ Stub::createSurfaces()
 {
   ELog::RegMethod RegA("Stub","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(width/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(width/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(width/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(width/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(length[0]),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(length[0]),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(width/2.0+wallThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(width/2.0+wallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(width/2.0+wallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(width/2.0+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(length[0]+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(length[0]+wallThick),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+104,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+4),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+104,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+4),
 				  -height);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+105,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+105,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+5),
 				  length[1]-height);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+106,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+5),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+106,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+5),
 				  length[1]);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+114,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+104),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+114,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+104),
 				  -wallThick);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+115,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+105),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
 				  -wallThick);
 
-  ModelSupport::buildShiftedPlane(SMap,surfIndex+116,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+106),
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+116,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+106),
 				  wallThick);
   return;
 }
@@ -268,59 +264,59 @@ Stub::createObjects(Simulation& System)
 
   attachSystem::ContainedGroup::addCC("Leg1");
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 -6 ")+backRule();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -4 5 -6 ")+backRule();
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
 
   if (wallThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 11 -12 -4 15 -16 (-1:2:4:-5) ")+backRule();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -104 6 -16 ")+backRule();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -104 6 -16 ")+backRule();
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 -14 15 -16 ")+backRule();
   addOuterSurf("Leg1",Out);
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg2");
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 104 -4 6 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 104 -4 6 -106 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
 
   if (wallThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 4 -14 15 -105 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 4 -14 15 -105 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 11 -12 114 -4 16 -105 (-1:2:-104:4:-16:105) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 114 -14 6 -116 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 114 -14 6 -116 ");
   addOuterSurf("Leg2",Out);
   addOuterUnionSurf("Full",Out);
 
   attachSystem::ContainedGroup::addCC("Leg3");
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+frontRule()));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 105 -106 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out+frontRule()));
 
   if (wallThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 11 -12 114 105 -116 (-1:2:-104:-105:106) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontRule()));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 115 -105 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontRule()));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 14 115 -105 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontRule()));
     }
   
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 4 115 -116 ")+frontRule();
   addOuterSurf("Leg3",Out);
   addOuterUnionSurf("Full",Out);
@@ -342,53 +338,53 @@ Stub::createLinks()
 
   // Leg 1
   FixedComp::setConnect(2,Origin+X*(length[0]+wallThick),X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+14));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+14));
 
   FixedComp::setConnect(3,Origin+X*(length[0]-height)-Y*(width/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+11));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+11));
 
   FixedComp::setConnect(4,Origin+X*(length[0]-height)+Y*(width/2.0+wallThick),Y);
-  FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+12));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+12));
 
   FixedComp::setConnect(5,Origin+X*(length[0]-height)-Z*(height/2.0+wallThick),-Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(surfIndex+15));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+15));
 
   FixedComp::setConnect(6,Origin+X*(length[0]-height-wallThick*2)+Z*(height/2.0+wallThick),Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+16));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+16));
 
   // Leg 2
   FixedComp::setConnect(7,Origin+X*(length[0]-height/2.0)+
 			Z*(length[1]/2.0+height/2.0)-Y*(width/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(surfIndex+11));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+11));
 
   FixedComp::setConnect(8,Origin+X*(length[0]-height/2.0)+
 			Z*(length[1]/2.0+height/2.0)+Y*(width/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(8,SMap.realSurf(surfIndex+12));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+12));
 
   FixedComp::setConnect(9,Origin+X*(length[0]-height/2.0)+
 			Z*(length[1]-height/2+wallThick),Z);
-  FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+116));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+116));
 
   // Leg 3
   FixedComp::setConnect(10,Origin+X*(length[0]-height-wallThick)+
 			Z*(length[1]-height),-X);
-  FixedComp::setLinkSurf(10,-SMap.realSurf(surfIndex+114));
+  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+114));
 
   FixedComp::setConnect(11,Origin+X*(length[0]+2*wallThick)+
 			Z*(length[1]-height)-Y*(width/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(11,-SMap.realSurf(surfIndex+11));
+  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+11));
 
   FixedComp::setConnect(12,Origin+X*(length[0]+2*wallThick)+
 			Z*(length[1]-height)+Y*(width/2.0+wallThick),Y);
-  FixedComp::setLinkSurf(12,SMap.realSurf(surfIndex+12));
+  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+12));
 
   FixedComp::setConnect(13,Origin+X*(length[0]+2*wallThick)+
 			Z*(length[1]-height-height/2-wallThick),-Z);
-  FixedComp::setLinkSurf(13,-SMap.realSurf(surfIndex+115));
+  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+115));
 
   FixedComp::setConnect(14,Origin+X*(length[0]+2*wallThick)+
 			Z*(length[1]-height+height/2+wallThick),Z);
-  FixedComp::setLinkSurf(14,SMap.realSurf(surfIndex+116));
+  FixedComp::setLinkSurf(14,SMap.realSurf(buildIndex+116));
 
   return;
 }

@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -91,9 +91,7 @@ namespace essSystem
   attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),6),
   attachSystem::CellMap(),
   baseName(Base),
-  extraName(Base+Key),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
+  extraName(Base+Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -105,7 +103,6 @@ PMQ::PMQ(const PMQ& A) :
   attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   baseName(A.baseName),
   extraName(A.extraName),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),
   gapLength(A.gapLength),
@@ -233,15 +230,15 @@ PMQ::createSurfaces()
   ELog::RegMethod RegA("PMQ","createSurfaces");
 
   // dividers
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin,X);
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
 
-  //  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(sideIndex));
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+gapLength),Y);
+  //  SMap.addMatch(buildIndex+1,FC.getSignedLinkSurf(sideIndex));
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+gapLength),Y);
 
-  int SI(surfIndex);
+  int SI(buildIndex);
   for (size_t i=0; i<nLayers; i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Y,radius[i]);
@@ -249,7 +246,7 @@ PMQ::createSurfaces()
     }
 
   // magnet bars
-  int SJ(surfIndex+static_cast<int>(nLayers-1)*10);
+  int SJ(buildIndex+static_cast<int>(nLayers-1)*10);
   double theta(0.0);
   const double dTheta = 360.0/nBars;
   // +1 in order to repeat 1st bar surfaces for simpler definition of the last bar void
@@ -279,52 +276,52 @@ PMQ::createObjects(Simulation& System)
 
   std::string Out,Side;
 
-  int SI(surfIndex);
-  int SJ(surfIndex+static_cast<int>(nLayers-1)*10); // magnet bars
+  int SI(buildIndex);
+  int SJ(buildIndex+static_cast<int>(nLayers-1)*10); // magnet bars
   for (size_t i=0; i<nLayers; i++)
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out));
 	} else if (i==2) // magnet goes there
 	{
-	  Side=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10," 1 -2 -7M 7N ");
+	  Side=ModelSupport::getComposite(SMap,buildIndex,SI,SI-10," 1 -2 -7M 7N ");
 	  for (size_t j=0; j<nBars/2;j++)
 	    {
 	      Out=ModelSupport::getComposite(SMap,SJ," 2 -3 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,barMat,0.0,Out+Side));
+	      System.addCell(MonteCarlo::Object(cellIndex++,barMat,0.0,Out+Side));
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 5 3 -2M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Side));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out+Side));
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," -5 -2 3M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Side));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out+Side));
 	      SJ += 10;
 	    }
 	} else
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 1 -2 -7M 7N ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
+	  Out=ModelSupport::getComposite(SMap,buildIndex,SI,SI-10, " 1 -2 -7M 7N ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out));
 	}
       SI += 10;
     }
 
   // gap
   const size_t ldtl(3); // number of layers in the gap
-  SI = surfIndex+static_cast<int>(nLayers-ldtl)*10;
+  SI = buildIndex+static_cast<int>(nLayers-ldtl)*10;
   for (size_t i=0; i<ldtl; i++)
     {
       if (i==0)
-	Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2  -12 -7M ");
+	Out=ModelSupport::getComposite(SMap,buildIndex,SI," 2  -12 -7M ");
       else
-	Out=ModelSupport::getComposite(SMap,surfIndex,SI-10,SI," 2 -12 7M -7N ");
+	Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,SI," 2 -12 7M -7N ");
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
+      System.addCell(MonteCarlo::Object(cellIndex++,
 				       i==0 ? mat[0] : mat[nLayers-ldtl+i],0.0,Out));
       
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -12 -7M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI-10," 1 -12 -7M ");
   addOuterSurf(Out);
 
   return;
@@ -341,29 +338,29 @@ PMQ::createLinks()
   ELog::RegMethod RegA("PMQ","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length+gapLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
-  const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
+  const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
   const double hl = (length+gapLength)/2.0;
 
   FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::addBridgeSurf(2,-SMap.realSurf(surfIndex+5));
+  FixedComp::addBridgeSurf(2,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(3,Origin+Y*(hl)+Z*radius.back(),Z);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::addBridgeSurf(3,SMap.realSurf(surfIndex+5));
+  FixedComp::addBridgeSurf(3,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(4,Origin+Y*(hl)-X*radius.back(),-X);
   FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-  FixedComp::addBridgeSurf(4,-SMap.realSurf(surfIndex+3));
+  FixedComp::addBridgeSurf(4,-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(5,Origin+Y*(hl)+X*radius.back(),X);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-  FixedComp::addBridgeSurf(5,SMap.realSurf(surfIndex+3));
+  FixedComp::addBridgeSurf(5,SMap.realSurf(buildIndex+3));
 
   // for (int i=6; i<8; i++)
   //   ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;

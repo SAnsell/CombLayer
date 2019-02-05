@@ -589,6 +589,7 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   //  tallyModification(*SimPHITSPtr,IParam);
 
   SDef::sourceSelection(*SimPHITSPtr,IParam);
+  //  SimPHITSPtr->masterSourceRotation();
   // Ensure we done loop
   
   int MCIndex(0);

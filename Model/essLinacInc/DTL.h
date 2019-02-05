@@ -44,8 +44,6 @@ class DTL : public attachSystem::ContainedComp,
 
   const std::string baseName; ///< Base name (e.g. Linac)
   const std::string extraName; ///< extra name (e.g. DTL)
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
 

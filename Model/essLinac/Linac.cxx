@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -266,7 +265,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 	if (CM)
 	  {
 	    wallCell=CM->getCell(cellName);
-	    wallObj=System.findQhull(wallCell);
+	    wallObj=System.findObject(wallCell);
 	  }
 
 	if (!wallObj)
@@ -284,7 +283,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 	DA.addMaterial(mat);
 
 	DA.setCellN(wallCell);
-	DA.setOutNum(cellIndex, surfIndex+10000);
+	DA.setOutNum(cellIndex, buildIndex+10000);
 
 	ModelSupport::mergeTemplate<Geometry::Plane,
 				    Geometry::Plane> surroundRule;
@@ -340,7 +339,7 @@ Linac::createSurfaces()
 {
   ELog::RegMethod RegA("Linac","createSurfaces");
 
-  //  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  //  ModelSupport::buildIndex& SurI=ModelSupport::buildIndex::Instance();
 
   // Redefine the outer void boundary sphere since the default one is too small
   //  SurI.createSurface(1,"so 60000"); use updateSurface when SA has it implemented. Now change World.cxx
@@ -379,16 +378,16 @@ Linac::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
   setCell("air", cellIndex-1);
 
   // side walls and roof
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -12 13 -14 5 -16 (-1:2:-3:4:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // wall bottom slab
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 23 -24 15 -5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   layerProcess(System, "air", 11, 12, nAirLayers, airMat);
 

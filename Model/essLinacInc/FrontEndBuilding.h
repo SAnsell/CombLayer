@@ -35,14 +35,12 @@ namespace essSystem
   \brief Front end building
 */
 
-class FrontEndBuilding : public attachSystem::ContainedComp,
+class FrontEndBuilding :
   public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double length;                ///< Total length including void
   double widthLeft;             ///< Width left x-

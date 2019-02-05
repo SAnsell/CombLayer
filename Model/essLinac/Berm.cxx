@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -86,10 +86,8 @@ namespace essSystem
 {
 
 Berm::Berm(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,7 +97,6 @@ Berm::Berm(const std::string& Key)  :
 Berm::Berm(const Berm& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
   widthLeft(A.widthLeft),
@@ -204,17 +201,17 @@ Berm::createSurfaces()
 {
   ELog::RegMethod RegA("Berm","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(lengthBack),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(lengthFront),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(widthRight),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
 
   Geometry::Vec3D topNorm(Z);
   Geometry::Quaternion::calcQRotDeg(-roofAngle,Y).rotate(topNorm);
-  ModelSupport::buildPlane(SMap,surfIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(height)-X*widthLeft,
 			   topNorm);
 
@@ -236,14 +233,14 @@ Berm::createObjects(Simulation& System,const attachSystem::FixedComp& KG,
   ELog::RegMethod RegA("Berm","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 5 -6 ") +
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 5 -6 ") +
     KG.getLinkString(kgSide);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 5 ") +
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -4 5 ") +
     KG.getLinkString(-kgSide) + KG.getLinkString(kgFloor);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addOuterUnionSurf(Out);
 
   return;
@@ -259,22 +256,22 @@ Berm::createLinks()
   ELog::RegMethod RegA("Berm","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(lengthBack),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(lengthFront),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(widthLeft),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin+X*(widthRight),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(depth),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*(height)+X*widthRight,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

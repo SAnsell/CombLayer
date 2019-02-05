@@ -12,7 +12,7 @@ sub new
     
     bcomp => "clang",
     ccomp => "clang",
-    cflag => "-no-pie -fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11",
+    cflag => "-fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11",
     boostLib => "-L/opt/local/lib ",
     
     masterProg => undef,
