@@ -256,6 +256,16 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
                                   SMap.realPtr<Geometry::Plane>(buildIndex+202),
                                   doorGap);
 
+  //        low region
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin+X*(doorThickHigh),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+213,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+203),
+                                  doorGap);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(FC.getLinkPt(floor).Z()+doorHeightLow),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+216,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+206),
+                                  doorGap);
+
   return;
 }
 
@@ -293,17 +303,30 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -2 201 -202 -106 ");
+    ModelSupport::getComposite(SMap,buildIndex," 103 -203 201 -202 -106 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -2 211 -212 -116 (-201:202:106) ");
+    ModelSupport::getComposite(SMap,buildIndex," 203 -2 201 -202 -206 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 203 -213 211 -212 216 -116 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 103 -203 211 -212 -116 (-201:202:106) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 203 -2 211 -212 -216 (-201:202:206) ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
 
   // wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
-    ModelSupport::getComposite(SMap,buildIndex," (113:-111:112:116) (-103:-211:212:116) ");
+    ModelSupport::getComposite(SMap,buildIndex,
+			       " (113:-111:112:116) (-103:213:-211:212:116) (-203:-211:212:216)");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
