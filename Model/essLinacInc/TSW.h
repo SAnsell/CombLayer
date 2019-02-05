@@ -50,12 +50,17 @@ class TSW : public attachSystem::ContainedComp,
   int wallMat;                  ///< Wall material
   int airMat;                   ///< Air material
 
+  int doorMat; ///< Door material
+  double doorOffset; ///< Door offset along the wall
+  double doorHeight; ///< Door height
+  double doorWidth; ///< Door width
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces(const attachSystem::FixedComp&,
-		      const long int,const long int);
+		      const long int,const long int,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,
 		     const long int,const long int);

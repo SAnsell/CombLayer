@@ -110,6 +110,11 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0XStep", 4760.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
+  // TSW door
+  Control.addVariable("LinacTSW0DoorMat", "SkanskaConcrete");
+  Control.addVariable("LinacTSW0DoorOffset", 200.0);
+  Control.addVariable("LinacTSW0DoorHeight", 222.5); // check
+  Control.addVariable("LinacTSW0DoorWidth",   80.0); // Wolfgang Hees 25.01.2019
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);

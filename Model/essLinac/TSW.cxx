@@ -102,7 +102,11 @@ TSW::TSW(const TSW& A) :
   Index(A.Index),
   length(A.length),width(A.width),
   wallMat(A.wallMat),
-  airMat(A.airMat)
+  airMat(A.airMat),
+  doorMat(A.doorMat),
+  doorOffset(A.doorOffset),
+  doorHeight(A.doorHeight),
+  doorWidth(A.doorWidth)
   /*!
     Copy constructor
     \param A :: TSW to copy
@@ -127,6 +131,10 @@ TSW::operator=(const TSW& A)
       width=A.width;
       wallMat=A.wallMat;
       airMat=A.airMat;
+      doorMat=A.doorMat;
+      doorOffset=A.doorOffset;
+      doorHeight=A.doorHeight;
+      doorWidth=A.doorWidth;
     }
   return *this;
 }
@@ -161,6 +169,11 @@ TSW::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
+  doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
+  doorOffset=Control.EvalVar<double>(keyName+"DoorOffset");
+
+  doorHeight=Control.EvalVar<double>(keyName+"DoorHeight");
+  doorWidth=Control.EvalVar<double>(keyName+"DoorWidth");
 
   return;
 }
@@ -185,12 +198,14 @@ TSW::createUnitVector(const attachSystem::FixedComp& FC,
 void
 TSW::createSurfaces(const attachSystem::FixedComp& FC,
 		    const long int wall1,
-		    const long int wall2)
+		    const long int wall2,
+		    const long int floor)
   /*!
     Create All the surfaces
     \param FC :: Central origin
     \param wall1 :: link point for origin
     \param wall1 :: link point for the opposite wall
+    \param floor :: link point for floor
   */
 {
   ELog::RegMethod RegA("TSW","createSurfaces");
@@ -202,6 +217,12 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildShiftedPlane(SMap,buildIndex+4,
 				  SMap.realPtr<Geometry::Plane>(w1),
 				  length);
+
+  // door
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(doorWidth/2.0-doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin-Y*(doorWidth/2.0+doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(FC.getLinkPt(floor).Z()+doorHeight),Z);
+
   return;
 }
 
@@ -224,8 +245,15 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   const std::string side(ModelSupport::getComposite(SMap,buildIndex," 1 -2 "));
   const std::string common(side+tb);
 
-  std::string Out = common+FC.getLinkString(wall1) +
-    ModelSupport::getComposite(SMap,buildIndex," -4 ");
+  std::string Out;
+  // door
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 101 -102 -106 ") + side;
+  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+  // wall
+
+  Out = common+FC.getLinkString(wall1) +
+    ModelSupport::getComposite(SMap,buildIndex," -4 (-101:102:106) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
@@ -302,7 +330,7 @@ TSW::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,-wall1);
-  createSurfaces(FC,wall1,wall2);
+  createSurfaces(FC,wall1,wall2,floor);
   createLinks(FC,wall1,wall2,floor,roof);
   createObjects(System,FC,wall1,wall2,floor,roof);
   insertObjects(System);
