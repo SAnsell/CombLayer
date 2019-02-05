@@ -106,10 +106,12 @@ TSW::TSW(const TSW& A) :
   doorMat(A.doorMat),
   doorGap(A.doorGap),
   doorOffset(A.doorOffset),
-  doorHeight(A.doorHeight),
-  doorWidth1(A.doorWidth1),
-  doorThick1(A.doorThick1),
-  doorWidth2(A.doorWidth2)
+  doorHeightHigh(A.doorHeightHigh),
+  doorWidthHigh(A.doorWidthHigh),
+  doorThickWide(A.doorThickWide),
+  doorThickHigh(A.doorThickHigh),
+  doorHeightLow(A.doorHeightLow),
+  doorWidthLow(A.doorWidthLow)
   /*!
     Copy constructor
     \param A :: TSW to copy
@@ -136,10 +138,12 @@ TSW::operator=(const TSW& A)
       doorMat=A.doorMat;
       doorGap=A.doorGap;
       doorOffset=A.doorOffset;
-      doorHeight=A.doorHeight;
-      doorWidth1=A.doorWidth1;
-      doorThick1=A.doorThick1;
-      doorWidth2=A.doorWidth2;
+      doorHeightHigh=A.doorHeightHigh;
+      doorWidthHigh=A.doorWidthHigh;
+      doorThickWide=A.doorThickWide;
+      doorThickHigh=A.doorThickHigh;
+      doorHeightLow=A.doorHeightLow;
+      doorWidthLow=A.doorWidthLow;
     }
   return *this;
 }
@@ -177,10 +181,12 @@ TSW::populate(const FuncDataBase& Control)
   doorGap=Control.EvalVar<double>(keyName+"DoorGap");
   doorOffset=Control.EvalVar<double>(keyName+"DoorOffset");
 
-  doorHeight=Control.EvalVar<double>(keyName+"DoorHeight");
-  doorWidth1=Control.EvalVar<double>(keyName+"DoorWidth1");
-  doorThick1=Control.EvalVar<double>(keyName+"DoorThick1");
-  doorWidth2=Control.EvalVar<double>(keyName+"DoorWidth2");
+  doorHeightHigh=Control.EvalVar<double>(keyName+"DoorHeightHigh");
+  doorWidthHigh=Control.EvalVar<double>(keyName+"DoorWidthHigh");
+  doorThickWide=Control.EvalVar<double>(keyName+"DoorThickWide");
+  doorThickHigh=Control.EvalVar<double>(keyName+"DoorThickHigh");
+  doorHeightLow=Control.EvalVar<double>(keyName+"DoorHeightLow");
+  doorWidthLow=Control.EvalVar<double>(keyName+"DoorWidthLow");
 
   return;
 }
@@ -222,10 +228,10 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 
   // door
   //       thick region
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(doorWidth1/2.0-doorOffset),-Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin-Y*(doorWidth1/2.0+doorOffset),-Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin+X*(doorThick1),X);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(FC.getLinkPt(floor).Z()+doorHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(doorWidthHigh/2.0-doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin-Y*(doorWidthHigh/2.0+doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin+X*(doorThickWide),X);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(FC.getLinkPt(floor).Z()+doorHeightHigh),Z);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+111,
                                   SMap.realPtr<Geometry::Plane>(buildIndex+101),
@@ -241,8 +247,8 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
                                   doorGap);
 
   //       thin region
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(doorWidth2/2.0-doorOffset),-Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin-Y*(doorWidth2/2.0+doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(doorWidthLow/2.0-doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin-Y*(doorWidthLow/2.0+doorOffset),-Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+211,
                                   SMap.realPtr<Geometry::Plane>(buildIndex+201),
                                   -doorGap);

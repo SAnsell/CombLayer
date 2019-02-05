@@ -114,10 +114,12 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0DoorMat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0DoorGap", 2.0);
   Control.addVariable("LinacTSW0DoorOffset", 200.0);
-  Control.addVariable("LinacTSW0DoorHeight", 222.5); // check
-  Control.addVariable("LinacTSW0DoorWidth1",   80.0); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0DoorThick1",   50.0); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0DoorWidth2",   60.0); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0DoorHeightHigh", 222.5); // check
+  Control.addVariable("LinacTSW0DoorWidthHigh",   80.0); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0DoorThickWide",   50.0); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0DoorThickHigh",   "LinacTSW0DoorThickWide+50"); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0DoorHeightLow", 197.5); // check
+  Control.addVariable("LinacTSW0DoorWidthLow",   60.0); // Wolfgang Hees 25.01.2019
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);
