@@ -40,20 +40,14 @@ namespace ts1System
 */
 
 class ReflectRods : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
   typedef std::map<int,constructSystem::hexUnit*> MTYPE;
   
-  const int rodIndex;          ///< Index of surface offset
   const std::string baseName;  ///< Base keyname
-  int cellIndex;               ///< Cell index
   int populated;               ///< Cells populated
-
-
-  double zAngle;            ///< Z angle rotation
-  double xyAngle;           ///< XY angle rotation
 
   int outerMat;             ///< Material outer 
   int innerMat;             ///< Material inner rod
@@ -73,7 +67,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   const Geometry::Plane* topSurf;    ///< Top Plane in refObj
   const Geometry::Plane* baseSurf;   ///< Base Plane in refObj
 
-  MonteCarlo::Qhull* RefObj;              ///< Reflector object to replace
+  MonteCarlo::Object* RefObj;              ///< Reflector object to replace
   std::vector<const Rule*> RefItems;      ///< Reflector items
   std::vector<Geometry::Plane*> OPSurf;   ///< Planes in the Reflector Object
   MTYPE HVec;               ///< Tubes
@@ -112,7 +106,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   ReflectRods& operator=(const ReflectRods&);
   ~ReflectRods();
 
-  void setObject(MonteCarlo::Qhull* QPtr) { RefObj=QPtr; }
+  void setObject(MonteCarlo::Object* QPtr) { RefObj=QPtr; }
 
   void printHoles() const;
   /// Ugly set centre

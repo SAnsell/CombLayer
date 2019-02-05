@@ -932,7 +932,7 @@ Material::write(std::ostream& OX) const
   
   std::ostringstream cx;
   cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity<<"\n";
-  cx<<"c           (rho="<<getMacroDensity()<<" g/cc)";
+  cx<<"c           (rho= "<<getMacroDensity()<<" g/cc)";
   StrFunc::writeMCNPXcomment(cx.str(),OX);
   cx.str("");
   

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/F5Collimator.h
  *
- * Copyright (c) 2015-2016 Konstantin Batkov
+ * Copyright (c) 2015-2018 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,20 +36,11 @@ namespace essSystem
 */
 
 class F5Collimator : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public tallySystem::F5Calc
 {
  private:
 
-  const int colIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-  
-  double xStep;                   ///< X step (point detector x coordinate)
-  double yStep;                   ///< Y step (point detector y coordinate)
-  double zStep;                   ///< Z step (point detector z coordinate)
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
-  
   double height;                  ///< Height along z
   double length;                   ///< Width  along x
   double width;                   ///< Width  along y
@@ -74,7 +65,7 @@ class F5Collimator : public attachSystem::ContainedComp,
   F5Collimator& operator=(const F5Collimator&);
   virtual ~F5Collimator();
   
-  int getMainCell() const { return colIndex+1; }
+  int getMainCell() const { return buildIndex+1; }
   virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
   void createAll(Simulation&,const attachSystem::FixedComp&);
   

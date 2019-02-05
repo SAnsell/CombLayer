@@ -57,9 +57,9 @@ class LineTrack
   std::vector<MonteCarlo::Object*> ObjVec;        ///< Object pointers
   std::vector<const Geometry::Surface*> SurfVec;  ///< Surface pointers
 
-  ///< Signed index [particle origin side true]
+  /// Signed index [particle origin side true]
   std::vector<int> SurfIndex;                
-  std::vector<double> Track;                ///< Track length
+  std::vector<double> segmentLen;          ///< length of each segment
 
   bool updateDistance(MonteCarlo::Object*,
 		      const Geometry::Surface*,
@@ -83,8 +83,8 @@ class LineTrack
   const std::vector<long int>& getCells() const
     { return Cells; }
   /// Access Track lengths
-  const std::vector<double>& getTrack() const
-    { return Track; }
+  const std::vector<double>& getSegmentLen() const
+    { return segmentLen; }
   /// Access Object Pointers
   const std::vector<MonteCarlo::Object*>& getObjVec() const
   { return ObjVec; }

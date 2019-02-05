@@ -42,8 +42,6 @@ class LineShield :
 {
  private:
   
-  const int shieldIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active

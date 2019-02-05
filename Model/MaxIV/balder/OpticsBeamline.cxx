@@ -3,7 +3,7 @@
  
  * File: balder/OpticsBeamline.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
@@ -56,17 +55,18 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -75,6 +75,9 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "ExternalCut.h"
+#include "InnerZone.h"
+#include "generateSurf.h"
+#include "ModelSupport.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -95,7 +98,9 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "ShutterUnit.h"
 #include "Mirror.h"
+#include "HeatDump.h"
 #include "OpticsBeamline.h"
 
 namespace xraySystem
@@ -107,7 +112,9 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
-  
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+  buildZone(*this,cellIndex),
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
@@ -147,8 +154,10 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
-  shutterPipe(new constructSystem::CrossPipe(newName+"ShutterPipe")),
-  monoShutter(new xraySystem::FlangeMount(newName+"MonoShutter")),
+  shutterPipe(new constructSystem::PortTube(newName+"ShutterPipe")),
+  monoShutterA(new xraySystem::ShutterUnit(newName+"MonoShutterA")),
+  monoShutterB(new xraySystem::ShutterUnit(newName+"MonoShutterB")),
+
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
   neutShield({
@@ -205,7 +214,8 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(viewPipe);
   OR.addObject(pipeF);
   OR.addObject(shutterPipe);
-  OR.addObject(monoShutter);
+  OR.addObject(monoShutterA);
+
   OR.addObject(pipeG);
   OR.addObject(gateE);
 }
@@ -225,6 +235,11 @@ OpticsBeamline::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OpticsBeamline","populate");
   FixedOffset::populate(Control);
+
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+  
   return;
 }
 
@@ -248,51 +263,95 @@ OpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+OpticsBeamline::createSurfaces()
+  /*!
+    Create surfaces for outer void
+   */
+{
+  ELog::RegMethod RegA("OpticsBeamLine","createSurface");
+  
+  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
+    {
+      std::string Out;
+      ModelSupport::buildPlane
+	(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("floor"));
+      buildZone.setSurround(HR);
+    }
+  return;
+}
 
 void
 OpticsBeamline::buildObjects(Simulation& System)
   /*!
-    Build all the objects relative to the main FC
-    point.
+    Build all the objects relative to the main FC point.
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("OpticsBeamline","buildObjects");
+
   
-  pipeInit->addInsertCell(ContainedComp::getInsertCells());
-  pipeInit->registerSpaceCut(1,2);
+  int outerCell;
+  buildZone.setFront(getRule("front"));
+  buildZone.setBack(getRule("back"));  
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System,*this);
+
+  // dummy space for first item
+  // This is a mess but want to preserve insert items already
+  // in the hut beam port
   pipeInit->createAll(System,*this,0);
+  // dump cell for joinPipe
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  // real cell for initPipe
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
+  pipeInit->insertInCell(System,outerCell);
+
     
-  ionPA->addInsertCell(ContainedComp::getInsertCells());
   ionPA->setFront(*pipeInit,2);
-  ionPA->registerSpaceCut(1,2);
   ionPA->createAll(System,*pipeInit,2);
-
-  triggerPipe->addInsertCell(ContainedComp::getInsertCells());
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPA,2);
+  ionPA->insertInCell(System,outerCell);
+  
+  
   triggerPipe->setFront(*ionPA,2);
-  triggerPipe->registerSpaceCut(1,2);
   triggerPipe->createAll(System,*ionPA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
+  triggerPipe->insertInCell(System,outerCell);
 
-  pipeA->addInsertCell(ContainedComp::getInsertCells());
   pipeA->setFront(*triggerPipe,2);
-  pipeA->registerSpaceCut(1,2);
   pipeA->createAll(System,*triggerPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
 
-  filterBox->addInsertCell(ContainedComp::getInsertCells());
+  
+  // fake inser for ports
+  filterBox->addAllInsertCell(masterCell->getName());
   filterBox->setFront(*pipeA,2);
-  filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBox,2);
+  filterBox->insertAllInCell(System,outerCell);
 
   // split on both inner void 
   filterBox->splitVoidPorts(System,"SplitVoid",1001,
 			    filterBox->getCell("Void"),
 			    Geometry::Vec3D(0,1,0));
   // split on outer  boid
+  //  filterBox->getBuildCell(),
+			      
   filterBox->splitVoidPorts(System,"SplitOuter",2001,
-			    filterBox->getBuildCell(),
-			    Geometry::Vec3D(0,1,0));
+			    outerCell,
+   			    Geometry::Vec3D(0,1,0));
   filterBox->splitObject(System,-11,filterBox->getCell("SplitOuter",0));
   filterBox->splitObject(System,12,filterBox->getCell("SplitOuter",3));
+  // increase cellIndex because 4 ports + two outer -1
+  cellIndex+=5;
 
   for(size_t i=0;i<filters.size();i++)
     {
@@ -303,55 +362,50 @@ OpticsBeamline::buildObjects(Simulation& System)
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-
-  pipeB->addInsertCell(ContainedComp::getInsertCells());
-  pipeB->registerSpaceCut(1,2);
+  
+  
   pipeB->setFront(*filterBox,2);
   pipeB->createAll(System,*filterBox,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeB,2);
+  pipeB->insertInCell(System,outerCell);  
 
-  gateA->addInsertCell(ContainedComp::getInsertCells());
-  gateA->registerSpaceCut(1,2);
   gateA->setFront(*pipeB,2);
   gateA->createAll(System,*pipeB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  gateA->insertInCell(System,outerCell);
 
-  mirrorBox->addInsertCell(ContainedComp::getInsertCells());
-  mirrorBox->registerSpaceCut(1,2);
   mirrorBox->setFront(*gateA,2);
   mirrorBox->createAll(System,*gateA,2);
-
-  mirrorBox->splitObject(System,-11,mirrorBox->getCell("OuterSpace"));
-  mirrorBox->splitObject(System,12,mirrorBox->getCell("OuterSpace"));
-
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBox,2);
+  mirrorBox->insertInCell(System,outerCell);
+  mirrorBox->setCell("OuterVoid",outerCell);
+  
+  mirrorBox->splitObject(System,-11,outerCell);
+  mirrorBox->splitObject(System,12,outerCell);
+  cellIndex+=2;
 
   mirror->addInsertCell(mirrorBox->getCell("Void"));
   mirror->createAll(System,*mirrorBox,0);
 
 
-  gateB->addInsertCell(ContainedComp::getInsertCells());
-  gateB->registerSpaceCut(1,2);
   gateB->setFront(*mirrorBox,2);
   gateB->createAll(System,*mirrorBox,2);
-
-  pipeC->addInsertCell(ContainedComp::getInsertCells());
-  pipeC->registerSpaceCut(1,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
+  gateB->insertInCell(System,outerCell);
+    
   pipeC->setFront(*gateB,2);
   pipeC->createAll(System,*gateB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
+  pipeC->insertInCell(System,outerCell);
 
-
-  driftA->addInsertCell(ContainedComp::getInsertCells());
-  driftA->registerSpaceCut(1,2);
   driftA->setFront(*pipeC,2);
   driftA->createAll(System,*pipeC,2);
-
-  driftB->addInsertCell(ContainedComp::getInsertCells());
-  driftB->registerSpaceCut(1,2);
-  driftB->createAll(System,*driftA,2);
-
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftA,2);
+  driftA->insertInCell(System,outerCell);
   
-  attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
-  UnitA.setPrimaryCell(ContainedComp::getMainCell());
-
+  driftB->createAll(System,*driftA,2);
   monoV->createAll(System,*driftA,2);
+  
   monoXtal->addInsertCell(monoV->getCell("Void"));
   monoXtal->createAll(System,*monoV,0);
 
@@ -365,149 +419,190 @@ OpticsBeamline::buildObjects(Simulation& System)
   monoBellowB->setBack(*driftB,1,1);
   monoBellowB->createAll(System,*driftB,-1);
 
-  UnitA.setBuildCell(monoV->nextCell());
-  UnitA.setLinkCopy(0,*monoBellowA,1);
-  UnitA.setLinkCopy(1,*monoBellowB,2);
-  UnitA.insertAllObjects(System);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBellowA,2);
+  monoBellowA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoV,2);
+  monoV->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBellowB,2);
+  monoBellowB->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftB,2);
+  driftB->insertInCell(System,outerCell);
+  driftB->setCell("OuterVoid",outerCell);
 
   monoV->constructPorts(System);
-  monoV->splitObject(System,-101,UnitA.getBuildCell());
-  monoV->splitObject(System,201,UnitA.getBuildCell());
 
 
-  gateC->addInsertCell(ContainedComp::getInsertCells());
   gateC->setFront(*driftB,2);
-  gateC->registerSpaceCut(1,2);
   gateC->createAll(System,*driftB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
+  gateC->insertInCell(System,outerCell);
 
-
-  driftC->addInsertCell(ContainedComp::getInsertCells());
   driftC->setFront(*gateC,2);
-  driftC->registerSpaceCut(1,2);
   driftC->createAll(System,*gateC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*driftC,2);
+  driftC->insertInCell(System,outerCell);
 
   beamStop->addInsertCell(driftC->getCell("Void"));
   beamStop->createAll(System,*driftC,0);
   
-  slitsA->addInsertCell(ContainedComp::getInsertCells());
   slitsA->setFront(*driftC,2);
-  slitsA->registerSpaceCut(1,2);
   slitsA->createAll(System,*driftC,2);
-
-  shieldPipe->addInsertCell(ContainedComp::getInsertCells());
-  shieldPipe->setFront(*slitsA,2);
-  shieldPipe->registerSpaceCut(1,2);
-  shieldPipe->createAll(System,*slitsA,2);
-  shieldPipe->splitObject(System,1001,shieldPipe->getCell("OuterSpace"),
-			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitsA,2);
+  slitsA->insertInCell(System,outerCell);
   
-  pipeD->addInsertCell(ContainedComp::getInsertCells());
+  // fake inser for ports
+  shieldPipe->addAllInsertCell(masterCell->getName());
+  shieldPipe->setFront(*slitsA,2);
+  shieldPipe->createAll(System,*slitsA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shieldPipe,2);
+  shieldPipe->insertAllInCell(System,outerCell);
+
+  shieldPipe->splitObject(System,1001,outerCell,
+			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+  cellIndex++;
+
+
   pipeD->setFront(*shieldPipe,2);
-  pipeD->registerSpaceCut(1,2);
   pipeD->createAll(System,*shieldPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeD,2);
+  pipeD->insertInCell(System,outerCell);
 
-  gateD->addInsertCell(ContainedComp::getInsertCells());
+
   gateD->setFront(*pipeD,2);
-  gateD->registerSpaceCut(1,2);
   gateD->createAll(System,*pipeD,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateD,2);
+  gateD->insertInCell(System,outerCell);
 
-  mirrorBoxB->addInsertCell(ContainedComp::getInsertCells());
+
   mirrorBoxB->setFront(*gateD,2);
-  mirrorBoxB->registerSpaceCut(1,2);
   mirrorBoxB->createAll(System,*gateD,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
+				*mirrorBoxB,2);
+  mirrorBoxB->insertInCell(System,outerCell);
+  mirrorBoxB->setCell("OuterVoid",outerCell);
+
 
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
   mirrorB->createAll(System,*mirrorBoxB,0);
 
-  mirrorBoxB->splitObject(System,-11,mirrorBoxB->getCell("OuterSpace"));
-  mirrorBoxB->splitObject(System,12,mirrorBoxB->getCell("OuterSpace"));
+  mirrorBoxB->splitObject(System,-11,outerCell);
+  mirrorBoxB->splitObject(System,12,outerCell);
+  cellIndex+=2;
   
-  pipeE->addInsertCell(ContainedComp::getInsertCells());
+
+
   pipeE->setFront(*mirrorBoxB,2);
-  pipeE->registerSpaceCut(1,2);
   pipeE->createAll(System,*mirrorBoxB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
+				*pipeE,2);
+  pipeE->insertInCell(System,outerCell);
+  
 
-  slitsB->addInsertCell(ContainedComp::getInsertCells());
   slitsB->setFront(*pipeE,2);
-  slitsB->registerSpaceCut(1,2);
   slitsB->createAll(System,*pipeE,2);
+  outerCell=
+    buildZone.createOuterVoidUnit(System,masterCell,*slitsB,2);
+  slitsB->setCell("OuterVoid",outerCell);
+  slitsB->insertInCell(System,outerCell);
 
-  viewPipe->addInsertCell(ContainedComp::getInsertCells());
-  viewPipe->addInsertPortCells(slitsB->getBuildCell());
+
+  // fake insert for ports
+  viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
-  viewPipe->registerSpaceCut(1,2);
   viewPipe->createAll(System,*slitsB,2);
+  outerCell=
+    buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
+  viewPipe->insertAllInCell(System,outerCell);
 
-  viewPipe->splitObject(System,1001,viewPipe->getCell("OuterSpace"),
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
-  viewPipe->splitObject(System,2001,viewPipe->getCell("OuterSpace",0),
+  // split the object into four
+  const int cNumOffset(outerCell);
+  viewPipe->splitObject(System,1001,outerCell,
+			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+  viewPipe->splitObject(System,2001,outerCell,
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
-  viewPipe->splitObject(System,2002,viewPipe->getCell("OuterSpace",1),
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+
+  viewPipe->splitObject(System,2002,cNumOffset+1,
+  			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  cellIndex+=3;
 
   for(size_t i=0;i<viewMount.size();i++)
     {
       const constructSystem::portItem& PI=viewPipe->getPort(i);
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",1));
-      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",3));
+      viewMount[i]->addInsertCell("Flange",cNumOffset+1);
+      viewMount[i]->addInsertCell("Flange",cNumOffset+3);
       viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
       viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
       viewMount[i]->setBladeCentre(PI,0);
       viewMount[i]->createAll(System,PI,2);
     }
 
-  pipeF->addInsertCell(ContainedComp::getInsertCells());
+  
   pipeF->setFront(*viewPipe,2);
-  pipeF->registerSpaceCut(1,2);
   pipeF->createAll(System,*viewPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
+  pipeF->insertInCell(System,outerCell);
 
-
-  shutterPipe->addInsertCell(ContainedComp::getInsertCells());
+    // fake inser for ports
+  shutterPipe->addAllInsertCell(masterCell->getName());
   shutterPipe->setFront(*pipeF,2);
-  shutterPipe->registerSpaceCut(1,2);
   shutterPipe->createAll(System,*pipeF,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterPipe,2);
+  shutterPipe->insertAllInCell(System,outerCell);
 
-  monoShutter->addInsertCell("Flange",shutterPipe->getCell("Void"));
-  monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
-  monoShutter->setBladeCentre(*shutterPipe,0);
+  const constructSystem::portItem& PIA=shutterPipe->getPort(0);
+  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterA->addInsertCell("Inner",PIA.getCell("Void"));
+  monoShutterA->addInsertCell("Outer",outerCell);
+  monoShutterA->createAll(System,*shutterPipe,0,PIA,2);
 
-  monoShutter->createAll
-    (System,*shutterPipe,shutterPipe->getSideIndex("topFlange"));
+  const constructSystem::portItem& PIB=shutterPipe->getPort(1);
+  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterB->addInsertCell("Inner",PIB.getCell("Void"));
+  monoShutterB->addInsertCell("Outer",outerCell);
+  monoShutterB->createAll(System,*shutterPipe,1,PIB,2);
+
+  // monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
+  // monoShutter->setBladeCentre(*shutterPipe,0);
+
+  // monoShutter->createAll
+  //   (System,*shutterPipe,shutterPipe->getSideIndex("topFlange"));
 
   pipeG->addInsertCell(ContainedComp::getInsertCells());
   pipeG->setFront(*shutterPipe,2);
-  pipeG->registerSpaceCut(1,2);
   pipeG->createAll(System,*shutterPipe,2);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
+				*pipeG,2);
+  pipeG->insertInCell(System,outerCell);
 
 
   gateE->addInsertCell(ContainedComp::getInsertCells());
   gateE->setFront(*pipeG,2);
-  gateE->registerSpaceCut(1,2);
   gateE->createAll(System,*pipeG,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
+				*gateE,2);
+  gateE->insertInCell(System,outerCell);
 
-  neutShield[0]->addInsertCell(mirrorBox->getCell("FFlangeVoid"));
-  neutShield[0]->addInsertCell(mirrorBox->getCell("OuterSpace",1));
+  
+  neutShield[0]->addAllInsertCell(mirrorBox->getCell("FFlangeVoid"));
+  neutShield[0]->addAllInsertCell(mirrorBox->getCell("OuterVoid",1));
   neutShield[0]->setCutSurf("inner",*mirrorBox,"frontPortWall");
   neutShield[0]->createAll(System,*mirrorBox,-1);
 
-  neutShield[1]->addInsertCell(driftB->getCell("OuterSpace"));
+  neutShield[1]->addAllInsertCell(driftB->getCell("OuterVoid"));
   neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
   neutShield[1]->createAll(System,*driftB,-1);
 
-  neutShield[2]->addInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
-  neutShield[2]->addInsertCell(mirrorBoxB->getCell("OuterSpace",2));
+  
+  neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
+  neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("OuterVoid",2));
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
   neutShield[2]->createAll(System,*mirrorBoxB,-2);
 
-
-  // build extra register space between beginning of pipe and end of gate
-  attachSystem::ContainedSpace::insertPair
-    (System,ContainedComp::getInsertCells(),*pipeInit,1,*gateE,2);
-
-  
-
-  
+  setCell("LastVoid",masterCell->getName());
   lastComp=gateE;  
 
   return;
@@ -537,13 +632,15 @@ OpticsBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("OpticsBeamline","build");
+  ELog::RegMethod RControl("OpticsBeamline","createAll");
 
   populate(System.getDataBase());
-  
   createUnitVector(FC,sideIndex);
+  createSurfaces();
+
   pipeInit->setFront(FC,sideIndex);
   buildObjects(System);
+
   createLinks();
   return;
 }

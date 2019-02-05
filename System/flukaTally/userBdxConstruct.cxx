@@ -47,24 +47,27 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "CellMap.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+
 #include "Object.h"
-#include "Qhull.h"
 #include "SimFLUKA.h"
 #include "particleConv.h"
 #include "flukaGenParticle.h"
 #include "TallySelector.h"
-#include "meshConstruct.h"
 #include "flukaTally.h"
 #include "userBdx.h"
 #include "userBdxConstruct.h" 
@@ -85,8 +88,8 @@ userBdxConstruct::checkLinkCells(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","checkLinkCells");
-  const MonteCarlo::Object* APtr=System.findQhull(cellA);
-  const MonteCarlo::Object* BPtr=System.findQhull(cellB);
+  const MonteCarlo::Object* APtr=System.findObject(cellA);
+  const MonteCarlo::Object* BPtr=System.findObject(cellB);
   if (!APtr || !BPtr)
     return 0;
 
@@ -107,19 +110,19 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
 				      int& cellA,int& cellB)
   /*!
     Construct a link region exiting the FixedComp link unit
-    \param System :: Simulation to use						
+    \param System :: Simulation to use	
+    \param FCname :: name of fixed comp
+    \param FCiindex :: name of link point
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* FCPtr=
-    OR.getObject<attachSystem::FixedComp>(FCname);
+    System.getObject<attachSystem::FixedComp>(FCname);
 
   if (!FCPtr) return 0;
-  // throws -- because if we have FC and no link number is that bad?
+
+  if (!FCPtr->hasSideIndex(FCindex)) return 0;
   const long int FCI=FCPtr->getSideIndex(FCindex);
 
   const int surfN=FCPtr->getLinkSurf(FCI);
@@ -128,6 +131,50 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
     System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
+  
+  if (RefPair.first && RefPair.second)
+    {
+      cellA=RefPair.first->getName();
+      cellB=RefPair.second->getName();
+      return 1;
+    }
+  return 0;
+}
+
+bool
+userBdxConstruct::constructSurfRegion(const Simulation& System,
+				      const std::string& FCname,
+				      const std::string& surfName,
+				      const size_t indexA,
+				      const size_t indexB,
+				      int& cellA,int& cellB)
+  /*!
+    Construct a link region exiting the SurfMap link unit
+    FCname also names a groupRange which is used 
+    to ensure that cellA is part of the groupRange
+    \param System :: Simulation to use	
+    \param FCname :: name of SurfMap
+    \param surfName :: name of surface [signed]
+    \param indexA :: Index of region found in primary
+    \param indexB :: Index region found in secondary
+    \param cellA :: Primary region cell number
+    \param cellB :: Secondary region cell number
+  */
+{
+  ELog::RegMethod RegA("userBdxConstruct","constructSurfRegion");
+  
+  const attachSystem::SurfMap* SMPtr=
+    System.getObject<attachSystem::SurfMap>(FCname);
+
+  if (!SMPtr || surfName.empty()) return 0;
+  
+  const int surfN=SMPtr->getSignedSurf(surfName);
+  if (!surfN) return 0;
+  // throws on error [unlikely because SurfMap is good]
+  const groupRange& activeGrp=System.getGroup(FCname);
+  const std::pair<const MonteCarlo::Object*,
+	    const MonteCarlo::Object*> RefPair=
+    System.findCellPair(surfN,activeGrp,indexA,indexB);
   
   if (RefPair.first && RefPair.second)
     {
@@ -182,7 +229,11 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 			     const size_t Index) 
   /*!
     Add BDX tally (s) as needed
-    \param System :: SimMCNP to add tallies
+    - Input:
+    -- particle FixedComp index
+    -- particle cellA  cellB
+    -- particle SurfMap name
+    \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -197,6 +248,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const std::string FCindex=
     IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
+  size_t itemIndex(4);
   int cellA(0);
   int cellB(0);
   if (
@@ -204,16 +256,23 @@ userBdxConstruct::processBDX(SimFLUKA& System,
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
       
-      (!constructLinkRegion(System,FCname,FCindex,cellA,cellB))
+      !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
       )
+    
     {
-      throw ColErr::InContainerError<std::string>
-	(FCname+":"+FCindex,"No connecting surface on regions");
+      // special class because must give regions
+      itemIndex+=2;
+      const size_t regionIndexA=IParam.getDefValue(0,"tally",Index,4);
+      const size_t regionIndexB=IParam.getDefValue(0,"tally",Index,5);
+
+      if (!constructSurfRegion(System,FCname,FCindex,
+			       regionIndexA,regionIndexB,cellA,cellB))
+	throw ColErr::InContainerError<std::string>
+	  (FCname+":"+FCindex,"No connecting surface on regions");
     }
   
   ELog::EM<<"Regions connected from "<<cellA<<" "<<cellB<<ELog::endDiag;  
-  
-  size_t itemIndex(4);
+
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
   

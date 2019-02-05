@@ -95,6 +95,19 @@ HeadRule::HeadRule(const std::string& RuleStr) :
     throw ColErr::InvalidLine(RuleStr,"RuleStr",0);
 }
 
+HeadRule::HeadRule(const int surfNum) :
+  HeadNode(0)
+  /*!
+    Creates a new rule
+    \param surfNum :: rule as surface number
+  */
+{
+  ELog::RegMethod RegA("HeadRule","HeadRule(string)");
+
+  if (!surfNum || !procString(std::to_string(surfNum)))
+    throw ColErr::InvalidLine(std::to_string(surfNum),"surfNum",0);
+}
+
 HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : 0)
   /*!

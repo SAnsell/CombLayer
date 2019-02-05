@@ -64,7 +64,8 @@
 #include "HeadRule.h"
 #include "neutron.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -82,8 +83,7 @@ namespace constructSystem
 Window::Window(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
-  winIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(winIndex+1),baseCell(0),FSurf(0),BSurf(0),
+  baseCell(0),FSurf(0),BSurf(0),
   nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -93,7 +93,6 @@ Window::Window(const std::string& Key)  :
 
 Window::Window(const Window& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  winIndex(A.winIndex),cellIndex(A.cellIndex),
   baseCell(A.baseCell),Centre(A.Centre),WAxis(A.WAxis),
   fSign(A.fSign),bSign(A.bSign),FSurf(A.FSurf),BSurf(A.BSurf),
   divideFlag(A.divideFlag),width(A.width),height(A.height),
@@ -117,7 +116,6 @@ Window::operator=(const Window& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       baseCell=A.baseCell;
       Centre=A.Centre;
       WAxis=A.WAxis;
@@ -164,7 +162,7 @@ Window::createCentre(Simulation& System)
 {
   ELog::RegMethod RegA("Window","createCentre");
   
-  MonteCarlo::Qhull* QHptr=System.findQhull(baseCell);
+  MonteCarlo::Object* QHptr=System.findObject(baseCell);
   if (!QHptr)
     {
       ELog::EM<<"Unable to find window base cell : "
@@ -218,15 +216,15 @@ Window::createSurfaces()
   if (FSurf->className()!="Plane" ||
       BSurf->className()!="Plane" )
     {
-      ModelSupport::buildPlane(SMap,winIndex+1,Centre,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Centre,Y);
       divideFlag=1;
     }
   
-  ModelSupport::buildPlane(SMap,winIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,winIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
   
-  ModelSupport::buildPlane(SMap,winIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,winIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
   
   if (nLayers>1)
@@ -234,7 +232,7 @@ Window::createSurfaces()
       ModelSupport::pairBase* pBase=
 	ModelSupport::pairFactory::createPair(FSurf,BSurf);
       
-      int divSurf(winIndex+11);
+      int divSurf(buildIndex+11);
       for(size_t i=0;i<nLayers-1;i++)
 	{
 	  const int sNum=pBase->
@@ -257,13 +255,13 @@ Window::createObjects(Simulation& System)
   std::string Out;
 
   std::string WOut=
-    ModelSupport::getComposite(SMap,winIndex," 3 -4 5 -6 ");
+    ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
 
   std::ostringstream cx;
 
   if (divideFlag)
     {
-      cx<<SMap.realSurf(winIndex+1)<<" ";
+      cx<<SMap.realSurf(buildIndex+1)<<" ";
       WOut+=cx.str();
     }
   cx<<fSign*FSurf->getName()<<" "<<-bSign*BSurf->getName()<<" ";
@@ -275,7 +273,7 @@ Window::createObjects(Simulation& System)
   else
     {
       Out=WOut+cx.str();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addOuterSurf(Out);
     }
 
@@ -291,7 +289,7 @@ Window::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,winIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void

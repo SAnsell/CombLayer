@@ -3,7 +3,7 @@
  
  * File:   constructInc/Window.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,6 @@ class Window : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
- 
-  const int winIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int baseCell;                 ///< Cell that it resides
 

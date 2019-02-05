@@ -3,7 +3,7 @@
  
  * File:   t1Build/MerlinModerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace ts1System
 {
 
 MerlinModerator::MerlinModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
-  merlinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(merlinIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,10 +88,8 @@ MerlinModerator::MerlinModerator(const std::string& Key)  :
 {}
 
 MerlinModerator::MerlinModerator(const MerlinModerator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  merlinIndex(A.merlinIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),width(A.width),depth(A.depth),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  width(A.width),depth(A.depth),
   height(A.height),innerThick(A.innerThick),vacThick(A.vacThick),
   nPoison(A.nPoison),vaneSide(A.vaneSide),poisonYStep(A.poisonYStep),
   poisonThick(A.poisonThick),alMat(A.alMat),waterMat(A.waterMat),
@@ -114,12 +111,7 @@ MerlinModerator::operator=(const MerlinModerator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
+      attachSystem::FixedOffset::operator=(A);
       width=A.width;
       depth=A.depth;
       height=A.height;
@@ -153,11 +145,7 @@ MerlinModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("MerlinModerator","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -198,9 +186,7 @@ MerlinModerator::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("MerlinModerator","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
-
-  FixedComp::applyShift(xStep,yStep,zStep);
-  FixedComp::applyAngleRotate(xyAngle,0);
+  applyOffset();
   return;
 }
 
@@ -273,7 +259,7 @@ MerlinModerator::createSurfaces()
 
   // Multi layer -- to be generalized
   const size_t nLayer(3);
-  int HI(merlinIndex);
+  int HI(buildIndex);
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,HI+1,getSurfacePoint(i,1),Y);
@@ -287,7 +273,7 @@ MerlinModerator::createSurfaces()
  
 
   // Poison layer:
-  HI=100+merlinIndex;
+  HI=100+buildIndex;
   for(size_t i=0;i<nPoison;i++)
     {
       ModelSupport::buildPlane(SMap,HI+3,Origin+
@@ -312,28 +298,28 @@ MerlinModerator::createObjects(Simulation& System)
   std::string Out,Exclude;
   // Poison bits first:
 
-  int PI(merlinIndex+100);
+  int PI(buildIndex+100);
   for(size_t i=0;i<nPoison;i++)
     {
-      Out=ModelSupport::getComposite(SMap,merlinIndex,PI,"3M -4M 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,PI,"3M -4M 3 -4 5 -6 ");
       Exclude+=ModelSupport::getComposite(SMap,PI,"(-3M : 4M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,poisonMat,0.0,Out));
       PI+=10;
     }      
 
-  Out=ModelSupport::getComposite(SMap,merlinIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+Exclude));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+Exclude));
   mainCell=cellIndex-1;
   // Inner al
-  Out=ModelSupport::getComposite(SMap,merlinIndex,"11 -12 13 -14 15 -16 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 " (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
   // Vac/clearance layer
-  Out=ModelSupport::getComposite(SMap,merlinIndex,"21 -22 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,merlinIndex," 21 -22 23 -24 25 -26 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 23 -24 25 -26 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
@@ -356,21 +342,20 @@ MerlinModerator::createLinks()
   FixedComp::setConnect(4,getSurfacePoint(2,5),-Z);
   FixedComp::setConnect(5,getSurfacePoint(2,6),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(merlinIndex+21));
-  FixedComp::setLinkSurf(1,SMap.realSurf(merlinIndex+22));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(merlinIndex+23));
-  FixedComp::setLinkSurf(3,SMap.realSurf(merlinIndex+24));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(merlinIndex+25));
-  FixedComp::setLinkSurf(5,SMap.realSurf(merlinIndex+26));
-
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
   // -- Inner surface for vanes 
   // As inner surface needs to be reversed
-  FixedComp::setLinkSurf(6,SMap.realSurf(merlinIndex+1));
-  FixedComp::setLinkSurf(7,-SMap.realSurf(merlinIndex+2));
-  FixedComp::setLinkSurf(8,SMap.realSurf(merlinIndex+3));
-  FixedComp::setLinkSurf(9,-SMap.realSurf(merlinIndex+4));
-  FixedComp::setLinkSurf(10,SMap.realSurf(merlinIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(merlinIndex+6));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(6,getSurfacePoint(0,1),Y);
   FixedComp::setConnect(7,getSurfacePoint(0,2),-Y);

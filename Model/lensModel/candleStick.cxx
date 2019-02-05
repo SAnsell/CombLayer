@@ -3,7 +3,7 @@
  
  * File:   lensModel/candleStick.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
-#include "surfExpand.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Sphere.h"
@@ -63,8 +60,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +77,7 @@ namespace lensSystem
 {
 
 candleStick::candleStick(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
-  surIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surIndex+1),populated(0)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2)
   /*!
     Constructor
   */
@@ -89,8 +85,7 @@ candleStick::candleStick(const std::string& Key) :
 
 candleStick::candleStick(const candleStick& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  surIndex(A.surIndex),cellIndex(A.cellIndex),
-  populated(A.populated),TopBoundary(A.TopBoundary),BaseCent(A.BaseCent),
+  TopBoundary(A.TopBoundary),BaseCent(A.BaseCent),
   StickCent(A.StickCent),CylCent(A.CylCent),baseThick(A.baseThick),
   baseWidth(A.baseWidth),baseLength(A.baseLength),baseXoffset(A.baseXoffset),
   baseYoffset(A.baseYoffset),vsWidth(A.vsWidth),vsDepth(A.vsDepth),
@@ -126,7 +121,6 @@ candleStick::operator=(const candleStick& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       TopBoundary=A.TopBoundary;
       BaseCent=A.BaseCent;
       StickCent=A.StickCent;
@@ -267,7 +261,7 @@ candleStick::populate(const FuncDataBase& Control)
   
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
-  populated=1;
+
   return;
 }
 
@@ -280,95 +274,95 @@ candleStick::createSurfaces()
   ELog::RegMethod RegA("candleStick","constructSurfaces");
 
   //Base:
-  ModelSupport::buildPlane(SMap,surIndex+1,BaseCent-X*(baseLength/2.0),X);
-  ModelSupport::buildPlane(SMap,surIndex+2,BaseCent+X*(baseLength/2.0),X);
-  ModelSupport::buildPlane(SMap,surIndex+3,BaseCent-Y*(baseWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,surIndex+4,BaseCent+Y*(baseWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,surIndex+5,BaseCent-Z*(baseThick/2.0),Z);
-  ModelSupport::buildPlane(SMap,surIndex+6,BaseCent+Z*(baseThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1,BaseCent-X*(baseLength/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2,BaseCent+X*(baseLength/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,BaseCent-Y*(baseWidth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+4,BaseCent+Y*(baseWidth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5,BaseCent-Z*(baseThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,BaseCent+Z*(baseThick/2.0),Z);
 
   // Support
-  ModelSupport::buildPlane(SMap,surIndex+11,StickCent-X*(vsDepth/2.0),X);
-  ModelSupport::buildPlane(SMap,surIndex+12,StickCent+X*(vsDepth/2.0),X);
-  ModelSupport::buildPlane(SMap,surIndex+13,StickCent-Y*(vsWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,surIndex+14,StickCent+Y*(vsWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,surIndex+16,StickCent+Z*vsHeight,Z);
-  ModelSupport::buildPlane(SMap,surIndex+15,StickCent,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+11,StickCent-X*(vsDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+12,StickCent+X*(vsDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,StickCent-Y*(vsWidth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+14,StickCent+Y*(vsWidth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+16,StickCent+Z*vsHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,StickCent,Z);
 
   // create same surf as Support
-  //  SMap.addMatch(surIndex+21,surIndex+11);
-  ModelSupport::buildPlane(SMap,surIndex+21,StickCent-X*(vsDepth/2.0),X);
-  ModelSupport::buildPlane(SMap,surIndex+22,
+  //  SMap.addMatch(buildIndex+21,buildIndex+11);
+  ModelSupport::buildPlane(SMap,buildIndex+21,StickCent-X*(vsDepth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   StickCent-X*(flatLength-vsDepth/2.0),X);
-  ModelSupport::buildPlane(SMap,surIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   StickCent-Y*(flatWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,surIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   StickCent+Y*(flatWidth/2.0),Y);
-  ModelSupport::buildPlane(SMap,surIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   StickCent+Z*vsHeight,Z);
-  ModelSupport::buildPlane(SMap,surIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   StickCent+Z*(vsHeight+flatThick),Z);
 
   // Vac layer
-  ModelSupport::buildPlane(SMap,surIndex+31,-X*vacLowMX,X);
-  ModelSupport::buildPlane(SMap,surIndex+32,X*vacLowPX,X);
-  ModelSupport::buildPlane(SMap,surIndex+33,-Y*vacLowMY,Y);
-  ModelSupport::buildPlane(SMap,surIndex+34,Y*vacLowPY,Y);
-  ModelSupport::buildPlane(SMap,surIndex+35,-Z*vacBase,Z);
-  ModelSupport::buildPlane(SMap,surIndex+36,Z*vacTop,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+31,-X*vacLowMX,X);
+  ModelSupport::buildPlane(SMap,buildIndex+32,X*vacLowPX,X);
+  ModelSupport::buildPlane(SMap,buildIndex+33,-Y*vacLowMY,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Y*vacLowPY,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+35,-Z*vacBase,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Z*vacTop,Z);
 
   // Top Vacuum
   // -- This is a divider
-  ModelSupport::buildPlane(SMap,surIndex+42,X*CylCent.X(),X);
-  ModelSupport::buildCylinder(SMap,surIndex+47,CylCent,Z,vacRadius);
-  ModelSupport::buildPlane(SMap,surIndex+45,Z*vacZExt,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+42,X*CylCent.X(),X);
+  ModelSupport::buildCylinder(SMap,buildIndex+47,CylCent,Z,vacRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Z*vacZExt,Z);
 
   // AL Skin:
   // -- PLANAR BOX SECTIONS [20000]:
-  ModelSupport::buildPlane(SMap,surIndex+51,-X*(vacLowMX+alSideThick),X);
-  ModelSupport::buildPlane(SMap,surIndex+52,X*(vacLowPX+alSideThick),X);
-  ModelSupport::buildPlane(SMap,surIndex+53,-Y*(vacLowMY+alSideThick),Y);
-  ModelSupport::buildPlane(SMap,surIndex+54,Y*(vacLowPY+alSideThick),Y);
-  ModelSupport::buildPlane(SMap,surIndex+55,-Z*(vacBase+alBaseThick),Z);
-  ModelSupport::buildPlane(SMap,surIndex+56,Z*(vacTop+alTopThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+51,-X*(vacLowMX+alSideThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+52,X*(vacLowPX+alSideThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+53,-Y*(vacLowMY+alSideThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+54,Y*(vacLowPY+alSideThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+55,-Z*(vacBase+alBaseThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+56,Z*(vacTop+alTopThick),Z);
 
-  ModelSupport::buildCylinder(SMap,surIndex+67,CylCent,Z,vacRadius+alSideThick);
-  ModelSupport::buildPlane(SMap,surIndex+65,Z*(vacZExt-alBaseThick),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+67,CylCent,Z,vacRadius+alSideThick);
+  ModelSupport::buildPlane(SMap,buildIndex+65,Z*(vacZExt-alBaseThick),Z);
  
-  ModelSupport::buildPlane(SMap,surIndex+71,
+  ModelSupport::buildPlane(SMap,buildIndex+71,
 			   -X*(vacLowMX+alSideThick+skinMSideClear),X);
-  ModelSupport::buildPlane(SMap,surIndex+72,
+  ModelSupport::buildPlane(SMap,buildIndex+72,
 			   X*(vacLowPX+alSideThick+skinPSideClear),X);
-  ModelSupport::buildPlane(SMap,surIndex+73,
+  ModelSupport::buildPlane(SMap,buildIndex+73,
 			   -Y*(vacLowMY+alSideThick+skinForwardClear),Y);
-  ModelSupport::buildPlane(SMap,surIndex+74,
+  ModelSupport::buildPlane(SMap,buildIndex+74,
 			   Y*(vacLowPY+alSideThick+skinBackClear),Y);
-  ModelSupport::buildPlane(SMap,surIndex+75,
+  ModelSupport::buildPlane(SMap,buildIndex+75,
 			   -Z*(vacBase+alBaseThick+skinBaseClear),Z);
 
-  ModelSupport::buildPlane(SMap,surIndex+83,
+  ModelSupport::buildPlane(SMap,buildIndex+83,
 			   -Y*(vacLowMY+alSideThick+skinCutSideClear),Y);
-  ModelSupport::buildPlane(SMap,surIndex+84,
+  ModelSupport::buildPlane(SMap,buildIndex+84,
 			   Y*(vacLowPY+alSideThick+skinCutSideClear),Y);
-  ModelSupport::buildPlane(SMap,surIndex+85,
+  ModelSupport::buildPlane(SMap,buildIndex+85,
 			   Z*(vacZExt-alBaseThick-skinCutBaseClear),Z);
-  ModelSupport::buildCylinder(SMap,surIndex+87,
+  ModelSupport::buildCylinder(SMap,buildIndex+87,
 			      CylCent,Z,vacRadius+alSideThick+skinCircleClear);
 
   // WATER ALUMINIUM:
   ModelSupport::buildPlane
-    (SMap,surIndex+91,-X*(vacLowMX+alSideThick+skinMSideClear+waterAlThick),X);
+    (SMap,buildIndex+91,-X*(vacLowMX+alSideThick+skinMSideClear+waterAlThick),X);
   ModelSupport::buildPlane
-    (SMap,surIndex+92,X*(vacLowPX+alSideThick+skinPSideClear+waterAlThick),X);
+    (SMap,buildIndex+92,X*(vacLowPX+alSideThick+skinPSideClear+waterAlThick),X);
   ModelSupport::buildPlane
-    (SMap,surIndex+93,
+    (SMap,buildIndex+93,
      -Y*(vacLowMY+alSideThick+skinForwardClear+waterAlThick),Y);
   ModelSupport::buildPlane
-    (SMap,surIndex+94,Y*(vacLowPY+alSideThick+skinBackClear+waterAlThick),Y);
+    (SMap,buildIndex+94,Y*(vacLowPY+alSideThick+skinBackClear+waterAlThick),Y);
   ModelSupport::buildPlane
-    (SMap,surIndex+95,-Z*(vacBase+alBaseThick+skinBaseClear+waterAlThick),Z);
+    (SMap,buildIndex+95,-Z*(vacBase+alBaseThick+skinBaseClear+waterAlThick),Z);
   ModelSupport::buildPlane
-    (SMap,surIndex+96,Z*(waterHeight+waterAlThick),Z);
+    (SMap,buildIndex+96,Z*(waterHeight+waterAlThick),Z);
 
   return;
 }
@@ -386,82 +380,82 @@ candleStick::createObjects(Simulation& System,
 
   // Base system:
   std::string Out=
-    ModelSupport::getComposite(SMap,surIndex,"1 -2 3 -4 5 -6");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+    ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");  
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
   // Support
-  Out=ModelSupport::getComposite(SMap,surIndex,"11 -12 13 -14 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   // Plate
-  Out=ModelSupport::getComposite(SMap,surIndex,"-12 22 23 -24 25 -26");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 22 23 -24 25 -26");
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   // VACUUM:
-  Out=ModelSupport::getComposite(SMap,surIndex,"31 -32 33 -34 35 -36");    
+  Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36");    
   // last three object 
-  Out+=ModelSupport::getComposite(SMap,surIndex,"(-1:2:-3:4:-5:6)");
-  Out+=ModelSupport::getComposite(SMap,surIndex,"(-11:12:-13:14:-15:16)");
-  Out+=ModelSupport::getComposite(SMap,surIndex,"(12:-22:-23:24:-25:26)");
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-1:2:-3:4:-5:6)");
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15:16)");
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"(12:-22:-23:24:-25:26)");
   // And si moderator 
   Out+=CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // TOP VACUUM
   // Make outer Al system
-  Out=ModelSupport::getComposite(SMap,surIndex,"45 -36 -31 ((42 33 -34):-47)");
-  Out+=ModelSupport::getComposite(SMap,surIndex," (-22:-23:24:-25:26)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"45 -36 -31 ((42 33 -34):-47)");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:24:-25:26)");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // AL SKIN:
-  Out= ModelSupport::getComposite(SMap,surIndex,"51 -52 53 -54 55 -56");
-  Out+=ModelSupport::getComposite(SMap,surIndex,
+  Out= ModelSupport::getComposite(SMap,buildIndex,"51 -52 53 -54 55 -56");
+  Out+=ModelSupport::getComposite(SMap,buildIndex,
 				  "( -31 : 32 : -33 : 34 : -35 : 36 )" 
 				  "(-45 : 36 : -33 : 34 : 31) ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // TOP Rounded section
   // Make outer Al system
-  Out=ModelSupport::getComposite(SMap,surIndex,"65 -56 -51 ((42 -54 53):-67)")+
-    ModelSupport::getComposite(SMap,surIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,"65 -56 -51 ((42 -54 53):-67)")+
+    ModelSupport::getComposite(SMap,buildIndex,
 			       "#(45 -36 -31 ((42 33 -34):-47))");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Construct side clearance:
   Out=
-    ModelSupport::getComposite(SMap,surIndex,"71 -72 73 -74 75 -56");
+    ModelSupport::getComposite(SMap,buildIndex,"71 -72 73 -74 75 -56");
   Out+=
     (skinBaseClear>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,surIndex,"( -51  : 52 : -53 : 54 : -55 )") :
-    ModelSupport::getComposite(SMap,surIndex,"( -51  : 52 : -53 : 54 )");
+    ModelSupport::getComposite(SMap,buildIndex,"( -51  : 52 : -53 : 54 : -55 )") :
+    ModelSupport::getComposite(SMap,buildIndex,"( -51  : 52 : -53 : 54 )");
 
   // Note that we dont need an explicit test here for cutClear
   // as the surface is required if and only if its the old Al surface
   // and register surface will find it.
   Out+=
-    ModelSupport::getComposite(SMap,surIndex,"( 51  : -85 : -83 : 84)");
+    ModelSupport::getComposite(SMap,buildIndex,"( 51  : -85 : -83 : 84)");
  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 			         
   // AL SKIN CLEARANCE
-  Out= ModelSupport::getComposite(SMap,surIndex,
+  Out= ModelSupport::getComposite(SMap,buildIndex,
 				  "85 -56 -51 ((42 -84 83) : -87)");
   addOuterSurf(Out);   // old 70000 virtual
-  Out+=ModelSupport::getComposite(SMap,surIndex,
+  Out+=ModelSupport::getComposite(SMap,buildIndex,
 				  "#(65 -56 -51 ((42 -54 53) : -67))");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // WATER AL
-  Out=ModelSupport::getComposite(SMap,surIndex,"91 -92 93 -94 95 -96 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"91 -92 93 -94 95 -96 ");
   TopBoundary.addOuterSurf(Out);
   Out+=(skinBaseClear>Geometry::zeroTol) ? 
-    ModelSupport::getComposite(SMap,surIndex,
+    ModelSupport::getComposite(SMap,buildIndex,
 			       "( -71 : 72 : -73 : 74 : -75 ) ") : 
-    ModelSupport::getComposite(SMap,surIndex,
+    ModelSupport::getComposite(SMap,buildIndex,
 			       "( -71 : 72 : -73 : 74 : -55 ) "); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,surIndex,"71 -72 73 -74 96 -56");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"71 -72 73 -74 96 -56");
   HeadBoundary.addOuterSurf(Out);
   return;
 }  
@@ -476,7 +470,7 @@ candleStick::specialExclude(Simulation& System,const int cellNum) const
 {
   ELog::RegMethod RegA("candleStick","specialExclude");
 
-  MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+  MonteCarlo::Object* outerObj=System.findObject(cellNum);
   if (outerObj)
     {
       outerObj->addSurfString(getExclude());
@@ -502,15 +496,16 @@ candleStick::createLinks()
   FixedComp::setConnect(1,Y*(vacLowMY+alSideThick+
 			     skinForwardClear+waterAlThick),Y);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(surIndex+93));
-  FixedComp::setLinkSurf(1,SMap.realSurf(surIndex+94));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+93));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+94));
 
   return;
 }
 
   
 void
-candleStick::createAll(Simulation& System,const siModerator& SMod)
+candleStick::createAll(Simulation& System,
+		       const siModerator& SMod)
   /*!
     Extrenal build everything
     \param System :: Simulation

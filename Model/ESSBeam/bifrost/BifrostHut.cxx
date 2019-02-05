@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/BifrostHut.cxx
+ * File:   bifrost/BifrostHut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +82,7 @@ namespace essSystem
 
 BifrostHut::BifrostHut(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -165,42 +164,42 @@ BifrostHut::createSurfaces()
   ELog::RegMethod RegA("BifrostHut","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
 
   // FE WALLS:
-  ModelSupport::buildPlane(SMap,hutIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(feFront+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(feBack+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(feLeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(feRightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(feFloor+voidDepth),Z);  
-  ModelSupport::buildPlane(SMap,hutIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(feRoof+voidHeight),Z);  
 
 
   // CONC WALLS:
-  ModelSupport::buildPlane(SMap,hutIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*(concFront+feFront+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(concBack+feBack+voidLength/2.0),Y);
   ModelSupport::buildPlane
-    (SMap,hutIndex+23,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),X);
+    (SMap,buildIndex+23,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,hutIndex+24,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
+    (SMap,buildIndex+24,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
   ModelSupport::buildPlane
-    (SMap,hutIndex+25,Origin-Z*(concFloor+feFloor+voidDepth),Z);  
+    (SMap,buildIndex+25,Origin-Z*(concFloor+feFloor+voidDepth),Z);  
   ModelSupport::buildPlane
-    (SMap,hutIndex+26,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
+    (SMap,buildIndex+26,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
 
   return;
@@ -217,40 +216,40 @@ BifrostHut::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   setCell("Iron",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   setCell("Conc",cellIndex-1);
 
   // Front wall:
-  Out=ModelSupport::getComposite(SMap,hutIndex,"11 -1 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   setCell("FrontWall",cellIndex-1);
   setCell("IronFront",cellIndex-1);
 
   // Ring of concrete
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -1 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
 
   // Front concrete face
-  Out=ModelSupport::getComposite(SMap,hutIndex,"21 -11 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 23 -24 25 -26 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
   setCell("ConcFront",cellIndex-1);
   
   // Exclude:
   Out=ModelSupport::getComposite
-    (SMap,hutIndex," 21 -22 23 -24  25 -26 ");
+    (SMap,buildIndex," 21 -22 23 -24  25 -26 ");
   addOuterSurf(Out);      
 
   return;
@@ -277,12 +276,12 @@ BifrostHut::createLinks()
   innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
   innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(hutIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(hutIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
+  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   
   // INNER VOID
@@ -293,12 +292,12 @@ BifrostHut::createLinks()
   midFC.setConnect(4,Origin-Z*(feFloor+voidDepth),-Z);
   midFC.setConnect(5,Origin+Z*(feRoof+voidHeight),Z);  
 
-  midFC.setLinkSurf(0,-SMap.realSurf(hutIndex+11));
-  midFC.setLinkSurf(1,SMap.realSurf(hutIndex+12));
-  midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+13));
-  midFC.setLinkSurf(3,SMap.realSurf(hutIndex+14));
-  midFC.setLinkSurf(4,-SMap.realSurf(hutIndex+15));
-  midFC.setLinkSurf(5,SMap.realSurf(hutIndex+16));
+  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   
     // OUTER VOID
@@ -309,12 +308,12 @@ BifrostHut::createLinks()
   outerFC.setConnect(4,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
   outerFC.setConnect(5,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+21));
-  outerFC.setLinkSurf(1,SMap.realSurf(hutIndex+22));
-  outerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+23));
-  outerFC.setLinkSurf(3,SMap.realSurf(hutIndex+24));
-  outerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+25));
-  outerFC.setLinkSurf(5,SMap.realSurf(hutIndex+26));
+  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+21));
+  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+26));
 
   
   return;

@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -181,7 +182,8 @@ Mirror::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("Mirror","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
+  applyOffset();
+
   return;
 }
 

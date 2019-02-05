@@ -63,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -83,8 +84,7 @@ namespace constructSystem
 WallCut::WallCut(const std::string& Key,const size_t ID)  :
   attachSystem::FixedOffset(Key+std::to_string(ID),6),
   attachSystem::ContainedComp(),
-  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(cutIndex+1),baseName(Key)
+  baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,7 +94,6 @@ WallCut::WallCut(const std::string& Key,const size_t ID)  :
 
 WallCut::WallCut(const WallCut& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  cutIndex(A.cutIndex),cellIndex(A.cellIndex),
   baseName(A.baseName),insertKey(A.insertKey),
   height(A.height),width(A.width),length(A.length)
   /*!
@@ -115,7 +114,6 @@ WallCut::operator=(const WallCut& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       insertKey=A.insertKey;
       height=A.height;
       width=A.width;
@@ -196,23 +194,23 @@ WallCut::createSurfaces()
 
   if (length>Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,cutIndex+1,
+      ModelSupport::buildPlane(SMap,buildIndex+1,
 			       Origin-Y*(length/2.0),Y);  
-      ModelSupport::buildPlane(SMap,cutIndex+2,
+      ModelSupport::buildPlane(SMap,buildIndex+2,
 			       Origin+Y*(length/2.0),Y);
     }
   if (width>Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,cutIndex+3,
+      ModelSupport::buildPlane(SMap,buildIndex+3,
 			       Origin-X*(width/2.0),X);  
-      ModelSupport::buildPlane(SMap,cutIndex+4,
+      ModelSupport::buildPlane(SMap,buildIndex+4,
 			       Origin+X*(width/2.0),X);
     }
   if (height>Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,cutIndex+5,
+      ModelSupport::buildPlane(SMap,buildIndex+5,
 			       Origin-Z*(height/2.0),Z);  
-      ModelSupport::buildPlane(SMap,cutIndex+6,
+      ModelSupport::buildPlane(SMap,buildIndex+6,
 			       Origin+Z*(height/2.0),Z);
     }
 
@@ -232,10 +230,10 @@ WallCut::createObjects(Simulation& System,
   ELog::RegMethod RegA("WallCut","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,cutIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   Out+=wallBoundary.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,matTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,matTemp,Out));
   
   return;
 }
@@ -251,8 +249,8 @@ WallCut::createLinks(const HeadRule& wallBoundary)
   
   if (length>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(0,-SMap.realSurf(cutIndex+1));
-      FixedComp::setLinkSurf(1,SMap.realSurf(cutIndex+2));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
       FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y); 
     }
@@ -264,8 +262,8 @@ WallCut::createLinks(const HeadRule& wallBoundary)
 
   if (width>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(2,-SMap.realSurf(cutIndex+3));
-      FixedComp::setLinkSurf(3,SMap.realSurf(cutIndex+4));
+      FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+      FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
       FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
       FixedComp::setConnect(3,Origin+X*(width/2.0),X); 
     }
@@ -277,8 +275,8 @@ WallCut::createLinks(const HeadRule& wallBoundary)
   
   if (height>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(4,-SMap.realSurf(cutIndex+5));
-      FixedComp::setLinkSurf(5,SMap.realSurf(cutIndex+6));
+      FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
       FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
       FixedComp::setConnect(5,Origin+Z*(height/2.0),Z); 
     }

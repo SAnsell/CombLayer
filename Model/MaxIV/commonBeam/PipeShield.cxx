@@ -59,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -68,9 +69,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
-#include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -81,7 +81,7 @@ namespace xraySystem
 {
 
 PipeShield::PipeShield(const std::string& Key) :
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedGroup("Main","Wings"),
   attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -92,7 +92,7 @@ PipeShield::PipeShield(const std::string& Key) :
 {}
 
 PipeShield::PipeShield(const PipeShield& A) : 
-  attachSystem::ContainedSpace(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),attachSystem::ExternalCut(A),
   height(A.height),width(A.width),length(A.length),
@@ -114,7 +114,7 @@ PipeShield::operator=(const PipeShield& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -145,8 +145,16 @@ PipeShield::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   clearGap=Control.EvalVar<double>(keyName+"ClearGap");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
+  wingThick=Control.EvalDefVar<double>(keyName+"WingThick",0.0);
+  wingLength=Control.EvalDefVar<double>(keyName+"WingLength",0.0);
+  wingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WingMat",-1);
+
+  if (wingThick<Geometry::zeroTol || wingLength<Geometry::zeroTol)
+    wingMat=-1;
   
   return;
 }
@@ -164,7 +172,6 @@ PipeShield::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-
   return;
 }
 
@@ -201,12 +208,23 @@ PipeShield::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(wallThick+height/2.0),Z);
 
+  if (isActive("inner"))
+    ExternalCut::makeExpandedSurf(SMap,"inner",buildIndex+7,Origin,clearGap);
   
-  ExternalCut::makeExpandedSurf(SMap,"inner",buildIndex+7,Origin,clearGap);
   if (isActive("innerTwo"))
     ExternalCut::makeExpandedSurf(SMap,"innerTwo",
 				  buildIndex+17,Origin,clearGap);
 
+
+  if (wingMat>=0)
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*wingLength,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+103,
+			       Origin-X*(wallThick+width/2.0-wingThick),X);
+      ModelSupport::buildPlane(SMap,buildIndex+104,
+			       Origin+X*(wallThick+width/2.0-wingThick),X);
+    }      
+  
   return;
 }
 
@@ -226,9 +244,12 @@ PipeShield::createObjects(Simulation& System)
   const std::string rBStr(getRuleStr("innerTwo"));
 
   // inner clearance gap
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
-  Out+=fStr+bStr+rAStr;
-  makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+  if (!rAStr.empty())
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
+      Out+=fStr+bStr+rAStr;
+      makeCell("clearGap",System,cellIndex++,0,0.0,Out);
+    }
 
   if (!rBStr.empty())
     {
@@ -249,7 +270,25 @@ PipeShield::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
   Out+=fStr+bStr;
 
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
+
+
+  if (wingMat>=0)
+    {
+      const std::string fComp(getComplementStr("front"));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 13 -103  15 -16 ");
+      Out+=fComp;
+      makeCell("WingA",System,cellIndex++,wingMat,0.0,Out);
+	    
+      addOuterSurf("Wings",Out);
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 101 104 -14  15 -16 ");
+      Out+=fComp;
+      makeCell("WingB",System,cellIndex++,wingMat,0.0,Out);
+
+      addOuterUnionSurf("Wings",Out);
+    }
+  
   return;
 }
 
@@ -261,10 +300,8 @@ PipeShield::createLinks()
 {
   ELog::RegMethod RegA("PipeShield","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
   
   return;
 }
@@ -291,6 +328,5 @@ PipeShield::createAll(Simulation& System,
 
   return;
 }
-
   
 }  // NAMESPACE xraySystem

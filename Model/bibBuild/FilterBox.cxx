@@ -56,13 +56,13 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -75,9 +75,7 @@ namespace bibSystem
 {
 
 FilterBox::FilterBox(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  filterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(filterIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -86,7 +84,6 @@ FilterBox::FilterBox(const std::string& Key) :
   
 FilterBox::FilterBox(const FilterBox& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  filterIndex(A.filterIndex),cellIndex(A.cellIndex),
   width(A.width),height(A.height),length(A.length),angleA(A.angleA),
   angleB(A.angleB),wallThick(A.wallThick),wallGap(A.wallGap),
   beTemp(A.beTemp),beMat(A.beMat),wallMat(A.wallMat)
@@ -108,7 +105,6 @@ FilterBox::operator=(const FilterBox& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -194,7 +190,7 @@ FilterBox::createSurfaces()
   // Outside-in system
   const double LayerV[]={-wallGap,-wallThick,0.0};
   double TThick(0.0);
-  int fIndex(filterIndex);
+  int fIndex(buildIndex);
   
   for(size_t i=0;i<3;i++)
     {
@@ -229,20 +225,20 @@ FilterBox::createObjects(Simulation& System)
   std::string Out;
 
   // FilterBox
-  Out=ModelSupport::getComposite(SMap,filterIndex,"21 -22 23 -24 25 -26");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,beTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26");
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,beTemp,Out));
 
   // Wrapper
-  Out=ModelSupport::getComposite(SMap,filterIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
   	 "11 -12 13 -14 15 -16 (-21: 22 : -23 : 24 :-25 : 26)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,beTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,beTemp,Out));
 
   // Void
-  Out=ModelSupport::getComposite(SMap,filterIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
   	 "1 -2 3 -4 5 -6 (-11: 12 : -13 : 14 :-15 : 16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,filterIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
@@ -268,13 +264,13 @@ FilterBox::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
 
   // WHY HAVENT I WRITTEN AutoLinkSurf()
-  FixedComp::setLinkSurf(0,-SMap.realSurf(filterIndex+1)); 
-  FixedComp::setLinkSurf(1,SMap.realSurf(filterIndex+2));
-  FixedComp::addLinkSurf(1,SMap.realSurf(filterIndex+1)); 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(filterIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(filterIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(filterIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(filterIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1)); 
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+1)); 
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   return;
 }

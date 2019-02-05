@@ -83,7 +83,7 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
-  Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
+  Control.addVariable("BilbaoWheelShaftHoleXYAngle",-1.0);  // value not known=>approx to put a hole
   
   Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
 
@@ -106,8 +106,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYangle",0.0);
-  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelXYAngle",0.0);
+  Control.addVariable("BilbaoWheelZAngle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeightRadius",74.5); // TSM141108V3000
@@ -187,8 +187,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("WheelXStep",0.0);  
   Control.addVariable("WheelYStep",113.0);  
   Control.addVariable("WheelZStep",0.0);
-  Control.addVariable("WheelXYangle",0.0); 
-  Control.addVariable("WheelZangle",0.0);
+  Control.addVariable("WheelXYAngle",0.0); 
+  Control.addVariable("WheelZAngle",0.0);
   Control.addVariable("WheelTargetHeight",8.0);
   Control.addVariable("WheelTemp",600.0);
   Control.addVariable("WheelCoolantThickIn",0.65);
@@ -329,12 +329,11 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubeInnerMat4","Void");
   Control.addVariable("ProtonTubeWallMat4","CastIron");  // mat: 26316
 
-
   Control.addVariable("BeamMonitorXStep",0.0);
   Control.addVariable("BeamMonitorYStep",450.0);
   Control.addVariable("BeamMonitorZStep",0.0);
-  Control.addVariable("BeamMonitorXYangle",0.0);
-  Control.addVariable("BeamMonitorZangle",0.0);
+  Control.addVariable("BeamMonitorXYAngle",0.0);
+  Control.addVariable("BeamMonitorZAngle",0.0);
   
   Control.addVariable("BeamMonitorBoxSide",70.0);
   Control.addVariable("BeamMonitorBoxNSections",5); //other are symmetric

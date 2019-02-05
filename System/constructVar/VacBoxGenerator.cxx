@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -267,8 +266,32 @@ VacBoxGenerator::setFlange(const double R,const double L)
     \param L :: length
    */
 {
+  setAFlange(R,L);
+  setBFlange(R,L);
+  return;
+}
+
+void
+VacBoxGenerator::setAFlange(const double R,const double L)
+  /*!
+    Set all the flange values
+    \param R :: radius of flange
+    \param L :: length
+   */
+{
   flangeARadius=R;
   flangeALen=L;
+  return;
+}
+
+void
+VacBoxGenerator::setBFlange(const double R,const double L)
+  /*!
+    Set all the flange values
+    \param R :: radius of flange
+    \param L :: length
+   */
+{
   flangeBRadius=R;
   flangeBLen=L;
   return;

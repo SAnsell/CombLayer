@@ -54,7 +54,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "Triple.h"
@@ -72,7 +73,6 @@
 #include "LinkUnit.h"
 #include "surfRegister.h"
 #include "FixedComp.h"
-#include "objectRegister.h"
 #include "MainProcess.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -94,9 +94,10 @@ processExitChecks(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SimInput[F]","processExitChecks");
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
+  System.populateCells();
+  System.createObjSurfMap();
+  
   int errFlag(0);
   if (IParam.flag("validCheck"))
     {
@@ -121,11 +122,16 @@ processExitChecks(Simulation& System,
 	    IParam.getValueError<std::string>("validFC",0,1,"No FC-link Pos");
 	  
 	  const attachSystem::FixedComp* FC=
-	    OR.getObjectThrow<attachSystem::FixedComp>(FCObject,"FixedComp");
+	    System.getObjectThrow<attachSystem::FixedComp>
+	    (FCObject,"FixedComp");
+	  
           const long int sideIndex=FC->getSideIndex(linkPos);
-	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex);
+	  const Geometry::Vec3D CPoint=FC->getLinkPt(sideIndex)+
+	    Geometry::Vec3D(0.001,0.001,0.001);
 	  ELog::EM<<"Validation point "<<CPoint<<ELog::endDiag;
-		  
+	  ELog::EM<<"NEEDS TO BE RE-WRITTEN SO WORKS STARTING"
+	    " ON A SURFACE"<<ELog::endCrit;
+
 	  if (!SValidCheck.runPoint(System,CPoint,
 				    IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
@@ -134,8 +140,8 @@ processExitChecks(Simulation& System,
 	{
 	  // This should work BUT never does
 	  const size_t NPts=IParam.getValue<size_t>("validCheck");
-	  typedef ModelSupport::objectRegister::cMapTYPE CM;
-	  const CM& mapFC=OR.getComponents();
+	  typedef objectGroups::cMapTYPE CM;
+	  const CM& mapFC=System.getComponents();
 	  for(const CM::value_type& mc : mapFC)
 	    {
 	      const attachSystem::FixedComp& FC = *(mc.second);

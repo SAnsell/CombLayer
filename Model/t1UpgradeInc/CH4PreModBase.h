@@ -41,8 +41,6 @@ class CH4PreModBase : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int preIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
  public:
 

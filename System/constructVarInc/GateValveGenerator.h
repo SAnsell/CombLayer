@@ -71,6 +71,7 @@ class GateValveGenerator
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }
 
+  /// set total thickness
   void setLength(const double L) { length=L; }
   void setOuter(const double,const double,
 		const double,const double);

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/EngReflector.h
+ * File:   t1EngineerInc/EngReflector.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,6 @@ class EngReflector : public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-  
-  const int refIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double radius;                ///< Reflector radius
   double width;                 ///< Reflector full width 
@@ -112,9 +109,9 @@ class EngReflector : public attachSystem::ContainedComp,
   virtual ~EngReflector();
 
   std::string getComposite(const std::string&) const;
-  void addToInsertChain(attachSystem::ContainedComp& CC) const;
+  void addToInsertChain(attachSystem::ContainedComp&) const;
   // Main cell
-  int getInnerCell() const { return refIndex+1; }
+  int getInnerCell() const { return buildIndex+1; }
   std::vector<int> getCells() const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
 

@@ -40,8 +40,6 @@ class CH4Base : public attachSystem::ContainedComp,
 {
  protected:
   
-  const int ch4Index;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
  public:
 

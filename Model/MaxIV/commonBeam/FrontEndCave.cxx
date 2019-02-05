@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/FrontEndCave.cxx
+ * File:   commonBeam/FrontEndCave.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,13 +43,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -61,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -72,7 +71,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -88,9 +86,10 @@ namespace xraySystem
 
 FrontEndCave::FrontEndCave(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
-  attachSystem::ContainedSpace(),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   mazeActive(0),doorActive(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -145,9 +144,6 @@ FrontEndCave::populate(const FuncDataBase& Control)
   segmentLength=Control.EvalVar<double>(keyName+"SegmentLength");
   segmentAngle=Control.EvalVar<double>(keyName+"SegmentAngle");
 
-
-  frontHoleRadius=Control.EvalVar<double>(keyName+"FrontHoleRadius");
-
   frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
@@ -189,7 +185,12 @@ FrontEndCave::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
+  // get primary and use that: [not ideal but will do]
+  const HeadRule& HR=ExternalCut::getRule("front");
+  SurfMap::addSurf("BeamFront",SMap.realSurf(HR.getPrimarySurface()));
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+  SurfMap::addSurf("BeamInner",-SMap.realSurf(buildIndex+2));
+  
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerGap,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringGap,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*floorDepth,Z);
@@ -198,6 +199,7 @@ FrontEndCave::createSurfaces()
 
   ModelSupport::buildPlane
     (SMap,buildIndex+12,Origin+Y*(frontWallThick+length),Y);
+  SurfMap::addSurf("BeamOuter",SMap.realSurf(buildIndex+12));
   ModelSupport::buildPlane
      (SMap,buildIndex+13,Origin-X*(outerWallThick+outerGap),X);
   ModelSupport::buildPlane
@@ -235,9 +237,6 @@ FrontEndCave::createSurfaces()
   RPoint += X*innerRingWidth/cosAngle;
   ModelSupport::buildPlaneRotAxis
     (SMap,buildIndex+124,RPoint,X,-Z,segmentAngle);
-
-  // exit hole
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,frontHoleRadius);
   
   return;
 }
@@ -257,7 +256,7 @@ FrontEndCave::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 (-4:-104) 5 -6 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out+fStr);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -103 5 -6 107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -103 5 -6 ");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 103 -104 5 -6 ");
@@ -265,9 +264,6 @@ FrontEndCave::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 104 -114 5 -6 ");
   makeCell("FrontWallRing",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -107 ");
-  makeCell("FrontWallHole",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -3 13 5 -6 ");
   makeCell("OuterWall",System,cellIndex++,wallMat,0.0,Out+fStr);
@@ -312,12 +308,12 @@ FrontEndCave::createLinks()
 {
   ELog::RegMethod RegA("FrontEndCave","createLinks");
   
-  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
 
   setConnect(1,Origin+Y*(frontWallThick+length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
-  setConnect(2,Origin+X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
+  setConnect(2,Origin-X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
   setLinkSurf(2,-SMap.realSurf(buildIndex+13));
 
   setConnect(3,Origin+X*(ringGap+ringWallThick)+Y*(segmentLength/2.0),X);
@@ -413,6 +409,7 @@ FrontEndCave::createDoor(Simulation& System)
       doorPtr->setCutSurf("innerWall",-SMap.realSurf(buildIndex+3));
       doorPtr->setCutSurf("outerWall",SMap.realSurf(buildIndex+13));
 
+      doorPtr->setAxisControl(-3,Z);
       doorPtr->addInsertCell(getCell("OuterWall"));
       doorPtr->createAll(System,*this,3);
     }

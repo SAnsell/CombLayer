@@ -53,6 +53,8 @@
 #include "inputParam.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 

@@ -267,7 +267,7 @@ neutMaterial::calcRefIndex(const double Wave) const
 
 double
 neutMaterial::dSdOdE(const MonteCarlo::neutron& NIn,
-		 const MonteCarlo::neutron& NOut) const
+		     const MonteCarlo::neutron& NOut) const
   /*!
     Determines the weight, relative to the total cross section
     of a neutron exiting with the channel NOut.

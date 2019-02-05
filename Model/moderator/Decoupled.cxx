@@ -66,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -83,8 +84,7 @@ namespace moderatorSystem
 
 Decoupled::Decoupled(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12),
-  decIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(decIndex+1),populated(0),VP(new VanePoison("decPoison"))
+  populated(0),VP(new VanePoison("decPoison"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -98,7 +98,7 @@ Decoupled::Decoupled(const std::string& Key)  :
   
 Decoupled::Decoupled(const Decoupled& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  decIndex(A.decIndex),cellIndex(A.cellIndex),populated(A.populated),
+  populated(A.populated),
   VP(new VanePoison("decPoison")),width(A.width),
   height(A.height),westCentre(A.westCentre),eastCentre(A.eastCentre),
   westRadius(A.westRadius),eastRadius(A.eastRadius),westDepth(A.westDepth),
@@ -128,7 +128,6 @@ Decoupled::operator=(const Decoupled& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       *VP = *A.VP;
       width=A.width;
@@ -230,19 +229,19 @@ Decoupled::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+alUpDown),Z);
 
   // Set Connect surfaces:
-  FixedComp::setLinkSurf(2,-SMap.realSurf(decIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(decIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(decIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(decIndex+16));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   // For Cylindrical surface must also have a divider:
   // -- Wish
-  FixedComp::setLinkSurf(0,SMap.realSurf(decIndex+17));
-  FixedComp::addLinkSurf(0,SMap.realSurf(decIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf(0,SMap.realSurf(buildIndex+1));
 
   // -- Narrow
-  FixedComp::setLinkSurf(1,SMap.realSurf(decIndex+18));
-  FixedComp::addLinkSurf(1,-SMap.realSurf(decIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+18));
+  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+1));
 
 
   // Internal links:
@@ -255,13 +254,13 @@ Decoupled::createLinks()
 
   // For Cylindrical surface [NO Divider added]
   // -- Wish
-  FixedComp::setLinkSurf(6,-SMap.realSurf(decIndex+7));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
   // -- Narrow
-  FixedComp::setLinkSurf(7,-SMap.realSurf(decIndex+8));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(decIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(decIndex+4));
-  FixedComp::setLinkSurf(10,SMap.realSurf(decIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(decIndex+6));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+8));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
 
 
   return;
@@ -277,22 +276,22 @@ Decoupled::createSurfaces()
   ELog::RegMethod RegA("Decoupled","createSurface");
 
   // INNER DIVIDE PLANE
-  ModelSupport::buildPlane(SMap,decIndex+1,Origin,Y);
-  SMap.setKeep(decIndex+1,1);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  SMap.setKeep(buildIndex+1,1);
   
-  ModelSupport::buildPlane(SMap,decIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,decIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,decIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,decIndex+6,Origin+Z*height/2.0,Z);
-  ModelSupport::buildCylinder(SMap,decIndex+7,westCentre,Z,westRadius);  // wish
-  ModelSupport::buildCylinder(SMap,decIndex+8,eastCentre,Z,eastRadius);  // narrow
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,westCentre,Z,westRadius);  // wish
+  ModelSupport::buildCylinder(SMap,buildIndex+8,eastCentre,Z,eastRadius);  // narrow
 
-  ModelSupport::buildPlane(SMap,decIndex+13,Origin-X*(alSides+width/2.0),X);
-  ModelSupport::buildPlane(SMap,decIndex+14,Origin+X*(alSides+width/2.0),X);
-  ModelSupport::buildPlane(SMap,decIndex+15,Origin-Z*(alUpDown+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,decIndex+16,Origin+Z*(alUpDown+height/2.0),Z);
-  ModelSupport::buildCylinder(SMap,decIndex+17,westCentre+Y*alCurve,Z,westRadius);  // wish
-  ModelSupport::buildCylinder(SMap,decIndex+18,eastCentre-Y*alCurve,Z,eastRadius);  // narrow
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(alSides+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(alSides+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(alUpDown+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(alUpDown+height/2.0),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,westCentre+Y*alCurve,Z,westRadius);  // wish
+  ModelSupport::buildCylinder(SMap,buildIndex+18,eastCentre-Y*alCurve,Z,eastRadius);  // narrow
 
   return;
 }
@@ -307,18 +306,18 @@ Decoupled::createObjects(Simulation& System)
   ELog::RegMethod RegA("Decoupled","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,decIndex,"13 -14 15 -16 -17 -18 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 -17 -18 ");
   addOuterSurf(Out);
 
   // Methane
-  Out=ModelSupport::getComposite(SMap,decIndex,"3 -4 5 -6 -7 -8");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 5 -6 -7 -8");
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   methCell=cellIndex-1;
 
   // Inner Al layer
-  Out=ModelSupport::getComposite(SMap,decIndex,"13 -14 15 -16 -17 -18 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 -17 -18 "
 				 "(-3:4:-5:6:7:8) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   return;
 }
@@ -331,8 +330,8 @@ Decoupled::getDividePlane(const int side) const
     \return divide surf
   */
 {
-  return (side) ? SMap.realSurf(decIndex+1) : 
-    -SMap.realSurf(decIndex+1);
+  return (side) ? SMap.realSurf(buildIndex+1) : 
+    -SMap.realSurf(buildIndex+1);
 }
 
 int
@@ -343,8 +342,8 @@ Decoupled::viewSurf(const int side) const
     \return divide surf
   */
 {
-  return (!side) ? SMap.realSurf(decIndex+7) : 
-    SMap.realSurf(decIndex+8);
+  return (!side) ? SMap.realSurf(buildIndex+7) : 
+    SMap.realSurf(buildIndex+8);
 }
 
 Geometry::Vec3D

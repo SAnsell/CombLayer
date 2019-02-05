@@ -40,8 +40,6 @@ class MultiChannel : public attachSystem::ContainedComp,
 {
  private:
 
-  const int chnIndex;           ///< Hole index
-  int cellIndex;                ///< Cell index
 
   int setFlag;                  ///< Structures set
   HeadRule topRule;             ///< Base surface rule

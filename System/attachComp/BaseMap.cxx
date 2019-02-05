@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -159,7 +158,7 @@ BaseMap::setItem(const std::string& Key,
         Items.insert(LCTYPE::value_type(Key,{CN}));
       else
 	throw ColErr::InContainerError<std::string>
-	  (Key,"Key not defined for index["+StrFunc::makeString(Index)+"]");
+	  (Key,"Key not defined for index["+std::to_string(Index)+"]");
       return;
     }
   // Replace current object [NO IDENTICAL CHECK (yet)]
@@ -394,7 +393,6 @@ BaseMap::removeVecUnit(const std::string& kName,
 {
   ELog::RegMethod RegA("BaseMap","removeVecUnit");
 
-
   LCTYPE::iterator mc=Items.find(kName);
 
   if (mc==Items.end())
@@ -576,6 +574,30 @@ BaseMap::removeItem(const std::string& Key,
   return outN;
 }
 
+bool
+BaseMap::changeCell(const int oldCell,const int newCell)
+  /*!
+    Change a cell number
+    \param oldCell :: old number
+    \param newCell :: new number
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("BaseMap","changeCell");
+  
+  for(LCTYPE::value_type& IUnit : Items)
+    {
+      std::vector<int>& SRef(IUnit.second);
+      std::vector<int>::iterator vc=
+	std::find(SRef.begin(),SRef.end(),oldCell);
+      if (vc != SRef.end())
+	{
+	  *vc=newCell;
+	  return 1;
+	}
+    }
+  return 0;
+}
 
  
 }  // NAMESPACE attachSystem

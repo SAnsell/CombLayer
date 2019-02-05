@@ -3,7 +3,7 @@
  
  * File:   imat/IMatGuide.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,18 +66,17 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "IMatGuide.h"
 
@@ -86,9 +85,8 @@ namespace imatSystem
 
 IMatGuide::IMatGuide(const std::string& Key)  :
   attachSystem::ContainedGroup("Inner","Steel","Wall"),
-  attachSystem::TwinComp(Key,6),
-  guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),innerVoid(0)
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,8 +94,7 @@ IMatGuide::IMatGuide(const std::string& Key)  :
 {}
 
 IMatGuide::IMatGuide(const IMatGuide& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::TwinComp(A),
-  guideIndex(A.guideIndex),cellIndex(A.cellIndex),
+  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
   height(A.height),width(A.width),glassThick(A.glassThick),
@@ -123,8 +120,7 @@ IMatGuide::operator=(const IMatGuide& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::FixedGroup::operator=(A);
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -207,7 +203,7 @@ IMatGuide::populate(const Simulation& System)
 }
   
 void
-IMatGuide::createUnitVector(const attachSystem::TwinComp& TC)
+IMatGuide::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -217,25 +213,18 @@ IMatGuide::createUnitVector(const attachSystem::TwinComp& TC)
   */
 {
   ELog::RegMethod RegA("IMatGuide","createUnitVector");
-  attachSystem::TwinComp::createUnitVector(TC);
-  Origin+=bEnter+X*xStep+Y*yStep+Z*zStep;
-  bEnter=Origin;
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  if (fabs(xyAngle)>Geometry::zeroTol || 
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,bX);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,bZ);
-  
-      Qz.rotate(bY);
-      Qz.rotate(bZ);
-      Qxy.rotate(bY);
-      Qxy.rotate(bX);
-      Qxy.rotate(bZ); 
-    }
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
+
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
+
   return;
 }
 
@@ -248,62 +237,65 @@ IMatGuide::createSurfaces()
 {
   ELog::RegMethod RegA("IMatGuide","createSurfaces");
 
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  setSecondary("Beam");
 
   // Inner void layers
   double xside(width/2.0);
   double zup(height/2.0);
   double zdown(height/2.0);
 
-  ModelSupport::buildPlane(SMap,guideIndex+1,Origin,bY);
-  ModelSupport::buildPlane(SMap,guideIndex+2,Origin+bY*length,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+bY*length,bY);
 
-  ModelSupport::buildPlane(SMap,guideIndex+3,Origin-bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+4,Origin+bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+5,Origin-bZ*zdown,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+6,Origin+bZ*zup,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-bZ*zdown,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+bZ*zup,bZ);
 
   // Glass layers
   xside+=glassThick;
   zup+=glassThick;
   zdown+=glassThick;
-  ModelSupport::buildPlane(SMap,guideIndex+13,Origin-bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+14,Origin+bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+15,Origin-bZ*zdown,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+16,Origin+bZ*zup,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-bZ*zdown,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+bZ*zup,bZ);
 
   // Box layers
   xside+=boxThick;
   zup+=boxThick;
   zdown+=boxThick;
-  ModelSupport::buildPlane(SMap,guideIndex+23,Origin-bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+24,Origin+bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+25,Origin-bZ*zdown,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+26,Origin+bZ*zup,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-bZ*zdown,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+bZ*zup,bZ);
 
   // Not change
   xside=voidSide;
   zup=voidTop;
   zdown=voidBase;
-  ModelSupport::buildPlane(SMap,guideIndex+33,Origin-bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+34,Origin+bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+35,Origin-bZ*zdown,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+36,Origin+bZ*zup,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+33,Origin-bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+34,Origin+bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-bZ*zdown,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+bZ*zup,bZ);
 
   xside+=feSide;
   zup+=feTop;
   zdown+=feBase;
-  ModelSupport::buildPlane(SMap,guideIndex+43,Origin-bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+44,Origin+bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+45,Origin-bZ*zdown,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+46,Origin+bZ*zup,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+43,Origin-bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+44,Origin+bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin-bZ*zdown,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin+bZ*zup,bZ);
 
   xside+=wallSide;
   zup+=wallTop;
   zdown+=wallBase;
-  ModelSupport::buildPlane(SMap,guideIndex+53,Origin-bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+54,Origin+bX*xside,bX);
-  ModelSupport::buildPlane(SMap,guideIndex+55,Origin-bZ*zdown,bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+56,Origin+bZ*zup,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+53,Origin-bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+54,Origin+bX*xside,bX);
+  ModelSupport::buildPlane(SMap,buildIndex+55,Origin-bZ*zdown,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+56,Origin+bZ*zup,bZ);
 
   return;
 }
@@ -321,38 +313,38 @@ IMatGuide::createObjects(Simulation& System,
   
   const std::string insertEdge=FC.getLinkString(2);
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 33 -34 35 -36 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 33 -34 35 -36 ");
   addOuterSurf("Inner",Out);
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 53 -54 55 -56 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 53 -54 55 -56 ");
   addOuterSurf("Wall",Out+insertEdge);
 
   // Inner void cell:
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ")+insertEdge;
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Glass layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-2 13 -14 15 -16 (-3:4:-5:6) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
   // Box layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 23 -24 25 -26 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 23 -24 25 -26 "
 				 "(-13:14:-15:16) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,boxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,boxMat,0.0,Out));
 
   // Void layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 33 -34 35 -36 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 33 -34 35 -36 "
 				 "(-23:24:-25:26) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Fe layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2 43 -44 45 -46 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 43 -44 45 -46 "
 				 "(-33:34:-35:36) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
-  Out=ModelSupport::getComposite(SMap,guideIndex,"-2  53 -54 55 -56 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2  53 -54 55 -56 "
 				 "(-43:44:-45:46) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
 
   
@@ -370,18 +362,23 @@ IMatGuide::createLinks()
 {
   ELog::RegMethod RegA("IMatGuide","createLinks");
 
-  SecondTrack::setBeamExit(Origin+bY*length,bY);
-  setExit(Origin+bY*length,bY);
+  
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(0,Origin,-Y);      // Note always to the reactor
+  const Geometry::Vec3D bY(beamFC.getY());
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(guideIndex+2));
+  mainFC.setConnect(1,Origin+bY*length,bY);
+  beamFC.setConnect(1,Origin+bY*length,bY);
+
+  mainFC.setConnect(0,Origin,-bY);      // Note always to the moderator
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
 }
 
 void
-IMatGuide::createAll(Simulation& System,const attachSystem::TwinComp& TC)
+IMatGuide::createAll(Simulation& System,const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to

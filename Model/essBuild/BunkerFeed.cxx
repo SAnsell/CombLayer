@@ -3,7 +3,7 @@
  
  * File:   bunker/BunkerFeed.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,10 +60,10 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -85,10 +84,8 @@ namespace essSystem
 
 BunkerFeed::BunkerFeed(const std::string& Key,
                        const size_t Index)  :
-  attachSystem::FixedComp(Key+StrFunc::makeString(Index),2),
+  attachSystem::FixedComp(Key+std::to_string(Index),2),
   ID(Index),baseName(Key),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(pipeIndex+1),
   voidTrack(new ModelSupport::BoxLine(keyName))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -98,8 +95,8 @@ BunkerFeed::BunkerFeed(const std::string& Key,
 
 BunkerFeed::BunkerFeed(const BunkerFeed& A) : 
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
-  ID(A.ID),baseName(A.baseName),pipeIndex(A.pipeIndex),
-  cellIndex(A.cellIndex),voidTrack(new ModelSupport::BoxLine(*A.voidTrack)),
+  ID(A.ID),baseName(A.baseName),
+  voidTrack(new ModelSupport::BoxLine(*A.voidTrack)),
   height(A.height),width(A.width),Offset(A.Offset),
   CPts(A.CPts)
   /*!
@@ -153,13 +150,28 @@ BunkerFeed::populate(const FuncDataBase& Control)
   height=Control.EvalPair<double>(keyName+"Height",baseName+"Height"); 
   width=Control.EvalPair<double>(keyName+"Width",baseName+"Width"); 
 
-  if (Control.hasVariable(keyName+"Track0"))
-    CPts=SimProcess::getVarVec<Geometry::Vec3D>(Control,keyName+"Track");
-  else 
-    CPts=SimProcess::getVarVec<Geometry::Vec3D>(Control,baseName+"Track");
+  CPts.clear();
+  size_t index(0);
+  while(Control.hasVariable(keyName+"Track"+std::to_string(index)))
+    {
+      CPts.emplace_back(Control.EvalVar<Geometry::Vec3D>
+		       (keyName+"Track"+std::to_string(index)));
+      index++;
+    }
 
-  if (CPts.empty())
-    ColErr::EmptyContainer("CPTs::TrackPts");
+  if (!index)
+    {
+      while(Control.hasVariable(baseName+"Track"+std::to_string(index)))
+	{
+	  CPts.emplace_back(Control.EvalVar<Geometry::Vec3D>
+			    (baseName+"Track"+std::to_string(index)));
+	  index++;
+	}
+    }
+
+
+  if (!index)
+    ColErr::EmptyContainer(keyName+" CPts::TrackPts");
 
   return;
 }

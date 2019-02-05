@@ -40,8 +40,6 @@ class BeamDump : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surfIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   std::string baseName;         ///< Base name
 
   int active;                   ///< Build/don't build flag

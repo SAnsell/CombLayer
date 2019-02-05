@@ -61,7 +61,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,8 +88,7 @@ boltRing::boltRing(const std::string& BKey,
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   baseName(BKey),
-  ringIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(ringIndex+1),populated(0),innerExclude(0),
+  populated(0),innerExclude(0),
   NBolts(0),innerRadius(1.0),sealRadius(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -101,7 +101,7 @@ boltRing::boltRing(const boltRing& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  baseName(A.baseName),ringIndex(A.ringIndex),cellIndex(A.cellIndex),
+  baseName(A.baseName),
   populated(A.populated),innerExclude(A.innerExclude),
   NBolts(A.NBolts),boltRadius(A.boltRadius),innerRadius(A.innerRadius),
   outerRadius(A.outerRadius),thick(A.thick),angOffset(A.angOffset),
@@ -129,7 +129,6 @@ boltRing::operator=(const boltRing& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       innerExclude=A.innerExclude;
       NBolts=A.NBolts;
@@ -292,21 +291,21 @@ boltRing::createSurfaces()
   ELog::RegMethod RegA("boltRing","createSurfaces");
    // Construct surfaces:
 
-  ModelSupport::buildCylinder(SMap,ringIndex+7,Origin,Y,innerRadius);
-  addSurf("innerRing",SMap.realSurf(ringIndex+7));
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
+  addSurf("innerRing",SMap.realSurf(buildIndex+7));
 
-  ModelSupport::buildCylinder(SMap,ringIndex+17,Origin,Y,outerRadius);
-  addSurf("outerRing",SMap.realSurf(ringIndex+17));
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
+  addSurf("outerRing",SMap.realSurf(buildIndex+17));
   if (!frontActive())
     {
       ELog::EM<<"F == "<<ELog::endDiag;
-      ModelSupport::buildPlane(SMap,ringIndex+1,Origin-Y*(thick/2.0),Y);
-      setFront(SMap.realSurf(ringIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(thick/2.0),Y);
+      setFront(SMap.realSurf(buildIndex+1));
     }
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,ringIndex+2,Origin+Y*(thick/2.0),Y);
-      setBack(-SMap.realSurf(ringIndex+2));      
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(thick/2.0),Y);
+      setBack(-SMap.realSurf(buildIndex+2));      
     }
 
   // BOLTS:
@@ -328,7 +327,7 @@ boltRing::createSurfaces()
       QStartSeg.rotate(BAxis);
       QHalfSeg.rotate(DPAxis);
       
-      int boltIndex(ringIndex+100);
+      int boltIndex(buildIndex+100);
       for(size_t i=0;i<NBolts;i++)
         {
           const Geometry::Vec3D boltC(Origin+BAxis);          
@@ -350,11 +349,11 @@ boltRing::createSurfaces()
       const Geometry::Vec3D MidPt((FPoint+BPoint)/2.0);
       const Geometry::Vec3D MidAxis((BPoint-FPoint).unit());
 
-      ModelSupport::buildCylinder(SMap,ringIndex+1007,Origin,Y,sealRadius);
-      ModelSupport::buildCylinder(SMap,ringIndex+1017,Origin,Y,
+      ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,sealRadius);
+      ModelSupport::buildCylinder(SMap,buildIndex+1017,Origin,Y,
 				  sealRadius+sealThick);      
-      ModelSupport::buildPlane(SMap,ringIndex+1001,MidPt-MidAxis*sealDepth,MidAxis);
-      ModelSupport::buildPlane(SMap,ringIndex+1002,MidPt+MidAxis*sealDepth,MidAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1001,MidPt-MidAxis*sealDepth,MidAxis);
+      ModelSupport::buildPlane(SMap,buildIndex+1002,MidPt+MidAxis*sealDepth,MidAxis);
     }
     
   
@@ -376,28 +375,28 @@ boltRing::createObjects(Simulation& System)
   std::string sealUnit,sealUnitComp;
   if (sealFlag)
     {
-      sealUnit=ModelSupport::getComposite(SMap,ringIndex,
+      sealUnit=ModelSupport::getComposite(SMap,buildIndex,
 					  " 1001 -1002 1007 -1017 ");
       const HeadRule SComp(sealUnit);
       sealUnitComp=SComp.complement().display();
     }
   
-  int boltIndex(ringIndex+100);
+  int boltIndex(buildIndex+100);
   int prevBoltIndex(boltIndex+static_cast<int>(10*NBolts)-10);
   const std::string EdgeStr=
-    ModelSupport::getComposite(SMap,ringIndex," 7 -17 ");
+    ModelSupport::getComposite(SMap,buildIndex," 7 -17 ");
   const std::string FBStr=frontRule()+backRule();
 
   for(size_t i=0;i<NBolts;i++)
     {
       Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
       addCell("Bolts",cellIndex-1);
       
       Out=ModelSupport::getComposite
 	(SMap,prevBoltIndex,boltIndex," 3 -3M 7M ");
           
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,
 				       Out+FBStr+EdgeStr+sealUnitComp));
       addCell("Ring",cellIndex-1);
       
@@ -405,7 +404,7 @@ boltRing::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,prevBoltIndex,boltIndex," 3 -3M ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,sealMat,0.0,Out+sealUnit));
 	  addCell("Seal",cellIndex-1);
 	}
@@ -415,19 +414,19 @@ boltRing::createObjects(Simulation& System)
 
   if (!NBolts)
     {
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,mainMat,0.0,FBStr+EdgeStr+sealUnitComp));
       addCell("Ring",cellIndex-1);
       if (sealFlag)
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,sealUnit));
+	  System.addCell(MonteCarlo::Object(cellIndex++,sealMat,0.0,sealUnit));
 	  addCell("Seal",cellIndex-1);
 	}
     }
 
   if (innerExclude)
     {
-      Out=ModelSupport::getComposite(SMap,ringIndex," -17 ");      
+      Out=ModelSupport::getComposite(SMap,buildIndex," -17 ");      
       addOuterSurf(Out+FBStr);
     }
   else

@@ -72,6 +72,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "ModeCard.h"
@@ -95,7 +97,8 @@ PWTConstructor::PWTConstructor()
 {}
 
 bool
-PWTConstructor::procZone(std::vector<std::string>& StrItem)
+PWTConstructor::procZone(const objectGroups& OGrp,
+			 std::vector<std::string>& StrItem)
   /*!
     Process the zone information
     \param StrItem :: List of item from the input [Used items erased]
@@ -109,18 +112,16 @@ PWTConstructor::procZone(std::vector<std::string>& StrItem)
   int cNum,dNum;
   if (NS>=1 && (StrItem[0]=="All" || StrItem[0]=="all"))
     {
-      Zones.push_back(MapSupport::Range<int>(0,100000000));
+      Zones.setItems(OGrp.getActiveCells());
       cut=1;
     }
   else if (NS>=2 && (StrItem[0]=="Object" || StrItem[0]=="object"))
     {
-      const ModelSupport::objectRegister& OR= 
-	ModelSupport::objectRegister::Instance();
-      const int cellN=OR.getCell(StrItem[1]);
-      const int cellE=OR.getLast(StrItem[1]);
-      if (cellN==0)
+      const std::vector<int> CVec=OGrp.getObjectRange(StrItem[1]);
+
+      if (CVec.empty())
 	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
-      Zones.push_back(MapSupport::Range<int>(cellN,cellE));
+      Zones.addItem(CVec);
       cut=2;
     }
   else if (NS>=2 && StrItem[0]=="Cells")
@@ -129,7 +130,7 @@ PWTConstructor::procZone(std::vector<std::string>& StrItem)
       while(index<NS &&
 	    StrFunc::convert(StrItem[index],cNum))
 	{
-	  Zones.push_back(MapSupport::Range<int>(cNum,cNum));
+	  Zones.addItem(cNum);
 	  index++;
 	}
       if (index!=1) cut=static_cast<long int>(index);
@@ -139,7 +140,7 @@ PWTConstructor::procZone(std::vector<std::string>& StrItem)
       if (StrFunc::convert(StrItem[1],cNum) &&
 	  StrFunc::convert(StrItem[2],dNum) )
 	{
-	  Zones.push_back(MapSupport::Range<int>(cNum,dNum));	
+	  Zones.addItem(cNum,dNum);
 	  cut=3;
 	}
     }
@@ -152,7 +153,8 @@ PWTConstructor::procZone(std::vector<std::string>& StrItem)
 }
 
 bool
-PWTConstructor::getVector(const std::vector<std::string>& StrItem,
+PWTConstructor::getVector(const objectGroups& OGrp,
+			  const std::vector<std::string>& StrItem,
 			  const size_t index,
 			  Geometry::Vec3D& Pt)
   /*!
@@ -176,7 +178,7 @@ PWTConstructor::getVector(const std::vector<std::string>& StrItem,
     {
       Geometry::Vec3D YAxis;  
       if (attachSystem::getAttachPoint
-	  (StrItem[index],StrItem[index+1],Pt,YAxis))
+	  (OGrp,StrItem[index],StrItem[index+1],Pt,YAxis))
 	return 1;
     }
   
@@ -210,33 +212,23 @@ PWTConstructor::procType(std::vector<std::string>& StrItem,
   if (NS>=2 && (StrItem[0]=="simple") &&
       StrFunc::convert(StrItem[1],scalar))
     {
-      for(const MapSupport::Range<int>& RUnit : Zones)
-	PWT.setUnit(RUnit,scalar);
+      const std::vector<int> ZVec=Zones.getAllCells();
+      for(const int rUnit : ZVec)
+	PWT.setUnit(rUnit,scalar);
       return 1;
     }
   return 0;
 }
 
-  
-void
-PWTConstructor::sortZone()
-  /*!
-    This is going to sort and concaternate the zones
-  */
-{
-  ELog::RegMethod RegA("PWTConstructor","sortZone");
-  
-  std::sort(Zones.begin(),Zones.end());
-  return;
-}
-
 
 void
-PWTConstructor::processUnit(PhysicsCards& PC,
+PWTConstructor::processUnit(const objectGroups& OGrp,
+			    PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
     Add pwt component 
+    \param OGrp :: Object groups
     \param PC :: Simulation to get physics/fixed points
     \param IParam :: Main input parameters
     \param Index :: index of the -wPWT card
@@ -261,11 +253,11 @@ PWTConstructor::processUnit(PhysicsCards& PC,
       return;
     }
   
-  if (!procZone(StrItem))
+  if (!procZone(OGrp,StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wPWT "+IParam.getFull("wPWT",Index),0);	
 
-  sortZone();
+
   PWTControl& PWT=PC.getPWTCard();
     
   if (!procType(StrItem,PWT))

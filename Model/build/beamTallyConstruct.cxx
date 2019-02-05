@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "NRange.h"
 #include "NList.h"
 #include "Tally.h"
@@ -59,7 +58,6 @@
 #include "masterRotate.h"
 #include "Surface.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Line.h"
@@ -71,10 +69,11 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "LinearComp.h"
 #include "PositionSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkSupport.h"
@@ -110,13 +109,18 @@ beamTallyConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("beamTallyConstruct","calcBeamDirection");
 
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(&FC);
-  BAxis=(TwinPtr) ?  -TwinPtr->getBY() :
-    FC.getLinkAxis(0);
-  
-  BOrigin=(TwinPtr) ? TwinPtr->getBeamStart() :
-    FC.getLinkPt(0); 
+  const attachSystem::FixedGroup* TwinPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&FC);
+  if (TwinPtr && TwinPtr->hasKey("Beam"))
+    {
+      BOrigin = TwinPtr->getKey("Beam").getLinkPt(1);
+      BAxis = TwinPtr->getKey("Beam").getLinkAxis(1);
+    }
+  else
+    {
+      BOrigin = FC.getLinkPt(1);
+      BAxis = FC.getLinkAxis(1);
+    }
   
   return;
 }
@@ -235,8 +239,6 @@ beamTallyConstruct::addBeamLineTally(SimMCNP& System,
 {
   ELog::RegMethod RegA("beamTallyConstruct","addBeamLineTally");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -255,50 +257,58 @@ beamTallyConstruct::addBeamLineTally(SimMCNP& System,
     {
       if (beamNum<4)
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("decoupled",errModStr);
 	  vSurface=1;
 	}
       else if (beamNum<9)
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("hydrogen",errModStr);
 	  vSurface=1;
 	}
       else if (beamNum<14)
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("groove",errModStr);
 	  vSurface=1;
 	}
       else
 	{
-	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	  ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	    ("decoupled",errModStr);
 	  vSurface=2;
 	}
     }
   else
     {
-      ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+      ModPtr=System.getObjectThrow<attachSystem::FixedComp>
 	(modName,errModStr);
     }
   
-  ShutterPtr=OR.getObjectThrow<attachSystem::FixedComp>
+  ShutterPtr=System.getObjectThrow<attachSystem::FixedComp>
     ("shutter"+std::to_string(beamNum),"Shutter Object");
   
 
   // MODERATOR PLANE
   masterPlane=ModPtr->getExitWindow(vSurface,Planes);
 
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
+  const attachSystem::FixedGroup* TwinPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(ShutterPtr);
 
-  Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(1);
-  Geometry::Vec3D shutterPoint=(TwinPtr) ?
-    TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(1); 
+  Geometry::Vec3D BAxis;
+  Geometry::Vec3D shutterPoint;
+  if (TwinPtr && TwinPtr->hasKey("Beam"))
+    {
+      BAxis=TwinPtr->getKey("Beam").getY()*-1.0;
+      shutterPoint=TwinPtr->getKey("Beam").getLinkPt(1);
+    }
+  else
+    {
+      BAxis=ShutterPtr->getLinkAxis(1);
+      shutterPoint=ShutterPtr->getLinkPt(1);
+    }
+
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     pointConstruct::calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -362,8 +372,6 @@ beamTallyConstruct::addShutterTally(SimMCNP& System,
 {
   ELog::RegMethod RegA("beamTallyConstruct","addShutterTally");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -377,9 +385,9 @@ beamTallyConstruct::addShutterTally(SimMCNP& System,
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
 
-  ModPtr=OR.getObject<attachSystem::FixedComp>(modName);  
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
-    (StrFunc::makeString(std::string("shutter"),beamNum));
+  ModPtr=System.getObject<attachSystem::FixedComp>(modName);  
+  ShutterPtr=System.getObject<attachSystem::FixedComp>
+    ("shutter"+std::to_string(beamNum));
 
   if (!ShutterPtr)    
     throw ColErr::InContainerError<int>(beamNum,"Shutter Object not found");
@@ -390,14 +398,21 @@ beamTallyConstruct::addShutterTally(SimMCNP& System,
   // MODERATOR PLANE
   masterPlane=ModPtr->getExitWindow(iLP,Planes);
 
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
+  const attachSystem::FixedGroup* TwinPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(ShutterPtr);
 
-  Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getY();
-  Geometry::Vec3D shutterPoint=(TwinPtr) ?
-    TwinPtr->getBeamStart() : 
-    ShutterPtr->getCentre();
+  Geometry::Vec3D BAxis;
+  Geometry::Vec3D shutterPoint;
+  if (TwinPtr && TwinPtr->hasKey("Beam"))
+    {
+      BAxis=TwinPtr->getKey("Beam").getY()*-1.0;
+      shutterPoint=TwinPtr->getKey("Beam").getLinkPt(1);
+    }
+  else
+    {
+      BAxis=ShutterPtr->getLinkAxis(1);
+      shutterPoint=ShutterPtr->getLinkPt(1);
+    }
   
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
@@ -458,8 +473,6 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
 {
   ELog::RegMethod RegA("beamTallyConstruct","addViewLineTally");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -469,8 +482,8 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
 
   const attachSystem::FixedComp* ShutterPtr;
 
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
-    (StrFunc::makeString(std::string("shutter"),beamNum));
+  ShutterPtr=System.getObject<attachSystem::FixedComp>
+    ("shutter"+std::to_string(beamNum));
 
   if (!ShutterPtr)    
     throw ColErr::InContainerError<int>(beamNum,"Shutter Object not found");
@@ -478,14 +491,22 @@ beamTallyConstruct::addViewLineTally(SimMCNP& System,
   // MODERATOR PLANE
   masterPlane=ShutterPtr->getExitWindow(0,Planes);
 
+  const attachSystem::FixedGroup* TwinPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(ShutterPtr);
 
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
-  Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getY();
-  Geometry::Vec3D shutterPoint=(TwinPtr) ?
-    TwinPtr->getBeamStart() : 
-    ShutterPtr->getCentre(); 
+  Geometry::Vec3D BAxis;
+  Geometry::Vec3D shutterPoint;
+  if (TwinPtr && TwinPtr->hasKey("Beam"))
+    {
+      BAxis=TwinPtr->getKey("Beam").getY()*-1.0;
+      shutterPoint=TwinPtr->getKey("Beam").getLinkPt(1);
+    }
+  else
+    {
+      BAxis=ShutterPtr->getLinkAxis(1);
+      shutterPoint=ShutterPtr->getLinkPt(1);
+    }
+
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     pointConstruct::calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -540,8 +561,6 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 
   ELog::RegMethod RegA("beamTallyConstruct","addViewInnerTally");
       
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
   //  const int tNum=System.nextTallyNum(5);
@@ -550,7 +569,7 @@ beamTallyConstruct::addViewInnerTally(SimMCNP& System,
   int masterPlane(0);
 
   const attachSystem::FixedComp* ShutterPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>
+    System.getObjectThrow<attachSystem::FixedComp>
     ("shutter"+std::to_string(beamNum),
      "Shutter Object not found");
   const long int faceFlag=ShutterPtr->getSideIndex(faceName);

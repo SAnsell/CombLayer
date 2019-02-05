@@ -3,7 +3,7 @@
  
  * File:   gammaBuild/NordBall.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,13 +56,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -74,10 +74,8 @@ namespace gammaSystem
 
 NordBall::NordBall(const size_t Index,const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
-  detNumber(Index),baseName(Key),
-  detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(detIndex+1)
+  attachSystem::FixedOffset(Key+std::to_string(Index),6),
+  detNumber(Index),baseName(Key)
   /*!
     Constructor
     \param Index :: Index number
@@ -88,7 +86,7 @@ NordBall::NordBall(const size_t Index,const std::string& Key) :
 NordBall::NordBall(const NordBall& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   detNumber(A.detNumber),baseName(A.baseName),
-  detIndex(A.detIndex),cellIndex(A.cellIndex),nFace(A.nFace),
+  nFace(A.nFace),
   faceWidth(A.faceWidth),backWidth(A.backWidth),
   frontLength(A.frontLength),backLength(A.backLength),
   wallThick(A.wallThick),plateThick(A.plateThick),
@@ -114,7 +112,6 @@ NordBall::operator=(const NordBall& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       nFace=A.nFace;
       faceWidth=A.faceWidth;
       backWidth=A.backWidth;
@@ -204,16 +201,16 @@ NordBall::createSurfaces()
   ELog::RegMethod RegA("NordBall","createSurfaces");
 
   // Front/Back plane
-  ModelSupport::buildPlane(SMap,detIndex+1,Origin-Y*wallThick,Y);  
-  ModelSupport::buildPlane(SMap,detIndex+2,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*wallThick,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+
 			   Y*(frontLength),Y);  
-  ModelSupport::buildPlane(SMap,detIndex+3,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin+
 			   Y*(frontLength+backLength),Y);  
 
 
-  ModelSupport::buildPlane(SMap,detIndex+101,Origin,Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin,Y);  
   // Loop over walls
-  int DI(detIndex);
+  int DI(buildIndex);
   double FWidth(faceWidth);
   double BWidth(backWidth);
   for(int nWall=0;nWall<2;nWall++)
@@ -238,16 +235,16 @@ NordBall::createSurfaces()
   // Back plate
 
   double TLen(frontLength+backLength+plateThick);
-  ModelSupport::buildCylinder(SMap,detIndex+1107,Origin,Y,plateRadius);
-  ModelSupport::buildPlane(SMap,detIndex+1101,Origin+Y*TLen,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+1107,Origin,Y,plateRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+1101,Origin+Y*TLen,Y);
   if (supportThick>Geometry::zeroTol)
     {
       TLen+=supportThick;
-      ModelSupport::buildPlane(SMap,detIndex+1201,Origin+Y*TLen,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1201,Origin+Y*TLen,Y);
     }
   TLen+=elecThick;
-  ModelSupport::buildCylinder(SMap,detIndex+1307,Origin,Y,elecRadius);
-  ModelSupport::buildPlane(SMap,detIndex+1301,Origin+Y*TLen,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+1307,Origin,Y,elecRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+1301,Origin+Y*TLen,Y);
   return; 
 }
 
@@ -268,32 +265,32 @@ NordBall::createObjects(Simulation& System)
 
   // Front [inner]
   const std::string divide=
-    ModelSupport::getComposite(SMap,detIndex," 101 -2 ");
+    ModelSupport::getComposite(SMap,buildIndex," 101 -2 ");
 
   for(int i=0;i<static_cast<int>(nFace);i++)
     cx<<-(31+i)<<" ";
   CompUnit.procString(cx.str());
   CompUnit.makeComplement();
-  Out=ModelSupport::getComposite(SMap,detIndex,cx.str());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+divide));
+  Out=ModelSupport::getComposite(SMap,buildIndex,cx.str());
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+divide));
 
-  Out=ModelSupport::getComposite(SMap,detIndex+50,cx.str());
-  Out+=ModelSupport::getComposite(SMap,detIndex,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+divide));
+  Out=ModelSupport::getComposite(SMap,buildIndex+50,cx.str());
+  Out+=ModelSupport::getComposite(SMap,buildIndex,CompUnit.display());
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+divide));
 
-  Out=ModelSupport::getComposite(SMap,detIndex+50,cx.str());
-  Out+=ModelSupport::getComposite(SMap,detIndex," -101 1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex+50,cx.str());
+  Out+=ModelSupport::getComposite(SMap,buildIndex," -101 1 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Edge [void]
-  Out=ModelSupport::getComposite(SMap,detIndex,"1 -2 -1107 ");
-  Out+=ModelSupport::getComposite(SMap,detIndex+50,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -1107 ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex+50,CompUnit.display());
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 
   //MID
   const std::string midDivide=
-    ModelSupport::getComposite(SMap,detIndex," 2 -3 ");
+    ModelSupport::getComposite(SMap,buildIndex," 2 -3 ");
   cx.str("");
   for(int i=0;i<static_cast<int>(nFace);i++)
     cx<<-(11+i)<<" ";
@@ -301,41 +298,41 @@ NordBall::createObjects(Simulation& System)
   CompUnit.makeComplement();
 
   // Inner
-  Out=ModelSupport::getComposite(SMap,detIndex,cx.str());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+midDivide));
+  Out=ModelSupport::getComposite(SMap,buildIndex,cx.str());
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out+midDivide));
 
   // Wall
-  Out=ModelSupport::getComposite(SMap,detIndex+50,cx.str());
-  Out+=ModelSupport::getComposite(SMap,detIndex,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+midDivide));
+  Out=ModelSupport::getComposite(SMap,buildIndex+50,cx.str());
+  Out+=ModelSupport::getComposite(SMap,buildIndex,CompUnit.display());
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+midDivide));
 
 
   // Edge [void]
-  Out=ModelSupport::getComposite(SMap,detIndex,"2 -3 -1107 ");
-  Out+=ModelSupport::getComposite(SMap,detIndex+50,CompUnit.display());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -3 -1107 ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex+50,CompUnit.display());
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 
   // Back plate
-  Out=ModelSupport::getComposite(SMap,detIndex,"3 -1101 -1107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"3 -1101 -1107 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,plateMat,0.0,Out));
 
   // support plate
-  int eIndex(detIndex);
+  int eIndex(buildIndex);
   if (supportThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,detIndex,"1101 -1201 -1107 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1101 -1201 -1107 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
       eIndex+=100;
     }
-  Out=ModelSupport::getComposite(SMap,detIndex,eIndex,"1101M -1301 -1307 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,elecMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,eIndex,"1101M -1301 -1307 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,elecMat,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,detIndex,eIndex,"1101M -1301 1307 -1107");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,eIndex,"1101M -1301 1307 -1107");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   
-  Out=ModelSupport::getComposite(SMap,detIndex,"1 -1301 -1107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -1301 -1107 ");
   addOuterSurf(Out);
 
 
@@ -352,10 +349,10 @@ NordBall::createLinks()
 
   setNConnect(2+nFace);
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(detIndex+1));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(frontLength+backLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(detIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   const double angleStep(2.0*M_PI/static_cast<double>(nFace));
   for(size_t i=0;i<nFace;i++)
@@ -365,7 +362,7 @@ NordBall::createLinks()
       const Geometry::Vec3D UDir(X*cos(angle)+Z*sin(angle));
       const Geometry::Vec3D BackPt(Origin+UDir*backWidth+Y*(frontLength));
       FixedComp::setConnect(2+i,BackPt,UDir);
-      FixedComp::setLinkSurf(2+i,SMap.realSurf(detIndex+11+ii));
+      FixedComp::setLinkSurf(2+i,SMap.realSurf(buildIndex+11+ii));
     }
 
   return;

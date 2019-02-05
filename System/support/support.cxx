@@ -459,6 +459,32 @@ hasComment(const std::string& A,const std::string& singleKey,
   return -1;
 }
 
+std::string
+getDelimUnit(const std::string& A,
+	     const std::string& B,
+	     std::string& Item)
+  /*!
+    Splits the first instance of A xxxx B and returns
+    xxx between A  and B. Removes AxxxB from the 
+    string
+    \param A :: Deliminer A
+    \param B :: Deliminer B
+    \param Item :: Full line
+    \return section unit [empty on failure / but also close units]
+  */
+{
+  std::string Out;
+  const std::string::size_type posA=Item.find(A);
+  const std::string::size_type posB=Item.find(B,posA+1);
+  if (posB==std::string::npos || posB-posA<2)
+    return Out;
+
+  Out=Item.substr(posA+1,posB-posA-1);
+
+  Item.erase(posA,1+posB-posA);
+  
+  return Out;
+}
 
 int
 quoteBlock(std::string& Line,std::string& Unit)
@@ -531,8 +557,8 @@ singleLine(const std::string& A)
 std::string
 frontBlock(const std::string& A)
   /*!
-    Returns the string from the first non-space to the 
-    last non-space 
+    Returns the string that starts from the first
+    front space.
     \param A :: string to process
     \returns shortened string
   */
@@ -881,6 +907,38 @@ StrParts(std::string Ln)
   std::string Part;
   while(section(Ln,Part))
     Out.push_back(Part);
+  return Out;
+}
+
+std::vector<std::string>
+StrSeparate(const std::string& Line,
+	    const std::string& splitUnit)
+/*!
+  Splits the sting into parts that are space delminated.
+  Note that the part can be zero length.
+
+  \param Ln :: line component to strip
+  \param splitUnit :: Unit to find and split on [discarding]
+  \returns vector of components [ Always size>0 ]
+*/
+{
+  std::vector<std::string> Out;
+
+  const size_t suLen=splitUnit.size();
+  if (suLen)
+    {
+      size_t pos=0;
+      std::string cutLine(Line);
+      do
+	{
+	  if (pos)
+	    cutLine=cutLine.substr(pos+suLen);
+	  pos=cutLine.find(splitUnit);
+	  Out.push_back(cutLine.substr(0,pos));
+	} while (pos!=std::string::npos);
+    }
+  else
+    Out.push_back(Line);
   return Out;
 }
 

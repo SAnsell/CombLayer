@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/PortChicane.cxx
+ * File:   commonBeam/PortChicane.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -59,7 +58,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -70,7 +70,6 @@
 #include "ContainedComp.h"
 #include "ExternalCut.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -83,7 +82,7 @@ namespace xraySystem
 {
 
 PortChicane::PortChicane(const std::string& Key) :
-  attachSystem::ContainedGroup("Main","Inner"),
+  attachSystem::ContainedGroup("Main","Inner","Sides"),
   attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -114,26 +113,31 @@ PortChicane::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   clearGap=Control.EvalVar<double>(keyName+"ClearGap");
   downStep=Control.EvalVar<double>(keyName+"DownStep");
-  overHang=Control.EvalVar<double>(keyName+"OverHang");
+  overHang=Control.EvalDefVar<double>(keyName+"OverHang",0.0);
 
-  innerSkin=Control.EvalVar<double>(keyName+"InnerSkin");
+  innerSkin=Control.EvalDefVar<double>(keyName+"InnerSkin",0.0);
   innerPlate=Control.EvalVar<double>(keyName+"InnerPlate");
 
-  outerSkin=Control.EvalVar<double>(keyName+"OuterSkin");
+  outerSkin=Control.EvalDefVar<double>(keyName+"OuterSkin",0.0);
   outerPlate=Control.EvalVar<double>(keyName+"OuterPlate");
     
   baseThick=Control.EvalVar<double>(keyName+"BaseThick");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
+
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  plateMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"PlateMat",wallMat);
+
+  if (innerPlate<Geometry::zeroTol && outerPlate<Geometry::zeroTol)
+    plateMat=wallMat;
   
   return;
 }
 
 void
 PortChicane::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors: Note only to construct front/back surf
     \param FC :: Centre point
@@ -156,23 +160,23 @@ PortChicane::createSurfaces()
 {
   ELog::RegMethod RegA("PortChicane","createSurface");
 
-  ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+11,Origin,clearGap);
-  ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+21,Origin,clearGap+innerSkin);
-  ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+31,Origin,clearGap+innerSkin+innerPlate);
-  ExternalCut::makeExpandedSurf
-    (SMap,"innerWall",buildIndex+41,Origin,clearGap+2*innerSkin+innerPlate);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerWall",buildIndex+11,-1,X,clearGap);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerWall",buildIndex+21,-1,X,clearGap+innerSkin);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerWall",buildIndex+31,-1,X,clearGap+innerSkin+innerPlate);
+  ExternalCut::makeShiftedSurf
+    (SMap,"innerWall",buildIndex+41,-1,X,clearGap+2*innerSkin+innerPlate);
 
-  ExternalCut::makeExpandedSurf
-    (SMap,"outerWall",buildIndex+12,Origin,clearGap);
-  ExternalCut::makeExpandedSurf
-    (SMap,"outerWall",buildIndex+22,Origin,clearGap+outerSkin);
-  ExternalCut::makeExpandedSurf
-    (SMap,"outerWall",buildIndex+32,Origin,clearGap+outerSkin+outerPlate);
-  ExternalCut::makeExpandedSurf
-    (SMap,"outerWall",buildIndex+42,Origin,clearGap+2*outerSkin+outerPlate);
+  ExternalCut::makeShiftedSurf
+    (SMap,"outerWall",buildIndex+12,1,X,clearGap);
+  ExternalCut::makeShiftedSurf
+    (SMap,"outerWall",buildIndex+22,1,X,clearGap+outerSkin);
+  ExternalCut::makeShiftedSurf
+    (SMap,"outerWall",buildIndex+32,1,X,clearGap+outerSkin+outerPlate);
+  ExternalCut::makeShiftedSurf
+    (SMap,"outerWall",buildIndex+42,1,X,clearGap+2*outerSkin+outerPlate);
 
   
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -210,64 +214,83 @@ PortChicane::createObjects(Simulation& System)
   ELog::RegMethod RegA("PortChicane","createObjects");
 
   std::string Out;
-  const std::string innerStr=getRuleStr("innerWall");
   const std::string outerStr=getRuleStr("outerWall");
-	
+  const std::string innerStr=getRuleStr("innerWall");
+
+
+
   // inner clearance gap
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -106 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
-  makeCell("InnerSkinA",System,cellIndex++,wallMat,0.0,Out);
+  
+  if (wallMat!=plateMat)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
+      makeCell("InnerSkinA",System,cellIndex++,wallMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 23 -24 25 -6 ");
+      makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
+      makeCell("InnerSkinB",System,cellIndex++,wallMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
+      makeCell("OuterSkinA",System,cellIndex++,wallMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
+      makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
+      makeCell("OuterSkinB",System,cellIndex++,wallMat,0.0,Out);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-11 41 23 -24 25 -6 ");
+      makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 23 -24 25 -6 ");
-  makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
-  makeCell("InnerSkinB",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
-  makeCell("OuterSkinA",System,cellIndex++,wallMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
-  makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
-  makeCell("OuterSkinB",System,cellIndex++,wallMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
+      makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
+    }
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -106 ");
   makeCell("LeftSide",System,cellIndex++,wallMat,0.0,Out);
-
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -14 4 5 -106 ");
   makeCell("RightSide",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 -5 15 ");
   makeCell("Base",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 -13 15 -6 ");
-  makeCell("InnerLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
+  if (overHang>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," -12 23 -13 15 -6 ");
+      makeCell("InnerLeftOver",System,cellIndex++,0,0.0,Out+outerStr);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 15 -6 ");
+      makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+outerStr);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
+      makeCell("InnerBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 15 -6 ");
+      makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+innerStr);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 15 -6 ");
+      makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+innerStr);
+      
+      Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -15 ");
+      makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+innerStr);
+    }      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 -24 14 15 -6 ");
-  makeCell("InnerRightOver",System,cellIndex++,0,0.0,Out+innerStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-12 23 -24 25 -15 ");
-  makeCell("InnerBaseOver",System,cellIndex++,wallMat,0.0,Out+innerStr);
-  
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -13 15 -6 ");
-  makeCell("OuterLeftOver",System,cellIndex++,0,0.0,Out+outerStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -24 14 15 -6 ");
-  makeCell("OuterRightOver",System,cellIndex++,0,0.0,Out+outerStr);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 23 -24 25 -15 ");
-  makeCell("OuterBaseOver",System,cellIndex++,wallMat,0.0,Out+outerStr);
+  // Out=ModelSupport::getComposite(SMap,buildIndex," 41 ");
+  // outerStr+=Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-12 13 -14 106 -6");
-  makeCell("InnerTopGap",System,cellIndex++,0,0.0,Out+innerStr);
-
+  makeCell("InnerTopGap",System,cellIndex++,0,0.0,Out+outerStr);
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 13 -14 106 -6");
-  makeCell("OuterTopGap",System,cellIndex++,0,0.0,Out+outerStr);
+  makeCell("OuterTopGap",System,cellIndex++,0,0.0,Out+innerStr);
 
   // needs to be group
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 23 -24 25 -6 ");
@@ -294,8 +317,8 @@ PortChicane::createLinks()
   FixedComp::setConnect(0,frontPt,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
 
-  FixedComp::setConnect(0,backPt,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+42));
+  FixedComp::setConnect(1,backPt,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
 
   // outer cross
   FixedComp::setConnect(2,frontPt-X*(wallThick+overHang+width/2.0),-X);

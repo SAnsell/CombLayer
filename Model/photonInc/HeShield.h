@@ -47,8 +47,6 @@ class HeShield : public attachSystem::ContainedComp,
 {
  private:
 
-  const int heIndex;         ///< Index of surface offset
-  int cellIndex;             ///< Cell index
 
   double length;            ///< length of poly 
   double width;             ///< width of poly 

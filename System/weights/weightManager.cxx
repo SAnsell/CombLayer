@@ -52,7 +52,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"

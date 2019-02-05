@@ -64,7 +64,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,7 +75,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -86,8 +86,7 @@ namespace moderatorSystem
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedOffset(Key,12),
-  flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flightIndex+1),nLayer(0),tapFlag(0)
+  nLayer(0),tapFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +96,6 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  flightIndex(A.flightIndex),cellIndex(A.cellIndex),
   height(A.height),width(A.width),
   innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
   lMat(A.lMat),tapFlag(A.tapFlag),attachRule(A.attachRule)
@@ -126,7 +124,6 @@ BasicFlightLine::operator=(const BasicFlightLine& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
       anglesZ[0]=A.anglesZ[0];
@@ -235,27 +232,27 @@ BasicFlightLine::createSurfaces()
   Geometry::Quaternion::calcQRotDeg(anglesZ[1],X).rotate(zDircB);
 
 
-  ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
-  ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),xDircA);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),xDircB);
 
   //  const int zFlag(1);
   if (tapFlag & 1)
     {
-      ModelSupport::buildCone(SMap,flightIndex+5,
+      ModelSupport::buildCone(SMap,buildIndex+5,
                               Origin-Z*(height/2.0),Z,90.0-anglesZ[0]);
-      ModelSupport::buildPlane(SMap,flightIndex+505,Origin-Z*(height/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+505,Origin-Z*(height/2.0),Z);
     }
   else
-    ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
+    ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),zDircA);
 
   if (tapFlag & 2 )
     {
-      ModelSupport::buildCone(SMap,flightIndex+6,
+      ModelSupport::buildCone(SMap,buildIndex+6,
                               Origin+Z*(height/2.0),Z,90-anglesZ[1]);
-      ModelSupport::buildPlane(SMap,flightIndex+506,Origin+Z*(height/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+506,Origin+Z*(height/2.0),Z);
     }
   else
-    ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),-zDircB);
+    ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),-zDircB);
   
  
   double layT(0.0);
@@ -264,35 +261,35 @@ BasicFlightLine::createSurfaces()
       const int II(static_cast<int>(i));
       layT+=lThick[i];
 	  
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+13,
+      ModelSupport::buildPlane(SMap,buildIndex+II*10+13,
 			       Origin-X*(width/2.0)-xDircA*layT,xDircA);
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
+      ModelSupport::buildPlane(SMap,buildIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
 
       if (tapFlag & 1)
 	{
-	  ModelSupport::buildCone(SMap,flightIndex+II*10+15,
+	  ModelSupport::buildCone(SMap,buildIndex+II*10+15,
 				  Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0]);
-          ModelSupport::buildPlane(SMap,flightIndex+II*10+515,Origin-Z*(height/2.0+layT),Z);
+          ModelSupport::buildPlane(SMap,buildIndex+II*10+515,Origin-Z*(height/2.0+layT),Z);
          }
       else
-        ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
+        ModelSupport::buildPlane(SMap,buildIndex+II*10+15,
                                  Origin-Z*(height/2.0)-zDircA*layT,zDircA);
 
       if (tapFlag & 2)
         {
-          ModelSupport::buildCone(SMap,flightIndex+II*10+16,
+          ModelSupport::buildCone(SMap,buildIndex+II*10+16,
                                   Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1]);
-          ModelSupport::buildPlane(SMap,flightIndex+II*10+516,Origin+Z*(height/2.0+layT),Z);
+          ModelSupport::buildPlane(SMap,buildIndex+II*10+516,Origin+Z*(height/2.0+layT),Z);
         }
       else
-        ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
+        ModelSupport::buildPlane(SMap,buildIndex+II*10+16,
                                  Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
     }
 
   // CREATE LINKS
 
-  const int sNum(flightIndex+static_cast<int>(10*nLayer));
+  const int sNum(buildIndex+static_cast<int>(10*nLayer));
 
   FixedComp::setLinkSurf(2,-SMap.realSurf(sNum+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(sNum+4));
@@ -312,19 +309,19 @@ BasicFlightLine::createSurfaces()
   FixedComp::setConnect(10,Origin-Z*(height/2.0),-zDircA);
   FixedComp::setConnect(11,Origin+Z*(height/2.0),-zDircB);
 
-  FixedComp::setLinkSurf(8,-SMap.realSurf(flightIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(flightIndex+4));
-  FixedComp::setLinkSurf(10,-SMap.realSurf(flightIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(flightIndex+6));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
   if (tapFlag & 1)
     {
-      FixedComp::addLinkSurf(4,-SMap.realSurf(flightIndex+505));
-      FixedComp::addLinkSurf(10,-SMap.realSurf(flightIndex+505));
+      FixedComp::addLinkSurf(4,-SMap.realSurf(buildIndex+505));
+      FixedComp::addLinkSurf(10,-SMap.realSurf(buildIndex+505));
     }
   if (tapFlag & 2)
     {
-      FixedComp::addLinkSurf(5,SMap.realSurf(flightIndex+506));
-      FixedComp::addLinkSurf(11,SMap.realSurf(flightIndex+506));
+      FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+506));
+      FixedComp::addLinkSurf(11,SMap.realSurf(buildIndex+506));
     }
   
   return;
@@ -354,17 +351,17 @@ BasicFlightLine::createObjects(Simulation& System,
   setLinkSignedCopy(0,innerFC,innerIndex);
   setLinkSignedCopy(1,outerFC,outerIndex);
   
-  const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
+  const int layerIndex=buildIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
   Out=ModelSupport::getSetComposite(SMap,layerIndex," 3 -4 (5:505) (6:-506) ");
   addOuterSurf("outer",Out);
 
   // Inner Void :
-  Out=ModelSupport::getSetComposite(SMap,flightIndex," 3 -4 (5:505) (6:-506) ");  
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 (5:505) (6:-506) ");  
   addOuterSurf("inner",Out);
   Out+=innerCut+outerCut; 
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
   CellMap::addCell("innerVoid",cellIndex-1);
 
   //Flight layers:
@@ -372,12 +369,15 @@ BasicFlightLine::createObjects(Simulation& System,
   for(size_t i=0;i<nLayer;i++)
     {
       const int II(static_cast<int>(i));
-      HeadRule Exclude(ModelSupport::getSetComposite(SMap,flightIndex+10*II," 3 -4 (5:505) (6:-506) "));
+      HeadRule Exclude(ModelSupport::getSetComposite
+		       (SMap,buildIndex+10*II," 3 -4 (5:505) (6:-506) "));
       Exclude.makeComplement();
-      Out=ModelSupport::getSetComposite(SMap,flightIndex+10*II," 13 -14 (15:505) (16:-506) ");
+
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex+10*II," 13 -14 (15:505) (16:-506) ");
       Out+=innerCut+outerCut+Exclude.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
-      CellMap::addCell("Layer"+StrFunc::makeString(i+1),cellIndex-1);
+      CellMap::makeCell("Layer"+std::to_string(i+1),
+			System,cellIndex++,lMat[i],0.0,Out);
     }      
   
   return;

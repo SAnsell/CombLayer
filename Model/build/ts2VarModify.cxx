@@ -46,6 +46,8 @@
 #include "FuncDataBase.h"
 #include "InputControl.h"
 #include "objectRegister.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "variableSetup.h"

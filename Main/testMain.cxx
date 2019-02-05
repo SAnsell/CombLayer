@@ -80,7 +80,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "Convex.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
@@ -94,6 +93,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkUnit.h"
@@ -112,7 +113,6 @@
 #include "testBoxLine.h"
 #include "testCone.h"
 #include "testContained.h"
-#include "testContainedSpace.h"
 #include "testConvex.h"
 #include "testConvex2D.h"
 #include "testCylinder.h"
@@ -126,6 +126,7 @@
 #include "testFunc.h"
 #include "testFunction.h"
 #include "testGeomSupport.h"
+#include "testGenerateSurf.h"
 #include "testGroupRange.h"
 #include "testHeadRule.h"
 #include "testInputParam.h"
@@ -160,7 +161,6 @@
 #include "testPoly.h"
 #include "testQuaternion.h"
 #include "testRecTriangle.h"
-#include "testRefPlate.h"
 #include "testRotCounter.h"
 #include "testRules.h"
 #include "testSimpleObj.h"
@@ -260,7 +260,6 @@ main(int argc,char* argv[])
   else
     startTest(0,0,0);
 
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return 0;
 }
@@ -787,17 +786,10 @@ moderatorTest(const int type,const int extra)
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
-      std::cout<<"testRefPlate         (1)"<<std::endl;
-      std::cout<<"testSingleObject     (2)"<<std::endl;
+      std::cout<<"testSingleObject     (1)"<<std::endl;
     }
 
   if(type==1 || type<0)
-    {
-      testRefPlate A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  if(type==2 || type<0)
     {
       testSingleObject A;
       const int X=A.applyTest(extra);
@@ -888,7 +880,6 @@ attachCompTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testAttachSupport          (1)"<<std::endl;
       std::cout<<"testContained              (2)"<<std::endl;
-      std::cout<<"testContainedSpace         (3)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -899,12 +890,6 @@ attachCompTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testContained A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  if(type==3 || type<0)
-    {
-      testContainedSpace A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
@@ -948,29 +933,38 @@ processTest(const int type,const int extra)
     {
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testBoxLine          (1)"<<std::endl;
-      std::cout<<"testInputParam       (2)"<<std::endl;
-      std::cout<<"testLineTrack        (3)"<<std::endl;
-      std::cout<<"testObjectRegister   (4)"<<std::endl;
-      std::cout<<"testObjectTrackAct   (5)"<<std::endl;
-      std::cout<<"testObjSurfMap       (6)"<<std::endl;
-      std::cout<<"testObjTrackItem     (7)"<<std::endl;
-      std::cout<<"testPairFactory      (8)"<<std::endl;
-      std::cout<<"testPairItem         (9)"<<std::endl;
-      std::cout<<"testPipeLine        (10)"<<std::endl;
-      std::cout<<"testPipeUnit        (11)"<<std::endl;
-      std::cout<<"testSimpleObj       (12)"<<std::endl;
-      std::cout<<"testSurfDIter       (13)"<<std::endl;
-      std::cout<<"testSurfDivide      (14)"<<std::endl;
-      std::cout<<"testSurfEqual       (15)"<<std::endl;
-      std::cout<<"testSurfExpand      (16)"<<std::endl;
-      std::cout<<"testSurfRegister    (17)"<<std::endl;
-      std::cout<<"testVolumes         (18)"<<std::endl;
-      std::cout<<"testWrapper         (19)"<<std::endl;
+      std::cout<<"testGenerateSurf     (2)"<<std::endl;
+      std::cout<<"testInputParam       (3)"<<std::endl;
+      std::cout<<"testLineTrack        (4)"<<std::endl;
+      std::cout<<"testObjectRegister   (5)"<<std::endl;
+      std::cout<<"testObjectTrackAct   (6)"<<std::endl;
+      std::cout<<"testObjSurfMap       (7)"<<std::endl;
+      std::cout<<"testObjTrackItem     (8)"<<std::endl;
+      std::cout<<"testPairFactory      (9)"<<std::endl;
+      std::cout<<"testPairItem        (10)"<<std::endl;
+      std::cout<<"testPipeLine        (11)"<<std::endl;
+      std::cout<<"testPipeUnit        (12)"<<std::endl;
+      std::cout<<"testSimpleObj       (13)"<<std::endl;
+      std::cout<<"testSurfDIter       (14)"<<std::endl;
+      std::cout<<"testSurfDivide      (15)"<<std::endl;
+      std::cout<<"testSurfEqual       (16)"<<std::endl;
+      std::cout<<"testSurfExpand      (17)"<<std::endl;
+      std::cout<<"testSurfRegister    (18)"<<std::endl;
+      std::cout<<"testVolumes         (19)"<<std::endl;
+      std::cout<<"testWrapper         (20)"<<std::endl;
     }
   int index(1);
   if(type==index || type<0)
     {
       testBoxLine A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  index++;
+
+  if(type==index || type<0)
+    {
+      testGenerateSurf A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

@@ -3,7 +3,7 @@
  
  * File:   build/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -51,10 +50,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -68,7 +63,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,9 +80,7 @@ namespace TMRSystem
 {
 
 TS2ModifyTarget::TS2ModifyTarget(const std::string& MKey) :
-  attachSystem::FixedComp(MKey,0),attachSystem::ContainedComp(),
-  molyIndex(ModelSupport::objectRegister::Instance().cell(MKey)),
-  cellIndex(molyIndex+1)
+  attachSystem::FixedComp(MKey,0),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param MKey :: Name for Moly changers
@@ -95,7 +89,6 @@ TS2ModifyTarget::TS2ModifyTarget(const std::string& MKey) :
 
 TS2ModifyTarget::TS2ModifyTarget(const TS2ModifyTarget& A) :  
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  molyIndex(A.molyIndex),cellIndex(A.cellIndex),
   PCut(A.PCut),SCent(A.SCent),Radius(A.Radius),
   SCut(A.SCut),CCut(A.CCut)
   /*!
@@ -115,7 +108,6 @@ TS2ModifyTarget::operator=(const TS2ModifyTarget& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       PCut=A.PCut;
       SCent=A.SCent;
       Radius=A.Radius;
@@ -144,7 +136,7 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nPlates;i++)
     {
       plateCut Item;
-      const std::string keyIndex(StrFunc::makeString(keyName+"P",i+1));
+      const std::string keyIndex(keyName+"P"+std::to_string(i+1));
       const double PY=
 	Control.EvalPair<double>(keyIndex,keyName+"P","Dist");
       Item.centre=Y*PY;
@@ -167,7 +159,7 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
     {
       sphereCut Item;
       
-      const std::string keyIndex(StrFunc::makeString(keyName+"CutSph",i+1));
+      const std::string keyIndex(keyName+"CutSph"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
 	(keyIndex,keyName+"CutSph","Cent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
@@ -187,7 +179,7 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
     {
       coneCut Item;
       
-      const std::string keyIndex(StrFunc::makeString(keyName+"Cone",i+1));
+      const std::string keyIndex(keyName+"Cone"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
 	(keyIndex,keyName+"Cone","Cent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
@@ -231,7 +223,7 @@ TS2ModifyTarget::createSurfaces()
   ELog::RegMethod RegA("TS2ModifyTarget","createSurface");
 
   // Plates at 0 index offset:
-  int offset(molyIndex);
+  int offset(buildIndex);
   for(size_t i=0;i<PCut.size();i++)
     {
       const plateCut& Item=PCut[i];
@@ -252,7 +244,7 @@ TS2ModifyTarget::createSurfaces()
     }
 
   // SpherCuts at 500 index offset:
-  offset=molyIndex+2000;
+  offset=buildIndex+2000;
   for(size_t i=0;i<SCut.size();i++)
     {
       sphereCut& Item=SCut[i];
@@ -276,7 +268,7 @@ TS2ModifyTarget::createSurfaces()
     }
 
   // Cones:
-  offset=molyIndex+3000;
+  offset=buildIndex+3000;
   for(size_t i=0;i<CCut.size();i++)
     {
       coneCut& Item=CCut[i];
@@ -311,8 +303,8 @@ TS2ModifyTarget::createObjects(Simulation& System,
   std::string Out;
   int offset;
 
-  MonteCarlo::Qhull* QPtrA=System.findQhull(mainBody);
-  MonteCarlo::Qhull* QPtrB=System.findQhull(skinBody);
+  MonteCarlo::Object* QPtrA=System.findObject(mainBody);
+  MonteCarlo::Object* QPtrB=System.findObject(skinBody);
   if (!QPtrA || !QPtrB)
     {
       ELog::EM<<"Failed on QHull for main/skin body "<<
@@ -328,13 +320,13 @@ TS2ModifyTarget::createObjects(Simulation& System,
   if (!SCut.empty())
     {
       // Sphere:
-      offset=molyIndex+2000;
+      offset=buildIndex+2000;
       for(size_t i=0;i<SCut.size();i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 7 8 ");
 	  addOuterUnionSurf(Out);
 	  Out+=getContainer();
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,SCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,SCut[i].mat,0.0,Out));
 	  offset+=100;
 	}
     }
@@ -344,7 +336,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
     {
       HeadRule ExCone;
       HeadRule ConeItem;
-      offset=molyIndex+3000;
+      offset=buildIndex+3000;
       for(size_t i=0;i<CCut.size();i++)
 	{
 	  // Ta layer
@@ -354,14 +346,14 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (CCut[i].dist<0)
 	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+getContainer();
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 	  
 	  cx.str("");
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+getContainer();
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,CCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,CCut[i].mat,0.0,Out));
 
 	  cx.str("");
 	  cx<<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)
@@ -369,7 +361,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (CCut[i].dist<0)
 	    cx<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)<<" ";
 	  Out=cx.str()+getContainer();
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 
 	  cx.str("");
@@ -390,7 +382,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
     {
       HeadRule ExPlate;
       std::string cutConeStr;
-      offset=molyIndex;
+      offset=buildIndex;
       for(size_t i=0;i<PCut.size();i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 ");    
@@ -405,22 +397,22 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  if (PCut[i].layerMat<0)
 	    {
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull
+	      System.addCell(MonteCarlo::Object
 			     (cellIndex++,PCut[i].mat,0.0,Out));
 	    }
 	  else
 	    {
 	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
 	      Out+=getContainer()+cutConeStr;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].mat,0.0,Out));
 	    }
 	  offset+=100;

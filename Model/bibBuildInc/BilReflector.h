@@ -3,7 +3,7 @@
  
  * File:   bibBuildInc/BilReflector.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@ class BilReflector : public attachSystem::ContainedComp,
 {
  private:
   
-  const int refIndex;           ///< Index of surface offset 
-  int cellIndex;                ///< Cell index
  
   double BeHeight;              ///< Be Height
   double BeDepth;               ///< Be Depth
@@ -94,7 +92,7 @@ class BilReflector : public attachSystem::ContainedComp,
 			  const attachSystem::FixedComp&,
 			  attachSystem::ContainedComp&) const;
   /// Main cell
-  int getInnerCell() const { return refIndex+1; }
+  int getInnerCell() const { return buildIndex+1; }
   std::vector<int> getCells() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,

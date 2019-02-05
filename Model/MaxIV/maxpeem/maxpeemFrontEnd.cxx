@@ -3,7 +3,7 @@
  
  * File: maxpeem/maxpeemFrontEnd.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,23 +56,25 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "CSGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "ModelSupport.h"
@@ -90,13 +92,16 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "CrossPipe.h"
-#include "Wiggler.h"
+#include "UTubePipe.h"
+#include "Undulator.h"
 #include "SquareFMask.h"
 #include "FlangeMount.h"
+#include "BeamMount.h"
 #include "HeatDump.h"
 #include "BremBlock.h"
-#include "LCollimator.h"
 
+#include "LCollimator.h"
+#include "R1FrontEnd.h"
 #include "maxpeemFrontEnd.h"
 
 namespace xraySystem
@@ -105,52 +110,9 @@ namespace xraySystem
 // Note currently uncopied:
   
 maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
-  attachSystem::CopiedComp(Key,Key),
-  attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
-  attachSystem::FrontBackCut(),
-  attachSystem::CellMap(),
-
-  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
-  wiggler(new Wiggler(newName+"Wiggler")),
-  dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
-  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
-  bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collA(new xraySystem::SquareFMask(newName+"CollA")),
-  bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
-  bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  heatPipe(new constructSystem::VacuumPipe(newName+"HeatPipe")),
-  heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
-  heatTopFlange(new xraySystem::FlangeMount(newName+"HeatTopFlange")),
-  bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
-  ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
-  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
-  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),  
-  bellowF(new constructSystem::Bellows(newName+"BellowF")),
-  ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
-  bellowG(new constructSystem::Bellows(newName+"BellowG")),
-  aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
-  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
-  bellowH(new constructSystem::Bellows(newName+"BellowH")),
-  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
-  bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
-  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateTubeB(new constructSystem::PipeTube(newName+"GateTubeB")),
-  offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
-  shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
-  shutters({
-      std::make_shared<xraySystem::FlangeMount>(newName+"Shutter0"),
-      std::make_shared<xraySystem::FlangeMount>(newName+"Shutter1")
-	}),
-  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  bremBlock(new xraySystem::BremBlock(newName+"BremBlock")),  
-  bellowK(new constructSystem::Bellows(newName+"BellowK")) 
+  R1FrontEnd(Key),
+  undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
+  undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -159,533 +121,56 @@ maxpeemFrontEnd::maxpeemFrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(wigglerBox);
-  OR.addObject(wiggler);
-  OR.addObject(dipolePipe);
-  OR.addObject(eCutDisk);
-  OR.addObject(bellowA);
-  OR.addObject(collA);
-  OR.addObject(bellowB);
-  OR.addObject(ionPA);
-  OR.addObject(bellowC);
-  OR.addObject(heatPipe);
-  OR.addObject(heatBox);
-  OR.addObject(heatTopFlange);
-  OR.addObject(bellowD);
-  OR.addObject(gateTubeA);
-  OR.addObject(ionPB);
-  OR.addObject(pipeB);
-  OR.addObject(bellowE);
-  OR.addObject(aperturePipe);
-  OR.addObject(moveCollA);
-  OR.addObject(bellowF);
-  OR.addObject(ionPC);
-  OR.addObject(bellowG);
-  OR.addObject(aperturePipeB);
-  OR.addObject(moveCollB);
-  OR.addObject(bellowH);
-  OR.addObject(pipeC);
-  OR.addObject(gateA);
-  OR.addObject(bellowI);
-  OR.addObject(florTubeA);
-  OR.addObject(bellowJ);
-  OR.addObject(gateTubeB);
-  OR.addObject(offPipeA);
-  OR.addObject(shutterBox);
-  OR.addObject(shutters[0]);
-  OR.addObject(shutters[1]);
-  OR.addObject(offPipeB);
-  OR.addObject(bremBlock);
-  OR.addObject(bellowK);
-
+  OR.addObject(undulatorPipe);
+  OR.addObject(undulator);
 }
   
 maxpeemFrontEnd::~maxpeemFrontEnd()
   /*!
     Destructor
-   */
+  */
 {}
 
-void
-maxpeemFrontEnd::populate(const FuncDataBase& Control)
-  /*!
-    Populate the intial values [movement]
-   */
-{
-  FixedOffset::populate(Control);
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
-  return;
-}
-
-void
-maxpeemFrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    Note that the FC:in and FC:out are tied to Main
-    -- rotate position Main and then Out/In are moved relative
-
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","createUnitVector");
-
-  FixedOffset::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
-  return;
-}
-
-void
-maxpeemFrontEnd::createSurfaces()
-  /*!
-    Create surfaces
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","createSurfaces");
-
-  if (outerRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
-      setFront(SMap.realSurf(buildIndex+1));
-    }
-  return;
-}
-
-int
-maxpeemFrontEnd::createOuterVoidUnit(Simulation& System,
-				     MonteCarlo::Object& masterCell,
-				     const attachSystem::FixedComp& FC,
-				     const long int sideIndex)
-/*!
-    Construct outer void object main pipe
-    \param System :: Simulation
-    \param masterCell :: full master cell
-    \param FC :: FixedComp
-    \param sideIndex :: link point
-    \return cell nubmer
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","createOuterVoid");
-
-  static HeadRule divider;
-  // construct an cell based on previous cell:
-  std::string Out;
-  
-  if (!divider.hasRule())
-    divider=FrontBackCut::getFrontRule();
-
-  const HeadRule& backHR=
-    (sideIndex) ? FC.getFullRule(-sideIndex) :
-    FrontBackCut::getBackRule();
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=divider.display()+backHR.display();
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-  divider=backHR;
-
-  // make the master cell valid:
-  
-  divider.makeComplement();
-
-  refrontMasterCell(masterCell,FC,sideIndex);
-  return cellIndex-1;
-}
-
-void
-maxpeemFrontEnd::refrontMasterCell(MonteCarlo::Object& MCell,
-				   const attachSystem::FixedComp& FC,
-				   const long int sideIndex) const
-  /*!
-    This horrifc function to re-build MCell so that it is correct
-    as createOuterVoid consumes the front of the master cell
-    \param MCell :: master cell object
-    \param FC :: FixedComp
-    \param sideIndex :: side index for back of FC object
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","refrontMasterCell");
-
-  std::string Out;  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=backRule()+FC.getLinkString(sideIndex);
-  MCell.procString(Out);
-  return;
-}
- 
-MonteCarlo::Object&
-maxpeemFrontEnd::constructMasterCell(Simulation& System)
- /*!
-    Construct outer void object main pipe
-    \param System :: Simulation
-    \return cell object
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","constructMasterCell");
-
-  std::string Out;
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=frontRule()+backRule();
-  makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
-  addOuterSurf(Out);
-  insertObjects(System);
-
-  return *System.findQhull(cellIndex-1);
-}
-   
-void
-maxpeemFrontEnd::buildHeatTable(Simulation& System,
-				MonteCarlo::Object& masterCell)
-  /*!
-    Build the heatDump table
-    \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildHeatTable");
-
-  int outerCell;
-  // FAKE insertcell:
-  heatBox->addInsertCell(masterCell.getName());
-  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,*heatPipe,2);
-
-  const constructSystem::portItem& PI=heatBox->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
-				PI,PI.getSideIndex("OuterPlate"));
-  heatBox->insertInCell(System,outerCell);
-    
-  heatTopFlange->addInsertCell("Flange",outerCell);
-  heatTopFlange->addInsertCell("Body",heatBox->getCell("Void"));
-  heatTopFlange->setBladeCentre(*heatBox,0);
-  heatTopFlange->createAll(System,*heatBox,2);
-
-  //  const constructSystem::portItem& PI=heatBox->getPort(1);  
-  bellowD->createAll(System,PI,PI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowD,2);
-  bellowD->insertInCell(System,outerCell);
-
-
-  // FAKE insertcell:
-  gateTubeA->addInsertCell(masterCell.getName());
-  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeA->createAll(System,*bellowD,2);  
-
-  const constructSystem::portItem& GPI=gateTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
-				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeA->insertInCell(System,outerCell);
-  
-  ionPB->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*ionPB,2);
-  ionPB->insertInCell(System,outerCell);
-
-  insertFlanges(System,*gateTubeA);
-  
-  pipeB->createAll(System,*ionPB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*pipeB,2);
-  pipeB->insertInCell(System,outerCell);
-  
-  return;
-  
-}
-
-void
-maxpeemFrontEnd::buildApertureTable(Simulation& System,
-				    MonteCarlo::Object& masterCell)
-  /*!
-    Build the moveable aperature table
-    \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildApertureTable");
-
-  int outerCell;
-  // NOTE order for master cell [Next 4 object
-  aperturePipe->createAll(System,*pipeB,2);
-  moveCollA->addInsertCell(aperturePipe->getCell("Void"));
-  moveCollA->createAll(System,*aperturePipe,0);
-  
-  // bellows AFTER movable aperture pipe
-  bellowE->setFront(*pipeB,2);
-  bellowE->setBack(*aperturePipe,1);
-  bellowE->createAll(System,*pipeB,2);
-
-  ionPC->createAll(System,*pipeB,2);
-
-  // bellows AFTER aperature ionpump and ion pump
-  bellowF->setFront(*aperturePipe,2);
-  bellowF->setBack(*ionPC,1);
-  bellowF->createAll(System,*pipeB,2);
-
-  // now do insert:
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowE,2);
-  bellowE->insertInCell(System,outerCell);
-    
-  outerCell=createOuterVoidUnit(System,masterCell,*aperturePipe,2);
-  aperturePipe->insertInCell(System,outerCell);
-  
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowF,2);
-  bellowF->insertInCell(System,outerCell);
-
-  outerCell=createOuterVoidUnit(System,masterCell,*ionPC,2);
-  ionPC->insertInCell(System,outerCell);
-
-
-  // Next 4 objects need to be build before insertion
-  aperturePipeB->createAll(System,*ionPC,2);
-  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
-  moveCollB->createAll(System,*aperturePipeB,0);
-
-  // bellows AFTER movable aperture pipe
-  bellowG->setFront(*ionPC,2);
-  bellowG->setBack(*aperturePipeB,1);
-  bellowG->createAll(System,*ionPC,2);
-
-  pipeC->createAll(System,*ionPC,2);
-
-  // bellows AFTER movable aperture pipe
-  bellowH->setFront(*aperturePipeB,2);
-  bellowH->setBack(*pipeC,1);
-  bellowH->createAll(System,*ionPC,2);
-
-
-  // now do insert:
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowG,2);
-  bellowG->insertInCell(System,outerCell);
-    
-  outerCell=createOuterVoidUnit(System,masterCell,*aperturePipeB,2);
-  aperturePipeB->insertInCell(System,outerCell);
-  
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowH,2);
-  bellowH->insertInCell(System,outerCell);
-
-  outerCell=createOuterVoidUnit(System,masterCell,*pipeC,2);
-  pipeC->insertInCell(System,outerCell);
-
-  
-  return;
-}
-
-void
-maxpeemFrontEnd::buildShutterTable(Simulation& System,
-				   MonteCarlo::Object& masterCell)
-  /*!
-    Build the moveable aperature table
-    \param System :: Simulation to use
-    \param masterCell :: Main cell for insertion
-  */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","buildShutterTable");
-  int outerCell;
-  
-  gateA->createAll(System,*pipeC,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
-
-  // bellows 
-  bellowI->createAll(System,*gateA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowI,2);
-  bellowI->insertInCell(System,outerCell);
-
-  // FAKE insertcell:
-  florTubeA->addInsertCell(masterCell.getName());
-  florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  florTubeA->createAll(System,*bellowI,2);
-  const constructSystem::portItem& FPI=florTubeA->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
-				FPI,FPI.getSideIndex("OuterPlate"));
-  florTubeA->insertInCell(System,outerCell);
-  
-  // bellows 
-  bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowJ,2);
-  bellowJ->insertInCell(System,outerCell);
-
-  insertFlanges(System,*florTubeA);
-
-  // FAKE insertcell:
-  gateTubeB->addInsertCell(masterCell.getName());
-  gateTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  gateTubeB->createAll(System,*bellowJ,2);  
-  const constructSystem::portItem& GPI=gateTubeB->getPort(1);
-  outerCell=createOuterVoidUnit(System,masterCell,
-				GPI,GPI.getSideIndex("OuterPlate"));
-  gateTubeB->insertInCell(System,outerCell);
-
-  offPipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
-  outerCell=createOuterVoidUnit(System,masterCell,*offPipeA,2);
-  offPipeA->insertInCell(System,outerCell);
-
-  insertFlanges(System,*gateTubeB);
-
-  shutterBox->delayPorts();
-  shutterBox->createAll(System,*offPipeA,
-			offPipeA->getSideIndex("FlangeBCentre"));
-  outerCell=createOuterVoidUnit(System,masterCell,*shutterBox,2);
-  shutterBox->insertInCell(System,outerCell);
-
-  cellIndex=shutterBox->splitVoidPorts(System,"SplitVoid",1001,
-				       shutterBox->getCell("Void"),
-				       {0,1});
-  cellIndex=
-    shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-			       outerCell,{0,1});
-  shutterBox->addInsertCell(outerCell);
-  shutterBox->createPorts(System);
-
-  for(size_t i=0;i<shutters.size();i++)
-    {
-      const constructSystem::portItem& PI=shutterBox->getPort(i);
-      shutters[i]->addInsertCell("Flange",shutterBox->getCell("SplitOuter",i));
-      shutters[i]->addInsertCell("Body",PI.getCell("Void"));
-      shutters[i]->addInsertCell("Body",shutterBox->getCell("SplitVoid",i));
-      shutters[i]->setBladeCentre(PI,0);
-      shutters[i]->createAll(System,PI,2);
-    }
-
-  offPipeB->createAll(System,*shutterBox,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*offPipeB,2);
-  offPipeB->insertInCell(System,outerCell);
-
-  bremBlock->addInsertCell(offPipeB->getCell("Void"));
-  bremBlock->setFront(*offPipeB,-1);
-  bremBlock->setBack(*offPipeB,-2);
-  bremBlock->createAll(System,*offPipeB,0);
-    
-  // bellows 
-  bellowK->createAll(System,*offPipeB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowK,2);
-  bellowK->insertInCell(System,outerCell);
-  
-  return;
-}
-
-void
-maxpeemFrontEnd::insertFlanges(Simulation& System,
-			       const constructSystem::PipeTube& PT)
-  /*!
-    Boilerplate function to insert the flanges from pipetubes
-    that extend past the linkzone in to ther neighbouring regions.
-    \param System :: Simulation to use
-    \param PT :: PipeTube
-   */
-{
-  ELog::RegMethod RegA("maxpeemFrontEnd","insertFlanges");
-  
-  const size_t voidN=this->getNItems("OuterVoid")-3;
-  this->insertComponent(System,"OuterVoid",voidN,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN,PT,"BackFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"FrontFlange",0);
-  this->insertComponent(System,"OuterVoid",voidN+2,PT,"BackFlange",0);
-  return;
-}
-  
-void
-maxpeemFrontEnd::buildObjects(Simulation& System)
+const attachSystem::FixedComp&
+maxpeemFrontEnd::buildUndulator(Simulation& System,
+				MonteCarlo::Object* masterCell,
+				const attachSystem::FixedComp& preFC,
+				const long int preSideIndex)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
+    \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
   */
 {
   ELog::RegMethod RegA("maxpeemFrontEnd","buildObjects");
 
   int outerCell;
-  MonteCarlo::Object& masterCell=constructMasterCell(System);
-  
-  wigglerBox->createAll(System,*this,0);
-  outerCell=createOuterVoidUnit(System,masterCell,*wigglerBox,2);
-  wigglerBox->insertInCell(System,outerCell);
+  undulatorPipe->createAll(System,preFC,preSideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
 
-  wiggler->addInsertCell(wigglerBox->getCell("Void"));
-  wiggler->createAll(System,*wigglerBox,0);
+  CellMap::addCell("UndulatorOuter",outerCell);
+  undulatorPipe->insertInCell("FFlange",System,outerCell);
+  undulatorPipe->insertInCell("BFlange",System,outerCell);
+  undulatorPipe->insertInCell("Pipe",System,outerCell);
 
-  dipolePipe->setFront(*wigglerBox,2);
-  dipolePipe->createAll(System,*wigglerBox,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
+  undulator->addInsertCell(outerCell);
+  undulator->createAll(System,*undulatorPipe,0);
+  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
-  eCutDisk->createAll(System,*dipolePipe,-2);
-
-  //  bellowA->registerSpaceCut(1,2);
-  bellowA->createAll(System,*dipolePipe,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
-
-  collA->createAll(System,*bellowA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*collA,2);
-  collA->insertInCell(System,outerCell);
-  
-  bellowB->createAll(System,*collA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowB,2);
-  bellowB->insertInCell(System,outerCell);
-
-  ionPA->createAll(System,*bellowB,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*ionPA,2);
-  ionPA->insertInCell(System,outerCell);
-
-  bellowC->createAll(System,*ionPA,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*bellowC,2);
-  bellowC->insertInCell(System,outerCell);
-
-  heatPipe->createAll(System,*bellowC,2);
-  outerCell=createOuterVoidUnit(System,masterCell,*heatPipe,2);
-  heatPipe->insertInCell(System,outerCell);
-
-  buildHeatTable(System,masterCell);  
-  buildApertureTable(System,masterCell);
-  buildShutterTable(System,masterCell);
-
-  lastComp=bellowK;
-  
-  return;
+  return *undulatorPipe;
 }
 
 void
 maxpeemFrontEnd::createLinks()
   /*!
     Create a front/back link
-   */
+  */
 {
-  setLinkSignedCopy(0,*wiggler,1);
+  setLinkSignedCopy(0,*undulatorPipe,1);
   setLinkSignedCopy(1,*lastComp,2);
-  return;
-}
-  
-void 
-maxpeemFrontEnd::createAll(Simulation& System,
-			   const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
- /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param FC :: Fixed component
-    \param sideIndex :: link point
-   */
-{
-  // For output stream
-  ELog::RegMethod RControl("maxpeemFrontEnd","build");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
-  createSurfaces();
-  buildObjects(System);
-  createLinks();
-
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=frontRule()+backRule();
-
-  addOuterSurf(Out);
-  insertObjects(System);
-
   return;
 }
 

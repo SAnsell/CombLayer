@@ -41,8 +41,6 @@ class Jaws : public attachSystem::FixedOffset,
 {
  private:
   
-  const int jawIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double zOpen;                 ///< Z-opening
   double zThick;                ///< Blade thickness

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Engineering/BulletVessel.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,14 +78,56 @@ namespace ts1System
 {
 
 BulletVessel::BulletVessel(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
-  pvIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pvIndex+1)
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+BulletVessel::BulletVessel(const BulletVessel& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  frontClear(A.frontClear),frontThick(A.frontThick),
+  frontWaterThick(A.frontWaterThick),mainRadius(A.mainRadius),
+  radii(A.radii),length(A.length),waterHeight(A.waterHeight),
+  taVertThick(A.taVertThick),taRadialThick(A.taRadialThick),
+  clearVertThick(A.clearVertThick),clearRadialThick(A.clearRadialThick),
+  waterMat(A.waterMat),wallMat(A.wallMat),innerCells(A.innerCells)
+  /*!
+    Copy constructor
+    \param A :: BulletVessel to copy
+  */
+{}
+
+BulletVessel&
+BulletVessel::operator=(const BulletVessel& A)
+  /*!
+    Assignment operator
+    \param A :: BulletVessel to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      frontClear=A.frontClear;
+      frontThick=A.frontThick;
+      frontWaterThick=A.frontWaterThick;
+      mainRadius=A.mainRadius;
+      radii=A.radii;
+      length=A.length;
+      waterHeight=A.waterHeight;
+      taVertThick=A.taVertThick;
+      taRadialThick=A.taRadialThick;
+      clearVertThick=A.clearVertThick;
+      clearRadialThick=A.clearRadialThick;
+      waterMat=A.waterMat;
+      wallMat=A.wallMat;
+      innerCells=A.innerCells;
+    }
+  return *this;
+}
 
   
 BulletVessel::~BulletVessel() 
@@ -114,7 +156,7 @@ BulletVessel::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nRadii;i++)
     {
-      const std::string Rkey=StrFunc::makeString(i);
+      const std::string Rkey=std::to_string(i);
       const double R=Control.EvalPair<double>(keyName+"Radius"+Rkey,
 					      keyName+"Radius");
       radii.push_back(R);
@@ -162,23 +204,23 @@ BulletVessel::createSurfaces()
   ELog::RegMethod RegA("BulletVessel","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,pvIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin-Y*(frontClear+frontThick+frontWaterThick),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(frontThick+frontWaterThick),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*frontWaterThick,Y);
 
-  ModelSupport::buildCylinder(SMap,pvIndex+8,Origin,Y,mainRadius);
-  ModelSupport::buildCylinder(SMap,pvIndex+18,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,Y,
 			      mainRadius+taRadialThick);
-  ModelSupport::buildCylinder(SMap,pvIndex+28,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+28,Origin,Y,
 			      mainRadius+taRadialThick+clearRadialThick);
   
   // Dividing plane
-  ModelSupport::buildPlane(SMap,pvIndex+3,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
 
-  int PV(pvIndex);
+  int PV(buildIndex);
   Geometry::Vec3D CPt(Origin);
   for(size_t i=0;i<length.size();i++)
     {
@@ -210,20 +252,20 @@ BulletVessel::createSurfaces()
       PV+=100;
     }
   
-  ModelSupport::buildPlane(SMap,pvIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(waterHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(waterHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,pvIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(waterHeight/2.0+taVertThick),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(waterHeight/2.0+taVertThick),Z);
 
 
-  ModelSupport::buildPlane(SMap,pvIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
      Origin-Z*(waterHeight/2.0+taVertThick+clearVertThick),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
      Origin+Z*(waterHeight/2.0+taVertThick+clearVertThick),Z);
 
   return;
@@ -241,51 +283,51 @@ BulletVessel::createObjects(Simulation& System)
   std::string Out;
 
   // FRONT UNITS:
-  Out=ModelSupport::getComposite(SMap,pvIndex,"1 -11 ((-27 25 -26) : -28) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 ((-27 25 -26) : -28) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"11 -21 ((-17 15 -16) : -18) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -21 ((-17 15 -16) : -18) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   
-  int PV(pvIndex);
+  int PV(buildIndex);
 
   // Note special first surface Special for first contact:
-  std::string frontSurf=ModelSupport::getComposite(SMap,pvIndex," 21 ");
-  const std::string overLap=ModelSupport::getComposite(SMap,pvIndex," 1 ");
+  std::string frontSurf=ModelSupport::getComposite(SMap,buildIndex," 21 ");
+  const std::string overLap=ModelSupport::getComposite(SMap,buildIndex," 1 ");
 
   for(size_t i=0;i<length.size();i++)
     {
       // WATER
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     " -2 -3M ((-7 5M -6M) : -8M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
       
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-2  3M ((-7 5M -6M) : -8M)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+frontSurf));
       innerCells.push_back(cellIndex-1);
       // TA 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 			  "-2 -3M ((-17 15M -16M) : -18M) (7:-5M:6M) 8M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontSurf));
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 			   "-2 3M ((-17 15M -16M) : -18M) (7:-5M:6M) 8M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontSurf));
       
       // Clear
       if (!i)
-	frontSurf=ModelSupport::getComposite(SMap,pvIndex," 11 ");	
+	frontSurf=ModelSupport::getComposite(SMap,buildIndex," 11 ");	
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 			 "-2 -3M ((-27 25M -26M) : -28M) (17:-15M:16M) 18M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
      			 "-2 3M ((-27 25M -26M) : -28M) (17:-15M:16M) 18M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontSurf));
 
-      Out=ModelSupport::getComposite(SMap,PV,pvIndex,
+      Out=ModelSupport::getComposite(SMap,PV,buildIndex,
 				     "-2 ((-27 25M -26M) : -28M)");
       if (i)
 	addOuterUnionSurf(Out+frontSurf);
@@ -311,10 +353,10 @@ BulletVessel::createLinks()
   // set Links :: Inner links:
   
   FixedComp::setConnect(7,Origin-Z*(waterHeight/2.0),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(pvIndex+5));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(8,Origin+Z*(waterHeight/2.0),-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(pvIndex+6));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
   return;
 }
 

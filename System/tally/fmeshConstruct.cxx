@@ -56,6 +56,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "LinkUnit.h"
@@ -105,7 +107,7 @@ fmeshConstruct::processMesh(SimMCNP& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object" || PType=="heatObject")
-    getObjectMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    getObjectMesh(System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free" || PType=="heat")
     getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
 

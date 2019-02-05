@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   imat/IMatShutter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -63,16 +62,16 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -85,8 +84,7 @@ namespace shutterSystem
 IMatShutter::IMatShutter(const size_t ID,const std::string& K,
 			 const std::string& ZK) :
   GeneralShutter(ID,K),imatKey(ZK),
-  insIndex(ModelSupport::objectRegister::Instance().cell(ZK)),
-  cellIndex(insIndex+1)
+  insIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Index number of shutter
@@ -98,7 +96,7 @@ IMatShutter::IMatShutter(const size_t ID,const std::string& K,
 IMatShutter::IMatShutter(const IMatShutter& A) : 
   GeneralShutter(A),
   imatKey(A.imatKey),insIndex(A.insIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),zStep(A.zStep),
+  xStep(A.xStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
   height(A.height),innerThick(A.innerThick),
   innerMat(A.innerMat),supportThick(A.supportThick),
@@ -124,7 +122,6 @@ IMatShutter::operator=(const IMatShutter& A)
       GeneralShutter::operator=(A);
       imatKey=A.imatKey;
       insIndex=A.insIndex;
-      cellIndex=A.cellIndex;
       xStep=A.xStep;
       zStep=A.zStep;
       xyAngle=A.xyAngle;
@@ -191,20 +188,13 @@ IMatShutter::createUnitVector()
 {
   ELog::RegMethod RegA("IMatShutter","createUnitVector");
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  frontPt+=X*xStep+Z*zStep;
-  bEnter+=X*xStep+Z*zStep;
+  mainFC.applyShift(xStep,0,zStep);
+  beamFC.applyShift(xStep,0,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-
-  Qz.rotate(bY);
-  Qz.rotate(bZ);
-  Qxy.rotate(bY);
-  Qxy.rotate(bX);
-  Qxy.rotate(bZ);
 
   return;
 }
@@ -216,6 +206,11 @@ IMatShutter::createSurfaces()
   */
 {
   ELog::RegMethod RegA("IMatShutter","createSurfaces");
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D bX(beamFC.getX());
+  const Geometry::Vec3D bY(beamFC.getY());
+  const Geometry::Vec3D bZ(beamFC.getZ());
 
   // Void Walls:                                                                                                  
   ModelSupport::buildPlane(SMap,insIndex+3,
@@ -292,62 +287,62 @@ IMatShutter::createObjects(Simulation& System)
   System.removeCell(innerVoidCell);              // Inner void
   System.removeCell(innerVoidCell+1);              // Inner void
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -100 13M -14M  15M  -16M"
 				 "  ( -3M : 4M : -5M : 6M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -100 23M -24M  25M  -26M"
 				 " ( -13M : 14M : -15M : 16M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -100 33M -34M  35M  -36M"
 				 " ( -23M : 24M : -25M : 26M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " -125 126 13 -14 51M -100 "
 				 " ( -33M : 34M : -35M : 36M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   // Back section
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 100 -17 13M -14M  15M  -16M"
 				 "  ( -3M : 4M : -5M : 6M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 100 -17 23M -24M  25M  -26M"
 				 " ( -13M : 14M : -15M : 16M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "  100 -17 33M -34M  35M  -36M"
 				 " ( -23M : 24M : -25M : 26M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " -225 226 113 -114 100 -17 "
 				 " ( -33M : 34M : -35M : 36M )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   // Inner voids
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 " 51M -17 3M -4M 5M -6M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Boron mask:
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -125 126 13 -14 -51M  "
 				 " (-53M : 54M : -55M : 56M) ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,maskMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,maskMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,insIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -51M 53M -54M 55M -56M ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 				 
 
   return;
@@ -361,16 +356,20 @@ IMatShutter::createLinks()
 {
   ELog::RegMethod RegA("IMatShutter","createLinks");
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  FixedComp::addLinkSurf(0,SMap.realSurf(insIndex+51));
-  std::string Out=ModelSupport::getComposite(SMap,surfIndex," -17 100 ");
-  FixedComp::addLinkSurf(1,Out);
-  FixedComp::addLinkSurf(2,SMap.realSurf(insIndex+3));
-  FixedComp::addLinkSurf(3,SMap.realSurf(insIndex+4));
-  FixedComp::addLinkSurf(4,SMap.realSurf(insIndex+5));
-  FixedComp::addLinkSurf(5,SMap.realSurf(insIndex+6));
+  mainFC.addLinkSurf(0,SMap.realSurf(insIndex+51));
+  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -17 100 ");
+  mainFC.addLinkSurf(1,Out);
+  beamFC.setLinkSurf(1,Out);
+  mainFC.addLinkSurf(2,SMap.realSurf(insIndex+3));
+  mainFC.addLinkSurf(3,SMap.realSurf(insIndex+4));
+  mainFC.addLinkSurf(4,SMap.realSurf(insIndex+5));
+  mainFC.addLinkSurf(5,SMap.realSurf(insIndex+6));
 
-  setBeamExit(surfIndex+17,bEnter,bY);
+  beamFC.setLineConnect(1,beamFC.getCentre(),beamFC.getY());
+
   return;
 }
 
@@ -402,7 +401,7 @@ IMatShutter::createAll(Simulation& System,const double,
 {
   ELog::RegMethod RegA("IMatShutter","createAll");
 
-  GeneralShutter::populate(System);
+  GeneralShutter::populate(System.getDataBase());
   populate(System);  
   GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
 

@@ -3,7 +3,7 @@
  
  * File:   tally/pointConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,15 +47,12 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -70,8 +67,9 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -106,23 +104,12 @@ pointConstruct::processPoint(SimMCNP& System,
 
   const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
 
-  const masterRotate& MR=masterRotate::Instance();
-  std::string revStr;
-
   if (PType=="free" || PType=="Free")
     {
       std::vector<Geometry::Vec3D> EmptyVec;
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=IParam.getCntVec3D
 	("tally",Index,itemIndex,"Point for point detector");
-      const std::string revStr=
-	IParam.getDefValue<std::string>("","tally",Index,itemIndex);
-
-      if (revStr=="r" || revStr=="R")
-	{
-	  PPoint=MR.forceReverseRotate(PPoint);
-	  ELog::EM<<"Remapped point == "<<PPoint<<ELog::endDiag;
-	}
       processPointFree(System,PPoint,EmptyVec);
     }
 
@@ -131,22 +118,11 @@ pointConstruct::processPoint(SimMCNP& System,
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Point for point detector");
-      int flag=IParam.checkItem<std::string>
-	("tally",Index,itemIndex,revStr);
-      if (flag && (revStr=="r" || revStr=="R"))
-	{
-	  itemIndex++;
-	  PPoint=MR.forceReverseRotate(PPoint);
-	}
       
       std::vector<Geometry::Vec3D> WindowPts(4);
       for(size_t i=0;i<4;i++)
 	WindowPts[i]=IParam.getCntVec3D
-	  ("tally",Index,itemIndex,"Window point "+StrFunc::makeString(i+1));
-
-      revStr=IParam.getDefValue<std::string>("","tally",Index,5);
-      if (revStr=="r" || revStr=="R")
-	PPoint=MR.forceReverseRotate(PPoint);
+	  ("tally",Index,itemIndex,"Window point "+std::to_string(i+1));
       
       processPointFree(System,PPoint,WindowPts);
     }
@@ -221,9 +197,6 @@ pointConstruct::processPointWindow(SimMCNP& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointWindow");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   std::vector<int> Planes;
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint;
@@ -231,7 +204,7 @@ pointConstruct::processPointWindow(SimMCNP& System,
   Geometry::Vec3D BAxis;
   int masterPlane(0);
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
   const long int linkPt=TPtr->getSideIndex(linkIndex);
   if (linkPt!=0)
@@ -284,11 +257,8 @@ pointConstruct::processPointFree(SimMCNP& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   const long int linkPt=TPtr->getSideIndex(linkName);
   
   const int tNum=System.nextTallyNum(5);
@@ -316,11 +286,8 @@ pointConstruct::processPointFree(SimMCNP& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(Vec)");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   const attachSystem::FixedComp* TPtr=
-    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   
   const long int linkPt=TPtr->getSideIndex(linkName);
   const int tNum=System.nextTallyNum(5);

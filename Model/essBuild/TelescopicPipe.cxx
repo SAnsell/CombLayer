@@ -62,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -73,7 +74,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -86,9 +86,7 @@ namespace essSystem
   
 TelescopicPipe::TelescopicPipe(const std::string& Key) :
   attachSystem::ContainedGroup(),attachSystem::FixedOffset(Key,3),
-  attachSystem::FrontBackCut(),attachSystem::CellMap(),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1)
+  attachSystem::FrontBackCut(),attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Keyname
@@ -98,8 +96,7 @@ TelescopicPipe::TelescopicPipe(const std::string& Key) :
 TelescopicPipe::TelescopicPipe(const TelescopicPipe& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),attachSystem::CellMap(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),nSec(A.nSec),
-  radius(A.radius),length(A.length),zCut(A.zCut),
+  nSec(A.nSec),radius(A.radius),length(A.length),zCut(A.zCut),
   thick(A.thick),inMat(A.inMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -122,7 +119,6 @@ TelescopicPipe::operator=(const TelescopicPipe& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       nSec=A.nSec;
       radius=A.radius;
       length=A.length;
@@ -210,7 +206,7 @@ TelescopicPipe::createSurfaces()
   ELog::RegMethod RegA("TelescopicPipe","createSurfaces");
  
 
-  int PT(ptIndex);
+  int PT(buildIndex);
   for(size_t i=0;i<nSec;i++)
     {
      ModelSupport::buildCylinder(SMap,PT+7,Origin,Y,radius[i]);  
@@ -238,7 +234,7 @@ TelescopicPipe::createObjects(Simulation& System)
 
   std::string Out,EndCap,FrontCap;
 
-  int PT(ptIndex);
+  int PT(buildIndex);
   attachSystem::ContainedGroup::addCC("Full");
   for(size_t i=0;i<nSec;i++)
     {
@@ -251,12 +247,12 @@ TelescopicPipe::createObjects(Simulation& System)
 	ModelSupport::getComposite(SMap,PT, " -2 ");
       
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,inMat[i],0.0,
 				       Out+FrontCap+EndCap));
       if (thick[i]>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
+	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,
 					   Out+FrontCap+EndCap));
 	}
 
@@ -281,7 +277,7 @@ TelescopicPipe::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
   FixedComp::setNConnect(nSec+2);
-  int PT(ptIndex);
+  int PT(buildIndex);
   for(size_t i=0;i<nSec;i++)
     {
       FixedComp::setConnect(i+2,Origin+Y*length[i]/2.0,-X);

@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
@@ -66,6 +65,8 @@
 #include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 
@@ -118,7 +119,7 @@ fluxConstruct::processFlux(SimMCNP& System,
 
   if (cells.empty())
     throw ColErr::InContainerError<std::string>
-      (cellKey+"/"+StrFunc::makeString(MType),"cell/mat not present in model");
+      (cellKey+"/"+MType,"cell/mat not present in model");
   
 
   const int nTally=System.nextTallyNum(4);
@@ -126,8 +127,8 @@ fluxConstruct::processFlux(SimMCNP& System,
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
   const std::string Comment=
-    "tally: "+StrFunc::makeString(nTally)+
-    " mat : "+StrFunc::makeString(matN)+":"+
+    "tally: "+std::to_string(nTally)+
+    " mat : "+std::to_string(matN)+":"+
     cellKey;
   TX->setComment(Comment);
   return 0;

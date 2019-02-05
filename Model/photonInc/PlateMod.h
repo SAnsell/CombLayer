@@ -43,8 +43,6 @@ class PlateMod : public attachSystem::ContainedComp,
 {
  private:
 
-  const int plateIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double outerWidth;                ///< Outer width
   double outerHeight;               ///< Outer Height

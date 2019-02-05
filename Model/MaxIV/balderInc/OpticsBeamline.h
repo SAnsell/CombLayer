@@ -3,7 +3,7 @@
  
  * File:   balderInc/OpticsBeamline.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class PipeShield;
+  class ShutterUnit;
     
   /*!
     \class OpticsBeamline
@@ -70,10 +71,14 @@ namespace xraySystem
 class OpticsBeamline :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
 
+  attachSystem::InnerZone buildZone;  
+  
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -173,10 +178,13 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeF;
 
   /// Shutter pipe
-  std::shared_ptr<constructSystem::CrossPipe> shutterPipe;
+  std::shared_ptr<constructSystem::PortTube> shutterPipe;
 
   /// shutter to stop beam
-  std::shared_ptr<xraySystem::FlangeMount> monoShutter;
+  std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
+
+  /// shutter to stop beam [second for redundency
+  std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;
     
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeG;
@@ -187,9 +195,15 @@ class OpticsBeamline :
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
 
+  double outerLeft;    /// Radius for cut rectangle
+  double outerRight;   /// Radius for cut rectangle
+  double outerTop;     /// Radius for cut rectangle
+  
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   

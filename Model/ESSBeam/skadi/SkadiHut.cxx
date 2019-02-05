@@ -3,7 +3,7 @@
  
  * File:   skadi/SkadiHut.cxx
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randiamalala & Stuart Ansell
+ * Copyright (c) 2004-2018 by Tsitohaina Randiamalala & Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,12 +81,17 @@ namespace essSystem
 {
 SkadiHut::SkadiHut(const std::string& Key) :
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutIndex+1)
+  attachSystem::ContainedComp(),attachSystem::CellMap()
+  /*!
+    Constructor
+    \param Key :: keynName
+   */
 {}
 
 SkadiHut::~SkadiHut()
+  /*!
+    Destructor
+   */
 {}
 
 void SkadiHut::populate(const FuncDataBase& Control)
@@ -137,6 +143,11 @@ void SkadiHut::populate(const FuncDataBase& Control)
 void 
 SkadiHut::createUnitVector(const attachSystem::FixedComp& FC,
 			   const long int sideIndex)
+  /*!
+    Create unit vector 
+    \param FC :: FixedComp
+    \param sideInde :: Link index
+  */
 {
   ELog::RegMethod RegA("SkadiHut","createUnitVector");
   
@@ -157,63 +168,63 @@ void SkadiHut::createSurfaces()
 {
   ELog::RegMethod RegA("SkadiHut","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z); 
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z); 
 
 
   // L1 WALLS:
-  ModelSupport::buildPlane(SMap,hutIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(L1Front+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(L1Back+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(L1LeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(L1RightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(L1Floor+voidDepth),Z);  
-  ModelSupport::buildPlane(SMap,hutIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(L1Roof+voidHeight),Z);
 
   // L2 WALLS:
-  ModelSupport::buildPlane(SMap,hutIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*(L2Front+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+22,
+  ModelSupport::buildPlane(SMap,buildIndex+22,
 			   Origin+Y*(L2Back+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,hutIndex+23,
+  ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(L2LeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+24,
+  ModelSupport::buildPlane(SMap,buildIndex+24,
 			   Origin+X*(L2RightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+25,
+  ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(L2Floor+voidDepth),Z);  
-  ModelSupport::buildPlane(SMap,hutIndex+26,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(L2Roof+voidHeight),Z);
 
   // L3 WALLS:
-   ModelSupport::buildPlane(SMap,hutIndex+31,
+   ModelSupport::buildPlane(SMap,buildIndex+31,
 			    Origin-Y*(L3Front+voidLength/2.0),Y);
-   ModelSupport::buildPlane(SMap,hutIndex+32,
+   ModelSupport::buildPlane(SMap,buildIndex+32,
 			    Origin+Y*(L3Back+voidLength/2.0),Y);
-   ModelSupport::buildPlane(SMap,hutIndex+33,
+   ModelSupport::buildPlane(SMap,buildIndex+33,
 			    Origin-X*(L3LeftWall+voidWidth/2.0),X);
-   ModelSupport::buildPlane(SMap,hutIndex+34,
+   ModelSupport::buildPlane(SMap,buildIndex+34,
 			    Origin+X*(L3RightWall+voidWidth/2.0),X);
-   ModelSupport::buildPlane(SMap,hutIndex+35,
+   ModelSupport::buildPlane(SMap,buildIndex+35,
 			    Origin-Z*(L3Floor+voidDepth),Z);  
-   ModelSupport::buildPlane(SMap,hutIndex+36,
+   ModelSupport::buildPlane(SMap,buildIndex+36,
 			    Origin+Z*(L3Roof+voidHeight),Z);
 
    // Cylinder Pipe
-   ModelSupport::buildCylinder(SMap,hutIndex+41,Origin,Y,pipeRadius);
-   ModelSupport::buildCylinder(SMap,hutIndex+42,Origin,Y,
+   ModelSupport::buildCylinder(SMap,buildIndex+41,Origin,Y,pipeRadius);
+   ModelSupport::buildCylinder(SMap,buildIndex+42,Origin,Y,
 			       pipeRadius+pipeL1Thickness);
-   ModelSupport::buildCylinder(SMap,hutIndex+43,Origin,Y,
+   ModelSupport::buildCylinder(SMap,buildIndex+43,Origin,Y,
 			       pipeRadius+pipeL1Thickness+pipeL2Thickness);
-   ModelSupport::buildPlane(SMap,hutIndex+51,Origin+Y*pipeLength,Y);
+   ModelSupport::buildPlane(SMap,buildIndex+51,Origin+Y*pipeLength,Y);
 
   return;
 }
@@ -224,51 +235,51 @@ void SkadiHut::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(1 -2 3 -4 5 -6) : (2 -41 -51) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,"2 -42 41 -51 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeL1Mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -42 41 -51 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeL1Mat,0.0,Out));
   setCell("L1Pipe",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,"2 -43 42 -51 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeL2Mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"2 -43 42 -51 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeL2Mat,0.0,Out));
   setCell("L2Pipe",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -12 13 -14 15 -16 43 (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L1Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
   setCell("L1",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex," -1 11 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L1Mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,L1Mat,0.0,Out));
   setCell("FrontWall",cellIndex-1);
   setCell("L1Front",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "11 -22 23 -24 25 -26 43 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L2Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
   setCell("L2",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,"-11 21 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L2Mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -26 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,L2Mat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
   setCell("L2Front",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "21 -32 33 -34 35 -36 43 (22:-23:24:-25:26) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L3Mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
   setCell("L3",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,"-21 31 33 -34 35 -36 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,L3Mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 33 -34 35 -36 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,L3Mat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
   setCell("L3Front",cellIndex-1); 
 
   // Exclude:
-  Out=ModelSupport::getComposite(SMap,hutIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 			 "( 31 -32 33 -34  35 -36 ) : (32 -43 -51) ");
   addOuterSurf(Out);      
 
@@ -291,12 +302,12 @@ SkadiHut::createLinks()
   innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
   innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(hutIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(hutIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
+  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   
   midFC.setConnect(0,Origin-Y*(L1Front+voidLength/2.0),-Y);
@@ -306,12 +317,12 @@ SkadiHut::createLinks()
   midFC.setConnect(4,Origin-Z*(L1Floor+voidDepth),-Z);
   midFC.setConnect(5,Origin+Z*(L1Roof+voidHeight),Z);  
 
-  midFC.setLinkSurf(0,-SMap.realSurf(hutIndex+11));
-  midFC.setLinkSurf(1,SMap.realSurf(hutIndex+12));
-  midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+13));
-  midFC.setLinkSurf(3,SMap.realSurf(hutIndex+14));
-  midFC.setLinkSurf(4,-SMap.realSurf(hutIndex+15));
-  midFC.setLinkSurf(5,SMap.realSurf(hutIndex+16));
+  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   outerFC.setConnect(0,Origin-Y*(L1Front+L2Front+L3Front+voidLength/2.0),-Y);
   outerFC.setConnect(1,Origin+Y*(L1Back+L2Back+L3Back+voidLength/2.0),Y);
@@ -320,12 +331,12 @@ SkadiHut::createLinks()
   outerFC.setConnect(4,Origin-Z*(L1Floor+L2Floor+L3Floor+voidDepth),-Z);
   outerFC.setConnect(5,Origin+Z*(L1Roof+L2Roof+L3Floor+voidHeight),Z);  
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+31));
-  outerFC.setLinkSurf(1,SMap.realSurf(hutIndex+32));
-  outerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+33));
-  outerFC.setLinkSurf(3,SMap.realSurf(hutIndex+34));
-  outerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+35));
-  outerFC.setLinkSurf(5,SMap.realSurf(hutIndex+36));
+  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+31));
+  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+33));
+  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+34));
+  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+35));
+  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+36));
 
   return;
 }

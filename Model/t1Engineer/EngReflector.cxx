@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/EngReflector.cxx
+ * File:   t1Engineer/EngReflector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -61,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -80,9 +80,7 @@ namespace ts1System
 
 EngReflector::EngReflector(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,13),
-  attachSystem::CellMap(),
-  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,7 +90,6 @@ EngReflector::EngReflector(const std::string& Key)  :
 EngReflector::EngReflector(const EngReflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),
   radius(A.radius),width(A.width),
   height(A.height),topCutHeight(A.topCutHeight),
   botCutHeight(A.botCutHeight),cutLen(A.cutLen),cutAngle(A.cutAngle),
@@ -129,7 +126,6 @@ EngReflector::operator=(const EngReflector& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       radius=A.radius;
       width=A.width;
       height=A.height;
@@ -266,74 +262,74 @@ EngReflector::createSurfaces()
 
   
   // Outer layer:
-  ModelSupport::buildCylinder(SMap,refIndex+7,Origin,Z,radius);
-  ModelSupport::buildPlane(SMap,refIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,refIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   // Cuts:
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+11,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+11,Origin
 			   -X*width/2.0-Y*cutLen,-X,Z,cutAngle);			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+12,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+12,Origin
 			   -X*width/2.0+Y*cutLen,-X,Z,-cutAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+13,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+13,Origin
 			   +X*width/2.0-Y*cutLen,X,Z,-cutAngle);			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+14,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+14,Origin
 			   +X*width/2.0+Y*cutLen,X,Z,cutAngle);
 			   
 			   			   
-  ModelSupport::buildPlane(SMap,refIndex+15,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin
                -Z*(height/2.0-botCutHeight),Z);
-  ModelSupport::buildPlane(SMap,refIndex+16,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin
                +Z*(height/2.0-topCutHeight),Z);
 
   // Cut cylinder:
-  ModelSupport::buildCylinder(SMap,refIndex+17,Origin
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin
                -Y*(cCoff+cutRadius),Z,cutRadius);
 
-  ModelSupport::buildPlane(SMap,refIndex+26,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin
                +Z*(height/2.0-topCCHeight),Z);
 
   // Lift plate:
-  ModelSupport::buildPlane(SMap,refIndex+36,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin
                +Z*(height/2.0+liftHeight),Z);
                
   // Cooling pads:
   //thicknesses
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+21,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+21,Origin
 			   -X*(width/2.0+coolPadThick)-Y*cutLen,-X,Z,cutAngle);			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+22,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+22,Origin
 			   -X*(width/2.0+coolPadThick)+Y*cutLen,-X,Z,-cutAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+23,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+23,Origin
 			   +X*(width/2.0+coolPadThick)-Y*cutLen,X,Z,-cutAngle);			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+24,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+24,Origin
 			   +X*(width/2.0+coolPadThick)+Y*cutLen,X,Z,cutAngle);
   //sides
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+101,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+101,Origin
 			   -X*width/2.0
 			   -Y*(cutLen+coolPadOffset),-X,Z,-90.+cutAngle);			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+201,Origin-X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+201,Origin-X*width/2.0
 			   -Y*(cutLen+coolPadOffset+coolPadWidth),-X,Z,-90.0+cutAngle);	
 
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+102,Origin-X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+102,Origin-X*width/2.0
 			   +Y*(cutLen+coolPadOffset),-X,Z,-90.-cutAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+202,Origin-X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+202,Origin-X*width/2.0
 			   +Y*(cutLen+coolPadOffset+coolPadWidth),-X,Z,-90.0-cutAngle);
 
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+103,Origin+X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+103,Origin+X*width/2.0
 			   -Y*(cutLen+coolPadOffset),X,Z,-90.-cutAngle);			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+203,Origin+X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+203,Origin+X*width/2.0
 			   -Y*(cutLen+coolPadOffset+coolPadWidth),X,Z,-90.0-cutAngle);			   
 			   			   			   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+104,Origin+X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+104,Origin+X*width/2.0
 			   +Y*(cutLen+coolPadOffset),X,Z,-90.+cutAngle);					   
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+204,Origin+X*width/2.0
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+204,Origin+X*width/2.0
 			   +Y*(cutLen+coolPadOffset+coolPadWidth),X,Z,-90.0+cutAngle);	
   //heights		   			   
-  ModelSupport::buildPlane(SMap,refIndex+105,
+  ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-Z*(height/2.0-coolPadHeight),Z);
-  ModelSupport::buildPlane(SMap,refIndex+106,
+  ModelSupport::buildPlane(SMap,buildIndex+106,
 			   Origin+Z*(height/2.0-coolPadHeight),Z);
 
 //
@@ -341,30 +337,30 @@ EngReflector::createSurfaces()
 //             the object(s) into FlightLines
 
  //inner cut (Cold Moderators)
-  ModelSupport::buildPlane(SMap,refIndex+401,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+401,Origin
                 +Y*(inCutYOffset-inCutThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,refIndex+402,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+402,Origin
                 +Y*(inCutYOffset+inCutThick/2.0),Y);
-  ModelSupport::buildPlaneRotAxis(SMap,refIndex+403,Origin
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+403,Origin
 			   +X*(inCutXOffset-inCutWidth/2.0),X,Z,inCutAngle);		
-  ModelSupport::buildPlane(SMap,refIndex+404,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+404,Origin
                 +X*(inCutXOffset+inCutWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,refIndex+405,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+405,Origin
                 +Z*(inCutZOffset-inCutHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,refIndex+406,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+406,Origin
                 +Z*(inCutZOffset+inCutHeight/2.0),Z); 
 
 //inner cut(s) (Water Moderator)                
 
-  ModelSupport::buildPlane(SMap,refIndex+415,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+415,Origin
                 +Z*(inBWatCutZOffset-inBWatCutHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,refIndex+416,Origin
+  ModelSupport::buildPlane(SMap,buildIndex+416,Origin
                 +Z*(inBWatCutZOffset+inBWatCutHeight/2.0),Z);     
-  ModelSupport::buildCylinder(SMap,refIndex+417,Origin
+  ModelSupport::buildCylinder(SMap,buildIndex+417,Origin
                   +X*inBWatCutXOffset+Y*inBWatCutYOffset,Z,inBWatCutRadius);
 
 
-  ModelSupport::buildCylinder(SMap,refIndex+427,Origin
+  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin
                   +X*inSWatCutXOffset+Y*inSWatCutYOffset,Z,inSWatCutRadius);
 
   return;
@@ -380,53 +376,53 @@ EngReflector::createObjects(Simulation& System)
   ELog::RegMethod RegA("EngReflector","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,refIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "401 -402 403 -404 405 -406");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,inCutMat,inCutTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,inCutMat,inCutTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-417 415 -416");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,
+  System.addCell(MonteCarlo::Object(cellIndex++,
                             inBWatCutMat,inBWatCutTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex,"-427 415 -416");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-427 415 -416");
+  System.addCell(MonteCarlo::Object(cellIndex++,
                              inBWatCutMat,inBWatCutTemp,Out));
     				   
-  Out=ModelSupport::getComposite(SMap,refIndex,"-7 3 -4 5 -6");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (-12:7:-16:6) ");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (-13:7:-16:6) ");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (-11:7:-5:15) ");
-  Out+=ModelSupport::getComposite(SMap,refIndex, " (-14:7:-5:15) ");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (17:7:-26:6) ");			 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 3 -4 5 -6");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-12:7:-16:6) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-13:7:-16:6) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-11:7:-5:15) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex, " (-14:7:-5:15) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (17:7:-26:6) ");			 
   addOuterSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,refIndex," (-401:402:-403:404:-405:406) ");			 
-  Out+=ModelSupport::getComposite(SMap,refIndex," (417:-415:416) ");		
-  Out+=ModelSupport::getComposite(SMap,refIndex," (427:-415:416) ");		
-  System.addCell(MonteCarlo::Qhull(cellIndex++,reflMat,reflTemp,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-401:402:-403:404:-405:406) ");			 
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (417:-415:416) ");		
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (427:-415:416) ");		
+  System.addCell(MonteCarlo::Object(cellIndex++,reflMat,reflTemp,Out));
   addCell("Reflector",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,refIndex,"-7 3 -4 6 -36");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (-12:7:36:-6) ");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (-13:7:36:-6) ");
-  Out+=ModelSupport::getComposite(SMap,refIndex," (17:7:36:-6) ");			 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,liftMat,liftTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 3 -4 6 -36");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-12:7:36:-6) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-13:7:36:-6) ");
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (17:7:36:-6) ");			 
+  System.addCell(MonteCarlo::Object(cellIndex++,liftMat,liftTemp,Out));
   addOuterUnionSurf(Out);	
 
-  Out=ModelSupport::getComposite(SMap,refIndex,"11  -21 -101 201 5 -105");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));	 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11  -21 -101 201 5 -105");
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));	 
   addOuterUnionSurf(Out);	
 
-  Out=ModelSupport::getComposite(SMap,refIndex,"12  -22 102 -202 106 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12  -22 102 -202 106 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));
   addOuterUnionSurf(Out);	
   
-  Out=ModelSupport::getComposite(SMap,refIndex,"13  -23 103 -203 106 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));		 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"13  -23 103 -203 106 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));		 
   addOuterUnionSurf(Out);	
   
-  Out=ModelSupport::getComposite(SMap,refIndex,"14  -24 -104 204 5 -105");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolPadMat,coolPadTemp,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"14  -24 -104 204 5 -105");
+  System.addCell(MonteCarlo::Object(cellIndex++,coolPadMat,coolPadTemp,Out));
   addOuterUnionSurf(Out);				 
 
     
@@ -441,7 +437,7 @@ EngReflector::getComposite(const std::string& surfList) const
     \return Composite string
   */
 {
-  return ModelSupport::getComposite(SMap,refIndex,surfList);
+  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void
@@ -453,7 +449,7 @@ EngReflector::addToInsertChain(attachSystem::ContainedComp& CC) const
 {
   ELog::RegMethod RegA("EngReflector","addToInsertChain");
 
-  for(int i=refIndex+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     CC.addInsertCell(i);
     
   return;
@@ -468,20 +464,20 @@ EngReflector::createLinks()
 {
   ELog::RegMethod RegA("Reflector","createLinks");
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+7));
-  FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+11));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(refIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+12));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+17));
-  FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+14));
-  FixedComp::setLinkSurf(6,SMap.realSurf(refIndex+4));
-  FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+13));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+5));
-  FixedComp::setLinkSurf(9,SMap.realSurf(refIndex+6));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+6));
  
-  FixedComp::setLinkSurf(10,SMap.realSurf(refIndex+403));   
-  FixedComp::setLinkSurf(11,SMap.realSurf(refIndex+417));   
-  FixedComp::setLinkSurf(12,SMap.realSurf(refIndex+427));   
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+403));   
+  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+417));   
+  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+427));   
     
   FixedComp::setConnect(0,Origin+Z*radius,Z);
   FixedComp::setConnect(2,Origin-X*width/2.0,-X);
@@ -514,7 +510,7 @@ EngReflector::getCells() const
   */
 {
   std::vector<int> Out;
-  for(int i=refIndex+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     Out.push_back(i);
   return Out;
 }

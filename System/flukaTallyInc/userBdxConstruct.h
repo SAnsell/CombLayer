@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/userBdxConstruct.h
+ * File:   flukaTallyInc/userBdxConstruct.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -41,8 +41,8 @@ namespace flukaSystem
   \class userBdxConstruct
   \version 1.0
   \author S. Ansell
-  \date July 2012
-  \brief Constructs a mesh tally from inputParam
+  \date July 2018
+  \brief Constructs a surface tally for fluka
 */
 
 class userBdxConstruct 
@@ -54,6 +54,9 @@ class userBdxConstruct
 
   static bool constructLinkRegion(const Simulation&,const std::string&,
 				  const std::string&,int&,int&);
+  static bool constructSurfRegion(const Simulation&,const std::string&,
+				  const std::string&,const size_t,
+				  const size_t,int&,int&);
 
   static bool checkLinkCells(const Simulation&,const int,const int);
   

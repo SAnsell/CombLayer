@@ -62,8 +62,10 @@ flukaPhysics::flukaPhysics() :
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
-      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECNUC") },
-      { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
+      { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
+      { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") },
+      { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
+      { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") }
     }),
 
   impValue({
@@ -84,11 +86,12 @@ flukaPhysics::flukaPhysics() :
 
   emfFlag({
       { "emfcut",  cellValueSet<2>("emfcut","EMFCUT","",{-1e-3,1e-3}) },
-      { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{1e-3,1e-3})},
+      { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{-1e-3,1e-3})},
       { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",{1e-3,1e-3})},
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
       { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
       { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
+      { "stepsize",cellValueSet<2>("stepsize","STEPSIZE","",{1.0,1}) }
     }),
 
   threeFlag({
@@ -119,11 +122,14 @@ flukaPhysics::flukaPhysics() :
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
 
+      { "coalescence", unitTYPE(1,"1.0 - - - - - ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
       { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
-      { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },	
+      { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },
+      { "evaporation", unitTYPE(1,"3.0 - - - - - ") },
+
       { "prodcut", unitTYPE(1,"%2 %3 1.0 M0 M1 1.0") },
       { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
       { "pho2thr", unitTYPE(1,"%2 %3 -  M0 M1 1.0") },
@@ -143,7 +149,10 @@ flukaPhysics::flukaPhysics() :
       { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
       { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
 
-      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") }
+      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") },
+
+      { "stepsize", unitTYPE(0,"%2 %3 M0 M1 1.0 - ") }
+
     })
   /*!
     Constructor

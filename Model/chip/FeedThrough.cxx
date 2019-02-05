@@ -3,7 +3,7 @@
  
  * File:   chip/FeedThrough.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,7 +66,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "SimProcess.h"
@@ -75,10 +75,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "boxValues.h"
@@ -93,12 +90,11 @@
 namespace hutchSystem
 {
 
-FeedThrough::FeedThrough(const std::string& Key,const size_t Index)  :
-  attachSystem::FixedComp(Key,0),ID(Index),
-  pipeIndex(ModelSupport::objectRegister::Instance().
-	    cell(StrFunc::makeString(Key,Index))),
-  cellIndex(pipeIndex+1),
-  CollTrack(StrFunc::makeString(Key,Index))
+FeedThrough::FeedThrough(const std::string& Key,
+			 const size_t Index)  :
+  attachSystem::FixedComp(Key+std::to_string(Index),0),
+  baseName(Key),ID(Index),
+  CollTrack(Key+std::to_string(Index))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -106,8 +102,7 @@ FeedThrough::FeedThrough(const std::string& Key,const size_t Index)  :
 {}
 
 FeedThrough::FeedThrough(const FeedThrough& A) : 
-  attachSystem::FixedComp(A),ID(A.ID),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
+  attachSystem::FixedComp(A),baseName(A.baseName),ID(A.ID),
   CollTrack(A.CollTrack),height(A.height),
   width(A.width),Offset(A.Offset),CPts(A.CPts)
   /*!
@@ -144,29 +139,39 @@ FeedThrough::~FeedThrough()
 {}
   
 void
-FeedThrough::populate(const Simulation& System)
+FeedThrough::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Data base to use
   */
 {
   ELog::RegMethod RegA("FeedThrough","populate");
   
-  const FuncDataBase& Control=System.getDataBase();  
-  
-  // Two keys : one with a number and the default
-  const std::string keyIndex(StrFunc::makeString(keyName,ID));
 
-  Offset=Control.EvalPair<Geometry::Vec3D>(keyIndex+"Offset",keyName+"Offset");  
-  height=Control.EvalPair<double>(keyIndex+"Height",keyName+"Height"); 
-  width=Control.EvalPair<double>(keyIndex+"Width",keyName+"Width"); 
-  if (Control.hasVariable(keyIndex+"Track0"))
-    CPts=SimProcess::getVarVec<Geometry::Vec3D>(Control,keyIndex+"Track");
-  else
-    CPts=SimProcess::getVarVec<Geometry::Vec3D>(Control,keyName+"Track");
+  Offset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName,"Offset");
+  height=Control.EvalPair<double>(keyName,baseName,"Height");
+  width=Control.EvalPair<double>(keyName,baseName,"Width");
 
-  if (CPts.empty())
-    ELog::EM<<"Col Track "<<ID<<" empty : "<<ELog::endErr;
+  size_t index(0);
+  CPts.clear();
+  while(Control.hasVariable(keyName+"Track"+std::to_string(index)))
+    {
+      CPts.emplace_back(Control.EvalVar<Geometry::Vec3D>
+		       (keyName+"Track"+std::to_string(index)));
+      index++;
+    }
+  if (!index)
+    {
+      while(Control.hasVariable(baseName+"Track"+std::to_string(index)))
+	{
+	  CPts.emplace_back(Control.EvalVar<Geometry::Vec3D>
+			    (baseName+"Track"+std::to_string(index)));
+	  index++;
+	}
+    }
+
+  if (!index)
+    ColErr::EmptyContainer(keyName+" CPts::TrackPts");
   
   return;
 }
@@ -239,7 +244,7 @@ FeedThrough::createAll(Simulation& System,
   ELog::RegMethod RegA("FeedThrough","createAll");
 
   return;
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(HutUnit);
   insertColl(System,HutUnit); 
 

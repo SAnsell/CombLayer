@@ -51,23 +51,30 @@ public:
   groupRange& operator=(const groupRange&);
   ~groupRange() {}    ///< Destructor
 
-  bool empty() const { return LowUnit.empty(); }     /// empty flag
+  bool operator==(const groupRange&) const;
+  bool operator!=(const groupRange&) const;
+  
+  bool empty() const { return LowUnit.empty(); }     ///< empty flag
   void merge();  
   bool valid(const int) const;
   groupRange& combine(const groupRange&);
 
+  void setItems(const std::set<int>&);
   void setItems(const std::vector<int>&);
   
   void addItem(const int);
+  void addItem(const int,const int);
   void addItem(const std::vector<int>&);
   
   void removeItem(const int); 
   void move(const int,const int);
   std::vector<int> getAllCells() const;
 
+  
   int getFirst() const;
   int getLast() const;
   int getNext(const int) const;
+  int getCellIndex(const size_t) const;
   
   void write(std::ostream&) const;
 }; 

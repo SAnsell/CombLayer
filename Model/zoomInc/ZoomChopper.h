@@ -42,13 +42,11 @@ namespace zoomSystem
   \brief ZoomChopper unit  
 */
 
-class ZoomChopper : public attachSystem::TwinComp,
+class ZoomChopper : public attachSystem::FixedGroup,
     public attachSystem::ContainedComp
 {
  private:
   
-  const int chpIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double xStep;                 ///< Origin step
   double yStep;                 ///< Origin step

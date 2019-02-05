@@ -3,7 +3,7 @@
  
  * File:   construct/GroupOrigin.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,14 +60,14 @@
 #include "Object.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "GroupOrigin.h"
 
 namespace constructSystem
 {
 
 GroupOrigin::GroupOrigin(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
-  grpIndex(ModelSupport::objectRegister::Instance().cell(Key))
+  attachSystem::FixedOffset(Key,0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -75,9 +75,7 @@ GroupOrigin::GroupOrigin(const std::string& Key)  :
 {}
 
 GroupOrigin::GroupOrigin(const GroupOrigin& A) : 
-  attachSystem::FixedComp(A),
-  grpIndex(A.grpIndex),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle)
+  attachSystem::FixedOffset(A)
   /*!
     Copy constructor
     \param A :: GroupOrigin to copy
@@ -94,12 +92,7 @@ GroupOrigin::operator=(const GroupOrigin& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      attachSystem::FixedOffset::operator=(A);
     }
   return *this;
 }
@@ -119,13 +112,7 @@ GroupOrigin::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("GroupOrigin","populate");
-  
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");  
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  FixedOffset::populate(Control);
 
   return;
 }
@@ -139,10 +126,8 @@ GroupOrigin::createUnitVector(const attachSystem::FixedComp& FC)
   */
 {
   ELog::RegMethod RegA("GroupOrigin","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,0);
+  applyOffset();
   return;
 }
 

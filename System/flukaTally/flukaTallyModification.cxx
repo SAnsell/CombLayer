@@ -52,6 +52,8 @@
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 #include "flukaTally.h"
@@ -62,20 +64,20 @@ namespace flukaSystem
 {
 
 std::set<flukaTally*>
-getActiveTally(SimFLUKA& Sim,const std::string& tName)
+getActiveTally(const SimFLUKA& Sim,const std::string& tName)
   /*!
     Get a set of points to matching tallys
-    \param Simulation :: Si
+    \param Sim :: Fluka simulation
     \param tName :: tally name [or wild card component]
-    \return Points to tallys
+    \return Set of tally pointer
    */
 {
   ELog::RegMethod RegA("flukaTallyModification[F]","getActiveTally");
 
   std::set<flukaTally*> Out;
-  SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
+  const SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
 
-  for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
+  for(const SimFLUKA::FTallyTYPE::value_type& mc : tmap)
     {
       std::string KN=mc.second->getKeyName();
       if (tName.back()=='*')
@@ -116,33 +118,6 @@ setBinaryOutput(SimFLUKA& Sim,const std::string& tName)
   return 1;
 }
   
-int
-setParticleType(SimFLUKA& Sim,const int tNumber,
-                const std::string& partType) 
-  /*!
-    Get the last tally point based on the tallynumber
-    \param Sim :: System to access tally tables
-    \param tNumber :: Tally number [0 for all]
-    \param partType :: particle type
-    \return tally number [0 on fail]
-  */
-{
-  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setParticleType");
-
-  
-  SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
-  int fnum(0);
-  for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
-    {
-      if (tNumber==0 || mc.first==tNumber ||
-          (tNumber<0 && (mc.first % 10) == -tNumber))
-	{
-	  //          mc.second->setParticles(partType);
-          fnum++;
-	}
-    }
-  return fnum;
-}
 
   
 int

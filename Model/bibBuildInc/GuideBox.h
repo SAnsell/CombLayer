@@ -40,8 +40,6 @@ class GuideBox : public attachSystem::ContainedComp,
 {
  private:
   
-  const int guideIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double width;                   ///< width of GuideBox
   double height;                  ///< height of GuideBox

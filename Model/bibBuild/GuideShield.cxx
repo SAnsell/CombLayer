@@ -3,7 +3,7 @@
  
  * File:   bibBuild/GuideShield.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,8 @@
 #include "inputParam.h"
 #include "ReadFunctions.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,9 +85,7 @@ namespace bibSystem
 GuideShield::GuideShield(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key+std::to_string(Index),4),
-  baseName(Key),
-  shieldIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(shieldIndex+1),innerWidth(0.0),innerHeight(0.0)
+  baseName(Key),innerWidth(0.0),innerHeight(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,8 +95,7 @@ GuideShield::GuideShield(const std::string& Key,const size_t Index)  :
 
 GuideShield::GuideShield(const GuideShield& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  baseName(A.baseName),shieldIndex(A.shieldIndex),
-  cellIndex(A.cellIndex),innerWidth(A.innerWidth),
+  baseName(A.baseName),innerWidth(A.innerWidth),
   innerHeight(A.innerHeight),nLayers(A.nLayers),
   Height(A.Height),Width(A.Width),Mat(A.Mat)
   /*!
@@ -190,8 +188,8 @@ GuideShield::createSurfaces()
   ELog::RegMethod RegA("GuideShield","createSurface");
 
   // Divider plane
-  ModelSupport::buildPlane(SMap,shieldIndex+1,Origin,Y);
-  int SI(shieldIndex);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildPlane(SMap,SI+3,Origin-X*(Width[i]/2.0),X);
@@ -224,10 +222,10 @@ GuideShield::createObjects(Simulation& System,
 
   std::string Out;
 
-  int SI(shieldIndex);
+  int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,shieldIndex,SI,
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				     "1 3M -4M 5M -6M ");
       if (i)
 	Out+=ModelSupport::getComposite(SMap,SI-10,"(-3:4:-5:6)");
@@ -237,12 +235,12 @@ GuideShield::createObjects(Simulation& System,
       Out+=InnerFC.getLinkString(innerSide);
       Out+=OuterFC.getLinkString(outerSide);
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out));
       SI+=10;
     }
   if (nLayers)
     {
-      Out=ModelSupport::getComposite(SMap,shieldIndex,SI-10,"1 3M -4M 5M -6M");
+      Out=ModelSupport::getComposite(SMap,buildIndex,SI-10,"1 3M -4M 5M -6M");
       addOuterSurf(Out);
       addBoundarySurf(Out);
     }
@@ -310,15 +308,13 @@ GuideShield::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("GuideShield","createAll");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   calcInnerDimensions(GO);
   populate(System);
 
   createUnitVector(GO);
   const attachSystem::ContainedComp* CC=
-    OR.getObject<attachSystem::ContainedComp>(GO.getKeyName());
+    System.getObject<attachSystem::ContainedComp>(GO.getKeyName());
     
   createSurfaces();
   createObjects(System,CC,InnerFC,innerIndex,

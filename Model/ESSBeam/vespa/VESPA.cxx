@@ -58,6 +58,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 
 #include "LinkUnit.h"
@@ -67,7 +69,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -207,7 +208,6 @@ VESPA::VESPA(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary as not directly constructed:
-  OR.cell(newName+"Axis");
   OR.addObject(vespaAxis);
 
   OR.addObject(FocusA);

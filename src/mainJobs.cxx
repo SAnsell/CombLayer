@@ -53,9 +53,10 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "TallyCreate.h"
@@ -149,7 +150,7 @@ createVTK(const mainSystem::inputParam& IParam,
 	    IParam.getValueError<std::string>("vtkMesh",0,0,"object/free");
 	  if (PType=="object")
 	      tallySystem::meshConstruct::getObjectMesh
-		(IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
+		(*SimMCPtr,IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);
 	  else if (PType=="free")
 	      tallySystem::meshConstruct::getFreeMesh
 		(IParam,"vtkMesh",0,1,MeshA,MeshB,MPts);

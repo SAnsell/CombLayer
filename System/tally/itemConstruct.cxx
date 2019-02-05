@@ -71,8 +71,9 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
@@ -88,8 +89,8 @@ namespace tallySystem
 
 void
 itemConstruct::processItem(SimMCNP& System,
-			     const mainSystem::inputParam& IParam,
-			     const size_t Index)
+			   const mainSystem::inputParam& IParam,
+			   const size_t Index)
   /*!
     Add point tally (s) as needed
     \param System :: SimMCNP to add tallies
@@ -149,9 +150,6 @@ itemConstruct::addBeamLineItem(SimMCNP& System,
   */
 {
   ELog::RegMethod RegA("itemConstruct","addBeamLineItem");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   std::vector<int> Planes;
 
@@ -160,8 +158,8 @@ itemConstruct::addBeamLineItem(SimMCNP& System,
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
 
-  ModPtr=OR.getObject<attachSystem::FixedComp>(modName);  
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
+  ModPtr=System.getObject<attachSystem::FixedComp>(modName);  
+  ShutterPtr=System.getObject<attachSystem::FixedComp>
     (StrFunc::makeString(std::string("shutter"),beamNum));
 
   if (!ShutterPtr)    
@@ -174,15 +172,21 @@ itemConstruct::addBeamLineItem(SimMCNP& System,
 
   const int masterPlane=ModPtr->getExitWindow(viewSurface,Planes);
   
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
+  const attachSystem::FixedGroup* TwinPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(ShutterPtr);
 
-  Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(1);
-  Geometry::Vec3D shutterPoint=(TwinPtr) ?
-    TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(1); 
-
+  Geometry::Vec3D BAxis;
+  Geometry::Vec3D shutterPoint;
+  if (TwinPtr && TwinPtr->hasKey("Beam"))
+    {
+      BAxis=TwinPtr->getKey("Beam").getY()*-1.0;
+      shutterPoint=TwinPtr->getKey("Beam").getLinkPt(1);
+    }
+  else
+    {
+      BAxis=ShutterPtr->getLinkAxis(1);
+      shutterPoint=ShutterPtr->getLinkPt(1);
+    }
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     pointConstruct::calcWindowIntercept(masterPlane,Planes,shutterPoint);

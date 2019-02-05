@@ -47,8 +47,6 @@ class Cryostat :
 {
  private:
   
-  const int cryIndex;        ///< Index of surface offset
-  int cellIndex;             ///< Cell index  
 
   int active;                ///< Active flag
   

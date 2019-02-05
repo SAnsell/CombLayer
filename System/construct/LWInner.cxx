@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -132,7 +133,7 @@ LWInner::createObjects(Simulation& System)
   for(size_t i=0;i<nLayers;i++)
     {
       cx.str("");
-      int lSurf(refIndex+101+100*static_cast<int>(i));
+      int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<surfNum.size();j++)
 	{
 	  const int signV((surfNum[j]>0) ? 1 : -1);
@@ -143,7 +144,7 @@ LWInner::createObjects(Simulation& System)
 	  lSurf++;
 	}
       Inner=cx.str();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[i],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,layerMat[i],0.0,
 				       Outer+getNotExcludeUnit()+
 				       " #( "+Inner+" )" ));
       Outer=Inner;
@@ -154,7 +155,7 @@ LWInner::createObjects(Simulation& System)
     {
       addBoundarySurf(Inner);
       Inner+=getNotExcludeUnit();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Inner));
     }
   return;
 }
@@ -175,7 +176,7 @@ LWInner::createSurfaces()
   for(vc=surfNum.begin();vc!=surfNum.end();vc++)
     FixedComp::setLinkSurf(linkIndex++,SMap.realSurf(*vc));
 
-  int nSurf(refIndex+1);      
+  int nSurf(buildIndex+1);      
   for(size_t i=0;i<surfCent.size();i++)
     {
       const Geometry::Vec3D CP=Origin+surfCent[i];
@@ -202,7 +203,7 @@ LWInner::createSurfaces()
   for(size_t i=0;i<nLayers;i++)
     { 
       lThick+=layerThick[i];
-      int lSurf(refIndex+101+100*static_cast<int>(i));
+      int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<SList.size();j++)
 	{
 	  const int signV((surfNum[j]>0) ? 1 : -1);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ColBox.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,14 +61,15 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedOffset.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ColBox.h"
 
@@ -76,9 +77,9 @@ namespace hutchSystem
 {
 
 ColBox::ColBox(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),populated(0)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,2),
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -86,12 +87,8 @@ ColBox::ColBox(const std::string& Key)  :
 {}
 
 ColBox::ColBox(const ColBox& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   populated(A.populated),insertCell(A.insertCell),
-  XAxis(A.XAxis),YAxis(A.YAxis),ZAxis(A.ZAxis),
-  Centre(A.Centre),xStep(A.xStep),fStep(A.fStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   width(A.width),depth(A.depth),height(A.height),
   roofThick(A.roofThick),floorThick(A.floorThick),
   frontThick(A.frontThick),backThick(A.backThick),
@@ -114,19 +111,9 @@ ColBox::operator=(const ColBox& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::FixedOffset::operator=(A);
       populated=A.populated;
       insertCell=A.insertCell;
-      XAxis=A.XAxis;
-      YAxis=A.YAxis;
-      ZAxis=A.ZAxis;
-      Centre=A.Centre;
-      xStep=A.xStep;
-      fStep=A.fStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       depth=A.depth;
       height=A.height;
@@ -156,12 +143,7 @@ ColBox::populate(const Simulation& System)
   */
 {
   const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  fStep=Control.EvalVar<double>(keyName+"FStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -178,12 +160,11 @@ ColBox::populate(const Simulation& System)
   outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat");
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
-  populated |= 1;
   return;
 }
 
 void
-ColBox::createUnitVector(const attachSystem::TwinComp& TC)
+ColBox::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     \param TC :: TwinComponent to attach to
@@ -191,28 +172,9 @@ ColBox::createUnitVector(const attachSystem::TwinComp& TC)
 {
   ELog::RegMethod RegA("ColBox","createUnitVector");
 
-  X=TC.getBX();  
-  Y=TC.getBY();
-  Z=TC.getBZ();
-  Origin=Centre+Y*fStep+X*xStep+Z*zStep;
-
-  
-
-  // Handle Angles [AFTER ORIGIN]:
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-
-  YAxis=Y;
-  XAxis=X;
-  ZAxis=Z;
-  Qz.rotate(YAxis);
-  Qz.rotate(ZAxis);
-  Qxy.rotate(YAxis);
-  Qxy.rotate(XAxis);
-  Qxy.rotate(ZAxis);
-    
+  FixedComp::createUnitVector(TC.getKey("Beam"));
+  applyOffset();
+      
   return;
 }
 
@@ -225,32 +187,32 @@ ColBox::createSurfaces()
   ELog::RegMethod RegA("ColBox","createSurface");
   // Back
 
-  ModelSupport::buildPlane(SMap,colIndex+1,Origin,YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+2,Origin+YAxis*depth,YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+3,Origin-XAxis*(width/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+4,Origin+XAxis*(width/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+5,Origin-ZAxis*(depth/2.0),ZAxis);
-  ModelSupport::buildPlane(SMap,colIndex+6,Origin+ZAxis*(depth/2.0),ZAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(depth/2.0),Z);
 
   // Front / Roof and Back planes
-  ModelSupport::buildPlane(SMap,colIndex+11,
-			   Origin+YAxis*backThick,YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+12,
-			   Origin+YAxis*(depth-frontThick),YAxis);
-  ModelSupport::buildPlane(SMap,colIndex+15,
-			   Origin-ZAxis*(depth/2.0-floorThick),ZAxis);
-  ModelSupport::buildPlane(SMap,colIndex+16,
-			   Origin+ZAxis*(depth/2.0-roofThick),ZAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   Origin+Y*backThick,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
+			   Origin+Y*(depth-frontThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+15,
+			   Origin-Z*(depth/2.0-floorThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,
+			   Origin+Z*(depth/2.0-roofThick),Z);
 
   // View Ports:
-  ModelSupport::buildPlane(SMap,colIndex+103,
-			   Origin-XAxis*(viewX/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+104,
-			   Origin+XAxis*(viewX/2.0),XAxis);
-  ModelSupport::buildPlane(SMap,colIndex+105,
-			   Origin-ZAxis*(viewZ/2.0),ZAxis);
-  ModelSupport::buildPlane(SMap,colIndex+106,
-			   Origin-ZAxis*(viewZ/2.0),ZAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+103,
+			   Origin-X*(viewX/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,
+			   Origin+X*(viewX/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,
+			   Origin-Z*(viewZ/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,
+			   Origin-Z*(viewZ/2.0),Z);
   
 
   return;
@@ -267,12 +229,12 @@ ColBox::createObjects(Simulation& System)
 
   std::string Out;
   // LEFT box: [virtual]  
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
   
   // Front plate
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -11 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -11 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,outMat,0.0,Out));
   
   
   return;
@@ -287,7 +249,7 @@ ColBox::setMidFace(const Geometry::Vec3D& fC)
 {
   populated |= 8;
   populated &= (~4);
-  Centre=fC;
+  Origin=fC;
   return;
 }
 
@@ -306,17 +268,17 @@ ColBox::exitWindow(const double Dist,
   ELog::RegMethod RegA("ColBox","exitWindow");
 
   window.clear();
-  window.push_back(SMap.realSurf(colIndex+3));
-  window.push_back(SMap.realSurf(colIndex+4));
-  window.push_back(SMap.realSurf(colIndex+5));
-  window.push_back(SMap.realSurf(colIndex+6));
-  Pt=Origin+YAxis*(depth+Dist);  
-  return SMap.realSurf(colIndex+2);
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
+  Pt=Origin+Y*(depth+Dist);  
+  return SMap.realSurf(buildIndex+2);
 }
 
 void
 ColBox::createPartial(Simulation& System,
-		      const attachSystem::TwinComp& TC)
+		      const attachSystem::FixedGroup& TC)
   /*!
     Generic function to create just sufficient to get datum points
     \param System :: Simulation item
@@ -330,17 +292,17 @@ ColBox::createPartial(Simulation& System,
       ELog::EM<<"ERROR ColBox not populated:"<<populated<<ELog::endErr;
       throw ColErr::ExitAbort(ELog::RegMethod::getFull());
     }
-  createUnitVector(TC);  
+  ColBox::createUnitVector(TC);  
   return;
 }
   
 void
 ColBox::createAll(Simulation& System,
-		      const attachSystem::TwinComp& TC)
+		  const attachSystem::FixedGroup& TC)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param LC :: Linear component to set axis etc
+    \param TC :: Linear component to set axis etc
   */
 {
   ELog::RegMethod RegA("ColBox","createAll");
@@ -353,4 +315,4 @@ ColBox::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE hutchSystem

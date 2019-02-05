@@ -39,8 +39,6 @@ class ConeModerator : public virtualMod
 {
  private:
   
-  const int coneIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double depth;             ///< apex-apex depth of H2
   double length;            ///< inner apex - cut plane 

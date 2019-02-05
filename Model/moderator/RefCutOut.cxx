@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/RefCutOut.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,9 +80,7 @@ namespace moderatorSystem
 {
 
 RefCutOut::RefCutOut(const std::string& Key)  :
-  attachSystem::FixedComp(Key,1),
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1)
+  attachSystem::FixedComp(Key,1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +89,6 @@ RefCutOut::RefCutOut(const std::string& Key)  :
 
 RefCutOut::RefCutOut(const RefCutOut& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   xyAngle(A.xyAngle),zAngle(A.zAngle),
   tarLen(A.tarLen),tarOut(A.tarOut),radius(A.radius),matN(A.matN)
   /*!
@@ -111,7 +109,6 @@ RefCutOut::operator=(const RefCutOut& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       tarLen=A.tarLen;
@@ -198,8 +195,8 @@ RefCutOut::createSurfaces()
 {
   ELog::RegMethod RegA("RefCutOut","createSurface");
 
-  ModelSupport::buildPlane(SMap,pipeIndex+1,Origin+Y*tarOut,Y);
-  ModelSupport::buildCylinder(SMap,pipeIndex+7,Origin+Y*tarOut,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*tarOut,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin+Y*tarOut,Y,radius);
   return;
 }
 
@@ -213,12 +210,12 @@ RefCutOut::createObjects(Simulation& System)
   ELog::RegMethod RegA("RefCutOut","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,pipeIndex," 1 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 ");
   addOuterSurf(Out);
 
   // Inner Void
   Out+=" "+ContainedComp::getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }

@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -60,7 +59,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -70,7 +70,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -83,7 +82,7 @@ namespace constructSystem
 VacuumBox::VacuumBox(const std::string& Key,
 		       const bool flag) : 
   attachSystem::FixedOffset(Key,10),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
   /*!
@@ -94,7 +93,7 @@ VacuumBox::VacuumBox(const std::string& Key,
 {}
 
 VacuumBox::VacuumBox(const VacuumBox& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   centreOrigin(A.centreOrigin),voidHeight(A.voidHeight),
   voidWidth(A.voidWidth),voidDepth(A.voidDepth),
@@ -125,7 +124,7 @@ VacuumBox::operator=(const VacuumBox& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       voidHeight=A.voidHeight;

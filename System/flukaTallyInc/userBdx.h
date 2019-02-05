@@ -64,7 +64,10 @@ class userBdx : public flukaTally
   virtual userBdx* clone() const; 
   userBdx& operator=(const userBdx&);
   virtual ~userBdx();
-  
+
+  /// return fluke name
+  virtual std::string getType() const { return "USRBDX"; };
+
   void setParticle(const std::string&);
   void setCell(const int,const int);
   virtual void setAngle(const bool,const double,

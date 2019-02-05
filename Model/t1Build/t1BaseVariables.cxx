@@ -65,8 +65,8 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselXStep",0.0);           // X Step
   Control.addVariable("PVesselYStep",0.0);           // Y Step
   Control.addVariable("PVesselZStep",0.0);           // Z step
-  Control.addVariable("PVesselXYangle",0.0);         // Rotation about Z
-  Control.addVariable("PVesselZangle",0.0);          // Rotation about X
+  Control.addVariable("PVesselXYAngle",0.0);         // Rotation about Z
+  Control.addVariable("PVesselZAngle",0.0);          // Rotation about X
 
   Control.addVariable("PVesselWidth",13.03);         // Half width
   Control.addVariable("PVesselHeight",7.10);         // Half height
@@ -341,8 +341,8 @@ TS1BulletTarget(FuncDataBase& Control)
   Control.addVariable("BPlatesXStep",0.0);
   Control.addVariable("BPlatesYStep",0.5);
   Control.addVariable("BPlatesZStep",0.0);
-  Control.addVariable("BPlatesXYangle",0.0);
-  Control.addVariable("BPlatesZangle",0.0);
+  Control.addVariable("BPlatesXYAngle",0.0);
+  Control.addVariable("BPlatesZAngle",0.0);
   
 
   Control.addVariable("BPlatesBPlateThick",2.2);    // Backplate thickness

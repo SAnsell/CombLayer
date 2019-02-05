@@ -59,8 +59,8 @@ void TS1CylMod(FuncDataBase& Control)
   Control.addVariable("H2CylModXStep",6.0);  
   Control.addVariable("H2CylModYStep",20.0);  
   Control.addVariable("H2CylModZStep",-13.2);
-  Control.addVariable("H2CylModXYangle",91.5);
-  Control.addVariable("H2CylModZangle",0.0);
+  Control.addVariable("H2CylModXYAngle",91.5);
+  Control.addVariable("H2CylModZAngle",0.0);
   Control.addVariable("H2CylModRadius",6.0);
   Control.addVariable("H2CylModHeight",12.0);
   Control.addVariable("H2CylModMat","ParaH2");
@@ -215,8 +215,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModXStep",5.0);
   Control.addVariable("TriModYStep",17.0);
   Control.addVariable("TriModZStep",12.70);
-  Control.addVariable("TriModXYangle",75.0);
-  Control.addVariable("TriModZangle",0.0);
+  Control.addVariable("TriModXYAngle",75.0);
+  Control.addVariable("TriModZAngle",0.0);
 
   Control.addVariable("TriModNCorner",6);  
   Control.addVariable("TriModAbsolute1",1);
@@ -285,8 +285,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModLayerXStep",3.0);
   Control.addVariable("TriModLayerYStep",6.0);
   Control.addVariable("TriModLayerZStep",13.0);
-  Control.addVariable("TriModLayerXYangle",-60.0);
-  Control.addVariable("TriModLayerZangle",0.0);
+  Control.addVariable("TriModLayerXYAngle",-60.0);
+  Control.addVariable("TriModLayerZAngle",0.0);
 
   Control.addVariable("TriModLayerNPoison",0); 
   Control.addVariable("TriModLayerPYStep1",0.0);       // for 1 poison layer
@@ -427,8 +427,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2ModXStep",6.0);               
   Control.addVariable("H2ModYStep",20.1);             
   Control.addVariable("H2ModZStep",-13.2);     
-  Control.addVariable("H2ModXYangle",91.5);  
-  Control.addVariable("H2ModZangle",0.0);  
+  Control.addVariable("H2ModXYAngle",91.5);  
+  Control.addVariable("H2ModZAngle",0.0);  
   Control.addVariable("H2ModNLayers",3);  
   Control.addVariable("H2ModDepth",10.0);      
   Control.addVariable("H2ModWidth",12.0);   
@@ -471,8 +471,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModXStep",0.0);      
   Control.addVariable("CH4ModYStep",0.90);  // +9.8    
   Control.addVariable("CH4ModZStep",-14.2);     
-  Control.addVariable("CH4ModXYangle",54.5);     
-  Control.addVariable("CH4ModZangle",0.0);     
+  Control.addVariable("CH4ModXYAngle",54.5);     
+  Control.addVariable("CH4ModZAngle",0.0);     
 
  
   Control.addVariable("CH4ModNLayer",7);     
@@ -536,8 +536,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4PreFlatXStep",0.0);      
   Control.addVariable("CH4PreFlatYStep",0.0);  
   Control.addVariable("CH4PreFlatZStep",0.0);     
-  Control.addVariable("CH4PreFlatXYangle",0.0);    
-  Control.addVariable("CH4PreFlatZangle",0.0);  
+  Control.addVariable("CH4PreFlatXYAngle",0.0);    
+  Control.addVariable("CH4PreFlatZAngle",0.0);  
 
   Control.addVariable("CH4PreFlatDepth",12.0);   
   Control.addVariable("CH4PreFlatWidth",12.0);   
@@ -614,10 +614,10 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4LayerXStep",1.7);      
   Control.addVariable("CH4LayerYStep",2.3);  // +9.8    
   Control.addVariable("CH4LayerZStep",-13.4);     
-  Control.addVariable("CH4LayerXYangle",60.0);  
-  Control.addVariable("CH4LayerZangle",0.0);  
+  Control.addVariable("CH4LayerXYAngle",60.0);  
+  Control.addVariable("CH4LayerZAngle",0.0);  
 
-  Control.addVariable("CH4LayerZangle",0.0);  
+  Control.addVariable("CH4LayerZAngle",0.0);  
 
   
   Control.addVariable("CH4LayerNPoison",0);    
@@ -676,8 +676,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2LayerXStep",6.7);
   Control.addVariable("H2LayerYStep",20.1);  // +9.8
   Control.addVariable("H2LayerZStep",-16.1);
-  Control.addVariable("H2LayerXYangle",100.0);
-  Control.addVariable("H2LayerZangle",0.0);
+  Control.addVariable("H2LayerXYAngle",100.0);
+  Control.addVariable("H2LayerZAngle",0.0);
 
 
   Control.addVariable("H2LayerNPoison",0);

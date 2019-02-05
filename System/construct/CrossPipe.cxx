@@ -60,7 +60,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -70,7 +71,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -85,7 +85,7 @@ namespace constructSystem
 
 CrossPipe::CrossPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -97,7 +97,7 @@ CrossPipe::CrossPipe(const std::string& Key) :
 }
 
 CrossPipe::CrossPipe(const CrossPipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   horrRadius(A.horrRadius),
@@ -123,7 +123,7 @@ CrossPipe::operator=(const CrossPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -279,42 +279,42 @@ CrossPipe::createObjects(Simulation& System)
   
   // Void [want a single void]
   Out=ModelSupport::getComposite(SMap,buildIndex," (-7 : -207) 205 -206  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+frontStr+backStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+frontStr+backStr));
   addCell("Void",cellIndex-1);
 
   // Main steel pipe
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 207 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr+backStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr+backStr));
   addCell("Pipe",cellIndex-1);
 
   // Vert steel pipe
   Out=ModelSupport::getComposite(SMap,buildIndex," 17 -217 207 205 -206 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   addCell("Pipe",cellIndex-1);
 
   // BasePlate
   Out=ModelSupport::getComposite(SMap,buildIndex," -217 215 -205 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   addCell("BasePlate",cellIndex-1);
 
   // BasePlate
   Out=ModelSupport::getComposite(SMap,buildIndex," -217 206 -216 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   addCell("TopPlate",cellIndex-1);
   
 
   if (flangeRadius>Geometry::zeroTol && flangeLength>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr));
       addCell("Flange",cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 102 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+backStr));
+      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+backStr));
       addCell("Flange",cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 -102 217 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addCell("FlangeVoid",cellIndex-1);
       Out=ModelSupport::getComposite(SMap,buildIndex," (-107 : -217) 215 -216  ");
     }

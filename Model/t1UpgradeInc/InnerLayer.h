@@ -43,8 +43,6 @@ class InnerLayer : public ts1System::CH4Layer
  private:
 
   const std::string IKeyName;     ///< Inner key name
-  const int innerIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   size_t nPoison;                  ///< Number of poison
   std::vector<double> poisonYStep; ///< Y centre of poison layer

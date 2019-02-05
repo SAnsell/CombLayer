@@ -58,6 +58,8 @@
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "LinkSupport.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "PositionSupport.h"
 
 
@@ -76,7 +78,7 @@ applyZAxisRotate(const FixedComp& FC,const double xyAngle,
 {
   ELog::RegMethod RegA("PositionSupport[F]","applyZAxisRotate");
 
-  if (fabs(xyAngle)>Geometry::zeroTol)
+  if (std::abs(xyAngle)>Geometry::zeroTol)
     {
       const Geometry::Quaternion Qxy=
 	Geometry::Quaternion::calcQRotDeg(xyAngle,FC.getZ());
@@ -86,7 +88,8 @@ applyZAxisRotate(const FixedComp& FC,const double xyAngle,
 }
 
 Geometry::Vec3D
-getCntVec3D(const mainSystem::inputParam& IParam,
+getCntVec3D(const objectGroups& OGrp,
+	    const mainSystem::inputParam& IParam,
             const std::string& K,const size_t setIndex,
             size_t& itemIndex) 
   /*!
@@ -99,8 +102,6 @@ getCntVec3D(const mainSystem::inputParam& IParam,
 { 
   ELog::RegMethod RegA("PositionSuppport[F]","getCntVec3D");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   const std::vector<std::string>& DItems=
     IParam.getObjectItems(K,setIndex);
@@ -131,7 +132,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
   if (itemIndex+3<=NItems && DItems[itemIndex]=="object")
     {
       const attachSystem::FixedComp* TPtr=
-	OR.getObjectThrow<attachSystem::FixedComp>
+	OGrp.getObjectThrow<attachSystem::FixedComp>
 	(DItems[itemIndex+1],"FixedComp");
       
       const long int linkNumber=
@@ -145,8 +146,8 @@ getCntVec3D(const mainSystem::inputParam& IParam,
   if (itemIndex+4<=NItems && DItems[itemIndex]=="objOffset")
     {
       const attachSystem::FixedComp* TPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex+1],
-						   "FixedComp");
+        OGrp.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex+1],
+						     "FixedComp");
       const long int linkNumber=TPtr->getSideIndex(DItems[itemIndex+2]);
       Value=TPtr->getLinkPt(linkNumber);
 
@@ -176,7 +177,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
     {
       ELog::EM<<"Item == "<<DItems[itemIndex]<<ELog::endDiag;
       const attachSystem::FixedComp* TPtr=
-        OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex],
+        OGrp.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex],
 						   "FixedComp");
 
       const long int linkNumber=TPtr->getSideIndex(DItems[itemIndex+1]);

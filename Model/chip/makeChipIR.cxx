@@ -57,23 +57,19 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "World.h"
 #include "ChipIRFilter.h"
 #include "ChipIRGuide.h"
@@ -180,8 +176,9 @@ makeChipIR::buildIsolated(Simulation& System,
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
-      FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
-      FeedVec.back().createAll(System,*HObj);
+      FeedVec.push_back
+      (std::make_shared<FeedThrough>("chipWiresColl",i+1));
+      FeedVec.back()->createAll(System,*HObj);
     }  
   
   return;
@@ -224,8 +221,9 @@ makeChipIR::build(Simulation* SimPtr,
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
-      FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
-      FeedVec.back().createAll(*SimPtr,*HObj);
+      FeedVec.push_back
+	(std::make_shared<FeedThrough>("chipWiresColl",i+1));
+      FeedVec.back()->createAll(*SimPtr,*HObj);
     }  
 
 

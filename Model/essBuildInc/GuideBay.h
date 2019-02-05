@@ -45,8 +45,6 @@ class GuideBay : public attachSystem::ContainedGroup,
   
   const std::string baseKey;    ///< Base key
   const size_t bayNumber;       ///< Bay number [id]
-  const int bayIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double viewAngle;     ///< Angle of guide
   double innerHeight;   ///< height

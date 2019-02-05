@@ -50,8 +50,15 @@ class SqrFMaskGenerator :
   double bFOutRadius;     ///< B flange Outer radius
   double bFLength;        ///< B flange lenght
 
+  double pipeRadius;      ///< Pipe radius
+  double pipeXWidth;      ///< Pipe x-width
+  double pipeZDepth;      ///< Pipe distance below beam
+  double pipeYStart;      ///< Pipe yStart point [from front]
+  double pipeYStep;       ///< Pipe yStep
+  
   std::string flangeMat;         ///< main material    
-
+  std::string waterMat;         ///< coolant material
+  
  public:
 
   SqrFMaskGenerator();

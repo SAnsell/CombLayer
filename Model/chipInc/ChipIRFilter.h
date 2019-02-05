@@ -42,8 +42,6 @@ class ChipIRFilter :  public attachSystem::ContainedComp,
 {
  private:
   
-  const int filterIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   int populated;                ///< populated or not
  
   double xStep;                 ///< Offset on X to Target

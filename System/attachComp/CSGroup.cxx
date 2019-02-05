@@ -57,17 +57,17 @@
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 
 #include "CSGroup.h"
 
@@ -89,6 +89,7 @@ CSGroup::CSGroup(const FCTYPE& FA)  :
   LCutters(2)
   /*!
     Constructor 
+    \param FA :: Single Fixed Component to cut on
   */
 {}
 
@@ -133,7 +134,7 @@ CSGroup::setConnect(const size_t Index,
    \param A :: Axis direciton
  */
 {
-  ELog::RegMethod RegA("ContainedComp","setConnect");
+  ELog::RegMethod RegA("CSGroup","setConnect");
   if (Index>=LCutters.size())
     throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU.size/index");
 
@@ -227,7 +228,7 @@ CSGroup::buildWrapCell(Simulation& System,
 {
   ELog::RegMethod RegA("CSGroup","buildWrapCell");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+  const MonteCarlo::Object* outerObj=System.findObject(pCell);
   if (!outerObj)
     throw ColErr::InContainerError<int>(pCell,"Primary cell does not exist");
 
@@ -284,14 +285,14 @@ CSGroup::insertAllObjects(Simulation& System)
 
   if (primaryCell && buildCell)
     {
-      BBox=ContainedSpace::calcBoundary
+      BBox=SpaceCut::calcBoundary
 	(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
       buildWrapCell(System,primaryCell,buildCell);
     }
 
   if (primaryCell)
     {
-      MonteCarlo::Object* outerObj=System.findQhull(primaryCell);
+      MonteCarlo::Object* outerObj=System.findObject(primaryCell);
       if (outerObj)
 	{
 	  outerObj->addSurfString(inwardCut.complement().display());

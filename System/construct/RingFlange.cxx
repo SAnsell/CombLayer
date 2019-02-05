@@ -3,7 +3,7 @@
  
  * File:   construct/RingFlange.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,9 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -173,7 +175,7 @@ RingFlange::insertBolt(Simulation& System,
   if (!NSection)
     {
       const int CN=getCell("Ring",0);
-      MonteCarlo::Qhull* segComp=System.findQhull(CN);
+      MonteCarlo::Object* segComp=System.findObject(CN);
       if (!segComp)
 	throw ColErr::InContainerError<int>
 	  (CN,"RingCell not found in object"+keyName);
@@ -205,7 +207,7 @@ RingFlange::insertBolt(Simulation& System,
 
   for(const int CN : cellN)
     {
-      MonteCarlo::Qhull* segComp=System.findQhull(CN);
+      MonteCarlo::Object* segComp=System.findObject(CN);
       if (!segComp) 
 	throw ColErr::InContainerError<int>
 	  (CN,"RingCell not found in object"+keyName);
@@ -231,7 +233,7 @@ RingFlange::addWindow(Simulation& System)
       if (NLink<12) setNConnect(12);
 
       std::string Out;
-      int windowIndex(ringIndex+2000);
+      int windowIndex(buildIndex+2000);
       ModelSupport::buildPlane(SMap,windowIndex+1,
 			       Origin+Y*(windowStep-windowThick/2.0),Y);
       ModelSupport::buildPlane(SMap,windowIndex+2,
@@ -240,18 +242,18 @@ RingFlange::addWindow(Simulation& System)
       // Create window
       const std::string radSurf=innerStruct.complement().display();
       Out=ModelSupport::getComposite(SMap,windowIndex,"1 -2  ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out+radSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out+radSurf));
       addCell("window",cellIndex-1);
       
       if (windowFlag>0)
 	{
-	  Out=ModelSupport::getComposite(SMap,windowIndex,ringIndex," 2 -2M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+radSurf));
+	  Out=ModelSupport::getComposite(SMap,windowIndex,buildIndex," 2 -2M ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+radSurf));
 	  addCell("window",cellIndex-1);
-	  Out=ModelSupport::getComposite(SMap,windowIndex,ringIndex," -1 1M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+radSurf));
+	  Out=ModelSupport::getComposite(SMap,windowIndex,buildIndex," -1 1M ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+radSurf));
 	  addCell("window",cellIndex-1);
-	  Out=ModelSupport::getComposite(SMap,ringIndex," 1 -2 ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
 	}
       // exclude:
@@ -285,7 +287,7 @@ RingFlange::addBolts(Simulation& System)
       const double boltSolidAngle
 	((180.0/M_PI)*std::atan((boltRadius+Geometry::zeroTol)/boltCentDist));
       const std::string FBStr=
-	ModelSupport::getComposite(SMap,ringIndex," 1 -2 ");
+	ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
       
       const double angleBR=360.0/static_cast<double>(nBolts);
       Geometry::Vec3D BAxis(Z*boltCentDist);
@@ -298,7 +300,7 @@ RingFlange::addBolts(Simulation& System)
       QStart.rotate(BAxis);
       double angleBCent(rotAngleOffset);  // angle of centre of bolt 
       
-      int boltIndex(ringIndex+1000);
+      int boltIndex(buildIndex+1000);
       for(size_t i=0;i<nBolts;i++)
         {
 	  const Geometry::Vec3D boltC(Origin+BAxis);
@@ -306,7 +308,7 @@ RingFlange::addBolts(Simulation& System)
           QBolt.rotate(BAxis);
 	  
 	  Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+	  System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
           addCell("Bolts",cellIndex-1);
 	  // exclude:
 	  Out=ModelSupport::getComposite(SMap,boltIndex," 7 ");

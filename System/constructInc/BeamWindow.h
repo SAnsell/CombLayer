@@ -41,8 +41,6 @@ class BeamWindow : public attachSystem::ContainedComp,
 {
  private:
   
-  const int bwIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   double incThick1;              ///< Inconel Thickness 1
   double waterThick;              ///< Light water Thickness

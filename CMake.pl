@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 ## use lib "/home/ansell/exe/getMk";
+use lib "./";
 
 use CMakeList;
 use strict;
@@ -18,15 +19,6 @@ my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 ##                    t1Engineer t1Upgrade t3Model zoom );
 
 ##my @modelNames= @modelLibDir;
-
-
-## GENERAL Directory 
-my @sublibdir=("src","beamline","global",
-	       "instrument","scatMat","transport","special",
-	       "test");                            
-
-
-my @libnames=@sublibdir;
 
 ## INCLUDES
 
@@ -129,12 +121,12 @@ $gM->addDepUnit("maxiv", ["maxivBuild","visit","src","simMC",
 			  "transport","scatMat","endf","crystal",
 			  "source","monte","funcBase","log","monte",
                           "flukaProcess","flukaPhysics","flukaTally",
-			   "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			  "tally",
+			   "phitsProcess","phitsPhysics","phitsTally",
+			  "phitsSupport","tally",
 			  "geometry","mersenne","src","world","work",
 			  "xml","poly","support","weights",
-			  "balder","cosaxs","commonBeam","maxpeem",
-			  "insertUnit","md5","construct",
+			  "balder","cosaxs","commonBeam","formax","maxpeem",
+			  "species","insertUnit","md5","construct",
 			  "global","constructVar","physics","simMC",
 			  "scatMat","endf","crystal","transport",
 			  "attachComp","visit","poly"]);
@@ -321,7 +313,7 @@ $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 
 $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src",
 			       "construct","physics","input","process",
-			       "transport","scatMat",
+			       "transport","scatMat","commonBeam",
 			       "source","monte","funcBase","log","monte",
 			       "flukaProcess","flukaPhysics","flukaTally",
 			       "phitsProcess","phitsPhysics","phitsTally","phitsSupport",

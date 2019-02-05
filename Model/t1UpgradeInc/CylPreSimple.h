@@ -40,8 +40,6 @@ class CylPreSimple : public attachSystem::ContainedComp,
 {
  private:
   
-  const int modIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
 
   double innerRadius;             ///< Radius from inner cell
   double innerHeight;             ///< height from inner cell

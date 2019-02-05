@@ -43,8 +43,6 @@ class BeamInsert : public attachSystem::ContainedComp,
 {
  private:
   
-  const int insertIndex;        ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   double length;                ///< Total length
   double radius;                ///< Outer radius [minus wall]

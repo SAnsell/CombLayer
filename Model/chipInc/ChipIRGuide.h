@@ -3,7 +3,7 @@
  
  * File:   chipInc/ChipIRGuide.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ namespace hutchSystem
   line impacts the 40000 outer surface
 */
 
-class ChipIRGuide : public attachSystem::TwinComp,
+class ChipIRGuide : public attachSystem::FixedGroup,
     public attachSystem::ContainedGroup
 {
  private:
@@ -64,8 +64,6 @@ class ChipIRGuide : public attachSystem::TwinComp,
   /// layer type
   typedef std::map<std::string,int> LCTYPE;
 
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   ChipIRFilter Filter;          ///< Filter component
   

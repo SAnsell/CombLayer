@@ -74,8 +74,9 @@ R1RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"HexRadius",800.0);
   Control.addVariable(preName+"HexWallThick",60.0);
   Control.addVariable(preName+"Height",160.0);
-  Control.addVariable(preName+"Depth",180.0);
+  Control.addVariable(preName+"Depth",130.0);
   Control.addVariable(preName+"RoofThick",60.0);
+  Control.addVariable(preName+"RoofExtraVoid",40.0);
   Control.addVariable(preName+"FloorThick",100.0);
 
   Control.addVariable(preName+"WallMat","Concrete");  

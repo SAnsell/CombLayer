@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ChipIRFilter.cxx
  *
@@ -64,7 +64,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,8 +82,7 @@ namespace hutchSystem
 
 ChipIRFilter::ChipIRFilter(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  filterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(filterIndex+1),populated(0)
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +91,6 @@ ChipIRFilter::ChipIRFilter(const std::string& Key)  :
 
 ChipIRFilter::ChipIRFilter(const ChipIRFilter& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  filterIndex(A.filterIndex),cellIndex(A.cellIndex),
   populated(A.populated),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),outerLen(A.outerLen),
   outerWidth(A.outerWidth),outerHeight(A.outerHeight),nLayers(A.nLayers),
@@ -114,7 +113,6 @@ ChipIRFilter::operator=(const ChipIRFilter& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
       populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -199,14 +197,14 @@ ChipIRFilter::createSurfaces()
   ELog::RegMethod RegA("ChipIRFilter","createSurface");
 
 
-  ModelSupport::buildPlane(SMap,filterIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,filterIndex+2,Origin+Y*outerLen,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*outerLen,Y);
   // Widths:
-  ModelSupport::buildPlane(SMap,filterIndex+3,Origin-X*outerWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,filterIndex+4,Origin+X*outerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerWidth/2.0,X);
   
-  ModelSupport::buildPlane(SMap,filterIndex+5,Origin-Z*outerHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,filterIndex+6,Origin+Z*outerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*outerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerHeight/2.0,Z);
 
   return;
 }
@@ -221,12 +219,12 @@ ChipIRFilter::createObjects(Simulation& System)
   ELog::RegMethod RegA("ChipIRFilter","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,filterIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
 
   // Outer layer
-  Out=ModelSupport::getComposite(SMap,filterIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   return;
 }
 

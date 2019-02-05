@@ -43,8 +43,6 @@ class BulletPlates : public attachSystem::ContainedComp,
 {
  private:
   
-  const int ptIndex;            ///< Index of surface offset
-  int cellIndex;                ///< Cell index
   
   size_t nBlock;                ///< nBlock
   std::vector<double> tBlock;   ///< Vector of block thickness

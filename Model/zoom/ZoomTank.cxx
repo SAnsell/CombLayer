@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomTank.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,6 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -63,15 +59,15 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ZoomTank.h"
 
@@ -79,9 +75,9 @@ namespace zoomSystem
 {
 
 ZoomTank::ZoomTank(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0),
-  tankIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tankIndex+1),populated(0)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",0,"Beam",2),
+  populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,8 +85,7 @@ ZoomTank::ZoomTank(const std::string& Key)  :
 {}
 
 ZoomTank::ZoomTank(const ZoomTank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  tankIndex(A.tankIndex),cellIndex(A.cellIndex),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   populated(A.populated),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   nCylinder(A.nCylinder),cylThickness(A.cylThickness),
@@ -117,8 +112,7 @@ ZoomTank::operator=(const ZoomTank& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::FixedGroup::operator=(A);
       populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -165,8 +159,8 @@ ZoomTank::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
 
   nCylinder=Control.EvalVar<size_t>(keyName+"NCylinder");
   CRadius.resize(nCylinder);
@@ -201,7 +195,7 @@ ZoomTank::populate(const Simulation& System)
 }
   
 void
-ZoomTank::createUnitVector(const attachSystem::TwinComp& TC)
+ZoomTank::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -209,26 +203,19 @@ ZoomTank::createUnitVector(const attachSystem::TwinComp& TC)
   */
 {
   ELog::RegMethod RegA("ZoomTank","createUnitVector");
-  TwinComp::createUnitVector(TC);
 
-  // // Reverse X
-  // X*=-1;
-  Origin=bEnter;
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  // SAMPLE Position
-  // const masterRotate& MR=masterRotate::Instance();
-  // ELog::EM<<"Zoom Sample postion == "
-  // 	  <<MR.calcRotate(bEnter+bY*200.0)<<ELog::endDebug;
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
+
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  mainFC.applyAngleRotate(xyAngle,zAngle);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
+
   return;
 }
 
@@ -241,30 +228,30 @@ ZoomTank::createSurfaces()
   ELog::RegMethod RegA("ZoomTank","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,tankIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin+Y*cylTotalDepth,Y);
-  ModelSupport::buildPlane(SMap,tankIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*(cylTotalDepth+length),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tankIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tankIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,tankIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,tankIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin+Y*(cylTotalDepth+wallThick),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(cylTotalDepth+length-wallThick),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width/2.0-wallThick),X);
-  ModelSupport::buildPlane(SMap,tankIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width/2.0-wallThick),X);
-  ModelSupport::buildPlane(SMap,tankIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0-wallThick),Z);
-  ModelSupport::buildPlane(SMap,tankIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0-wallThick),Z);
 
 
@@ -273,26 +260,26 @@ ZoomTank::createSurfaces()
     {
       const int iN(static_cast<int>(i));
       // Plates across
-      ModelSupport::buildPlane(SMap,tankIndex+111+iN,
+      ModelSupport::buildPlane(SMap,buildIndex+111+iN,
 			       Origin+Y*depthSum,Y);
-      ModelSupport::buildPlane(SMap,tankIndex+121+iN,
+      ModelSupport::buildPlane(SMap,buildIndex+121+iN,
 			       Origin+Y*(depthSum+wallThick),Y);
       depthSum+=CylDepth[i];
       // Radii [Outer]
-      ModelSupport::buildCylinder(SMap,tankIndex+171+iN,
+      ModelSupport::buildCylinder(SMap,buildIndex+171+iN,
 				  Origin+X*CylX[i]+Z*CylZ[i],
 				  Y,CRadius[i]);
       // Radii [Inner]
-      ModelSupport::buildCylinder(SMap,tankIndex+181+iN,
+      ModelSupport::buildCylinder(SMap,buildIndex+181+iN,
 				  Origin+X*CylX[i]+Z*CylZ[i],
 				  Y,CRadius[i]-wallThick);
     }      
 
   // Window stuff
-  ModelSupport::buildCylinder(SMap,tankIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin+X*CylX[0]+Z*CylZ[0],
 			      Y,windowRadius);
-  ModelSupport::buildPlane(SMap,tankIndex+101,
+  ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin+Y*(wallThick-windowThick),Y);
   
   return;
@@ -308,55 +295,55 @@ ZoomTank::createObjects(Simulation& System)
   ELog::RegMethod RegA("ZoomTank","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tankIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "111 -2 3 -4 5 -6 (1:-173)");
   addOuterSurf(Out);
 
   // Dead Volume
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-173 171 111 -113 (-112:172)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-173 171 111 -113 (-112:172)");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Inner Volume
-  Out=ModelSupport::getComposite(SMap,tankIndex,"11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // first Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-181 121 -122");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-181 121 -122");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // skipping front window
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-171 181 121 -122");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-171 181 121 -122");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // second Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-182 122 -123");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-182 122 -123");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-172 171 112 -123 (-122:182)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-172 171 112 -123 (-122:182)");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // third Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-183 123 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-183 123 -11");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-173 172 113 -11 (-123:183)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-173 172 113 -11 (-123:183)");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Main bulk tank:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"1 -2 3 -4 5 -6 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 "((-11 173):12:-13:14:-15:16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
 
   // window
   //   support:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-171 17 111 -121");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-171 17 111 -121");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   //  Silicon window
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 101 -121");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 101 -121");
+  System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out));
   //  void
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 111 -101 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 111 -101 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   return;
 }
@@ -397,7 +384,7 @@ ZoomTank::createLinks()
 }
 
 void
-ZoomTank::createAll(Simulation& System,const attachSystem::TwinComp& FC)
+ZoomTank::createAll(Simulation& System,const attachSystem::FixedGroup& FC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

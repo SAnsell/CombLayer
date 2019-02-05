@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -90,8 +91,7 @@ namespace essSystem
 {
 
 BunkerGaps::BunkerGaps(const std::string& bunkerName) :
-  attachSystem::FixedComp(bunkerName+"Gaps",0),
-  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName))
+  attachSystem::FixedComp(bunkerName+"Gaps",0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof

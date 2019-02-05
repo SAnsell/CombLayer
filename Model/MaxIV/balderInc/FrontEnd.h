@@ -107,8 +107,6 @@ class FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
   /// head dump port
   std::shared_ptr<constructSystem::PortTube> heatBox;
-  /// heat dump stick
-  std::shared_ptr<xraySystem::FlangeMount> heatDumpFlange;  
   /// heat dump 
   std::shared_ptr<xraySystem::HeatDump> heatDump;  
   /// Pipe from heat dump to shutters

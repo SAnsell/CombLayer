@@ -3,7 +3,7 @@
  
  * File:   delftInc/H2Groove.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,8 @@ class H2Groove : public attachSystem::ContainedComp,
 {
  private:
 
-  const int gIndex;            ///< groove index
   
-  const int siIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  int gID;                  ///< Groove ide
   
   int face;                 ///< 0 not object / +/- Y direction
   double height;            ///< Height 
@@ -69,7 +67,7 @@ class H2Groove : public attachSystem::ContainedComp,
   ~H2Groove();
 
   /// Access main cell
-  int getMainCell() const { return siIndex+1 ; }
+  int getMainCell() const { return buildIndex+1 ; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::ContainedComp&);

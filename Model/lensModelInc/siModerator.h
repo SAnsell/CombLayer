@@ -49,8 +49,6 @@ class siModerator : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Index of surface offset
   int populated;                ///< populated or not
 
   double modLength;        ///< Moderator length

@@ -37,7 +37,7 @@ namespace xraySystem
 
 class MonoBox :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {

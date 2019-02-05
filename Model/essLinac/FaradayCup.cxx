@@ -3,7 +3,7 @@
 
  * File:   essBuild/FaradayCup.cxx
  *
- * Copyright (c) 2017-2018 by Konstantin Batkov
+ * Copyright (c) 2004-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -92,8 +92,6 @@ FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::FixedOffset(Base+Key,7),
   attachSystem::CellMap(),
   baseName(Base),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -105,7 +103,6 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(),
   baseName(A.baseName),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   active(A.active),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
@@ -144,7 +141,6 @@ FaradayCup::operator=(const FaradayCup& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
       active=A.active;
       engActive=A.engActive;
       length=A.length;
@@ -343,21 +339,21 @@ FaradayCup::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+500,Origin,Z);
 
   double dy(0.0);
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*dy,Y);
   dy += faceLength;
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*dy,Y);
   dy += absLength;
-  ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*dy,Y);
   dy += baseLength;
-  ModelSupport::buildPlane(SMap,surfIndex+31,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+31,Origin+Y*dy,Y);
   dy += colLength;
-  ModelSupport::buildPlane(SMap,surfIndex+41,Origin+Y*dy,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+Y*dy,Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
 
-  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,outerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,faceRadius);
 
   int SI(surfIndex+100);
   for (size_t i=0; i<nShieldLayers; i++)

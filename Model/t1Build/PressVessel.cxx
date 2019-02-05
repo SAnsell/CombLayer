@@ -3,7 +3,7 @@
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,12 +65,12 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -88,8 +88,6 @@ namespace ts1System
 PressVessel::PressVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,12),
-  pvIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pvIndex+1),
   outerWallCell(0),IVoidCell(0),targetLen(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -99,7 +97,6 @@ PressVessel::PressVessel(const std::string& Key)  :
 
 PressVessel::PressVessel(const PressVessel& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  pvIndex(A.pvIndex),cellIndex(A.cellIndex),
   outerWallCell(A.outerWallCell),IVoidCell(A.IVoidCell),
   width(A.width),
   height(A.height),length(A.length),frontLen(A.frontLen),
@@ -138,7 +135,6 @@ PressVessel::operator=(const PressVessel& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       outerWallCell=A.outerWallCell;
       IVoidCell=A.IVoidCell;
       width=A.width;
@@ -239,14 +235,13 @@ PressVessel::populate(const FuncDataBase& Control)
 
   // Number of channels:
   nBwch=Control.EvalVar<size_t>(keyName+"NBwch");
-  begXstep=SimProcess::getVarVec<double>(Control,keyName+"BegXstep");
-  if (begXstep.size()!=nBwch)
-    throw ColErr::MisMatch<size_t>(nBwch,begXstep.size(),
-				"Incorrect number of channels");
-  endXstep=SimProcess::getVarVec<double>(Control,keyName+"EndXstep");
-  if (endXstep.size()!=nBwch)
-    throw ColErr::MisMatch<size_t>(nBwch,endXstep.size(),
-				"Incorrect number of channels");  				        
+  for(size_t index=0;index<nBwch;index++)
+    {
+      begXstep.push_back(Control.EvalVar<double>
+			 (keyName+"BigXstep"+std::to_string(index)));
+      endXstep.push_back(Control.EvalVar<double>
+			 (keyName+"EndXstep"+std::to_string(index)));
+    }		        
     
   bigWchbegThick=Control.EvalVar<double>(keyName+"BigWchbegThick");
   bigWchbegZstep=Control.EvalVar<double>(keyName+"BigWchbegZstep"); 
@@ -297,127 +292,127 @@ PressVessel::createSurfaces()
   ELog::RegMethod RegA("PressVessel","createSurface");
 
   // First layer [Bulk]
-  ModelSupport::buildPlane(SMap,pvIndex+1,
+  ModelSupport::buildPlane(SMap,buildIndex+1,
 			   Origin-Y*frontLen,Y);
-  ModelSupport::buildPlane(SMap,pvIndex+2,
+  ModelSupport::buildPlane(SMap,buildIndex+2,
 			   Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,pvIndex+3,
+  ModelSupport::buildPlane(SMap,buildIndex+3,
 			   Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,pvIndex+4,
+  ModelSupport::buildPlane(SMap,buildIndex+4,
 			   Origin+X*width,X);
-  ModelSupport::buildPlane(SMap,pvIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*height,Z);
-  ModelSupport::buildPlane(SMap,pvIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*height,Z);
 
-  ModelSupport::buildPlane(SMap,pvIndex+8,
+  ModelSupport::buildPlane(SMap,buildIndex+8,
 			   Origin-Y*frontLen-X*cutX,
 			   Origin+Y*cutY-X*width,
 			   Origin+Y*cutY-X*width+Z,
 			   -X-Y);
-  ModelSupport::buildPlane(SMap,pvIndex+9,
+  ModelSupport::buildPlane(SMap,buildIndex+9,
 			   Origin-Y*frontLen+X*cutX,
 			   Origin+Y*cutY+X*width,
 			   Origin+Y*cutY+X*width+Z,
 			   X-Y);
 
-  ModelSupport::buildPlane(SMap,pvIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(frontLen-frontWallThick),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(length-sideWallThick),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(width-sideWallThick),X);
-  ModelSupport::buildPlane(SMap,pvIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(width-sideWallThick),X);
-  ModelSupport::buildPlane(SMap,pvIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height-topWallThick),Z);
-  ModelSupport::buildPlane(SMap,pvIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height-topWallThick),Z);
   
-  const Geometry::Plane* PX=SMap.realPtr<Geometry::Plane>(pvIndex+8);
-  ModelSupport::buildPlane(SMap,pvIndex+18,
+  const Geometry::Plane* PX=SMap.realPtr<Geometry::Plane>(buildIndex+8);
+  ModelSupport::buildPlane(SMap,buildIndex+18,
 			   Origin-Y*frontLen-X*cutX-
 			   PX->getNormal()*sideWallThick,
 			   PX->getNormal());
-  PX=SMap.realPtr<Geometry::Plane>(pvIndex+9);
-  ModelSupport::buildPlane(SMap,pvIndex+19,
+  PX=SMap.realPtr<Geometry::Plane>(buildIndex+9);
+  ModelSupport::buildPlane(SMap,buildIndex+19,
 			   Origin-Y*frontLen+X*cutX-
 			   PX->getNormal()*sideWallThick,
 			   PX->getNormal());
 
   // Front face insert
-  ModelSupport::buildPlane(SMap,pvIndex+21,
+  ModelSupport::buildPlane(SMap,buildIndex+21,
 			   Origin-Y*viewThickness,Y);
-  ModelSupport::buildPlane(SMap,pvIndex+22,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin,Y);
   
-  ModelSupport::buildCylinder(SMap,pvIndex+27,Origin,Y,viewRadius);
-  ModelSupport::buildCylinder(SMap,pvIndex+28,Origin,Y,viewSteelRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,viewRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+28,Origin,Y,viewSteelRadius);
   
   // Pressure Vessel end
-  ModelSupport::buildPlane(SMap,pvIndex+31,
+  ModelSupport::buildPlane(SMap,buildIndex+31,
 			   Origin+Y*(length-endYStep1),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+33,
+  ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*endXOutSize1/2.0,X);
-  ModelSupport::buildPlane(SMap,pvIndex+34,
+  ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*endXOutSize1/2.0,X);
-  ModelSupport::buildPlane(SMap,pvIndex+35,
+  ModelSupport::buildPlane(SMap,buildIndex+35,
 			   Origin-Z*endZOutSize1/2.0,Z);
-  ModelSupport::buildPlane(SMap,pvIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
 			   Origin+Z*endZOutSize1/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,pvIndex+41,
+  ModelSupport::buildPlane(SMap,buildIndex+41,
 			   Origin+Y*(length-endYStep2),Y);
-  ModelSupport::buildPlane(SMap,pvIndex+43,
+  ModelSupport::buildPlane(SMap,buildIndex+43,
 			   Origin-X*endXOutSize2/2.0,X);
-  ModelSupport::buildPlane(SMap,pvIndex+44,
+  ModelSupport::buildPlane(SMap,buildIndex+44,
 			   Origin+X*endXOutSize2/2.0,X);
-  ModelSupport::buildPlane(SMap,pvIndex+45,
+  ModelSupport::buildPlane(SMap,buildIndex+45,
 			   Origin-Z*endZOutSize2/2.0,Z);
-  ModelSupport::buildPlane(SMap,pvIndex+46,
+  ModelSupport::buildPlane(SMap,buildIndex+46,
 			   Origin+Z*endZOutSize2/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,pvIndex+51,
+  ModelSupport::buildPlane(SMap,buildIndex+51,
 			   Origin+Y*(length+steelBulkThick),Y);
-  ModelSupport::buildCylinder(SMap,pvIndex+57,Origin,Y,steelBulkRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+57,Origin,Y,steelBulkRadius);
 
 
-  ModelSupport::buildPlane(SMap,pvIndex+61,
+  ModelSupport::buildPlane(SMap,buildIndex+61,
 			   Origin-Y*winHouseThick,Y);
-  ModelSupport::buildCylinder(SMap,pvIndex+67,Origin,Y,winHouseOutRad);
+  ModelSupport::buildCylinder(SMap,buildIndex+67,Origin,Y,winHouseOutRad);
   
   // Water IN  
   
-  ModelSupport::buildPlane(SMap,pvIndex+71,
+  ModelSupport::buildPlane(SMap,buildIndex+71,
 			   Origin+Y*(length+watInThick),Y);
-  ModelSupport::buildCylinder(SMap,pvIndex+77,Origin,Y,watInRad);					   
+  ModelSupport::buildCylinder(SMap,buildIndex+77,Origin,Y,watInRad);					   
 
 
    // Big Water Channels at the end 
   const Geometry::Plane* endYPlane=
-    ModelSupport::buildPlane(SMap,pvIndex+701,
+    ModelSupport::buildPlane(SMap,buildIndex+701,
 			     Origin+Y*(length+steelBulkThick-bigWchendThick),Y);
 
   const Geometry::Plane* begYPlane=
-     ModelSupport::buildPlane(SMap,pvIndex+801,
+     ModelSupport::buildPlane(SMap,buildIndex+801,
 			      Origin+Y*(length+bigWchbegThick),Y);
 
   const Geometry::Plane* enddZPlane=
-    ModelSupport::buildPlane(SMap,pvIndex+705,
+    ModelSupport::buildPlane(SMap,buildIndex+705,
 			     Origin+Z*(bigWchendZstep-bigWchendHeight/2.0),Z);
 
   const Geometry::Plane* endtZPlane=
-    ModelSupport::buildPlane(SMap,pvIndex+706,
+    ModelSupport::buildPlane(SMap,buildIndex+706,
 			     Origin+Z*(bigWchendZstep+bigWchendHeight/2.0),Z);
 
   const Geometry::Plane* begdZPlane=
-    ModelSupport::buildPlane(SMap,pvIndex+805,
+    ModelSupport::buildPlane(SMap,buildIndex+805,
 			     Origin+Z*(bigWchbegZstep-bigWchbegHeight/2.0),Z);
 
   const Geometry::Plane* begtZPlane=
-    ModelSupport::buildPlane(SMap,pvIndex+806,
+    ModelSupport::buildPlane(SMap,buildIndex+806,
 			     Origin+Z*(bigWchbegZstep+bigWchbegHeight/2.0),Z);	
  
-  int SN(pvIndex+1000);
+  int SN(buildIndex+1000);
   for(size_t i=0;i<nBwch;i++)
     {
       const Geometry::Plane* endmXPlane=
@@ -471,57 +466,57 @@ PressVessel::createObjects(Simulation& System)
   
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"1 -2 3 -4 5 -6 -8 -9 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 -8 -9 ");
   addOuterSurf(Out);
 
-  Out+=ModelSupport::getComposite(SMap,pvIndex,"(-11:12:-13:14:-15:16:18:19)"
+  Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15:16:18:19)"
 				  " (11:28) (11:-61:67:-28) ");
-  Out+=ModelSupport::getComposite(SMap,pvIndex, "(-12:71:77) ");                       				  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-12:71:77) ");                       				  
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   outerWallCell=cellIndex-1;
 
   // Inner Volume
-  Out=ModelSupport::getComposite(SMap,pvIndex,"11 -12 13 -14 15 -16 -18 -19 "
+  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 -18 -19 "
 				 " (28:22) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   IVoidCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,pvIndex,"1 -22 (27:21) -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 (27:21) -28 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
     // Water IN  
-  Out=ModelSupport::getComposite(SMap,pvIndex,"12 -71 -77 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out)); 
+  Out=ModelSupport::getComposite(SMap,buildIndex,"12 -71 -77 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out)); 
 
    // Big Water Channels at the end    
-  int SN(pvIndex+1000);
+  int SN(buildIndex+1000);
   for(size_t i=0;i<nBwch;i++)  
     {
-      Out=ModelSupport::getComposite(SMap,pvIndex,SN,"701 -51 705 -706 3M -4M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out)); 
+      Out=ModelSupport::getComposite(SMap,buildIndex,SN,"701 -51 705 -706 3M -4M");
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out)); 
       
-      Out=ModelSupport::getComposite(SMap,pvIndex,SN,
+      Out=ModelSupport::getComposite(SMap,buildIndex,SN,
 				     "2 -801 805 -806 13M -14M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));  
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));  
 
-      Out=ModelSupport::getComposite(SMap,pvIndex,SN,
+      Out=ModelSupport::getComposite(SMap,buildIndex,SN,
 				     "801 -701 23M -24M 25M -26M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));  
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));  
       SN+=100;
      }
 
   // Pressure Vessel end
-  Out=ModelSupport::getComposite(SMap,pvIndex, "31 -41 33 -34 35 -36 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, "31 -41 33 -34 35 -36 ");
   addOuterUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,pvIndex, "(-31:41:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-31:41:-3:4:-5:6) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex, "41 -2 43 -44 45 -46 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, "41 -2 43 -44 45 -46 ");
   addOuterUnionSurf(Out);
-  Out+=ModelSupport::getComposite(SMap,pvIndex, "(-41:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-41:2:-3:4:-5:6) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,pvIndex, "2 -51 -57 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex, "2 -51 -57 ");
   addOuterUnionSurf(Out);
 
 
@@ -529,12 +524,12 @@ PressVessel::createObjects(Simulation& System)
   // [ i.e not in one object unless surrounded by a wrapper]
 
   std::string OutA=
-    ModelSupport::getComposite(SMap,pvIndex, "((-701:51:-705:706) : ( ");
+    ModelSupport::getComposite(SMap,buildIndex, "((-701:51:-705:706) : ( ");
   std::string OutB=
-    ModelSupport::getComposite(SMap,pvIndex, "((-2:801:-805:806) : ( ");
+    ModelSupport::getComposite(SMap,buildIndex, "((-2:801:-805:806) : ( ");
   std::string OutC=
-    ModelSupport::getComposite(SMap,pvIndex, "((-801:701) : ( ");
-  SN=pvIndex+1000;
+    ModelSupport::getComposite(SMap,buildIndex, "((-801:701) : ( ");
+  SN=buildIndex+1000;
   for(size_t i=0;i<nBwch;SN+=100,i++)  
     {
       // THIS WORKS -- therefore it is independent and redundent (?)
@@ -546,11 +541,11 @@ PressVessel::createObjects(Simulation& System)
   OutB+="))";
   OutC+="))";
   Out+=OutA+OutB+OutC; 
-  Out+=ModelSupport::getComposite(SMap,pvIndex, "(-2:71:77) ");                       
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out+=ModelSupport::getComposite(SMap,buildIndex, "(-2:71:77) ");                       
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // WINDOW HOUSING - Tantalum
-  Out=ModelSupport::getComposite(SMap,pvIndex, "-22 61 -67 28");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex, "-22 61 -67 28");
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   return;
 }
@@ -567,9 +562,9 @@ PressVessel::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("PressVessel","addProtonLine");
   // Proton flight line:
-  std::string Out=ModelSupport::getComposite(SMap,pvIndex, "-21 -27 ");
+  std::string Out=ModelSupport::getComposite(SMap,buildIndex, "-21 -27 ");
   Out+=RefSurfBoundary;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   return cellIndex-1;
 }
 
@@ -581,41 +576,41 @@ PressVessel::createLinks()
 {
   // set Links :: Inner links:
   FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(pvIndex+22));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+22));
 
   FixedComp::setConnect(1,Origin+Y*(length-sideWallThick),-Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(pvIndex+12));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
   FixedComp::setConnect(2,Origin-X*(width-sideWallThick),X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(pvIndex+13));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+13));
 
   FixedComp::setConnect(3,Origin+X*(width-sideWallThick),-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(pvIndex+14));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
 
   FixedComp::setConnect(4,Origin-Z*(height-topWallThick),Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(pvIndex+15));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+15));
 
   FixedComp::setConnect(5,Origin+Z*(height-topWallThick),-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(pvIndex+16));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   // Exit window
   FixedComp::setConnect(6,Origin-Y*viewThickness,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(pvIndex+21));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+21));
 
   // Outer Layers:
   FixedComp::setConnect(7,Origin-X*width,X);
-  FixedComp::setLinkSurf(7,SMap.realSurf(pvIndex+3));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(8,Origin+X*width,-X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(pvIndex+4));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(9,Origin-Z*height,Z);
-  FixedComp::setLinkSurf(9,SMap.realSurf(pvIndex+5));
+  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(10,Origin+Z*height,-Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(pvIndex+6));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(11,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(11,SMap.realSurf(pvIndex+2));
+  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+2));
 
   return;
 }
@@ -635,7 +630,7 @@ PressVessel::buildChannels(Simulation& System)
   channel* CPtr(0);
   for(int i=0;i<NChannel;i++)
     {
-      CItem.push_back(channel(i,pvIndex,"PVesselChannel"));
+      CItem.push_back(channel("PVesselChannel",i,buildIndex));
       CPtr=&CItem.back();
       CPtr->addInsertCell(outerWallCell);
       CPtr->createAll(System,*this,CPtr);
@@ -655,7 +650,7 @@ PressVessel::buildFeedThrough(Simulation& System)
   for(int i=0;i<4;i++)
     {
       ModelSupport::BoxLine 
-	SideWaterChannel(StrFunc::makeString("sideWaterChannel",i+1));   
+	SideWaterChannel("sideWaterChannel"+std::to_string(i+1));   
 
       const double sX((i % 2) ? -1 : 1);
       const double sZ((i / 2) ? -1 : 1);

@@ -22,6 +22,8 @@
 #ifndef physicsSystem_DXTConstructor_h
 #define physicsSystem_DXTConstructor_h
 
+class objectGroups;
+
 namespace attachSystem
 {
   class FixedComp;
@@ -54,7 +56,8 @@ class DXTConstructor
   DXTConstructor& operator=(const DXTConstructor&);
   ~DXTConstructor() {}  ///< Destructor
 
-  void processUnit(PhysicsCards&,const mainSystem::inputParam&,
+  void processUnit(const objectGroups&,
+		   PhysicsCards&,const mainSystem::inputParam&,
 		   const size_t);
   void processDD(PhysicsCards&,const mainSystem::inputParam&,
 		   const size_t);

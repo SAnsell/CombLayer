@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/PortChicaneGenerator.cxx
+ * File:   commonBeamVar/PortChicaneGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

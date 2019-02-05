@@ -56,14 +56,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -71,11 +70,11 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
-
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -99,9 +98,9 @@ ConnectZone::ConnectZone(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::FixedOffset(newName,2),
   attachSystem::ContainedComp(),
-  attachSystem::FrontBackCut(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  
+  buildZone(*this,cellIndex),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   boxA(new xraySystem::LeadBox(newName+"LeadA")),
   pipeA(new constructSystem::LeadPipe(newName+"PipeA")),
@@ -156,7 +155,9 @@ ConnectZone::populate(const FuncDataBase& Control)
     \param Control :: DataBase for variables
    */
 {
+  ELog::RegMethod RegA("ConnectZone","populate");
   FixedOffset::populate(Control);
+
   outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
   return;
 }
@@ -190,62 +191,10 @@ ConnectZone::createSurfaces()
   ELog::RegMethod RegA("ConnectZone","createSurfaces");
 
   if (outerRadius>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-  
-  return;
-}
-
-  
-int
-ConnectZone::createOuterVoidUnit(Simulation& System,
-				 const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
-  /*!
-    Construct outer void object
-    \param System :: Simulation
-    \param FC :: FixedComp
-    \param sideIndex :: link point
-    \return cell nubmer
-  */
-{
-  ELog::RegMethod RegA("ConnectZone","createOuterVoid");
-
-  static HeadRule divider;
-  // construct an cell based on previous cell:
-  std::string Out;
-  
-  if (!divider.hasRule())
-    divider=FrontBackCut::getFrontRule();
-
-  const HeadRule& backHR=
-    (sideIndex) ? FC.getFullRule(-sideIndex) :
-    FrontBackCut::getBackRule();
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=divider.display()+backHR.display();
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-
-
-  divider=backHR;
-  divider.makeComplement();
-  
-  return cellIndex-1;
-}
-
-void
-ConnectZone::insertFirstRegion(Simulation& System,const int cellN)
-  /*!
-    Inserts the first component in the main wall / front wall
-    \param System :: Simuation 
-    \param cellN :: Cell number to place into region
-
-   */
-{
-  ELog::RegMethod RegA("ConnectZone","insertFirstRegion");
- 
-  boxA->insertInCell("FrontWall",System,cellN);
-  boxA->insertInCell("MainWall",System,cellN);
-
+    {
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+      buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
+    }
   return;
 }
   
@@ -257,45 +206,49 @@ ConnectZone::buildObjects(Simulation& System,
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
-    \parma FC :: Connection poitn
+    \parma FC :: Connection point
     \param sideIndex :: link piont
   */
 {
   ELog::RegMethod RegA("ConnectZone","buildObjects");
 
-  const attachSystem::CellMap* CMPtr=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
-  const attachSystem::ContainedComp* CPtr=
-    dynamic_cast<const attachSystem::ContainedComp*>(&FC);
+  const constructSystem::LeadPipe* LeadPipePtr=
+    dynamic_cast<const constructSystem::LeadPipe*>(&FC);
+    
+  // First build construction zone
+  int outerCell;
+  buildZone.setFront(getRule("front"));
+  buildZone.setBack(getRule("back"));  
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System,*this);
 
   std::string Out;
   
   // create first unit:
 
-  // build jump pipe [fit bellows in between]
+  // First build to set bellows/Box
   pipeA->createAll(System,FC,sideIndex);
   
   // Now build lead box
-  if (CMPtr)
-    boxA->addInsertCell("FrontWall",CMPtr->getCell("BackSpaceVoid"));
+  if (LeadPipePtr)
+    boxA->addInsertCell("FrontWall",LeadPipePtr->getCell("BackSpaceVoid"));
   boxA->addInsertCell("BackWall",pipeA->getCell("FrontSpaceVoid"));
   boxA->setCutSurf("portCutA",FC,"pipeWall");
   boxA->setCutSurf("portCutB",*pipeA,"pipeWall");
   boxA->createAll(System,FC,sideIndex);
+
   boxA->splitObjectAbsolute
     (System,1001,
      boxA->getCell("Void"),
      {{FC.getLinkPt(sideIndex),pipeA->getLinkPt(1)}},
      {{FC.getLinkAxis(sideIndex),pipeA->getLinkAxis(-1)}});
-  
 
-  int pipeCell=createOuterVoidUnit(System,*boxA,-1);
-  CellMap::setCell("firstVoid",getCell("OuterVoid"));
 
-  int boxCell=createOuterVoidUnit(System,*boxA,2);
-  boxA->insertInCell("Main",System,boxCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxA,-1);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxA,2);
+  boxA->insertInCell("Main",System,outerCell);
 
-  CPtr->insertInCell(System,boxA->getCell("Void",0));
+  LeadPipePtr->insertInCell(System,boxA->getCell("Void",0));
   pipeA->insertInCell(System,boxA->getCell("Void",2));
 
   // Bellow goes immediately in next unit
@@ -305,8 +258,8 @@ ConnectZone::buildObjects(Simulation& System,
   bellowA->createAll(System,FC,sideIndex);
 
 
-  // SKIP :: pipe B is placed and the ion pump bridges
 
+  // SKIP :: pipe B is placed and the ion pump bridges
   pipeB->createAll(System,*pipeA,2);
 
   pumpBoxA->addInsertCell("FrontWall",pipeA->getCell("BackSpaceVoid"));
@@ -321,16 +274,24 @@ ConnectZone::buildObjects(Simulation& System,
      {{pipeA->getLinkPt(2),pipeB->getLinkPt(1)}},
      {{pipeA->getLinkAxis(2),pipeB->getLinkAxis(-1)}});
 
-  pipeCell=createOuterVoidUnit(System,*pumpBoxA,-1);
-  pipeA->insertInCell(System,pipeCell);
 
-  boxCell=createOuterVoidUnit(System,*pumpBoxA,2);
-  pumpBoxA->insertInCell("Main",System,boxCell);
+  //  pipeCell=createOuterVoidUnit(System,*pumpBoxA,-1);
+  //  pipeA->insertInCell(System,pipeCell);
+  //  int boxCell=createOuterVoidUnit(System,*pumpBoxA,2);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxA,-1);
+  pipeA->insertInCell(System,outerCell);
+  pipeA->insertInCell(System,pumpBoxA->getCell("Void",0));
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxA,2);
+  pumpBoxA->insertInCell("Main",System,outerCell);
+  
   pipeA->insertInCell(System,pumpBoxA->getCell("Void",0));
   pipeB->insertInCell(System,pumpBoxA->getCell("Void",2));
 
+
   ionPumpA->delayPorts();
-  ionPumpA->setInsertCell(pumpBoxA->getCell("Void",1));
+  ionPumpA->addAllInsertCell(pumpBoxA->getCell("Void",1));
   ionPumpA->setFront(*pipeA,2);
   ionPumpA->setBack(*pipeB,1);
   ionPumpA->createAll(System,*pipeA,2);
@@ -350,19 +311,19 @@ ConnectZone::buildObjects(Simulation& System,
 		    {{pipeB->getLinkPt(2),pipeC->getLinkPt(1)}},
 		    {{pipeB->getLinkAxis(2),pipeC->getLinkAxis(-1)}});
   
-  pipeCell=createOuterVoidUnit(System,*boxB,-1);
-  pipeB->insertInCell(System,pipeCell);
-  
-  boxCell=createOuterVoidUnit(System,*boxB,2);
-  boxB->insertInCell("Main",System,boxCell);
 
-  
-    // Bellow goes immediately in next unit
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxB,-1);
+  pipeB->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxB,2);
+  boxB->insertInCell("Main",System,outerCell);
+
+
+  // Bellow goes immediately in next unit
   bellowB->addInsertCell(boxB->getCell("Void",1));
   bellowB->setFront(*pipeB,2);  
   bellowB->setBack(*pipeC,1);
   bellowB->createAll(System,*pipeB,2);
-
 
   pipeB->insertInCell(System,boxB->getCell("Void",0));
   pipeC->insertInCell(System,boxB->getCell("Void",2));
@@ -381,16 +342,16 @@ ConnectZone::buildObjects(Simulation& System,
      {{pipeC->getLinkPt(2),pipeD->getLinkPt(1)}},
      {{pipeC->getLinkAxis(2),pipeD->getLinkAxis(-1)}});
 
-  pipeCell=createOuterVoidUnit(System,*pumpBoxB,-1);
-  pipeC->insertInCell(System,pipeCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxB,-1);
+  pipeC->insertInCell(System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxB,2);
 
-  boxCell=createOuterVoidUnit(System,*pumpBoxB,2);
-  pumpBoxB->insertInCell("Main",System,boxCell);
+  pumpBoxB->insertInCell("Main",System,outerCell);
   pipeC->insertInCell(System,pumpBoxB->getCell("Void",0));
   pipeD->insertInCell(System,pumpBoxB->getCell("Void",2));
 
   ionPumpB->delayPorts();
-  ionPumpB->setInsertCell(pumpBoxB->getCell("Void",1));
+  ionPumpB->addAllInsertCell(pumpBoxB->getCell("Void",1));
   ionPumpB->setFront(*pipeC,2);
   ionPumpB->setBack(*pipeD,1);
   ionPumpB->createAll(System,*pipeC,2);
@@ -410,11 +371,12 @@ ConnectZone::buildObjects(Simulation& System,
 		    {{pipeD->getLinkPt(2),JPipe->getLinkPt(1)}},
 		    {{pipeD->getLinkAxis(2),JPipe->getLinkAxis(-1)}});
 
-  pipeCell=createOuterVoidUnit(System,*boxC,-1);
-  pipeD->insertInCell(System,pipeCell);
-  
-  boxCell=createOuterVoidUnit(System,*boxC,2);
-  boxC->insertInCell("Main",System,boxCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxC,-1);
+  pipeD->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*boxC,2);
+  boxC->insertInCell("Main",System,outerCell);
 
   pipeD->insertInCell(System,boxC->getCell("Void",0));
   JPipe->insertInCell(System,boxC->getCell("Void",2));
@@ -425,8 +387,8 @@ ConnectZone::buildObjects(Simulation& System,
   bellowC->setBack(*JPipe,1);
   bellowC->createAll(System,*pipeD,2);
 
-  boxCell=createOuterVoidUnit(System,*this,0);
-  JPipe->insertInCell(System,boxCell);
+  JPipe->insertInCell(System,masterCell->getName());
+
   return;
 }
 
@@ -459,14 +421,8 @@ ConnectZone::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  //  createOuterVoid(System,FC.sideIndex);
 
-  buildObjects(System,FC,sideIndex);
-
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  Out+=frontRule()+backRule();
-  addOuterSurf(Out);
-    
+  buildObjects(System,FC,sideIndex);    
   createLinks();
   insertObjects(System);
   return;

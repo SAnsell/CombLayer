@@ -51,8 +51,6 @@ namespace xraySystem
   class FlangeMount;
   class LeadBox;
   class Mirror;
-  class MonoVessel;
-  class MonoCrystals;
   class OpticsHutch;
 
     
@@ -68,11 +66,13 @@ class ConnectZone :
   public attachSystem::CopiedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::FrontBackCut,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap      
 {
  private:
 
+  attachSystem::InnerZone buildZone;
+  
   /// First bellow
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
@@ -104,8 +104,6 @@ class ConnectZone :
   void createSurfaces();
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
 		    const long int);
-  int createOuterVoidUnit(Simulation&,const attachSystem::FixedComp&,
-			   const long int);
   void createLinks();
   
  public:
@@ -115,7 +113,7 @@ class ConnectZone :
   ConnectZone& operator=(const ConnectZone&);
   ~ConnectZone();
 
-
+  /// Register pipe
   void registerJoinPipe(const std::shared_ptr<constructSystem::LeadPipe>& JP)
     { JPipe=JP; }
   

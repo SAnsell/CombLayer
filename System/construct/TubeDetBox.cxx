@@ -56,7 +56,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,8 +83,7 @@ TubeDetBox::TubeDetBox(const std::string& Key,const size_t index) :
   attachSystem::FixedOffset(Key+StrFunc::makeString(index),6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   baseName(Key),ID(index),
-  detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(detIndex+1),nDet(0)
+  nDet(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -94,8 +94,8 @@ TubeDetBox::TubeDetBox(const std::string& Key,const size_t index) :
 TubeDetBox::TubeDetBox(const TubeDetBox& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  baseName(A.baseName),ID(A.ID),detIndex(A.detIndex),
-  cellIndex(A.cellIndex),centRadius(A.centRadius),
+  baseName(A.baseName),ID(A.ID),
+  centRadius(A.centRadius),
   tubeRadius(A.tubeRadius),wallThick(A.wallThick),
   height(A.height),detMat(A.detMat),wallMat(A.wallMat),
   nDet(A.nDet),DPoints(A.DPoints)
@@ -119,7 +119,6 @@ TubeDetBox::operator=(const TubeDetBox& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       centRadius=A.centRadius;
       tubeRadius=A.tubeRadius;
       wallThick=A.wallThick;
@@ -209,13 +208,13 @@ TubeDetBox::createSurfaces()
   //main inner box
   
   // tube caps:
-  ModelSupport::buildPlane(SMap,detIndex+5,
+  ModelSupport::buildPlane(SMap,buildIndex+5,
 			   Origin-Z*(height/2.0),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+6,
+  ModelSupport::buildPlane(SMap,buildIndex+6,
 			   Origin+Z*(height/2.0),Z);    
-  ModelSupport::buildPlane(SMap,detIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);    
 
   
@@ -226,24 +225,24 @@ TubeDetBox::createSurfaces()
       const Geometry::Vec3D XDist=XGap*(static_cast<double>(nDet)/2.0);
       const Geometry::Vec3D ZDist=Z*(height/2.0+wallThick);
 
-      ModelSupport::buildPlane(SMap,detIndex+2001,Origin-Y*(centRadius+gap),Y);
-      ModelSupport::buildPlane(SMap,detIndex+2002,Origin+Y*(centRadius+gap),Y);
-      ModelSupport::buildPlane(SMap,detIndex+2003,Origin-XDist-X*gap,X);
-      ModelSupport::buildPlane(SMap,detIndex+2004,Origin+XDist+X*gap,X);
+      ModelSupport::buildPlane(SMap,buildIndex+2001,Origin-Y*(centRadius+gap),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2002,Origin+Y*(centRadius+gap),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2003,Origin-XDist-X*gap,X);
+      ModelSupport::buildPlane(SMap,buildIndex+2004,Origin+XDist+X*gap,X);
 
-      ModelSupport::buildPlane(SMap,detIndex+2005,Origin-ZDist-Z*gap,Z);
-      ModelSupport::buildPlane(SMap,detIndex+2006,Origin+ZDist+Z*gap,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+2005,Origin-ZDist-Z*gap,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+2006,Origin+ZDist+Z*gap,Z);
 
-      ModelSupport::buildPlane(SMap,detIndex+2012,
+      ModelSupport::buildPlane(SMap,buildIndex+2012,
 			       Origin+Y*(centRadius+gap+outerThick),Y);
-      ModelSupport::buildPlane(SMap,detIndex+2013,
+      ModelSupport::buildPlane(SMap,buildIndex+2013,
 			       Origin-XDist-X*(gap+outerThick),X);
-      ModelSupport::buildPlane(SMap,detIndex+2014,
+      ModelSupport::buildPlane(SMap,buildIndex+2014,
 			       Origin+XDist+X*(gap+outerThick),X);
 
-      ModelSupport::buildPlane(SMap,detIndex+2015,
+      ModelSupport::buildPlane(SMap,buildIndex+2015,
 			       Origin-ZDist-Z*(gap+outerThick),Z);
-      ModelSupport::buildPlane(SMap,detIndex+2016,
+      ModelSupport::buildPlane(SMap,buildIndex+2016,
 			       Origin+ZDist+Z*(gap+outerThick),Z);
     }
 
@@ -251,7 +250,7 @@ TubeDetBox::createSurfaces()
   if (nDet)
     {  
       Geometry::Vec3D tubeCent(Origin-XGap*(static_cast<double>(nDet-1)/2.0));
-      int DI(detIndex);
+      int DI(buildIndex);
       for(size_t i=0;i<nDet;i++)
 	{
 	  ModelSupport::buildCylinder(SMap,DI+7,tubeCent,Z,tubeRadius);
@@ -261,12 +260,12 @@ TubeDetBox::createSurfaces()
 	  tubeCent+=XGap;
 	}
       
-      ModelSupport::buildPlane(SMap,detIndex+1001,Origin-Y*centRadius,Y);
-      ModelSupport::buildPlane(SMap,detIndex+1002,Origin+Y*centRadius,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-Y*centRadius,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+Y*centRadius,Y);
       
-      ModelSupport::buildPlane(SMap,detIndex+1003,
+      ModelSupport::buildPlane(SMap,buildIndex+1003,
 			       Origin-XGap*(static_cast<double>(nDet)/2.0),X);
-      ModelSupport::buildPlane(SMap,detIndex+1004,
+      ModelSupport::buildPlane(SMap,buildIndex+1004,
 			       Origin+XGap*(static_cast<double>(nDet)/2.0),X);
     }
 
@@ -288,42 +287,42 @@ TubeDetBox::createObjects(Simulation& System)
       std::string Out;
       std::string mainBody;
       
-      int DI(detIndex);
+      int DI(buildIndex);
       for(size_t i=0;i<nDet;i++)
         {
-          Out=ModelSupport::getComposite(SMap,detIndex,DI," 5 -6 -7M ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
+          Out=ModelSupport::getComposite(SMap,buildIndex,DI," 5 -6 -7M ");
+          System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));
           addCell("Tubes",cellIndex-1);
           addCell("Tube"+StrFunc::makeString(i),cellIndex-1);
           
-          Out=ModelSupport::getComposite(SMap,detIndex,DI,
+          Out=ModelSupport::getComposite(SMap,buildIndex,DI,
                                          " 15 -16 (-5:6:7M) -17M ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
           
           mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
           DI+=100;
         }
 	  // Main body:
-      Out= ModelSupport::getComposite(SMap,detIndex,
+      Out= ModelSupport::getComposite(SMap,buildIndex,
 					  " 1001 -1002 15 -16  1003 -1004 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+mainBody));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+mainBody));
       if (outerMat>=0) 
 	{
 	  Out= ModelSupport::getComposite
-	    (SMap,detIndex," 1001 -2002 2005 -2006  2003 -2004  "
+	    (SMap,buildIndex," 1001 -2002 2005 -2006  2003 -2004  "
                            " (1002:-15:16:-1003:1004)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  // filter
 	  Out= ModelSupport::getComposite
-	    (SMap,detIndex," 2001 -1001 -2002 2005 -2006  2003 -2004  ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,filterMat,0.0,Out));
+	    (SMap,buildIndex," 2001 -1001 -2002 2005 -2006  2003 -2004  ");
+	  System.addCell(MonteCarlo::Object(cellIndex++,filterMat,0.0,Out));
 	  // outer wall
 	  Out= ModelSupport::getComposite
-	    (SMap,detIndex," 2001 -2012 2015 -2016  2013 -2014  "
+	    (SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014  "
                            " (2002:-2003:2004:-2005:2006)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
 	  Out= ModelSupport::getComposite
-	    (SMap,detIndex," 2001 -2012 2015 -2016  2013 -2014 ");
+	    (SMap,buildIndex," 2001 -2012 2015 -2016  2013 -2014 ");
 	}
       addOuterSurf(Out);
     }
@@ -343,7 +342,7 @@ TubeDetBox::createLinks()
 
   if (nDet)
     {
-      int DI(detIndex);
+      int DI(buildIndex);
       const Geometry::Vec3D XGap(X*(2.0*centRadius));
       Geometry::Vec3D tubeCent(Origin-XGap*(static_cast<double>(nDet-1)/2.0));
       for(size_t i=0;i<nDet;i++)

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/TSMainBuilding.h
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2004-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,9 +42,6 @@ class TSMainBuilding :
 {
  private:
    
-  const int surfIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< height

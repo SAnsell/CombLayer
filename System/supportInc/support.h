@@ -45,6 +45,10 @@ std::string removeSpace(const std::string&);
 std::string stripMultSpc(const std::string&);
 /// find quoted blocks (section for strings)
 int quoteBlock(std::string&,std::string&);
+
+ std::string getDelimUnit(const std::string&,const std::string&,
+			  std::string&);
+
 /// strip pre-spaces
 std::string frontBlock(const std::string&);
 /// strip pre/post spaces
@@ -104,6 +108,9 @@ bool removeItem(V<T,Alloc>&,const T&);
 std::vector<std::string> StrParts(std::string);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);
+
+std::vector<std::string>
+StrSeparate(const std::string&,const std::string&);
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 int sliceVector(V<T,Alloc>&,const T&,const T&);

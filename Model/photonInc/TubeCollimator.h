@@ -47,8 +47,6 @@ class TubeCollimator : public attachSystem::ContainedComp,
 
   typedef std::map<int,constructSystem::gridUnit*> MTYPE;
   
-  const int rodIndex;          ///< Index of surface offset
-  int cellIndex;               ///< Cell index
 
 
   std::string layoutType;      ///< layout type

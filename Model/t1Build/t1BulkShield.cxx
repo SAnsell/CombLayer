@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,10 +68,11 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
@@ -80,11 +81,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "collInsertBase.h"
 #include "collInsertBlock.h"
@@ -120,8 +119,7 @@ const size_t t1BulkShield::pearlShutter(18);  // South 9
 
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
-  bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bulkIndex+1),numberBeamLines(18)
+  numberBeamLines(18)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -130,7 +128,6 @@ t1BulkShield::t1BulkShield(const std::string& Key)  :
 
 t1BulkShield::t1BulkShield(const t1BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   numberBeamLines(A.numberBeamLines),
   GData(A.GData),BData(A.BData),vYoffset(A.vYoffset),
   voidRadius(A.voidRadius),shutterRadius(A.shutterRadius),
@@ -156,7 +153,6 @@ t1BulkShield::operator=(const t1BulkShield& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       GData=A.GData;
       BData=A.BData;
       vYoffset=A.vYoffset;
@@ -226,19 +222,19 @@ t1BulkShield::createSurfaces(const attachSystem::FixedComp& FC)
   //
   // Top/Base
   //
-  ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*totalDepth,Z);
-  ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*totalHeight,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*totalDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*totalHeight,Z);
 
   // Layers:
-  ModelSupport::buildCylinder(SMap,bulkIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Z,shutterRadius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Z,innerRadius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+37,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,
 			      Origin,Z,outerRadius);
 
   // INNER LAYER:
-  SMap.addMatch(bulkIndex+7,FC.getLinkSurf(1));
+  SMap.addMatch(buildIndex+7,FC.getLinkSurf(1));
   return;
 }
 
@@ -266,8 +262,8 @@ t1BulkShield::createShutters(Simulation& System,
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i+1,"shutter")));
       else if (i==sandalsShutter)
-	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new BlockShutter(i,"shutter","sandalsShutter")));
+	GData.push_back(std::make_shared<BlockShutter>
+			(i,"shutter","sandalsShutter"));
       else if (i==prismaShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","prismaShutter")));
@@ -323,25 +319,24 @@ t1BulkShield::createShutters(Simulation& System,
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
       // Not registered under KeyName 
-      OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
+      OR.addObject(GData.back());
     }
 
-  MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
+  MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
   if (!shutterObj)
     throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
 
   for(size_t i=0;i<static_cast<size_t>(numberBeamLines);i++)
     {
-      GData[i]->setExternal(SMap.realSurf(bulkIndex+7),
-			    SMap.realSurf(bulkIndex+17),
-			    SMap.realSurf(bulkIndex+6),
-			    SMap.realSurf(bulkIndex+5));
+      GData[i]->setExternal(SMap.realSurf(buildIndex+7),
+			    SMap.realSurf(buildIndex+17),
+			    SMap.realSurf(buildIndex+6),
+			    SMap.realSurf(buildIndex+5));
 
       GData[i]->setGlobalVariables(voidRadius,shutterRadius,
 				   totalDepth,totalHeight);
       GData[i]->setDivide(50000);     /// ARRRHHH....
       GData[i]->createAll(System,0.0,this);    
-      
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 
@@ -365,9 +360,9 @@ t1BulkShield::createBulkInserts(Simulation& System,
 		      (new BulkInsert(i,"bulkInsert")));
 
       BData.back()->setLayers(innerCell,outerCell);
-      BData.back()->setExternal(SMap.realSurf(bulkIndex+17),
-				SMap.realSurf(bulkIndex+27),
-				SMap.realSurf(bulkIndex+37) );
+      BData.back()->setExternal(SMap.realSurf(buildIndex+17),
+				SMap.realSurf(buildIndex+27),
+				SMap.realSurf(buildIndex+37) );
       BData.back()->setGlobalVariables(shutterRadius,innerRadius,outerRadius);
       BData.back()->createAll(System,*GData[i]);    
     }
@@ -387,19 +382,19 @@ t1BulkShield::createObjects(Simulation& System,
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -17 7")+CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   shutterCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -27 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   innerCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -37 27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   outerCell=cellIndex-1;
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -37");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
   addOuterSurf(Out);
 
   return;
@@ -414,11 +409,11 @@ t1BulkShield::processVoid(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","processVoid");
   // Add void
-  MonteCarlo::Qhull* Obj=System.findQhull(74123);
+  MonteCarlo::Object* Obj=System.findObject(74123);
   if (Obj)
     Obj->procString("-1 "+getExclude());
   else
-    System.addCell(MonteCarlo::Qhull(74123,0,0.0,"-1 "+getExclude()));
+    System.addCell(MonteCarlo::Object(74123,0,0.0,"-1 "+getExclude()));
   return;
 }
 
@@ -465,9 +460,9 @@ t1BulkShield::createLinks()
   FixedComp::setConnect(1,Origin-Z*totalDepth,-Z);
   FixedComp::setConnect(2,Origin+Z*totalHeight,Z);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(bulkIndex+37));
-  FixedComp::setLinkSurf(1,-SMap.realSurf(bulkIndex+5));  // base
-  FixedComp::addLinkSurf(2,SMap.realSurf(bulkIndex+6));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+37));
+  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+5));  // base
+  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+6));
 
   return;
 }

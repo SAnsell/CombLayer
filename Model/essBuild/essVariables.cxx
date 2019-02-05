@@ -295,8 +295,8 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TSMainBuildingXStep", 0.0);
   Control.addVariable("TSMainBuildingYStep", 0.0);
   Control.addVariable("TSMainBuildingZStep", 0.0);
-  Control.addVariable("TSMainBuildingXYangle", 0.0);
-  Control.addVariable("TSMainBuildingZangle", 0.0);
+  Control.addVariable("TSMainBuildingXYAngle", 0.0);
+  Control.addVariable("TSMainBuildingZAngle", 0.0);
   Control.addVariable("TSMainBuildingLength", 2200*2.0);
   Control.addVariable("TSMainBuildingWidth",  1090*2.0);
   Control.addVariable("TSMainBuildingHeight", 1000.0);

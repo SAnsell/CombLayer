@@ -41,8 +41,6 @@ class RefBox : public attachSystem::ContainedComp,
 {
  private:
   
-  const int refIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   std::vector<int> surfNum;          ///< Signed surface numbers
   std::vector<Geometry::Vec3D> surfCent;    ///< Relative to origin

@@ -51,7 +51,6 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -64,10 +63,11 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h" 
@@ -76,8 +76,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "chipDataStore.h"
@@ -87,8 +86,9 @@
 namespace shutterSystem
 {
 
-ChipIRShutterFlat::ChipIRShutterFlat(const size_t ID,const std::string& K,
-			     const std::string& CKey)  : 
+ChipIRShutterFlat::ChipIRShutterFlat(const size_t ID,
+				     const std::string& K,
+				     const std::string& CKey)  : 
   GeneralShutter(ID,K),chipKey(CKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -139,14 +139,15 @@ ChipIRShutterFlat::~ChipIRShutterFlat()
 {}
 
 void
-ChipIRShutterFlat::populate(const Simulation& System)
+ChipIRShutterFlat::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
-  GeneralShutter::populate(System);
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("ChipIRShutterFlat","populate");
+  
+  GeneralShutter::populate(Control);
 
   forwardStep=Control.EvalVar<double>(chipKey+"FStep");
   midStep=Control.EvalVar<double>(chipKey+"MFStep");
@@ -197,16 +198,16 @@ ChipIRShutterFlat::createCInfoTable(Simulation& System)
   insertBaseInfo& ASection=CInfo.back();
   
   // top/bottom : back/front
-  ASection.setSides(SMap.realSurf(surfIndex+13),
-		    -SMap.realSurf(surfIndex+14),
-		    -SMap.realSurf(surfIndex+125),
-		    SMap.realSurf(surfIndex+126));
+  ASection.setSides(SMap.realSurf(buildIndex+13),
+		    -SMap.realSurf(buildIndex+14),
+		    -SMap.realSurf(buildIndex+125),
+		    SMap.realSurf(buildIndex+126));
 
   ASection.setInit(frontPt+Z*voidZOffset,BeamAxis, 
 		   frontPt+BeamAxis*forwardStep+Z*voidZOffset,BeamAxis);
   ASection.populate(chipKey+"I");
   
-  ASection.setFPlane(SMap.realSurf(surfIndex+501));
+  ASection.setFPlane(SMap.realSurf(buildIndex+501));
   return;
 }
 
@@ -230,7 +231,7 @@ ChipIRShutterFlat::createShutterInsert(Simulation& System)
     voidZOffset+closedZShift-openZShift : voidZOffset;
   const Geometry::Vec3D Pt=frontPt+BeamAxis*forwardStep+Z*zShift;
   
-  ModelSupport::buildPlane(SMap,surfIndex+501,Pt,BeamAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+501,Pt,BeamAxis);
 
   CS.setCNum(chipIRDatum::secScatCentre,MR.calcRotate(Pt));
 
@@ -239,11 +240,11 @@ ChipIRShutterFlat::createShutterInsert(Simulation& System)
 
   System.removeCell(innerVoidCell);              // Inner void
   // Add front spacer:
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-501 7")+dSurf+ASection.getFullSides();
-  System.addCell(MonteCarlo::Qhull(innerVoidCell,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(innerVoidCell,0,0.0,Out));
   // ADD scatter objects:
-  ASection.createObjects(surfIndex+502,cellIndex);
+  ASection.createObjects(buildIndex+502,cellIndex);
 
   return;
 }  
@@ -267,7 +268,7 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 
   const std::string dSurf=divideStr();
   const int bPlane=ASection.getBPlane();
-  const int outCyl=SMap.realSurf(surfIndex+17);
+  const int outCyl=SMap.realSurf(buildIndex+17);
   
   // Check Centre Point:
   
@@ -284,7 +285,7 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
       // Create BackScrap
       const Geometry::Cylinder* BPtr=
 	SMap.realPtr<Geometry::Cylinder>(outCyl);
-      ModelSupport::buildCylinder(SMap,surfIndex+2007,
+      ModelSupport::buildCylinder(SMap,buildIndex+2007,
 				  BPtr->getCentre(),BPtr->getNormal(),
 				  BPtr->getRadius()-backScrapThick);
       
@@ -294,39 +295,39 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
       const Geometry::Vec3D Cp(ASection.getLastPt());
       const Geometry::Vec3D Ep(endPt+Z*voidZOffset);
       // left/right/base/top
-      ModelSupport::buildPlane(SMap,surfIndex+1503,
+      ModelSupport::buildPlane(SMap,buildIndex+1503,
 			       Cp+X*linerStartXZ[0]+Z*linerStartXZ[2],
 			       Cp+X*linerStartXZ[0]+Z*linerStartXZ[3],
 			       Ep+X*linerEndXZ[0]+Z*linerEndXZ[2],
 			       X);
-      ModelSupport::buildPlane(SMap,surfIndex+1504,
+      ModelSupport::buildPlane(SMap,buildIndex+1504,
 			       Cp+X*linerStartXZ[1]+Z*linerStartXZ[2],
 			       Cp+X*linerStartXZ[1]+Z*linerStartXZ[3],
 			       Ep+X*linerEndXZ[1]+Z*linerEndXZ[2],
 			       -X);
-      ModelSupport::buildPlane(SMap,surfIndex+1505,
+      ModelSupport::buildPlane(SMap,buildIndex+1505,
 			       Cp+X*linerStartXZ[0]+Z*linerStartXZ[2],
 			       Cp+X*linerStartXZ[1]+Z*linerStartXZ[2],
 			       Ep+X*linerEndXZ[1]+Z*linerEndXZ[2],
 			       Z);
-      ModelSupport::buildPlane(SMap,surfIndex+1506,
+      ModelSupport::buildPlane(SMap,buildIndex+1506,
 			       Cp+X*linerStartXZ[0]+Z*linerStartXZ[3],
 			       Cp+X*linerStartXZ[1]+Z*linerStartXZ[3],
 			       Ep+X*linerEndXZ[1]+Z*linerEndXZ[3],
 			       -Z);
       // Inner void
-      Out=ModelSupport::getComposite(SMap,surfIndex,"1503 1504 1505 1506");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+fullLength));
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1503 1504 1505 1506");
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+fullLength));
       // Lead
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "(-1503:-1504:-1505:-1506) -2007 ");
       Out+=ASection.getFullSides()+leadLength;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shineMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shineMat,0.0,Out));
       // Aluminium
-      Out=ModelSupport::getComposite(SMap,surfIndex,
+      Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "(-1503:-1504:-1505:-1506) 2007 ");
       Out+=ASection.getFullSides()+fullLength;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,backScrapMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,backScrapMat,0.0,Out));
 
       
       // ADD SHINE POINTS TO CHIPDATUM:
@@ -343,22 +344,22 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
       Geometry::Vec3D backPt;
       for(int i=0;i<4;i++)
 	{
-	  Pt=SurInter::getPoint(SMap.realSurfPtr(surfIndex+505),
-				SMap.realSurfPtr(surfIndex+1503+(i%2)),
-				SMap.realSurfPtr(surfIndex+1505+i/2));
+	  Pt=SurInter::getPoint(SMap.realSurfPtr(buildIndex+505),
+				SMap.realSurfPtr(buildIndex+1503+(i%2)),
+				SMap.realSurfPtr(buildIndex+1505+i/2));
 	  CS.setCNum(chipIRDatum::shinePt1+static_cast<size_t>(i),
 		     MR.calcRotate(Pt));
 	  frontPt+=Pt;
 	  Pt=SurInter::getPoint(SMap.realSurfPtr(outCyl),
-				SMap.realSurfPtr(surfIndex+1503+(i%2)),
-				SMap.realSurfPtr(surfIndex+1505+i/2),
+				SMap.realSurfPtr(buildIndex+1503+(i%2)),
+				SMap.realSurfPtr(buildIndex+1505+i/2),
 				Ep);
 	  CS.setCNum(chipIRDatum::shinePt5+static_cast<size_t>(i),
 		     MR.calcRotate(Pt));
 	  backPt+=Pt;
 	}
-      FixedComp::setConnect(0,frontPt/4.0,-beamAxis);
-      FixedComp::setConnect(1,backPt/4.0,beamAxis);
+      FixedComp::setConnect(0,frontPt/4.0,-bY);
+      FixedComp::setConnect(1,backPt/4.0,bY);
     }
   else
     {
@@ -391,7 +392,7 @@ ChipIRShutterFlat::createAll(Simulation& System,const double ZOffset,
 {
   ELog::RegMethod RegA("ChipIRShutterFlat","createAll");
   GeneralShutter::createAll(System,ZOffset,FCPtr);
-  populate(System);
+  populate(System.getDataBase());
   createCInfoTable(System);
   createShutterInsert(System);  
   createShinePipe(System);

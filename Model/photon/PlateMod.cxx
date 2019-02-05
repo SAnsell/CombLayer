@@ -3,7 +3,7 @@
  
  * File:   photon/PlateMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
@@ -56,13 +55,13 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -78,9 +77,7 @@ namespace photonSystem
       
 PlateMod::PlateMod(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  plateIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(plateIndex+1)
+  attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -89,8 +86,7 @@ PlateMod::PlateMod(const std::string& Key) :
 
 PlateMod::PlateMod(const PlateMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),
-  plateIndex(A.plateIndex),cellIndex(A.cellIndex),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
   outerWidth(A.outerWidth),outerHeight(A.outerHeight),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   Layer(A.Layer),outerMat(A.outerMat)
@@ -112,7 +108,6 @@ PlateMod::operator=(const PlateMod& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
       outerWidth=A.outerWidth;
       outerHeight=A.outerHeight;
       innerWidth=A.innerWidth;
@@ -162,10 +157,9 @@ PlateMod::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nLayers;i++)
     {
-      const std::string KN=StrFunc::makeString(i);
+      const std::string KN=std::to_string(i);
       plateInfo PI;
-      PI.name=Control.EvalDefVar<std::string>
-        (keyName+"Name"+KN,"Layer"+StrFunc::makeString(i));
+      PI.name=Control.EvalDefVar<std::string>(keyName+"Name"+KN,"Layer"+KN);
       PI.thick=Control.EvalVar<double>(keyName+"Thick"+KN);
       PI.vHeight=Control.EvalVar<double>(keyName+"VHeight"+KN);
       PI.vWidth=Control.EvalVar<double>(keyName+"VWidth"+KN);
@@ -203,19 +197,19 @@ PlateMod::createSurfaces()
   ELog::RegMethod RegA("PlateMod","createSurfaces");
 
   // Outer surf
-  ModelSupport::buildPlane(SMap,plateIndex+3,Origin-X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,plateIndex+4,Origin+X*(outerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,plateIndex+5,Origin-Z*(outerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,plateIndex+6,Origin+Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(outerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(outerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(outerHeight/2.0),Z);
 
   // Inner layered boundary [easily convertable to multiple different]
-  ModelSupport::buildPlane(SMap,plateIndex+13,Origin-X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,plateIndex+14,Origin+X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,plateIndex+15,Origin-Z*(innerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,plateIndex+16,Origin+Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(innerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(innerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(innerHeight/2.0),Z);
 
   
-  int SI(plateIndex+100);
+  int SI(buildIndex+100);
   Geometry::Vec3D OR(Origin);
   for(const plateInfo& PI : Layer)
     {
@@ -252,9 +246,9 @@ PlateMod::createObjects(Simulation& System)
   // Build outer layer
 
   const std::string innerContainer=
-    ModelSupport::getComposite(SMap,plateIndex,"13 -14 15 -16 ");
+    ModelSupport::getComposite(SMap,buildIndex,"13 -14 15 -16 ");
   
-  int SI(plateIndex+100);
+  int SI(buildIndex+100);
   for(const plateInfo& PI : Layer)
     {
       // void in middle
@@ -262,24 +256,24 @@ PlateMod::createObjects(Simulation& System)
           PI.vWidth>Geometry::zeroTol)
         {
           Out=ModelSupport::getComposite(SMap,SI,"1 -101 3 -4 5 -6 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
           voidCut=ModelSupport::getComposite(SMap,SI,"(-3:4:-5:6)");
         }
       else
         voidCut="";
       
       Out=ModelSupport::getComposite(SMap,SI,"1 -101");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,PI.mat,PI.temp,
+      System.addCell(MonteCarlo::Object(cellIndex++,PI.mat,PI.temp,
                                        Out+innerContainer+voidCut));
       SI+=100;
 
     }
-  Out=ModelSupport::getComposite(SMap,plateIndex,SI,
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI,
                                  " 101 3 -4 5 -6 (-13:14:-15:16) -1M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,plateIndex,SI," 101 3 -4 5 -6 -1M ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,SI," 101 3 -4 5 -6 -1M ");
   addOuterSurf(Out);
   return; 
 }
@@ -295,26 +289,26 @@ PlateMod::createLinks()
   double tThick(0.0);
   for(const plateInfo& PI : Layer)
     tThick+=PI.thick;
-  const int NL(plateIndex+static_cast<int>(Layer.size()-1)*100);
+  const int NL(buildIndex+static_cast<int>(Layer.size()-1)*100);
 
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(plateIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*tThick,Y);
   FixedComp::setLinkSurf(1,-SMap.realSurf(NL+101));
 
   FixedComp::setConnect(2,Origin+Y*(tThick/2.0)-X*(outerWidth/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(plateIndex+3));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
   
   FixedComp::setConnect(3,Origin+Y*(tThick/2.0)+X*(outerWidth/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(plateIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin+Y*(tThick/2.0)-Z*(outerHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(plateIndex+5));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Y*(tThick/2.0)+Z*(outerHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(plateIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

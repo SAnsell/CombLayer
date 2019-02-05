@@ -29,7 +29,7 @@ namespace attachSystem
 
 struct cutUnit
 {
-  HeadRule main;            ///<  cut
+  HeadRule main;           ///<  cut
   HeadRule divider;        ///<  divider
 };
   
@@ -95,10 +95,6 @@ class ExternalCut
   std::string getComplementStr(const std::string&) const;
 
   std::string getBridgeStr(const std::string&) const;
-
-  void makeShiftedSurf(ModelSupport::surfRegister&,
-		      const std::string&,const int,
-		      const int,const Geometry::Vec3D&,const double) const;
   
   const HeadRule& getRule(const std::string&) const;
   const HeadRule& getDivider(const std::string&) const;
@@ -108,6 +104,11 @@ class ExternalCut
 			     const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
 
+  
+  void makeShiftedSurf(ModelSupport::surfRegister&,
+		       const std::string&,const int,
+		       const int,const Geometry::Vec3D&,const double) const;
+  
   void makeExpandedSurf(ModelSupport::surfRegister&,
 			const std::string&,const int,
 			const Geometry::Vec3D&,

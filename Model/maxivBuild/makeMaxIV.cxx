@@ -58,6 +58,8 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -65,7 +67,6 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
@@ -81,6 +82,8 @@
 #include "BALDER.h"
 #include "COSAXS.h"
 #include "MAXPEEM.h"
+#include "FORMAX.h"
+#include "SPECIES.h"
 
 #include "makeMaxIV.h"
 
@@ -93,14 +96,9 @@ makeMaxIV::makeMaxIV() :
     Constructor
  */
 {
-  // Require registration of THIS world
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  std::shared_ptr<attachSystem::FixedComp> worldPtr=
-    std::make_shared<attachSystem::FixedComp>(World::masterOrigin());
-  OR.addObject(worldPtr);
-  // stuff for R1.5
   OR.addObject(r1Ring);
 }
 
@@ -120,10 +118,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
     \param IParam :: Input paramters
   */
 {
-  ELog::RegMethod RegA("makeMaxIV","makeR1Ring");
+  ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
 
   const int voidCell(74123);
-  
+
+
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
 
@@ -143,7 +142,13 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre7"));
-	      const long int I=r1Ring->getSideIndex("OpticCentre7");
+	    }
+	  if (BL=="SPECIES")  // sector 10
+	    {
+	      SPECIES BL("Species");
+	      BL.setRing(r1Ring);
+	      BL.build(System,*r1Ring,
+		       r1Ring->getSideIndex("OpticCentre6"));
 	    }
 	  index++;
 	}
@@ -166,11 +171,9 @@ makeMaxIV::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeMaxIV","makeBeamLine");
 
   static const std::set<std::string> beamNAMES
-    ({"BALDER","COSAXS"});
+    ({"BALDER","COSAXS","FORMAX"});
 
   bool outFlag(0);  
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   typedef std::map<std::string,std::vector<std::string>> mTYPE;
   mTYPE stopUnits=IParam.getMapItems("stopPoint");
@@ -202,7 +205,7 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	  index+=3;
 
           const attachSystem::FixedComp* FCOrigin=
-	    OR.getObjectThrow<attachSystem::FixedComp>
+	    System.getObjectThrow<attachSystem::FixedComp>
 	    (FCName,"FixedComp not found for origin");
 
 	  std::map<std::string,std::string>::const_iterator mc;
@@ -226,6 +229,18 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	      BL.build(System,*FCOrigin,linkIndex);
 	      outFlag=1;
 	    }
+	  else if (BL=="FORMAX")
+	    {
+	      FORMAX BL("Formax");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
+	      BL.build(System,*FCOrigin,linkIndex);
+	      outFlag=1;
+	    }
+
 	}
     }
 
@@ -247,7 +262,6 @@ makeMaxIV::build(Simulation& System,
   //  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
-  
   if (makeBeamLine(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
   else

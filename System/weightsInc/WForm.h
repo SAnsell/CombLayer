@@ -24,7 +24,7 @@
 
 namespace MonteCarlo
 {
-  class Qhull;
+  class Object;
 }
 
 /*!
@@ -92,7 +92,7 @@ class WForm
   virtual void scaleWeights(const int,const std::vector<double>&) =0;
   virtual void scaleWeights(const int,const double&) =0;
   virtual void maskCell(const int) =0;
-  virtual void populateCells(const std::map<int,MonteCarlo::Qhull*>&) =0;
+  virtual void populateCells(const std::map<int,MonteCarlo::Object*>&) =0;
   virtual void renumberCell(const int,const int) =0;
   virtual void balanceScale(const std::vector<double>&) =0;
 

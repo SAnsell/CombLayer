@@ -63,10 +63,11 @@
 #include "Object.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "AttachSupport.h"
 #include "SurInter.h"
@@ -253,7 +254,7 @@ SpaceCut::setOuterSurf(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","setOuterSurf(cell)");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  const MonteCarlo::Object* outerObj=System.findObject(cellN);
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
 
@@ -286,7 +287,7 @@ SpaceCut::setPrimaryCell(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","setPrimaryCell(cell)");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  const MonteCarlo::Object* outerObj=System.findObject(cellN);
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
 
@@ -314,7 +315,7 @@ SpaceCut::calcBoundary(const Simulation& System,
 {
   ELog::RegMethod RegA("SpaceCut","calcBoundary(System)");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  const MonteCarlo::Object* outerObj=System.findObject(cellN);
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
 
@@ -571,7 +572,7 @@ SpaceCut::buildWrapCell(Simulation& System,
   double matTemp=0.0;
   if (pCell)
     {
-      const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+      const MonteCarlo::Object* outerObj=System.findObject(pCell);
       if (!outerObj)
 	throw ColErr::InContainerError<int>
 	  (pCell,"Primary cell does not exist");
@@ -704,7 +705,7 @@ SpaceCut::insertPair(Simulation& System,
 
   for(const int pCell : insertCells)
      {
-      MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+      MonteCarlo::Object* outerObj=System.findObject(pCell);
       if (!outerObj)
 	throw ColErr::InContainerError<int>
 	  (pCell,"Primary cell does not exist");
@@ -736,7 +737,7 @@ SpaceCut::insertObjects(Simulation& System)
   
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(primaryCell);
+      MonteCarlo::Object* outerObj=System.findObject(primaryCell);
       if (outerObj)
 	outerObj->addSurfString(outerCut.complement().display());
       else
@@ -774,7 +775,7 @@ SpaceCut::insertObjects(Simulation& System,
 
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(primaryCell);
+      MonteCarlo::Object* outerObj=System.findObject(primaryCell);
       if (outerObj)
 	outerObj->addSurfString(outerCut.complement().display());
       else

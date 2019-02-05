@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/PreCollimator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,16 +66,15 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "HoleUnit.h"
 #include "PreCollimator.h"
@@ -84,9 +83,8 @@ namespace hutchSystem
 {
 
 PreCollimator::PreCollimator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,2),
-  colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",2,"Beam",2),
   populated(0),holeIndex(0),nHole(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -95,10 +93,8 @@ PreCollimator::PreCollimator(const std::string& Key)  :
 {}
 
 PreCollimator::PreCollimator(const PreCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  colIndex(A.colIndex),cellIndex(A.cellIndex),
-  populated(A.populated),Axis(A.Axis),
-  XAxis(A.XAxis),ZAxis(A.ZAxis),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  populated(A.populated),xyAngle(A.xyAngle),zAngle(A.zAngle),
   fStep(A.fStep),xStep(A.xStep),zStep(A.zStep),Centre(A.Centre),
   radius(A.radius),depth(A.depth),defMat(A.defMat),innerWall(A.innerWall),
   innerWallMat(A.innerWallMat),nHole(A.nHole),nLayers(A.nLayers),
@@ -120,18 +116,13 @@ PreCollimator::operator=(const PreCollimator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::FixedGroup::operator=(A);
       populated=A.populated;
-      Axis=A.Axis;
-      XAxis=A.XAxis;
-      ZAxis=A.ZAxis;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       fStep=A.fStep;
       xStep=A.xStep;
       zStep=A.zStep;
-      Centre=A.Centre;
       radius=A.radius;
       depth=A.depth;
       defMat=A.defMat;
@@ -191,7 +182,7 @@ PreCollimator::populate(const Simulation& System)
     {
       std::ostringstream cx;
       cx<<keyName+"Hole"<<i+1;
-      Holes.push_back(HoleUnit(SMap,cx.str(),colIndex+10*i));
+      Holes.push_back(HoleUnit(cx.str()));
       Holes.back().populate(Control);
     }
 
@@ -232,33 +223,25 @@ PreCollimator::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors. The vectors are created
     relative to the exit point
-    \param FC :: TwinComp to attach to 
+    \param FC :: FixedComp to attach to 
   */
 {
   ELog::RegMethod RegA("PreCollimator","createUnitVector");
 
-  // Origin is in the wrong place as it is at the EXIT:
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getExit();
-  Origin+= X*xStep+Y*fStep+Z*zStep;
-  bEnter=Origin;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-
-  // Move centre before rotation
-  Centre=Origin+Y*(depth/2.0);
-  Axis=Y;
-  XAxis=X;
-  ZAxis=Z;
-  Qz.rotate(Axis);
-  Qz.rotate(ZAxis);
-  Qxy.rotate(Axis);
-  Qxy.rotate(XAxis);
-  Qxy.rotate(ZAxis);
   
+  // Origin is in the wrong place as it is at the EXIT:
+  mainFC.createUnitVector(FC);
+  mainFC.setCentre(FC.getLinkPt(2));
+  mainFC.applyShift(xStep,fStep,zStep);
+  beamFC.createUnitVector(mainFC,0);
+  beamFC.applyShift(0,depth/2.0,0);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
+  setDefault("Main");
+  setSecondary("Main");
+   
   return;
 }
 
@@ -285,14 +268,15 @@ PreCollimator::createSurfaces()
   // INNER PLANES
   
   // Front/Back
-  ModelSupport::buildPlane(SMap,colIndex+1,Centre-Axis*depth/2.0,Axis);
-  ModelSupport::buildPlane(SMap,colIndex+2,Centre+Axis*depth/2.0,Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+1,bOrigin-bY*depth/2.0,bY);
+  ModelSupport::buildPlane(SMap,buildIndex+2,bOrigin+bY*depth/2.0,bY);
 
   // Master Cylinder
-  ModelSupport::buildCylinder(SMap,colIndex+7,Centre,Axis,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,bOrigin,bY,radius);
 
   // Process exit:
-  setBeamExit(colIndex+2,Origin+Axis*depth,Axis);
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  beamFC.setExit(buildIndex+2,Origin+bY*depth,bY);
 
   return;
 }
@@ -307,7 +291,7 @@ PreCollimator::createObjects(Simulation& System)
   ELog::RegMethod RegA("PreCollimator","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
   addOuterSurf(Out);
   //
   // Sectors
@@ -316,18 +300,18 @@ PreCollimator::createObjects(Simulation& System)
   for(size_t i=0;i<nHole;i++)
     {
       HoleUnit& HU=Holes[i];
-      HU.setFaces(SMap.realSurf(colIndex+1),SMap.realSurf(colIndex+2));
+      HU.setFaces(SMap.realSurf(buildIndex+1),SMap.realSurf(buildIndex+2));
       HU.createAll(holeAngOffset,*this);          // Use THESE Origins
       std::string OutItem=HU.createObjects();
       if (OutItem!=" ")
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutItem));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OutItem));
 	  Out+=" "+HU.getExclude();
 	}
     }
 
   Out+=" "+getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));            
   CDivideList.push_back(cellIndex-1);
 
   return;
@@ -372,10 +356,10 @@ PreCollimator::layerProcess(Simulation& System)
       DA.init();
       // Cell Specific:
       DA.setCellN(CDivideList[i]);
-      DA.setOutNum(cellIndex,colIndex+201+100*static_cast<int>(i));
+      DA.setOutNum(cellIndex,buildIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+1),
-				   SMap.realSurf(colIndex+2));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+1),
+				   SMap.realSurf(buildIndex+2));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
@@ -395,12 +379,12 @@ PreCollimator::exitWindow(const double Dist,
   */
 {
   window.clear();
-  window.push_back(SMap.realSurf(colIndex+3));
-  window.push_back(SMap.realSurf(colIndex+4));
-  window.push_back(SMap.realSurf(colIndex+5));
-  window.push_back(SMap.realSurf(colIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+Y*(depth+Dist);  
-  return SMap.realSurf(colIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
 
 void

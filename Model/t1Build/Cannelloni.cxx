@@ -65,7 +65,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,8 +88,7 @@ namespace ts1System
 
 Cannelloni::Cannelloni(const std::string& Key) :
   constructSystem::TargetBase(Key,3),
-  tarIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
-  cellIndex(tarIndex+1),frontPlate(0),backPlate(0)
+  frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +97,6 @@ Cannelloni::Cannelloni(const std::string& Key) :
 
 Cannelloni::Cannelloni(const Cannelloni& A) : 
   constructSystem::TargetBase(A),
-  tarIndex(A.tarIndex),cellIndex(A.cellIndex),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   wallThick(A.wallThick),wallClad(A.wallClad),
@@ -124,7 +123,6 @@ Cannelloni::operator=(const Cannelloni& A)
   if (this!=&A)
     {
       constructSystem::TargetBase::operator=(A);
-      cellIndex=A.cellIndex;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
       mainLength=A.mainLength;
@@ -226,36 +224,36 @@ Cannelloni::createSurfaces()
 {
   ELog::RegMethod RegA("Cannelloni","createSurface");
 
-  SMap.addMatch(tarIndex+1001,frontPlate);
-  SMap.addMatch(tarIndex+1002,backPlate);
+  SMap.addMatch(buildIndex+1001,frontPlate);
+  SMap.addMatch(buildIndex+1002,backPlate);
 
   // Inner Cannelloni
-  ModelSupport::buildCylinder(SMap,tarIndex+7,Origin,Y,coreRadius);
-  ModelSupport::buildPlane(SMap,tarIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,tarIndex+2,Origin+Y*mainLength,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,coreRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*mainLength,Y);
 
   // Ta Pressure vessesl
   double T(wallClad);
-  ModelSupport::buildCylinder(SMap,tarIndex+17,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
 			      Origin,Y,coreRadius+T);
-  ModelSupport::buildPlane(SMap,tarIndex+11,Origin-Y*T,Y);
-  ModelSupport::buildPlane(SMap,tarIndex+12,Origin+Y*
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*T,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*
 			   (mainLength+T),Y);
   // WAll mat
   T+=wallThick;
-  ModelSupport::buildCylinder(SMap,tarIndex+27,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,
 			      Origin,Y,coreRadius+T);
-  ModelSupport::buildPlane(SMap,tarIndex+21,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin-
 			   Y*(wallClad+frontThick),Y);
-  ModelSupport::buildPlane(SMap,tarIndex+22,Origin+Y*
+  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*
 			   (mainLength+T),Y);
   // void
   T+=voidThick;
-  ModelSupport::buildCylinder(SMap,tarIndex+37,Origin,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,
 			      coreRadius+T);
-  ModelSupport::buildPlane(SMap,tarIndex+31,
+  ModelSupport::buildPlane(SMap,buildIndex+31,
 			   Origin-Y*(wallClad+frontThick+voidThick),Y);
-  ModelSupport::buildPlane(SMap,tarIndex+32,
+  ModelSupport::buildPlane(SMap,buildIndex+32,
 			   Origin+Y*(mainLength+T),Y);
   return;
 }
@@ -272,27 +270,27 @@ Cannelloni::createObjects(Simulation& System)
   // Tungsten inner core
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-7 1 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-7 1 -2");
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
   mainCell=cellIndex-1;
 
   // Cladding [with front water divider]
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-17 11 -12 (7:-1:2) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-17 11 -12 (7:-1:2) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // W material
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-27 21 -22 (17:-11:12) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-27 21 -22 (17:-11:12) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
 
   // void 
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-37 31 -32 (27:-21:22) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32 (27:-21:22) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // Set EXCLUDE:
-  Out=ModelSupport::getComposite(SMap,tarIndex,"-37 31 -32");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-37 31 -32");
   addOuterSurf(Out);
 
-  addBoundarySurf(tarIndex+7);
+  addBoundarySurf(buildIndex+7);
 
   return;
 }
@@ -306,9 +304,9 @@ Cannelloni::createLinks()
   ELog::RegMethod RegA("Cannelloni","createLinks");
 
   // all point out
-  FixedComp::setLinkSurf(0,-SMap.realSurf(tarIndex+31));
-  FixedComp::setLinkSurf(1,SMap.realSurf(tarIndex+32));
-  FixedComp::setLinkSurf(2,SMap.realSurf(tarIndex+37));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+31));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+37));
 		      
   FixedComp::setConnect(0,Origin-Y*(frontThick+wallClad+voidThick),-Y);
   FixedComp::setConnect(1,Origin+Y*
@@ -344,7 +342,7 @@ Cannelloni::createLinkSurf()
 
   std::map<int,constructSystem::hexUnit*>::iterator ac;
   std::map<int,constructSystem::hexUnit*>::iterator bc;
-  int planeIndex(tarIndex+2001);
+  int planeIndex(buildIndex+2001);
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
       // iterate over the index set [6]
@@ -382,13 +380,13 @@ Cannelloni::createInnerObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Cannelloni","createInnerObject");
 
-  int cylIndex(12000+tarIndex);
+  int cylIndex(12000+buildIndex);
   System.removeCell(mainCell);
   const std::string endCap=
-    ModelSupport::getComposite(SMap,tarIndex," 1 -2 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
   const std::string outer=
-    ModelSupport::getComposite(SMap,tarIndex," -7 ");
+    ModelSupport::getComposite(SMap,buildIndex," -7 ");
 
   std::map<int,constructSystem::hexUnit*>::const_iterator ac;
   for(ac=HVec.begin();ac!=HVec.end();ac++)
@@ -400,9 +398,9 @@ Cannelloni::createInnerObjects(Simulation& System)
       ModelSupport::buildCylinder(SMap,cylIndex+8,
 				  APtr->getCentre(),Y,tubeRadius-10.0*Geometry::zeroTol);
       std::string CylA=
-	ModelSupport::getComposite(SMap,tarIndex,cylIndex," -7M 1 -2");
+	ModelSupport::getComposite(SMap,buildIndex,cylIndex," -7M 1 -2");
       std::string CylB=
-	ModelSupport::getComposite(SMap,tarIndex,cylIndex," 7M -8M 1 -2");
+	ModelSupport::getComposite(SMap,buildIndex,cylIndex," 7M -8M 1 -2");
 
       std::string Out=APtr->getInner()+
       	ModelSupport::getComposite(SMap,cylIndex," 8 ");
@@ -413,10 +411,10 @@ Cannelloni::createInnerObjects(Simulation& System)
 	  CylB+=outer;
 	  Out+=outer;
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,CylA));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,CylB));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,CylA));
+      System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,CylB));
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+endCap));
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+endCap));
       cylIndex+=10;
     }
   return;
@@ -491,7 +489,7 @@ Cannelloni::createInnerCells(Simulation& System)
   ELog::RegMethod RegA("Cannelloni","createInnterCells");
 
   const Geometry::Plane* PPtr=
-    SMap.realPtr<Geometry::Plane>(tarIndex+1);
+    SMap.realPtr<Geometry::Plane>(buildIndex+1);
 
   createCentres(PPtr);
   createLinkSurf();

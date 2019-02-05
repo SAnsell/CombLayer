@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,8 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
+  IParam.regMulti("Mag","MAG",1000,0);
+  IParam.regMulti("MagField","MagField",1000,0);
   IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
   IParam.regItem("cellDNF","cellDNF");
@@ -126,6 +128,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
+  IParam.regMulti("postOffset","postOffset",10000,1,8);
   IParam.regDefItem<std::string>("print","printTable",1,
 				 "10 20 40 50 110 120");  
   IParam.regItem("PTRAC","ptrac");
@@ -166,6 +169,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("volCell","volCells",100,1,100);
     
   IParam.regFlag("void","void");
+  IParam.regMulti("voidObject","voidObject",1000);
   IParam.regItem("vtkMesh","vtkMesh",1);
   IParam.regItem("vtk","vtk",0);
   IParam.regItem("vtkType","vtkType",1);
@@ -277,6 +281,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("u","Units in cm");
   IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
+  IParam.setDesc("voidObject","Sets material of FC-object by name");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");

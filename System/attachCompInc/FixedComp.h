@@ -66,8 +66,6 @@ class FixedComp
   Geometry::Vec3D Z;            ///< Z-coordinate 
   Geometry::Vec3D Origin;       ///< Origin  
 
-  Geometry::Vec3D beamOrigin;    ///< Neutron origin [if different]
-  Geometry::Vec3D beamAxis;      ///< Neutron direction [if different]
   Geometry::Vec3D orientateAxis; ///< Axis for reorientation
   long int primeAxis;            ///< X/Y/Z Axis for reorientation 
 
@@ -87,7 +85,7 @@ class FixedComp
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
-  FixedComp(const std::string&,const size_t);
+  FixedComp(const std::string&,const size_t,const size_t =10000);
   FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
   FixedComp(const std::string&,const size_t,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&,
@@ -134,6 +132,11 @@ class FixedComp
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);
+
+  void setLinkComp(const size_t,const int);
+  void setLinkComp(const size_t,const std::string&);
+  void setLinkComp(const size_t,const HeadRule&);
+
   void setLinkSurf(const size_t,const HeadRule&,const bool,
 		   const HeadRule&,const bool);
 
@@ -152,7 +155,6 @@ class FixedComp
 
   void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
 
-
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }
   /// Access X
@@ -163,11 +165,9 @@ class FixedComp
   const Geometry::Vec3D& getZ() const { return Z; }
   /// Access centre
   virtual const Geometry::Vec3D& getCentre() const  { return Origin; }  
-  /// Access beamOrigin
-  virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
-
   virtual int getExitWindow(const long int,std::vector<int>&) const;
-
+  virtual const Geometry::Vec3D& getExit() const;
+  
   void nameSideIndex(const size_t,const std::string&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
@@ -179,10 +179,14 @@ class FixedComp
   LinkUnit& getLU(const size_t);
   
   LinkUnit getSignedLU(const long int) const;
+  bool hasSideIndex(const std::string&) const;
   long int getSideIndex(const std::string&) const;
   
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
 
+  bool hasLinkPt(const long int) const;
+  bool hasLinkPt(const std::string&) const;
+  
   Geometry::Vec3D getLinkPt(const std::string&) const;
   Geometry::Vec3D getLinkAxis(const std::string&) const;
   int getLinkSurf(const std::string&) const;
@@ -208,11 +212,10 @@ class FixedComp
 
   /// access next cell if need
   int nextCell() { return cellIndex++; }
-  /// access next cell as neede
+  /// access next cell as needed
   int getNextCell() const { return cellIndex; }
 
-  const Geometry::Vec3D& getExit() const;
-  const Geometry::Vec3D& getExitNorm() const;
+  
   void selectAltAxis(const long int,Geometry::Vec3D&,
 		     Geometry::Vec3D&,Geometry::Vec3D&) const;
   void calcLinkAxis(const long int,Geometry::Vec3D&,
@@ -223,7 +226,10 @@ class FixedComp
   void setAxisControl(const long int,const Geometry::Vec3D&);
   virtual void applyRotation(const localRotate&);
   virtual void applyRotation(const Geometry::Vec3D&,const double);
+
+  void setExit(const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
+
 
   std::vector<int> splitObject(Simulation&,const int,const int);
 
@@ -240,6 +246,9 @@ class FixedComp
   std::vector<int> splitObjectAbsolute
     (Simulation&,const int,const int, const std::vector<Geometry::Vec3D>&,
      const std::vector<Geometry::Vec3D>&);
+
+  virtual void createAll(Simulation&,const FixedComp&,const long int)
+  { };
 };
 
 }

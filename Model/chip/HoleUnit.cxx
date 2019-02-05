@@ -3,7 +3,7 @@
  
  * File:   chip/HoleUnit.cxx
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,10 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -68,25 +64,25 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "HoleUnit.h"
 
 namespace hutchSystem
 {
 
-HoleUnit::HoleUnit(ModelSupport::surfRegister& SR,
-		   const std::string& Key,
-		   const int HIndex) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
-  HMap(SR),holeIndex(HIndex),shapeType(0),
+HoleUnit::HoleUnit(const std::string& Key) :
+
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,2),
+  shapeType(0),
   AngleOffset(0),radialOffset(0.0),radius(0.0),
   depth(0.0),frontFace(0),backFace(0)
   /*!
@@ -99,7 +95,7 @@ HoleUnit::HoleUnit(ModelSupport::surfRegister& SR,
 
 HoleUnit::HoleUnit(const HoleUnit& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  HMap(A.HMap),holeIndex(A.holeIndex),shapeType(A.shapeType),
+  shapeType(A.shapeType),
   AngleOffset(A.AngleOffset),radialOffset(A.radialOffset),
   radius(A.radius),depth(A.depth),frontFace(A.frontFace),
   backFace(A.backFace),Centre(A.Centre)
@@ -190,8 +186,8 @@ HoleUnit::createUnitVector(const double rotAngle,
   //  const masterRotate& MR=masterRotate::Instance();
   //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
-  FixedComp::createUnitVector(FC);
-  Origin=FC.getExit();
+  FixedComp::createUnitVector(FC,2);
+
   // Now rotate:
   const Geometry::Quaternion QAxisR=
     Geometry::Quaternion::calcQRotDeg(rotAngle+AngleOffset,Y);
@@ -217,9 +213,9 @@ HoleUnit::createCircleSurfaces()
   
   // inner cyclinder:
   Geometry::Cylinder* CX;
-  CX=SurI.createUniqSurf<Geometry::Cylinder>(holeIndex+31);  
+  CX=SurI.createUniqSurf<Geometry::Cylinder>(buildIndex+31);  
   CX->setCylinder(Centre,Y,radius);
-  HMap.registerSurf(holeIndex+31,CX);
+  SMap.registerSurf(buildIndex+31,CX);
   return;
 }
 
@@ -247,7 +243,7 @@ HoleUnit::createCircleObj()
 {
   ELog::RegMethod RegA("HoleUnit","createCircleObj");
   std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex,"-31");
+  cx<<ModelSupport::getComposite(SMap,buildIndex,"-31");
   addOuterSurf(cx.str());
   cx<<" "<<frontFace<<" "<<-backFace;   
   
@@ -267,21 +263,21 @@ HoleUnit::createSquareSurfaces()
   
   // inner square
   Geometry::Plane* PX;
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+33);  
+  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+33);  
   PX->setPlane(Centre-X*radius,X);
-  HMap.registerSurf(holeIndex+33,PX);
+  SMap.registerSurf(buildIndex+33,PX);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+34);  
+  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+34);  
   PX->setPlane(Centre+X*radius,X);
-  HMap.registerSurf(holeIndex+34,PX);
+  SMap.registerSurf(buildIndex+34,PX);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+35);  
+  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+35);  
   PX->setPlane(Centre-Z*radius,Z);
-  HMap.registerSurf(holeIndex+35,PX);
+  SMap.registerSurf(buildIndex+35,PX);
 
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+36);  
+  PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+36);  
   PX->setPlane(Centre+Z*radius,Z);
-  HMap.registerSurf(holeIndex+36,PX);
+  SMap.registerSurf(buildIndex+36,PX);
   return;
 }
 
@@ -295,7 +291,7 @@ HoleUnit::createSquareObj()
   ELog::RegMethod RegA("HoleUnit","createSquareObj");
   
   std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex," 33 -34 35 -36");
+  cx<<ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36");
   addOuterSurf(cx.str());
   cx<<" "<<frontFace<<" "<<-backFace;   
 
@@ -318,10 +314,10 @@ HoleUnit::createHexagonSurfaces()
   double theta=0.0;
   for(int i=0;i<6;i++)
     {
-      PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+31+i);  
+      PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+31+i);  
       const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);
       PX->setPlane(Centre+Norm*radius,Norm);
-      HMap.registerSurf(holeIndex+31+i,PX);
+      SMap.registerSurf(buildIndex+31+i,PX);
       theta+=2.0*M_PI/6.0;
     }
   return;
@@ -337,7 +333,7 @@ HoleUnit::createHexagonObj()
   ELog::RegMethod RegA("HoleUnit","createHexagonObj");
   
   std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex," -31 -32 -33 -34 -35 -36");
+  cx<<ModelSupport::getComposite(SMap,buildIndex," -31 -32 -33 -34 -35 -36");
   addOuterSurf(cx.str());
   cx<<" "<<frontFace<<" "<<-backFace;   
     
@@ -360,10 +356,10 @@ HoleUnit::createOctagonSurfaces()
   double theta=0.0;
   for(int i=0;i<8;i++)
     {
-      PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+31+i);  
+      PX=SurI.createUniqSurf<Geometry::Plane>(buildIndex+31+i);  
       const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);
       PX->setPlane(Centre+Norm*radius,Norm);
-      HMap.registerSurf(holeIndex+31+i,PX);
+      SMap.registerSurf(buildIndex+31+i,PX);
       theta+=2.0*M_PI/8.0;
     }
   return;
@@ -379,7 +375,7 @@ HoleUnit::createOctagonObj()
   ELog::RegMethod RegA("HoleUnit","createOctagonObj");
 
   std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex,
+  cx<<ModelSupport::getComposite(SMap,buildIndex,
 				 " -31 -32 -33 -34 -35 -36 -37 -38");
   addOuterSurf(cx.str());
   cx<<" "<<frontFace<<" "<<-backFace;   
@@ -462,12 +458,12 @@ HoleUnit::exitWindow(const double Dist,
   */
 {
   window.clear();
-  window.push_back(HMap.realSurf(holeIndex+3));
-  window.push_back(HMap.realSurf(holeIndex+4));
-  window.push_back(HMap.realSurf(holeIndex+5));
-  window.push_back(HMap.realSurf(holeIndex+6));
+  window.push_back(SMap.realSurf(buildIndex+3));
+  window.push_back(SMap.realSurf(buildIndex+4));
+  window.push_back(SMap.realSurf(buildIndex+5));
+  window.push_back(SMap.realSurf(buildIndex+6));
   Pt=Origin+Y*(depth+Dist);  
-  return HMap.realSurf(holeIndex+2);
+  return SMap.realSurf(buildIndex+2);
 }
   
 

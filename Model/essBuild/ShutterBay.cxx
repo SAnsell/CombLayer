@@ -3,7 +3,7 @@
  
  * File:   essBuild/ShutterBay.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -81,9 +81,7 @@ namespace essSystem
 
 ShutterBay::ShutterBay(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,8),
-  attachSystem::CellMap(),
-  bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bulkIndex+1)
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -93,7 +91,6 @@ ShutterBay::ShutterBay(const std::string& Key)  :
 ShutterBay::ShutterBay(const ShutterBay& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   radius(A.radius),height(A.height),depth(A.depth),
   skin(A.skin),topSkin(A.topSkin),
   mat(A.mat),skinMat(A.skinMat)
@@ -116,7 +113,6 @@ ShutterBay::operator=(const ShutterBay& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A),
-      cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
       depth=A.depth;
@@ -206,16 +202,16 @@ ShutterBay::createSurfaces()
   // rotation of axis:
 
   // Dividing planes:
-  ModelSupport::buildPlane(SMap,bulkIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,bulkIndex+2,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin,X);
 
-  ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*height,Z);
-  ModelSupport::buildPlane(SMap,bulkIndex+16,Origin+Z*(topSkin+height),Z);
-  ModelSupport::buildPlane(SMap,bulkIndex+106,Origin+Z*(height-topCut),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(topSkin+height),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height-topCut),Z);
 
 
-  int CL(bulkIndex+200);
+  int CL(buildIndex+200);
   for(size_t i=0;i<NCurtain;i++)
     {
       ModelSupport::buildPlane
@@ -223,10 +219,10 @@ ShutterBay::createSurfaces()
       CL+=10;
     }
   
-  ModelSupport::buildCylinder(SMap,bulkIndex+7,Origin,Z,radius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+17,Origin,Z,radius+skin);
-  ModelSupport::buildCylinder(SMap,bulkIndex+107,Origin,Z,topRadius);
-  ModelSupport::buildCylinder(SMap,bulkIndex+117,Origin,Z,topRadius+skin);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius+skin);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Z,topRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Z,topRadius+skin);
   
   return;
 }
@@ -243,48 +239,48 @@ ShutterBay::createObjects(Simulation& System,
   ELog::RegMethod RegA("ShutterBay","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -106 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -106 -7 ");
   Out+=CC.getExclude();  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("MainCell",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex," 106 -107 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -107 -6 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("TopCell",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -106 7 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"5 -106 7 -17 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex," 106 -206 107 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 106 -206 107 -17 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"206 -6 107 -117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"206 -6 107 -117 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex," 6 -16 -117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex," 6 -16 -117 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
-  int CL(bulkIndex+200);
+  int CL(buildIndex+200);
   for(size_t i=1;i<NCurtain;i++)
     {
       Out=ModelSupport::getComposite
-        (SMap,bulkIndex,CL," 117 -17 6M -16M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,curMat[i-1],0.0,Out));
+        (SMap,buildIndex,CL," 117 -17 6M -16M ");
+      System.addCell(MonteCarlo::Object(cellIndex++,curMat[i-1],0.0,Out));
       addCell("Curtain",cellIndex-1);
       CL+=10;
     }
-  Out=ModelSupport::getComposite(SMap,bulkIndex,CL," 117 -17 6M -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,curMat.back(),0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,CL," 117 -17 6M -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,curMat.back(),0.0,Out));
   addCell("Curtain",cellIndex-1);
 
   
 
   
-  Out=ModelSupport::getComposite(SMap,bulkIndex," 5 -16 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -16 -17 ");
   addOuterSurf(Out);
 
   return;
@@ -305,20 +301,20 @@ ShutterBay::createLinks()
   FixedComp::setConnect(4,Origin-Z*depth,-Z);  // base
   FixedComp::setConnect(5,Origin+Z*(height+topSkin),Z);  // 
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(bulkIndex+17));
-  FixedComp::setLinkSurf(1,SMap.realSurf(bulkIndex+17));
-  FixedComp::setLinkSurf(2,SMap.realSurf(bulkIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(bulkIndex+17));
+  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
 
-  FixedComp::addBridgeSurf(0,-SMap.realSurf(bulkIndex+1));
-  FixedComp::addBridgeSurf(1,SMap.realSurf(bulkIndex+1));
-  FixedComp::addBridgeSurf(2,-SMap.realSurf(bulkIndex+2));
-  FixedComp::addBridgeSurf(3,SMap.realSurf(bulkIndex+2));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(bulkIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+16));
+  FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+1));
+  FixedComp::addBridgeSurf(2,-SMap.realSurf(buildIndex+2));
+  FixedComp::addBridgeSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(bulkIndex+7));
-  FixedComp::setLinkSurf(7,SMap.realSurf(bulkIndex+7));
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7));
 
   FixedComp::setConnect(6,Origin-Y*radius,-Y);   // materila point
   FixedComp::setConnect(7,Origin+Y*radius,Y);    // material point

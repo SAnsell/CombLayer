@@ -95,7 +95,7 @@ class WWGWeight
 		     const long int, const double);
   void scaleGrid(const double);
   void scalePower(const double);
-  void scaleRange(const double,const double,const double);
+  void scaleRange(const size_t,const double,const double,const double);
   void setMinSourceValue(const double);
 
 
@@ -118,6 +118,7 @@ class WWGWeight
 		 const std::vector<Geometry::Vec3D>&,
 		 const T&,const U&);
   
+  void writeCHECK(const size_t) const;
   
   void writeWWINP(std::ostream&) const;
   void writeVTK(std::ostream&,const long int) const;

@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -98,8 +99,6 @@ namespace essSystem
 Linac::Linac(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,17), attachSystem::CellMap(),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump")),
   faradayCup(new FaradayCup(Key,"FaradayCup")),
   dtl(new DTLArray(Key,"DTLArray"))
@@ -118,7 +117,7 @@ Linac::Linac(const std::string& Key)  :
 Linac::Linac(const Linac& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
+  attachSystem::CellMap(A),
   engActive(A.engActive),
   lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
@@ -157,7 +156,7 @@ Linac::operator=(const Linac& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
+      attachSystem::CellMap::operator=(A);
       engActive=A.engActive;
       lengthBack=A.lengthBack;
       lengthFront=A.lengthFront;
@@ -346,25 +345,25 @@ Linac::createSurfaces()
   // Redefine the outer void boundary sphere since the default one is too small
   //  SurI.createSurface(1,"so 60000"); use updateSurface when SA has it implemented. Now change World.cxx
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(lengthBack),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(lengthFront),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(widthLeft),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
 
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(lengthFront+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(widthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(widthLeft+wallThick),X);
   // floor
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthRight),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthLeft),X);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(floorWidthRight),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(floorWidthLeft),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
 
   return;
 }
@@ -379,21 +378,21 @@ Linac::createObjects(Simulation& System)
   ELog::RegMethod RegA("Linac","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
   setCell("air", cellIndex-1);
 
   // side walls and roof
-  Out=ModelSupport::getComposite(SMap,surfIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -12 13 -14 5 -16 (-1:2:-3:4:6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   // wall bottom slab
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 23 -24 15 -5 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -12 23 -24 15 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   layerProcess(System, "air", 11, 12, nAirLayers, airMat);
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," (1 -12 13 -14 15 -16) : (1 -12 23 -24 15 -5) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (1 -12 13 -14 15 -16) : (1 -12 23 -24 15 -5) ");
   addOuterSurf(Out);
 
   return;
@@ -410,41 +409,41 @@ Linac::createLinks()
 
   // outer links
   FixedComp::setConnect(0,Origin-Y*(lengthBack),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
 
   FixedComp::setConnect(2,Origin-X*(widthRight+wallThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+13));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
 
   FixedComp::setConnect(3,Origin+X*(widthLeft+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
 
   FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
 
   FixedComp::setConnect(5,Origin+Z*(height+roofThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   // walls
   FixedComp::setConnect(10,Origin-Y*(lengthBack),Y);
-  FixedComp::setLinkSurf(10,SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+1));
 
   FixedComp::setConnect(11,Origin+Y*(lengthFront),Y); // should be negative, but layerProcess needs positive
-  FixedComp::setLinkSurf(11,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(12,Origin-X*(widthRight),X);
-  FixedComp::setLinkSurf(12,SMap.realSurf(surfIndex+3));
+  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(13,Origin+X*(widthLeft),-X); // check left/right/location
-  FixedComp::setLinkSurf(13,-SMap.realSurf(surfIndex+4));
+  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(14,Origin-Z*(depth),Z);
-  FixedComp::setLinkSurf(14,SMap.realSurf(surfIndex+5));
+  FixedComp::setLinkSurf(14,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(15,Origin+Z*(height),-Z);
-  FixedComp::setLinkSurf(15,-SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(15,-SMap.realSurf(buildIndex+6));
 
   return;
 }

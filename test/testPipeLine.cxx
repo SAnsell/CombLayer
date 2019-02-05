@@ -51,10 +51,11 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "ModelSupport.h"
@@ -142,20 +143,20 @@ testPipeLine::createObjects()
   const int surIndex(0);
 
   Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
   // Inner box
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));
   
 
   // Container box:
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
 				 " (-1:2:-3:4:-5:6) ");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
+  ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
   return;
 }

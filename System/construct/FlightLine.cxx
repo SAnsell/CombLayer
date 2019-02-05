@@ -64,7 +64,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -74,7 +75,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
-#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "surfExpand.h"
 #include "FlightLine.h"
@@ -85,8 +85,7 @@ namespace moderatorSystem
 FlightLine::FlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedOffset(Key,12),
-  flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flightIndex+1),plateIndex(0),nLayer(0)
+  plateIndex(0),nLayer(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,7 +94,6 @@ FlightLine::FlightLine(const std::string& Key)  :
 
 FlightLine::FlightLine(const FlightLine& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
-  flightIndex(A.flightIndex),cellIndex(A.cellIndex),
   height(A.height),width(A.width),
   plateIndex(A.plateIndex),nLayer(A.nLayer),lThick(A.lThick),
   lMat(A.lMat),capActive(A.capActive),capLayer(A.capLayer),
@@ -123,7 +121,6 @@ FlightLine::operator=(const FlightLine& A)
     {
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      cellIndex=A.cellIndex;
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
       anglesZ[0]=A.anglesZ[0];
@@ -276,10 +273,10 @@ FlightLine::createSurfaces()
   Geometry::Quaternion::calcQRotDeg(anglesZ[1],X).rotate(zDircB);
 
 
-  ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
-  ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
-  ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
-  ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),xDircA);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),xDircB);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),zDircA);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),zDircB);
 
   double layT(0.0);
   for(size_t i=0;i<nLayer;i++)
@@ -287,13 +284,13 @@ FlightLine::createSurfaces()
       const int II(static_cast<int>(i));
       layT+=lThick[i];
 	  
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+13,
+      ModelSupport::buildPlane(SMap,buildIndex+II*10+13,
 			       Origin-X*(width/2.0)-xDircA*layT,xDircA);
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
+      ModelSupport::buildPlane(SMap,buildIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
+      ModelSupport::buildPlane(SMap,buildIndex+II*10+15,
 			       Origin-Z*(height/2.0)-zDircA*layT,zDircA);
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
+      ModelSupport::buildPlane(SMap,buildIndex+II*10+16,
 			       Origin+Z*(height/2.0)+zDircB*layT,zDircB);
     }
 
@@ -301,9 +298,9 @@ FlightLine::createSurfaces()
   int signVal(-1);
   for(size_t i=3;i<7;i++)
     {
-      const int sNum(flightIndex+static_cast<int>(10*nLayer+i));
+      const int sNum(buildIndex+static_cast<int>(10*nLayer+i));
       FixedComp::setLinkSurf(i-1,signVal*SMap.realSurf(sNum));
-      const int tNum(flightIndex+static_cast<int>(i));
+      const int tNum(buildIndex+static_cast<int>(i));
       FixedComp::setLinkSurf(i+5,signVal*SMap.realSurf(tNum));
       signVal*=-1;
     } 
@@ -335,9 +332,9 @@ FlightLine::removeObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FlightLine","removeObjects");
 
-  for(int i=flightIndex+1;i<cellIndex;i++)
+  for(int i=buildIndex+1;i<cellIndex;i++)
     System.removeCell(i);
-  cellIndex=flightIndex+1;
+  cellIndex=buildIndex+1;
   return;
 }
 
@@ -380,7 +377,7 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 	  QrotZ.rotate(PAxis);
 	  QrotXY.rotate(PAxis);
 	  const Geometry::Plane* PX=
-	    ModelSupport::buildPlane(SMap,flightIndex+offset,
+	    ModelSupport::buildPlane(SMap,buildIndex+offset,
 				     FC.getCentre(),PAxis);
 	  const int PXNum=PX->getName();
 	  
@@ -405,7 +402,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
   const HeadRule& MainUnit=FC.getMainRule(sideIndex);
   const std::vector<int> SurNum(MainUnit.getSurfaceNumbers());
   
-  int surfN(501+flightIndex);
+  int surfN(501+buildIndex);
   int newSurfN;
   std::stack<double> capThickStack;
   capThickStack.push(0.0);
@@ -469,7 +466,7 @@ FlightLine::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("FlightLine","createObjects(FC,sideIndex)");
   
-  const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
+  const int outIndex=buildIndex+static_cast<int>(nLayer)*10;
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
@@ -481,13 +478,13 @@ FlightLine::createObjects(Simulation& System,
   addOuterSurf("outer",Out);
 
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   Out+=attachRule;
   addOuterSurf("inner",Out);
 
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
@@ -495,23 +492,23 @@ FlightLine::createObjects(Simulation& System,
       const int II(static_cast<int>(i));
       if (i && capLayer[i]>1)        // only object to be capped 
 	{
-	  Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+	  Out=ModelSupport::getComposite(SMap,buildIndex+10*II,
 				     "13 -14 15 -16 (-3:4:-5:6) ");
 	  HeadRule ICut=capRule[i];
 	  ICut.makeComplement();
 	  const std::string IOut=Out+ICut.display()+" "+
 	    capRule[i-1].display()+divider;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i-1],0.0,IOut));
+	  System.addCell(MonteCarlo::Object(cellIndex++,lMat[i-1],0.0,IOut));
 	  Out+=capRule[i].display()+divider;
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+	  Out=ModelSupport::getComposite(SMap,buildIndex+10*II,
 				     " 13 -14 15 -16 (-3:4:-5:6) ");
 	  Out+=attachRule;         // forward boundary of object
 	}
       Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],0.0,Out));
     }      
 
   return;
@@ -533,7 +530,7 @@ FlightLine::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("FlightLine","createObjects(FC,sign,sideIndex,CC)");
 
-  const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
+  const int outIndex=buildIndex+static_cast<int>(nLayer)*10;
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
@@ -549,19 +546,19 @@ FlightLine::createObjects(Simulation& System,
   addOuterSurf("inner",Out);
   const std::string attachRule=StrFunc::makeString(baseSurf)
     +" "+CC.getExclude();
-  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
     {
-      Out=ModelSupport::getComposite(SMap,flightIndex+10*static_cast<int>(i),
+      Out=ModelSupport::getComposite(SMap,buildIndex+10*static_cast<int>(i),
 				     " 13 -14 15 -16 (-3:4:-5:6) ");
       Out+=attachRule;         // forward boundary of object
       Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],0.0,Out));
     }      
 
   return;
@@ -583,10 +580,10 @@ FlightLine::processIntersectMajor(Simulation& System,
 {
   ELog::RegMethod RegA("FlightLine","processIntersectMajor");
 
-  int metalCell(flightIndex+2);
+  int metalCell(buildIndex+2);
   for(size_t i=0;i<nLayer;i++)
     {
-      MonteCarlo::Object* Obj=System.findQhull(metalCell++);
+      MonteCarlo::Object* Obj=System.findObject(metalCell++);
       if (!Obj)
 	throw ColErr::InContainerError<int>
 	  (metalCell-1,"Cell no found at layer"+StrFunc::makeString(i+1));
@@ -595,13 +592,13 @@ FlightLine::processIntersectMajor(Simulation& System,
     }
 
   std::string Out;
-  const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
+  const int outIndex=buildIndex+static_cast<int>(nLayer)*10;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
   Out+=attachRule;
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-  Out+=ModelSupport::getComposite(SMap,flightIndex," (-3:4:-5:6) ");  
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-3:4:-5:6) ");  
   Out+=CC.getCompExclude(iKey);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }
@@ -622,10 +619,10 @@ FlightLine::processIntersectMinor(Simulation& System,
 {
   ELog::RegMethod RegA("FlightLine","processIntersectMinor");
 
-  int changeCell(flightIndex+1);
+  int changeCell(buildIndex+1);
   for(size_t i=0;i<=nLayer;i++)
     {
-      MonteCarlo::Object* Obj=System.findQhull(changeCell++);
+      MonteCarlo::Object* Obj=System.findObject(changeCell++);
       if (!Obj)
 	throw ColErr::InContainerError<int>
 	  (changeCell-1,"Cell no found at layer"+StrFunc::makeString(i+1));
@@ -646,7 +643,7 @@ FlightLine::getInnerVec(std::vector<int>& ISurf) const
   ELog::RegMethod RegA("FlightLine","getInnerVec");
   ISurf.clear();
   for(int i=0;i<4;i++)
-    ISurf.push_back(SMap.realSurf(flightIndex+i+3));
+    ISurf.push_back(SMap.realSurf(buildIndex+i+3));
 
   return;
 }

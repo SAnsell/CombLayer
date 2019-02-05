@@ -56,8 +56,9 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Object.h"
-#include "Qhull.h"
 
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 
 #include "LineTrack.h"
@@ -143,7 +144,7 @@ MarkovProcess::computeMatrix(const Simulation& System,
 			     const double r2Length,
 			     const double r2Power)
   /*!
-    Calculate the makov chain process
+    Calculate the Markov chain process
     \param System :: Simualation
     \param wSet :: WWG set for grid
     \param densityFactor :: Scaling factor for density

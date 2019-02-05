@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/EssModBase.cxx
+ * File:   essBuild/EssModBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "LinkUnit.h"
@@ -75,9 +76,7 @@ namespace essSystem
 
 EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedOffset(Key,nLinks),attachSystem::CellMap(),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+  attachSystem::FixedOffset(Key,nLinks),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,8 +87,7 @@ EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
 EssModBase::EssModBase(const EssModBase& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex)
+  attachSystem::CellMap(A)
   /*!
     Copy constructor
     \param A :: EssModBase to copy
@@ -110,7 +108,6 @@ EssModBase::operator=(const EssModBase& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
     }
   return *this;
 }

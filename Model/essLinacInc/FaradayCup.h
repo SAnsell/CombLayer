@@ -42,8 +42,6 @@ class FaradayCup : public attachSystem::ContainedComp,
  private:
 
   const std::string baseName; ///< base name (e.g. Linac)
-  const int surfIndex;             ///< Index of surface offset
-  int cellIndex;                ///< Cell index
 
   int active; ///< On/Off switch
   int engActive;                ///< Engineering active flag

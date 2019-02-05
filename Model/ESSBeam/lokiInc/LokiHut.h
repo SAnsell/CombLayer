@@ -43,8 +43,6 @@ class LokiHut :
 {
  private:
   
-  const int hutIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]

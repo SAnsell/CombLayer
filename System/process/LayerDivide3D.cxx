@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/LayerDivide3D.cxx
+ * File:   process/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
@@ -89,8 +90,6 @@ namespace ModelSupport
 
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
   FixedComp(Key,0),
-  divIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
-  cellIndex(divIndex+1),
   WallID({"Sector","Vert","Radial"}),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -101,7 +100,7 @@ LayerDivide3D::LayerDivide3D(const std::string& Key)  :
 LayerDivide3D::LayerDivide3D(const LayerDivide3D& A) : 
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  Centre(A.Centre),divIndex(A.divIndex),cellIndex(A.cellIndex),
+  Centre(A.Centre),
   AFrac(A.AFrac),BFrac(A.BFrac),CFrac(A.CFrac),
   ALen(A.ALen),BLen(A.BLen),CLen(A.CLen),WallID(A.WallID),
   AWall(A.AWall),BWall(A.BWall),CWall(A.CWall),divider(A.divider),
@@ -128,7 +127,6 @@ LayerDivide3D::operator=(const LayerDivide3D& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       Centre=A.Centre;
-      cellIndex=A.cellIndex;
       AFrac=A.AFrac;
       BFrac=A.BFrac;
       CFrac=A.CFrac;
@@ -201,7 +199,7 @@ LayerDivide3D::processSurface(const size_t Index,
     }
   // -------------------------------------------------------------
   
-  int surfN(divIndex+1000*static_cast<int>(Index)+1);
+  int surfN(buildIndex+1000*static_cast<int>(Index)+1);
   SMap.addMatch(surfN,WallSurf.first);
   attachSystem::SurfMap::addSurf(surGroup,surfN);
   surfN++;
@@ -246,9 +244,9 @@ LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
 {
   ELog::RegMethod RegA("LayerDivide3D","addCalcPoint");
 
-  const int Asurf(divIndex+static_cast<int>(i));
-  const int Bsurf(divIndex+1000+static_cast<int>(j));
-  const int Csurf(divIndex+2000+static_cast<int>(k));
+  const int Asurf(buildIndex+static_cast<int>(i));
+  const int Bsurf(buildIndex+1000+static_cast<int>(j));
+  const int Csurf(buildIndex+2000+static_cast<int>(k));
   
   Geometry::Surface* APtr[2];
   Geometry::Surface* BPtr[2];
@@ -484,7 +482,7 @@ LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
   */
 {
   ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
-  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  const MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
 
@@ -515,7 +513,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   checkDivide();
   
-  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  const MonteCarlo::Object* CPtr=System.findObject(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
 
@@ -526,20 +524,20 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
 
   std::string Out;
-  int aIndex(divIndex);
+  int aIndex(buildIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
       const std::string layerNum(StrFunc::makeString(i));
       const std::string ACut=
         ModelSupport::getComposite(SMap,aIndex,"1 -2");
       
-      int bIndex(divIndex+1000);
+      int bIndex(buildIndex+1000);
       
       for(size_t j=0;j<BLen;j++,bIndex++)
 	{
 	  const std::string BCut=
 	    ModelSupport::getComposite(SMap,bIndex," 1 -2 ")+ACut;
-	  int cIndex(divIndex+2000);
+	  int cIndex(buildIndex+2000);
 	  
 	  for(size_t k=0;k<CLen;k++,cIndex++)
 	    {
@@ -552,7 +550,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
       	    }
 	}
     }
-
   System.removeCell(cellN);
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);

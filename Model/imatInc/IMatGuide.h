@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   imatInc/IMatGuide.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,13 +39,10 @@ namespace imatSystem
 */
 
 class IMatGuide : public attachSystem::ContainedGroup,
-    public attachSystem::TwinComp
+    public attachSystem::FixedGroup
 {
  protected:
-  
-  const int guideIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
-  
+    
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on X to Target
   double zStep;                 ///< Offset on Z top Target
@@ -80,7 +77,7 @@ class IMatGuide : public attachSystem::ContainedGroup,
   int innerVoid;                ///< Inner void cell
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
 			
   virtual void createSurfaces();
   virtual void createObjects(Simulation&,const attachSystem::FixedComp&);
@@ -96,7 +93,7 @@ class IMatGuide : public attachSystem::ContainedGroup,
   // Accessor to inner void cell
   int getInnerVoid() const { return innerVoid; }
 
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createAll(Simulation&,const attachSystem::FixedGroup&);
 		 
 
 };

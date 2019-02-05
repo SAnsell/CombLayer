@@ -69,7 +69,6 @@
 #include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "DBMaterial.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
@@ -265,9 +264,9 @@ readSurfaces(FuncDataBase& DB,std::istream& IX,const int offset)
 // ---------------------------------------------------
 
 int
-checkInsert(const MonteCarlo::Qhull& A,const int offset,OTYPE& ObjMap)
+checkInsert(const MonteCarlo::Object& A,const int offset,OTYPE& ObjMap)
   /*!
-    When a new Qhull object is to be inserted this
+    When a new Object object is to be inserted this
     checks to see if it can be done, returns 1 on 
     success and 0 on failure 
     \param A :: Hull to insert in the main list
@@ -382,7 +381,7 @@ readCells(FuncDataBase& DB,std::istream& IX,
       
       if (endActive && !ObjLine.empty())
         {
-	  MonteCarlo::Qhull Tx;
+	  MonteCarlo::Object Tx;
 	  // This loop over the string making fake object
 	  // for each #(xxx) 
 	  // REMOVED To use new CompGrp object

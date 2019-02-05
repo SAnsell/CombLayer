@@ -38,9 +38,7 @@ class targetOuter : public constructSystem::TargetBase
 {
  private:
   
-  const int protonIndex;        ///< Index of surface offset
 
-  int cellIndex;                ///< Cell index
   
   double totalLength;            ///< Straight length
 

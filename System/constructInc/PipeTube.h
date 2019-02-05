@@ -37,7 +37,7 @@ namespace constructSystem
 
 class PipeTube :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedSpace,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
@@ -51,9 +51,12 @@ class PipeTube :
   double flangeALength;        ///< Joining Flange length
   double flangeBRadius;        ///< Joining Flange radius
   double flangeBLength;        ///< Joining Flange length
-
+  double flangeACap;           ///< Thickness of Flange cap if present
+  double flangeBCap;           ///< Thickness of Flange cap if present
+  
   int voidMat;                ///< void material
   int wallMat;                ///< Fe material layer
+  int capMat;                 ///< flange cap material layer
 
   bool delayPortBuild;        ///< Delay port to manual construct
   size_t portConnectIndex;    ///< Port to connect to
@@ -80,7 +83,7 @@ class PipeTube :
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
 
-    /// Set a port delay
+  /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
   int splitVoidPorts(Simulation&,const std::string&,
 		     const int,const int);
@@ -93,11 +96,12 @@ class PipeTube :
 
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
+  void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
   void createPorts(Simulation&);
 
-  virtual void insertInCell(Simulation&,const int);
+  virtual void insertAllInCell(Simulation&,const int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

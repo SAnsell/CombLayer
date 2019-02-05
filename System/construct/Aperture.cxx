@@ -64,7 +64,8 @@
 #include "HeadRule.h"
 #include "neutron.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "groupRange.h"
+#include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -82,9 +83,7 @@ namespace constructSystem
 Aperture::Aperture(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,14),
-  attachSystem::FrontBackCut(),
-  appIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(appIndex+1)
+  attachSystem::FrontBackCut()
 
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -95,7 +94,6 @@ Aperture::Aperture(const std::string& Key)  :
 Aperture::Aperture(const Aperture& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),
-  appIndex(A.appIndex),cellIndex(A.cellIndex),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   width(A.width),height(A.height),thick(A.thick),
   nLayers(A.nLayers),voidMat(A.voidMat),defMat(A.defMat)
@@ -118,7 +116,6 @@ Aperture::operator=(const Aperture& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       innerWidth=A.innerWidth;
       innerHeight=A.innerHeight;
       width=A.width;
@@ -193,20 +190,20 @@ Aperture::createSurfaces()
   ELog::RegMethod RegA("Aperture","createSurfaces");
   
 
-  ModelSupport::buildPlane(SMap,appIndex+1,Origin-Y*thick/2.0,Y);
-  ModelSupport::buildPlane(SMap,appIndex+2,Origin+Y*thick/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*thick/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*thick/2.0,Y);
 
-  ModelSupport::buildPlane(SMap,appIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,appIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
   
-  ModelSupport::buildPlane(SMap,appIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,appIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
   
-  ModelSupport::buildPlane(SMap,appIndex+13,Origin-X*innerWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,appIndex+14,Origin+X*innerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*innerWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*innerWidth/2.0,X);
   
-  ModelSupport::buildPlane(SMap,appIndex+15,Origin-Z*innerHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,appIndex+16,Origin+Z*innerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*innerHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*innerHeight/2.0,Z);
 
   
   return;
@@ -222,15 +219,15 @@ Aperture::createObjects(Simulation& System)
   ELog::RegMethod RegA("Aperture","createObjects");
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,appIndex,"1 -2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,appIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
                                  "1 -2 3 -4 5 -6 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,appIndex,"1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   return;
 }
@@ -252,18 +249,18 @@ Aperture::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);  
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(appIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(appIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(appIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(appIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(appIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(appIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // 8 corners [FRONT/BACK]
   for(size_t i=0;i<4;i++)
     {
-      FixedComp::setLinkSurf(i+6,-SMap.realSurf(appIndex+1));
-      FixedComp::setLinkSurf(i+10,SMap.realSurf(appIndex+2));
+      FixedComp::setLinkSurf(i+6,-SMap.realSurf(buildIndex+1));
+      FixedComp::setLinkSurf(i+10,SMap.realSurf(buildIndex+2));
     }
   Geometry::Vec3D platePt(Origin-Y*(thick/2.0));
   FixedComp::setConnect(6,platePt-X*(width/2.0),-X);
