@@ -1048,6 +1048,8 @@ FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
 
   LinkUnit& LObj=LU[Index];
   LObj.populateSurf();
+  ELog::EM<<"Main == "<<LObj.getMainRule()
+	  <<" ::: "<<LObj.getCommonRule()<<ELog::endDiag;
   const Geometry::Vec3D Pt=
     SurInter::getLinePoint(C,A,LObj.getMainRule(),LObj.getCommonRule()); 
   LObj.setConnectPt(Pt);

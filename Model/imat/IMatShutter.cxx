@@ -195,7 +195,7 @@ IMatShutter::createUnitVector()
   beamFC.applyShift(xStep,0,zStep);
   beamFC.applyAngleRotate(xyAngle,zAngle);
 
-
+  setDefault("Main","Beam");
   return;
 }
 
@@ -206,11 +206,6 @@ IMatShutter::createSurfaces()
   */
 {
   ELog::RegMethod RegA("IMatShutter","createSurfaces");
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-
-  const Geometry::Vec3D bX(beamFC.getX());
-  const Geometry::Vec3D bY(beamFC.getY());
-  const Geometry::Vec3D bZ(beamFC.getZ());
 
   // Void Walls:                                                                                                  
   ModelSupport::buildPlane(SMap,insIndex+3,
@@ -360,15 +355,21 @@ IMatShutter::createLinks()
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
   mainFC.addLinkSurf(0,SMap.realSurf(insIndex+51));
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex," -17 100 ");
+  const std::string Out=
+    ModelSupport::getComposite(SMap,buildIndex," -17 100 ");
+  
   mainFC.addLinkSurf(1,Out);
-  beamFC.setLinkSurf(1,Out);
+  beamFC.setLinkSurf(1,-SMap.realSurf(buildIndex+17));
+  beamFC.setBridgeSurf(1,SMap.realSurf(buildIndex+100));
+  ELog::EM<<"Surf = "<<*SMap.realSurfPtr(buildIndex+17)<<ELog::endDiag;
+  ELog::EM<<"Surf = "<<*SMap.realSurfPtr(buildIndex+100)<<ELog::endDiag;
   mainFC.addLinkSurf(2,SMap.realSurf(insIndex+3));
   mainFC.addLinkSurf(3,SMap.realSurf(insIndex+4));
   mainFC.addLinkSurf(4,SMap.realSurf(insIndex+5));
   mainFC.addLinkSurf(5,SMap.realSurf(insIndex+6));
 
-  beamFC.setLineConnect(1,beamFC.getCentre(),beamFC.getY());
+  ELog::EM<<"BeamC == "<<bY<<" :: "<<bOrigin<<ELog::endDiag;
+  //  beamFC.setLineConnect(1,bOrigin,bY);
 
   return;
 }

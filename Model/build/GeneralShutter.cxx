@@ -322,7 +322,6 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
     {
       mainFC.createUnitVector(*FCPtr,0);
       beamFC.createUnitVector(*FCPtr,0);
-      ELog::EM<<"Origin "<<mainFC.getCentre()<<ELog::endErr;
     }
   else
     {
@@ -337,8 +336,7 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
          Geometry::Vec3D(0,0,-1),
          Geometry::Vec3D(-1,0,0));
     }
-  setDefault("Main");
-  setSecondary("Beam");
+  setDefault("Main","Beam");
   return;
 }
 

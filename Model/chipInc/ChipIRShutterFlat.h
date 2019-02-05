@@ -3,7 +3,7 @@
  
  * File:   chipInc/ChipIRShutterFlat.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

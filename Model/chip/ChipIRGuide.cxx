@@ -386,39 +386,43 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector");
 
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  Geometry::Vec3D bZ=Z=Geometry::Vec3D(-1,0,0);        // Gravity axis [up]
-  Geometry::Vec3D bY=Y=GS.getXYAxis();                 // forward axis [centre line]  
-  Geometry::Vec3D bX=X=Z*GS.getXYAxis();               // horrizontal axis [across]
+  const Geometry::Vec3D tmpbZ=
+    Geometry::Vec3D(-1,0,0);        // Gravity axis [up]
+  const Geometry::Vec3D tmpbY=
+    GS.getXYAxis();                 // forward axis [centre line]  
+  const Geometry::Vec3D tmpbX=
+    Z*GS.getXYAxis();               // horrizontal axis [across]
 
   // Change so that not dependent on the angle of the shutter:
 
 
   mainFC.createUnitVector(GS.getKey("Main"));
   
-  Origin=GS.getOrigin()+Y*BS.getORadius();
+  //  Origin=GS.getOrigin()+Y*BS.getORadius();
 
-  Geometry::Vec3D bEnter=Origin;
-  Origin+=Z*zShift+X*xShift;
-  bEnter+=Z*zBeamShift+X*xBeamShift;
-
-
-  mainFC.setCentre(Origin);
-  beamFC.createUnitVector(bEnter,bX,bY,bZ);
+  mainFC.applyShift(xShift,BS.getORadius(),zShift);
+  
+  //  mainFC.setCentre(Origin);
+  //  bEnter+=Z*zBeamShift+X*xBeamShift;
+  beamFC.createUnitVector(mainFC.getCentre(),tmpbX,tmpbY,tmpbZ);
+  beamFC.applyShift(xBeamShift,0.0,zBeamShift);
   beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
 
   // Now calculate Cent
+  setDefault("Main","Beam");
   gLen=hYStart-BS.getORadius();
-  beamFC.setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
+  beamFC.setExit(bOrigin+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
   //  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
   //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
   //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
-  
+
+  setDefault("Main","Beam");
   return;
 }
 
@@ -910,6 +914,10 @@ ChipIRGuide::writeMasterPoints()
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","writeMasterPoints");
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
   const masterRotate& MR=masterRotate::Instance();  
   // Output Datum
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
@@ -962,7 +970,7 @@ ChipIRGuide::writeMasterPoints()
       Cp/=4.0;
       const Geometry::Plane* PX=
 	SMap.realPtr<Geometry::Plane>(gIndex[i]+buildIndex);
-      FixedComp::setConnect(cNum[i],Cp,PX->getNormal()*signV);      
+      mainFC.setConnect(cNum[i],Cp,PX->getNormal()*signV);      
     }
   
   return;
@@ -992,22 +1000,24 @@ ChipIRGuide::createLinks()
 {
   ELog::RegMethod RegA("ChipIRGuide","createLinks");
   // Set directional exit:
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*gLen,Y);
-  FixedComp::setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setConnect(1,Origin+Y*gLen,Y);
+  mainFC.setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
   
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));  
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));  
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));  
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));  
+  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));  
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));  
+  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));  
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1002));
+  mainFC.setLinkSurf(6,SMap.realSurf(buildIndex+1002));
 
   // OutersideWalls
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+213));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+604));
+  mainFC.setLinkSurf(7,-SMap.realSurf(buildIndex+213));
+  mainFC.setLinkSurf(8,SMap.realSurf(buildIndex+604));
       
 
 

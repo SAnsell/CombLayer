@@ -243,9 +243,12 @@ BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
   mainFC.createUnitVector(GS.getKey("Main"),2);
   beamFC.createUnitVector(GS.getKey("Beam"),2);
 
+  
   divideSurf=GS.getDivideSurf();
   DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
   Origin=GS.getTargetPoint();
+  mainFC.setCentre(Origin);
+  setDefault("Main","Beam");
   
   return;
 }

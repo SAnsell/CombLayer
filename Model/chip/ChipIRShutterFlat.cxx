@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRShutterFlat.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,8 +358,11 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 		     MR.calcRotate(Pt));
 	  backPt+=Pt;
 	}
-      FixedComp::setConnect(0,frontPt/4.0,-bY);
-      FixedComp::setConnect(1,backPt/4.0,bY);
+      //attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+      attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
+      beamFC.setConnect(0,frontPt/4.0,-bY);
+      beamFC.setConnect(1,backPt/4.0,bY);
     }
   else
     {

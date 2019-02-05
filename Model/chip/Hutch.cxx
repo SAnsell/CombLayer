@@ -290,7 +290,7 @@ ChipIRHutch::populate(const FuncDataBase& Control)
     \param Control :: Database
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","populate");
+  ELog::RegMethod RegA("Hutch","populate");
 
   beamAngle=Control.EvalVar<double>("chipSndAngle");
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -414,7 +414,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
     \param LC :: connectin linear component [ChipIRGuide]
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","createUnitVector");
+  ELog::RegMethod RegA("Hutch","createUnitVector");
 
   const masterRotate& MR=masterRotate::Instance();
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
@@ -462,7 +462,7 @@ ChipIRHutch::createWallObjects(Simulation& System,
     \param IC :: Inner Insert object of Wall from the guide
    */
 {
-  ELog::RegMethod RegA("ChipIRHutch","createWallObjects");
+  ELog::RegMethod RegA("Hutch","createWallObjects");
   // Create outer virtual void
   std::string Out;
 
@@ -1122,11 +1122,11 @@ ChipIRHutch::addCollimators(Simulation& System,
   PreColObj->addInsertCell(collimatorVoid);
   PreColObj->addBoundarySurf(SMap.realSurf(buildIndex+33));
   PreColObj->addBoundarySurf(-SMap.realSurf(buildIndex+34));
-  
+
   if (collActiveFlag & 1)
-    PreColObj->createAll(System,GI);
+    PreColObj->createAll(System,GI.getKey("Beam"));
   else
-    PreColObj->createPartial(System,GI);
+    PreColObj->createPartial(System,GI.getKey("Beam"));
 
 
   // Stuff for collimator box:
@@ -1145,22 +1145,6 @@ ChipIRHutch::addCollimators(Simulation& System,
   if (collActiveFlag & 2)
     Jaw->createAll(System,getKey("Beam"),-1);
 
-  /*
-  CS.setCNum(chipIRDatum::preCollOrigin,
-	     MR.calcRotate(PreColObj->getCentre()));
-  CS.setCNum(chipIRDatum::preCollAxis,
-	     MR.calcAxisRotate(PreColObj->getBeamAxis()));
-  CS.setCNum(chipIRDatum::preCollHoleCent,
-	     MR.calcRotate(PreColObj->getHoleCentre()));
-  CS.setCNum(chipIRDatum::collVOrigin,
-	     MR.calcRotate(Jaw->getCentre()));
-  CS.setCNum(chipIRDatum::collVAxis,
-	     MR.calcAxisRotate(Jaw->getY()));
-  CS.setCNum(chipIRDatum::collHOrigin,
-	     MR.calcRotate(Jaw->getCentre()));
-  CS.setCNum(chipIRDatum::collHAxis,
-	     MR.calcAxisRotate(Jaw->getY()));
-  */
   return;
 }
   
@@ -1298,7 +1282,7 @@ ChipIRHutch::createAll(Simulation& System,
   ELog::RegMethod RegA("ChipIRHutch","createAll(ShutterPort)");
 
   populate(System.getDataBase());
-  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide);
+  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide.getKey("Main"));
   createCommonAll(System,Guide,IC);
   return;
 }
@@ -1319,7 +1303,7 @@ ChipIRHutch::createAll(Simulation& System,
   ELog::RegMethod RegA("Hutch","createAll(Fixed)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FC.getY(),Guide);
+  createUnitVector(FC,FC.getY(),Guide.getKey("Main"));
   createCommonAll(System,Guide,IC);
   return;
 }
@@ -1338,16 +1322,17 @@ ChipIRHutch::createCommonAll(Simulation& System,
 {
   ELog::RegMethod RegA("Hutch","createCommonAll");
 
-  Trimmer->createOnlySurfaces(System,Guide,2);
-  createWallSurfaces(Guide);
+  Trimmer->createOnlySurfaces(System,Guide.getKey("Main"),2);
+  createWallSurfaces(Guide.getKey("Main"));
   
   createWallObjects(System,IC);
-  addExtraWalls(System,Guide);
+  addExtraWalls(System,Guide.getKey("Main"));
   createLinks();
 
   Trimmer->createOnlyObjects(System);
 
   addOuterVoid();
+  return;
   addCollimators(System,Guide);
   BStop->createAll(System,getKey("Main"),4);
 
