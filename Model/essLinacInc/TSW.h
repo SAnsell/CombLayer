@@ -53,7 +53,9 @@ class TSW : public attachSystem::ContainedComp,
   int doorMat; ///< Door material
   double doorOffset; ///< Door offset along the wall
   double doorHeight; ///< Door height
-  double doorWidth; ///< Door width
+  double doorWidth1; ///< Width of the wide part
+  double doorThick1; ///< Thickness of the wide part
+  double doorWidth2; ///< Width of the narrow part
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

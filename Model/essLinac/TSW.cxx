@@ -106,7 +106,9 @@ TSW::TSW(const TSW& A) :
   doorMat(A.doorMat),
   doorOffset(A.doorOffset),
   doorHeight(A.doorHeight),
-  doorWidth(A.doorWidth)
+  doorWidth1(A.doorWidth1),
+  doorThick1(A.doorThick1),
+  doorWidth2(A.doorWidth2)
   /*!
     Copy constructor
     \param A :: TSW to copy
@@ -134,7 +136,9 @@ TSW::operator=(const TSW& A)
       doorMat=A.doorMat;
       doorOffset=A.doorOffset;
       doorHeight=A.doorHeight;
-      doorWidth=A.doorWidth;
+      doorWidth1=A.doorWidth1;
+      doorThick1=A.doorThick1;
+      doorWidth2=A.doorWidth2;
     }
   return *this;
 }
@@ -173,7 +177,9 @@ TSW::populate(const FuncDataBase& Control)
   doorOffset=Control.EvalVar<double>(keyName+"DoorOffset");
 
   doorHeight=Control.EvalVar<double>(keyName+"DoorHeight");
-  doorWidth=Control.EvalVar<double>(keyName+"DoorWidth");
+  doorWidth1=Control.EvalVar<double>(keyName+"DoorWidth1");
+  doorThick1=Control.EvalVar<double>(keyName+"DoorThick1");
+  doorWidth2=Control.EvalVar<double>(keyName+"DoorWidth2");
 
   return;
 }
@@ -219,9 +225,13 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 				  length);
 
   // door
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(doorWidth/2.0-doorOffset),-Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin-Y*(doorWidth/2.0+doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(doorWidth1/2.0-doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin-Y*(doorWidth1/2.0+doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin+X*(doorThick1),X);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(FC.getLinkPt(floor).Z()+doorHeight),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+Y*(doorWidth2/2.0-doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+112,Origin-Y*(doorWidth2/2.0+doorOffset),-Y);
 
   return;
 }
@@ -248,12 +258,17 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   std::string Out;
   // door
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 101 -102 -106 ") + side;
+    ModelSupport::getComposite(SMap,buildIndex," 1 -103 101 -102 -106 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
-  // wall
 
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 103 -2 111 -112 -106 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+
+
+  // wall
   Out = common+FC.getLinkString(wall1) +
-    ModelSupport::getComposite(SMap,buildIndex," -4 (-101:102:106) ");
+    ModelSupport::getComposite(SMap,buildIndex," -4 (103:-101:102:106) (-103:-111:112:106) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
