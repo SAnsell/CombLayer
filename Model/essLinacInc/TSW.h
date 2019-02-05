@@ -44,7 +44,6 @@ class TSW : public attachSystem::ContainedComp,
   const std::string baseName;   ///< Base name
   const size_t Index;           ///< Wall index
 
-  double length;                ///< Total length including void
   double width;                 ///< Width
 
   int wallMat;                  ///< Wall material

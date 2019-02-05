@@ -84,7 +84,7 @@ namespace essSystem
   TSW::TSW(const std::string& baseKey,const std::string& extraKey,
 	   const size_t& index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),7),
+  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),6),
   attachSystem::CellMap(),
   baseName(baseKey),
   Index(index)
@@ -100,7 +100,7 @@ TSW::TSW(const TSW& A) :
   attachSystem::CellMap(A),
   baseName(A.baseName),
   Index(A.Index),
-  length(A.length),width(A.width),
+  width(A.width),
   wallMat(A.wallMat),
   airMat(A.airMat),
   doorMat(A.doorMat),
@@ -130,7 +130,6 @@ TSW::operator=(const TSW& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      length=A.length;
       width=A.width;
       wallMat=A.wallMat;
       airMat=A.airMat;
@@ -171,7 +170,6 @@ TSW::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("TSW","populate");
 
   FixedOffset::populate(Control);
-  length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
@@ -221,11 +219,6 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+X*(width),X);
-
-  const int w1 = FC.getLinkSurf(wall1);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+4,
-				  SMap.realPtr<Geometry::Plane>(w1),
-				  length);
 
   // door
   //       thick region
@@ -303,19 +296,12 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
 
   // wall
-  Out = common+FC.getLinkString(wall1) +
-    ModelSupport::getComposite(SMap,buildIndex," -4 (113:-111:112:116) (-103:-211:212:116) ");
+  Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
+    ModelSupport::getComposite(SMap,buildIndex," (113:-111:112:116) (-103:-211:212:116) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
-  const double linacWidth(FC.getLinkDistance(wall1, wall2));
-
-  if (linacWidth-length>Geometry::zeroTol)
-    {
-      Out = common+FC.getLinkString(wall2) +
-	ModelSupport::getComposite(SMap,buildIndex," 4 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-    }
+  //  const double linacWidth(FC.getLinkDistance(wall1, wall2));
 
   Out=common+FC.getLinkString(wall1) + FC.getLinkString(wall2);
   addOuterSurf(Out);
@@ -335,24 +321,22 @@ TSW::createLinks(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("TSW","createLinks");
 
   FixedComp::setLinkSignedCopy(0,FC,-wall1);
-  FixedComp::setLinkSignedCopy(1,FC,-wall2);
+  FixedComp::setLinkSignedCopy(1,FC,-wall2); // wrong
 
-  FixedComp::setConnect(2,Origin-Y*(length/2.0),-X);
+
+  FixedComp::setConnect(2,Origin,-X); // wrong
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(3,Origin-Y*(length/2.0)+X*(width),X);
+  FixedComp::setConnect(3,Origin+X*(width),X); // same as 0
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+2));
 
-  FixedComp::setLinkSignedCopy(4,FC,-floor);
+  FixedComp::setLinkSignedCopy(4,FC,-floor); // as 0 but from the other side of the whall
   FixedComp::setLinkSignedCopy(5,FC,-roof);
 
-  FixedComp::setConnect(6,Origin-Y*(length/2.0)+X*(width),X);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+2));
+  ELog::EM << "Check the links [now they are wrong!]" << ELog::endCrit;
 
-  ELog::EM << "check the links" << ELog::endCrit;
-
-  for (int i=0; i<=6; i++)
-    ELog::EM << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
+  for (int i=0; i<=5; i++)
+    ELog::EM << i << ":\t" << getLinkSurf(i+1) << " " << getLinkPt(i+1) << ELog::endDiag;
 
   return;
 }
