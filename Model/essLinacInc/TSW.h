@@ -51,6 +51,7 @@ class TSW : public attachSystem::ContainedComp,
   int airMat;                   ///< Air material
 
   int doorMat; ///< Door material
+  double doorGap; ///< Gap size around the door
   double doorOffset; ///< Door offset along the wall
   double doorHeight; ///< Door height
   double doorWidth1; ///< Width of the wide part

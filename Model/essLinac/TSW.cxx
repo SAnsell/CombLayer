@@ -104,6 +104,7 @@ TSW::TSW(const TSW& A) :
   wallMat(A.wallMat),
   airMat(A.airMat),
   doorMat(A.doorMat),
+  doorGap(A.doorGap),
   doorOffset(A.doorOffset),
   doorHeight(A.doorHeight),
   doorWidth1(A.doorWidth1),
@@ -134,6 +135,7 @@ TSW::operator=(const TSW& A)
       wallMat=A.wallMat;
       airMat=A.airMat;
       doorMat=A.doorMat;
+      doorGap=A.doorGap;
       doorOffset=A.doorOffset;
       doorHeight=A.doorHeight;
       doorWidth1=A.doorWidth1;
@@ -174,6 +176,7 @@ TSW::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
+  doorGap=Control.EvalVar<double>(keyName+"DoorGap");
   doorOffset=Control.EvalVar<double>(keyName+"DoorOffset");
 
   doorHeight=Control.EvalVar<double>(keyName+"DoorHeight");
@@ -225,13 +228,34 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 				  length);
 
   // door
+  //       thick region
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(doorWidth1/2.0-doorOffset),-Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin-Y*(doorWidth1/2.0+doorOffset),-Y);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin+X*(doorThick1),X);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(FC.getLinkPt(floor).Z()+doorHeight),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+Y*(doorWidth2/2.0-doorOffset),-Y);
-  ModelSupport::buildPlane(SMap,buildIndex+112,Origin-Y*(doorWidth2/2.0+doorOffset),-Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+111,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+101),
+                                  -doorGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+112,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+102),
+                                  doorGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+113,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+103),
+                                  doorGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+116,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+106),
+                                  doorGap);
+
+  //       thin region
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(doorWidth2/2.0-doorOffset),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin-Y*(doorWidth2/2.0+doorOffset),-Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+211,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+201),
+                                  -doorGap);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+212,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+202),
+                                  doorGap);
 
   return;
 }
@@ -262,13 +286,25 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -2 111 -112 -106 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 -103 111 -112 -116 (-101:102:106) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 103 -113 111 -112 -116 (-211:212:116) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 103 -2 201 -202 -106 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 103 -2 211 -212 -116 (-201:202:106) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
 
   // wall
   Out = common+FC.getLinkString(wall1) +
-    ModelSupport::getComposite(SMap,buildIndex," -4 (103:-101:102:106) (-103:-111:112:106) ");
+    ModelSupport::getComposite(SMap,buildIndex," -4 (113:-111:112:116) (-103:-211:212:116) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
