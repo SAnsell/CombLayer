@@ -121,7 +121,17 @@ TSW::TSW(const TSW& A) :
   hole2Radius(A.hole2Radius),
   hole3StepY(A.hole3StepY),
   hole3StepZ(A.hole3StepZ),
-  hole3Radius(A.hole3Radius)
+  hole3Radius(A.hole3Radius),
+  hole4StepY(A.hole4StepY),
+  hole4StepZ(A.hole4StepZ),
+  hole4Width(A.hole4Width),
+  hole4Height(A.hole4Height),
+  hole5StepY(A.hole5StepY),
+  hole5StepZ(A.hole5StepZ),
+  hole5Radius(A.hole5Radius),
+  hole6StepY(A.hole6StepY),
+  hole6StepZ(A.hole6StepZ),
+  hole6Radius(A.hole6Radius)
 /*!
     Copy constructor
     \param A :: TSW to copy
@@ -164,6 +174,16 @@ TSW::operator=(const TSW& A)
       hole3StepY=A.hole3StepY;
       hole3StepZ=A.hole3StepZ;
       hole3Radius=A.hole3Radius;
+      hole4StepY=A.hole4StepY;
+      hole4StepZ=A.hole4StepZ;
+      hole4Width=A.hole4Width;
+      hole4Height=A.hole4Height;
+      hole5StepY=A.hole5StepY;
+      hole5StepZ=A.hole5StepZ;
+      hole5Radius=A.hole5Radius;
+      hole6StepY=A.hole6StepY;
+      hole6StepZ=A.hole6StepZ;
+      hole6Radius=A.hole6Radius;
     }
   return *this;
 }
@@ -220,6 +240,19 @@ TSW::populate(const FuncDataBase& Control)
   hole3StepY=Control.EvalVar<double>(keyName+"Hole3StepY");
   hole3StepZ=Control.EvalVar<double>(keyName+"Hole3StepZ");
   hole3Radius=Control.EvalVar<double>(keyName+"Hole3Radius");
+
+  hole4StepY=Control.EvalVar<double>(keyName+"Hole4StepY");
+  hole4StepZ=Control.EvalVar<double>(keyName+"Hole4StepZ");
+  hole4Width=Control.EvalVar<double>(keyName+"Hole4Width");
+  hole4Height=Control.EvalVar<double>(keyName+"Hole4Height");
+
+  hole5StepY=Control.EvalVar<double>(keyName+"Hole5StepY");
+  hole5StepZ=Control.EvalVar<double>(keyName+"Hole5StepZ");
+  hole5Radius=Control.EvalVar<double>(keyName+"Hole5Radius");
+
+  hole6StepY=Control.EvalVar<double>(keyName+"Hole6StepY");
+  hole6StepZ=Control.EvalVar<double>(keyName+"Hole6StepZ");
+  hole6Radius=Control.EvalVar<double>(keyName+"Hole6Radius");
 
   return;
 }
@@ -317,6 +350,12 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 			      X,
 			      hole3Radius);
 
+  // Hole 4 (rectangular penetration left to the door)
+  ModelSupport::buildPlane(SMap,buildIndex+601,Origin-Y*(hole4StepY-hole4Width),-Y)->print();
+  ModelSupport::buildPlane(SMap,buildIndex+602,Origin-Y*(hole4StepY+hole4Width),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(hole4StepZ-hole4Height),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+606,Origin+Z*(hole4StepZ+hole4Height),Z);
+
   return;
 }
 
@@ -406,11 +445,16 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out = ModelSupport::getComposite(SMap,buildIndex," -507 ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
 
+  // Hole 4 [rectangular]
+  Out = ModelSupport::getComposite(SMap,buildIndex," 601 -602 605 -606 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
   // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
 			       " (-111:112:116) "
-			       " (-301:302:-305:306) 407 507 ");
+			       " (-301:302:-305:306) 407 507 "
+			       " (-601:602:-605:606) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
