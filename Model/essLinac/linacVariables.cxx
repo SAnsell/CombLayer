@@ -121,6 +121,11 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0DoorHeightLow", 197.5); // check
   Control.addVariable("LinacTSW0DoorWidthLow",   60.0); // Wolfgang Hees 25.01.2019
 
+  Control.addVariable("LinacTSW0Hole1StepY",   550.74); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0Hole1StepZ",   172.08); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0Hole1Width",    39.0); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0Hole1Height",   10.0); // Wolfgang Hees 25.01.2019
+
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);
   Control.addVariable("LinacTSW1Width", 140.0);

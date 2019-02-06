@@ -59,6 +59,12 @@ class TSW : public attachSystem::ContainedComp,
   double doorHeightLow; ///< Height of the low door part
   double doorWidthLow; ///< Width of the narrow part
 
+  // rectangular penetration above the door
+  double hole1StepY; ///< Y-offset of hole 1
+  double hole1StepZ; ///< Z-offset of hole 1
+  double hole1Width; ///< width of hole 1
+  double hole1Height; ///< height of hole 1
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

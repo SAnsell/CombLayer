@@ -111,7 +111,11 @@ TSW::TSW(const TSW& A) :
   doorThickWide(A.doorThickWide),
   doorThickHigh(A.doorThickHigh),
   doorHeightLow(A.doorHeightLow),
-  doorWidthLow(A.doorWidthLow)
+  doorWidthLow(A.doorWidthLow),
+  hole1StepY(A.hole1StepY),
+  hole1StepZ(A.hole1StepZ),
+  hole1Width(A.hole1Width),
+  hole1Height(A.hole1Height)
   /*!
     Copy constructor
     \param A :: TSW to copy
@@ -144,6 +148,10 @@ TSW::operator=(const TSW& A)
       doorThickHigh=A.doorThickHigh;
       doorHeightLow=A.doorHeightLow;
       doorWidthLow=A.doorWidthLow;
+      hole1StepY=A.hole1StepY;
+      hole1StepZ=A.hole1StepZ;
+      hole1Width=A.hole1Width;
+      hole1Height=A.hole1Height;
     }
   return *this;
 }
@@ -187,6 +195,11 @@ TSW::populate(const FuncDataBase& Control)
   doorThickHigh=Control.EvalVar<double>(keyName+"DoorThickHigh");
   doorHeightLow=Control.EvalVar<double>(keyName+"DoorHeightLow");
   doorWidthLow=Control.EvalVar<double>(keyName+"DoorWidthLow");
+
+  hole1StepY=Control.EvalVar<double>(keyName+"Hole1StepY");
+  hole1StepZ=Control.EvalVar<double>(keyName+"Hole1StepZ");
+  hole1Width=Control.EvalVar<double>(keyName+"Hole1Width");
+  hole1Height=Control.EvalVar<double>(keyName+"Hole1Height");
 
   return;
 }
@@ -266,6 +279,12 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
                                   SMap.realPtr<Geometry::Plane>(buildIndex+206),
                                   doorGap);
 
+  // Hole 1 (rectangular penetration above the door)
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(hole1StepY-hole1Width),-Y)->print();
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin-Y*(hole1StepY+hole1Width),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+305,Origin+Z*(hole1StepZ-hole1Height),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(hole1StepZ+hole1Height),Z);
+
   return;
 }
 
@@ -322,11 +341,18 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     ModelSupport::getComposite(SMap,buildIndex," 203 -2 211 -212 -216 (-201:202:206) ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
+  // Hole 1
+  Out = ModelSupport::getComposite(SMap,buildIndex," 301 -302 305 -306 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
 
   // wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
-			       " (113:-111:112:116) (-103:213:-211:212:116) (-203:-211:212:216)");
+			       " (113:-111:112:116) "
+                               " (-103:213:-211:212:116) "
+                               " (-203:-211:212:216) "
+			       " (-301:302:-305:306) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
