@@ -115,8 +115,11 @@ TSW::TSW(const TSW& A) :
   hole1StepY(A.hole1StepY),
   hole1StepZ(A.hole1StepZ),
   hole1Width(A.hole1Width),
-  hole1Height(A.hole1Height)
-  /*!
+  hole1Height(A.hole1Height),
+  hole2StepY(A.hole2StepY),
+  hole2StepZ(A.hole2StepZ),
+  hole2Radius(A.hole2Radius)
+/*!
     Copy constructor
     \param A :: TSW to copy
   */
@@ -152,6 +155,9 @@ TSW::operator=(const TSW& A)
       hole1StepZ=A.hole1StepZ;
       hole1Width=A.hole1Width;
       hole1Height=A.hole1Height;
+      hole2StepY=A.hole2StepY;
+      hole2StepZ=A.hole2StepZ;
+      hole2Radius=A.hole2Radius;
     }
   return *this;
 }
@@ -200,6 +206,10 @@ TSW::populate(const FuncDataBase& Control)
   hole1StepZ=Control.EvalVar<double>(keyName+"Hole1StepZ");
   hole1Width=Control.EvalVar<double>(keyName+"Hole1Width");
   hole1Height=Control.EvalVar<double>(keyName+"Hole1Height");
+
+  hole2StepY=Control.EvalVar<double>(keyName+"Hole2StepY");
+  hole2StepZ=Control.EvalVar<double>(keyName+"Hole2StepZ");
+  hole2Radius=Control.EvalVar<double>(keyName+"Hole2Radius");
 
   return;
 }
@@ -285,6 +295,12 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,buildIndex+305,Origin+Z*(hole1StepZ-hole1Height),Z);
   ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(hole1StepZ+hole1Height),Z);
 
+  // Hole 2 (circular penetration below Hole 1)
+  ModelSupport::buildCylinder(SMap,buildIndex+407,
+			      Origin-Y*hole2StepY+Z*hole2StepZ,
+			      X,
+			      hole2Radius);
+
   return;
 }
 
@@ -366,11 +382,15 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out = ModelSupport::getComposite(SMap,buildIndex," 301 -302 305 -306 ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
 
-  // wall
+  // Hole 2
+  Out = ModelSupport::getComposite(SMap,buildIndex," -407 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
+  // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
 			       " (-111:112:116) "
-			       " (-301:302:-305:306) ");
+			       " (-301:302:-305:306) 407 ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
