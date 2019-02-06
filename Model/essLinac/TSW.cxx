@@ -314,14 +314,6 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 1 -103 111 -112 -116 (-101:102:106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-
-  Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -113 111 -112 -116 (-211:212:116) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
-
-  Out = FC.getLinkString(floor) +
     ModelSupport::getComposite(SMap,buildIndex," 103 -203 201 -202 -106 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
@@ -329,22 +321,37 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     ModelSupport::getComposite(SMap,buildIndex," 203 -2 201 -202 -206 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
-  Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 203 -213 211 -212 216 -116 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  if (doorGap>Geometry::zeroTol)
+    {
+      Out = FC.getLinkString(floor) +
+	ModelSupport::getComposite(SMap,buildIndex,
+				   " 1 -103 111 -112 -116 (-101:102:106) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
-  Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -203 211 -212 -116 (-201:202:106) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+      Out = FC.getLinkString(floor) +
+	ModelSupport::getComposite(SMap,buildIndex,
+				   " 103 -113 111 -112 -116 (-211:212:116) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
-  Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 203 -2 211 -212 -216 (-201:202:206) ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+      Out = FC.getLinkString(floor) +
+	ModelSupport::getComposite(SMap,buildIndex,
+				   " 203 -213 211 -212 216 -116 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+
+      Out = FC.getLinkString(floor) +
+	ModelSupport::getComposite(SMap,buildIndex,
+				   " 103 -203 211 -212 -116 (-201:202:106) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+
+      Out = FC.getLinkString(floor) +
+	ModelSupport::getComposite(SMap,buildIndex,
+				   " 203 -2 211 -212 -216 (-201:202:206) ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+    }
 
   // Hole 1
   Out = ModelSupport::getComposite(SMap,buildIndex," 301 -302 305 -306 ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
-
 
   // wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
