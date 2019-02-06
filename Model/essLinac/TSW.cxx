@@ -321,6 +321,19 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     ModelSupport::getComposite(SMap,buildIndex," 203 -2 201 -202 -206 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
+  // splitting the wall near the door to simplify the wall cell
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 111 -211 113 -2 -116 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex," 212 -112 113 -2 -116 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+
+  Out = ModelSupport::getComposite(SMap,buildIndex,
+				   " 211 -212 213 -2 216 -116 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+
   if (doorGap>Geometry::zeroTol)
     {
       Out = FC.getLinkString(floor) +
@@ -356,9 +369,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   // wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
-			       " (113:-111:112:116) "
-                               " (-103:213:-211:212:116) "
-                               " (-203:-211:212:216) "
+			       " (-111:112:116) "
 			       " (-301:302:-305:306) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
