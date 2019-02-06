@@ -203,15 +203,17 @@ makeChipIR::build(Simulation* SimPtr,
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("chipIR")))
     return;
 
-
   HObj->setCollFlag(IParam.getValue<int>("collFlag"));
   // chipguide/chiphutch
   GObj->setMonoSurface(BulkObj.getMonoSurf());
   GObj->addInsertCell("outer",74123);
   GObj->addInsertCell("rightwall",74123);
   GObj->addInsertCell("leftwall",74123);
-
+  
   GObj->createAll(*SimPtr,BulkObj,0);
+  ELog::EM<<"Bulk == "<<BulkObj.getLinkPt(0)<<ELog::endDiag;
+  return;
+    
   HObj->addInsertCell(74123);
   HObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
 		  GObj->getCC("inner"));

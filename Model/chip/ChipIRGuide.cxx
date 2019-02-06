@@ -389,18 +389,24 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  const Geometry::Vec3D tmpbZ=
-    Geometry::Vec3D(-1,0,0);        // Gravity axis [up]
-  const Geometry::Vec3D tmpbY=
-    GS.getXYAxis();                 // forward axis [centre line]  
-  const Geometry::Vec3D tmpbX=
-    Z*GS.getXYAxis();               // horrizontal axis [across]
+  // Gravity axis [up]
+  const Geometry::Vec3D tmpbZ= Geometry::Vec3D(-1,0,0); 
+  const Geometry::Vec3D tmpbY=GS.getXYAxis();
+  const Geometry::Vec3D tmpbX=Z*GS.getXYAxis();
+
+  ELog::EM<<"GS - "<<GS.getXYAxis()<<ELog::endDiag;
 
   // Change so that not dependent on the angle of the shutter:
 
 
   mainFC.createUnitVector(GS.getKey("Main"));
+  setDefault("Main");
   
+  ELog::EM<<"ORG == "<<Origin<<" :"<<X<<": "<<Y<<" :"<<Z<<ELog::endDiag;
+  ELog::EM<<"ORG == "<<Origin<<" :"<<tmpbX<<": "<<tmpbZ<<ELog::endDiag;
+  mainFC.createUnitVector(Origin,-X,Y,Z);
+  setDefault("Main");
+  ELog::EM<<"ORG == "<<Origin<<" :"<<X<<": "<<Y<<" :"<<Z<<ELog::endDiag;
   //  Origin=GS.getOrigin()+Y*BS.getORadius();
 
   mainFC.applyShift(xShift,BS.getORadius(),zShift);
@@ -423,6 +429,7 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
   //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
 
   setDefault("Main","Beam");
+  ELog::EM<<"Beam Enter == "<<bOrigin<<" :"<<X<<": "<<bZ<<ELog::endDiag;
   return;
 }
 
@@ -446,13 +453,13 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
 
   beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
 
-  setDefault("Main");
-  setSecondary("Beam");
+  setDefault("Main","Beam");
   
   // Now calculate Cent
   gLen=hYStart-ORadius; 
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
+
 
   beamFC.setExit(bOrigin+bY*(hYStart/std::abs(bY.dotProd(Y))),
 		 bY);
@@ -547,6 +554,9 @@ ChipIRGuide::createSurfacesCommon()
   for(size_t i=0;i<LThick.size();i++)
     createLiner(static_cast<int>(i+1)*20,LThick[i]);
 
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"X == "<<X<<" :: "<<Y<<" :: "<<Z<<ELog::endDiag;
+  ELog::EM<<"X == "<<bX<<" :: "<<bY<<" :: "<<bZ<<ELog::endDiag;
   // Steel Work:
   //  [sides]
   Geometry::Vec3D rX(X);
