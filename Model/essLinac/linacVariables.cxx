@@ -130,6 +130,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0Hole2StepZ",   152.08); // Wolfgang Hees 25.01.2019
   Control.addVariable("LinacTSW0Hole2Radius",   4.0); // check
 
+  Control.addVariable("LinacTSW0Hole3StepY",   497.8); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0Hole3StepZ",   160.8); // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0Hole3Radius",   2.5); // check
+
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);
   Control.addVariable("LinacTSW1Width", 140.0);

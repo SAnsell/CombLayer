@@ -69,6 +69,10 @@ class TSW : public attachSystem::ContainedComp,
   double hole2StepZ; ///< Z-offset of hole 2
   double hole2Radius; ///< Radius of hole 2
 
+  double hole3StepY; ///< Y-offset of hole 3
+  double hole3StepZ; ///< Z-offset of hole 3
+  double hole3Radius; ///< Radius of hole 3
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

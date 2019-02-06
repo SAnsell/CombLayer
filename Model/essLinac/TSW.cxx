@@ -118,7 +118,10 @@ TSW::TSW(const TSW& A) :
   hole1Height(A.hole1Height),
   hole2StepY(A.hole2StepY),
   hole2StepZ(A.hole2StepZ),
-  hole2Radius(A.hole2Radius)
+  hole2Radius(A.hole2Radius),
+  hole3StepY(A.hole3StepY),
+  hole3StepZ(A.hole3StepZ),
+  hole3Radius(A.hole3Radius)
 /*!
     Copy constructor
     \param A :: TSW to copy
@@ -158,6 +161,9 @@ TSW::operator=(const TSW& A)
       hole2StepY=A.hole2StepY;
       hole2StepZ=A.hole2StepZ;
       hole2Radius=A.hole2Radius;
+      hole3StepY=A.hole3StepY;
+      hole3StepZ=A.hole3StepZ;
+      hole3Radius=A.hole3Radius;
     }
   return *this;
 }
@@ -210,6 +216,10 @@ TSW::populate(const FuncDataBase& Control)
   hole2StepY=Control.EvalVar<double>(keyName+"Hole2StepY");
   hole2StepZ=Control.EvalVar<double>(keyName+"Hole2StepZ");
   hole2Radius=Control.EvalVar<double>(keyName+"Hole2Radius");
+
+  hole3StepY=Control.EvalVar<double>(keyName+"Hole3StepY");
+  hole3StepZ=Control.EvalVar<double>(keyName+"Hole3StepZ");
+  hole3Radius=Control.EvalVar<double>(keyName+"Hole3Radius");
 
   return;
 }
@@ -301,6 +311,12 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 			      X,
 			      hole2Radius);
 
+  // Hole 3 (circular penetration left of Hole 1)
+  ModelSupport::buildCylinder(SMap,buildIndex+507,
+			      Origin-Y*hole3StepY+Z*hole3StepZ,
+			      X,
+			      hole3Radius);
+
   return;
 }
 
@@ -386,11 +402,15 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out = ModelSupport::getComposite(SMap,buildIndex," -407 ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
 
+  // Hole 3
+  Out = ModelSupport::getComposite(SMap,buildIndex," -507 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
   // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
 			       " (-111:112:116) "
-			       " (-301:302:-305:306) 407 ");
+			       " (-301:302:-305:306) 407 507 ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
