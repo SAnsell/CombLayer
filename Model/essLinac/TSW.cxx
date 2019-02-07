@@ -356,6 +356,11 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(hole4StepZ-hole4Height),Z);
   ModelSupport::buildPlane(SMap,buildIndex+606,Origin+Z*(hole4StepZ+hole4Height),Z);
 
+  // Hole 5 (circular penetration left of Hole 4)
+  ModelSupport::buildCylinder(SMap,buildIndex+707,
+			      Origin-Y*hole5StepY+Z*hole5StepZ,
+			      X,
+			      hole5Radius);
   return;
 }
 
@@ -449,12 +454,16 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out = ModelSupport::getComposite(SMap,buildIndex," 601 -602 605 -606 ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
 
+  // Hole 5
+  Out = ModelSupport::getComposite(SMap,buildIndex," -707 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
   // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
 			       " (-111:112:116) "
 			       " (-301:302:-305:306) 407 507 "
-			       " (-601:602:-605:606) ");
+			       " (-601:602:-605:606) 707 ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
