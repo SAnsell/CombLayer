@@ -121,6 +121,9 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0DoorHeightLow", 197.5); // check
   Control.addVariable("LinacTSW0DoorWidthLow",   60.0); // Wolfgang Hees 25.01.2019
 
+  Control.addVariable("LinacTSW0DoorLowGapWidth",  55.0);
+  Control.addVariable("LinacTSW0DoorLowGapHeight",  8.0);
+
    // Wolfgang Hees 25.01.2019
   Control.addVariable("LinacTSW0Hole1Width",    39.0);
   Control.addVariable("LinacTSW0Hole1Height",   10.0);

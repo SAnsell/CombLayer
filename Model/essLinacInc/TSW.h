@@ -58,6 +58,8 @@ class TSW : public attachSystem::ContainedComp,
   double doorThickHigh; ///< Thickness of the high part
   double doorHeightLow; ///< Height of the low door part
   double doorWidthLow; ///< Width of the narrow part
+  double doorLowGapWidth; ///< width of the door lower gap
+  double doorLowGapHeight; ///< height of the door lower gap
 
   // rectangular penetration above the door
   double hole1StepY; ///< Y-offset of hole 1

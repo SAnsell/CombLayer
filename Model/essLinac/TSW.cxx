@@ -112,6 +112,8 @@ TSW::TSW(const TSW& A) :
   doorThickHigh(A.doorThickHigh),
   doorHeightLow(A.doorHeightLow),
   doorWidthLow(A.doorWidthLow),
+  doorLowGapWidth(A.doorLowGapWidth),
+  doorLowGapHeight(A.doorLowGapHeight),
   hole1StepY(A.hole1StepY),
   hole1StepZ(A.hole1StepZ),
   hole1Width(A.hole1Width),
@@ -170,6 +172,8 @@ TSW::operator=(const TSW& A)
       doorThickHigh=A.doorThickHigh;
       doorHeightLow=A.doorHeightLow;
       doorWidthLow=A.doorWidthLow;
+      doorLowGapWidth=A.doorLowGapWidth;
+      doorLowGapHeight=A.doorLowGapHeight;
       hole1StepY=A.hole1StepY;
       hole1StepZ=A.hole1StepZ;
       hole1Width=A.hole1Width;
@@ -239,6 +243,8 @@ TSW::populate(const FuncDataBase& Control)
   doorThickHigh=Control.EvalVar<double>(keyName+"DoorThickHigh");
   doorHeightLow=Control.EvalVar<double>(keyName+"DoorHeightLow");
   doorWidthLow=Control.EvalVar<double>(keyName+"DoorWidthLow");
+  doorLowGapWidth=Control.EvalVar<double>(keyName+"DoorLowGapWidth");
+  doorLowGapHeight=Control.EvalVar<double>(keyName+"DoorLowGapHeight");
 
   hole1StepY=Control.EvalVar<double>(keyName+"Hole1StepY");
   hole1StepZ=Control.EvalVar<double>(keyName+"Hole1StepZ");
@@ -407,6 +413,16 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,buildIndex+1006,
 			   Origin+Z*(hole8StepZ+hole8Height/2.0),Z);
 
+  // Gap between the door and threshold
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+1103,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+101),
+                                  (doorWidthHigh-doorLowGapWidth)/2.0);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+1104,
+                                  SMap.realPtr<Geometry::Plane>(buildIndex+102),
+                                  -(doorWidthHigh-doorLowGapWidth)/2.0);
+  ModelSupport::buildPlane(SMap,buildIndex+1105,
+			   Origin+Z*(FC.getLinkPt(floor).Z()+doorLowGapHeight),Z);
+
   return;
 }
 
@@ -432,11 +448,17 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   std::string Out;
   // door
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 1 -103 101 -102 -106 ");
+    ModelSupport::getComposite(SMap,buildIndex,
+			       " 1 -103 101 -102 -106 (-1103:1104:1105) ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+  // lower gap
+  Out = FC.getLinkString(floor) +
+    ModelSupport::getComposite(SMap,buildIndex,
+			       " 1 -203 1103 -1104 -1105 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -203 201 -202 -106 ");
+    ModelSupport::getComposite(SMap,buildIndex," 103 -203 201 -202 -106 (-1103:1104:1105) ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
