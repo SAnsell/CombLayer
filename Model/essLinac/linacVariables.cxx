@@ -121,37 +121,49 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0DoorHeightLow", 197.5); // check
   Control.addVariable("LinacTSW0DoorWidthLow",   60.0); // Wolfgang Hees 25.01.2019
 
-  Control.addVariable("LinacTSW0Hole1StepY",   550.74); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole1StepZ",   172.08); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole1Width",    39.0); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole1Height",   10.0); // Wolfgang Hees 25.01.2019
+   // Wolfgang Hees 25.01.2019
+  Control.addVariable("LinacTSW0Hole1Width",    39.0);
+  Control.addVariable("LinacTSW0Hole1Height",   10.0);
+  Control.addParse<double>("LinacTSW0Hole1StepY",
+			   "LinacWidthLeft+LinacWidthRight-LinacTSW0Hole1Width/2.0-10.26");
+  Control.addParse<double>("LinacTSW0Hole1StepZ",
+			   "LinacHeight-LinacTSW0Hole1Height/2.0-27.92");
 
-  Control.addVariable("LinacTSW0Hole2StepY",   589.87); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole2StepZ",   152.08); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole2Radius",   4.0); // check
+  Control.addVariable("LinacTSW0Hole2Radius",   4.0);
+  Control.addParse<double>("LinacTSW0Hole2StepY",
+			   "LinacTSW0Hole1StepY+LinacTSW0Hole1Width/2.0");
+  Control.addParse<double>("LinacTSW0Hole2StepZ",
+			   "LinacTSW0Hole1StepZ-LinacTSW0Hole1Height/2.0-LinacTSW0Hole2Radius-23.43");
 
-  Control.addVariable("LinacTSW0Hole3StepY",   497.8); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole3StepZ",   160.8); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole3Radius",   2.5); // check
+  Control.addVariable("LinacTSW0Hole3Radius",   2.5);
+  Control.addParse<double>("LinacTSW0Hole3StepY",
+			   "LinacTSW0Hole1StepY-LinacTSW0Hole1Width/2.0-LinacTSW0Hole3Radius-11.33");
+  Control.addParse<double>("LinacTSW0Hole3StepZ",
+		      "LinacTSW0Hole1StepZ-LinacTSW0Hole1Height/2.0");
+
+  Control.addVariable("LinacTSW0Hole4Width",    15.0);
+  Control.addVariable("LinacTSW0Hole4Height",   15.0);
+  Control.addParse<double>("LinacTSW0Hole4StepY",
+			   "252.85+LinacTSW0Hole4Width/2.0");
+  Control.addParse<double>("LinacTSW0Hole4StepZ",
+			   "LinacHeight-LinacTSW0Hole4Height/2.0-16.22");
+
+  Control.addVariable("LinacTSW0Hole5Radius",   3.2);
+  Control.addParse<double>("LinacTSW0Hole5StepY",
+			   "LinacTSW0Hole4StepY-LinacTSW0Hole4Width/2.0-LinacTSW0Hole5Radius-24.36");
+  Control.addParse<double>("LinacTSW0Hole5StepZ",
+		      "LinacTSW0Hole4StepZ+LinacTSW0Hole4Height/2.0");
+
+  Control.addParse<double>("LinacTSW0Hole6StepY",   "LinacTSW0Hole4StepY");
+  Control.addVariable("LinacTSW0Hole6Radius",   2.0);
+  Control.addParse<double>("LinacTSW0Hole6StepZ",
+			   "LinacTSW0Hole4StepZ+LinacTSW0Hole4Height/2+LinacTSW0Hole6Radius+8.8");
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);
   Control.addVariable("LinacTSW1Width", 140.0);
   Control.copyVarSet("LinacTSW0", "LinacTSW2");
   Control.addVariable("LinacTSW2XStep", 4330.0);
-
-  Control.addVariable("LinacTSW0Hole4StepY",   213.85);
-  Control.addVariable("LinacTSW0Hole4StepZ",   172.08-13.8);
-  Control.addVariable("LinacTSW0Hole4Width",    15.0); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole4Height",   15.0); // Wolfgang Hees 25.01.2019
-
-  Control.addVariable("LinacTSW0Hole5StepY",   171.44); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole5StepZ",   173.27); // Wolfgang Hees 25.01.2019
-  Control.addVariable("LinacTSW0Hole5Radius",   3.2); // check
-
-  Control.addVariable("LinacTSW0Hole6StepY",   157.8);
-  Control.addVariable("LinacTSW0Hole6StepZ",   60.8);
-  Control.addVariable("LinacTSW0Hole6Radius",   3.2);
 
   // Beam dump
   Control.addVariable("LinacBeamDumpActive", 0);
