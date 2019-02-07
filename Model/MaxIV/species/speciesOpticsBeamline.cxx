@@ -3,7 +3,7 @@
  
  * File: species/speciesOpticsBeamline.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@
 #include "AttachSupport.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "ExternalCut.h"
 
 #include "insertObject.h"
@@ -243,6 +244,9 @@ speciesOpticsBeamline::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+
+  const int voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  buildZone.setVoidMat(voidMat);
   return;
 }
 

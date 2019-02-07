@@ -3,7 +3,7 @@
  
  * File:   speciesInc/speciesOpticsHutch.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,9 +73,11 @@ class speciesOpticsHut :
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
 
+  int voidMat;                 ///< void Material
   int innerMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls 
+  int pbMat;                   ///< pb layer material for walls 
   int outerMat;                ///< Conc layer material for ring walls
+
 
 
   /// Chicanes 

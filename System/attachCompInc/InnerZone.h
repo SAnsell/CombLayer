@@ -62,6 +62,8 @@ class InnerZone
   HeadRule middleHR;                 ///< Rule of middle 
 
   HeadRule frontDivider;             ///< Local front divider [if needed]
+
+  int voidMat;                       ///< Void material
   
  public:
 
@@ -77,6 +79,9 @@ class InnerZone
   void setBack(const HeadRule&);
   void setMiddle(const HeadRule&);
 
+  /// set the void material
+  void setVoidMat(const int M) { voidMat=M; }
+  
   InnerZone buildMiddleZone(const int) const;
   
   void constructMiddleSurface(ModelSupport::surfRegister&,

@@ -113,7 +113,6 @@ getTallyMesh(const Simulation* SimPtr,
 	}
     }
 
-  
   // failed
   return 0;
 }
@@ -191,8 +190,12 @@ createVTK(const mainSystem::inputParam& IParam,
       VTK.setBox(MeshA,MeshB);
       VTK.setIndex(MPts[0],MPts[1],MPts[2]);
       VTK.populate(*SimPtr,Active);
-      
-      VTK.writeVTK(Oname);
+
+      ELog::EM<<"VTK Type == "<<vType<<ELog::endDiag;
+      if (vType=="cell")
+	VTK.writeIntegerVTK(Oname);
+      else
+	VTK.writeVTK(Oname);
       return 2;
     }
 

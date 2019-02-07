@@ -86,7 +86,8 @@ InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 		     int& cRef) :
   FCName(FRef.getKeyName()),cellIndex(cRef),
   FCPtr(&FRef),
-  CellPtr(dynamic_cast<CellMap*>(&FRef))
+  CellPtr(dynamic_cast<CellMap*>(&FRef)),
+  voidMat(0)
   /*!
     Add a fixed points to the system -- it is expected
     that this can be cast to a cellmap.
@@ -103,7 +104,8 @@ InnerZone::InnerZone(attachSystem::FixedComp& FRef,
 InnerZone::InnerZone(const InnerZone& A) : 
   FCName(A.FCName),cellIndex(A.cellIndex),FCPtr(A.FCPtr),
   CellPtr(A.CellPtr),surroundHR(A.surroundHR),frontHR(A.frontHR),
-  backHR(A.backHR),middleHR(A.middleHR),frontDivider(A.frontDivider)
+  backHR(A.backHR),middleHR(A.middleHR),frontDivider(A.frontDivider),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: InnerZone to copy
@@ -127,6 +129,7 @@ InnerZone::operator=(const InnerZone& A)
       backHR=A.backHR;
       middleHR=A.middleHR;
       frontDivider=A.frontDivider;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -267,7 +270,7 @@ InnerZone::createOuterVoidUnit(Simulation& System,
   Out=surroundHR.display()+
     FDivider.display()+backDivider.display();
   
-  CellPtr->makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   FDivider=backDivider;
   FDivider.makeComplement();
 
@@ -376,7 +379,7 @@ InnerZone::constructMasterCell(Simulation& System)
   std::string Out;
   
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
-  CellPtr->makeCell("MasterVoid",System,cellIndex++,0,0.0,Out);
+  CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
   MonteCarlo::Object* OPtr= System.findObject(cellIndex-1);
 
   return OPtr;

@@ -442,3 +442,58 @@ Visit::writeVTK(const std::string& FName) const
   OX.close();
   return;
 }
+
+void
+Visit::writeIntegerVTK(const std::string& FName) const
+  /*!
+    Write out a VTK cell
+    \param FName :: filename 
+  */
+{
+  if (FName.empty()) return;
+  std::ofstream OX(FName.c_str());
+  std::ostringstream cx;
+  boost::format fFMT("%1$11.6g%|14t|");
+  boost::format iFMT("%1$12d%|14t|");
+  
+  double stepXYZ[3];
+  for(size_t i=0;i<3;i++)
+    stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
+  
+  OX<<"# vtk DataFile Version 2.0"<<std::endl;
+  OX<<"chipIR Data"<<std::endl;
+  OX<<"ASCII"<<std::endl;
+  OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
+  OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
+  OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
+  for(int i=0;i<nPts[0];i++)
+    OX<<(fFMT % (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
+  OX<<std::endl;
+
+  OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
+  for(long int i=0;i<nPts[1];i++)
+    OX<<(fFMT % (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
+  OX<<std::endl;
+
+  OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
+  for(int i=0;i<nPts[2];i++) 
+    OX<<(fFMT % (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
+  OX<<std::endl;
+
+  OX<<"POINT_DATA "<<nPts[0]*nPts[1]*nPts[2]<<std::endl;
+  OX<<"SCALARS cellID int 1.0"<<std::endl;
+  OX<<"LOOKUP_TABLE default"<<std::endl;
+
+
+  for(long int k=0;k<nPts[2];k++)
+    for(long int j=0;j<nPts[1];j++)
+      {
+	for(long int i=0;i<nPts[0];i++)
+	  
+	  OX<<(iFMT %
+	       static_cast<long int>(std::round(mesh[i][j][k])));
+	OX<<std::endl;
+      }
+  OX.close();
+  return;
+}

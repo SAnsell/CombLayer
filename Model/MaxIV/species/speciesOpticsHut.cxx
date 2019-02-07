@@ -135,6 +135,7 @@ speciesOpticsHut::populate(const FuncDataBase& Control)
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
 
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
@@ -144,7 +145,7 @@ speciesOpticsHut::populate(const FuncDataBase& Control)
 
 void
 speciesOpticsHut::createUnitVector(const attachSystem::FixedComp& FC,
-				     const long int sideIndex)
+				   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -266,14 +267,14 @@ speciesOpticsHut::createObjects(Simulation& System)
   if (innerFarVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
-      makeCell("InnerFarVoid",System,cellIndex++,0,0.0,Out+floorStr);
+      makeCell("InnerFarVoid",System,cellIndex++,voidMat,0.0,Out+floorStr);
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (11:-24) -6 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floorStr);
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (11:-24) -6  ");   
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floorStr);
     }
     
     
@@ -283,7 +284,8 @@ speciesOpticsHut::createObjects(Simulation& System)
     {
       const int mat=matList.front();
       matList.pop_front();
-      Out=ModelSupport::getComposite(SMap,HI,"1 -2 -104 (111:-124) (4:(-11 24)) -6 ");
+      Out=ModelSupport::getComposite
+	(SMap,HI,"1 -2 -104 (111:-124) (4:(-11 24)) -6 ");
       makeCell("Ring"+layer,System,cellIndex++,mat,0.0,Out+floorStr);
       
       Out=ModelSupport::getComposite(SMap,HI,"1 -2 -3 103 -6 ");

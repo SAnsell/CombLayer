@@ -85,6 +85,7 @@ class Visit
   void populatePoint(const Simulation&,const std::set<std::string>&);
   void populate(const Simulation&,const std::set<std::string>&);
   void writeVTK(const std::string&) const;
+  void writeIntegerVTK(const std::string&) const;
 };
 
 

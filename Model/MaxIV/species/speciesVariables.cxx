@@ -579,7 +579,8 @@ opticsBeamVariables(FuncDataBase& Control,
   Control.addVariable(opticKey+"OuterLeft",90.0);
   Control.addVariable(opticKey+"OuterRight",110.0);
   Control.addVariable(opticKey+"OuterTop",110.0);
-
+  Control.addVariable(opticKey+"VoidMat","Void");
+  
   preOpticsVariables(Control,opticKey);
   m1MirrorVariables(Control,opticKey);
   slitPackageVariables(Control,opticKey);
@@ -622,6 +623,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbBackThick",0.4);
   Control.addVariable(hutName+"OuterSkin",0.3);
 
+  Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"InnerMat","Stainless304");
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"OuterMat","Stainless304");
