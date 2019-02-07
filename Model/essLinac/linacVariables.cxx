@@ -159,6 +159,15 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("LinacTSW0Hole6StepZ",
 			   "LinacTSW0Hole4StepZ+LinacTSW0Hole4Height/2+LinacTSW0Hole6Radius+8.8");
 
+  Control.addVariable("LinacTSW0Hole7Width",    20.0);
+  Control.addVariable("LinacTSW0Hole7Height",   15.0);
+  Control.addParse<double>("LinacTSW0Hole7StepZ",
+			   "LinacHeight-LinacTSW0Hole7Height/2.0-175.0");
+
+
+
+
+
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 4110.0);
   Control.addVariable("LinacTSW1Width", 140.0);

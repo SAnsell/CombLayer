@@ -131,7 +131,10 @@ TSW::TSW(const TSW& A) :
   hole5Radius(A.hole5Radius),
   hole6StepY(A.hole6StepY),
   hole6StepZ(A.hole6StepZ),
-  hole6Radius(A.hole6Radius)
+  hole6Radius(A.hole6Radius),
+  hole7StepZ(A.hole7StepZ),
+  hole7Width(A.hole7Width),
+  hole7Height(A.hole7Height)
 /*!
     Copy constructor
     \param A :: TSW to copy
@@ -184,6 +187,9 @@ TSW::operator=(const TSW& A)
       hole6StepY=A.hole6StepY;
       hole6StepZ=A.hole6StepZ;
       hole6Radius=A.hole6Radius;
+      hole7StepZ=A.hole7StepZ;
+      hole7Width=A.hole7Width;
+      hole7Height=A.hole7Height;
     }
   return *this;
 }
@@ -253,6 +259,9 @@ TSW::populate(const FuncDataBase& Control)
   hole6StepY=Control.EvalVar<double>(keyName+"Hole6StepY");
   hole6StepZ=Control.EvalVar<double>(keyName+"Hole6StepZ");
   hole6Radius=Control.EvalVar<double>(keyName+"Hole6Radius");
+  hole7StepZ=Control.EvalVar<double>(keyName+"Hole7StepZ");
+  hole7Width=Control.EvalVar<double>(keyName+"Hole7Width");
+  hole7Height=Control.EvalVar<double>(keyName+"Hole7Height");
 
   return;
 }
@@ -355,10 +364,14 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 			      hole3Radius);
 
   // Hole 4 (rectangular penetration left to the door)
-  ModelSupport::buildPlane(SMap,buildIndex+601,Origin-Y*(hole4StepY-hole4Width/2.0),-Y)->print();
-  ModelSupport::buildPlane(SMap,buildIndex+602,Origin-Y*(hole4StepY+hole4Width/2.0),-Y);
-  ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(hole4StepZ-hole4Height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+606,Origin+Z*(hole4StepZ+hole4Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+601,
+			   Origin-Y*(hole4StepY-hole4Width/2.0),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+602,
+			   Origin-Y*(hole4StepY+hole4Width/2.0),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+605,
+			   Origin+Z*(hole4StepZ-hole4Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+606,
+			   Origin+Z*(hole4StepZ+hole4Height/2.0),Z);
 
   // Hole 5 (circular penetration left of Hole 4)
   ModelSupport::buildCylinder(SMap,buildIndex+707,
@@ -371,6 +384,13 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 			      Origin-Y*hole6StepY+Z*hole6StepZ,
 			      X,
 			      hole6Radius);
+  // Hole 7 (lower rectangular penetration attached to the left linac tunnel wall)
+  ModelSupport::buildPlane(SMap,buildIndex+902,Origin-Y*(hole7Width),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+905,
+			   Origin+Z*(hole7StepZ-hole7Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+906,
+			   Origin+Z*(hole7StepZ+hole7Height/2.0),Z);
+
   return;
 }
 
@@ -472,12 +492,18 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out = ModelSupport::getComposite(SMap,buildIndex," -807 ");
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
 
+  // Hole 7
+  Out = ModelSupport::getComposite(SMap,buildIndex," -902 905 -906 ");
+  Out += FC.getLinkString(wall1);
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
   // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
 			       " (-111:112:116) "
 			       " (-301:302:-305:306) 407 507 "
-			       " (-601:602:-605:606) 707 807 ");
+			       " (-601:602:-605:606) 707 807 "
+			       " (902:-905:906) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
