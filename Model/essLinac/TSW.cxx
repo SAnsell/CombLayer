@@ -134,7 +134,10 @@ TSW::TSW(const TSW& A) :
   hole6Radius(A.hole6Radius),
   hole7StepZ(A.hole7StepZ),
   hole7Width(A.hole7Width),
-  hole7Height(A.hole7Height)
+  hole7Height(A.hole7Height),
+  hole8StepZ(A.hole8StepZ),
+  hole8Width(A.hole8Width),
+  hole8Height(A.hole8Height)
 /*!
     Copy constructor
     \param A :: TSW to copy
@@ -190,6 +193,9 @@ TSW::operator=(const TSW& A)
       hole7StepZ=A.hole7StepZ;
       hole7Width=A.hole7Width;
       hole7Height=A.hole7Height;
+      hole8StepZ=A.hole8StepZ;
+      hole8Width=A.hole8Width;
+      hole8Height=A.hole8Height;
     }
   return *this;
 }
@@ -262,6 +268,9 @@ TSW::populate(const FuncDataBase& Control)
   hole7StepZ=Control.EvalVar<double>(keyName+"Hole7StepZ");
   hole7Width=Control.EvalVar<double>(keyName+"Hole7Width");
   hole7Height=Control.EvalVar<double>(keyName+"Hole7Height");
+  hole8StepZ=Control.EvalVar<double>(keyName+"Hole8StepZ");
+  hole8Width=Control.EvalVar<double>(keyName+"Hole8Width");
+  hole8Height=Control.EvalVar<double>(keyName+"Hole8Height");
 
   return;
 }
@@ -391,6 +400,13 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,buildIndex+906,
 			   Origin+Z*(hole7StepZ+hole7Height/2.0),Z);
 
+  // Hole 8 (upper rectangular penetration attached to the left linac tunnel wall)
+  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin-Y*(hole8Width),-Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1005,
+			   Origin+Z*(hole8StepZ-hole8Height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,
+			   Origin+Z*(hole8StepZ+hole8Height/2.0),Z);
+
   return;
 }
 
@@ -497,13 +513,18 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out += FC.getLinkString(wall1);
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
 
+  // Hole 8
+  Out = ModelSupport::getComposite(SMap,buildIndex," -1002 1005 -1006 ");
+  Out += FC.getLinkString(wall1);
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+
   // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,buildIndex,
 			       " (-111:112:116) "
 			       " (-301:302:-305:306) 407 507 "
 			       " (-601:602:-605:606) 707 807 "
-			       " (902:-905:906) ");
+			       " (902:-905:906) (1002:-1005:1006) ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("wall", cellIndex-1);
 
