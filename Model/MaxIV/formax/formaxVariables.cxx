@@ -151,7 +151,7 @@ shutterTable(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","shutterTable");
+  ELog::RegMethod RegA("formaxVariables[F]","shutterTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
@@ -533,7 +533,7 @@ frontEndVariables(FuncDataBase& Control,
 
   CollGen.setFrontGap(2.62,1.86);  //1033.8
   CollGen.setBackGap(1.54,1.42);
-  CollGen.setMinSize(29.0,0.95,0.95);  // Approximated to get 1mrad x 1mrad
+  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
 
   CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
 
@@ -573,7 +573,7 @@ frontEndVariables(FuncDataBase& Control,
   CollGen.setFrontGap(0.84,0.582);
   CollGen.setBackGap(0.750,0.357);
   // approx for 100uRad x 100uRad
-  CollGen.setMinSize(12.0,0.150,0.15);
+  CollGen.setMinSize(12.0,0.15,0.15);
   
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
@@ -897,7 +897,8 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowA",0,17.0);
 
   BremGen.setCF<CF63>();
-  BremGen.generateColl(Control,preName+"BremCollA",0,6.5);
+  BremGen.setAperature(1.0,1.0,0.2,0.2);
+  BremGen.generateColl(Control,preName+"BremCollA",0,8.0);
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();

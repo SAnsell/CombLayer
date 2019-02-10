@@ -59,9 +59,10 @@ namespace setVariable
 
 BremCollGenerator::BremCollGenerator() :
   width(7.2),height(6.6),wallThick(0.5),
-  holeXStep(0.0),holeZStep(0.0),holeAWidth(3.0),
-  holeAHeight(1.5),holeBWidth(0.7),
-  holeBHeight(0.7),voidMat("Void"),innerMat("Tungsten"),
+  holeXStep(0.0),holeZStep(0.0),
+  holeAWidth(3.0),holeAHeight(1.5),
+  holeBWidth(0.7),holeBHeight(0.7),
+  voidMat("Void"),innerMat("Tungsten"),
   wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -90,6 +91,7 @@ BremCollGenerator::setCF()
   flangeBLength=CF::flangeLength;
   return;
 }
+  
 void
 BremCollGenerator::setMaterial(const std::string& IMat,
 			       const std::string& WMat)
@@ -102,6 +104,24 @@ BremCollGenerator::setMaterial(const std::string& IMat,
 {
   innerMat=IMat;
   wallMat=WMat;
+  return;
+}
+
+void
+BremCollGenerator::setAperature(const double outerW,const double outerH,
+				const double minW,const double minH)
+  /*!
+    Set the widths
+    \param outerW :: Outer width
+    \param outerH :: Outer height
+    \param minW :: min width
+    \param minH :: min height
+  */
+{
+  holeAWidth=outerW;
+  holeAHeight=outerH;
+  holeBWidth=minW;
+  holeBHeight=minH;
   return;
 }
 

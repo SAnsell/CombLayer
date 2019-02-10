@@ -70,7 +70,8 @@ class BremCollGenerator
   ~BremCollGenerator();
 
   template<typename CF> void setCF();
-  
+
+  void setAperature(const double,const double,const double,const double);
   void setMaterial(const std::string&,const std::string&);
   
   void generateColl(FuncDataBase&,const std::string&,
