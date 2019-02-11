@@ -3,7 +3,7 @@
  
  * File:   species/speciesOpticsHut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -327,7 +327,8 @@ speciesOpticsHut::createObjects(Simulation& System)
       makeCell("OuterFarVoid",System,cellIndex++,0,0.0,Out+floorStr+ringWall);
     }
   
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"301 -3002 1303 -304 (311:-324) -306 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,
+				    "301 -3002 1303 -304 (311:-324) -306 ");
   addOuterSurf(Out);  
 
   return;

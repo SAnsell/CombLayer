@@ -178,7 +178,7 @@ main(int argc,char* argv[])
 	}
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
