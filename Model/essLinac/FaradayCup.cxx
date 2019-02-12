@@ -384,11 +384,14 @@ FaradayCup::createObjects(Simulation& System)
 
   std::string Out;
   // collimator
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
+  if (faceLength>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 -27 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -11 27 -17 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+    }
 
   // absorber
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
@@ -402,8 +405,11 @@ FaradayCup::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // collector
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
+  if (colLength>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 31 -41 -7 ");
+      System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
+    }
 
   // back plane
   Out=ModelSupport::getComposite(SMap,buildIndex," 41 -2 -17 ");
