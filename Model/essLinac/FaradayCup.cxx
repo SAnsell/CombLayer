@@ -113,6 +113,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   colLength(A.colLength),
   colMat(A.colMat),wallMat(A.wallMat),
   airMat(A.airMat),
+  baseMat(A.baseMat),
   nShieldLayers(A.nShieldLayers),
   shieldWidthLeft(A.shieldWidthLeft),
   shieldWidthRight(A.shieldWidthRight),
@@ -154,6 +155,7 @@ FaradayCup::operator=(const FaradayCup& A)
       colMat=A.colMat;
       wallMat=A.wallMat;
       airMat=A.airMat;
+      baseMat=A.baseMat;
       nShieldLayers=A.nShieldLayers;
       shieldWidthLeft=A.shieldWidthLeft;
       shieldWidthRight=A.shieldWidthRight;
@@ -278,6 +280,7 @@ FaradayCup::populate(const FuncDataBase& Control)
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
+  baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
   nShieldLayers=Control.EvalVar<size_t>(keyName+"NShieldLayers");
   shieldBackLength = Control.EvalVar<double>(keyName+"ShieldBackLength");
@@ -399,7 +402,7 @@ FaradayCup::createObjects(Simulation& System)
 
   // base
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,baseMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -41 7 -17 ");
   System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
