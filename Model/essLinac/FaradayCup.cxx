@@ -109,6 +109,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   faceRadius(A.faceRadius),
   absLength(A.absLength),
   absMat(A.absMat),
+  absTemp(A.absTemp),
   baseLength(A.baseLength),
   colLength(A.colLength),
   colMat(A.colMat),wallMat(A.wallMat),
@@ -150,6 +151,7 @@ FaradayCup::operator=(const FaradayCup& A)
       faceRadius=A.faceRadius;
       absLength=A.absLength;
       absMat=A.absMat;
+      absTemp=A.absTemp;
       baseLength=A.baseLength;
       colLength=A.colLength;
       colMat=A.colMat;
@@ -274,6 +276,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   faceRadius=Control.EvalVar<double>(keyName+"FaceRadius");
   absLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absMat=ModelSupport::EvalMat<int>(Control,keyName+"AbsorberMat");
+  absTemp=Control.EvalVar<int>(keyName+"AbsorberTemp");
   baseLength=Control.EvalVar<double>(keyName+"BaseLength");
   colLength=Control.EvalVar<double>(keyName+"CollectorLength");
   colMat=ModelSupport::EvalMat<int>(Control,keyName+"CollectorMat");
@@ -398,7 +401,7 @@ FaradayCup::createObjects(Simulation& System)
 
   // absorber
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,absMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,absMat,absTemp,Out));
 
   // base
   Out=ModelSupport::getComposite(SMap,buildIndex," 21 -31 -7 ");

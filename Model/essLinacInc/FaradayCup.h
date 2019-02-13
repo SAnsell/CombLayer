@@ -55,6 +55,7 @@ class FaradayCup : public attachSystem::ContainedComp,
 
   double absLength; ///< Absorber length
   int absMat; ///< Absorber material
+  int absTemp; ///< Entrance foil temperature
   double baseLength; ///< Base length (e1)
 
   double colLength; ///< Collector length
