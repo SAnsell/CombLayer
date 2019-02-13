@@ -265,25 +265,32 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacFaradayCupWallMat", "Copper");
 
+  // FC dimensiona as of Wolfgang Hees email 13 Feb 2019
   Control.addVariable("LinacFaradayCupNShieldLayers", 3);
   Control.addVariable("LinacFaradayCupShieldMat1","Air");
   Control.addVariable("LinacFaradayCupShieldMat2","SS304L");
-  Control.addVariable("LinacFaradayCupShieldMat3","SkanskaConcrete%Boron%99");
-  Control.addVariable("LinacFaradayCupShieldWidthLeft1",10.0);
-  Control.addVariable("LinacFaradayCupShieldWidthLeft2",30.0);
-  Control.addVariable("LinacFaradayCupShieldWidthLeft3",110.0); // 100+10 to account for LinacFaradayCupShieldWidthLeft1
-  Control.addVariable("LinacFaradayCupShieldWidthRight1",10.0);
-  Control.addVariable("LinacFaradayCupShieldWidthRight2",30.0);
-  Control.addVariable("LinacFaradayCupShieldWidthRight3",110.0); // 100+10 to account for LinacFaradayCupShieldWidthRight1
+  Control.addVariable("LinacFaradayCupShieldMat3","SkanskaConcrete");
+  Control.addVariable("LinacFaradayCupShieldWidthLeft1",12.0);
+  Control.addVariable("LinacFaradayCupShieldWidthLeft2",35.0);
+  Control.addVariable("LinacFaradayCupShieldWidthLeft3",110.0);
+  Control.addParse<double>("LinacFaradayCupShieldWidthRight1",
+			   "LinacFaradayCupShieldWidthLeft1");
+  Control.addParse<double>("LinacFaradayCupShieldWidthRight2",
+			   "LinacFaradayCupShieldWidthLeft2");
+  Control.addParse<double>("LinacFaradayCupShieldWidthRight3",
+			   "LinacFaradayCupShieldWidthLeft3");
   Control.addVariable("LinacFaradayCupShieldHeight1",10.0);
-  Control.addVariable("LinacFaradayCupShieldHeight2",30.0);
-  Control.addVariable("LinacFaradayCupShieldHeight3",110.0); // 100+10 to account for LinacFaradayCupShieldHeight1
-  Control.addVariable("LinacFaradayCupShieldDepth1",10.0);
-  Control.addVariable("LinacFaradayCupShieldDepth2",30.0);
-  Control.addVariable("LinacFaradayCupShieldDepth3",120.0);
+  Control.addVariable("LinacFaradayCupShieldHeight2",25.0);
+  Control.addVariable("LinacFaradayCupShieldHeight3",125.0);
+  Control.addParse<double>("LinacFaradayCupShieldDepth1",
+			   "LinacFaradayCupShieldHeight1");
+  Control.addParse<double>("LinacFaradayCupShieldDepth2",
+			   "LinacFaradayCupShieldHeight2");
+  Control.addParse<double>("LinacFaradayCupShieldDepth3",
+			   "LinacFaradayCupShieldHeight3");
   Control.addVariable("LinacFaradayCupShieldForwardLength1",10.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength2",30.0);
-  Control.addVariable("LinacFaradayCupShieldForwardLength3",130.0); // Wolfgang Hees email 13 Feb 2019
+  Control.addVariable("LinacFaradayCupShieldForwardLength3",130.0);
   Control.addVariable("LinacFaradayCupShieldBackLength",170.0);
 
   // DTL
