@@ -1009,6 +1009,16 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-10.22);
   MDB.resetMaterial(MObj);
 
+  // Graphite at 600 K - same as Graphite but with 71c
+  MObj.setMaterial(imat++,"Graphite600K",
+                   "6000.71c 8.523759e-02 5010.71c "
+                   "1.894100e-08 5011.71c 7.576401e-08",
+                   "",MLib);
+  MObj.setMXitem(6000, 71, 'c', "h", "06012");
+  MObj.setDensity(-1.7);
+  MDB.resetMaterial(MObj);
+
+
   return;
 }
 
