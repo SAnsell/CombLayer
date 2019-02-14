@@ -60,8 +60,6 @@ const double SCALE52tl(5.84906);
 const double SCALE52tr(2.90783);
 // Scale of the plots in SPLTDISH0052 (bottom-left corner):  14.5/10
 const double SCALE52bl(1.45);
-// Scale of the plots in Fc_design.pdf received from LT 13 March 2017
-const double SCALE3(32.0/34.0);
 
 namespace setVariable
 {
@@ -244,23 +242,24 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpWaterPipeDist", 0.05*SCALE52tr); // measured on SPLTDISH005
 
   
-  // Faraday cup
+  // Faraday cup DTL 2 FC.
+  // Dimensions: https://confluence.esss.lu.se/display/BIG/DTL+FCs
   Control.addVariable("LinacFaradayCupActive", 1.0);
   Control.addVariable("LinacFaradayCupYStep", 206.3397); // arbitrary distance from the end of last DTL
-  // Dimensions are based on email from LT 13 Mar 2017 (Fc_design.pdf)
   Control.addVariable("LinacFaradayCupEngineeringActive", 1);
-  Control.addVariable("LinacFaradayCupLength", 3.2);
-  Control.addVariable("LinacFaradayCupOuterRadius", 3.0); // d2/2
-  Control.addVariable("LinacFaradayCupInnerRadius", 2.0); // d1/2
-  Control.addVariable("LinacFaradayCupFaceLength", 0.1*SCALE3);
-  Control.addVariable("LinacFaradayCupFaceRadius", 2.0*SCALE3); // approx
-  Control.addVariable("LinacFaradayCupAbsorberLength", 0.7);
+  Control.addVariable("LinacFaradayCupLength", 3.25);
+  Control.addVariable("LinacFaradayCupOuterRadius", 3.0);
+  Control.addVariable("LinacFaradayCupInnerRadius", 2.0);
+  Control.addVariable("LinacFaradayCupFaceLength", 0.0);
+  Control.addVariable("LinacFaradayCupFaceRadius", 1.8);
+  Control.addVariable("LinacFaradayCupAbsorberLength", 0.25);
   Control.addVariable("LinacFaradayCupAbsorberMat", "Graphite600K");
   Control.addVariable("LinacFaradayCupAbsorberTemp", 600.0);
-  Control.addVariable("LinacFaradayCupBaseLength", 1.5); // e1
+  Control.addVariable("LinacFaradayCupCollectorLength", 0.7);
+  Control.addParse<double>("LinacFaradayCupBaseLength",
+		   "LinacFaradayCupLength-LinacFaradayCupAbsorberLength-LinacFaradayCupCollectorLength-0.5");
   Control.addVariable("LinacFaradayCupBaseMat", "Void"); // FC2: void, FC4: Graphite
 
-  Control.addVariable("LinacFaradayCupCollectorLength", 0.5);
   Control.addVariable("LinacFaradayCupCollectorMat", "Graphite");
 
   Control.addVariable("LinacFaradayCupWallMat", "Copper");
