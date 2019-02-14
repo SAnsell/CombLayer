@@ -101,6 +101,7 @@
 #include "Mirror.h"
 #include "MonoBox.h"
 #include "MonoCrystals.h"
+#include "MonoShutter.h"
 #include "formaxOpticsLine.h"
 
 namespace xraySystem
@@ -155,8 +156,10 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
 	}),
-  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
-  leadBrick(new insertSystem::insertPlate(newName+"LeadBrick"))
+  
+  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
+
+  screenA(new xraySystem::PipeShield(newName+"ScreenA"))
     /*!
     Constructor
     \param Key :: Name of construction key
@@ -253,7 +256,7 @@ formaxOpticsLine::constructDiag
     \param jawComp :: Jaw componets to build in diagnostic box
     \param FC :: FixedComp for start point
     \param linkPt :: side index
-    return outerCell
+    \return outerCell
    */
 {
   ELog::RegMethod RegA("formaxOpticsLine","constructDiag");

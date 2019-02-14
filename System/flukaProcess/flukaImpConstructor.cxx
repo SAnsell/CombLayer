@@ -3,7 +3,7 @@
  
  * File:   physics/flukaImpConstructor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -474,7 +474,8 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
       { "lambemf",emfTYPE(2,1,"lambemf") },        // mat
 
       { "evaporation",emfTYPE(0,-1,"evaporation") },      // none
-      { "coalescence",emfTYPE(0,-1,"coalescence") }      // none
+      { "coalescence",emfTYPE(0,-1,"coalescence") },       // none
+      { "ionsplit",emfTYPE(0,-1,"ionsplit") }             // none
 
     });
   

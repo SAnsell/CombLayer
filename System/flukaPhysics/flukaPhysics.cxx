@@ -3,7 +3,7 @@
  
  * File:   flukaPhysics/flukaPhysics.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,8 @@ flukaPhysics::flukaPhysics() :
       { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
       { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") },
       { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
-      { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") }
+      { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") },
+      { "ionsplit",cellValueSet<0>("ionsplit","PHYSICS","IONSPLIT") }
     }),
 
   impValue({
@@ -122,7 +123,8 @@ flukaPhysics::flukaPhysics() :
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
 
-      { "coalescence", unitTYPE(1,"1.0 - - - - - ") },	
+      { "coalescence", unitTYPE(1,"1.0 - - - - - ") },
+      { "ionsplit", unitTYPE(1,"1.0 - - - - - ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	

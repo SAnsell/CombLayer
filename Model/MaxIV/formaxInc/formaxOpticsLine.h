@@ -61,7 +61,9 @@ namespace xraySystem
   class Mirror;
   class MonoCrystals;
   class MonoBox;
+  class MonoShutter;
   class PipeShield;
+  class ShutterUnit;
     
   /*!
     \class formaxOpticsLine
@@ -156,11 +158,10 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::PortTube> diagBoxC;
   /// Diag Box C :: Jaw units
   std::array<std::shared_ptr<constructSystem::JawFlange>,2> jawCompC;
-
+  /// Monochromatic shutter
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
   /// Screen at end of hut
   std::shared_ptr<xraySystem::PipeShield> screenA;
-  /// Screen at end of hut
-  std::shared_ptr<insertSystem::insertPlate> leadBrick;
 
   /// Bellow to end station
   std::shared_ptr<constructSystem::Bellows> bellowI;
