@@ -124,7 +124,7 @@ flukaPhysics::flukaPhysics() :
       { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
 
       { "coalescence", unitTYPE(1,"1.0 - - - - - ") },
-      { "ionsplit", unitTYPE(1,"1.0 - - - - - ") },	
+      { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },	
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },	
 	
