@@ -72,7 +72,9 @@ class BALDER : public attachSystem::CopiedComp
 
   /// the components in the front end
   std::shared_ptr<balderFrontEnd> frontBeam;
-  std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
+
+  /// lead in beam wall
+  std::shared_ptr<WallLead> wallLead;           
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;

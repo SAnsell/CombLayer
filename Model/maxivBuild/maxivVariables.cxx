@@ -94,8 +94,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   ELog::RegMethod RegA("maxivVariables[F]",
                        "maxivInstrumentVariables");
 
-  const std::set<std::string> R1Beam(
-     {"RING1","MAXPEEM","SPECIES"});
+  const std::set<std::string> R1Beam
+    ({"RING1","FLEXPES","MAXPEEM","SPECIES"});
 
   
   typedef void (*VariableFunction)(FuncDataBase&);
@@ -104,6 +104,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
      {"COSAXS",    &COSAXSvariables},
+     {"FLEXPES",    &FLEXPESvariables},
      {"FORMAX",    &FORMAXvariables},
      {"MAXPEEM",   &MAXPEEMvariables},
      {"SPECIES",   &SPECIESvariables}

@@ -537,6 +537,8 @@ formaxOpticsLine::createLinks()
     Create a front/back link
    */
 {
+  ELog::RegMethod RControl("formaxOpticsLine","createLinks");
+  
   setLinkSignedCopy(0,*pipeInit,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
@@ -554,8 +556,7 @@ formaxOpticsLine::createAll(Simulation& System,
     \param sideIndex :: link point
    */
 {
-  // For output stream
-  ELog::RegMethod RControl("formaxOpticsLine","build");
+  ELog::RegMethod RControl("formaxOpticsLine","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -77,6 +77,9 @@ class COSAXS : public attachSystem::CopiedComp
 
   /// the components in the front end
   std::shared_ptr<cosaxsFrontEnd> frontBeam;
+
+  /// lead in beam wall
+  std::shared_ptr<WallLead> wallLead;
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
@@ -95,7 +98,9 @@ class COSAXS : public attachSystem::CopiedComp
   COSAXS(const COSAXS&);
   COSAXS& operator=(const COSAXS&);
   ~COSAXS();
-  
+
+  /// set stop point(s)
+  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);
 

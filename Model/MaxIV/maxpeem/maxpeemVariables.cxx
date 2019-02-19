@@ -125,7 +125,7 @@ void
 undulatorVariables(FuncDataBase& Control,
 		   const std::string& undKey)
   /*!
-    Builds the variables for the collimator
+    Builds the variables for the undulator
     \param Control :: Database
     \param undKey :: prename
   */

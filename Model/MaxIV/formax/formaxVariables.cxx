@@ -80,6 +80,8 @@ namespace setVariable
 namespace formaxVar
 {
 
+void frontCaveVariables(FuncDataBase&,const std::string&,
+			const bool,const bool);
 void undulatorVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
@@ -265,7 +267,7 @@ collimatorVariables(FuncDataBase& Control,
     \param collKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","collimatorVariables");
+  ELog::RegMethod RegA("formaxVariables[F]","collimatorVariables");
 
   Control.addVariable(collKey+"Width",4.0);
   Control.addVariable(collKey+"Height",4.0);
@@ -859,7 +861,7 @@ opticsVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("formaxVariables[F]","opticsVariables");
 
   const std::string preName(beamName+"OpticsLine");
-  ELog::EM<<"PRe == "<<preName<<ELog::endDiag;
+
   Control.addVariable(preName+"OuterLeft",70.0);
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);

@@ -129,6 +129,17 @@ cosaxsFrontEnd::~cosaxsFrontEnd()
    */
 {}
 
+void
+cosaxsFrontEnd::createLinks()
+  /*!
+    Create a front/back link
+   */
+{
+  setLinkSignedCopy(0,*undulator,1);
+  setLinkSignedCopy(1,*lastComp,2);
+  return;
+}
+
 
 const attachSystem::FixedComp&
 cosaxsFrontEnd::buildUndulator(Simulation& System,
@@ -168,16 +179,6 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
   return *dipolePipe;
 }
 
-void
-cosaxsFrontEnd::createLinks()
-  /*!
-    Create a front/back link
-   */
-{
-  setLinkSignedCopy(0,*undulator,1);
-  setLinkSignedCopy(1,*lastComp,2);
-  return;
-}
   
 }   // NAMESPACE xraySystem
 

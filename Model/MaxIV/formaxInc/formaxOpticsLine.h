@@ -109,9 +109,9 @@ class formaxOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
-  /// Mono box
+  /// Mono Xstal 
   std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
-  // ate
+  // Gate to isolate mono
   std::shared_ptr<constructSystem::GateValve> gateC;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowD;

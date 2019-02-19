@@ -179,7 +179,7 @@ BALDER::build(Simulation& System,
   frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
   frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
 
-  const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
+  //  const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
 

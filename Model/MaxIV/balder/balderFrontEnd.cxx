@@ -113,6 +113,18 @@ balderFrontEnd::~balderFrontEnd()
    */
 {}
 
+void
+balderFrontEnd::createLinks()
+  /*!
+    Create a front/back link
+   */
+{
+
+  setLinkSignedCopy(0,*wigglerBox,1);
+  setLinkSignedCopy(1,*lastComp,2);
+  return;
+}
+  
 
 const attachSystem::FixedComp&
 balderFrontEnd::buildUndulator(Simulation& System,
@@ -151,16 +163,6 @@ balderFrontEnd::buildUndulator(Simulation& System,
   return *dipolePipe;
 }
 
-void
-balderFrontEnd::createLinks()
-  /*!
-    Create a front/back link
-   */
-{
-  setLinkSignedCopy(0,*wigglerBox,1);
-  setLinkSignedCopy(1,*lastComp,2);
-  return;
-}
   
 }   // NAMESPACE xraySystem
 

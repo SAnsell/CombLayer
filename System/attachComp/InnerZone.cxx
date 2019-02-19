@@ -374,11 +374,12 @@ InnerZone::constructMasterCell(Simulation& System)
     \return cell object
   */
 {
-  ELog::RegMethod RegA("balderFrontEnd","constructMasterCell");
+  ELog::RegMethod RegA("InnerZone","constructMasterCell");
 
   std::string Out;
-  
+
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
+  
   CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
   MonteCarlo::Object* OPtr= System.findObject(cellIndex-1);
 
@@ -398,7 +399,7 @@ InnerZone::constructMasterCell(Simulation& System,
     \return cell object
   */
 {
-  ELog::RegMethod RegA("balderFrontEnd","constructMasterCell(CC)");
+  ELog::RegMethod RegA("InnerZone","constructMasterCell(CC)");
  
   MonteCarlo::Object* ORef=constructMasterCell(System);
   CC.insertExternalObject(System,*ORef);

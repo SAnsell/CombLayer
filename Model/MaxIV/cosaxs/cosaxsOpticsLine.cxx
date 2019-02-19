@@ -72,10 +72,13 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "InnerZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "ModelSupport.h"
+#include "generateSurf.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -109,6 +112,10 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
+
+  buildZone(*this,cellIndex),
   
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
@@ -124,6 +131,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),  
   gateB(new constructSystem::GateValve(newName+"GateB")),
   monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
+  monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
   gateC(new constructSystem::GateValve(newName+"GateC")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
@@ -200,6 +208,11 @@ cosaxsOpticsLine::populate(const FuncDataBase& Control)
    */
 {
   FixedOffset::populate(Control);
+
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+  
   return;
 }
 
@@ -224,22 +237,58 @@ cosaxsOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-cosaxsOpticsLine::constructDiag
-(Simulation& System, constructSystem::PortTube& diagBoxItem,
- std::array<std::shared_ptr<constructSystem::JawFlange>,2>& jawComp,
- const attachSystem::FixedComp& FC,const long int linkPt)
+cosaxsOpticsLine::createSurfaces()
   /*!
+    Create surfaces for outer void
+  */
+{
+  ELog::RegMethod RegA("cosaxsOpticsLine","createSurface");
+
+  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
+    {
+      std::string Out;
+      ModelSupport::buildPlane
+	(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+6,Origin+Z*outerTop,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("floor"));
+      buildZone.setSurround(HR);
+    }
+  return;
+}
+
+int
+cosaxsOpticsLine::constructDiag
+  (Simulation& System,
+   MonteCarlo::Object** masterCellPtr,
+   constructSystem::PortTube& diagBoxItem,
+   std::array<std::shared_ptr<constructSystem::JawFlange>,2>& jawComp,
+   const attachSystem::FixedComp& FC,const long int linkPt)
+/*!
     Construct a diagnostic box
     \param System :: Simulation for building
     \param diagBoxItem :: Diagnostic box item
+    \param jawComp :: Jaw componets to build in diagnostic box
     \param FC :: FixedComp for start point
     \param linkPt :: side index
+    \return outerCell
    */
 {
-  ELog::RegMethod RegA("cosaxOpticsLine","constructDiag");
-  
-  diagBoxItem.addAllInsertCell(ContainedComp::getInsertCells());
+  ELog::RegMethod RegA("cosaxsOpticsLine","constructDiag");
+
+  int outerCell;
+
+  // fake insert
+
+  diagBoxItem.addAllInsertCell((*masterCellPtr)->getName());  
+  diagBoxItem.setFront(FC,linkPt);
   diagBoxItem.createAll(System,FC,linkPt);
+  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,diagBoxItem,2);
+  diagBoxItem.insertAllInCell(System,outerCell);
+
 
   for(size_t index=0;index<2;index++)
     {
@@ -253,12 +302,15 @@ cosaxsOpticsLine::constructDiag
       jawComp[index]->createAll
 	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
     }
-  // diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
-  // 			   diagBoxItem.getBuildCell(),{0,2});
-
-  // diagBoxItem.splitObject(System,-11,diagBoxItem.getCell("SplitOuter",0));
-  // diagBoxItem.splitObject(System,12,diagBoxItem.getCell("SplitOuter",1));
-  return;
+  
+  diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
+			     diagBoxItem.getCell("Void"),{0,2});
+  diagBoxItem.splitObject(System,-11,outerCell);
+  diagBoxItem.splitObject(System,12,outerCell);
+  diagBoxItem.splitObject(System,2001,outerCell);
+  cellIndex+=3;
+    
+  return outerCell;
 }
   
 
@@ -271,119 +323,203 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("cosaxsOpticsLine","buildObjects");
+
+  int outerCell;
   
-  pipeInit->addInsertCell(ContainedComp::getInsertCells());
+  buildZone.setFront(getRule("front"));
+  buildZone.setBack(getRule("back"));
+
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System,*this);
+
+
+  // dummy space for first item
+  // This is a mess but want to preserve insert items already
+  // in the hut beam port
   pipeInit->createAll(System,*this,0);
+  // dump cell for joinPipe
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  // real cell for initPipe
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
+  pipeInit->insertInCell(System,outerCell);
 
-  
-  triggerPipe->addInsertCell(ContainedComp::getInsertCells());
+  triggerPipe->setFront(*pipeInit,2);
   triggerPipe->createAll(System,*pipeInit,2);
-
-  gaugeA->addInsertCell(ContainedComp::getInsertCells());
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
+  triggerPipe->insertInCell(System,outerCell);
+  
+  gaugeA->setFront(*triggerPipe,2);
   gaugeA->createAll(System,*triggerPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeA,2);
+  gaugeA->insertInCell(System,outerCell);
 
 
-  bellowA->addInsertCell(ContainedComp::getInsertCells());
+  bellowA->setFront(*gaugeA,2);
   bellowA->createAll(System,*gaugeA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
 
-  bremCollA->addInsertCell(ContainedComp::getInsertCells());
+
+  bremCollA->setFront(*bellowA,2);
   bremCollA->createAll(System,*bellowA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
+  bremCollA->insertInCell(System,outerCell);
 
 
-  filterBoxA->addAllInsertCell(ContainedComp::getInsertCells());
+  filterBoxA->addAllInsertCell(masterCell->getName());
+  filterBoxA->setFront(*bremCollA,2);
   filterBoxA->createAll(System,*bremCollA,2);
-
-  filterBoxA->splitObject(System,1001,filterBoxA->getCell("OuterSpace"),
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterBoxA,2);
+  filterBoxA->insertAllInCell(System,outerCell);
+  filterBoxA->splitObject(System,1001,outerCell,
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-
-
+  cellIndex++;
+  
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Body",PI.getCell("Void"));
   filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
   filterStick->setBladeCentre(PI,0);
-  filterStick->createAll(System,PI,PI.getSideIndex("InnerPlate"));
+  filterStick->createAll(System,PI,PI.getSideIndex("-InnerPlate"));
 
 
-  gateA->addInsertCell(ContainedComp::getInsertCells());
+  gateA->setFront(*filterBoxA,2);
   gateA->createAll(System,*filterBoxA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  gateA->insertInCell(System,outerCell);
 
-  screenPipeA->addAllInsertCell(ContainedComp::getInsertCells());
+  // fake insert
+  screenPipeA->addAllInsertCell(masterCell->getName());
+  screenPipeA->setFront(*gateA,2);
   screenPipeA->createAll(System,*gateA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*screenPipeA,2);
+  screenPipeA->insertAllInCell(System,outerCell);
 
-
-  screenPipeB->addAllInsertCell(ContainedComp::getInsertCells());
+  // fake insert
+  screenPipeB->addAllInsertCell(masterCell->getName());
+  screenPipeB->setFront(*screenPipeA,2);
   screenPipeB->createAll(System,*screenPipeA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*screenPipeB,2);
+  screenPipeB->insertAllInCell(System,outerCell);
   screenPipeB->intersectPorts(System,0,1);
 
 
-  primeJawBox->addInsertCell(ContainedComp::getInsertCells());
+  primeJawBox->setFront(*screenPipeB,2);
   primeJawBox->createAll(System,*screenPipeB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*primeJawBox,2);
+  primeJawBox->insertInCell(System,outerCell);
 
-  
-  bellowC->addInsertCell(ContainedComp::getInsertCells());
+  bellowC->setFront(*primeJawBox,2);
   bellowC->createAll(System,*primeJawBox,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
+  bellowC->insertInCell(System,outerCell);
 
-
-  gateB->addInsertCell(ContainedComp::getInsertCells());
+  gateB->setFront(*bellowC,2);
   gateB->createAll(System,*bellowC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
+  gateB->insertInCell(System,outerCell);
 
-
-
-  monoBox->addInsertCell(ContainedComp::getInsertCells());
+  // fake insert
+  monoBox->addInsertCell(masterCell->getName());
+  monoBox->setFront(*gateB,2);
   monoBox->createAll(System,*gateB,2);
-  monoBox->splitObject(System,2001,monoBox->getCell("OuterSpace"),
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBox,2);
+  monoBox->insertInCell(System,outerCell);
+  monoBox->splitObject(System,2001,outerCell,
 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  cellIndex++;
 
-  gateC->addInsertCell(ContainedComp::getInsertCells());
+  monoXtal->addInsertCell(monoBox->getCell("Void"));
+  monoXtal->createAll(System,*monoBox,0);
+
+  
+  gateC->setFront(*monoBox,2);
   gateC->createAll(System,*monoBox,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
+  gateC->insertInCell(System,outerCell);
 
-
-  bellowD->addInsertCell(ContainedComp::getInsertCells());
+  bellowD->setFront(*gateC,2);
   bellowD->createAll(System,*gateC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
+  bellowD->insertInCell(System,outerCell);
 
 
-  diagBoxA->addAllInsertCell(ContainedComp::getInsertCells());
+  // fake insert
+  diagBoxA->addAllInsertCell(masterCell->getName());
+  diagBoxA->setFront(*bellowD,2);
   diagBoxA->createAll(System,*bellowD,2);
-  // diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
-  // 			   diagBoxA->getBuildCell(),
-  // 			   {0,1, 1,2});
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagBoxA,2);
+  diagBoxA->insertAllInCell(System,outerCell);
 
-  //  diagBoxA->splitObject(System,-11,diagBoxA->getCell("SplitOuter",0));
-  //  diagBoxA->splitObject(System,12,diagBoxA->getCell("SplitOuter",2));
+  
+  diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
+     			   diagBoxA->getCell("Void"),
+   			   {0,1, 1,2});
+  diagBoxA->splitObject(System,-11,outerCell);
+  diagBoxA->splitObject(System,12,outerCell);
+  diagBoxA->splitObject(System,-2001,outerCell);
+  diagBoxA->splitObject(System,-2002,outerCell);
 
-  bellowE->addInsertCell(ContainedComp::getInsertCells());
+  //  diagBoxA->intersectPorts(System,3,6);
+  diagBoxA->intersectVoidPorts(System,6,3);
+  cellIndex+=4;
+  
+  
+  bellowE->setFront(*diagBoxA,2);  
   bellowE->createAll(System,*diagBoxA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
+  bellowE->insertInCell(System,outerCell);
 
-  
-  gateD->addInsertCell(ContainedComp::getInsertCells());
+  gateD->setFront(*bellowE,2);  
   gateD->createAll(System,*bellowE,2);
-
-  mirrorA->addInsertCell(ContainedComp::getInsertCells());
-  mirrorA->createAll(System,*gateD,2);
-
-  gateE->addInsertCell(ContainedComp::getInsertCells());
-  gateE->createAll(System,*mirrorA,2);
-
-  bellowF->addInsertCell(ContainedComp::getInsertCells());
-  bellowF->createAll(System,*gateE,2);
-
-  constructDiag(System,*diagBoxB,jawCompB,*bellowF,2);
-  bellowG->addInsertCell(ContainedComp::getInsertCells());
-  bellowG->createAll(System,*diagBoxB,2);
-
-  gateF->addInsertCell(ContainedComp::getInsertCells());
-  gateF->createAll(System,*bellowG,2);
-
-  mirrorB->addInsertCell(ContainedComp::getInsertCells());
-  mirrorB->createAll(System,*gateF,2);
-
-  gateG->addInsertCell(ContainedComp::getInsertCells());
-  gateG->createAll(System,*mirrorB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateD,2);
+  gateD->insertInCell(System,outerCell);
   
-  bellowH->addInsertCell(ContainedComp::getInsertCells());
-  bellowH->createAll(System,*gateG,2);
+  mirrorA->setFront(*gateD,2);  
+  mirrorA->createAll(System,*gateD,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorA,2);
+  mirrorA->insertInCell(System,outerCell);
 
-  constructDiag(System,*diagBoxC,jawCompC,*bellowH,2);
+  gateE->setFront(*mirrorA,2);  
+  gateE->createAll(System,*mirrorA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateE,2);
+  gateE->insertInCell(System,outerCell);
+
+  bellowF->setFront(*gateE,2);  
+  bellowF->createAll(System,*gateE,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
+  bellowF->insertInCell(System,outerCell);
+
+  constructDiag(System,&masterCell,*diagBoxB,jawCompB,*bellowF,2);
+
+  bellowG->setFront(*diagBoxB,2);  
+  bellowG->createAll(System,*diagBoxB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowG,2);
+  bellowG->insertInCell(System,outerCell);
+
+
+  gateF->setFront(*bellowG,2);  
+  gateF->createAll(System,*bellowG,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateF,2);
+  gateF->insertInCell(System,outerCell);
+
+  mirrorB->setFront(*gateF,2);  
+  mirrorB->createAll(System,*gateF,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorB,2);
+  mirrorB->insertInCell(System,outerCell);
+
+  gateG->setFront(*mirrorB,2);  
+  gateG->createAll(System,*mirrorB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateG,2);
+  gateG->insertInCell(System,outerCell);
+
+  bellowH->setFront(*gateG,2);  
+  bellowH->createAll(System,*gateG,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
+  bellowH->insertInCell(System,outerCell);
+
+  ELog::EM<<"DFSAFDSAFDSA"<<ELog::endDiag;
+  constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
+
   lastComp=diagBoxC;
   return;
 }
@@ -394,6 +530,8 @@ cosaxsOpticsLine::createLinks()
     Create a front/back link
    */
 {
+  ELog::RegMethod RControl("cosaxsOpticsLine","createLinks");
+  
   setLinkSignedCopy(0,*pipeInit,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
@@ -409,13 +547,14 @@ cosaxsOpticsLine::createAll(Simulation& System,
     \param System :: Simulation system
     \param FC :: Fixed component
     \param sideIndex :: link point
-   */
+  */
 {
-  // For output stream
-  ELog::RegMethod RControl("cosaxsOpticsLine","build");
+  ELog::RegMethod RControl("cosaxsOpticsLine","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  createSurfaces();
+  
   buildObjects(System);
   createLinks();
   return;

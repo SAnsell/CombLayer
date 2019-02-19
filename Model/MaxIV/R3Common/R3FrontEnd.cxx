@@ -226,7 +226,7 @@ R3FrontEnd::populate(const FuncDataBase& Control)
    */
 {
   FixedOffset::populate(Control);
-  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
+  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   return;
 }
 
@@ -561,7 +561,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
-
+  
   buildUndulator(System,masterCell,*this,0);
   
   eCutDisk->setNoInsert();
@@ -573,6 +573,7 @@ R3FrontEnd::buildObjects(Simulation& System)
       lastComp=dipolePipe;
       return;
     }
+  lastComp=dipolePipe;
   bellowA->createAll(System,*dipolePipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
@@ -615,15 +616,17 @@ R3FrontEnd::buildObjects(Simulation& System)
   collC->addInsertCell(collTubeC->getCell("Void"));
   collC->createAll(System,*collTubeC,0);
 
-
   collExitPipe->setFront(*collTubeC,2);
   collExitPipe->createAll(System,*collTubeC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
+
   buildHeatTable(System,masterCell,*collExitPipe,2);
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
+
+
 
 
   exitPipe->createAll(System,*bellowK,2);
