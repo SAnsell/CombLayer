@@ -90,13 +90,15 @@
 #include "ExperimentalHutch.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
-#include "FrontEndCave.h"
+#include "R3FrontEndCave.h"
 #include "WallLead.h"
+#include "R3FrontEnd.h"
 #include "balderFrontEnd.h"
 #include "OpticsBeamline.h"
 #include "ConnectZone.h"
 #include "PipeShield.h"
 #include "ExptBeamline.h"
+
 #include "BALDER.h"
 
 namespace xraySystem
@@ -104,8 +106,8 @@ namespace xraySystem
 
 BALDER::BALDER(const std::string& KN) :
   attachSystem::CopiedComp("Balder",KN),
-  ringCaveA(new FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new FrontEndCave(newName+"RingCaveB")),
+  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
+  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new balderFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),

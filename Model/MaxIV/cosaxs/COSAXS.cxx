@@ -3,7 +3,7 @@
  
  * File: cosaxs/COSAXS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,8 +92,9 @@
 #include "JawValve.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
-#include "FrontEndCave.h"
-#include "FrontEnd.h"
+#include "R3FrontEndCave.h"
+#include "R3FrontEnd.h"
+#include "cosaxsFrontEnd.h"
 #include "cosaxsOpticsLine.h"
 #include "ConnectZone.h"
 #include "COSAXS.h"
@@ -103,9 +104,9 @@ namespace xraySystem
 
 COSAXS::COSAXS(const std::string& KN) :
   attachSystem::CopiedComp("Balder",KN),
-  ringCaveA(new FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new FrontEndCave(newName+"RingCaveB")),
-  frontBeam(new FrontEnd(newName+"FrontBeam")),
+  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
+  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
+  frontBeam(new cosaxsFrontEnd(newName+"FrontBeam")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),

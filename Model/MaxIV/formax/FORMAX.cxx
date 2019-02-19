@@ -90,7 +90,7 @@
 #include "ExperimentalHutch.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
-#include "FrontEndCave.h"
+#include "R3FrontEndCave.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
 #include "formaxFrontEnd.h"
@@ -105,8 +105,8 @@ namespace xraySystem
 
 FORMAX::FORMAX(const std::string& KN) :
   attachSystem::CopiedComp("Formax",KN),
-  ringCaveA(new FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new FrontEndCave(newName+"RingCaveB")),
+  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
+  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new formaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),

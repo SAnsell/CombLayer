@@ -3,7 +3,7 @@
  
  * File:   balderInc/BALDER.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,14 +36,6 @@ namespace constructSystem
   class JawValve;
 }
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace xraySystem
 {
   class BeamMount;
@@ -51,12 +43,14 @@ namespace xraySystem
   class ExperimentalHutch;
   class ExptBeamline;
   class OpticsBeamline;
-  class FrontEndCave;
+  class R3FrontEndCave;
+  class R3FrontEnd;
   class ConnectZone;
   class balderFrontEnd;
   class PipeShield;
   class WallLead;
-  
+
+  class balderFrontEnd;
   /*!
     \class BALDER
     \version 1.0
@@ -72,9 +66,9 @@ class BALDER : public attachSystem::CopiedComp
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
   /// Front end cave volume
-  std::shared_ptr<FrontEndCave> ringCaveA;
+  std::shared_ptr<R3FrontEndCave> ringCaveA;
   // Joining front cave
-  std::shared_ptr<FrontEndCave> ringCaveB;
+  std::shared_ptr<R3FrontEndCave> ringCaveB;
 
   /// the components in the front end
   std::shared_ptr<balderFrontEnd> frontBeam;
@@ -122,7 +116,7 @@ class BALDER : public attachSystem::CopiedComp
   BALDER& operator=(const BALDER&);
   ~BALDER();
 
-  // set stop point(s)
+  /// set stop point(s)
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);

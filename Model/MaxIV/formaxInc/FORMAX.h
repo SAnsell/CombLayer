@@ -51,7 +51,7 @@ namespace xraySystem
   class ExperimentalHutch;
   class ExptBeamline;
   class formaxOpticsLine;
-  class FrontEndCave;
+  class R3FrontEndCave;
   class ConnectZone;
   class formaxFrontEnd;
   class PipeShield;
@@ -72,9 +72,9 @@ class FORMAX : public attachSystem::CopiedComp
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
   /// Front end cave volume
-  std::shared_ptr<FrontEndCave> ringCaveA;
+  std::shared_ptr<R3FrontEndCave> ringCaveA;
   // Joining front cave
-  std::shared_ptr<FrontEndCave> ringCaveB;
+  std::shared_ptr<R3FrontEndCave> ringCaveB;
 
   /// the components in the front end
   std::shared_ptr<formaxFrontEnd> frontBeam;
@@ -96,7 +96,7 @@ class FORMAX : public attachSystem::CopiedComp
   FORMAX& operator=(const FORMAX&);
   ~FORMAX();
 
-  // set stop point(s)
+  /// set stop point(s)
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }
   void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);

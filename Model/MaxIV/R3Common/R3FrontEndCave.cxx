@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/FrontEndCave.cxx
+ * File:   R3Common/R3FrontEndCave.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -70,7 +70,6 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
@@ -79,12 +78,12 @@
 #include "Maze.h"
 #include "RingDoor.h"
 
-#include "FrontEndCave.h"
+#include "R3FrontEndCave.h"
 
 namespace xraySystem
 {
 
-FrontEndCave::FrontEndCave(const std::string& Key) : 
+R3FrontEndCave::R3FrontEndCave(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -108,20 +107,20 @@ FrontEndCave::FrontEndCave(const std::string& Key) :
 }
 
 
-FrontEndCave::~FrontEndCave() 
+R3FrontEndCave::~R3FrontEndCave() 
   /*!
     Destructor
   */
 {}
 
 void
-FrontEndCave::populate(const FuncDataBase& Control)
+R3FrontEndCave::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","populate");
+  ELog::RegMethod RegA("R3FrontEndCave","populate");
   
   FixedOffset::populate(Control);
 
@@ -156,7 +155,7 @@ FrontEndCave::populate(const FuncDataBase& Control)
 }
 
 void
-FrontEndCave::createUnitVector(const attachSystem::FixedComp& FC,
+R3FrontEndCave::createUnitVector(const attachSystem::FixedComp& FC,
 			       const long int sideIndex)
   /*!
     Create the unit vectors
@@ -164,7 +163,7 @@ FrontEndCave::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","createUnitVector");
+  ELog::RegMethod RegA("R3FrontEndCave","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -172,12 +171,12 @@ FrontEndCave::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-FrontEndCave::createSurfaces()
+R3FrontEndCave::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","createSurfaces");
+  ELog::RegMethod RegA("R3FrontEndCave","createSurfaces");
 
   // Inner void
   if (!ExternalCut::isActive("front"))
@@ -242,13 +241,13 @@ FrontEndCave::createSurfaces()
 }
 
 void
-FrontEndCave::createObjects(Simulation& System)
+R3FrontEndCave::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("FrontEndCave","createObjects");
+  ELog::RegMethod RegA("R3FrontEndCave","createObjects");
 
   const std::string fStr=getRuleStr("front");
   std::string Out;
@@ -300,13 +299,13 @@ FrontEndCave::createObjects(Simulation& System)
 }
 
 void
-FrontEndCave::createLinks()
+R3FrontEndCave::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","createLinks");
+  ELog::RegMethod RegA("R3FrontEndCave","createLinks");
   
   ExternalCut::createLink("front",*this,0,Origin,-Y);
 
@@ -365,13 +364,13 @@ FrontEndCave::createLinks()
 }
 
 void
-FrontEndCave::createMaze(Simulation& System)
+R3FrontEndCave::createMaze(Simulation& System)
   /*!
     Build if a Maze required
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","createMaze");
+  ELog::RegMethod RegA("R3FrontEndCave","createMaze");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -391,13 +390,13 @@ FrontEndCave::createMaze(Simulation& System)
 }
 
 void
-FrontEndCave::createDoor(Simulation& System)
+R3FrontEndCave::createDoor(Simulation& System)
   /*!
     Build if a ring-door is required
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","createMaze");
+  ELog::RegMethod RegA("R3FrontEndCave","createMaze");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -417,7 +416,7 @@ FrontEndCave::createDoor(Simulation& System)
 }
 
 void
-FrontEndCave::createAll(Simulation& System,
+R3FrontEndCave::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -427,7 +426,7 @@ FrontEndCave::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("FrontEndCave","createAll(FC)");
+  ELog::RegMethod RegA("R3FrontEndCave","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

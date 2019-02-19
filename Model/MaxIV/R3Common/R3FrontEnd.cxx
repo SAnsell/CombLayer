@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: R3FrontEnd/R3FrontEnd.cxx
+ * File: R3Common/R3FrontEnd.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *

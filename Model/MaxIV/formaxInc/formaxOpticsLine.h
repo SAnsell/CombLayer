@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_formaxOpticsLine_h
-#define xraySystem_formaxOpticsLine_h
+#ifndef xraySystem_formaxOpticsLineX_h
+#define xraySystem_formaxOpticsLineX_h
 
 namespace insertSystem
 {
@@ -43,16 +43,6 @@ namespace constructSystem
 
 }
 
-
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace xraySystem
 {
   class OpticsHutch;
@@ -69,8 +59,8 @@ namespace xraySystem
     \class formaxOpticsLine
     \version 1.0
     \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \date January 2019
+    \brief Constructor for the formax optics components
   */
 
 class formaxOpticsLine :

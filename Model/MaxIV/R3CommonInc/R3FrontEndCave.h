@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/FrontEndCave.h
+ * File:   R3CommonInc/R3FrontEndCave.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_FrontEndCave_h
-#define xraySystem_FrontEndCave_h
+#ifndef xraySystem_R3FrontEndCave_h
+#define xraySystem_R3FrontEndCave_h
 
 class Simulation;
 
@@ -30,7 +30,7 @@ namespace xraySystem
   class RingDoor;
   
 /*!
-  \class FrontEndCave
+  \class R3FrontEndCave
   \version 1.0
   \author S. Ansell
   \date February 2018
@@ -39,7 +39,7 @@ namespace xraySystem
   Built around the central beam axis
 */
 
-class FrontEndCave :
+class R3FrontEndCave :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -91,10 +91,10 @@ class FrontEndCave :
   
  public:
 
-  FrontEndCave(const std::string&);
-  FrontEndCave(const FrontEndCave&);
-  FrontEndCave& operator=(const FrontEndCave&);
-  virtual ~FrontEndCave();
+  R3FrontEndCave(const std::string&);
+  R3FrontEndCave(const R3FrontEndCave&);
+  R3FrontEndCave& operator=(const R3FrontEndCave&);
+  virtual ~R3FrontEndCave();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/R3FrontEnd.h
+ * File:   R3CommonInc/R3FrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -56,6 +56,7 @@ namespace xraySystem
   class LCollimator;
   class SqrCollimator;
   class SquareFMask;
+  class BeamMount;
 
     
   /*!
@@ -174,7 +175,8 @@ class R3FrontEnd :
 
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,MonteCarlo::Object*,
+    buildUndulator(Simulation&,
+		   MonteCarlo::Object*,
 		   const attachSystem::FixedComp&,
 		   const long int) =0;
 

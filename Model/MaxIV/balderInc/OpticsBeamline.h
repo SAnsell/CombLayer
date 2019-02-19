@@ -40,16 +40,6 @@ namespace constructSystem
   class JawValve;
 }
 
-
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace xraySystem
 {
   class OpticsHutch;

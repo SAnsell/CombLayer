@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/balderFrontEnd.cxx
+ * File: cosaxs/cosaxsFrontEnd.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -79,21 +79,37 @@
 #include "ModelSupport.h"
 
 #include "VacuumPipe.h"
+#include "insertObject.h"
+#include "insertCylinder.h"
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+#include "LCollimator.h"
+#include "GateValve.h"
+#include "OffsetFlangePipe.h"
 #include "VacuumBox.h"
+#include "portItem.h"
+#include "PipeTube.h"
+#include "PortTube.h"
+#include "CrossPipe.h"
 #include "Wiggler.h"
+#include "SqrCollimator.h"
+#include "BeamMount.h"
+#include "HeatDump.h"
+#include "UTubePipe.h"
+#include "Undulator.h"
 #include "R3FrontEnd.h"
 
-#include "balderFrontEnd.h"
+#include "cosaxsFrontEnd.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-balderFrontEnd::balderFrontEnd(const std::string& Key) :
+cosaxsFrontEnd::cosaxsFrontEnd(const std::string& Key) :
   R3FrontEnd(Key),
-  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
-  wiggler(new Wiggler(newName+"Wiggler"))
+  undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
+  undulator(new xraySystem::Undulator(newName+"Undulator"))   
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -103,11 +119,11 @@ balderFrontEnd::balderFrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(wigglerBox);
-  OR.addObject(wiggler);
+  OR.addObject(undulatorPipe);
+  OR.addObject(undulator);
 }
   
-balderFrontEnd::~balderFrontEnd()
+cosaxsFrontEnd::~cosaxsFrontEnd()
   /*!
     Destructor
    */
@@ -115,7 +131,7 @@ balderFrontEnd::~balderFrontEnd()
 
 
 const attachSystem::FixedComp&
-balderFrontEnd::buildUndulator(Simulation& System,
+cosaxsFrontEnd::buildUndulator(Simulation& System,
 				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& preFC,
 				const long int preSideIndex)
@@ -129,22 +145,23 @@ balderFrontEnd::buildUndulator(Simulation& System,
     \return link object 
   */
 {
-  ELog::RegMethod RegA("balderFrontEnd","buildUndulator");
+  ELog::RegMethod RegA("cosaxsFrontEnd","buildUndulator");
 
   int outerCell;
+  undulatorPipe->createAll(System,preFC,preSideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorPipe,2);
 
-  wigglerBox->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*wigglerBox,2);
-  
-  wiggler->addInsertCell(wigglerBox->getCell("Void"));
-  wiggler->createAll(System,*wigglerBox,0);
+  CellMap::addCell("UndulatorOuter",outerCell);
+  undulatorPipe->insertInCell("FFlange",System,outerCell);
+  undulatorPipe->insertInCell("BFlange",System,outerCell);
+  undulatorPipe->insertInCell("Pipe",System,outerCell);
 
-  
-  CellMap::addCell("WiggerOuter",outerCell);
-  wigglerBox->insertInCell(System,outerCell);
+  undulator->addInsertCell(outerCell);
+  undulator->createAll(System,*undulatorPipe,0);
+  undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  dipolePipe->setFront(*wigglerBox,2);
-  dipolePipe->createAll(System,*wigglerBox,2);
+  dipolePipe->setFront(*undulatorPipe,2);
+  dipolePipe->createAll(System,*undulatorPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
@@ -152,12 +169,12 @@ balderFrontEnd::buildUndulator(Simulation& System,
 }
 
 void
-balderFrontEnd::createLinks()
+cosaxsFrontEnd::createLinks()
   /*!
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*wigglerBox,1);
+  setLinkSignedCopy(0,*undulator,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
 }

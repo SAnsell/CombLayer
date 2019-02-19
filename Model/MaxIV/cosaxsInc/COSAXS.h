@@ -3,7 +3,7 @@
  
  * File:   cosaxsInc/COSAXS.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,11 +51,10 @@ namespace xraySystem
 {
   class OpticsHutch;
   class ExperimentalHutch;
+  class cosaxsFrontEnd;
   class cosaxsOpticsLine;
   class FrontEndCave;
   class ConnectZone;
-  class FrontEnd;
-  
   
   /*!
     \class COSAXS
@@ -72,12 +71,12 @@ class COSAXS : public attachSystem::CopiedComp
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
   /// Front end cave volume
-  std::shared_ptr<FrontEndCave> ringCaveA;
+  std::shared_ptr<R3FrontEndCave> ringCaveA;
   // Joining front cave
-  std::shared_ptr<FrontEndCave> ringCaveB;
+  std::shared_ptr<R3FrontEndCave> ringCaveB;
 
   /// the components in the front end
-  std::shared_ptr<FrontEnd> frontBeam;
+  std::shared_ptr<cosaxsFrontEnd> frontBeam;
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
