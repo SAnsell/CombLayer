@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   pipeBuild/pipeVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,8 +64,8 @@ PipeVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("pipeVariables[F]","PipeVariables");
   
   Control.addVariable("ATubeLength",350.0);
-  Control.addVariable("ATubeWidth",100.0);
-  Control.addVariable("ATubeHeight",100.0);
+  Control.addVariable("ATubeWidth",500.0);
+  Control.addVariable("ATubeHeight",500.0);
   Control.addVariable("ATubeInnerWidth",10.0);
   Control.addVariable("ATubeInnerHeight",10.0);
   Control.addVariable("ATubeWallMat","Stainless304");
@@ -77,8 +77,8 @@ PipeVariables(FuncDataBase& Control)
   Control.addVariable("ATubeWLayerThick3",5.0);
 
   Control.addVariable("BTubeLength",350.0);
-  Control.addVariable("BTubeWidth",100.0);
-  Control.addVariable("BTubeHeight",100.0);
+  Control.addVariable("BTubeWidth",500.0);
+  Control.addVariable("BTubeHeight",500.0);
   Control.addVariable("BTubeInnerWidth",10.0);
   Control.addVariable("BTubeInnerHeight",10.0);
   Control.addVariable("BTubeWallMat","H2O");
@@ -91,8 +91,8 @@ PipeVariables(FuncDataBase& Control)
   
 
   Control.addVariable("CTubeLength",350.0);
-  Control.addVariable("CTubeWidth",100.0);
-  Control.addVariable("CTubeHeight",100.0);
+  Control.addVariable("CTubeWidth",500.0);
+  Control.addVariable("CTubeHeight",500.0);
   Control.addVariable("CTubeInnerWidth",10.0);
   Control.addVariable("CTubeInnerHeight",10.0);
   Control.addVariable("CTubeWallMat","Stainless304");
