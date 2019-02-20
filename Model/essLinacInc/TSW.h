@@ -45,6 +45,7 @@ class TSW : public attachSystem::ContainedComp,
   const size_t Index;           ///< Wall index
 
   double width;                 ///< Width
+  size_t nLayers;               ///< Number of layers for variance reduction
 
   int wallMat;                  ///< Wall material
   int airMat;                   ///< Air material
@@ -95,6 +96,10 @@ class TSW : public attachSystem::ContainedComp,
   double hole8StepZ; ///< Z-offset of hole 8
   double hole8Width; ///< width of hole 8
   double hole8Height; ///< height of hole 8
+
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const long int& lpS, const long int& lsS, const size_t&,
+		    const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
