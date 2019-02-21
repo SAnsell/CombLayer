@@ -76,6 +76,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "FrontBackCut.h"
 
 #include "portItem.h"
@@ -177,12 +178,20 @@ PortTube::createSurfaces()
 
   // void space:
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  SurfMap::addSurf("VoidFront",SMap.realSurf(buildIndex+1));
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  SurfMap::addSurf("VoidBack",-SMap.realSurf(buildIndex+2));
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-
+  SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));
+  
   // metal
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   Origin-Y*(wallThick+length/2.0),Y);
+  SurfMap::addSurf("PortACut",SMap.realSurf(buildIndex+11));
+  
+  ModelSupport::buildPlane(SMap,buildIndex+12,
+			   Origin+Y*(wallThick+length/2.0),Y);
+  SurfMap::addSurf("PortBCut",SMap.realSurf(buildIndex+12));
 
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
@@ -315,6 +324,8 @@ PortTube::createLinks()
   FixedComp::setConnect(9,BVec+Z*(portBRadius+portBThick),Z);
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
   FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+217));
+
+  FixedComp::setConnect(10,Origin,Y);
 
   
   return;

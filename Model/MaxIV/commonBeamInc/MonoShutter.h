@@ -40,10 +40,17 @@ class MonoShutter :
   public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::ExternalCut,
+  public attachSystem::SurfMap,
   public attachSystem::CellMap
 {
  private:
 
+  double divideBStep;   ///< B divider step
+  double divideThick;   ///< Thickness of divider
+  double divideRadius;  ///< Inner hole in divider
+  
+  int dMat;             ///< Divider material
+  
   /// Shutter pipe
   std::shared_ptr<constructSystem::PortTube> shutterPipe;
   /// shutter to stop beam

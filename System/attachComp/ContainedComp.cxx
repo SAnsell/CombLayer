@@ -240,6 +240,20 @@ ContainedComp::addOuterSurf(const std::string& SList)
 }
 
 void
+ContainedComp::addOuterSurf(const ContainedComp& CC) 
+  /*!
+    Add a surface to the output
+    \param CC :: Contaned comp to intersect
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addOuterSurf(CC)");
+
+  outerSurf.addIntersection(CC.outerSurf);
+  outerSurf.populateSurf();
+  return;
+}
+  
+void
 ContainedComp::addOuterUnionSurf(const std::string& SList) 
   /*!
     Add a set of surfaces to the output
@@ -248,6 +262,20 @@ ContainedComp::addOuterUnionSurf(const std::string& SList)
 {
   ELog::RegMethod RegA("ContainedComp","addOuterUnionSurf(std::string)");
   outerSurf.addUnion(SList);
+  outerSurf.populateSurf();
+  return;
+}
+
+void
+ContainedComp::addOuterUnionSurf(const ContainedComp& CC) 
+  /*!
+    Add a surface to the output as a union
+    \param CC :: Contaned comp to intersect
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addOuterUnionSurf(CC)");
+
+  outerSurf.addUnion(CC.outerSurf);
   outerSurf.populateSurf();
   return;
 }

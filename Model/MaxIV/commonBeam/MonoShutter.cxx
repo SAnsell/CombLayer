@@ -72,6 +72,7 @@
 #include "FixedOffsetGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
@@ -86,9 +87,11 @@ namespace xraySystem
 {
 
 MonoShutter::MonoShutter(const std::string& Key) :
-  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::ContainedGroup("Main","FlangeA","FlangeB",
+			       "ShutterA","ShutterB"),
+  attachSystem::FixedOffset(Key,3),
   attachSystem::ExternalCut(),
+  attachSystem::SurfMap(),
   attachSystem::CellMap(),
   
   shutterPipe(new constructSystem::PortTube(keyName+"Pipe")),
@@ -99,7 +102,6 @@ MonoShutter::MonoShutter(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {}
-
 
 MonoShutter::~MonoShutter()
   /*!
@@ -117,7 +119,14 @@ MonoShutter::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("MonoShutter","populate");
 
   FixedOffset::populate(Control);
-    
+
+  divideBStep=Control.EvalVar<double>(keyName+"DivideBStep");
+
+  divideThick=Control.EvalVar<double>(keyName+"DivideThick");
+  divideRadius=Control.EvalVar<double>(keyName+"DivideRadius");
+  
+  dMat=ModelSupport::EvalMat<int>(Control,keyName+"DivideMat");
+  
   return;
 }
 
@@ -139,8 +148,7 @@ MonoShutter::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("MonoShutter","createUnitVector");
 
-
-  createUnitVector(FC,sideIndex);
+  FixedOffset::createUnitVector(FC,sideIndex);
 
   applyOffset();
   return;
@@ -149,11 +157,25 @@ MonoShutter::createUnitVector(const attachSystem::FixedComp& FC,
 void
 MonoShutter::createSurfaces()
   /*!
-    Create planes for mirror block and support
+    Create planes for mid plane divider
   */
 {
   ELog::RegMethod RegA("MonoShutter","createSurfaces");
-			   
+
+  const Geometry::Vec3D CPoint(shutterPipe->getLinkPt(0));
+  const Geometry::Vec3D beamPoint(shutterPipe->getLinkPt(1));
+
+  ModelSupport::buildPlane(SMap,buildIndex+1,
+			   CPoint-Y*(divideThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,
+			   CPoint+Y*(divideThick/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,beamPoint,Y,divideRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   CPoint+Y*(divideBStep-divideThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
+			   CPoint+Y*(divideBStep+divideThick/2.0),Y);
+  
   return; 
 }
 
@@ -162,25 +184,39 @@ MonoShutter::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
-   */
+  */
 {
   ELog::RegMethod RegA("MonoShutter","createObjects");
 
+  std::string Out;
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
+  makeCell("DivideAVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 7 ");
+  makeCell("DivideA",System,cellIndex++,dMat,0.0,Out+
+	   shutterPipe->getSurfString("VoidCyl"));
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -7 ");
+  makeCell("DivideBVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 7 ");
+  makeCell("DivideB",System,cellIndex++,dMat,0.0,Out+
+	   shutterPipe->getSurfString("VoidCyl"));
+
+  // Special cells for replacing splitPipe->getCell("Void")
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11  ");
+  makeCell("FrontVoid",System,cellIndex++,dMat,0.0,Out+
+	   shutterPipe->getSurfString("VoidFront")+
+	   shutterPipe->getSurfString("VoidCyl"));
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11  ");
+  makeCell("BackVoid",System,cellIndex++,dMat,0.0,Out+
+	   shutterPipe->getSurfString("VoidBack")+
+	   shutterPipe->getSurfString("VoidCyl"));
+  
   return; 
 }
-
-void
-MonoShutter::createLinks()
-  /*!
-    Creates a full attachment set
-  */
-{
-  ELog::RegMethod RegA("MonoShutter","createLinks");
-  
-  return;
-}
-
 
 void
 MonoShutter::buildComponents(Simulation& System)
@@ -190,31 +226,59 @@ MonoShutter::buildComponents(Simulation& System)
   */
 {
   ELog::RegMethod RegA("MonoShutter","buildComponents");
-
-  
+ 
   shutterPipe->addInsertCell("Main",getCC("Main").getInsertCells());
 
   if (isActive("front"))
-    shutterPipe->setFront(this->getRuleStr("front"));
-  
+    shutterPipe->setFront(this->getRuleStr("front"));  
   shutterPipe->createAll(System,*this,0);
 
+  const int CN=shutterPipe->getCell("Void");
+  System.removeCell(CN);
+    
+  
   const constructSystem::portItem& PIA=shutterPipe->getPort(0);
-  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("FrontVoid"));
   monoShutterA->addInsertCell("Inner",PIA.getCell("Void"));
   monoShutterA->addInsertCell("Outer",getCC("Main").getInsertCells());
   monoShutterA->createAll(System,*shutterPipe,0,PIA,2);
 
   const constructSystem::portItem& PIB=shutterPipe->getPort(1);
-  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
+  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("BackVoid"));
   monoShutterB->addInsertCell("Inner",PIB.getCell("Void"));
   monoShutterB->addInsertCell("Outer",getCC("Main").getInsertCells());
   monoShutterB->createAll(System,*shutterPipe,1,PIB,2);
 
+
+  ContainedGroup::addOuterSurf("Main",shutterPipe->getCC("Main"));
+  ContainedGroup::addOuterUnionSurf("Main",PIA);
+  ContainedGroup::addOuterUnionSurf("Main",PIB);
+  ContainedGroup::addOuterSurf("FlangeA",shutterPipe->getCC("FlangeA"));
+  ContainedGroup::addOuterSurf("FlangeB",shutterPipe->getCC("FlangeB"));
+  ContainedGroup::addOuterSurf("ShutterA",monoShutterA->getCC("Outer"));
+  ContainedGroup::addOuterSurf("ShutterB",monoShutterB->getCC("Outer"));
+
+  SurfMap::addSurf("PortACut",shutterPipe->getSignedSurf("PortACut"));
+  SurfMap::addSurf("PortBCut",shutterPipe->getSignedSurf("PortBCut"));
+  
   return;
 }
 
+void
+MonoShutter::createLinks()
+  /*!
+    Create a front/back links and centre origin
+   */
+{
+  ELog::RegMethod RControl("MonoShutter","createLinks");
   
+  setLinkSignedCopy(0,*shutterPipe,1);
+  setLinkSignedCopy(1,*shutterPipe,2);
+  setLinkSignedCopy(2,*shutterPipe,11);   // center origin
+  
+  return;
+}
+
 void
 MonoShutter::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -227,11 +291,15 @@ MonoShutter::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("MonoShutter","createAll");
-
+ 
   populate(System.getDataBase());
-
   createUnitVector(FC,sideIndex);
+
+  createSurfaces();
   buildComponents(System);
+
+  createObjects(System);
+  createLinks();
 
   return;
 }

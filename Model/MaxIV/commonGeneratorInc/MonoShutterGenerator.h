@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/MonoShutterGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,9 @@ class FuncDataBase;
 
 namespace setVariable
 {
+  class PortTubeGenerator;
+  class PortItemGenerator;
+  class ShutterUnitGenerator;
 
 /*!
   \class MonoShutterGenerator
@@ -39,27 +42,11 @@ class MonoShutterGenerator
 {
  private:
 
-  double height;           ///< height total 
-  double width;            ///< width accross beam
-  double thick;            ///< Thickness in normal direction to reflection  
-  double lift;             ///< Amount to lift [when raized]
-  double liftScrewRadius;  ///< Radius of lifting thread
-  double threadLength;     ///< Total length of thread
-    
-  double topInnerRadius;          ///<  Flange inner radius radius 
-  double topFlangeRadius;          ///< Joining Flange radius 
-  double topFlangeLength;          ///< Joining Flange length
-
-  double bellowLength;             ///< Bellow length
-  double bellowThick;              ///< Bellow thick
+  std::unique_ptr<PortTubeGenerator> PTubeGen;   ///< Main port tube
+  std::unique_ptr<PortItemGenerator> PItemGen;   ///< port items
   
-  double outRadius;                ///< Out connect radius
-  double outLength;                ///< Out connect length
-  
-  std::string mat;                 ///< Base material
-  std::string threadMat;           ///< Thread material
-  std::string flangeMat;           ///<  flange material
-  std::string bellowMat;           ///<  bellow material 
+  /// Shutter units [both the same]
+  std::unique_ptr<ShutterUnitGenerator> SUnitGen;  
 
  public:
 
@@ -74,9 +61,9 @@ class MonoShutterGenerator
   
   void setMat(const std::string&,const double);
   
-  void generateHD(FuncDataBase&,const std::string&,
-		  const bool) const;
-
+  void generateShutter(FuncDataBase&,const std::string&,
+		       const bool,const bool) const;
+  
 };
 
 }

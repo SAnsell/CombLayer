@@ -1543,11 +1543,11 @@ Simulation::splitObject(const int CA,const int SN)
 {
   ELog::RegMethod RegA("Simulation","splitObject");
 
-
   MonteCarlo::Object* CPtr = findObject(CA);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CA,"Cell not found");
   CPtr->populate();
+
   // get next cell
   const int CB=getNextCell(CA);
   
@@ -1572,14 +1572,13 @@ Simulation::splitObject(const int CA,const int SN)
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs(std::abs(SN));
 
+
+      
   // Now make two cells and replace this cell with A + B
 
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
 
-  // ELog::EM<<"Ax == "<<CHead<<ELog::endDiag;
-  // for(auto XX : IP)
-  //   ELog::EM<<"P == "<<XX.first<<" "<<XX.second<<ELog::endDiag;
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
     CPtr->procString(AX.writeMCNPX());

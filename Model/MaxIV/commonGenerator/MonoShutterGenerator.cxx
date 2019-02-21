@@ -52,38 +52,42 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
+#include "PortTubeGenerator.h"
+#include "PortItemGenerator.h"
+#include "ShutterUnitGenerator.h"
 #include "MonoShutterGenerator.h"
 
 namespace setVariable
 {
 
 MonoShutterGenerator::MonoShutterGenerator() :
-  height(5.0),width(5.0),
-  thick(5.0),lift(3.0),liftScrewRadius(1.0),
-  threadLength(30.0),
-  topInnerRadius(CF100::innerRadius),
-  topFlangeRadius(CF100::flangeRadius),
-  topFlangeLength(CF100::flangeLength),
-  bellowLength(2.0),bellowThick(CF100::bellowThick),
-  outRadius(CF100::flangeRadius),
-  outLength(CF100::flangeLength),
-  mat("Tungsten"),threadMat("Copper"),
-  flangeMat("Stainless304"),
-  bellowMat("Stainless304%Void%10.0")
+  PTubeGen(new PortTubeGenerator()),
+  PItemGen(new PortItemGenerator()),
+  SUnitGen(new ShutterUnitGenerator())
   /*!
     Constructor and defaults
   */
-{}
+{
+  SUnitGen->setCF<CF40>();
+  SUnitGen->setTopCF<CF40>();
+
+  PItemGen->setCF<setVariable::CF40>(0.45);
+  PItemGen->setPlate(0.0,"Void");  
+
+  PTubeGen->setCF<CF63>();
+  PTubeGen->setPortLength(3.0,3.0);
+
+  PTubeGen->setAPortOffset(0,-3.0);
+  PTubeGen->setBPortOffset(0,-3.0);
+ 
+}
 
 
-  
 MonoShutterGenerator::~MonoShutterGenerator() 
  /*!
    Destructor
  */
 {}
-
-
 
 void
 MonoShutterGenerator::setMat(const std::string& M,const double T)
@@ -94,109 +98,46 @@ MonoShutterGenerator::setMat(const std::string& M,const double T)
     \param T :: Percentage of material
   */
 {
-  flangeMat=M;
-  bellowMat=M+"%Void%"+std::to_string(T);
+  SUnitGen->setMat(M,T);
   return;
 }
-  
-template<typename CF>
+ 
 void
-MonoShutterGenerator::setCF()
-  /*!
-    Set pipe/flange to CF format
-  */
-{
-  topInnerRadius=CF::innerRadius;
-  bellowThick=CF::bellowThick;
-  setMat(flangeMat,20.0*CF::wallThick/CF::bellowThick);
-  
-  setTopCF<CF>();
-  setOutCF<CF>();
-  return;
-}
-
-template<typename CF>
-void
-MonoShutterGenerator::setOutCF()
-  /*!
-    Set the Out [highest] flange 
-  */
-{
-  outRadius=CF::flangeRadius;
-  outLength=CF::flangeLength;
-  return;
-}
-
-template<typename CF>
-void
-MonoShutterGenerator::setTopCF()
-  /*!
-    Set the top [flange] level
-  */
-{
-  topFlangeRadius=CF::flangeRadius;
-  topFlangeLength=CF::flangeLength;
-  return;
-}
-
-void
-MonoShutterGenerator::generateHD(FuncDataBase& Control,
-				 const std::string& keyName,
-				 const bool upFlag) const
+MonoShutterGenerator::generateShutter(FuncDataBase& Control,
+				      const std::string& keyName,
+				      const bool upFlagA,
+				      const bool upFlagB) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param upFlag :: Shutter Dum up
+    \param upFlagA :: First Shutter up
+    \param upFlagB :: Second Shutter up
   */
 {
-  ELog::RegMethod RegA("MonoShutterGenerator","generateColl");
+  ELog::RegMethod RegA("MonoShutterGenerator","generateShutter");
   
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"Thick",thick);
-  Control.addVariable(keyName+"Lift",lift);
-  Control.addVariable(keyName+"LiftScrewRadius",liftScrewRadius);
-  Control.addVariable(keyName+"ThreadLength",threadLength);
-
-  Control.addVariable(keyName+"UpFlag",static_cast<int>(upFlag));
+  SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
+  SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
   
-  Control.addVariable(keyName+"TopInnerRadius",topInnerRadius);
-  Control.addVariable(keyName+"TopFlangeRadius",topFlangeRadius);
-  Control.addVariable(keyName+"TopFlangeLength",topFlangeLength);
-
-  Control.addVariable(keyName+"BellowLength",bellowLength);
-  Control.addVariable(keyName+"BellowThick",bellowThick);
-
-  Control.addVariable(keyName+"OutLength",outLength);
-  Control.addVariable(keyName+"OutRadius",outRadius);
-
+  // Main outer structure:
+  PTubeGen->generateTube(Control,keyName+"Pipe",0.0,7.50,20.0);
+  Control.addVariable(keyName+"PipeNPorts",2);
   
-  Control.addVariable(keyName+"BlockMat",mat);
-  Control.addVariable(keyName+"ThreadMat",threadMat);
-  Control.addVariable(keyName+"FlangeMat",flangeMat);
-  Control.addVariable(keyName+"BellowMat",bellowMat);
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen->generatePort(Control,keyName+"PipePort0",
+			Geometry::Vec3D(0,-4,0),ZVec);
+  PItemGen->generatePort(Control,keyName+"PipePort1",
+			 Geometry::Vec3D(0,4,0),ZVec);
+
+
+  Control.addVariable(keyName+"DivideBStep",7.8);
+  Control.addVariable(keyName+"DivideThick",1.0);
+  Control.addVariable(keyName+"DivideRadius",2.0);
+  Control.addVariable(keyName+"DivideMat","Tungsten");
        
   return;
 }
-
-template void MonoShutterGenerator::setCF<CF40>();
-template void MonoShutterGenerator::setCF<CF63>();
-template void MonoShutterGenerator::setCF<CF100>();
-template void MonoShutterGenerator::setCF<CF120>();
-template void MonoShutterGenerator::setCF<CF150>();
-
-template void MonoShutterGenerator::setOutCF<CF40>();
-template void MonoShutterGenerator::setOutCF<CF63>();
-template void MonoShutterGenerator::setOutCF<CF100>();
-template void MonoShutterGenerator::setOutCF<CF120>();
-template void MonoShutterGenerator::setOutCF<CF150>();
-
-template void MonoShutterGenerator::setTopCF<CF40>();
-template void MonoShutterGenerator::setTopCF<CF63>();
-template void MonoShutterGenerator::setTopCF<CF100>();
-template void MonoShutterGenerator::setTopCF<CF120>();
-template void MonoShutterGenerator::setTopCF<CF150>();
 
   
 }  // NAMESPACE setVariable

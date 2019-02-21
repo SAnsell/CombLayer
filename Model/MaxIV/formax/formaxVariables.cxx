@@ -61,6 +61,7 @@
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
+#include "MonoShutterGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
@@ -878,7 +879,8 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
-
+  setVariable::MonoShutterGenerator MShutterGen;
+  
   PipeGen.setWindow(-2.0,0.0);   // no window
 
   BellowGen.setCF<setVariable::CF40>();
@@ -1020,6 +1022,7 @@ opticsVariables(FuncDataBase& Control,
 
   formaxVar::diagUnit2(Control,preName+"DiagBoxC");
 
+  MShutterGen.generateShutter(Control,preName+"MonoShutter",0,0);
   // ystep : wing
   setVariable::PipeShieldGenerator ShieldGen;
   ShieldGen.setPlate(100.0,100,9.0);

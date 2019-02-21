@@ -198,6 +198,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(gateG);
   OR.addObject(bellowH);
   OR.addObject(diagBoxC);
+  OR.addObject(monoShutter);
 }
   
 formaxOpticsLine::~formaxOpticsLine()
@@ -495,7 +496,6 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructDiag(System,&masterCell,*diagBoxB,jawCompB,*bellowF,2);
 
-
   bellowG->setFront(*diagBoxB,2);  
   bellowG->createAll(System,*diagBoxB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowG,2);
@@ -524,8 +524,21 @@ formaxOpticsLine::buildObjects(Simulation& System)
    
   constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
 
-  screenA->addAllInsertCell(masterCell->getName());  
-  screenA->createAll(System,*diagBoxC,2);
+  monoShutter->addAllInsertCell(masterCell->getName());
+  monoShutter->setCutSurf("front",*diagBoxC,2);
+  monoShutter->createAll(System,*diagBoxC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoShutter,2);
+
+  monoShutter->insertAllInCell(System,outerCell);
+
+  monoShutter->splitObject(System,"-PortACut",outerCell);
+  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
+  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
+  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
+  monoShutter->splitObject(System,"PortBCut",outerCell);
+
+  //  screenA->addAllInsertCell(masterCell->getName());  
+  //  screenA->createAll(System,*diagBoxC,2);
   
   lastComp=diagBoxC;
   return;

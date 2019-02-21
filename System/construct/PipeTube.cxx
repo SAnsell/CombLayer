@@ -76,6 +76,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "FrontBackCut.h"
 
 #include "portItem.h"
@@ -88,7 +89,9 @@ PipeTube::PipeTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
+  
   delayPortBuild(0),portConnectIndex(1),
   rotAxis(0,1,0)
   /*!
@@ -225,6 +228,8 @@ PipeTube::createSurfaces()
   
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));
+    
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,

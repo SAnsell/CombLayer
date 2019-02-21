@@ -232,6 +232,7 @@ class FixedComp
 
 
   std::vector<int> splitObject(Simulation&,const int,const int);
+  std::vector<int> splitObject(Simulation&,const std::string&,const int);
 
   std::vector<int> splitObject(Simulation&,const int,const int,
 			       const Geometry::Vec3D&,const Geometry::Vec3D&);

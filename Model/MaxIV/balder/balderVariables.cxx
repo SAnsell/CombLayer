@@ -63,7 +63,7 @@
 #include "FlangeMountGenerator.h"
 #include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
-#include "MonoShutterGenerator.h"
+#include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
@@ -635,14 +635,15 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::MonoShutterGenerator MSGen;
+  setVariable::ShutterUnitGenerator MSGen;
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();
   PTubeGen.setPortLength(3.0,3.0);
-  // ystep/width/height/depth/length
   PTubeGen.setAPortOffset(0,-3.0);
   PTubeGen.setBPortOffset(0,-3.0);
+
+  // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,7.50,20.0);
   Control.addVariable(preName+"ShutterPipeNPorts",2);
 
@@ -659,8 +660,8 @@ monoShutterVariables(FuncDataBase& Control,
   const std::string mDumpB(preName+"MonoShutterB");
   MSGen.setCF<CF40>();
   MSGen.setTopCF<CF40>();
-  MSGen.generateHD(Control,mDumpA,1);  // both up
-  MSGen.generateHD(Control,mDumpB,0);  // both up
+  MSGen.generateShutter(Control,mDumpA,1);  // both up
+  MSGen.generateShutter(Control,mDumpB,0);  // second down
 
   
   // bellows on shield block

@@ -93,8 +93,11 @@ class ContainedComp
 
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);
+  void addOuterSurf(const ContainedComp&);
+  
   void addOuterUnionSurf(const std::string&);
-
+  void addOuterUnionSurf(const ContainedComp&);
+  
   void addBoundarySurf(const int);
   void addBoundarySurf(const std::string&);
   void addBoundaryUnionSurf(const int);

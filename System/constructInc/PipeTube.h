@@ -39,6 +39,7 @@ class PipeTube :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
+  public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  protected:

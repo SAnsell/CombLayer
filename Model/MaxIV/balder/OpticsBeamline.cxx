@@ -545,7 +545,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
   pipeF->insertInCell(System,outerCell);
 
-    // fake inser for ports
+  // fake insert for ports
   shutterPipe->addAllInsertCell(masterCell->getName());
   shutterPipe->setFront(*pipeF,2);
   shutterPipe->createAll(System,*pipeF,2);
