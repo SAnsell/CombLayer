@@ -205,16 +205,26 @@ MonoShutter::createObjects(Simulation& System)
 	   shutterPipe->getSurfString("VoidCyl"));
 
   // Special cells for replacing splitPipe->getCell("Void")
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11  ");
-  makeCell("FrontVoid",System,cellIndex++,dMat,0.0,Out+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1  ");
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,Out+
 	   shutterPipe->getSurfString("VoidFront")+
 	   shutterPipe->getSurfString("VoidCyl"));
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -11  ");
-  makeCell("BackVoid",System,cellIndex++,dMat,0.0,Out+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -11  ");
+  makeCell("MidVoid",System,cellIndex++,0,0.0,Out+
+	   shutterPipe->getSurfString("VoidCyl"));
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12  ");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,Out+
 	   shutterPipe->getSurfString("VoidBack")+
 	   shutterPipe->getSurfString("VoidCyl"));
+
+
+  const int CN=shutterPipe->getCell("Void");
   
+  System.removeCell(CN);
+  monoShutterA->insertInCell("Inner",System,getCell("FrontVoid"));
+  monoShutterB->insertInCell("Inner",System,getCell("MidVoid"));
   return; 
 }
 
@@ -233,18 +243,15 @@ MonoShutter::buildComponents(Simulation& System)
     shutterPipe->setFront(this->getRuleStr("front"));  
   shutterPipe->createAll(System,*this,0);
 
-  const int CN=shutterPipe->getCell("Void");
-  System.removeCell(CN);
-    
   
   const constructSystem::portItem& PIA=shutterPipe->getPort(0);
-  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("FrontVoid"));
+  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
   monoShutterA->addInsertCell("Inner",PIA.getCell("Void"));
   monoShutterA->addInsertCell("Outer",getCC("Main").getInsertCells());
   monoShutterA->createAll(System,*shutterPipe,0,PIA,2);
 
   const constructSystem::portItem& PIB=shutterPipe->getPort(1);
-  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("BackVoid"));
+  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
   monoShutterB->addInsertCell("Inner",PIB.getCell("Void"));
   monoShutterB->addInsertCell("Outer",getCC("Main").getInsertCells());
   monoShutterB->createAll(System,*shutterPipe,1,PIB,2);
@@ -295,9 +302,9 @@ MonoShutter::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 
-  createSurfaces();
   buildComponents(System);
 
+  createSurfaces();
   createObjects(System);
   createLinks();
 
