@@ -58,7 +58,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -266,10 +265,10 @@ PreMod::createObjects(Simulation& System)
 
   Out+=ModelSupport::getSetComposite(SMap,buildIndex,
 				    "(-11:12:-13:14:-15:16:-17)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
   return;
 }
 

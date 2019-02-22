@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -73,7 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ExcludedComp.h"
 #include "LinkWrapper.h"
@@ -706,7 +705,7 @@ t1Reflector::createRods(Simulation& System)
       // REFLECTOR RODS:
       Rods.push_back
 	(std::shared_ptr<ReflectRods>(new ReflectRods("Rods",i)));
-      Rods.back()->setObject(System.findQhull(Boxes[i]->centralCell()));
+      Rods.back()->setObject(System.findObject(Boxes[i]->centralCell()));
       Rods.back()->createAll(System,*this,0);   // 0 not used
     }
   return;

@@ -56,7 +56,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -227,17 +226,17 @@ FilterBox::createObjects(Simulation& System)
 
   // FilterBox
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,beTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,beTemp,Out));
 
   // Wrapper
   Out=ModelSupport::getComposite(SMap,buildIndex,
   	 "11 -12 13 -14 15 -16 (-21: 22 : -23 : 24 :-25 : 26)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,beTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,beTemp,Out));
 
   // Void
   Out=ModelSupport::getComposite(SMap,buildIndex,
   	 "1 -2 3 -4 5 -6 (-11: 12 : -13 : 14 :-15 : 16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);

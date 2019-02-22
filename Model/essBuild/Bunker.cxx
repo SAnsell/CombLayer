@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -407,7 +406,7 @@ Bunker::createObjects(Simulation& System,
   const int InnerSurf=FC.getLinkSurf(sideIndex);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -7 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+Inner));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out+Inner));
   setCell("MainVoid",cellIndex-1);
   // process left wall:
   //  std::string leftWallStr=procLeftWall(System);
@@ -418,21 +417,21 @@ Bunker::createObjects(Simulation& System,
   if (leftWallFlag)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 -3 13 5 -106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("leftWall",cellIndex-1);
       lwIndex+=10;
     }
   if (rightWallFlag)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 -7 4 -14 5 -106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("rightWall",cellIndex-1);
       rwIndex+=10;
     }
   
   Out=ModelSupport::getComposite(SMap,buildIndex,lwIndex,rwIndex,
 				 " 1 -17 3M -4N -5 15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
   setCell("floor",cellIndex-1);
 
   // Main wall not divided
@@ -456,11 +455,11 @@ Bunker::createObjects(Simulation& System,
       else
 	Out+=ModelSupport::getComposite(SMap,buildIndex," -14 ");
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out+Inner));
       addCell("roof"+StrFunc::makeString(i),cellIndex-1);
       Out=ModelSupport::getComposite(SMap,buildIndex,divIndex,
 				     " 1 7 -17 1M -2M 5 -106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
       addCell("frontWall",cellIndex-1);
       addCell("frontWall"+StrFunc::makeString(i),cellIndex-1);
       divIndex++;
@@ -627,7 +626,7 @@ Bunker::calcSegment(const Simulation& System,
     {
       const std::string SName="frontWall"+StrFunc::makeString(i);
       const int cN=getCell(SName);
-      const MonteCarlo::Object* SUnit=System.findQhull(cN);
+      const MonteCarlo::Object* SUnit=System.findObject(cN);
       if (SUnit)
 	{
 	  HeadRule HR=SUnit->getHeadRule();

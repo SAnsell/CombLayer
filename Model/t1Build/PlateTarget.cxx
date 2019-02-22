@@ -65,14 +65,12 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -159,11 +157,13 @@ PlateTarget::populate(const Simulation& System)
   width=Control.EvalVar<double>(keyName+"Width");
   // Blocks:
   nBlock=Control.EvalVar<size_t>(keyName+"NBlocks");
-  tBlock=SimProcess::getVarVec<double>(Control,keyName+"Thick");
-  if (tBlock.size()!=nBlock)
-    throw ColErr::MisMatch<size_t>(nBlock,tBlock.size(),
-				"Incorrect thicknesses");
-  
+
+  for(size_t index=0;index<nBlock;index++)
+    {
+      tBlock.push_back(Control.EvalVar<double>
+		       (keyName+"Thick"+std::to_string(index)));
+    }
+	  
   // Master Ta dimensions:
   taThick=Control.EvalVar<double>(keyName+"TaThick");
   waterThick=Control.EvalVar<double>(keyName+"WaterThick");
@@ -308,46 +308,46 @@ PlateTarget::createObjects(Simulation& System)
 	{
 	  // W CELL Full:
 	  Out=ModelSupport::getComposite(SMap,surfNum,"12 -13 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out+WEdge));
+	  System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out+WEdge));
 	  
 	  // WATER CELL
 	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -11 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,
+	  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,
 					   0.0,Out+H2OEdge));
 	  std::ostringstream cx;
 	  // TA CELL Full:
 	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -14 ");
 	  cx<<" #"<<cellIndex-2<<" #"<<cellIndex-1<<" ";
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,
+	  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,
 					   Out+cx.str()+TaEdge));
 	}
       else   // VOID BLOCK
 	{
 	  Out=ModelSupport::getComposite(SMap,surfNum,"4 -14 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+TaEdge));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+TaEdge));
 	}
     }
   // Add backplate
   surfNum=buildIndex+1000+10*static_cast<int>(nBlock);
   // WATER CELL
   Out=ModelSupport::getComposite(SMap,surfNum,"4 -11 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+H2OEdge));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+H2OEdge));
   // TA BackPlate Full:
   std::ostringstream cx;
   Out=ModelSupport::getComposite(SMap,surfNum,"4 ");
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-51:-53:54) (-51:-63:64) -52 (-51:57)");
   cx<<" #"<<cellIndex-1<<" ";
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out+cx.str()+TaEdge));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out+cx.str()+TaEdge));
   
   // Void:
   Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52  53 -54 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0, Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52  63 -64 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0, Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0, Out));
   // Steel pin
   Out=ModelSupport::getComposite(SMap,buildIndex," 51 -52 -57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1004 3 -4 5 -6 -52");
   //  Out+=ModelSupport::getComposite(SMap,surfNum," -52");

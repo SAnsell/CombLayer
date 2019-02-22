@@ -3,7 +3,7 @@
  
  * File:   balderInc/ConnectZone.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,23 +36,11 @@ namespace constructSystem
     
 }
 
-
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace xraySystem
 {
   class FlangeMount;
   class LeadBox;
   class Mirror;
-  class MonoVessel;
-  class MonoCrystals;
   class OpticsHutch;
 
     
@@ -68,11 +56,13 @@ class ConnectZone :
   public attachSystem::CopiedComp,
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::FrontBackCut,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap      
 {
  private:
 
+  attachSystem::InnerZone buildZone;
+  
   /// First bellow
   std::shared_ptr<constructSystem::Bellows> bellowA;
 
@@ -104,8 +94,6 @@ class ConnectZone :
   void createSurfaces();
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
 		    const long int);
-  int createOuterVoidUnit(Simulation&,const attachSystem::FixedComp&,
-			   const long int);
   void createLinks();
   
  public:
@@ -115,7 +103,7 @@ class ConnectZone :
   ConnectZone& operator=(const ConnectZone&);
   ~ConnectZone();
 
-
+  /// Register pipe
   void registerJoinPipe(const std::shared_ptr<constructSystem::LeadPipe>& JP)
     { JPipe=JP; }
   

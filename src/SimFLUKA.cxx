@@ -69,7 +69,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "Source.h"
 #include "inputSupport.h"
@@ -78,19 +77,23 @@
 #include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
+#include "radDecay.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
 #include "groupRange.h"
 #include "objectGroups.h"
+
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
-  defType("PRECISION"),writeVariable(1),lowEnergyNeutron(1),
-  nps(1000),rndSeed(2374891),
-  PhysPtr(new flukaSystem::flukaPhysics())
+  defType("PRECISION"),writeVariable(1),
+  lowEnergyNeutron(1),
+  nps(1000),rndSeed(2374891),BVec(0,0,0),
+  PhysPtr(new flukaSystem::flukaPhysics()),
+  RadDecayPtr(new flukaSystem::radDecay())
   /*!
     Constructor
   */
@@ -101,8 +104,10 @@ SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   alignment(A.alignment),defType(A.defType),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
-  nps(A.nps),rndSeed(A.rndSeed),sourceExtraName(A.sourceExtraName),
-  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
+  nps(A.nps),rndSeed(A.rndSeed),BVec(A.BVec),
+  sourceExtraName(A.sourceExtraName),
+  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr)),
+  RadDecayPtr(new flukaSystem::radDecay(*A.RadDecayPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -125,11 +130,13 @@ SimFLUKA::operator=(const SimFLUKA& A)
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
+      BVec=A.BVec;
       sourceExtraName=A.sourceExtraName;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
 	FTItem.emplace(TM.first,TM.second->clone());
       *PhysPtr= *A.PhysPtr;
+      *RadDecayPtr = *A.RadDecayPtr;
     }
   return *this;
 }
@@ -141,6 +148,7 @@ SimFLUKA::~SimFLUKA()
 {
   clearTally();
   delete PhysPtr;
+  delete RadDecayPtr;
 }
 
 void
@@ -405,8 +413,13 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
   OX<<"* MATERIAL CARDS "<<std::endl;
   OX<<alignment<<std::endl;
   // WRITE OUT ASSIGNMENT:
+  bool magField(0);
   for(const OTYPE::value_type& mp : OList)
-    mp.second->writeFLUKAmat(OX);
+    {
+      mp.second->writeFLUKAmat(OX);
+      if (mp.second->hasMagField())
+	magField=1;
+    }
     
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
@@ -418,12 +431,31 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
   writeElements(OX);
 
   DB.writeFLUKA(OX);
-  
+
   OX<<alignment<<std::endl;
+  if (magField)
+    writeMagField(OX);
   return;
 }
-  
 
+void
+SimFLUKA::writeMagField(std::ostream& OX) const
+  /*!
+    Write out the magnetic field if needed
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","writeMagField");
+
+  std::ostringstream cx;
+  if (BVec.abs()<Geometry::zeroTol)
+    cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
+  else
+    cx<<"MGNFIELD 15.0 0.05 0.1 "<<BVec;
+  
+  StrFunc::writeFLUKA(cx.str(),OX);
+  return;
+}
 
 void
 SimFLUKA::writeWeights(std::ostream& OX) const
@@ -639,6 +671,7 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"GEOEND"<<std::endl;
   writeWeights(OX);
   writeMaterial(OX);
+  RadDecayPtr->write(*this,OX);
   writeTally(OX);
   writeSource(OX);
   writePhysics(OX);

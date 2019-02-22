@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -291,23 +290,23 @@ Groove::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 "
 				 "(13 : -14 : -11 : -15 : 16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // void in groove
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 -33 34 31 35 -36");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Al layers :
   // - Outer skin
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 23 -24 25 -26 "
 				 " (2 : -3 : 4 : -5 : 6 ) "
                                  " (33 : -34 : -35 : 36 )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
   
   // - Inner skin
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -13 14 11 15 -16 "
 				 "( 33 : -34 : -31 : -35 : 36 )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   return;
 }

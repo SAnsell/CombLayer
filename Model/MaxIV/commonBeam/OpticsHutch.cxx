@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -211,7 +210,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
-  beamTubeRadius=Control.EvalDefVar<double>(keyName+"BeamTubeRadius",0.0);
   
   return;
 }
@@ -243,12 +241,6 @@ OpticsHutch::createSurfaces()
 {
   ELog::RegMethod RegA("OpticsHutch","createSurfaces");
 
-  if (beamTubeRadius>Geometry::zeroTol)
-    {
-      ModelSupport::buildCylinder(SMap,buildIndex+3007,Origin,Y,beamTubeRadius);
-      setSurf("BeamTube",-SMap.realSurf(buildIndex+3007));
-    }
-
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
@@ -257,6 +249,8 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+  
   if (innerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
@@ -367,12 +361,6 @@ OpticsHutch::createObjects(Simulation& System)
       makeCell("Void",System,cellIndex++,0,0.0,Out);
     }
 
-  if (beamTubeRadius>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -3007");
-      makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
-    }
-
   // walls:
   int HI(buildIndex);
 
@@ -402,7 +390,7 @@ OpticsHutch::createObjects(Simulation& System)
       // roof
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;
     }
@@ -415,10 +403,7 @@ OpticsHutch::createObjects(Simulation& System)
     // ring wall
   const std::string ringWall=ExternalCut::getRuleStr("ringWall");
 
-  //  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1M -2M 4M 104M 15 -6M ");
-  //  makeCell("RingWall",System,cellIndex++,ringMat,0.0,Out+ringWall);
-  // Outer void for chicanes etc
-
+  // Outer void for pipe
   if (inletRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");

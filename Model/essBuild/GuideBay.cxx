@@ -60,7 +60,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -279,12 +278,12 @@ GuideBay::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 7 -17 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   CellMap::addCell("Inner",cellIndex-1);
   addOuterSurf("Inner",Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 17 -27 3 -4 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   CellMap::addCell("Outer",cellIndex-1);
   addOuterSurf("Outer",Out);
 
@@ -314,8 +313,8 @@ GuideBay::outerMerge(Simulation& System,
 {
   ELog::RegMethod RegA("GuideBay","outerMerge");
 
-  MonteCarlo::Qhull* AB=System.findQhull(CellMap::getCell("Outer"));
-  MonteCarlo::Qhull* BB=System.findQhull(otherBay.CellMap::getCell("Outer"));
+  MonteCarlo::Object* AB=System.findObject(CellMap::getCell("Outer"));
+  MonteCarlo::Object* BB=System.findObject(otherBay.CellMap::getCell("Outer"));
   
   if (!AB)
     throw ColErr::InContainerError<int>
@@ -356,7 +355,7 @@ GuideBay::outerMerge(Simulation& System,
   const double temp=AB->getTemp();
   System.removeCell(AB->getName());
   System.removeCell(BB->getName());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,
 				   ARule.display()));
   // NOW RESET names in cellMap:
   setCell("Outer",cellIndex-1);

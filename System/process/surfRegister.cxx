@@ -331,4 +331,4 @@ template const Geometry::Plane* surfRegister::findPtr<const Geometry::Plane>
 ///\endcond TEMPLATE
 
 
-} // SimProcess
+} // NAMESPACE ModelSupport

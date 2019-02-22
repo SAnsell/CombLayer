@@ -37,7 +37,8 @@ namespace shutterSystem
   Holds the edge/centre 
 */
 
-class collInsertBase  : public attachSystem::ContainedComp,
+class collInsertBase  :
+  public attachSystem::ContainedComp,
   public attachSystem::FixedComp
 {
  protected:

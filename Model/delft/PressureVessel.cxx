@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -229,13 +228,13 @@ PressureVessel::createObjects(Simulation& System)
 
   // Main void
   Out=ModelSupport::getComposite(SMap,buildIndex," (-8:1) (-108:-2) -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
   
   // Main Wall
   Out=ModelSupport::getComposite(SMap,buildIndex," (-18:1) (-118:-2) -17 "
 				 " (7 : (-1 8) : (2 108)) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
  
   return;
 }

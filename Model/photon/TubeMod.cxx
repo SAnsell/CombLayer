@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -218,7 +217,7 @@ TubeMod::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,tIndex," 1 -2 -7 ");
       TubeCollection.addUnion(Out);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,TI.mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,TI.mat,0.0,Out));
       tIndex+=100;
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex," 1 -2 -7 ");
@@ -226,7 +225,7 @@ TubeMod::createObjects(Simulation& System)
   // Now exclude tubes
   TubeCollection.makeComplement();
   Out+=TubeCollection.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
   return; 
 }
 

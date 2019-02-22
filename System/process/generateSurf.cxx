@@ -293,9 +293,9 @@ buildCylinder(surfRegister& SMap,const int N,
   Geometry::Cylinder* CX=SurI.createUniqSurf<Geometry::Cylinder>(N);  
   if (CX->setCylinder(O,D,R))
     throw ColErr::ConstructionError("setCylinder","CX",
-				 StrFunc::makeString(O),
-				 StrFunc::makeString(D),
-				 StrFunc::makeString(R));
+				 "Origin = "+StrFunc::makeString(O),
+				 "Dir    = "+StrFunc::makeString(D),
+				 "Radius = "+StrFunc::makeString(R));
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cylinder>(NFound);
@@ -443,5 +443,110 @@ buildEllipticCyl(surfRegister& SMap,const int N,
   const int NFound=SMap.registerSurf(N,EX);
   return SMap.realPtr<Geometry::EllipticCyl>(NFound);
 }
+
+Geometry::Surface*
+buildShiftedSurf(surfRegister& SMap,
+		const int SN,
+		const int index,
+		const int dFlag,
+		const Geometry::Vec3D& YAxis,
+		const double length)
+  /*!
+    Support function to calculate the shifted surface based
+    on surface type and form
+    \param SMap :: local surface register
+    \param SN :: HeadRule to extract plane surf
+    \param index :: offset index
+    \param dFlag :: direction of surface axis (relative to HR.Plane)
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("ExternalCut","makeShiftedSurf");
+  
+  const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
+  
+  const Geometry::Plane* PPtr=
+    dynamic_cast<const Geometry::Plane*>(SPtr);
+  if (PPtr)
+    {
+      if (SN*dFlag>0)
+	buildShiftedPlane(SMap,index,PPtr,dFlag*length);
+      else
+	buildShiftedPlaneReversed(SMap,index,PPtr,dFlag*length);
+      return SMap.realSurfPtr(index);
+    }
+  
+  const Geometry::Cylinder* CPtr=
+    dynamic_cast<const Geometry::Cylinder*>(SPtr);
+  // Cylinder case:
+  if (CPtr)
+    {
+      if (SN>0)
+	buildCylinder(SMap,index,CPtr->getCentre()+YAxis*length,
+	   CPtr->getNormal(),CPtr->getRadius());
+      else
+	buildCylinder(SMap,index,CPtr->getCentre()-YAxis*length,
+	       CPtr->getNormal(),CPtr->getRadius());
+      return SMap.realSurfPtr(index);
+    }  
+  return 0;
+} 
+
+
+Geometry::Surface*
+buildExpandedSurf(ModelSupport::surfRegister& SMap,
+		 const int SN,
+		 const int index,
+		 const Geometry::Vec3D& expandCentre,
+		 const double dExtra) 
+  /*!
+    Support function to calculate the shifted surface based
+    on surface type and form. Moves away from the center if dExtra
+    positive.
+    \param SMap :: local surface register
+    \param SN :: surface to expand
+    \param index :: offset index
+    \param expandCentre :: Centre for expansion
+    \param dExtra :: displacement extra [cm]
+    \return Surface ptr [nullPtr on failure]
+  */
+{
+  ELog::RegMethod RegA("generateSurf","buildExpandedSurf");
+  
+  const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
+  // plane case does not use distance
+  const Geometry::Plane* PPtr=
+    dynamic_cast<const Geometry::Plane*>(SPtr);
+  if (PPtr)
+    {
+      int sideFlag=PPtr->side(expandCentre);
+      if (sideFlag==0) sideFlag=1;
+      buildShiftedPlane(SMap,index,PPtr, -sideFlag*dExtra);
+      return SMap.realSurfPtr(index);
+    }
+  
+  const Geometry::Cylinder* CPtr=
+    dynamic_cast<const Geometry::Cylinder*>(SPtr);
+  // Cylinder case:
+  if (CPtr)
+    {
+      // // this may not alway be what we want:
+      Geometry::Vec3D NVec=(CPtr->getCentre()-expandCentre);
+      const Geometry::Vec3D CAxis=CPtr->getNormal();
+      // now must remove component in axis direction
+      NVec-= CAxis * NVec.dotProd(CAxis);
+      NVec.makeUnit();
+      //	  const Geometry::Vec3D NC=CPtr->getCentre()+NVec*dExtra;
+      const Geometry::Vec3D NC=CPtr->getCentre();
+      
+      ModelSupport::buildCylinder
+	(SMap,index,NC,CPtr->getNormal(),CPtr->getRadius()+dExtra);
+      return SMap.realSurfPtr(index);
+    }
+  return 0;
+} 
+
+
 
 } // ModelSupport

@@ -393,22 +393,24 @@ ExternalCut::createLink(const std::string& extName,
   const cutUnit* CU=findUnit(extName);
   if (CU)  
     {
+
       FC.setLinkSurf(linkIndex,CU->main.complement());
       FC.setBridgeSurf(linkIndex,CU->divider);
       FC.setConnect(linkIndex,
-	 SurInter::getLinePoint(Org-YAxis*10.0,YAxis,CU->main,CU->divider),-YAxis);
+	 SurInter::getLinePoint(Org+YAxis*10.0,-YAxis,CU->main,CU->divider),YAxis);
     }
   return;
 }
   
 
+
 void
 ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
-			    const HeadRule& HR,
-			    const int index,
-			    const int dFlag,
-			    const Geometry::Vec3D& YAxis,
-			    const double length)
+			     const HeadRule& HR,
+			     const int index,
+			     const int dFlag,
+			     const Geometry::Vec3D& YAxis,
+			     const double length)
   /*!
     Support function to calculate the shifted surface based
     on surface type and form
@@ -416,7 +418,7 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction of surface axis (relative to HR.Plane)
-    \param YAxis :: Direction of cylindical shift
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param length :: length to shift by
   */
 {
@@ -425,38 +427,13 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
     {
-      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
-
-      const Geometry::Plane* PPtr=
-	dynamic_cast<const Geometry::Plane*>(SPtr);
-      if (PPtr)
-	{
-	  if (SN*dFlag>0)
-	    ModelSupport::buildShiftedPlane(SMap,index,PPtr,dFlag*length);
-	  else
-	    ModelSupport::buildShiftedPlaneReversed(SMap,index,PPtr,dFlag*length);
-	  
-	  return;
-	}
-      
-      const Geometry::Cylinder* CPtr=
-	dynamic_cast<const Geometry::Cylinder*>(SPtr);
-      // Cylinder case:
-      if (CPtr)
-	{
-	  if (SN>0)
-	    ModelSupport::buildCylinder
-	      (SMap,index,CPtr->getCentre()+YAxis*length,
-	       CPtr->getNormal(),CPtr->getRadius());
-	  else
-	    ModelSupport::buildCylinder
-	      (SMap,index,CPtr->getCentre()-YAxis*length,
-	       CPtr->getNormal(),CPtr->getRadius());
-	  return;
-	}
-    }  
+      const Geometry::Surface* SPtr=
+	ModelSupport::buildShiftedSurf(SMap,SN,index,dFlag,YAxis,length);
+      if (SPtr) return;
+    }
   throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
 } 
+
 
 void
 ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
@@ -480,38 +457,10 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
     {
-      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
-      // plane case does not use distance
-      const Geometry::Plane* PPtr=
-	dynamic_cast<const Geometry::Plane*>(SPtr);
-      if (PPtr)
-	{
-	  int sideFlag=PPtr->side(expandCentre);
-	  if (sideFlag==0) sideFlag=1;
-	  ModelSupport::buildShiftedPlane
-	    (SMap,index,PPtr, -sideFlag*dExtra);
-	  return;
-	}
-      
-      const Geometry::Cylinder* CPtr=
-	dynamic_cast<const Geometry::Cylinder*>(SPtr);
-      // Cylinder case:
-      if (CPtr)
-	{
-	  // // this may not alway be what we want:
-	   Geometry::Vec3D NVec=(CPtr->getCentre()-expandCentre);
-	   const Geometry::Vec3D CAxis=CPtr->getNormal();
-	   // now must remove component in axis direction
-	   NVec-= CAxis * NVec.dotProd(CAxis);
-	   NVec.makeUnit();
-	   //	  const Geometry::Vec3D NC=CPtr->getCentre()+NVec*dExtra;
-	   const Geometry::Vec3D NC=CPtr->getCentre();
-	  
-	  ModelSupport::buildCylinder
-	    (SMap,index,NC,CPtr->getNormal(),CPtr->getRadius()+dExtra);
-	  return;
-	}
-    }  
+      const Geometry::Surface* SPtr=
+	ModelSupport::buildExpandedSurf(SMap,SN,index,expandCentre,dExtra);
+      if (SPtr) return;
+    }
   throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
 } 
   
@@ -553,7 +502,8 @@ ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
     \param SMap :: local surface register
     \param extName :: cut unit name
     \param index :: offset index
-    \param expandCentre :: Centre for expansion
+    \param dFlag :: direction of surface axis (relative to HR.Plane) [-1/1]
+    \param YAxis :: Direction of cylindical shift [NOT PLANE]
     \param dExtra :: displacement extra [cm]
   */
 {
@@ -589,7 +539,7 @@ ExternalCut::makeExpandedSurf(ModelSupport::surfRegister& SMap,
   const cutUnit* CU=findUnit(extName);
   if (!CU)
     throw ColErr::InContainerError<std::string>(extName,"Unit not named");
-  
+
   makeExpandedSurf(SMap,CU->main,index,expandCentre,dExtra);
 
   return;

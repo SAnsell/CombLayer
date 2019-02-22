@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -264,19 +263,19 @@ TelescopicPipe::createObjects(Simulation& System)
 	ModelSupport::getComposite(SMap,PT, rInc ? " -2 " : " -3 ");
 
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,
+      System.addCell(MonteCarlo::Object(cellIndex++,inMat[i],0.0,
 				       Out+FrontCap+EndCap));
       if (thick[i]>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
+	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,
 					   Out+FrontCap+EndCap));
          if ((i+1!=nSec) && (std::abs(radius[i]-radius[i+1])>Geometry::zeroTol))
             {
               Out=(radius[i+1]>radius[i]) ?
                 ModelSupport::getSetComposite(SMap,PT,PT+100," 17 -17M 5 -6") :
                 ModelSupport::getSetComposite(SMap,PT,PT+100," 17M -17 5 -6");
-              System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
+              System.addCell(MonteCarlo::Object(cellIndex++,wallMat[i],0.0,
                                                Out+WallEndCap+WallFrontCap));
             }
 	}

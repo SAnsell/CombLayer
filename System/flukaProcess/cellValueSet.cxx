@@ -664,7 +664,7 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::ostringstream cx;
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
-	
+
   if (cellSplit(cellN,Bgroup,Bdata))
     {	
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
@@ -713,7 +713,8 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 		cx<<UC<<" ";
 	    }
 	  cx<<tag;
-		      
+
+
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
     }

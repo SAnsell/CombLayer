@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -224,12 +223,12 @@ OrthoInsert::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 13 -14 15 -16 ");
   addOuterSurf("HSide",Out); 
   Out+=CU.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,orthoMat,orthoTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,orthoMat,orthoTemp,Out));
   // Groove side
   Out=ModelSupport::getComposite(SMap,buildIndex," -11 (-13:14:-15:16) ");
   addOuterSurf("GSide",Out); 
   Out+=CU.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,orthoMat,orthoTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,orthoMat,orthoTemp,Out));
   
   return;
 }

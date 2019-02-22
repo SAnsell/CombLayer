@@ -450,7 +450,7 @@ groupRange::getAllCells() const
   /*!
     Fill a vector with all cells
     \return Vector of all cells
-   */
+  */
 {
   std::vector<int> Out;
   for(size_t i=0;i<LowUnit.size();i++)
@@ -524,6 +524,31 @@ groupRange::getNext(const int cellNV) const
       return cellPlus;
     }
   throw ErrorOut;
+}
+
+int
+groupRange::getCellIndex(const size_t cellIndex) const
+  /*!
+    Returns the next valid cell after cellIndex
+    \param cellIndex :: Index number from first nubmer
+    \throw RangeError if cellIndex exceeds last index
+  */
+{
+
+  size_t indexPoint(0);
+  for(size_t i=0;i<LowUnit.size();i++)
+    {
+      const int LA(LowUnit[i]);
+      const int HA(HighUnit[i]);
+      const size_t dLen(static_cast<size_t>(HA-LA+1));
+      if (dLen+indexPoint<cellIndex)
+	indexPoint+=dLen;
+      else
+	return LA+static_cast<int>(cellIndex-indexPoint);
+    }
+
+  throw ColErr::RangeError<int>(cellIndex,0,indexPoint,
+				"cellIndex out of groupRange");
 }
 
 void

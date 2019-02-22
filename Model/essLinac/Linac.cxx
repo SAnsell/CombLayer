@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -351,39 +350,39 @@ Linac::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -101 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
   setCell("airBefore", cellIndex-1);
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -111 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 112 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
   setCell("airAfter", cellIndex-1);
 
   // side walls and roof
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 11 -12 13 -14 5 -16 (-1:2:-3:4:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // wall bottom slab
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -24 15 -5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 23 -13 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 14 -24 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // temporary shielding walls
   // 1st wall
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 3 -103 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("tsw1", cellIndex-1);
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
   // 2nd wall
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 3 -104 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 111 -112 104 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("tsw2", cellIndex-1);
 
   // divide TSW walls

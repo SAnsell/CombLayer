@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -58,6 +57,10 @@
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
+#include "QuadrupoleGenerator.h"
+#include "EPSeparatorGenerator.h"
+#include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
@@ -87,13 +90,20 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("ShieldMat","Stainless304");
 
   Control.addVariable("TubeYStep",10.0);
+  Control.addVariable("TubeRadius",5.0);
+  Control.addVariable("TubeLength",30.0);
   Control.addVariable("TubeDepth",10.0);
   Control.addVariable("TubeWidth",20.0);
   Control.addVariable("TubeHeight",20.0);
-  Control.addVariable("TubeMat","Void");
+  Control.addVariable("TubeMat","Stainless304");
   
+  Control.addVariable("TubeARadius",5.0);
+  Control.addVariable("TubeALength",25.0);
+  Control.addVariable("TubeBRadius",5.0);
+  Control.addVariable("TubeBLength",5.0);
+  Control.addVariable("TubeAMat","Stainless304");
+  Control.addVariable("TubeBMat","Lead");
   
-
   Control.addVariable("CryoBOuterRadius",20.0);
   
   Control.addVariable("CryoBNLayers",0);
@@ -151,7 +161,17 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
+  setVariable::QuadrupoleGenerator QGen;
+  QGen.generateQuad(Control,"Quad",0.0,10.0);
 
+  setVariable::EPSeparatorGenerator EPGen;
+  EPGen.generatePipe(Control,"EPSep",0.0);
+
+  setVariable::PreDipoleGenerator PDGen;
+  PDGen.generatePipe(Control,"PreDipole",0.0);
+
+  setVariable::DipoleChamberGenerator DCGen;
+  DCGen.generatePipe(Control,"DipoleChamber",0.0);
   
   
   return;

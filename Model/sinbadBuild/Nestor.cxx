@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -297,14 +296,14 @@ Nestor::createObjects(Simulation& System,
 
   // Front one uses FC/sideIndex 
   Out=FSurf+ModelSupport::getComposite(SMap,buildIndex," -11 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[0],matTemp[0],Out)); 
+  System.addCell(MonteCarlo::Object(cellIndex++,mat[0],matTemp[0],Out)); 
   
   int SI(buildIndex);
   for(size_t i=1;i<nSlab;i++)
    {
      SI+=10;
      Out=ModelSupport::getComposite(SMap,buildIndex,SI,"1M -11M 3 -4 5 -6");
-     System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],matTemp[i],Out)); 
+     System.addCell(MonteCarlo::Object(cellIndex++,mat[i],matTemp[i],Out)); 
    }
   
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," -11M 3 -4 5 -6");

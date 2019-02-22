@@ -58,7 +58,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "weightManager.h"
 #include "WForm.h"
 #include "WItem.h"
@@ -269,6 +268,7 @@ WWGControl::wwgCreate(const Simulation& System,
       procParam(IParam,"wwgCalc",iSet,1);      
       WWGWeight& wSet=(adjointFlag) ? *adjointFlux : *sourceFlux;
 
+      ELog::EM<<"ADJOINT == "<<adjointFlag<<ELog::endDiag;
       if (ptType=="help" || ptType=="Help")
 	{
 	  ELog::EM<<"wwgCalc ==> \n"
@@ -337,6 +337,7 @@ WWGControl::wwgMarkov(const Simulation& System,
 	  MCalc.computeMatrix(System,wwg,density,r2Length,r2Power);
 	  MCalc.multiplyOut(nMult);
 	  MCalc.rePopulateWWG();
+	  ELog::EM<<"MARKOV FINISHED"<<ELog::endDiag;
 	}
     }
 
@@ -357,6 +358,7 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   WWG& wwg=WM.getWWG();
 
   wwg.updateWM(*sourceFlux,1.0);
+  const size_t NE=wwg.getEBin().size();
   
   if (IParam.flag("wwgNorm"))
     {
@@ -382,7 +384,8 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
       //        IParam.getDefValue<double>(1.0,"wwgNorm",0,3);
       
 
-      wwg.scaleRange(lowRange,highRange,weightRange);
+      for(size_t i=0;i<NE;i++)
+	wwg.scaleRange(i,lowRange,highRange,weightRange);
       //      wwg.powerRange(powerWeight);
     }
   else
@@ -492,6 +495,7 @@ WWGControl::processWeights(Simulation& System,
       wwgMesh(IParam);               // create mesh [wwgXMesh etc]
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
+      sourceFlux->writeCHECK(100);
       wwgMarkov(System,IParam);
       wwgCombine(System,IParam);
       wwgNormalize(IParam);

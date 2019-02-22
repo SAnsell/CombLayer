@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -201,11 +200,11 @@ B4CCollimator::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 103 -104 105 -106");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 -7 (-103:104:-105:106)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   addOuterSurf(Out);

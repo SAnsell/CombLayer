@@ -46,10 +46,10 @@ class GrateMonoBox :
   const bool centreOrigin;      ///< Construct on the centre line
 
   double voidHeight;            ///< void height [flat section]
-  double voidDepth;             ///< void height [flat section]
+  double voidDepth;             ///< void depth [flat section]
   double voidWidth;             ///< void width [total]
-  double voidLength;            ///< void width [total]
-  double voidRadius;            ///< void depth [low only]
+  double voidLength;            ///< void forward [total]
+  double voidRadius;            ///< void radius [low Z only]
 
   double overHangExtent;        ///< Overhang distance
   double overHangDepth;         ///< Overhang distance

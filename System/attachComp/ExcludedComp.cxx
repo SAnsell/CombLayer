@@ -52,7 +52,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h" 
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -333,7 +332,7 @@ ExcludedComp::applyBoundary(Simulation& System)
 
   for(const int CN : excludeCells)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
+      MonteCarlo::Object* outerObj=System.findObject(CN);
       if (outerObj)
 	outerObj->addSurfString(getNotExcludeUnit());
       else

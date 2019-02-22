@@ -63,8 +63,7 @@ class ExBase : public std::exception
   ExBase(const std::string&);
   ExBase(const ExBase&);
   ExBase& operator=(const ExBase&);
-  virtual ~ExBase() throw() {}  \
-  ///< Destructor 
+  virtual ~ExBase() throw() {}  ///< Destructor 
 
   /// Main reporting method
   virtual const char* what() const throw();

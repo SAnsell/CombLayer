@@ -3,7 +3,7 @@
  
  * File:   chip/LeadPlate.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -81,8 +80,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "tubeUnit.h"
 #include "LeadPlate.h"
@@ -453,25 +450,25 @@ LeadPlate::createObjects(Simulation& System)
 	{
 	  // void in middle:
 	  Out=TUPtr->getCell(SMap,cellLayer)+Boundary;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  cellLayer++;
 
 	  // Now add liner if present:
 	  if (linerThick>Geometry::zeroTol)
 	    {
 	      Out=TUPtr->getCell(SMap,cellLayer)+Boundary;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       supportMat,0.0,Out));
 	      cellLayer++;
 	    }
 	  // Outer stuff
 	  Out=TUPtr->getCell(SMap,cellLayer)+Boundary;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 	}
       else  // EMPTY
 	{
 	  Out=TUPtr->getCell(SMap,0)+Boundary;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 	  cellLayer++;
 	}
     }

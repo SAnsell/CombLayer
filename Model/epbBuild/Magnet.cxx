@@ -3,7 +3,7 @@
  
  * File:   epbBuild/Magnet.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -86,7 +85,7 @@ Magnet::Magnet(const std::string& Key,const size_t Index) :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
-    \parma Index :: ID number
+    \param Index :: ID number
   */
 {}
 
@@ -162,13 +161,12 @@ Magnet::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("Magnet","createUnitVector");
 
-  
   Geometry::Vec3D Axis;
   for(size_t i=0;i<segLen;i++)
     Axis+=FC.getLU(segIndex+i).getAxis();
   Axis/=static_cast<double>(segLen);
 
-  beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
+  //  beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
 
   FixedComp::createUnitVector(FC,static_cast<long int>(segIndex+1));
   applyOffset();
@@ -209,7 +207,7 @@ Magnet::createObjects(Simulation& System,
   addOuterSurf(Out);      
   for(size_t i=1;i<=segLen;i++)
     Out+=FC.getLinkString(static_cast<long int>(segIndex+i));
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   return;
 }

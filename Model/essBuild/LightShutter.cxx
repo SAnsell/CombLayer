@@ -62,7 +62,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -217,13 +216,13 @@ LightShutter::createObjects(Simulation& System)
   std::string Out;
   // Tugnsten middle
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mainMat,0.0,Out));
   setCell("main",cellIndex-1);
 
   // Steel wrapper
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("main",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16");

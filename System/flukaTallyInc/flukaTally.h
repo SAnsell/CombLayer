@@ -44,7 +44,7 @@ class flukaTally
   int outputUnit;                   ///< Fortran output number
   std::string comments;             ///< comment line
 
-  std::string auxParticle;          ///< Auxillary particle
+  std::string auxParticle;          ///< Auxillary particles
   std::string doseType;             ///< Auxillary dose type if used
   
  public:
@@ -55,7 +55,10 @@ class flukaTally
   flukaTally& operator=(const flukaTally&);
   virtual flukaTally* clone() const; 
   virtual ~flukaTally();
-  
+
+  /// return fluka name
+  virtual std::string getType() const { return "VOID"; }
+
   void setKeyName(const std::string&);
   void setBinary();
   void setComment(const std::string&);

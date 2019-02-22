@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -320,11 +319,11 @@ targCoolant::createObjects(Simulation& System)
   std::string Out;
   int offset;
   
-  std::vector<MonteCarlo::Qhull*> QPtr;
+  std::vector<MonteCarlo::Object*> QPtr;
   std::vector<int>::const_iterator vc;
   for(vc=activeCells.begin();vc!=activeCells.end();vc++)
     {
-      MonteCarlo::Qhull* QA=System.findQhull(*vc);
+      MonteCarlo::Object* QA=System.findObject(*vc);
       if (!QA)      
 	throw ColErr::InContainerError<int>(*vc,"MainBody cell not found");
       QPtr.push_back(QA);
@@ -341,7 +340,7 @@ targCoolant::createObjects(Simulation& System)
 	  if (PCut[i].layerMat<0)
 	    {
 	      Out+=container;
-	      System.addCell(MonteCarlo::Qhull
+	      System.addCell(MonteCarlo::Object
 			     (cellIndex++,PCut[i].mat,0.0,Out));
 	    }
 	  else
@@ -349,15 +348,15 @@ targCoolant::createObjects(Simulation& System)
 	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
 	      Out+=container;
 	      
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
 	      Out+=container;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
 	      Out+=container;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       PCut[i].mat,0.0,Out));
 	    }
 	  offset+=100;
@@ -365,7 +364,7 @@ targCoolant::createObjects(Simulation& System)
       ExPlate.makeComplement();
 
       for_each(QPtr.begin(),QPtr.end(),
-	       boost::bind(&MonteCarlo::Qhull::addSurfString,_1,
+	       boost::bind(&MonteCarlo::Object::addSurfString,_1,
 			   ExPlate.display()));
     }
 
@@ -378,7 +377,7 @@ targCoolant::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 7 8 ");
 	  //	  addOuterUnionSurf(Out);
 	  Out+=container;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,SCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,SCut[i].mat,0.0,Out));
 	  offset+=100;
 	}
       // NOT FINISHED
@@ -398,14 +397,14 @@ targCoolant::createObjects(Simulation& System)
 	  if (CCut[i].dist<0)
 	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+container;
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 	  
 	  cx.str("");
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
 	  Out=cx.str()+container;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,CCut[i].mat,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,CCut[i].mat,0.0,Out));
 
 	  cx.str("");
 	  cx<<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)
@@ -413,7 +412,7 @@ targCoolant::createObjects(Simulation& System)
 	  if (CCut[i].dist<0)
 	    cx<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)<<" ";
 	  Out=cx.str()+container;
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,CCut[i].layerMat,0.0,Out));
 
 	  cx.str("");
@@ -425,7 +424,7 @@ targCoolant::createObjects(Simulation& System)
       ExCone.makeComplement();
 
       for_each(QPtr.begin(),QPtr.end(),
-	       boost::bind(&MonteCarlo::Qhull::addSurfString,_1,
+	       boost::bind(&MonteCarlo::Object::addSurfString,_1,
 			   ExCone.display()));	    
     }
 

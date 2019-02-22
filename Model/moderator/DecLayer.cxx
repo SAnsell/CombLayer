@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -190,13 +189,13 @@ DecLayer::createObjects(Simulation& System)
   for(size_t i=0;i<lThick.size();i++)
     {
       const std::string Out=ModelSupport::getComposite(SMap,offset," 7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],lTemp[i],
+      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],lTemp[i],
 				       Out+OutWall+WWall));
       OutWall=ModelSupport::getComposite(SMap,offset," -7 ");
       offset+=10;
     }
   // Inner Half:
-  System.addCell(MonteCarlo::Qhull(cellIndex++,centMat,centTemp,
+  System.addCell(MonteCarlo::Object(cellIndex++,centMat,centTemp,
 				   OutWall+WWall));      
 
   // EAST SIDE:
@@ -206,13 +205,13 @@ DecLayer::createObjects(Simulation& System)
   for(size_t i=0;i<lThick.size();i++)
     {
       const std::string Out=ModelSupport::getComposite(SMap,offset," 8 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],lTemp[i],
+      System.addCell(MonteCarlo::Object(cellIndex++,lMat[i],lTemp[i],
 				       Out+OutWall+EWall));
       OutWall=ModelSupport::getComposite(SMap,offset," -8 ");
       offset+=10;
     }
   // Inner Half:
-  System.addCell(MonteCarlo::Qhull(cellIndex++,centMat,centTemp,
+  System.addCell(MonteCarlo::Object(cellIndex++,centMat,centTemp,
 				   OutWall+EWall));
   return;
 }

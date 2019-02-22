@@ -47,6 +47,9 @@ class userDump : public flukaTally
   userDump& operator=(const userDump&);
   virtual ~userDump();
 
+  /// return fluke name
+  virtual std::string getType() const { return "USRDUMP"; };
+
   /// set dump type
   void setDumpType(const int D) { dumpType=D; }
   /// set output tag name

@@ -80,7 +80,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "Convex.h"
 #include "Vert2D.h"
 #include "Convex2D.h"

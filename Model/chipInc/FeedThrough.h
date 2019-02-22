@@ -3,7 +3,7 @@
  
  * File:   chipInc/FeedThrough.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ namespace hutchSystem
 class FeedThrough : public attachSystem::FixedComp
 {
  private:
-  
+
+  const std::string baseName;   ///< Base name
   const size_t ID;              ///< Identity number
   
   ModelSupport::BoxLine CollTrack;   ///< Collimator track
@@ -49,7 +50,7 @@ class FeedThrough : public attachSystem::FixedComp
   std::vector<Geometry::Vec3D> CPts;
 
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void insertColl(Simulation&,const ChipIRHutch&);

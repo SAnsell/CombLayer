@@ -59,7 +59,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -175,7 +175,7 @@ RingFlange::insertBolt(Simulation& System,
   if (!NSection)
     {
       const int CN=getCell("Ring",0);
-      MonteCarlo::Qhull* segComp=System.findQhull(CN);
+      MonteCarlo::Object* segComp=System.findObject(CN);
       if (!segComp)
 	throw ColErr::InContainerError<int>
 	  (CN,"RingCell not found in object"+keyName);
@@ -207,7 +207,7 @@ RingFlange::insertBolt(Simulation& System,
 
   for(const int CN : cellN)
     {
-      MonteCarlo::Qhull* segComp=System.findQhull(CN);
+      MonteCarlo::Object* segComp=System.findObject(CN);
       if (!segComp) 
 	throw ColErr::InContainerError<int>
 	  (CN,"RingCell not found in object"+keyName);
@@ -242,16 +242,16 @@ RingFlange::addWindow(Simulation& System)
       // Create window
       const std::string radSurf=innerStruct.complement().display();
       Out=ModelSupport::getComposite(SMap,windowIndex,"1 -2  ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out+radSurf));
+      System.addCell(MonteCarlo::Object(cellIndex++,windowMat,0.0,Out+radSurf));
       addCell("window",cellIndex-1);
       
       if (windowFlag>0)
 	{
 	  Out=ModelSupport::getComposite(SMap,windowIndex,buildIndex," 2 -2M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+radSurf));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+radSurf));
 	  addCell("window",cellIndex-1);
 	  Out=ModelSupport::getComposite(SMap,windowIndex,buildIndex," -1 1M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+radSurf));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+radSurf));
 	  addCell("window",cellIndex-1);
 	  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 ");
 
@@ -308,7 +308,7 @@ RingFlange::addBolts(Simulation& System)
           QBolt.rotate(BAxis);
 	  
 	  Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+	  System.addCell(MonteCarlo::Object(cellIndex++,boltMat,0.0,Out+FBStr));
           addCell("Bolts",cellIndex-1);
 	  // exclude:
 	  Out=ModelSupport::getComposite(SMap,boltIndex," 7 ");

@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -254,7 +253,7 @@ WedgeItem::createObjects(Simulation& System,
     FC.getLinkString(baseLinkPt)+
     FL.getLinkString(topLinkPt)+
     FL.getLinkString(bottomLinkPt);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   
   addOuterSurf(Out);
   return;

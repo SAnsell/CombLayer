@@ -47,7 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -59,7 +58,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -137,8 +135,6 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
 
-  beamTubeRadius=Control.EvalDefVar<double>(keyName+"BeamTubeRadius",0.0);
-  
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
@@ -248,18 +244,13 @@ maxpeemOpticsHut::createSurfaces()
     ModelSupport::buildCylinder
       (SMap,buildIndex+7,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
 
-  if (beamTubeRadius>Geometry::zeroTol)
-    {
-      ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,beamTubeRadius);
-      setSurf("BeamTube",-SMap.realSurf(buildIndex+2007));
-    }
-
   ModelSupport::buildPlane(SMap,buildIndex+3002,
 			     Origin+Y*(length+TB+extension),Y);
   ModelSupport::buildPlane(SMap,buildIndex+1303,
 			     Origin-X*(outWidth+TW+outerFarVoid),X);
 
   SurfMap::setSurf("OuterCorner",SMap.realSurf(buildIndex+314));
+  SurfMap::setSurf("OuterBack",SMap.realSurf(buildIndex+302));
   SurfMap::setSurf("OuterRoof",SMap.realSurf(buildIndex+306));
   return;
 }
@@ -282,20 +273,15 @@ maxpeemOpticsHut::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
       makeCell("InnerFarVoid",System,cellIndex++,0,0.0,Out+floorStr);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 2007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6 2007 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6  ");
       makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
     }
     
-  if (beamTubeRadius>Geometry::zeroTol)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -2007");
-      makeCell("BeamVoid",System,cellIndex++,0,0.0,Out);
-    }
     
   std::list<int> matList({innerMat,pbMat,outerMat});
   int HI(buildIndex);

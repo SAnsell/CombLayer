@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -72,8 +71,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "HoleUnit.h"
 
@@ -188,8 +186,8 @@ HoleUnit::createUnitVector(const double rotAngle,
   //  const masterRotate& MR=masterRotate::Instance();
   //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
-  FixedComp::createUnitVector(FC);
-  Origin=FC.getExit();
+  FixedComp::createUnitVector(FC,2);
+
   // Now rotate:
   const Geometry::Quaternion QAxisR=
     Geometry::Quaternion::calcQRotDeg(rotAngle+AngleOffset,Y);

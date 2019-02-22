@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ExternalCut.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef attachSystem_ExternalCut_h
@@ -95,10 +95,6 @@ class ExternalCut
   std::string getComplementStr(const std::string&) const;
 
   std::string getBridgeStr(const std::string&) const;
-
-  void makeShiftedSurf(ModelSupport::surfRegister&,
-		      const std::string&,const int,
-		      const int,const Geometry::Vec3D&,const double) const;
   
   const HeadRule& getRule(const std::string&) const;
   const HeadRule& getDivider(const std::string&) const;
@@ -108,6 +104,11 @@ class ExternalCut
 			     const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
 
+  
+  void makeShiftedSurf(ModelSupport::surfRegister&,
+		       const std::string&,const int,
+		       const int,const Geometry::Vec3D&,const double) const;
+  
   void makeExpandedSurf(ModelSupport::surfRegister&,
 			const std::string&,const int,
 			const Geometry::Vec3D&,

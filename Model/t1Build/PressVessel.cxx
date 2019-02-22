@@ -3,7 +3,7 @@
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,14 +65,12 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -237,14 +235,13 @@ PressVessel::populate(const FuncDataBase& Control)
 
   // Number of channels:
   nBwch=Control.EvalVar<size_t>(keyName+"NBwch");
-  begXstep=SimProcess::getVarVec<double>(Control,keyName+"BegXstep");
-  if (begXstep.size()!=nBwch)
-    throw ColErr::MisMatch<size_t>(nBwch,begXstep.size(),
-				"Incorrect number of channels");
-  endXstep=SimProcess::getVarVec<double>(Control,keyName+"EndXstep");
-  if (endXstep.size()!=nBwch)
-    throw ColErr::MisMatch<size_t>(nBwch,endXstep.size(),
-				"Incorrect number of channels");  				        
+  for(size_t index=0;index<nBwch;index++)
+    {
+      begXstep.push_back(Control.EvalVar<double>
+			 (keyName+"BegXstep"+std::to_string(index)));
+      endXstep.push_back(Control.EvalVar<double>
+			 (keyName+"EndXstep"+std::to_string(index)));
+    }		        
     
   bigWchbegThick=Control.EvalVar<double>(keyName+"BigWchbegThick");
   bigWchbegZstep=Control.EvalVar<double>(keyName+"BigWchbegZstep"); 
@@ -475,36 +472,36 @@ PressVessel::createObjects(Simulation& System)
   Out+=ModelSupport::getComposite(SMap,buildIndex,"(-11:12:-13:14:-15:16:18:19)"
 				  " (11:28) (11:-61:67:-28) ");
   Out+=ModelSupport::getComposite(SMap,buildIndex, "(-12:71:77) ");                       				  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   outerWallCell=cellIndex-1;
 
   // Inner Volume
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 -18 -19 "
 				 " (28:22) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   IVoidCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -22 (27:21) -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
     // Water IN  
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -71 -77 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out)); 
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out)); 
 
    // Big Water Channels at the end    
   int SN(buildIndex+1000);
   for(size_t i=0;i<nBwch;i++)  
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,SN,"701 -51 705 -706 3M -4M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out)); 
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out)); 
       
       Out=ModelSupport::getComposite(SMap,buildIndex,SN,
 				     "2 -801 805 -806 13M -14M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));  
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));  
 
       Out=ModelSupport::getComposite(SMap,buildIndex,SN,
 				     "801 -701 23M -24M 25M -26M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));  
+      System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));  
       SN+=100;
      }
 
@@ -512,12 +509,12 @@ PressVessel::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex, "31 -41 33 -34 35 -36 ");
   addOuterUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex, "(-31:41:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, "41 -2 43 -44 45 -46 ");
   addOuterUnionSurf(Out);
   Out+=ModelSupport::getComposite(SMap,buildIndex, "(-41:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, "2 -51 -57 ");
   addOuterUnionSurf(Out);
@@ -545,10 +542,10 @@ PressVessel::createObjects(Simulation& System)
   OutC+="))";
   Out+=OutA+OutB+OutC; 
   Out+=ModelSupport::getComposite(SMap,buildIndex, "(-2:71:77) ");                       
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // WINDOW HOUSING - Tantalum
   Out=ModelSupport::getComposite(SMap,buildIndex, "-22 61 -67 28");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   return;
 }
@@ -567,7 +564,7 @@ PressVessel::addProtonLine(Simulation& System,
   // Proton flight line:
   std::string Out=ModelSupport::getComposite(SMap,buildIndex, "-21 -27 ");
   Out+=RefSurfBoundary;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   return cellIndex-1;
 }
 

@@ -109,7 +109,29 @@ PipeTubeGenerator::~PipeTubeGenerator()
    Destructor
  */
 {}
-    
+
+void
+PipeTubeGenerator::setPipe(const double R,const double W,
+			   const double FR,const double FL)
+  /*!
+    Set the pipe by hand
+    \param R :: Radius
+    \param W :: Wall thick
+    \param FR :: Flange Radius
+    \param FL :: Flange length
+  */
+{
+  radius=R;
+  wallThick=W;
+  flangeARadius=FR;
+  flangeALen=FL;
+  flangeBRadius=FR;
+  flangeBLen=FL;
+  ACap=0.0;
+  BCap=0.0;
+  return;
+}
+  
 template<typename CF>
 void
 PipeTubeGenerator::setCF()

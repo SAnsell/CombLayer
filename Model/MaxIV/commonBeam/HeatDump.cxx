@@ -3,7 +3,7 @@
  
  * File:   commonBeam/HeatDump.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -73,7 +72,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "HeatDump.h"
@@ -90,7 +88,6 @@ HeatDump::HeatDump(const std::string& Key) :
   /*!
     Constructor
     \param Key :: Name of construction key
-    \param Index :: Index number
   */
 {}
 
@@ -171,7 +168,6 @@ HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   applyOffset();
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
-
   setDefault("Main");
   return;
 }

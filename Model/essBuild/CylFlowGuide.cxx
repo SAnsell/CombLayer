@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -246,7 +245,7 @@ CylFlowGuide::createObjects(Simulation& System,
   const int initCellIndex(cellIndex);
   // central plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
 				   Out+vertStr+sideStr));
 
   // side plates
@@ -258,39 +257,39 @@ CylFlowGuide::createObjects(Simulation& System,
       if (i%2)
 	{
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 -14M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
 					   Out+vertStr+sideStr));
           
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 14M -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
                                            Out+vertStr));
           
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 24M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
 					   Out+vertStr+sideStr));
 
                     
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," 1 -2 -24M 4M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
 					   Out+vertStr+sideStr));
 
 	}
       else 
 	{
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 -3M -7M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerMat,Out+vertStr));
+	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerMat,Out+vertStr));
 	  
 	  // x<0
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 7M -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
 					   Out+vertStr+sideStr));
 	  // same but x>0 - divided by surf 3M to gain speed
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 7M 3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
 					   Out+vertStr+sideStr));
 	  
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex, " 1 -2 4M -7M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,innerTemp,
 					   Out+vertStr));
 	  
 	}
@@ -299,28 +298,28 @@ CylFlowGuide::createObjects(Simulation& System,
       if (i==0)
 	{
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," -1 -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,
 					   Out+vertStr+sideStr));
 	  Out = ModelSupport::getComposite(SMap,SI,buildIndex," -1 4M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,
 					   innerTemp,Out+vertStr+sideStr));
 	}
       else
 	{
 	  Out = ModelSupport::getSetComposite(SMap,SI-10,buildIndex," -11 2 -3M");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
 	  
 	  Out = ModelSupport::getSetComposite(SMap,SI-10,buildIndex," -11 2 4M");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
 
 	}
       SI += 10;
     }
   // Tail end:
   Out = ModelSupport::getComposite(SMap,SI-10,buildIndex," 2 -3M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
   Out = ModelSupport::getComposite(SMap,SI-10,buildIndex," 2 4M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
 
   // Add cell map info:
   CellMap::setCells("InnerGuide",initCellIndex,cellIndex-1);

@@ -40,7 +40,7 @@ namespace zoomSystem
 */
 
 class ZoomOpenStack :  public attachSystem::ContainedComp,
-  public attachSystem::TwinComp
+  public attachSystem::FixedGroup
 {
  private:
   
@@ -74,7 +74,7 @@ class ZoomOpenStack :  public attachSystem::ContainedComp,
   int voidCell;                ///< Cell to insert to.
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -86,7 +86,7 @@ class ZoomOpenStack :  public attachSystem::ContainedComp,
   virtual ~ZoomOpenStack();
 
   void createAll(Simulation&,const int,
-		 const attachSystem::TwinComp&);
+		 const attachSystem::FixedGroup&);
 
 };
 

@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -336,11 +335,11 @@ PreModWing::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -5 -7 ");
   Out+=innerSurf.display();
   Out+=baseSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -15 5 -7 ");
   Out+=innerSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // cone section
   for(size_t i=0;i<nLayers;i++)
@@ -351,13 +350,13 @@ PreModWing::createObjects(Simulation& System)
       Out+=baseSurf.display();
       Out+=midSurf.display();
       Out+=Zone;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,innerMat[i],0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -18 -1015 (8:1005) ");
       Out+=midSurf.display();
       Out+=Zone;
       Out+=baseSurf.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,surfMat[i],0.0,Out));
       
       // Top layer
       Out=ModelSupport::getComposite(SMap,buildIndex," -9 1006 ");
@@ -367,13 +366,13 @@ PreModWing::createObjects(Simulation& System)
       Out+=topSurf.display();
 	    
       Out+=getLayerZone(i);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,innerMat[i],0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," -19 1016 (9:-1006) ");
       Out+=midSurf.display();
       Out+=topSurf.display();
       Out+=Zone;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,surfMat[i],0.0,Out));
     }
   
   // TOP
@@ -381,11 +380,11 @@ PreModWing::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 6 -7 ");
   Out+=innerSurf.display();
   Out+=topSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 16 -6 -7 ");
   Out+=innerSurf.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," ((-19 16 ) : (-18 -15)) ");
   Out+=outerSurf.display();

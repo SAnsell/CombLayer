@@ -65,7 +65,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -538,7 +537,7 @@ TriangleMod::createInnerObject(Simulation& System)
 	  // Full inside unit:
 	  outUnit=IUnits[i].getString(iK);
 	  IUnits[i].addCell(cellIndex);
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[iK],modTemp,
+	  System.addCell(MonteCarlo::Object(cellIndex++,innerMat[iK],modTemp,
 					   inUnit+outUnit+vertUnit));
 	  inUnit=IUnits[i].getExclude(iK);
 	}
@@ -564,7 +563,7 @@ TriangleMod::cutInnerObj(Simulation& System,const TriUnit& InnerUnit)
   std::vector<int>::const_iterator vc;
   for(vc=Cells.begin();vc!=Cells.end();vc++)
     {
-      MonteCarlo::Qhull* innerObj=System.findQhull(*vc);
+      MonteCarlo::Object* innerObj=System.findObject(*vc);
       if (innerObj)
 	innerObj->addSurfString(Outer.getString(0));
       else
@@ -592,7 +591,7 @@ TriangleMod::cutOuterObj(Simulation& System,
   std::vector<int>::const_iterator vc;
   for(vc=Cells.begin();vc!=Cells.end();vc++)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(*vc);
+      MonteCarlo::Object* outerObj=System.findObject(*vc);
       if (outerObj)
 	{
 	  const std::string cutStr=
@@ -616,18 +615,18 @@ TriangleMod::calcOverlaps(Simulation& System)
   ELog::RegMethod RegA("TriangleMod","calcOverlaps");
   // Tmp Object for Outer:
 
-  MonteCarlo::Qhull OHull(cellIndex++,0,0.0,Outer.getString(0));
+  MonteCarlo::Object OHull(cellIndex++,0,0.0,Outer.getString(0));
   OHull.createSurfaceList();
 
   
   Geometry::Plane PZ(buildIndex+5000,0);
   PZ.setPlane(Geometry::Vec3D(0,0,0),Z);
 
-  std::vector<MonteCarlo::Qhull> IQH;
+  std::vector<MonteCarlo::Object> IQH;
   for(size_t i=0;i<nIUnits;i++)
     {
       const std::string OLayer=IUnits[i].getString(0);
-      IQH.push_back(MonteCarlo::Qhull(cellIndex++,0,0.0,OLayer));
+      IQH.push_back(MonteCarlo::Object(cellIndex++,0,0.0,OLayer));
       IQH.back().createSurfaceList();
     }
   for(size_t i=0;i<nIUnits;i++)
@@ -665,19 +664,19 @@ TriangleMod::createObjects(Simulation& System)
     Outer.getString(0);
   
   Out=createInnerObject(System);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,outUnit+Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,outUnit+Out));
 
   // Wall       
   inUnit=MonteCarlo::getComplementShape(outUnit);
   outUnit=ModelSupport::getComposite(SMap,buildIndex," 15 -16 ")+
     Outer.getString(1);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,outUnit+inUnit));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,outUnit+inUnit));
 
   // Clearance
   inUnit=MonteCarlo::getComplementShape(outUnit);
   outUnit=ModelSupport::getComposite(SMap,buildIndex," 25 -26 ")+
     Outer.getString(2);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,outUnit+inUnit));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,outUnit+inUnit));
   
   // Outer
   addOuterSurf(outUnit);

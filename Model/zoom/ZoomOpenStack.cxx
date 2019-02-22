@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -73,8 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ZoomOpenStack.h"
 
@@ -82,7 +80,8 @@ namespace zoomSystem
 {
 
 ZoomOpenStack::ZoomOpenStack(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,2)
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",2,"Beam",2)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,7 +89,7 @@ ZoomOpenStack::ZoomOpenStack(const std::string& Key)  :
 {}
 
 ZoomOpenStack::ZoomOpenStack(const ZoomOpenStack& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   nItem(A.nItem),posIndex(A.posIndex),width(A.width),
   height(A.height),length(A.length),wallThick(A.wallThick),
   windowThick(A.windowThick),wallMat(A.wallMat),
@@ -112,7 +111,7 @@ ZoomOpenStack::operator=(const ZoomOpenStack& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       nItem=A.nItem;
       posIndex=A.posIndex;
       width=A.width;
@@ -174,19 +173,25 @@ ZoomOpenStack::populate(const FuncDataBase& Control)
 }
   
 void
-ZoomOpenStack::createUnitVector(const attachSystem::TwinComp& TT)
+ZoomOpenStack::createUnitVector(const attachSystem::FixedGroup& TT)
   /*!
     Create the unit vectors- Y Down the beamline
     \param TT :: Twin item 
   */
 {
   ELog::RegMethod RegA("ZoomOpenStack","createUnitVector");
-  TwinComp::createUnitVector(TT);
   
-  Origin=TT.getBeamStart();
-  applyShift(xStep,yStep,zStep);  
-  bEnter=TT.getBeamStart();
-  bExit=bEnter+Y*length;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.createUnitVector(TT.getKey("Main"));
+  beamFC.createUnitVector(TT.getKey("Beam"));
+  mainFC.setCentre(beamFC.getCentre());
+  
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+
+  //  bExit=bEnter+Y*length;
   
   return;
 }
@@ -199,6 +204,12 @@ ZoomOpenStack::createSurfaces()
 {
   ELog::RegMethod RegA("ZoomOpenStack","createSurface");
 
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& bEnter=beamFC.getCentre();
+  const Geometry::Vec3D& bX=beamFC.getX();
+  const Geometry::Vec3D& bZ=beamFC.getZ();
+
+  
   // Create Outer surfaces
   // First layer [Bulk]
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -272,7 +283,7 @@ ZoomOpenStack::createObjects(Simulation& System)
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
                               " (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
 
   int SI(buildIndex+100);
@@ -282,10 +293,10 @@ ZoomOpenStack::createObjects(Simulation& System)
       // inner void
       Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M (-3:4:-5:6) 13 -14 15 -16 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,guideMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,guideMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,SI,buildIndex,
 				     "101M -102M 13 -14 15 -16 ");
       MidVoid.addIntersection(Out);
@@ -295,14 +306,14 @@ ZoomOpenStack::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   MidVoid.makeComplement();
   Out+=MidVoid.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }
 
 void
 ZoomOpenStack::createAll(Simulation& System,const int vCell,
-			 const attachSystem::TwinComp& FC)
+			 const attachSystem::FixedGroup& FC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

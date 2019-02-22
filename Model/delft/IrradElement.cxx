@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -306,49 +305,49 @@ IrradElement::createObjects(Simulation& System)
 
   // Two samples:
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,sampleMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 125 -45 -17 7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 125 -45 -18 8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // Cladding 
   Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 17 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 18 -28");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
     
   // -- Change to full bore:
   Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 -37 27 28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"125 -45 -47 37 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   
   // Base Cape
   Out=ModelSupport::getComposite(SMap,buildIndex,"115 -125 -47");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
 
   // Water Surround
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -45 -57 (-115:47)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   // Be surround
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -25 15 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
   // End Cap
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -15 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   // Top Cap
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 25 -35 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
   // Locator Inner Water
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 35 -45 57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   // Locator OuterWalls
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 3 -4 (-11:12:-13:14) 35 -45");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeMat,0.0,Out));
 
 
   return;

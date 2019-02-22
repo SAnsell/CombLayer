@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -296,19 +295,19 @@ Jaws::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 101 -102 103 -1103 105 -106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 101 -102 -104 1104 105 -106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
     }
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -103 153 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,xJawMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,xJawMat,0.0,Out));
   addCell("xJaw",cellIndex-1);
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 1103 -1104 105 -106");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 104 -154 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,xJawMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,xJawMat,0.0,Out));
   addCell("xJaw",cellIndex-1);
 
   
@@ -320,19 +319,19 @@ Jaws::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 201 -202 205 -1205 203 -204 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 201 -202 -206 1206 203 -204 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,linerMat,0.0,Out));
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 -205 255 203 -204 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,zJawMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,zJawMat,0.0,Out));
   addCell("zJaw",cellIndex-1);
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 1205 -1206 203 -204 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 206 -256 203 -204 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,zJawMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,zJawMat,0.0,Out));
   addCell("zJaw",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 255 -256 ");
@@ -341,13 +340,13 @@ Jaws::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   Out+=getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+CutRule.display()));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+CutRule.display()));
 
   if (wallThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 13 -14 15 -16 (-3 : 4 : -5: 6)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
     }
 
   

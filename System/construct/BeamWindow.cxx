@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -210,13 +209,13 @@ BeamWindow::createObjects(Simulation& System)
   const std::string Boundary=getCompContainer();
   // Inconel1 
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2  ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,inconelMat,0.0,Out+Boundary));
+  System.addCell(MonteCarlo::Object(cellIndex++,inconelMat,0.0,Out+Boundary));
   // Water 
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -3 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+Boundary));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out+Boundary));
   // Inconel2 
   Out=ModelSupport::getComposite(SMap,buildIndex,"3 -4 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,inconelMat,0.0,Out+Boundary));
+  System.addCell(MonteCarlo::Object(cellIndex++,inconelMat,0.0,Out+Boundary));
 
   return;
 }

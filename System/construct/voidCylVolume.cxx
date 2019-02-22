@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -206,14 +205,14 @@ voidCylVolume::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				     "5 -6  1M -2M 101M -201M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addOuterUnionSurf(Out);
       SI++;
     }
   // Join
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
 				 "5 -6  1M -11 101M -201M");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addOuterUnionSurf(Out);
 
   return; 

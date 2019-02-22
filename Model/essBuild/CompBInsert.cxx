@@ -63,7 +63,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -263,7 +262,7 @@ CompBInsert::createObjects(Simulation& System)
         {
           Out=ModelSupport::getComposite(SMap,SWI," 3 -4 5 -6 ");
           const int M=(!wallIndex) ? mat[index] : wallMat[wallIndex-1];
-          System.addCell(MonteCarlo::Qhull(cellIndex++,M,0.0,
+          System.addCell(MonteCarlo::Object(cellIndex++,M,0.0,
 					   frontBack+Out+Inner.display()));
 
           if (!wallIndex)

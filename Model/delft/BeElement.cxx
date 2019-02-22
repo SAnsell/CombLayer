@@ -58,7 +58,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -202,7 +201,7 @@ BeElement::createObjects(Simulation& System)
   // Outer Layers
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
-  System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,beMat,0.0,Out));
   addCell("Main",cellIndex-1);
 
   return;
@@ -241,7 +240,7 @@ BeElement::layerProcess(Simulation& System,
       if (MatN!=beMat)
 	{
 	  const int CN=getCell("Main");
-	  MonteCarlo::Object* OPtr=System.findQhull(CN);
+	  MonteCarlo::Object* OPtr=System.findObject(CN);
 	  if (!OPtr)
 	    throw ColErr::InContainerError<int>
 	      (CN,"["+keyName+"] Main Be Cell");

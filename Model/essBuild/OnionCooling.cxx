@@ -34,7 +34,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -219,7 +219,7 @@ OnionCooling::createObjects(Simulation& System,
   if (CM)
     {
       innerCell=CM->getCell("Inner");
-      InnerObj=System.findQhull(innerCell);
+      InnerObj=System.findObject(innerCell);
     }
   if (!InnerObj)
     throw ColErr::InContainerError<int>
@@ -236,13 +236,13 @@ OnionCooling::createObjects(Simulation& System,
     // upper half-ring
     //Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (1M -2M -4) (-1M:2M:3) "); // same: (1M -2M -4 3)
     Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (7 -8 5 -6 3: 6 3 -4) ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
+    System.addCell(MonteCarlo::Object(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
     addOuterUnionSurf(Out);
     wallExclude.addUnion(Out);
 
     // bottom half-ring
     Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (7 -8 -10 9 3: -9 3 -4) ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
+    System.addCell(MonteCarlo::Object(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
     addOuterUnionSurf(Out);
     wallExclude.addUnion(Out);
 

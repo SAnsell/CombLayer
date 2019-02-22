@@ -56,7 +56,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -222,18 +221,18 @@ WaterMod::createObjects(Simulation& System,
 
   // Water
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
 
   // Wall of water moderator
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,waterTemp,Out));
 
   // Wall of water moderator
   Out=ModelSupport::getComposite(SMap,buildIndex,
 	     	 "21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
   Out+=CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26" );
   addOuterSurf(Out);

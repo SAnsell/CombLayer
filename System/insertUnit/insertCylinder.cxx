@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -241,7 +240,7 @@ insertCylinder::createObjects(Simulation& System)
     ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 -7 ");
   Out+=frontRule();
   Out+=backRule();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   addCell("Main",cellIndex-1);
   addOuterSurf(Out);
   return;

@@ -42,7 +42,7 @@ namespace zoomSystem
   \brief ZoomChopper unit  
 */
 
-class ZoomChopper : public attachSystem::TwinComp,
+class ZoomChopper : public attachSystem::FixedGroup,
     public attachSystem::ContainedComp
 {
  private:

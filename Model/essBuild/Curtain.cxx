@@ -62,7 +62,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -309,35 +308,35 @@ Curtain::createObjects(Simulation& System,
   std::string Out;
   // Top section
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 3 -4 15 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   addOuterSurf("Top",Out);
   setCell("topWall",cellIndex-1);
   // Top section void
   //  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -27 3 -4 15 -6 ");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  //  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   //  addCell("topVoid",cellIndex-1);
 
   // Mid section
   Out=ModelSupport::getComposite(SMap,buildIndex," 7 -27 3 -4 -15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+topSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+topSurf));
   setCell("midWall",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -127 3 -4 -15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+topSurf));
   setCell("MidGap",cellIndex-1);
 
   // Lower section
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 3 -4 5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,
 				   Out+topBase+sideSurf));
   setCell("baseWall",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 3 -4 -5 105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+sideSurf));
   setCell("BaseGap",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 27 -127 3 -4 105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topBase+sideSurf));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+topBase+sideSurf));
   setCell("BaseGap",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-127 3 -4 105 ");

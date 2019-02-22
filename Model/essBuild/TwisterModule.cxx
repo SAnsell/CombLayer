@@ -56,7 +56,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -281,10 +281,10 @@ TwisterModule::createObjects(Simulation& System)
   std::string Out;
   // shaft
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 25 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shaftMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 25 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -16 ");
   addOuterSurf("Shaft", Out);
@@ -292,23 +292,23 @@ TwisterModule::createObjects(Simulation& System)
   // plug frame
   //  inside sector
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 -1 11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameMat,0.0,Out));
 
   //  inside sector wall x+
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 -21 1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
 
   //  inside sector wall x-
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 31 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
 
   // outer wall inside sector
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
 
   // bottom wall of the shaft
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 47 5 -25 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
 
   // Next line is DNF of " 5 -6  ((-17 31 -21) : (-27 31 -21 2))"
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -317,10 +317,10 @@ TwisterModule::createObjects(Simulation& System)
 
   // shaft bearing
   Out=ModelSupport::getComposite(SMap,buildIndex, " -47 35 -25 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shaftMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -57 47 35 -5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex, " -57 35 -5 ");
   addOuterSurf("ShaftBearing", Out);

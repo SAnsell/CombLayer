@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -361,7 +360,7 @@ Hut::createObjects(Simulation& System)
     Out=ModelSupport::getComposite(SMap,buildIndex,"1002 -2 3 -4 5 -6");
   else
     Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("VoidMain",cellIndex-1);
 
   // Void [front]
@@ -369,19 +368,19 @@ Hut::createObjects(Simulation& System)
     Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1001 13 -14 5 -6");
   else
     Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 13 -14 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   setCell("VoidNose",cellIndex-1);
   // EXTRA If required:
 
   if (!frontWallCut && backWallCut) // completely within nose cone
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -1001 3 -4 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
     }
   else if (frontWallCut && !backWallCut) // completely within nose cone
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1002 -1 13 -14 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
     }
   
   // Make Wall
@@ -392,7 +391,7 @@ Hut::createObjects(Simulation& System)
     Out+=ModelSupport::getComposite(SMap,buildIndex," 13 -14 ");
   if (backWallCut)
     Out+=ModelSupport::getComposite(SMap,buildIndex," 3 -4 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   setCell("InnerWall",cellIndex-1);
 
 
@@ -401,14 +400,14 @@ Hut::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -102 103 -104 105 -106 "
 				 " (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   setCell("FeMain",cellIndex-1);
 
   // Fe [nose]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "111 -1 113 -114 103 -104 105 -106 "
 				 " (-11:-13:14:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   setCell("FeNose",cellIndex-1);
 
 
@@ -416,20 +415,20 @@ Hut::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 213 -214 -202 203 -204 205 -206 "
 				 " (102:-103:104:-105:106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   setCell("ConcMain",cellIndex-1);
 
   // Conc [nose]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "111 -1 213 -214 203 -204 205 -206 "
 				 " (-103:-113:104:114:-105:106) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   setCell("ConcNose",cellIndex-1);
 
 
   // FRONT CONC SECTION:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-111 211 213 -214 205 -206 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   setCell("ConcNoseFront",cellIndex-1);
   
   // Exclude:

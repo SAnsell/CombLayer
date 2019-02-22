@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -283,7 +282,7 @@ RotaryCollimator::createObjects(Simulation& System)
       addCell("Void"+StrFunc::makeString(i),HU->getCell("Void"));
     }
   Out+=" "+HoleExclude.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));            
   addCell("Main",cellIndex-1);
   return;
 }

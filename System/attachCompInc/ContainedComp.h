@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedComp.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,8 +93,11 @@ class ContainedComp
 
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);
+  void addOuterSurf(const ContainedComp&);
+  
   void addOuterUnionSurf(const std::string&);
-
+  void addOuterUnionSurf(const ContainedComp&);
+  
   void addBoundarySurf(const int);
   void addBoundarySurf(const std::string&);
   void addBoundaryUnionSurf(const int);
@@ -113,7 +116,10 @@ class ContainedComp
   virtual void insertInCell(Simulation&,const int) const;
   virtual void insertInCell(Simulation&,const std::vector<int>&) const;
 
+  void insertExternalObject(Simulation&,const MonteCarlo::Object&) const;
+  
   virtual void insertObjects(Simulation&);
+
   virtual void insertObjects(Simulation&,
 			     const std::vector<Geometry::Vec3D>&);
 

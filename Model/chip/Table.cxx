@@ -3,7 +3,7 @@
  
  * File:   chip/Table.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -75,8 +74,6 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "Table.h"
 
@@ -84,7 +81,8 @@ namespace hutchSystem
 {
 
 Table::Table(const int T,const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,6),
   shapeType(T),populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -95,8 +93,7 @@ Table::Table(const int T,const std::string& Key)  :
 
 Table::Table(const Table& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  shapeType(A.shapeType),
-  populated(A.populated),
+  shapeType(A.shapeType),populated(A.populated),
   xyAngle(A.xyAngle),zAngle(A.zAngle),
   fStep(A.fStep),xStep(A.xStep),Centre(A.Centre),
   height(A.height),width(A.width),length(A.length),surThick(A.surThick),
@@ -305,14 +302,14 @@ Table::createObjects(Simulation& System)
   // Base Object
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -16 "
 				 "(-11 : 12 : -13 : 14)" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
   // Inner void
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 5 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Table top
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 -6 16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,topMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,topMat,0.0,Out));
 
   return;
 }

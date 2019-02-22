@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/makeMaxIV.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,9 @@
 #include "BALDER.h"
 #include "COSAXS.h"
 #include "MAXPEEM.h"
+#include "FLEXPES.h"
+#include "FORMAX.h"
+#include "SPECIES.h"
 
 #include "makeMaxIV.h"
 
@@ -134,12 +137,27 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
 
+	  if (BL=="FLEXPES")  // sector 
+	    {
+	      FLEXPES BL("FlexPes");
+	      BL.setRing(r1Ring);
+	      BL.build(System,*r1Ring,
+		       r1Ring->getSideIndex("OpticCentre5"));
+	    }
+
 	  if (BL=="MAXPEEM")  // sector 11
 	    {
 	      MAXPEEM BL("MaxPeem");
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre7"));
+	    }
+	  if (BL=="SPECIES")  // sector 10
+	    {
+	      SPECIES BL("Species");
+	      BL.setRing(r1Ring);
+	      BL.build(System,*r1Ring,
+		       r1Ring->getSideIndex("OpticCentre6"));
 	    }
 	  index++;
 	}
@@ -162,13 +180,13 @@ makeMaxIV::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeMaxIV","makeBeamLine");
 
   static const std::set<std::string> beamNAMES
-    ({"BALDER","COSAXS"});
+    ({"BALDER","COSAXS","FORMAX"});
 
   bool outFlag(0);  
 
   typedef std::map<std::string,std::vector<std::string>> mTYPE;
   mTYPE stopUnits=IParam.getMapItems("stopPoint");
-
+  
   // create a map of beamname : stopPoint [or All : stoppoint]
   std::string stopPoint;
   std::map<std::string,std::string> beamStop;
@@ -179,7 +197,7 @@ makeMaxIV::makeBeamLine(Simulation& System,
       else if (!SP.second.empty())
 	beamStop.emplace(SP.first,SP.second.front());
     }
-    
+
   const size_t NSet=IParam.setCnt("beamlines");
   for(size_t j=0;j<NSet;j++)
     {
@@ -217,9 +235,26 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	  else if (BL=="COSAXS")
 	    {
 	      COSAXS BL("Cosaxs");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
 	      BL.build(System,*FCOrigin,linkIndex);
 	      outFlag=1;
 	    }
+	  else if (BL=="FORMAX")
+	    {
+	      FORMAX BL("Formax");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
+	      BL.build(System,*FCOrigin,linkIndex);
+	      outFlag=1;
+	    }
+
 	}
     }
 

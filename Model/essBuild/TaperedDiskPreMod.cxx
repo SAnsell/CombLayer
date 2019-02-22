@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -290,30 +289,30 @@ TaperedDiskPreMod::createObjects(Simulation& System)
 	    {
 	      Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) "); // need this to define Inner. below
 	      Out1 = ModelSupport::getComposite(SMap, SI, " -8 5 -6 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	    }
 	  else
 	    {
 	      Out = ModelSupport::getComposite(SMap, SI, " ((-7 5 -6) : (8 -7 5 -9 -6)) "); // need this to define Inner. below
 	      Out1 = ModelSupport::getComposite(SMap, SI, " -7 5 -6 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
+	      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	    }
 	  Out1 = ModelSupport::getComposite(SMap, SI, " 8 -7 5 -9 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	  if (i==nLayers-1)
 	    {
 	      if (tiltSide)
 		Out1 = ModelSupport::getComposite(SMap, SI, " -7 -6 9 ");
 	      else
 		Out1 = ModelSupport::getComposite(SMap, SI, " -7  5 9 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0, Out1));
+	      System.addCell(MonteCarlo::Object(cellIndex++,0,0, Out1));
 	      }
 	    }
       else
 	{
 	  Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
       
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+Inner.display()));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i], Out+Inner.display()));
 	}
 
       if (!i)
@@ -332,7 +331,7 @@ TaperedDiskPreMod::createObjects(Simulation& System)
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       // For exit surface
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
     }

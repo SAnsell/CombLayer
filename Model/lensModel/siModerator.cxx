@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -236,7 +235,7 @@ siModerator::createObjects(Simulation& System)
       cx.str("");
       cx<<prevIndex<<" "<<(-planeIndex);
       Out=ModelSupport::getComposite(buildIndex,XYsides+cx.str());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[nextType],temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[nextType],temp,Out));
       prevIndex=planeIndex;
       planeIndex++;
       nextType=1-nextType;
@@ -246,12 +245,12 @@ siModerator::createObjects(Simulation& System)
   cx.str("");
   cx<<prevIndex<<" -6";
   Out=ModelSupport::getComposite(buildIndex,XYsides+cx.str());
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[nextType],temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat[nextType],temp,Out));
 
   // Add AL surrounds:
   Out=ModelSupport::getComposite(buildIndex,
 				 "11 -12 3 -4 15 -16 ( -1 : 2 : -5 : 6 )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,surroundMat,temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,surroundMat,temp,Out));
   return; 
 }
 

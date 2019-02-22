@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -78,11 +77,9 @@
 #include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "surfDBase.h"
@@ -97,7 +94,7 @@ namespace hutchSystem
 {
 
 ChipIRGuide::ChipIRGuide(const std::string& Key) : 
-  attachSystem::TwinComp(Key,12),
+  attachSystem::FixedGroup(Key,"Main",12,"Beam",2),
   attachSystem::ContainedGroup("inner","outer","leftwall","rightwall"),
   Filter("chipFilter"),nLayers(0),
   nConcLayers(0)
@@ -108,7 +105,7 @@ ChipIRGuide::ChipIRGuide(const std::string& Key) :
 {}
 
 ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedGroup(A),
   Filter(A.Filter),beamAngle(A.beamAngle),sideBeamAngle(A.sideBeamAngle),
   shutterAngle(A.shutterAngle),gLen(A.gLen),hYStart(A.hYStart),
   hFWallThick(A.hFWallThick),xShift(A.xShift),zShift(A.zShift),
@@ -152,7 +149,7 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       Filter=A.Filter;
       beamAngle=A.beamAngle;
@@ -388,36 +385,51 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector");
-  const masterRotate& MR=masterRotate::Instance();
-  
-  bZ=Z=Geometry::Vec3D(-1,0,0);         // Gravity axis [up]
-  bY=Y=GS.getXYAxis();                 // forward axis [centre line]  
-  bX=X=Z*GS.getXYAxis();               // horrizontal axis [across]
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  // Gravity axis [up]
+  const Geometry::Vec3D tmpbZ= Geometry::Vec3D(-1,0,0); 
+  const Geometry::Vec3D tmpbY=GS.getXYAxis();
+  const Geometry::Vec3D tmpbX=Z*GS.getXYAxis();
+
+  ELog::EM<<"GS - "<<GS.getXYAxis()<<ELog::endDiag;
 
   // Change so that not dependent on the angle of the shutter:
 
-  Origin=GS.getOrigin()+Y*BS.getORadius();
-  bEnter=Origin;
-  Origin+=Z*zShift+X*xShift;
-  bEnter+=Z*zBeamShift+X*xBeamShift;
 
-  // Rotate beamAxis to the final angle
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bZ);
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bY);
+  mainFC.createUnitVector(GS.getKey("Main"));
+  setDefault("Main");
+  
+  ELog::EM<<"ORG == "<<Origin<<" :"<<X<<": "<<Y<<" :"<<Z<<ELog::endDiag;
+  ELog::EM<<"ORG == "<<Origin<<" :"<<tmpbX<<": "<<tmpbZ<<ELog::endDiag;
+  mainFC.createUnitVector(Origin,-X,Y,Z);
+  setDefault("Main");
+  ELog::EM<<"ORG == "<<Origin<<" :"<<X<<": "<<Y<<" :"<<Z<<ELog::endDiag;
+  //  Origin=GS.getOrigin()+Y*BS.getORadius();
 
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bX);
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
+  mainFC.applyShift(xShift,BS.getORadius(),zShift);
+  
+  //  mainFC.setCentre(Origin);
+  //  bEnter+=Z*zBeamShift+X*xBeamShift;
+  beamFC.createUnitVector(mainFC.getCentre(),tmpbX,tmpbY,tmpbZ);
+  beamFC.applyShift(xBeamShift,0.0,zBeamShift);
+  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
 
   // Now calculate Cent
+  setDefault("Main","Beam");
   gLen=hYStart-BS.getORadius();
-
+  beamFC.setExit(bOrigin+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
-  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
-  
+  //  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
+  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
+  //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
+
+  setDefault("Main","Beam");
+  ELog::EM<<"Beam Enter == "<<bOrigin<<" :"<<X<<": "<<bZ<<ELog::endDiag;
   return;
 }
 
@@ -432,31 +444,28 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector(Fixed)");
 
-  const masterRotate& MR=masterRotate::Instance();
 
-  FixedComp::createUnitVector(WO);
-  bEnter=Origin;
-  Z*=-1.0;
-  bZ=Z;
-  bY=Y;
-  bX=X;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.createUnitVector(WO);
+  beamFC.createUnitVector(WO);
+
+  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
+
+  setDefault("Main","Beam");
   
-  // Rotate beamAxis to the final angle
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bZ);
-  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bY);
-
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bX);
-  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
-
   // Now calculate Cent
   gLen=hYStart-ORadius; 
-
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  setExit(bEnter+bY*(hYStart/std::abs(bY.dotProd(Y))),bY);
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
-  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
+
+
+  beamFC.setExit(bOrigin+bY*(hYStart/std::abs(bY.dotProd(Y))),
+		 bY);
+  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
+  //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
   
   return;
 }
@@ -474,21 +483,21 @@ ChipIRGuide::createLiner(const int index,const double offset)
   const int GI(buildIndex+index);
   // INNER VOID CORE [+ve X : +ve z]
   ModelSupport::buildPlane(SMap,GI+3,
-			   bEnter-bX*(innerALWall+offset),
-			   bEnter-bX*(innerALWall+offset)+bY*gLen,
-			   bEnter-bX*(innerALWall+offset)+bZ,X);
+			   bOrigin-bX*(innerALWall+offset),
+			   bOrigin-bX*(innerALWall+offset)+bY*gLen,
+			   bOrigin-bX*(innerALWall+offset)+bZ,X);
   ModelSupport::buildPlane(SMap,GI+4,
-			   bEnter+bX*(innerARWall+offset),
-			   bEnter+bX*(innerBRWall+offset)+bY*gLen,
-			   bEnter+bX*(innerARWall+offset)+bZ,X);
+			   bOrigin+bX*(innerARWall+offset),
+			   bOrigin+bX*(innerBRWall+offset)+bY*gLen,
+			   bOrigin+bX*(innerARWall+offset)+bZ,X);
   ModelSupport::buildPlane(SMap,GI+5,
-			   bEnter-bZ*(innerAFloorZ+offset),
-			   bEnter-bZ*(innerBFloorZ+offset)+bY*gLen,
-			   bEnter-bZ*(innerAFloorZ+offset)+bX,Z);
+			   bOrigin-bZ*(innerAFloorZ+offset),
+			   bOrigin-bZ*(innerBFloorZ+offset)+bY*gLen,
+			   bOrigin-bZ*(innerAFloorZ+offset)+bX,Z);
   ModelSupport::buildPlane(SMap,GI+6,
-			   bEnter+bZ*(innerARoofZ+offset),
-			   bEnter+bZ*(innerBRoofZ+offset)+bY*gLen,
-			   bEnter+bZ*(innerARoofZ+offset)+bX,Z);
+			   bOrigin+bZ*(innerARoofZ+offset),
+			   bOrigin+bZ*(innerBRoofZ+offset)+bY*gLen,
+			   bOrigin+bZ*(innerARoofZ+offset)+bX,Z);
 
   return;
 }
@@ -545,6 +554,9 @@ ChipIRGuide::createSurfacesCommon()
   for(size_t i=0;i<LThick.size();i++)
     createLiner(static_cast<int>(i+1)*20,LThick[i]);
 
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"X == "<<X<<" :: "<<Y<<" :: "<<Z<<ELog::endDiag;
+  ELog::EM<<"X == "<<bX<<" :: "<<bY<<" :: "<<bZ<<ELog::endDiag;
   // Steel Work:
   //  [sides]
   Geometry::Vec3D rX(X);
@@ -665,7 +677,7 @@ ChipIRGuide::createObjects(Simulation& System)
   // Inner void:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-100 1 -2 3 -4 5 -6");
   voidCells.push_back(cellIndex);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // Cell liner:
   const std::string BasicOut=
     ModelSupport::getComposite(SMap,buildIndex,"-100 1 -2 ");
@@ -677,7 +689,7 @@ ChipIRGuide::createObjects(Simulation& System)
       GI+=20;
       Out+=ModelSupport::getComposite(SMap,GI," 3 -4 5 -6 ");
       voidCells.push_back(cellIndex);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,LMat[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,LMat[i],0.0,Out));
     }
   // Outer layer
   Out=ModelSupport::getComposite(SMap,GI," (-3:4:-5:6) ");
@@ -685,7 +697,7 @@ ChipIRGuide::createObjects(Simulation& System)
   // First Layer
   Out+=ModelSupport::getComposite(SMap,buildIndex,
        "-100 1 -2 13 113 -14 -114 115 -116 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("SteelInner",cellIndex-1));
 
@@ -693,64 +705,64 @@ ChipIRGuide::createObjects(Simulation& System)
   // Roof:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 116 -206 213 -204 -214");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
 
   // Floor
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 -115 205 213 -204 -214 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
 
   // Right Wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100  1 -1002 115 -116 (14:114) -204 -214 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   //  voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("ConcRight",cellIndex-1));
 
   // Left Wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 115 -116 (-13:-113) 213 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
   layerCells.insert(LCTYPE::value_type("ConcLeft",cellIndex-1));
 
   // BlockWall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 205 -306 -213 303 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 306 -206 -213 303 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Extra left Wall
   // everything below wall height to limit of wall length
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 402 205 -406 -303 403 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
   //above wall height, below roof
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -302 406 -206 -303 403 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // below wall height beyond end of wall length
 
   // Extra right Wall [W2 side]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -502 205 -506 214 -503 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
 
   // REMEDIAL WALL West [W2 side]
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 (214:204) (502:503:506) "
 				 "205 -606 -604 -614 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcW2",cellIndex-1));
 
     // REMEDIAL ROOF to the wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -1002 -214 -204 213 206 -606");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcRoof",cellIndex-1));
 
 
@@ -758,7 +770,7 @@ ChipIRGuide::createObjects(Simulation& System)
  //above wall height, below roof
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-100 1 -502 506 -206 214 -503 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Add full outer system
   // Inner 
@@ -912,6 +924,10 @@ ChipIRGuide::writeMasterPoints()
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","writeMasterPoints");
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
   const masterRotate& MR=masterRotate::Instance();  
   // Output Datum
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
@@ -964,7 +980,7 @@ ChipIRGuide::writeMasterPoints()
       Cp/=4.0;
       const Geometry::Plane* PX=
 	SMap.realPtr<Geometry::Plane>(gIndex[i]+buildIndex);
-      FixedComp::setConnect(cNum[i],Cp,PX->getNormal()*signV);      
+      mainFC.setConnect(cNum[i],Cp,PX->getNormal()*signV);      
     }
   
   return;
@@ -994,22 +1010,24 @@ ChipIRGuide::createLinks()
 {
   ELog::RegMethod RegA("ChipIRGuide","createLinks");
   // Set directional exit:
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*gLen,Y);
-  FixedComp::setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setConnect(1,Origin+Y*gLen,Y);
+  mainFC.setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
   
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));  
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));  
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));  
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));  
+  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));  
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));  
+  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));  
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1002));
+  mainFC.setLinkSurf(6,SMap.realSurf(buildIndex+1002));
 
   // OutersideWalls
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+213));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+604));
+  mainFC.setLinkSurf(7,-SMap.realSurf(buildIndex+213));
+  mainFC.setLinkSurf(8,SMap.realSurf(buildIndex+604));
       
 
 
@@ -1037,7 +1055,7 @@ ChipIRGuide::exitWindow(const double Dist,
   window.push_back(SMap.realSurf(buildIndex+26));
   // Note cant rely on exit point because that is the 
   // virtual 46 degree exit point.
-  Pt=getExit()+bY*Dist; 
+  //  Pt=getExit()+bY*Dist; 
   return SMap.realSurf(buildIndex+2);
 }
 

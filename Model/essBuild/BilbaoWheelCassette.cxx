@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheelCassette.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,7 +62,6 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -205,18 +203,17 @@ BilbaoWheelCassette::getSegWallArea() const
 
   // for the innermost segment without bricks:
   // get segmented wall area:
-  // it's a sum of rectangle (s1) and triangle (s2)
-  double s(0.0);
-  double h1(wallSegThick); // downstream thick
-  double h2(0.0); // upstream thick
-  double h3(0.0); // leg of triangle: h2=h1+h3
+
+
+  //  double h1(wallSegThick); // downstream thick
 
   // for the inner segment with  no bricks
-  h3 = std::abs(wallSegLength[0])*tan(wallSegDelta*M_PI/180.0);
-  h2 = h1+h3;
-  const double s1 = h1*std::abs(wallSegLength[0]); // rectangle
+  const double h3 = std::abs(wallSegLength[0])*tan(wallSegDelta*M_PI/180.0);
+  const double s1 = wallSegThick*std::abs(wallSegLength[0]); // rectangle
   const double s2 = wallSegLength[0]*h3/2.0; // triangle
-  s += s1+s2;
+
+  // it's a sum of rectangle (s1) and triangle (s2)
+  double s(s1+s2);
 
   // for the segments with bricks:
   double R(innerCylRadius);
@@ -225,9 +222,6 @@ BilbaoWheelCassette::getSegWallArea() const
       R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       const double L = 2*R*sin(wallSegDelta*M_PI/180.0);
       const double bg(getBrickGapThick(j));
-
-      //      ELog::EM << j << " " << R << " " << L-bg << ELog::endDiag;
-
       s += (L-bg)*std::abs(wallSegLength[j])/2;
     }
 
@@ -268,14 +262,15 @@ BilbaoWheelCassette::getBrickGapThick(const size_t& j) const
   if (j==0)
     throw ColErr::RangeError<size_t>(j, 1, nWallSeg-1, "segment index");
 
-  return nBricks[j]*brickWidth + (nBricks[j]-1)*brickGap;
+  return static_cast<double>(nBricks[j])*brickWidth +
+    static_cast<double>(nBricks[j]-1)*brickGap;
 }
 
 void
 BilbaoWheelCassette::buildBricks()
   /*!
     Build the bricks for the given segment
-   */
+  */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","buildBricks");
   return;
@@ -491,30 +486,30 @@ BilbaoWheelCassette::createObjects(Simulation& System,
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -13 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));
 
   if (nSteelRows>0)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 12 17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,homoWMat,temp,Out+tb));
+      System.addCell(MonteCarlo::Object(cellIndex++,homoWMat,temp,Out+tb));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -17 7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,homoSteelMat,temp,Out+tb));
+      System.addCell(MonteCarlo::Object(cellIndex++,homoSteelMat,temp,Out+tb));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 12 7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,homoWMat,temp,Out+tb));
+      System.addCell(MonteCarlo::Object(cellIndex++,homoWMat,temp,Out+tb));
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -7 ") + FC.getLinkString(back);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 -12 ") + FC.getLinkString(front);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+tb));
+  System.addCell(MonteCarlo::Object(cellIndex++,pipeCellMat,temp,Out+tb));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 14 -4 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);
@@ -549,7 +544,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	  backFront = ModelSupport::getComposite(SMap,buildIndex,SJ," 11M -1 ") +
 	    FC.getLinkString(back);
 	  Out=ModelSupport::getComposite(SMap,SJ," 13 -14 ") + backFront;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+	  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
 	} else
 	{
 	  if (j==nWallSeg-1)
@@ -560,7 +555,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 -21M ") +
 		FC.getLinkString(front);
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,
+	      System.addCell(MonteCarlo::Object(cellIndex++,pipeCellMat,temp,
 					       Out+tb));
 	    } else
 	    {
@@ -576,7 +571,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 		{
 		  // gap
 		  Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
-		  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,
+		  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,
 						   Out+backFrontBrick+tb));
 		  // brick
 		  Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
@@ -584,7 +579,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	      else // build only brick
 		Out=ModelSupport::getComposite(SMap,SJ," -14 ") + prev;
 
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+	      System.addCell(MonteCarlo::Object(cellIndex++,
 					       j<=nSteelRows?brickSteelMat:brickWMat,
 					       temp,Out+backFrontBrick+tb));
 
@@ -594,15 +589,15 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	    }
 	  // gap b/w bricks in y-direction
 	  Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 12M -11M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+	  System.addCell(MonteCarlo::Object(cellIndex++,heMat,temp,Out+tb));
 	}
 
       /// create side walls
       Out=ModelSupport::getComposite(SMap,buildIndex,SJ," 3 -13M ") + backFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+tb));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,SJ," 14M -4 ") + backFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,temp,Out+tb));
 
       SJ += 1000;
     }

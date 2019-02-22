@@ -64,7 +64,6 @@
 #include "ReadFunctions.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -264,7 +263,7 @@ BilReflector::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7");
       if (i)
 	Out+=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,M[i],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,M[i],0.0,Out));
       RI+=10;
     }
 

@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -294,12 +293,12 @@ ProtonFlight::createObjects(Simulation& System)
   std::string Out;
   // Inner void:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Al - Layer
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-1 2 3 -4 5 -6 (-13 : 14 : -15 : 16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // Make exclude unit
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 2 3 -4 5 -6");
@@ -319,20 +318,20 @@ ProtonFlight::createTarget(Simulation& System)
   std::string Out;
   // Be slab
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -102 103 -104 105 -106");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targetMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,targetMat,0.0,Out));
   
   // Water coolant
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(102 : -103 : 104 : -105 : 106) "
 				 "1 -112 113 -114 115 -116");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targetCoolant,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,targetCoolant,0.0,Out));
 
   // Al - Layer
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-1 : 112 : -113 : 114 : -115 : 116) "
 				 "121 -122 123 -124 125 -126"
 				 "(1 : -3 : 4 : -5 : 6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targetSurround,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,targetSurround,0.0,Out));
 
 
   // Make exclude unit

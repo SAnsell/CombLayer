@@ -82,6 +82,7 @@
 #include "flukaDefPhysics.h"
 #include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
+#include "MaterialUpdate.h"
 #include "World.h"
 
 #include "MainProcess.h"
@@ -340,7 +341,7 @@ setVariables(Simulation& System,const inputParam& IParam,
       if (!NP)
 	Control.addVariable("EngineeringActive",1);
     }
-  
+
 
   return;
 }
@@ -404,7 +405,11 @@ createSimulation(inputParam& IParam,
   if (IParam.flag("PHITS"))
     SimPtr=new SimPHITS;
   else if (IParam.flag("FLUKA"))
-    SimPtr=new SimFLUKA;
+    {
+      masterWrite::Instance().setSigFig(12);
+      masterWrite::Instance().setZero(1e-15);
+      SimPtr=new SimFLUKA;
+    }
   else if (IParam.flag("PovRay"))
     SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
@@ -680,6 +685,7 @@ buildFullSimulation(Simulation* SimPtr,
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
 
   ModelSupport::objectAddition(*SimPtr,IParam);
+  ModelSupport::materialUpdate(*SimPtr,IParam);
   
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
@@ -689,6 +695,7 @@ buildFullSimulation(Simulation* SimPtr,
 
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
+
   
   if (createVTK(IParam,SimPtr,OName))
     return;

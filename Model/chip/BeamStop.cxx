@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -371,28 +370,28 @@ BeamStop::createObjects(Simulation& System)
 	    ModelSupport::getComposite(SMap,buildIndex+i*10," -101 -102 ");
 	  Prev=ModelSupport::getComposite(SMap,buildIndex+i*10," (101:102) ");
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,BB.matN,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,BB.matN,0.0,Out));
     }
   // REAR SPACER:
   if (innerLength-totalThick>0.0)
     {
 
       Out=Base+Prev;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
     }
   
   // STEEL LAYER
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		  "1 -12 13 -14 15 -16 (2:-3:4:-5:6)" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
   // VOID LAYER
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		  "1 -22 23 -24 25 -26 (12:-13:14:-15:16)" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // Concrete LAYER
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		  "1 -32 33 -34 35 -36 (22:-23:24:-25:26)" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
 
   return;
 }

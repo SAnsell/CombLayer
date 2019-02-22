@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -309,18 +308,18 @@ DiskChopper::createObjects(Simulation& System)
 	{
           // Inner :
 	  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"12M -511M -7");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Inner",cellIndex-1);
 	  
           // Outer
 	  Out=ModelSupport::getComposite(SMap,buildIndex,CI-500,"2M -501M 7 -17");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Outer",cellIndex-1);
 	}
       
       // inner layer
       Out=ModelSupport::getComposite(SMap,buildIndex,CI,"11M -12M -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.getInnerMat(),
+      System.addCell(MonteCarlo::Object(cellIndex++,DRef.getInnerMat(),
                                        0.0,Out));
       addCell("Inner",cellIndex-1);
 
@@ -342,7 +341,7 @@ DiskChopper::createObjects(Simulation& System)
 	    Out=ModelSupport::getComposite(SMap,PI," 3 -4 ");
 	  else
 	    Out=ModelSupport::getComposite(SMap,PI," (3 : -4) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Main));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+Main));
 	  addCell("Outer",cellIndex-1);
 		  
 	  // CLOSING
@@ -352,7 +351,7 @@ DiskChopper::createObjects(Simulation& System)
 	    Out=ModelSupport::getComposite(SMap,PI,PN," 4 -3M ");
 	  else
 	    Out=ModelSupport::getComposite(SMap,PI,PN," (4 : -3M) ");
-	  System.addCell(MonteCarlo::Qhull
+	  System.addCell(MonteCarlo::Object
 			 (cellIndex++,DRef.getOuterMat(),0.0,Out+Main));
 	  addCell("Outer",cellIndex-1);
 	  PI+=10;
@@ -362,10 +361,10 @@ DiskChopper::createObjects(Simulation& System)
       if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
         {
           Out=ModelSupport::getComposite(SMap,buildIndex,"11 -1 7 -17");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Outer",cellIndex-1);
           Out=ModelSupport::getComposite(SMap,buildIndex,"2 -12 7 -17");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 	  addCell("Outer",cellIndex-1);
         }
 

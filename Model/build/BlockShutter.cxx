@@ -3,7 +3,7 @@
  
  * File:   build/BlockShutter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -75,8 +74,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -152,6 +150,7 @@ BlockShutter::populate(const Simulation& System)
   ELog::RegMethod RegA("BlockShutter","populate");
 
   const FuncDataBase& Control=System.getDataBase();
+  GeneralShutter::populate(Control);
 
   // Modification to the general shutter populated variables:
   
@@ -253,7 +252,7 @@ BlockShutter::createInsert(Simulation& System)
   
   size_t cutPt(0);
   // Get Test object
-  const MonteCarlo::Qhull* OuterCell=System.findQhull(colletOuterCell);
+  const MonteCarlo::Object* OuterCell=System.findObject(colletOuterCell);
   // Create First Object: (or only object)
    if (nBlock>1)
     {
@@ -271,7 +270,7 @@ BlockShutter::createInsert(Simulation& System)
       
       iBlock.push_back(ItemZB);
        // Nasty code to force using the system:
-      if (OuterCell && OuterCell->isValid(ItemZB->getExit()))
+      if (OuterCell && OuterCell->isValid(ItemZB->getLinkPt(2)))
 	{
 	  OuterCell=0;
 	  ItemZB->insertObjects(System);
@@ -354,8 +353,8 @@ BlockShutter::createObjects(Simulation& System)
 	(SMap,buildIndex," (-313:314:325:-326) ");
       OutB=ModelSupport::getComposite
 	(SMap,buildIndex," (-413:414:425:-426) ");
-      MonteCarlo::Qhull* VObjA=System.findQhull(innerVoidCell);
-      MonteCarlo::Qhull* VObjB=System.findQhull(innerVoidCell+1);
+      MonteCarlo::Object* VObjA=System.findObject(innerVoidCell);
+      MonteCarlo::Object* VObjB=System.findObject(innerVoidCell+1);
 
       if (!VObjA || !VObjB)
 	{
@@ -370,16 +369,16 @@ BlockShutter::createObjects(Simulation& System)
       colletInnerCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"313 -314 -325 326 7 -401")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // OuterCollet
       colletOuterCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"413 -414 -425 426 -17 401");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // SPACER:
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
     }
   else
@@ -503,18 +502,23 @@ BlockShutter::setTwinComp()
   const double zCShift=(closed % 2) ? 
     closedZShift-openZShift : 0;
 
-  bEnter=(*ac)->getWindowCentre()-Z*zCShift;
-  bExit=(*bc)->getWindowCentre()-Z*zCShift;
-  bY=bExit-bEnter;
-  bY.makeUnit();
-  bZ=Z;
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
 
+  Geometry::Vec3D bEnter=(*ac)->getWindowCentre()-Z*zCShift;
+  Geometry::Vec3D bExit=(*bc)->getWindowCentre()-Z*zCShift;
 
-
+  Geometry::Vec3D bX;
+  Geometry::Vec3D bY=(bExit-bEnter).unit();
+  Geometry::Vec3D bZ=Z;
   Geometry::Quaternion::calcQRot(zAngle,X).rotate(bZ);
   bX=bZ*bY;
-  if (X.dotProd(bX)<0)
-    bX*=-1;
+  
+  if (X.dotProd(bX)<0) bX*=-1;
+  beamFC.createUnitVector(bEnter,bX,bY,bZ);
+  beamFC.setConnect(0,bEnter,-bY);
+  beamFC.setConnect(1,bExit,bY);
+  
   // Only amount to add is closed shutter offset:
   
   return;
@@ -595,7 +599,6 @@ BlockShutter::createAll(Simulation& System,const double,
   */
 {
   ELog::RegMethod RegA("BlockShutter","createAll");
-  GeneralShutter::populate(System);
   populate(System);  
   GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
 

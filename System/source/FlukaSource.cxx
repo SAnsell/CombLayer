@@ -3,7 +3,7 @@
  
  * File:   source/FlukaSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,7 +167,10 @@ FlukaSource::populate(const ITYPE& inputMap)
   if (mainSystem::hasInput(inputMap,"logWeight"))
     sourceName="LOG";
 
-  ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
+  if (sourceName=="LOG")
+    ELog::EM<<"Source log type == "<<sourceName<<ELog::endDiag;
+  else
+    ELog::EM<<"Source flat probability type "<<ELog::endDiag;
   
   return;
 }
@@ -214,7 +217,7 @@ FlukaSource::createSource(SDef::Source&) const
 
 void
 FlukaSource::createAll(const attachSystem::FixedComp& FC,
-		      const long int linkIndex)
+		       const long int linkIndex)
   /*!
     Create all with out using Control variables
     \param FC :: Fixed Point for origin/axis of beam
@@ -239,7 +242,7 @@ FlukaSource::createAll(const ITYPE& inputMap,
     \param linkIndex :: link Index				
    */
 {
-  ELog::RegMethod RegA("FlukaSource","createAll<FC,linkIndex>");
+  ELog::RegMethod RegA("FlukaSource","createAll<Map,FC,linkIndex>");
   populate(inputMap);
   createUnitVector(FC,linkIndex);
 

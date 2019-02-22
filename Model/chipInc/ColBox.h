@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/ColBox.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,23 +35,14 @@ namespace hutchSystem
 */
 
 class ColBox : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
  
   int insertCell;               ///< Cell to insert into
-  Geometry::Vec3D XAxis;        ///< X actual direction
-  Geometry::Vec3D YAxis;        ///< Y-movement axis 
-  Geometry::Vec3D ZAxis;        ///< Z-movement axis 
-  Geometry::Vec3D Centre;       ///< Centre point 
   
-  double xStep;                 ///< X step accross beam
-  double fStep;                 ///< forward step 
-  double zStep;                 ///< Zstep of all
-  double xyAngle;               ///< XY-Angle
-  double zAngle;                ///< Zangle
 
   double width;             ///< Full Width
   double depth;             ///< Full Depth
@@ -69,7 +60,7 @@ class ColBox : public attachSystem::ContainedComp,
   int defMat;                 ///< Material for roof
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::TwinComp&);
+  void createUnitVector(const attachSystem::FixedGroup&);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -83,8 +74,8 @@ class ColBox : public attachSystem::ContainedComp,
 
   void setMidFace(const Geometry::Vec3D&);
 
-  void createPartial(Simulation&,const attachSystem::TwinComp&);
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createPartial(Simulation&,const attachSystem::FixedGroup&);
+  void createAll(Simulation&,const attachSystem::FixedGroup&);
 
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D& Pt) const;

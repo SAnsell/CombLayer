@@ -65,7 +65,7 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -444,93 +444,93 @@ MidWaterDivider::createObjects(Simulation& System,
       // water
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 5 -6 (-7:8)");
       Out+=LCut.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 5 -6 (-17:18)");
       Out+=RCut.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
       // top container plate
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 6 (-7:8)");
       Out+=LCut.display()+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 6 (-17:18)");
       Out+=RCut.display()+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       // bottom container plate
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 -5 (-7:8)");
       Out+=LCut.display()+Base;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 -5 (-17:18)");
       Out+=RCut.display()+Base;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       // Reverse side
       Out=ModelSupport::getSetComposite(SMap,buildIndex,
                                      "300 -100 -23  -31 5 -6 (-37:38) ");
       Out+=LCut.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
       
       Out=ModelSupport::getSetComposite(SMap,buildIndex,
                                      "-300 -100 24 -32 5 -6 (-27:28)");
       Out+=RCut.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
       
       Out=ModelSupport::getSetComposite(SMap,buildIndex,
                                      "300 -100 -23 -31 6 (-37:38) ");
       Out+=LCut.display()+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,
                                      "-300 -100 24 -32 6 (-27:28)");
       Out+=RCut.display()+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,
                                      "300 -100 -23 -31 -5 (-37:38) ");
       Out+=LCut.display()+Base;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,
                                      "-300 -100 24 -32 -5 (-27:28)");
       Out+=RCut.display()+Base;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
     }
   else 
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 100 4 -11 (-7:8)");
       Out+=LCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
       
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 100 -3 -12 (-17:18)");
       Out+=RCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
       // Reverse layers
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"300 -100 -23 -31 (-37:38)");
       Out+=LCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"-300 -100 24 -32 (-27:28)");
       Out+=RCut.display()+Base+Top;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
       
     }
   
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "300 100 104 -111 (-107:108) (-4 : 11 : (7 -8) ) ");				 
   Out+=LCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "-300 100 -103 -112 (-117:118) (3 : 12 : (17 -18)) ");				 
   Out+=RCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "100 ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
@@ -540,12 +540,12 @@ MidWaterDivider::createObjects(Simulation& System,
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "300 -100 -123 -131 (-137:138) (23 : 31 : (37 -38))");
   Out+=LCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "-300 -100 124 -132 (-127:128) (-24 : 32 : (27 -28))");
   Out+=RCut.display()+Base+Top;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "-100 ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
@@ -583,7 +583,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
     {
       const int cellA=leftWing.getCell("Outer");
       
-      MonteCarlo::Qhull* OPtr=System.findQhull(cellA);
+      MonteCarlo::Object* OPtr=System.findObject(cellA);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellA,"leftWing Cell: Outer");
       Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -595,7 +595,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   if (cutLayer+1<rWing)
     {
       const int cellB=rightWing.getCell("Outer");
-      MonteCarlo::Qhull* OPtr=System.findQhull(cellB);
+      MonteCarlo::Object* OPtr=System.findObject(cellB);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellB,"rightWing Cell: Outer");
       Out=ModelSupport::getComposite(SMap,buildIndex,

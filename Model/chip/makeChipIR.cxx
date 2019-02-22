@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "groupRange.h"
@@ -67,14 +66,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "World.h"
 #include "ChipIRFilter.h"
 #include "ChipIRGuide.h"
@@ -181,8 +176,9 @@ makeChipIR::buildIsolated(Simulation& System,
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
-      FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
-      FeedVec.back().createAll(System,*HObj);
+      FeedVec.push_back
+      (std::make_shared<FeedThrough>("chipWiresColl",i+1));
+      FeedVec.back()->createAll(System,*HObj);
     }  
   
   return;
@@ -207,15 +203,17 @@ makeChipIR::build(Simulation* SimPtr,
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("chipIR")))
     return;
 
-
   HObj->setCollFlag(IParam.getValue<int>("collFlag"));
   // chipguide/chiphutch
   GObj->setMonoSurface(BulkObj.getMonoSurf());
   GObj->addInsertCell("outer",74123);
   GObj->addInsertCell("rightwall",74123);
   GObj->addInsertCell("leftwall",74123);
-
+  
   GObj->createAll(*SimPtr,BulkObj,0);
+  ELog::EM<<"Bulk == "<<BulkObj.getLinkPt(0)<<ELog::endDiag;
+  return;
+    
   HObj->addInsertCell(74123);
   HObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
 		  GObj->getCC("inner"));
@@ -225,8 +223,9 @@ makeChipIR::build(Simulation* SimPtr,
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
-      FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
-      FeedVec.back().createAll(*SimPtr,*HObj);
+      FeedVec.push_back
+	(std::make_shared<FeedThrough>("chipWiresColl",i+1));
+      FeedVec.back()->createAll(*SimPtr,*HObj);
     }  
 
 

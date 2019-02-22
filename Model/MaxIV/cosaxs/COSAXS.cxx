@@ -3,7 +3,7 @@
  
  * File: cosaxs/COSAXS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -75,6 +74,7 @@
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "InnerZone.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -92,10 +92,12 @@
 #include "JawValve.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
-#include "FrontEndCave.h"
-#include "FrontEnd.h"
+#include "R3FrontEndCave.h"
+#include "R3FrontEnd.h"
+#include "cosaxsFrontEnd.h"
 #include "cosaxsOpticsLine.h"
 #include "ConnectZone.h"
+#include "WallLead.h"
 #include "COSAXS.h"
 
 namespace xraySystem
@@ -103,9 +105,10 @@ namespace xraySystem
 
 COSAXS::COSAXS(const std::string& KN) :
   attachSystem::CopiedComp("Balder",KN),
-  ringCaveA(new FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new FrontEndCave(newName+"RingCaveB")),
-  frontBeam(new FrontEnd(newName+"FrontBeam")),
+  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
+  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
+  frontBeam(new cosaxsFrontEnd(newName+"FrontBeam")),
+  wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
@@ -121,6 +124,7 @@ COSAXS::COSAXS(const std::string& KN) :
   OR.addObject(ringCaveA);
   OR.addObject(ringCaveB);
   OR.addObject(frontBeam);
+  OR.addObject(wallLead);
   OR.addObject(joinPipe);
   
   OR.addObject(opticsHut);
@@ -150,6 +154,8 @@ COSAXS::build(Simulation& System,
   ELog::RegMethod RControl("COSAXS","build");
 
   int voidCell(74123);
+  frontBeam->setStopPoint(stopPoint);
+  
   ringCaveA->addInsertCell(voidCell);
   ringCaveA->createAll(System,FCOrigin,sideIndex);
 
@@ -158,9 +164,18 @@ COSAXS::build(Simulation& System,
   ringCaveB->createAll(System,*ringCaveA,
 		       ringCaveA->getSideIndex("connectPt"));
 
-  const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
+  frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
+  frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
+  
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
   frontBeam->createAll(System,*ringCaveA,-1);
+
+  wallLead->addInsertCell(ringCaveA->getCell("FrontWall"));
+  wallLead->setFront(-ringCaveA->getSurf("BeamInner"));
+  wallLead->setBack(-ringCaveA->getSurf("BeamOuter"));
+  wallLead->createAll(System,FCOrigin,sideIndex);
+
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   opticsHut->addInsertCell(voidCell);
   opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
@@ -175,26 +190,29 @@ COSAXS::build(Simulation& System,
   ringCaveB->insertComponent
     (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
 
-  joinPipe->addInsertCell(ringCaveA->getCell("Void"));
-  joinPipe->addInsertCell(ringCaveA->getCell("FrontWallHole"));
+  if (stopPoint=="opticsHut") return;
+
+  joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
-  joinPipe->addInsertCell(opticsHut->getCell("Void"));
-  
-  joinPipe->setFront(*frontBeam,2);
   joinPipe->createAll(System,*frontBeam,2);
 
-  joinPipe->insertObjects(System);
-
-  System.removeCell(ringCaveA->getCell("Void"));
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->setCutSurf("front",*opticsHut,
+			 opticsHut->getSideIndex("innerFront"));
+  opticsBeam->setCutSurf("back",*opticsHut,
+			 opticsHut->getSideIndex("innerBack"));
+  opticsBeam->setCutSurf("floor",opticsHut->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
+  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+  
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-  System.removeCell(opticsHut->getCell("Void"));
+
 
   return;
 }

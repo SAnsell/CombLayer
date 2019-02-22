@@ -74,8 +74,6 @@ class maxpeemOpticsHut :
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
 
-  double beamTubeRadius;       ///< Hole for objects to easily be inserted
-  
   int innerMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls 
   int outerMat;                ///< Conc layer material for ring walls

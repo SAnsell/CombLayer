@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,17 +170,17 @@ Object::startLine(const std::string& Line)
 Object::Object() :
   ObjName(0),listNum(-1),Tmp(300),MatN(-1),trcl(0),
   imp(1),density(0.0),placehold(0),populated(0),
-  objSurfValid(0)
- /*!
-   Defaut constuctor, set temperature to 300C and material to vacuum
- */
+  activeMag(0),objSurfValid(0)
+   /*!
+     Defaut constuctor, set temperature to 300C and material to vacuum
+   */
 {}
 
 Object::Object(const int N,const int M,
 	       const double T,const std::string& Line) :
   ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
   imp(1),density(0.0),placehold(0),
-  populated(0),objSurfValid(0)
+  populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -196,7 +196,7 @@ Object::Object(const std::string& FCName,const int N,const int M,
 	       const double T,const std::string& Line) :
   FCUnit(FCName),ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
   imp(1),density(0.0),placehold(0),
-  populated(0),objSurfValid(0)
+  populated(0),activeMag(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
    \param N :: number
@@ -213,6 +213,7 @@ Object::Object(const Object& A) :
   listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
   trcl(A.trcl),imp(A.imp),
   density(A.density),placehold(A.placehold),populated(A.populated),
+  activeMag(A.activeMag),magVec(A.magVec),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
     Copy constructor
@@ -240,6 +241,8 @@ Object::operator=(const Object& A)
       density=A.density;
       placehold=A.placehold;
       populated=A.populated;
+      activeMag=A.activeMag;
+      magVec=A.magVec;
       HRule=A.HRule;
       objSurfValid=0;
       SurList=A.SurList;
@@ -539,6 +542,17 @@ Object::addSurfString(const std::string& XE)
   return flag;
 }
 
+void
+Object::setMagField(const Geometry::Vec3D& M)
+  /*!
+    Simple setter for magnetic field in an object
+    \param M :: Magnetic vector
+  */
+{
+  magVec=M;
+  activeMag=1;
+  return;
+}
 
 int
 Object::isOnSide(const Geometry::Vec3D& Pt) const
@@ -1330,6 +1344,62 @@ Object::str() const
   return cx.str();
 }
 
+
+std::string
+Object::cellStr(const std::map<int,Object*>& MList) const
+  /*!
+    Returns just the cell string object. Processes complement
+    and self include.
+    \param MList :: List of indexable Hulls
+    \return Cell String (from TopRule)
+    \todo Break infinite recusion
+  */
+{
+  ELog::RegMethod RegA("Object","cellStr");
+
+  const char compUnit[]="%#";
+  std::string TopStr=this->topRule()->display();
+  std::string::size_type pos=TopStr.find_first_of(compUnit);
+  std::ostringstream cx;
+  while(pos!=std::string::npos)
+    {
+      const int compFlag(TopStr[pos]=='%' ? 0 : 1); 
+      pos++;
+      cx<<TopStr.substr(0,pos);            // Everything including the #
+      int cN(0);
+      const size_t nLen=StrFunc::convPartNum(TopStr.substr(pos),cN);
+      if (nLen>0)
+        {
+	  std::map<int,MonteCarlo::Object*>::const_iterator vc=MList.find(cN);
+	  if (vc==MList.end() || cN==this->getName())
+	    {
+	      ELog::EM<<"Cell:"<<getName()<<" comp unit:"
+		      <<cN<<ELog::endCrit;
+	      ELog::EM<<"full string == "
+		      <<topRule()->display()<<ELog::endCrit;
+	      cx<<compUnit[compFlag]<<cN;
+	      throw ColErr::InContainerError<int>
+		(cN,"Object::cellStr unknown complementary unit");
+	    }
+	  else
+	    {
+	      if (compFlag) cx<<"(";
+	      // Not the recusion :: This will cause no end of problems 
+	      // if there is an infinite loop.
+	      cx<<vc->second->cellStr(MList);
+	      if (compFlag) cx<<")";
+	    }
+	  cx<<" ";
+	  pos+=nLen;
+	}
+      TopStr.erase(0,pos);
+      pos=TopStr.find_first_of(compUnit);
+    }
+
+  cx<<TopStr;
+  return cx.str();
+}
+
 void 
 Object::write(std::ostream& OX) const
   /*!
@@ -1376,6 +1446,10 @@ Object::writeFLUKAmat(std::ostream& OX) const
 	cx<<"VACUUM";
 
       cx<<" R"+std::to_string(ObjName);
+      if (imp && activeMag)
+	cx<<" - - 1 ";
+
+      
       StrFunc::writeFLUKA(cx.str(),OX);
     }
   

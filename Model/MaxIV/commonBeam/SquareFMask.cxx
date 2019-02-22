@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -120,10 +119,23 @@ SquareFMask::populate(const FuncDataBase& Control)
   flangeBInRadius=Control.EvalVar<double>(keyName+"FlangeBackInRadius");
   flangeBOutRadius=Control.EvalVar<double>(keyName+"FlangeBackOutRadius");
   flangeBLength=Control.EvalVar<double>(keyName+"FlangeBackLength");
+
+  pipeRadius=Control.EvalDefVar<double>(keyName+"PipeRadius",0.0);
+  if (pipeRadius>Geometry::zeroTol)
+    {
+      pipeXWidth=Control.EvalVar<double>(keyName+"PipeXWidth");
+      pipeZDepth=Control.EvalVar<double>(keyName+"PipeZDepth");
+      for(size_t i=0;i<4;i++)
+	pipeYStep[i]=Control.EvalVar<double>
+	  (keyName+"PipeYStep"+std::to_string(i));
+
+      waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+    }
   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
+
   
   return;
 }
@@ -218,7 +230,39 @@ SquareFMask::createSurfaces()
 			   BPt-X*BW2+Z*BH2,
 			   BPt+X*BW2+Z*BH2,
 			   MPt+X*MW2+Z*MH2,Z);
-  
+
+
+
+  if (pipeRadius>Geometry::zeroTol)
+    {
+      // start from front of collimator
+      const Geometry::Vec3D pipeOrgZ(APt-Z*pipeZDepth);
+      int BI(buildIndex+1000);
+      for(size_t i=0;i<4;i++)
+	{
+	  const Geometry::Vec3D PCent(pipeOrgZ+Y*pipeYStep[i]);
+	  ModelSupport::buildCylinder(SMap,BI+7,PCent,X,pipeRadius);
+	  // left/right uprights
+	  ModelSupport::buildCylinder
+	    (SMap,BI+8,PCent-X*(pipeXWidth/2.0),Z,pipeRadius);
+	  ModelSupport::buildCylinder
+	    (SMap,BI+9,PCent+X*(pipeXWidth/2.0),Z,pipeRadius);
+	  // divider plane :
+	  if (i<3)
+	    ModelSupport::buildPlane
+	      (SMap,BI+1,pipeOrgZ+Y*((pipeYStep[i]+pipeYStep[i+1])/2.0),Y);
+	  BI+=10;
+	}
+      // divider [only a pair of left/right needed]
+      // 45 deg divider
+      ModelSupport::buildPlane(SMap,buildIndex+1003,
+			       pipeOrgZ-X*(pipeXWidth/2.0),
+			       -X+Z);
+      ModelSupport::buildPlane(SMap,buildIndex+1004,
+			       pipeOrgZ+X*(pipeXWidth/2.0),
+			       X+Z);
+    }
+      
   return;
 }
 
@@ -239,15 +283,67 @@ SquareFMask::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -2 203 -204 205 -206");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
-  // metal [ inner section]
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 11 -101 3 -4 5 -6 (-103:104:-105:106) ");
-  CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,Out);
-  
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
-  CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
+  if (pipeRadius>Geometry::zeroTol)
+    {
 
+      int BI(buildIndex+1000);
+      const std::string topSurf=
+	ModelSupport::getComposite(SMap,buildIndex," -6 ");
+      const std::string frontSurf=
+	ModelSupport::getComposite(SMap,buildIndex," 1 ");
+
+
+      HeadRule pipeHR[4];
+      for(size_t i=0;i<4;i++)
+	{	  
+	  Out=ModelSupport::getComposite(SMap,buildIndex,BI,"-7M -1003 -1004 ");
+	  CellMap::makeCell("PipeA",System,cellIndex++,waterMat,0.0,Out);
+	  pipeHR[i].addUnion(Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,buildIndex,BI," -8M 1003 ");
+	  CellMap::makeCell("PipeLeft",System,cellIndex++,
+			    waterMat,0.0,Out+topSurf);
+	  pipeHR[i].addUnion(Out);
+	  
+	  Out=ModelSupport::getComposite(SMap,buildIndex,BI," -9M 1004 ");
+	  CellMap::makeCell("PipeRight",System,cellIndex++,
+			    waterMat,0.0,Out+topSurf);
+	  pipeHR[i].addUnion(Out);
+	  pipeHR[i].makeComplement();
+	  BI+=10;
+	}
+
+      const std::string FC=ModelSupport::getComposite
+	(SMap,buildIndex," 3 -4 5 -6 (-103:104:-105:106) ");
+
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1001 ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[0].display());
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1011 ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[1].display());
+      Out=ModelSupport::getComposite(SMap,buildIndex," 1011 -101 ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,
+			FC+Out+pipeHR[2].display());
+      
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+      CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,
+			Out+pipeHR[3].display());
+
+    }
+  else   // two simple sections:
+    {
+      // metal [ inner section]
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 11 -101 3 -4 5 -6 (-103:104:-105:106) ");
+      CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,Out);
+      
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -12 3 -4 5 -6 (-203:204:-205:206) ");
+      CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,Out);
+    }
+  
   // Front flange:
 
   Out=ModelSupport::getComposite 

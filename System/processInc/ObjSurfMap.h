@@ -88,7 +88,7 @@ class ObjSurfMap
   void write(std::ostream&) const;
 
   static void removeEqualSurf(const std::map<int,Geometry::Surface*>&,
-			      std::map<int,MonteCarlo::Qhull*>&);
+			      std::map<int,MonteCarlo::Object*>&);
 };
 
 

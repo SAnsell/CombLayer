@@ -65,7 +65,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -243,28 +242,28 @@ EdgeWater::createObjects(Simulation& System,
   std::string Out;
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 103 -104");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,
 				   modTemp,Out+container+divider));
   CellMap::setCell("Water",  cellIndex-1);
   
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -1 103 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out+container));
   CellMap::addCell("Wall",  cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -104 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out+container));
   CellMap::addCell("Wall",  cellIndex-1);
 
   // front walls
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -103 203 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
   CellMap::addCell("Wall",  cellIndex-1);
   CellMap::setCell("InnerAlSupply",  cellIndex-1);
     
   Out=ModelSupport::getComposite(SMap,buildIndex," -12 104 -204");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
   CellMap::addCell("Wall",  cellIndex-1);
   

@@ -3,7 +3,7 @@
  
  * File:   imat/IMatBulkInsert.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "groupRange.h"
@@ -73,10 +72,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BulkInsert.h"
 #include "IMatBulkInsert.h"
@@ -87,7 +84,8 @@ namespace shutterSystem
 
 IMatBulkInsert::IMatBulkInsert(const size_t ID,const std::string& BKey,
 			       const std::string& IKey)  : 
-  BulkInsert(ID,BKey),compName(IKey),insIndex(buildIndex+5000)
+  BulkInsert(ID,BKey),compName(IKey),
+  insIndex(buildIndex+5000)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -150,13 +148,13 @@ IMatBulkInsert::populate(const Simulation& System)
 
   const FuncDataBase& Control=System.getDataBase();
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
-  frontGap=Control.EvalVar<double>(keyName+"FrontGap");
+  frontGap=Control.EvalPair<double>(keyName,baseName,"FrontGap");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   
@@ -168,27 +166,14 @@ IMatBulkInsert::populate(const Simulation& System)
 void
 IMatBulkInsert::createUnitVector()
   /*!
-    Create the unit vectors
+    Create the unit vectors: After BulkInsert built!!
   */
 {
   ELog::RegMethod RegA("IMatBulkInsert","createUnitVector");
 
-  bEnter+=bX*xStep+bY*yStep+bZ*zStep;
-  if (fabs(xyAngle)>Geometry::zeroTol ||
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      // ADDITIONAL ROTATIONS TO 
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,bX);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,bZ);
-
-      Qz.rotate(bY);
-      Qz.rotate(bZ);
-      Qxy.rotate(bX);
-      Qxy.rotate(bY);
-      Qxy.rotate(bZ);
-    }
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  beamFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
   return;
 }
@@ -201,6 +186,12 @@ IMatBulkInsert::createSurfaces()
 {
   ELog::RegMethod RegA("IMatBulkInsert","createSurface");
 
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bY(beamFC.getX());
+  const Geometry::Vec3D& bZ(beamFC.getX());
+  const Geometry::Vec3D& bEnter(beamFC.getCentre());
+  
   ModelSupport::buildPlane(SMap,insIndex+3,
 			   bEnter-bX*width/2.0,bX);
   ModelSupport::buildPlane(SMap,insIndex+4,
@@ -229,21 +220,21 @@ IMatBulkInsert::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -17 3M -4M 5M -6M ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "7 -17 3 -4 -5 6 "
                                  " (-3M : 4M : -5M : 6M) ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
   // Outer void
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "17 -27 3M -4M 5M -6M ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,insIndex,
 				 "17 -27 13 -14 -15 16 "
                                  " (-3M : 4M : -5M : 6M) ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
 
   

@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 ## use lib "/home/ansell/exe/getMk";
+use lib "./";
 
 use CMakeList;
 use strict;
@@ -20,15 +21,6 @@ my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 ##                    t1Engineer t1Upgrade t3Model zoom );
 
 ##my @modelNames= @modelLibDir;
-
-
-## GENERAL Directory 
-my @sublibdir=("src","beamline","global",
-	       "instrument","scatMat","transport","special",
-	       "test");                            
-
-
-my @libnames=@sublibdir;
 
 ## INCLUDES
 
@@ -122,17 +114,20 @@ $gM->addDepUnit("essBeamline",
 			      "tally","source",
 			      "instrument","work"
     	 	             ]);
+
 $gM->addDepUnit("maxiv", ["maxivBuild","visit","src","simMC",
 			  "construct","physics","input","process",
 			  "transport","scatMat","endf","crystal",
 			  "source","monte","funcBase","log","monte",
                           "flukaProcess","flukaPhysics","flukaTally",
-			   "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			  "tally",
+			   "phitsProcess","phitsPhysics","phitsTally",
+			  "phitsSupport","tally",
 			  "geometry","mersenne","src","world","work",
 			  "xml","poly","support","weights",
-			  "balder","cosaxs","commonBeam","maxpeem",
-			  "insertUnit","md5","construct",
+			  "balder","cosaxs","commonBeam",
+			  "flexpes","formax","maxpeem",
+			  "commonGenerator","R3Common","R1Common",
+			  "species","insertUnit","md5","construct",
 			  "global","constructVar","physics","simMC",
 			  "scatMat","endf","crystal","transport",
 			  "attachComp","visit","poly"]);
@@ -319,18 +314,18 @@ $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 
 $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src",
 			       "construct","physics","input","process",
-			       "transport","scatMat",
+			       "transport","scatMat","commonVar","commonBeam",
 			       "source","monte","funcBase","log","monte",
 			       "flukaProcess","flukaPhysics","flukaTally",
-			       "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			       "tally","geometry","mersenne",
+			       "phitsProcess","phitsPhysics","phitsTally",
+			       "phitsSupport","tally","geometry","mersenne",
 			       "src","world","work","xml","poly",
-			       "support","weights",
-			       "physics","simMC","transport","scatMat",
-			       "endf","crystal",
+			       "support","weights","physics","simMC",
+			       "transport","scatMat", "endf","crystal",
 			       "md5","global","attachComp","visit","poly",
-			       "essConstruct","insertUnit","commonVar",
-		               "construct"]);
+			       "commonGenerator","construct","constructVar",
+			       "essConstruct","insertUnit","commonVar"
+		]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",
@@ -360,7 +355,8 @@ $gM->addDepUnit("reactor",  ["delft","visit","src","simMC","physics",
 			     "construct","transport","scatMat","crystal",
 			     "endf","process","flukaProcess",
 			     "flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
+			     "phitsProcess","phitsPhysics",
+			     "phitsTally","phitsSupport",
 			     "tally","world","monte",
 			     "geometry","mersenne","src","physics",
 			     "simMC","transport","scatMat","endf",
@@ -371,7 +367,8 @@ $gM->addDepUnit("reactor",  ["delft","visit","src","simMC","physics",
 $gM->addDepUnit("siMod",    ["visit","src","physics","input","source","monte",
 			     "funcBase","log","tally","flukaProcess",
 			     "flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
+			     "phitsProcess","phitsPhysics",
+			     "phitsTally","phitsSupport",
 			     "construct","crystal",
 			     "transport","scatMat","endf","process","world",
 			     "monte","geometry","mersenne","src","xml",
@@ -382,7 +379,8 @@ $gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
 			     "input","source","monte","funcBase","log",
 			     "tally","flukaProcess","flukaPhysics",
 			     "flukaTally","construct",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
+			     "phitsProcess","phitsPhysics",
+			     "phitsTally","phitsSupport",
 			     "crystal","transport",
 			     "scatMat","md5","endf","process","world",
 			     "work","monte","geometry","mersenne","src",
@@ -393,7 +391,8 @@ $gM->addDepUnit("sinbad",   ["sinbadBuild","visit","src","simMC",
 			     "physics","input",
 			     "source","monte","funcBase","log","tally",
 			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
+			     "phitsProcess","phitsPhysics",
+			     "phitsTally","phitsSupport",
 			     "construct","crystal","transport","scatMat",
 			     "md5","endf","process","world","work","monte",
 			     "geometry","mersenne","src","xml","poly",

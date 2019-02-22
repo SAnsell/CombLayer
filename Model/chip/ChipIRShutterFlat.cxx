@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRShutterFlat.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -77,8 +76,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "chipDataStore.h"
@@ -141,14 +139,15 @@ ChipIRShutterFlat::~ChipIRShutterFlat()
 {}
 
 void
-ChipIRShutterFlat::populate(const Simulation& System)
+ChipIRShutterFlat::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
-  GeneralShutter::populate(System);
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("ChipIRShutterFlat","populate");
+  
+  GeneralShutter::populate(Control);
 
   forwardStep=Control.EvalVar<double>(chipKey+"FStep");
   midStep=Control.EvalVar<double>(chipKey+"MFStep");
@@ -243,7 +242,7 @@ ChipIRShutterFlat::createShutterInsert(Simulation& System)
   // Add front spacer:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-501 7")+dSurf+ASection.getFullSides();
-  System.addCell(MonteCarlo::Qhull(innerVoidCell,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(innerVoidCell,0,0.0,Out));
   // ADD scatter objects:
   ASection.createObjects(buildIndex+502,cellIndex);
 
@@ -318,17 +317,17 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 			       -Z);
       // Inner void
       Out=ModelSupport::getComposite(SMap,buildIndex,"1503 1504 1505 1506");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+fullLength));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+fullLength));
       // Lead
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "(-1503:-1504:-1505:-1506) -2007 ");
       Out+=ASection.getFullSides()+leadLength;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shineMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,shineMat,0.0,Out));
       // Aluminium
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "(-1503:-1504:-1505:-1506) 2007 ");
       Out+=ASection.getFullSides()+fullLength;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,backScrapMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,backScrapMat,0.0,Out));
 
       
       // ADD SHINE POINTS TO CHIPDATUM:
@@ -359,8 +358,11 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 		     MR.calcRotate(Pt));
 	  backPt+=Pt;
 	}
-      FixedComp::setConnect(0,frontPt/4.0,-beamAxis);
-      FixedComp::setConnect(1,backPt/4.0,beamAxis);
+      //attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+      attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
+      beamFC.setConnect(0,frontPt/4.0,-bY);
+      beamFC.setConnect(1,backPt/4.0,bY);
     }
   else
     {
@@ -393,7 +395,7 @@ ChipIRShutterFlat::createAll(Simulation& System,const double ZOffset,
 {
   ELog::RegMethod RegA("ChipIRShutterFlat","createAll");
   GeneralShutter::createAll(System,ZOffset,FCPtr);
-  populate(System);
+  populate(System.getDataBase());
   createCInfoTable(System);
   createShutterInsert(System);  
   createShinePipe(System);

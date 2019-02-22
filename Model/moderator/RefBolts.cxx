@@ -3,7 +3,7 @@
  
  * File:   moderator/RefBolts.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -161,26 +160,40 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
       flag=0;
       cx.str("");
       cx<<keyName<<subKey<<bolt;
-      if (Control.hasVariable(cx.str()+"Track0"))
+      const std::string boltName(cx.str());
+      if (Control.hasVariable(boltName+"Track0"))
 	{
 	  //  Get Default/base radii
-	  matN=ModelSupport::EvalDefMat<int>(Control,cx.str()+"Mat",matN); 
-	  if (Control.hasVariable(cx.str()+"Radius0"))
-	    Radii=SimProcess::getVarVec<double>(Control,cx.str()+"Radius");
-	  std::vector<Geometry::Vec3D> Track=
-	    SimProcess::getVarVec<Geometry::Vec3D>(Control,cx.str()+"Track");
+	  matN=ModelSupport::EvalDefMat<int>(Control,boltName+"Mat",matN); 
+
+	  size_t index(0);
+	  while(Control.hasVariable(boltName+"Radius"+std::to_string(index)))
+	    {
+	      Radii.emplace_back(Control.EvalVar<double>
+				 (boltName+"Radius"+std::to_string(index)));
+	      index++;
+	    }
+
+	  std::vector<Geometry::Vec3D> Track;
+	  index=0;
+	  while(Control.hasVariable(boltName+"Track"+std::to_string(index)))
+	    {
+	      Track.emplace_back(Control.EvalVar<Geometry::Vec3D>
+				 (boltName+"Track"+std::to_string(index)));
+	      index++;
+	    }
+	  
 	  // Error test:
 	  if (Radii.size()+1!=Track.size() ||
 	      Track.size()<2)
 	    {
 	      throw ColErr::MisMatch<size_t>(Radii.size(),Track.size(),
-					     RegA.getFull());
+					     "Track/Radius no match");
 	    }
 
-	  ModelSupport::PipeLine TBolt(cx.str());
-	  std::vector<Geometry::Vec3D>::const_iterator vc;
-	  for(vc=Track.begin();vc!=Track.end();vc++)
-	    TBolt.addPoint(MR.reverseRotate(*vc)+Origin);
+	  ModelSupport::PipeLine TBolt(boltName);
+	  for(const Geometry::Vec3D& tPoint : Track)
+	    TBolt.addPoint(MR.reverseRotate(tPoint)+Origin);
 
 	  for(const double& R : Radii)
 	    TBolt.addRadius(R,matN,0.0);

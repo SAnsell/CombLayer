@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -477,19 +476,19 @@ TS2target::createNoseConeObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-9 -19 3 -4 -8 (109:-103:104:108)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,"-109 -19 103 -104 -108");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     "-1 -8  19 3 -4 (108:-103:104)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -108  19 103 -104");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -8 (-9 : 19) 3 -4");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
     }
 
   // ----------------- WATER -------------------------------
@@ -497,12 +496,12 @@ TS2target::createNoseConeObjects(Simulation& System)
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 		 "-81 61 ((63 -64):(-63 64)) -59 (29:24)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watOCap=ModelSupport::getExclude(cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-48 62 ((63 -64):(-63 64)) -1 59");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICyl=ModelSupport::getExclude(cellIndex-1);
 
 
@@ -510,7 +509,7 @@ TS2target::createNoseConeObjects(Simulation& System)
   // Inner Water Cut:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "71 -29 ((73 -74) : (-73 74)) -59");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
   const std::string watICap=ModelSupport::getExclude(cellIndex-1);
 
   // Tungsen Cap [Part Sphere]
@@ -518,30 +517,30 @@ TS2target::createNoseConeObjects(Simulation& System)
                                    "(-29: 59) "
    				 "(-3 : 4 : 8 : ( 9 -19 ) ) "
                                  +watICap+watICyl);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // Cut: [Top section]
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 59 -48 (27 : -23 : 24)"
                                  +watICyl); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
   // Cut: [Top section/Part 2]
   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 -81  "
    				 "(-23 : 24 : ( 29 -39 ) ) "
                                  +watICap+watOCap);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
 
   // Cap Base:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 -57 59 48");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   // Cap Top:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 -91 81");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-1 59 57 -101");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   return;
 }
@@ -561,43 +560,43 @@ TS2target::createObjects(Simulation& System)
   if (surfThick>Geometry::zeroTol && nLayers>1)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -17");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7 17");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wMat,0.0,Out));
     }
 
 
   // ----------------- FLANGE ----------------
   Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -207 101");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
     
   // -- WATER -- [Main Cylinder]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 27 -47");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,0.0,Out));
 
   // -----------------------------------------------------------
   // Main Cylinder
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 7 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   skinCell=cellIndex-1;
 
   // Ta Press: [Cylinder]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 47 -57");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,0.0,Out));
   
 
   // Spacer Void around target:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 57 -101");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"2 -101 186");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
 
   // Front spacer [Proton flight line]:
@@ -605,7 +604,7 @@ TS2target::createObjects(Simulation& System)
   //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -190");
   // else
   //   Out=ModelSupport::getComposite(SMap,buildIndex,"-59 91 -101 -202 186");
-  // System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  // System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   //  protonVoidCell=cellIndex-1;
   
   // Set EXCLUDE:

@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -74,8 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -231,7 +229,7 @@ ZoomShutter::createInsert(Simulation& System)
   
   size_t cutPt(0);
   // Get Test object
-  const MonteCarlo::Qhull* OuterCell=System.findQhull(colletOuterCell);
+  const MonteCarlo::Object* OuterCell=System.findObject(colletOuterCell);
   // Create First Object:
   if (nBlock>1)
     {
@@ -248,7 +246,7 @@ ZoomShutter::createInsert(Simulation& System)
       ItemZB.createAll(System,iBlock.back());
       iBlock.push_back(ItemZB);
        // Nasty code to force using the system:
-      if (OuterCell && OuterCell->isValid(ItemZB.getExit()))
+      if (OuterCell && OuterCell->isValid(ItemZB.getLinkPt(2)))
 	{
 	  OuterCell=0;
 	  ItemZB.insertObjects(System);
@@ -332,8 +330,8 @@ ZoomShutter::createObjects(Simulation& System)
 	(SMap,buildIndex," (-313:314:325:-326) ");
       OutB=ModelSupport::getComposite
 	(SMap,buildIndex," (-413:414:425:-426) ");
-      MonteCarlo::Qhull* VObjA=System.findQhull(innerVoidCell);
-      MonteCarlo::Qhull* VObjB=System.findQhull(innerVoidCell+1);
+      MonteCarlo::Object* VObjA=System.findObject(innerVoidCell);
+      MonteCarlo::Object* VObjB=System.findObject(innerVoidCell+1);
 
       if (!VObjA || !VObjB)
 	{
@@ -348,16 +346,16 @@ ZoomShutter::createObjects(Simulation& System)
       colletInnerCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"313 -314 -325 326 7 -401")+dSurf;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // OuterCollet
       colletOuterCell=cellIndex;
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"413 -414 -425 426 -17 401");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,colletMat,0.0,Out));
       // SPACER:
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"413 -414 -425 426 100 -401 (-313:314:325:-326)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
     }
   else
@@ -490,18 +488,16 @@ ZoomShutter::setTwinComp()
   const double zCShift=(closed % 2) ? 
     closedZShift-openZShift : 0;
 
-  bEnter=ac->getWindowCentre()-Z*zCShift;
-  bExit=bc->getWindowCentre()-Z*zCShift;
-  bY=bExit-bEnter;
-  bY.makeUnit();
-  bZ=Z;
-
-  Geometry::Quaternion::calcQRot(zAngle,X).rotate(bZ);
-  bX=bZ*bY;
-  if (X.dotProd(bX)<0)
-    bX*=-1;
-  // Only amount to add is closed shutter offset:
+  attachSystem::FixedComp& beamFC=getKey("Beam");
   
+  Geometry::Vec3D bEnter=(*ac).getWindowCentre()-Z*zCShift;
+  Geometry::Vec3D bExit=(*bc).getWindowCentre()-Z*zCShift;
+  beamFC.createUnitVector(bEnter,X,(bExit-bEnter).unit(),Z);
+  beamFC.applyAngleRotate(0,zAngle);
+
+  beamFC.setConnect(0,bEnter,beamFC.getY());
+  beamFC.setConnect(1,bExit,beamFC.getY());
+
   return;
 }
 
@@ -514,7 +510,7 @@ ZoomShutter::createAll(Simulation& System,const double,
   */
 {
   ELog::RegMethod RegA("ZoomShutter","createAll");
-  GeneralShutter::populate(System);
+  GeneralShutter::populate(System.getDataBase());
   populate(System);  
   GeneralShutter::createAll(System,processShutterDrop(),FCPtr);
 

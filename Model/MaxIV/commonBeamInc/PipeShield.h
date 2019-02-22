@@ -34,7 +34,7 @@ namespace xraySystem
     \brief Extra beam stop for opticshutch
   */
   
-class PipeShield : public attachSystem::ContainedComp,
+class PipeShield : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
@@ -47,8 +47,13 @@ class PipeShield : public attachSystem::ContainedComp,
   double length;                 ///< thickness of collimator
   double clearGap;               ///< clearance gap
   double wallThick;              ///< wall thickness
+
+  double wingThick;             ///< Extra back wings
+  double wingLength;            ///< Wing length
+  
   int mat;                       ///< material
   int wallMat;                   ///< wall material
+  int wingMat;                   ///< Wing material
 
 
   void createUnitVector(const attachSystem::FixedComp&,

@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -245,45 +244,45 @@ VacuumVessel::createObjects(Simulation& System)
 
   // Inner void (Cyl)
   Out=ModelSupport::getComposite(SMap,buildIndex,"  101 -2 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Inner void (Box)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -101 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   // Metal front
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -2 7 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -101 111 -17 (-13 : 14 : -15 : 16 )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 11 -101  13 -14 15 -16 ( -1:-3:4:-5:6 )");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
   // DOOR
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("DoorVoid",cellIndex-1);
 
   // set forward door
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 -37 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,doorMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
   addCell("Door",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 12 -22 37 -17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   addCell("Edge",cellIndex-1);
 
   

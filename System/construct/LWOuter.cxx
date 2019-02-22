@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -216,7 +215,7 @@ LWOuter::createObjects(Simulation& System)
       const std::string cellStr=
 	Inner+getNotExcludeUnit()+" #( "+Outer+" ) "
 	+control.str()+exclude;
-      System.addCell(MonteCarlo::Qhull
+      System.addCell(MonteCarlo::Object
 		     (cellIndex++,layerMat[i],0.0,cellStr));
       Outer=Inner;
     }

@@ -67,7 +67,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "objectRegister.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -339,7 +338,7 @@ addToInsertControl(Simulation& System,
 
   for(const int cN : BaseObj.getCells(cellName))
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(cN);
+      MonteCarlo::Object* CRPtr=System.findObject(cN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
@@ -380,7 +379,7 @@ addToInsertControl(Simulation& System,
 
   for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
+      MonteCarlo::Object* CRPtr=System.findObject(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
@@ -491,7 +490,7 @@ addToInsertSurfCtrl(Simulation& System,
 
   const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
-  MonteCarlo::Qhull* CRPtr=System.findQhull(cellA);
+  MonteCarlo::Object* CRPtr=System.findObject(cellA);
   if (!CRPtr) return;
   
   CRPtr->populate();
@@ -526,7 +525,7 @@ addToInsertSurfCtrl(Simulation& System,
 
   for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
+      MonteCarlo::Object* CRPtr=System.findObject(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();
@@ -570,7 +569,7 @@ addToInsertOuterSurfCtrl(Simulation& System,
 
   for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
+      MonteCarlo::Object* CRPtr=System.findObject(CN);
       if (CRPtr && checkIntersect(CC,*CRPtr,CellSVec))
 	CC.addInsertCell(CN);
     }
@@ -746,7 +745,7 @@ addToInsertForced(Simulation& System,
 
   for(const int CN : cellVec)
     {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(CN);
+      MonteCarlo::Object* CRPtr=System.findObject(CN);
       if (CRPtr)
 	{
 	  CRPtr->populate();

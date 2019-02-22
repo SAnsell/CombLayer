@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -303,44 +302,44 @@ SideCoolTarget::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,targetTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wMat,targetTemp,Out));
   addBoundarySurf(-SMap.realSurf(buildIndex+17));
 
   // Cladding
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -17 (-1:2:7)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,waterTemp,Out));
 
   // Water : Stops at the Tungsten edge
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -27 23 -24 101 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 -27 -23 24 -101 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
   // front face
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -11 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
   
   // Pressure
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -37 33 -34 101 17 (27:-23:24)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,externTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,externTemp,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -37 -35 36 -101 17 (27:23:-24)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,externTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,externTemp,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"31 -11 -37 (-21 : 27) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,externTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,taMat,externTemp,Out));
 
   // clearance void
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -47 101 17 (37:-33:34)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 -47 -101 17 (37:35:-36)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -11 -47 (-31 : 37) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   // Tail to be replaced with something
   Out=ModelSupport::getComposite(SMap,buildIndex,"12 -42 -47 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Set EXCLUDE:
   Out=ModelSupport::getComposite(SMap,buildIndex,"41 -42 -47");

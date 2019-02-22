@@ -68,7 +68,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -679,7 +678,7 @@ GuideLine::createObjects(Simulation& System)
 	  Out+=front+back;
 	  if (j)
 	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[j],0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,layerMat[j],0.0,Out));
           if (!j)
             addCell(GKey+"Void",cellIndex-1);
           addCell("Full",cellIndex-1);
@@ -704,7 +703,7 @@ GuideLine::createObjects(Simulation& System)
       
       excludeCell.makeComplement();
       Out+=excludeCell.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
       addCell("Shield",cellIndex-1);
     }
   else

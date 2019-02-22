@@ -64,7 +64,6 @@
 #include "BnId.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
@@ -365,7 +364,7 @@ testSingleObject::checkResult(const ModelSupport::LineTrack& LT,
   ELog::RegMethod RegA("testSingleObject","checkResults");
 
   const std::vector<long int>& cells=LT.getCells();
-  const std::vector<double>& tLen=LT.getTrack();
+  const std::vector<double>& tLen=LT.getSegmentLen();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
   long int cValue(0);
   double tValue(0.0);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ScatterPlate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -76,6 +75,8 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ScatterPlate.h"
 
@@ -83,7 +84,7 @@ namespace hutchSystem
 {
 
 ScatterPlate::ScatterPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   populated(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -92,10 +93,9 @@ ScatterPlate::ScatterPlate(const std::string& Key)  :
 {}
 
 ScatterPlate::ScatterPlate(const ScatterPlate& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  populated(A.populated),Axis(A.Axis),
-  XAxis(A.XAxis),ZAxis(A.ZAxis),Centre(A.Centre),zAngle(A.zAngle),
-  xyAngle(A.xyAngle),fStep(A.fStep),width(A.width),height(A.height),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  populated(A.populated),
+  width(A.width),height(A.height),
   depth(A.depth),defMat(A.defMat),cutSurf(A.cutSurf),nLayers(A.nLayers),
   cFrac(A.cFrac),cMat(A.cMat),CDivideList(A.CDivideList)
   /*!
@@ -115,15 +115,8 @@ ScatterPlate::operator=(const ScatterPlate& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       populated=A.populated;
-      Axis=A.Axis;
-      XAxis=A.XAxis;
-      ZAxis=A.ZAxis;
-      Centre=A.Centre;
-      zAngle=A.zAngle;
-      xyAngle=A.xyAngle;
-      fStep=A.fStep;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -151,13 +144,9 @@ ScatterPlate::populate(const Simulation& System)
   */
 {
   const FuncDataBase& Control=System.getDataBase();
-
+  FixedOffset::populate(Control);
   try
-    {
-      zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-      xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-      fStep=Control.EvalVar<double>(keyName+"FStep");
-      
+    {      
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       depth=Control.EvalVar<double>(keyName+"Depth");
@@ -195,25 +184,8 @@ ScatterPlate::createUnitVector(const attachSystem::FixedComp& LC)
   //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
   // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(LC);
-  Origin=LC.getExit();
-
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  
-  Axis=Y;
-  XAxis=X;
-  ZAxis=Z;
-  Qz.rotate(Axis);
-  Qz.rotate(ZAxis);
-  Qxy.rotate(Axis);
-  Qxy.rotate(XAxis);
-  Qxy.rotate(ZAxis);
-  
-  Centre=Origin-(Y*fStep);
-  setExit(Centre+Axis*depth,Axis);
+  FixedComp::createUnitVector(LC,0);
+  applyOffset();
 
   return;
 }
@@ -228,25 +200,25 @@ ScatterPlate::createSurfaces()
   // INNER PLANES
   
   // Front
-  ModelSupport::buildPlane(SMap,buildIndex+1,Centre,Axis);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Centre+Axis*depth,Axis);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*depth,Y);
   
   if (height>0.0)   // Only create if not using register edges
     {
       ModelSupport::buildPlane(SMap,buildIndex+6,
-			       Centre+ZAxis*(height/2.0),ZAxis);
+			       Origin+Z*(height/2.0),Z);
       // down
       ModelSupport::buildPlane(SMap,buildIndex+5,
-			       Centre-ZAxis*height/2.0,ZAxis);
+			       Origin-Z*height/2.0,Z);
     }
   if (width>0.0)
     {
       // left [Dept. on Axis]
       ModelSupport::buildPlane(SMap,buildIndex+3,
-			       Centre-XAxis*(width/2.0),XAxis);
+			       Origin-X*(width/2.0),X);
       // right [Dept. on Axis]
       ModelSupport::buildPlane(SMap,buildIndex+3,
-			       Centre+XAxis*(width/2.0),XAxis);
+			       Origin+X*(width/2.0),X);
     }
 
   return;
@@ -261,20 +233,12 @@ ScatterPlate::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ScatterPlate","createObjects");
   
-  std::ostringstream cx;
-  cx<<"1 -2 ";
-  if (width>0.0)
-    cx<<"3 -4 ";
-  if (height>0.0)
-    cx<<"5 -6 ";
+  // Master box:
   std::string Out;
-  
-
-  // Master box: 
-  Out=ModelSupport::getComposite(SMap,buildIndex,cx.str());
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   Out+=getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,defMat,0.0,Out));
 
   return;
 }
@@ -341,7 +305,7 @@ ScatterPlate::exitWindow(const double Dist,
       window.push_back(SMap.realSurf(buildIndex+5));
       window.push_back(SMap.realSurf(buildIndex+6));
     }
-  Pt=Centre+Axis*(depth+Dist);  
+  Pt=Origin+Y*(depth+Dist);  
 
   return SMap.realSurf(buildIndex+2);
 }

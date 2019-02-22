@@ -3,7 +3,7 @@
  
  * File:   construct/PipeTube.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -77,6 +76,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "FrontBackCut.h"
 
 #include "portItem.h"
@@ -89,7 +89,9 @@ PipeTube::PipeTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
+  
   delayPortBuild(0),portConnectIndex(1),
   rotAxis(0,1,0)
   /*!
@@ -226,6 +228,8 @@ PipeTube::createSurfaces()
   
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));
+    
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,
@@ -346,7 +350,7 @@ PipeTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PipeTube","createPorts");
-
+  
   for(size_t i=0;i<Ports.size();i++)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
@@ -355,7 +359,7 @@ PipeTube::createPorts(Simulation& System)
 
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
-      
+
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System);
     }
@@ -400,7 +404,7 @@ PipeTube::intersectPorts(Simulation& System,
     Currently does not check that they don't intersect.
     \param System :: Simulation
     \param aIndex :: Inner port
-    \param aIndex :: Outer port
+    \param bIndex :: Outer port
    */
 {
   ELog::RegMethod RegA("PipeTube","intersectPorts");
@@ -413,6 +417,32 @@ PipeTube::intersectPorts(Simulation& System,
 				     "Port does not exist");
 
   Ports[aIndex].intersectPair(System,Ports[bIndex]);
+  
+  return;
+}
+
+void
+PipeTube::intersectVoidPorts(Simulation& System,
+			     const size_t aIndex,
+			     const size_t bIndex) const
+/*!
+    Overlaps two ports if the intersect because of size
+    Currently does not check that they don't intersect.
+    \param System :: Simulation
+    \param aIndex :: Inner port
+    \param bIndex :: Outer port
+   */
+{
+  ELog::RegMethod RegA("PipeTube","intersectPorts");
+
+  if (aIndex==bIndex || aIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(aIndex,Ports.size(),
+				     "Port does not exist");
+  if (bIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(bIndex,Ports.size(),
+				     "Port does not exist");
+
+  Ports[aIndex].intersectVoidPair(System,Ports[bIndex]);
   
   return;
 }
@@ -469,7 +499,6 @@ PipeTube::applyPortRotation()
       YPrime=PAxis[pIndex].unit();
       const Geometry::Quaternion QV=
 	Geometry::Quaternion::calcQVRot(Geometry::Vec3D(0,1,0),YPrime,rotAxis);
-      
       // Now move QV into the main basis set origin:
       const Geometry::Vec3D& QVvec=QV.getVec();
       const Geometry::Vec3D QAxis=X*QVvec.X()+
@@ -703,7 +732,7 @@ PipeTube::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
-  
+
   insertObjects(System);
   if (!delayPortBuild)
     createPorts(System);

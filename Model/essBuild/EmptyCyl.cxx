@@ -63,7 +63,7 @@
 #include "inputParam.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -229,7 +229,7 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out=common+std::to_string(FC.getLinkSurf(-side))+
     " ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+")";
 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
   if (Origin[2]>0.0)
     {
@@ -241,7 +241,7 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
       Out=common+ModelSupport::getComposite(SMap,buildIndex," -6 ") +
 	GB1.getLinkString(-gb1lp)+" "+GB2.getLinkString(-gb2lp);
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
       Out=common+std::to_string(FC.getLinkSurf(-side))+
 	" ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+

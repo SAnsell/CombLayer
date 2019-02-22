@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/PreCollimator.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,22 +36,18 @@ namespace hutchSystem
 */
 
 class PreCollimator : public attachSystem::ContainedComp,
-    public attachSystem::TwinComp
+    public attachSystem::FixedGroup
 {
  private:
   
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
-
-  Geometry::Vec3D Axis;     ///< Beam  axis
-  Geometry::Vec3D XAxis;    ///< Horrizontal axis
-  Geometry::Vec3D ZAxis;    ///< Vertial axis
   
   double xyAngle;           ///< Angle relative to LC 
   double zAngle;            ///< Angle relative LC 
   double fStep;             ///< origin forward step
   double xStep;             ///< Offset on XAxis of centre
   double zStep;             ///< Offset on ZAxis of centre
-  Geometry::Vec3D Centre;   ///< Centre point 
+  Geometry::Vec3D Centre;
 
   double radius;            ///< Full radius
   double depth;             ///< Full depth

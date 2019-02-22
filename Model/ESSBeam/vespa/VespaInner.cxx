@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -241,19 +240,19 @@ VespaInner::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 -7 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontStr));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -12 13 -14 15 -16 -17 -18 "
 				 " ( 2 : -3 : 4 : -5 : 6 : 7 : 8 ) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out+frontStr));
   setCell("FeLayer",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " -22 23 -24 25 -26 -27 -28 "
 				 " ( 12 : -13 : 14 : -15 : 16 : 17 : 18 ) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out+frontStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out+frontStr));
   setCell("ConcLayer",cellIndex-1);
 
   // Exclude:

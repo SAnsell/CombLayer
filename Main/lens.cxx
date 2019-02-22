@@ -62,7 +62,6 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
 #include "SimInput.h"

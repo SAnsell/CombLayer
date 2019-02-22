@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -257,21 +256,21 @@ PlateMod::createObjects(Simulation& System)
           PI.vWidth>Geometry::zeroTol)
         {
           Out=ModelSupport::getComposite(SMap,SI,"1 -101 3 -4 5 -6 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+          System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
           voidCut=ModelSupport::getComposite(SMap,SI,"(-3:4:-5:6)");
         }
       else
         voidCut="";
       
       Out=ModelSupport::getComposite(SMap,SI,"1 -101");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,PI.mat,PI.temp,
+      System.addCell(MonteCarlo::Object(cellIndex++,PI.mat,PI.temp,
                                        Out+innerContainer+voidCut));
       SI+=100;
 
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,SI,
                                  " 101 3 -4 5 -6 (-13:14:-15:16) -1M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,SI," 101 3 -4 5 -6 -1M ");

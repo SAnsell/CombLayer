@@ -63,7 +63,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -234,7 +233,7 @@ WallCut::createObjects(Simulation& System,
   Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   Out+=wallBoundary.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,matTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,matTemp,Out));
   
   return;
 }

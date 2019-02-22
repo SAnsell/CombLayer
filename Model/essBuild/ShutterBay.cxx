@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -241,27 +240,27 @@ ShutterBay::createObjects(Simulation& System,
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -106 -7 ");
   Out+=CC.getExclude();  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("MainCell",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 106 -107 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
   addCell("TopCell",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -106 7 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 106 -206 107 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"206 -6 107 -117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 6 -16 -117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
   int CL(buildIndex+200);
@@ -269,12 +268,12 @@ ShutterBay::createObjects(Simulation& System,
     {
       Out=ModelSupport::getComposite
         (SMap,buildIndex,CL," 117 -17 6M -16M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,curMat[i-1],0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,curMat[i-1],0.0,Out));
       addCell("Curtain",cellIndex-1);
       CL+=10;
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,CL," 117 -17 6M -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,curMat.back(),0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,curMat.back(),0.0,Out));
   addCell("Curtain",cellIndex-1);
 
   

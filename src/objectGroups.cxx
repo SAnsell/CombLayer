@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,6 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
@@ -122,8 +120,6 @@ objectGroups::reset()
   activeCells.clear();
   return;
 }
-
-
 
 bool
 objectGroups::hasCell(const std::string& Name,
@@ -378,7 +374,7 @@ objectGroups::renumberCell(const int oldCellN,
 
   
 int
-objectGroups::cell(const std::string& Name,const int size)
+objectGroups::cell(const std::string& Name,const size_t size)
   /*!
     Add a component and get a new cell number 
     This is called via FixedComp and creates an active range
@@ -667,35 +663,61 @@ objectGroups::getObjectRange(const std::string& objName) const
   */
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
-  
-  std::string::size_type pos=objName.find(":");
-  // CELLMAP Range ::  objectName:cellName
-  if (pos!=0 && pos!=std::string::npos)
-    {
-      const std::string itemName=objName.substr(0,pos);
-      const std::string cellName=objName.substr(pos+1);
 
-      const attachSystem::CellMap* CPtr=
-        getObject<attachSystem::CellMap>(itemName);
-      if (!CPtr)
-        throw ColErr::InContainerError<std::string>(itemName,"objectName:");
+  const std::vector<std::string> Units=
+    StrFunc::StrSeparate(objName,":");
+  
+  // CELLMAP Range ::  objectName:cellName
+  if ((Units.size()==2 || Units.size()==3) &&
+      !Units[0].empty() && !Units[1].empty())
+    {
+      const std::string& itemName=Units[0];
+      const std::string& cellName=Units[1];
       
-      std::vector<int> Out=CPtr->getCells(cellName);
-      if (Out.empty())
-        {
-          ELog::EM<<"EMPTY NAME::Possible names["<<itemName
-		  <<"] == "<<ELog::endDiag;
-          std::vector<std::string> NameVec=CPtr->getNames();
-          for(const std::string CName : NameVec)
-            ELog::EM<<"  "<<CName<<ELog::endDiag;
-          throw ColErr::InContainerError<std::string>
-            (objName,"Object empty");
-        }
-      return Out;
+      const attachSystem::CellMap* CPtr=
+	getObject<attachSystem::CellMap>(itemName);
+
+      if (CPtr)
+	{
+	  if (Units.size()==3)
+	    {
+	      size_t cellIndex;
+	      if(!StrFunc::convert(Units[2],cellIndex))
+		throw ColErr::InContainerError<std::string>
+		  (objName,"CellMap:cellName:Index");
+	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
+	    }
+	  // case 2:
+	  const std::vector<int> Out=CPtr->getCells(cellName);
+	  
+	  if (Out.empty())
+	    {
+	      ELog::EM<<"EMPTY NAME::Possible names["<<itemName
+		      <<"] == "<<ELog::endDiag;
+	      std::vector<std::string> NameVec=CPtr->getNames();
+	      for(const std::string CName : NameVec)
+		ELog::EM<<"  "<<CName<<ELog::endDiag;
+	      throw ColErr::InContainerError<std::string>
+		(objName,"Object empty");
+	    }
+	  return Out;
+	}
+    }
+  // FIXED COMP and number
+  if (Units.size()==2)
+    {
+      const std::string& itemName=Units[0];
+      size_t index;
+      if (StrFunc::convert(Units[1],index) &&
+	  hasObject(itemName))
+	{
+	  const groupRange& fcGroup=getGroup(itemName);
+	  return std::vector<int>({ fcGroup.getCellIndex(index) });
+	}
     }
   
   // SIMPLE NUMBER RANGE  M - N
-  pos=objName.find("-");
+  size_t pos=objName.find("-");
   if (pos!=std::string::npos)
     {
       int ANum,BNum;
@@ -729,7 +751,7 @@ void
 objectGroups::rotateMaster()
   /*!
     Apply the rotation to the object component
-   */
+  */
 {
   ELog::RegMethod RegA("objectGroups","rotateMaster");
   const masterRotate& MR=masterRotate::Instance();
@@ -743,6 +765,12 @@ objectGroups::rotateMaster()
 std::ostream&
 objectGroups::writeRange(std::ostream& OX,
 			 const std::string& gName) const
+  /*!
+    Write out a set of object names based on the keyName
+    \param OX :: Output stream
+    \param gName :: group name to search for
+    \return OX Stream
+   */
 {
   ELog::RegMethod RegA("objectGroups","writeRange");
 
@@ -792,12 +820,6 @@ template const attachSystem::ContainedComp*
 template const attachSystem::ContainedGroup* 
   objectGroups::getObject(const std::string&) const;
 
-template const attachSystem::TwinComp* 
-  objectGroups::getObject(const std::string&) const;
-
-template const attachSystem::SecondTrack* 
-  objectGroups::getObject(const std::string&) const;
-
 template const attachSystem::LayerComp* 
   objectGroups::getObject(const std::string&) const;
 
@@ -817,12 +839,6 @@ template attachSystem::ContainedComp*
   objectGroups::getObject(const std::string&);
 
 template attachSystem::ContainedGroup* 
-  objectGroups::getObject(const std::string&);
-
-template attachSystem::TwinComp* 
-  objectGroups::getObject(const std::string&);
-
-template attachSystem::SecondTrack* 
   objectGroups::getObject(const std::string&);
 
 template attachSystem::CellMap* 
@@ -842,12 +858,6 @@ template const attachSystem::ContainedComp*
 template const attachSystem::ContainedGroup* 
   objectGroups::getObjectThrow(const std::string&,const std::string&) const;
 
-template const attachSystem::TwinComp* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&) const;
-
-template const attachSystem::SecondTrack* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&) const;
-
 template const attachSystem::LayerComp* 
   objectGroups::getObjectThrow(const std::string&,const std::string&) const;
 
@@ -869,11 +879,6 @@ template attachSystem::ContainedComp*
 template attachSystem::ContainedGroup* 
   objectGroups::getObjectThrow(const std::string&,const std::string&);
 
-template attachSystem::TwinComp* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&);
-
-template attachSystem::SecondTrack* 
-  objectGroups::getObjectThrow(const std::string&,const std::string&);
 
 template attachSystem::LayerComp* 
   objectGroups::getObjectThrow(const std::string&,const std::string&);

@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomHutch.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -75,8 +74,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ZoomTank.h"
@@ -86,7 +84,8 @@ namespace zoomSystem
 {
 
 ZoomHutch::ZoomHutch(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
   populated(0),
   tank("zoomTank"),innerVoid(0)
   /*!
@@ -96,7 +95,7 @@ ZoomHutch::ZoomHutch(const std::string& Key)  :
 {}
 
 ZoomHutch::ZoomHutch(const ZoomHutch& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
   populated(A.populated),tank(A.tank),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   frontLeftWidth(A.frontLeftWidth),
@@ -125,7 +124,7 @@ ZoomHutch::operator=(const ZoomHutch& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       populated=A.populated;
       tank=A.tank;
       xStep=A.xStep;
@@ -214,7 +213,7 @@ ZoomHutch::populate(const Simulation& System)
 } 
   
 void
-ZoomHutch::createUnitVector(const attachSystem::TwinComp& TC)
+ZoomHutch::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -223,19 +222,17 @@ ZoomHutch::createUnitVector(const attachSystem::TwinComp& TC)
 {
   ELog::RegMethod RegA("ZoomHutch","createUnitVector");
 
-  TwinComp::createUnitVector(TC);
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
 
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  mainFC.applyAngleRotate(xyAngle,zAngle);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
   return;
 }
@@ -268,8 +265,9 @@ ZoomHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*roofHeight,Z);
 
   // Port:
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   ModelSupport::buildCylinder(SMap,buildIndex+77,
-			      bEnter,bY,portRadius);
+			      beamFC.getCentre(),beamFC.getY(),portRadius);
   
   // INNER WALLS:
 
@@ -325,51 +323,51 @@ ZoomHutch::createObjects(Simulation& System)
   // OUTER WALLS
   // Front
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -31 3  -4  15 -16 77");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // port
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -31 -77");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   
   // left
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -41 (11:3) 13 -33 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Add door here:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "41 -2 13 -43 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Right
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "31 -42 (12:-4) -14 34 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "42 -52 (22:-14) -24 44 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "52 -2 -24 54 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   // Back wall
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "32 -2 43 -54 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
   // ROOF:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 (3 : 11) "
 				 "(-4 : 12) (-14 : 22) -24  16 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,roofMat,0.0,Out));
 
   // Floor:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 (3 : 11) "
 				 "(-4 : 12) (-14 : 22) -24  -15 5");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,floorMat,0.0,Out));
 
   // INNER VOID
   Out=ModelSupport::getComposite(SMap,buildIndex,
    				 "31 -32 43 (33 : 41) "
    				 "(-34 : 42) (-44 : 52) -54  15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
   return;
 }
@@ -396,7 +394,7 @@ ZoomHutch::createLinks()
       FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+1+ii));
     }
   
-  setBeamExit(buildIndex+2,bEnter,bY);
+  //  setBeamExit(buildIndex+2,bEnter,bY);
 
 
   return;
@@ -404,7 +402,7 @@ ZoomHutch::createLinks()
 
 void
 ZoomHutch::createAll(Simulation& System,
-		     const attachSystem::TwinComp& TC)
+		     const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

@@ -70,7 +70,6 @@
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"

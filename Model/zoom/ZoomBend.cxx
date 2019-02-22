@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomBend.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "surfDIter.h"
@@ -80,8 +79,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
@@ -99,7 +97,7 @@ namespace zoomSystem
 
 ZoomBend::ZoomBend(const std::string& Key)  : 
   attachSystem::ContainedGroup("A","B","C","D"),
-  attachSystem::TwinComp(Key,6),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
   populated(0),innerCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -108,7 +106,7 @@ ZoomBend::ZoomBend(const std::string& Key)  :
 {} 
 
 ZoomBend::ZoomBend(const ZoomBend& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
   populated(A.populated),BCentre(A.BCentre),normalOut(A.normalOut),
   bendAngle(A.bendAngle),bendVertAngle(A.bendVertAngle),
   bendXAngle(A.bendXAngle),bendRadius(A.bendRadius),
@@ -134,7 +132,7 @@ ZoomBend::operator=(const ZoomBend& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       populated=A.populated;
       BCentre=A.BCentre;
       normalOut=A.normalOut;
@@ -232,7 +230,7 @@ void
 ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   /*!
     Create the unit vectors.
-    Note the outer core goes down teh beam
+    Note the outer core goes down the beam
     \param ZS :: shutter direction
   */
 {
@@ -242,30 +240,38 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   const masterRotate& MR=masterRotate::Instance();
   // This must be checked but the EXIT needs to be the GENERAL 
   // exit 
-  
-  const attachSystem::TwinComp* TCPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(&ZS);
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+
+  const attachSystem::FixedGroup* TCPtr=
+    dynamic_cast<const attachSystem::FixedGroup*>(&ZS);
   if (TCPtr)
-    attachSystem::TwinComp::createUnitVector(*TCPtr);
+    {
+      mainFC.createUnitVector(TCPtr->getKey("Main"));
+      beamFC.createUnitVector(TCPtr->getKey("Beam"));
+    }
   else
     {
-      attachSystem::FixedComp::createUnitVector(ZS);
-      Z*=-1;
-      bX=X;
-      bY=Y;
-      bZ=Z;
-      const Geometry::Quaternion Qbx=
-	Geometry::Quaternion::calcQRot(bendXAngle/1000.0,X);
-      Qbx.rotate(bZ);
-      Qbx.rotate(bY);
-      bEnter=ZS.getCentre();
-      bEnter+= X*bxStep+Z*bzStep;
+      mainFC.createUnitVector(ZS);
+      beamFC.createUnitVector(ZS);
+      // Z*=-1;
+      // bX=X;
+      // bY=Y;
+      // bZ=Z;
+      // const Geometry::Quaternion Qbx=
+      // 	Geometry::Quaternion::calcQRot(bendXAngle/1000.0,X);
+      // Qbx.rotate(bZ);
+      // Qbx.rotate(bY);
+      // beamFC.setCentre(ZS.getCentre());
+      // beamFC.applyOffset(bxStep,0,bzStep);
     }
   // link point 
   //  FixedComp::createUnitVector(ZS.getBackPt(),ZS.getY());  
 
   Origin+=X*xStep+Y*yStep+Z*zStep;
-  Geometry::Vec3D Diff=bEnter-Origin;
+  Geometry::Vec3D Diff=beamFC.getCentre()-Origin;
   // TODO :: 
   // STUFF FOR BEND OCCURS AT DIFFERENT PLACE :
 
@@ -281,6 +287,12 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   //    from E2.
 
   bendRadius=1000.0*bendLength/bendAngle;
+
+  Geometry::Vec3D bX(beamFC.getX());
+  Geometry::Vec3D bY(beamFC.getY());
+  Geometry::Vec3D bZ(beamFC.getZ());
+  Geometry::Vec3D bEnter(beamFC.getCentre());
+  
   if(bendRadius<0)
     {
       bZ*=-1;
@@ -290,16 +302,17 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
     }
   normalOut=bY;
   zOut=bZ;
+  
   Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(normalOut);
   Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(zOut);
 
   BCentre=bEnter-bZ*bendRadius;  // correct: X is tangent at this pt.
-  bExit= bZ*bendRadius;
+  Geometry::Vec3D bExit= bZ*bendRadius;
   Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(bExit);
   bExit += BCentre;
 
 
-  SecondTrack::setBeamExit(bExit,normalOut);
+  //  SecondTrack::setBeamExit(bExit,normalOut);
   CS.setVNum(chipIRDatum::zoomBendLength,bendLength);
   CS.setVNum(chipIRDatum::zoomBendRadius,bendRadius);
   CS.setENum(chipIRDatum::zoomBendShutter,MR.calcRotate(bEnter));  
@@ -318,6 +331,11 @@ ZoomBend::createSurfaces()
   */
 {
   ELog::RegMethod RegA("ZoomBend","createSurface");
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bZ(beamFC.getZ());
+  const Geometry::Vec3D& bEnter(beamFC.getCentre());
 
   // Forward Plane:
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);  
@@ -382,6 +400,11 @@ ZoomBend::createAttenuation(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ZoomBend","createAttenuation");
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bY(beamFC.getY());
+  const Geometry::Vec3D& bZ(beamFC.getZ());
 
   // Create +/- insert bend
   ModelSupport::buildCylinder(SMap,buildIndex+1003,
@@ -402,7 +425,7 @@ ZoomBend::createAttenuation(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,buildIndex,ONum,
 				     "1M -2M 503 -1003 505 -506 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,ONum,
 				     " (-1M:2M:-503:1003:-505:506) ");
@@ -415,7 +438,7 @@ ZoomBend::createAttenuation(Simulation& System)
 	  if ((PA>=sectorLenA && PA<=sectorLenB) ||
 	      (PB>=sectorLenA && PB<=sectorLenB) )
 	    {
-	      MonteCarlo::Qhull* CRPtr=System.findQhull(innerShield[j]);
+	      MonteCarlo::Object* CRPtr=System.findObject(innerShield[j]);
 	      if (!CRPtr)
 		throw ColErr::InContainerError<int>(innerShield[j],"inner shield cell");
 	      CRPtr->addSurfString(Out);
@@ -533,15 +556,15 @@ ZoomBend::createObjects(Simulation& System)
       addOuterUnionSurf(SecName[i],Out);      
       Out=ModelSupport::getComposite(SMap,offset,"1 -2 3 -4 5 -6 "
 				     "(-101:102:-103:104:-105:106)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+Inner));
 
       Out=ModelSupport::getComposite(SMap,offset,"101 -102 103 -104 105 -106");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out+Inner));
+      System.addCell(MonteCarlo::Object(cellIndex++,innerMat,0.0,Out+Inner));
       innerShield.push_back(cellIndex-1);
     }
   // Create Bend itself [NOTE DEPENDENT ON NSection]
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -32 -503 504 505 -506 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
   innerCell=cellIndex-1;
   return;
 }
@@ -558,12 +581,13 @@ ZoomBend::exitWindow(const double Dist,std::vector<int>& window,
     \return Master Plane
   */
 {
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   window.clear();
   window.push_back(SMap.realSurf(buildIndex+13));
   window.push_back(SMap.realSurf(buildIndex+14));
   window.push_back(SMap.realSurf(buildIndex+15));
   window.push_back(SMap.realSurf(buildIndex+16));
-  Pt=getExit()+normalOut*Dist;  
+  Pt=beamFC.getLinkPt(1)+normalOut*Dist;  
   return SMap.realSurf(buildIndex+31); 
 }
 
@@ -574,6 +598,10 @@ ZoomBend::createLinks()
   */
 {
   ELog::RegMethod RegA("ZoomBend","createLinks");
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bZ(beamFC.getZ());
+  const Geometry::Vec3D& bEnter(beamFC.getCentre());
 
   Y=normalOut-Z*(normalOut.dotProd(Z));
   Y.makeUnit();
@@ -610,8 +638,8 @@ ZoomBend::createLinks()
   FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+506));
 
 
-  SecondTrack::setBeamExit(MidPt,normalOut);
-  setExit(Origin+Y*bendLength,Y);
+  //  SecondTrack::setBeamExit(MidPt,normalOut);
+  //  setExit(Origin+Y*bendLength,Y);
   return;
 }
 
@@ -638,9 +666,8 @@ ZoomBend::createAll(Simulation& System,
   createLinks();
 
   // Adjust bY for exit
-
-  bY=normalOut;
-  bZ=zOut;
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  beamFC.createUnitVector(beamFC.getCentre(),beamFC.getX(),normalOut,zOut);
   return;
 }
   

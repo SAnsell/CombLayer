@@ -55,8 +55,13 @@ class Object
   int placehold;     ///< Is cell virtual (ie not in output)
   int populated;     ///< Full population
 
+  bool activeMag;         ///< Magnetic field active
+  Geometry::Vec3D magVec; ///< Magnetic field  [for fluka/phits]
+  
   HeadRule HRule;    ///< Top rule
 
+  Geometry::Vec3D COM;       ///< Centre of mass 
+  
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;
  
@@ -105,6 +110,9 @@ class Object
   void setCreate(const int lx) { listNum=lx; }         ///< Set Creation point
   void setTemp(const double A) { Tmp=A; }              ///< Set temperature [Kelvin]
   void setImp(const int A) { imp=A; }                  ///< Set imp
+  void setMagField(const Geometry::Vec3D&);
+  void setMagFlag() { activeMag=1; }  ///< implicit mag flag [no field]
+  
   int setObject(std::string);
   int setObject(const int,const int,const std::vector<Token>&);
   int procString(const std::string&);
@@ -144,6 +152,7 @@ class Object
   void makeComplement();
 
   bool hasSurface(const int) const;
+  bool hasMagField() const { return activeMag; }  ///< Active mag
   int isValid(const Geometry::Vec3D&) const;            
   int isValid(const Geometry::Vec3D&,const int) const;            
   int isDirectionValid(const Geometry::Vec3D&,const int) const;            
@@ -190,12 +199,17 @@ class Object
   int trackOutCell(const MonteCarlo::neutron&,double&,
 		   const Geometry::Surface*&,const int =0) const;
 
+
+  /// acessor to forward 
+  Geometry::Vec3D getCofM() const { return COM; }
   // OUTPUT
   std::string cellCompStr() const;
   std::vector<Token> cellVec() const;
   std::string headStr() const;
   std::string str() const;
   std::string pointStr(const Geometry::Vec3D&) const;
+  std::string cellStr(const std::map<int,Object*>&) const;
+  
   void write(std::ostream&) const;         
   void writePHITS(std::ostream&) const;    
   void writeFLUKA(std::ostream&) const;    

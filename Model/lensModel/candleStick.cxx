@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -382,14 +381,14 @@ candleStick::createObjects(Simulation& System,
   // Base system:
   std::string Out=
     ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
   // Support
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   // Plate
   Out=ModelSupport::getComposite(SMap,buildIndex,"-12 22 23 -24 25 -26");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,supportMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,supportMat,0.0,Out));
 
   // VACUUM:
   Out=ModelSupport::getComposite(SMap,buildIndex,"31 -32 33 -34 35 -36");    
@@ -399,27 +398,27 @@ candleStick::createObjects(Simulation& System,
   Out+=ModelSupport::getComposite(SMap,buildIndex,"(12:-22:-23:24:-25:26)");
   // And si moderator 
   Out+=CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // TOP VACUUM
   // Make outer Al system
   Out=ModelSupport::getComposite(SMap,buildIndex,"45 -36 -31 ((42 33 -34):-47)");
   Out+=ModelSupport::getComposite(SMap,buildIndex," (-22:-23:24:-25:26)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // AL SKIN:
   Out= ModelSupport::getComposite(SMap,buildIndex,"51 -52 53 -54 55 -56");
   Out+=ModelSupport::getComposite(SMap,buildIndex,
 				  "( -31 : 32 : -33 : 34 : -35 : 36 )" 
 				  "(-45 : 36 : -33 : 34 : 31) ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // TOP Rounded section
   // Make outer Al system
   Out=ModelSupport::getComposite(SMap,buildIndex,"65 -56 -51 ((42 -54 53):-67)")+
     ModelSupport::getComposite(SMap,buildIndex,
 			       "#(45 -36 -31 ((42 33 -34):-47))");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
   // Construct side clearance:
   Out=
@@ -435,7 +434,7 @@ candleStick::createObjects(Simulation& System,
   Out+=
     ModelSupport::getComposite(SMap,buildIndex,"( 51  : -85 : -83 : 84)");
  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 			         
   // AL SKIN CLEARANCE
   Out= ModelSupport::getComposite(SMap,buildIndex,
@@ -443,7 +442,7 @@ candleStick::createObjects(Simulation& System,
   addOuterSurf(Out);   // old 70000 virtual
   Out+=ModelSupport::getComposite(SMap,buildIndex,
 				  "#(65 -56 -51 ((42 -54 53) : -67))");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // WATER AL
   Out=ModelSupport::getComposite(SMap,buildIndex,"91 -92 93 -94 95 -96 ");
@@ -453,7 +452,7 @@ candleStick::createObjects(Simulation& System,
 			       "( -71 : 72 : -73 : 74 : -75 ) ") : 
     ModelSupport::getComposite(SMap,buildIndex,
 			       "( -71 : 72 : -73 : 74 : -55 ) "); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"71 -72 73 -74 96 -56");
@@ -471,7 +470,7 @@ candleStick::specialExclude(Simulation& System,const int cellNum) const
 {
   ELog::RegMethod RegA("candleStick","specialExclude");
 
-  MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+  MonteCarlo::Object* outerObj=System.findObject(cellNum);
   if (outerObj)
     {
       outerObj->addSurfString(getExclude());

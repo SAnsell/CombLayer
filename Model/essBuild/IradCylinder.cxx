@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -216,7 +215,7 @@ IradCylinder::createInnerObjects(Simulation& System)
     {
       std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -2 ");
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
       addCell("Samples",cellIndex-1);
       return;
     }
@@ -294,7 +293,7 @@ IradCylinder::createInnerObjects(Simulation& System)
 		XSurfA+YSurfA+ZSurfA;
 	      HeadRule unit(Out);
 	      unit.removeCommon();
-              System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,
+              System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,
 					       unit.display()));
               addCell("Samples",cellIndex-1);
             }
@@ -349,15 +348,15 @@ IradCylinder::createObjects(Simulation& System)
   std::string Out;
   // Centre
   // Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
-  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+  // System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
   // addCell("Centre",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
   addCell("End",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -9 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,mat,temp,Out));
   addCell("End",cellIndex-1);
 
 
@@ -365,15 +364,15 @@ IradCylinder::createObjects(Simulation& System)
   for(size_t index=0;index<wallThick.size();index++)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,IR," 1 -2 -17M 7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[index],temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[index],temp,Out));
       addCell("Wall",cellIndex-1);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,IR," -1 -18M 8M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[index],temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[index],temp,Out));
       addCell("Wall",cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,IR," 2 -19M 9M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[index],temp,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat[index],temp,Out));
       addCell("Wall",cellIndex-1);
       IR+=10;
     }

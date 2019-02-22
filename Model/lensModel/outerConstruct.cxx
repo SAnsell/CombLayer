@@ -51,7 +51,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -69,7 +68,7 @@ outerConstruct(Simulation& System)
   */
 {
   // Add outer void
-  System.addCell(MonteCarlo::Qhull(100,0,0.0,"-1"));
+  System.addCell(MonteCarlo::Object(100,0,0.0,"-1"));
 
   SimProcess::registerOuter(System,100,20000);  // Arm 
   SimProcess::registerOuter(System,100,60000);  // outer clearance [top]

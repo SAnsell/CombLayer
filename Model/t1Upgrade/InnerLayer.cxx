@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -235,24 +234,24 @@ InnerLayer::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,nextPoisLayer," -11 ")
 	    +frontX.display();
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
+      System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 11 -1 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
+      System.addCell(MonteCarlo::Object(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       
       // Poisoning 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 1 -2");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,
+      System.addCell(MonteCarlo::Object(cellIndex++,poisonMat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 2 -12 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
+      System.addCell(MonteCarlo::Object(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
       innerCells.push_back(cellIndex-1);
       nextPoisLayer+=20;
@@ -265,7 +264,7 @@ InnerLayer::createObjects(Simulation& System)
   else
     Out=backX.display()+" "+frontX.display();
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
+  System.addCell(MonteCarlo::Object(cellIndex++,ch4Mat,
 				   ch4Temp,Out+Edge));
   innerCells.push_back(cellIndex-1);
   

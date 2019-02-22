@@ -57,7 +57,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -277,12 +276,12 @@ WedgeInsert::createObjects(Simulation& System,
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 1 3 -4 5 -6 ");
       Out+=CShape;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex,
 				     " 11 13 -14 15 -16 ( -1:-3:4:-5:6 )" );
       Out+=CShape;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,buildIndex," 11 13 -14 15 -16 ");
       

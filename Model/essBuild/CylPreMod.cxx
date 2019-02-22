@@ -55,7 +55,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -424,7 +423,7 @@ CylPreMod::createObjects(Simulation& System,
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
       else if (CMod)
 	Out+=CMod->getExclude();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
       layerCells.push_back(cellIndex-1);
       SI+=10;
       if (i!=even)
@@ -445,7 +444,7 @@ CylPreMod::createObjects(Simulation& System,
 	  Out+=ModelSupport::getComposite
 	    (SMap,SI+100*static_cast<int>(viewIndex),
 	     divideN," 101M (103:104:105:106) -113 -114 -115 -116");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temp[i],Out));
 	  layerCells.push_back(cellIndex-1);
 	}
     }
@@ -459,7 +458,7 @@ CylPreMod::createObjects(Simulation& System,
       std::string OComp(Out);
       OComp+=ModelSupport::getComposite(SMap,buildIndex+100*static_cast<int>(viewIndex),
 				 "101 -103 -104 -105 -106 " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OComp));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,OComp));
     }
   return; 
 }
@@ -718,7 +717,7 @@ CylPreMod::updateLayers(Simulation& System,
 {
   ELog::RegMethod RegA("CylPreMod","updateLayers");
   
-  MonteCarlo::Qhull* OPtr=System.findQhull(layerCells[layerN]);
+  MonteCarlo::Object* OPtr=System.findObject(layerCells[layerN]);
   if (!OPtr)
     throw ColErr::InContainerError<int>(layerCells[layerN],"layerCells");
   if (flag=='A')

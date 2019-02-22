@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -195,7 +194,7 @@ CylSample::createObjects(Simulation& System)
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+OutInner));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out+OutInner));
       OutInner=ModelSupport::getComposite(SMap,SI," (7:-5:6) ");
       SI+=10;
     }

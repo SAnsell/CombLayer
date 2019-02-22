@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -74,10 +73,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "IMatGuide.h"
 #include "IMatPrimGuide.h"
@@ -130,7 +127,13 @@ IMatPrimGuide::createSurfaces()
   */
 {
   ELog::RegMethod RegA("IMatPrimGuide","createSurfaces");
-  
+
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D bX(beamFC.getX());
+  const Geometry::Vec3D bY(beamFC.getY());
+  const Geometry::Vec3D bZ(beamFC.getZ());
+
   IMatGuide::createSurfaces();
 
   // Inner void layers
@@ -172,31 +175,31 @@ IMatPrimGuide::createObjects(Simulation& System,
 
   // Inner void cell:
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 3 -4 5 -6 ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Glass layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-2 13 -14 15 -16 (-3:4:-5:6) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,glassMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,glassMat,0.0,Out));
   // Box layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 23 -24 25 -26 "
 				 "(-13:14:-15:16) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,boxMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,boxMat,0.0,Out));
 
   // Void layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 33 -34 35 -36 "
 				 "(-23:24:-25:26) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Fe layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 47 43 -44 45 -46 "
 				 "(-33:34:-35:36) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 57 53 -54 55 -56 "
 				 "(-43:44:-45:46:-47) ")+insertEdge;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
   
   return;
 }
@@ -216,7 +219,8 @@ IMatPrimGuide::createLinks()
 }
 
 void
-IMatPrimGuide::createAll(Simulation& System,const attachSystem::TwinComp& TC)
+IMatPrimGuide::createAll(Simulation& System,
+			 const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to

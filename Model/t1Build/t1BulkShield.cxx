@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -82,8 +81,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
@@ -324,7 +322,7 @@ t1BulkShield::createShutters(Simulation& System,
       OR.addObject(GData.back());
     }
 
-  MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
+  MonteCarlo::Object* shutterObj=System.findObject(shutterCell);
   if (!shutterObj)
     throw ColErr::InContainerError<int>(shutterCell,"shutterCell");
 
@@ -385,15 +383,15 @@ t1BulkShield::createObjects(Simulation& System,
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -17 7")+CC.getExclude();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   shutterCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -27 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   innerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37 27");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ironMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,ironMat,0.0,Out));
   outerCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"5 -6 -37");
@@ -411,11 +409,11 @@ t1BulkShield::processVoid(Simulation& System)
 {
   ELog::RegMethod RegA("t1BulkShield","processVoid");
   // Add void
-  MonteCarlo::Qhull* Obj=System.findQhull(74123);
+  MonteCarlo::Object* Obj=System.findObject(74123);
   if (Obj)
     Obj->procString("-1 "+getExclude());
   else
-    System.addCell(MonteCarlo::Qhull(74123,0,0.0,"-1 "+getExclude()));
+    System.addCell(MonteCarlo::Object(74123,0,0.0,"-1 "+getExclude()));
   return;
 }
 

@@ -60,7 +60,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -479,7 +478,7 @@ boxUnit::createObjects(Simulation& System)
 	  if (SIprev)
 	    Out+=ModelSupport::getComposite(SMap,SIprev,innerCX.str());
 	  Out+=FBSurf;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,
+	  System.addCell(MonteCarlo::Object(cellIndex++,
 					   boxVar[i].getMat(),
 					   boxVar[i].getTemp(),Out));
 	  SIprev=SI;

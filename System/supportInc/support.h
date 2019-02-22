@@ -109,6 +109,9 @@ std::vector<std::string> StrParts(std::string);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);
 
+std::vector<std::string>
+StrSeparate(const std::string&,const std::string&);
+
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 int sliceVector(V<T,Alloc>&,const T&,const T&);
 

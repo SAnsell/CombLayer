@@ -54,7 +54,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "surfIndex.h"
 #include "ObjSurfMap.h"
 

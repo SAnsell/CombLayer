@@ -82,7 +82,6 @@
 #include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "WForm.h"
 #include "weightManager.h"
 #include "ModeCard.h"
@@ -198,9 +197,9 @@ Simulation::deleteObjects()
 
 
 int
-Simulation::checkInsert(const MonteCarlo::Qhull& A)
+Simulation::checkInsert(const MonteCarlo::Object& A)
   /*!
-    When a new Qhull object is to be inserted this
+    When a new Object object is to be inserted this
     checks to see if it can be done, returns 1 on 
     success and 0 on failure 
     \param A :: Hull to insert in the main list
@@ -238,7 +237,7 @@ Simulation::getNextCell(int CN) const
 }
 
 int
-Simulation::addCell(const MonteCarlo::Qhull& A)
+Simulation::addCell(const MonteCarlo::Object& A)
   /*!
     Adds a cell the the simulation.
     \todo Can the checkCell be removed??
@@ -250,7 +249,7 @@ Simulation::addCell(const MonteCarlo::Qhull& A)
 }
 
 int
-Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
+Simulation::addCell(const int cellNumber,const MonteCarlo::Object& A)
   /*!
     Adds a cell the the simulation.
     \param cellNumber :: Cell Id
@@ -258,18 +257,18 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
     \return 1 on success and 0 on failure
   */
 {
-  ELog::RegMethod RegA("Simulation","addCell(int,Qhull)");
+  ELog::RegMethod RegA("Simulation","addCell(int,Object)");
 
   OTYPE::iterator mpt=OList.find(cellNumber);
-  
+
   // Adding existing cell:
   if (mpt!=OList.end())
     {
-      ELog::EM<<"Cell Exists Object ::"<<cellNumber<<std::endl;
+      ELog::EM<<"Cell Exists Object ::"<<cellNumber<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
   OList.insert(OTYPE::value_type(cellNumber,A.clone()));
-  MonteCarlo::Qhull* QHptr=OList[cellNumber];
+  MonteCarlo::Object* QHptr=OList[cellNumber];
 
   QHptr->setName(cellNumber);
 
@@ -330,7 +329,7 @@ Simulation::addCell(const int Index,const int matNum,
 {
   ELog::RegMethod RegA("Simulation","addCell(int,int,double,string)");
   
-  MonteCarlo::Qhull TX;
+  MonteCarlo::Object TX;
   TX.setName(Index);
   TX.setMaterial(matNum);
   TX.setTemp(matTemp);  
@@ -354,7 +353,7 @@ Simulation::addCell(const int Index,const int matNum,
 {
   ELog::RegMethod RegA("Simulation","addCell(int,int,double,HeadRule)");
   
-  MonteCarlo::Qhull TX;
+  MonteCarlo::Object TX;
   TX.setName(Index);
   TX.setMaterial(matNum);
   TX.setTemp(matTemp);  
@@ -583,7 +582,7 @@ Simulation::getCellImp() const
 }
 
 int
-Simulation::removeComplement(MonteCarlo::Qhull& OB) const
+Simulation::removeComplement(MonteCarlo::Object& OB) const
   /*!
     Remove a complement form an object
     \param OB :: object to extract complement
@@ -603,7 +602,7 @@ Simulation::removeComplement(MonteCarlo::Qhull& OB) const
 int
 Simulation::removeComplements()
   /*!
-    Expand each complement on a tree.
+    Expand each complement on the tree
     \retval 0 on success, 
     \retval -1 failed to find surface key
   */
@@ -615,7 +614,7 @@ Simulation::removeComplements()
   OTYPE::iterator vc;
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
-      MonteCarlo::Qhull& workObj= *(vc->second);
+      MonteCarlo::Object& workObj= *(vc->second);
 
       if (workObj.hasComplement())
         {  
@@ -663,7 +662,7 @@ Simulation::removeNullSurfaces()
 	  OTYPE::iterator oc;
 	  for(oc=OList.begin();oc!=OList.end();oc++)
 	    {
-	      MonteCarlo::Qhull& workObj= *(oc->second);
+	      MonteCarlo::Object& workObj= *(oc->second);
 	      workObj.removeSurface(keyN);
 	    }
 	  dead.push_back(keyN);
@@ -680,7 +679,7 @@ int
 Simulation::populateCells()
   /*!
     Place a surface* with each keyN in the cell list 
-    Generate the Qhull map.
+    Generate the Object map.
     \retval 0 on success, 
     \retval -1 failed to find surface key
   */
@@ -692,7 +691,7 @@ Simulation::populateCells()
   int retVal(0);
   for(oc=OList.begin();oc!=OList.end();oc++)
     {
-      MonteCarlo::Qhull& workObj= *(oc->second);
+      MonteCarlo::Object& workObj= *(oc->second);
       try
         {
 	  workObj.populate();
@@ -712,7 +711,7 @@ int
 Simulation::populateCells(const std::vector<int>& cellVec)
   /*!
     Place a surface* with each keyN in the cell list 
-    Generate the Qhull map.
+    Generate the Object map.
     \param cellVec :: Cells to consider
     \retval 0 on success, 
     \retval -1 failed to find surface key
@@ -726,7 +725,7 @@ Simulation::populateCells(const std::vector<int>& cellVec)
     {
       oc=OList.find(CN);
       if (oc==OList.end()) return -1;
-      MonteCarlo::Qhull& workObj= *(oc->second);
+      MonteCarlo::Object& workObj= *(oc->second);
       try
         {
 	  workObj.populate();
@@ -766,30 +765,30 @@ Simulation::applyTransforms()
   return 0;
 }
 
-MonteCarlo::Qhull*
-Simulation::findQhull(const int CellN)
+MonteCarlo::Object*
+Simulation::findObject(const int CellN)
   /*!
     Helper function to determine the hull object 
     given a particular cell number
     \param CellN : Number of the Object to find
-    \returns Qhull pointer to the object
+    \returns Object pointer to the object
   */
 {
-  ELog::RegMethod RegA("Simulation","findQhull");
+  ELog::RegMethod RegA("Simulation","findObject");
   OTYPE::iterator mp=OList.find(CellN);
   return (mp==OList.end()) ? 0 : mp->second;
 }
 
-const MonteCarlo::Qhull*
-Simulation::findQhull(const int CellN) const
+const MonteCarlo::Object*
+Simulation::findObject(const int CellN) const
   /*! 
     Helper function to determine the hull object 
     given a particulat cell number (const varient)
     \param CellN :: Cell number 
-    \return Qhull pointer 
+    \return Object pointer 
   */
 {
-  ELog::RegMethod RegA("Simulation","findQhull const");
+  ELog::RegMethod RegA("Simulation","findObject const");
 
   OTYPE::const_iterator mp=OList.find(CellN);
   return (mp==OList.end()) ? 0 : mp->second;
@@ -800,16 +799,18 @@ int
 Simulation::calcVertex(const int CellN)
   /*! 
      Calculates the vertexes in the Cell and stores
-     in the Qhull. The number of vertexes found are returned. 
+     in the Object. The number of vertexes found are returned. 
      \param CellN :: Cell object number
-     \returns CellN if valid, 0 if failed
+     \returns Number of vertex found
   */
 {
   ELog::RegMethod RegA("Simulation","calcVertex");
-  MonteCarlo::Qhull* QH=findQhull(CellN);
+  
+  MonteCarlo::Object* QH=findObject(CellN);
   if (!QH) return 0;
 
-  QH->calcVertex();
+  
+  
   return CellN;
 }
 
@@ -817,7 +818,7 @@ void
 Simulation::calcAllVertex()
   /*! 
      Calculates the vertexes in the Cell and stores
-     in the Qhull. The number of vertexes found are returned. 
+     in the Object. The number of vertexes found are returned. 
   */
 {
   ELog::RegMethod RegA("Simulation","calcAllVertex");
@@ -828,8 +829,8 @@ Simulation::calcAllVertex()
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
       // This point may be outside of the point
-      if (!mc->second->calcVertex())   
-	mc->second->calcMidVertex();
+      //      if (!mc->second->calcVertex())   
+      //	mc->second->calcMidVertex();
     }
   return;
 }
@@ -861,10 +862,10 @@ Simulation::updateSurface(const int SN,const std::string& SLine)
 }
 
 void
-Simulation::addObjSurfMap(MonteCarlo::Qhull* QPtr)
+Simulation::addObjSurfMap(MonteCarlo::Object* QPtr)
   /*! 
     Add an object surface mappings.
-    \param QPtr :: Qhull object
+    \param QPtr :: Object object
   */
 {
   ELog::RegMethod RegA("Simulation","addObjSurfMap");
@@ -930,20 +931,6 @@ Simulation::getOSM() const
   return OSMPtr;
 }
   
-void
-Simulation::printVertex(const int CellN) const
-  /*! 
-    Print out the appropiate Vertex information
-    \param CellN :: Cell number to access
-  */
-{
-  const MonteCarlo::Qhull* QH=findQhull(CellN);
-  if (!QH) 
-    return;
-
-  QH->printVertex();
-  return;
-}
 
 void
 Simulation::setEnergy(const double) 
@@ -982,7 +969,7 @@ Simulation::existCell(const int cellNumber) const
   */
 {
   ELog::RegMethod RegA("Simulation","existCell");
-  const MonteCarlo::Qhull* QH=findQhull(cellNumber);
+  const MonteCarlo::Object* QH=findObject(cellNumber);
   if (!QH) return 0;
 
   if (QH->getName()!=cellNumber)
@@ -1006,7 +993,7 @@ Simulation::getCellMaterial(const int cellNumber) const
   */
   
 {
-  const MonteCarlo::Qhull* QH=findQhull(cellNumber);
+  const MonteCarlo::Object* QH=findObject(cellNumber);
   if (!QH) 
     return -1;
 
@@ -1120,7 +1107,7 @@ Simulation::isValidCell(const int cellNumber,
   */
 {
   /* Does Oi correspond to an object */
-  const MonteCarlo::Qhull* QH=findQhull(cellNumber);
+  const MonteCarlo::Object* QH=findObject(cellNumber);
   if (!QH)
     return 0;
 
@@ -1275,7 +1262,7 @@ Simulation::getCellWithMaterial(const int matN) const
 
   for(const OTYPE::value_type& cellItem : OList)
     {
-      const MonteCarlo::Qhull* QPtr=cellItem.second;
+      const MonteCarlo::Object* QPtr=cellItem.second;
       if (!QPtr->isPlaceHold() &&
           (matN==-2 ||                            // all
           (matN==-1 && QPtr->getMat()) ||         // not void
@@ -1459,7 +1446,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
     {
       const int cNum=RMItem.first;
       const int nNum=RMItem.second;
-      MonteCarlo::Qhull* oPtr=findQhull(cNum);
+      MonteCarlo::Object* oPtr=findObject(cNum);
       if (oPtr)
 	{
 	  oPtr->setName(nNum);      
@@ -1535,7 +1522,7 @@ Simulation::voidObject(const std::string& ObjName)
   const std::vector<int> cellRange=getObjectRange(ObjName);
   for(const int cellN : cellRange)
     {
-      MonteCarlo::Qhull* QH=findQhull(cellN);
+      MonteCarlo::Object* QH=findObject(cellN);
       if (QH) 
 	QH->setMaterial(0);
     }
@@ -1556,11 +1543,11 @@ Simulation::splitObject(const int CA,const int SN)
 {
   ELog::RegMethod RegA("Simulation","splitObject");
 
-
-  MonteCarlo::Object* CPtr = findQhull(CA);
+  MonteCarlo::Object* CPtr = findObject(CA);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CA,"Cell not found");
   CPtr->populate();
+
   // get next cell
   const int CB=getNextCell(CA);
   
@@ -1574,7 +1561,7 @@ Simulation::splitObject(const int CA,const int SN)
   addCell(CB,CPtr->getMat(),CPtr->getTemp(),DHead);
   CPtr->procHeadRule(CHead);
 
-  MonteCarlo::Object* DPtr = findQhull(CB);  
+  MonteCarlo::Object* DPtr = findObject(CB);  
   CPtr->populate();
   CPtr->createSurfaceList();
 
@@ -1585,11 +1572,13 @@ Simulation::splitObject(const int CA,const int SN)
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs(std::abs(SN));
 
+
+      
   // Now make two cells and replace this cell with A + B
 
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
-  
+
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
     CPtr->procString(AX.writeMCNPX());
@@ -1612,7 +1601,7 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
-  MonteCarlo::Object* CPtr = findQhull(CN);
+  MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   
@@ -1708,7 +1697,7 @@ Simulation::prepareWrite()
   
   cellOutOrder.clear();
 
-  for(const std::pair<int,MonteCarlo::Qhull*>& OVal : OList)
+  for(const std::pair<int,MonteCarlo::Object*>& OVal : OList)
     {
       if (!OVal.second->isPlaceHold())
 	{

@@ -66,7 +66,7 @@ objectAddition(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*
     Adds components to the model -- should NOT be here
-    \param System :: Simulation to get tallies from 
+    \param System :: Simulation to add object to
     \param IParam :: Parameters
   */
 {

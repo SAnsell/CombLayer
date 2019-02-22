@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WWG.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ class WWG
 		     const size_t,const double);
   void calcGridMidPoints();
   void updateWM(const WWGWeight&,const double);
-  void scaleRange(const double,const double,const double);
+  void scaleRange(const size_t,const double,const double,const double);
   void powerRange(const double);
 
   void write(std::ostream&) const;

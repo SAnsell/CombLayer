@@ -61,7 +61,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -251,28 +250,28 @@ BeamTubeJoiner::createObjects(Simulation& System,
   addOuterSurf(Out+frontLayer);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontLayer));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontLayer));
 
   // Void (exclude inter wall)
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -17 27 (-41:-67)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out+frontLayer));
+  System.addCell(MonteCarlo::Object(cellIndex++,gapMat,0.0,Out+frontLayer));
   addCell("FrontVoid",cellIndex-1);
   
   // Inner wall
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -27 37");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontLayer));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out+frontLayer));
   
   // Inner Void
   Out=ModelSupport::getComposite(SMap,buildIndex," -2 -37 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontLayer));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+frontLayer));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -47 57 51 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,interMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,interMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "41 -17 67 (47:-57:-51) -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   return;
 }

@@ -37,7 +37,7 @@ class testObject
 private:
   
   /// Type of storage
-  typedef std::map<int,MonteCarlo::Qhull*> OTYPE;
+  typedef std::map<int,MonteCarlo::Object*> OTYPE;
 
   OTYPE MObj;  ///< Master object list
 

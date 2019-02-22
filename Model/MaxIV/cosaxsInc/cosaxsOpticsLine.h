@@ -3,7 +3,7 @@
  
  * File:   cosaxsInc/cosaxsOpticsLine.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,9 +71,14 @@ namespace xraySystem
 class cosaxsOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
+
+  /// construction space for main object
+  attachSystem::InnerZone buildZone;
 
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -109,7 +114,9 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
-  // ate
+  /// Mono Xstal 
+  std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
+  // Gate to isolate mono
   std::shared_ptr<constructSystem::GateValve> gateC;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowD;
@@ -117,7 +124,7 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::PortTube> diagBoxA;
   /// Bellow from diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  // Gate fro first mirror
+  // Gate for first mirror
   std::shared_ptr<constructSystem::GateValve> gateD;
 
   /// Mirror box 
@@ -150,15 +157,23 @@ class cosaxsOpticsLine :
   /// Bellow to end station
   std::shared_ptr<constructSystem::Bellows> bellowI;
 
+  double outerLeft;    ///< Left Width for cut rectangle
+  double outerRight;   ///< Right width for cut rectangle
+  double outerTop;     ///< Top lift for cut rectangle
 
 
-  
-  void constructDiag(Simulation&,constructSystem::PortTube&,
-		     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-		     const attachSystem::FixedComp&,const long int);
+  int constructDiag
+    (Simulation&,
+     MonteCarlo::Object**,
+     constructSystem::PortTube&,
+     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
+     const attachSystem::FixedComp&,
+     const long int);
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   

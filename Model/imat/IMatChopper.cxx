@@ -66,7 +66,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -74,8 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
@@ -85,7 +83,8 @@ namespace imatSystem
 {
 
 IMatChopper::IMatChopper(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,6),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
   innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -147,7 +146,7 @@ IMatChopper::populate(const Simulation& System)
 }
   
 void
-IMatChopper::createUnitVector(const attachSystem::TwinComp& TC)
+IMatChopper::createUnitVector(const attachSystem::FixedGroup& TC)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -157,25 +156,18 @@ IMatChopper::createUnitVector(const attachSystem::TwinComp& TC)
   */
 {
   ELog::RegMethod RegA("IMatChopper","createUnitVector");
-  attachSystem::TwinComp::createUnitVector(TC);
-  Origin+=bEnter+X*xStep+Y*yStep+Z*zStep;
-  bEnter=Origin;
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  if (fabs(xyAngle)>Geometry::zeroTol || 
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,bX);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,bZ);
+  mainFC.createUnitVector(TC.getKey("Main"));
+  beamFC.createUnitVector(TC.getKey("Beam"));
+
+  mainFC.setCentre(beamFC.getCentre());
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
   
-      Qz.rotate(bY);
-      Qz.rotate(bZ);
-      Qxy.rotate(bY);
-      Qxy.rotate(bX);
-      Qxy.rotate(bZ); 
-    }
   return;
 }
 
@@ -188,6 +180,12 @@ IMatChopper::createSurfaces()
 {
   ELog::RegMethod RegA("IMatChopper","createSurfaces");
 
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D& bX(beamFC.getX());
+  const Geometry::Vec3D& bY(beamFC.getY());
+  const Geometry::Vec3D& bZ(beamFC.getZ());
+  
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,bY);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+bY*length,bY);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-bX*left,bX);
@@ -237,17 +235,17 @@ IMatChopper::createObjects(Simulation& System)
 
   // Inner void cell:
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Fe layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16 "
 				 "(-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,feMat,0.0,Out));
 
   // Wall layer:
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26 "
 				 " (-11:12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
   
   return;
 }
@@ -262,11 +260,15 @@ IMatChopper::createLinks()
 {
   ELog::RegMethod RegA("IMatChopper","createLinks");
 
-  SecondTrack::setBeamExit(Origin+bY*length,bY);
-  setExit(Origin+bY*length,bY);
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(0,Origin,-bY);      // Note always to the moderator
+  const Geometry::Vec3D bY(beamFC.getY());
 
+  mainFC.setConnect(1,Origin+bY*length,bY);
+  beamFC.setConnect(1,Origin+bY*length,bY);
+
+  mainFC.setConnect(0,Origin,-bY);      // Note always to the moderator
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
@@ -274,7 +276,7 @@ IMatChopper::createLinks()
 
 void
 IMatChopper::createAll(Simulation& System,
-		       const attachSystem::TwinComp& TC)
+		       const attachSystem::FixedGroup& TC)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to

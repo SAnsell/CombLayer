@@ -35,20 +35,12 @@ namespace hutchSystem
 */
 
 class ScatterPlate : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   int populated;                 ///< 1:var
 
-  Geometry::Vec3D Axis;          ///< Beam  axis
-  Geometry::Vec3D XAxis;         ///< Horrizontal axis
-  Geometry::Vec3D ZAxis;         ///< Vertial axis
-  Geometry::Vec3D Centre;        ///< Centre point
-
-  double zAngle;            ///< Z angle rotation
-  double xyAngle;           ///< XY angle rotation
-  double fStep;             ///< Forward step
   double width;             ///< Full Width
   double height;            ///< Full Height
   double depth;             ///< Full Depth 

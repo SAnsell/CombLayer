@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -258,7 +257,8 @@ ContainedGroup::addOuterSurf(const std::string& Key,const int SN)
     \param SN :: Surface number [inward looking]
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","addInterSurf");
+  ELog::RegMethod RegA("ContainedGroup","addOuterSurf(int)");
+  
   getCC(Key).addOuterSurf(SN);
   return;
 }
@@ -272,8 +272,22 @@ ContainedGroup::addOuterSurf(const std::string& Key,
   \param SList ::  Surface string [fully decomposed]
 */
 {
-  ELog::RegMethod RegA("ContainedGroup","addInterSurf(std::string)");
+  ELog::RegMethod RegA("ContainedGroup","addOuterSurf(std::string)");
   getCC(Key).addOuterSurf(SList);
+  return;
+}
+
+void
+ContainedGroup::addOuterSurf(const std::string& Key,
+			     const ContainedComp& CC) 
+/*!
+  Add a ContainedComp outerSurf to a component rule
+  \param Key :: Key name for rule
+  \param CC ::  Component to add
+*/
+{
+  ELog::RegMethod RegA("ContainedGroup","addOuterUnionSurf(CC)");
+  getCC(Key).addOuterSurf(CC);
   return;
 }
   
@@ -286,8 +300,23 @@ ContainedGroup::addOuterUnionSurf(const std::string& Key,
   \param SList ::  Surface string [fully decomposed]
 */
 {
-  ELog::RegMethod RegA("ContainedGroup","addInterSurf(std::string)");
+  ELog::RegMethod RegA("ContainedGroup","addOuterUnionSurf(std::string)");
+  
   getCC(Key).addOuterUnionSurf(SList);
+  return;
+}
+
+void
+ContainedGroup::addOuterUnionSurf(const std::string& Key,
+				  const ContainedComp& CC) 
+  /*!
+    Add a ContainedComp outerSurf to a component rule
+    \param Key :: Key name for rule
+    \param CC ::  Component to add
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addOuterUnionSurf(CC)");
+  getCC(Key).addOuterUnionSurf(CC);
   return;
 }
 

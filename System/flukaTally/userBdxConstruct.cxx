@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,6 @@
 #include "inputParam.h"
 
 #include "Object.h"
-#include "Qhull.h"
 #include "SimFLUKA.h"
 #include "particleConv.h"
 #include "flukaGenParticle.h"
@@ -89,8 +88,8 @@ userBdxConstruct::checkLinkCells(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","checkLinkCells");
-  const MonteCarlo::Object* APtr=System.findQhull(cellA);
-  const MonteCarlo::Object* BPtr=System.findQhull(cellB);
+  const MonteCarlo::Object* APtr=System.findObject(cellA);
+  const MonteCarlo::Object* BPtr=System.findObject(cellB);
   if (!APtr || !BPtr)
     return 0;
 
@@ -162,7 +161,7 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
     \param cellB :: Secondary region cell number
   */
 {
-  ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
+  ELog::RegMethod RegA("userBdxConstruct","constructSurfRegion");
   
   const attachSystem::SurfMap* SMPtr=
     System.getObject<attachSystem::SurfMap>(FCname);
@@ -171,10 +170,8 @@ userBdxConstruct::constructSurfRegion(const Simulation& System,
   
   const int surfN=SMPtr->getSignedSurf(surfName);
   if (!surfN) return 0;
-
   // throws on error [unlikely because SurfMap is good]
   const groupRange& activeGrp=System.getGroup(FCname);
-  
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
     System.findCellPair(surfN,activeGrp,indexA,indexB);

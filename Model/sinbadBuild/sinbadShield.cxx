@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -231,7 +230,7 @@ sinbadShield::createObjects(Simulation& System)
   for(size_t i=0;i<nSlab;i++)
    {
      Out=ModelSupport::getComposite(SMap,buildIndex,SI2,"1M -2M 3M -13M 5M -6M");
-     System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temperatureSlab,Out));
+     System.addCell(MonteCarlo::Object(cellIndex++,mat[i],temperatureSlab,Out));
      SI2+=10; 
      // 49
      if (i==3)shieldCell=cellIndex-1;

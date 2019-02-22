@@ -64,7 +64,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -431,7 +431,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 					      " (-3:4:-5:6:57) ");
 	}
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       addCell("Body",cellIndex-1);
 
       if (i==0)
@@ -445,7 +445,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	  // step
 	  Out=ModelSupport::getComposite(SMap,GI,buildIndex,GI-50,
 					  "1M 8 -7 (-3N:4N:-5N:6N) 13 -14 15 -16 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,GI,buildIndex,
 					 "1M 7 13 -14 15 -16 -57");
@@ -455,7 +455,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       if (!filled)
 	Out+=ModelSupport::getComposite
 	  (SMap,buildIndex,"(-1103:1104:-1105:1106) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
       
       if (filled) addCell("Void",cellIndex-1);
       addCell("Body",cellIndex-1);
@@ -468,7 +468,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,GI,
 				     "1 7 -7M 1103 -1104 1105 -1106 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
       
       setCell("Void",cellIndex-1);
     }

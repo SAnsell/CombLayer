@@ -58,7 +58,6 @@
 #include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -148,21 +147,21 @@ testObjectTrackAct::createObjects()
   int cellIndex(1);
   const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
 				 " (-1:2:-3:4:-5:6) ");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
+  ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
+  ASim.addCell(MonteCarlo::Object(cellIndex++,8,0.0,Out));      // Gd box 
 
   Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
 				 " #4");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
 
@@ -227,6 +226,7 @@ testObjectTrackAct::testPointDet()
 {
   ELog::RegMethod RegA("testObjectTrackAct","testPointDet");
 
+  return 0;
   ObjectTrackPoint OA(Geometry::Vec3D(20,0,0));
 
   typedef std::tuple<int,double>  TTYPE;
@@ -242,8 +242,8 @@ testObjectTrackAct::testPointDet()
   Simulation::OTYPE::const_iterator vc;
   for(vc=Cells.begin();vc!=Cells.end();vc++)
     {
-      if (!vc->second->isPlaceHold())
-	OA.addUnit(ASim,vc->first,vc->second->getCofM());
+      // if (!vc->second->isPlaceHold())
+      // 	OA.addUnit(ASim,vc->first,vc->second->getCofM());
     }
 
   for(const TTYPE& tc : Tests)

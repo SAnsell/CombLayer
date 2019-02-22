@@ -39,6 +39,7 @@ class PipeTube :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
+  public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  protected:
@@ -83,7 +84,7 @@ class PipeTube :
   PipeTube& operator=(const PipeTube&);
   virtual ~PipeTube();
 
-    /// Set a port delay
+  /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
   int splitVoidPorts(Simulation&,const std::string&,
 		     const int,const int);
@@ -96,6 +97,7 @@ class PipeTube :
 
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
+  void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
 
   void createPorts(Simulation&);

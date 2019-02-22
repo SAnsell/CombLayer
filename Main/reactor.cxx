@@ -59,7 +59,6 @@
 #include "HeadRule.h"
 #include "surfIndex.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
@@ -126,7 +125,7 @@ main(int argc,char* argv[])
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
-      SimPtr->write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {

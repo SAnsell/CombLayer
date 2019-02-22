@@ -62,7 +62,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -238,7 +237,7 @@ H2Groove::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,buildIndex,"7 -8 5 -6 ");
   addOuterSurf(Out);
   Out+=CC.getContainer();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,siMat,siTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,siMat,siTemp,Out));
   
   return;
 }

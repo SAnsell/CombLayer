@@ -63,7 +63,6 @@
 #include "SurInter.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "neutron.h"
@@ -157,22 +156,22 @@ testLineTrack::createObjects()
   int cellIndex(1);
   const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex,"100 ");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
 
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
 				 " (-1:2:-3:4:-5:6) ");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
+  ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"-27 16 -26");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,4,0.0,Out));      // CH4 container
+  ASim.addCell(MonteCarlo::Object(cellIndex++,4,0.0,Out));      // CH4 container
 
   // Sphereical container
   Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16) "
                                         "(27 : -16 : 26)");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));  
 
   return;
 }
@@ -276,7 +275,8 @@ testLineTrack::testLine()
 
 int
 testLineTrack::checkResult(const LineTrack& LT,
-			   const long int CSum,const double TSum) const
+			   const long int CSum,
+			   const double TSum) const
   /*!
     Check the result from the test
     \param LT :: LineTrack to test
@@ -288,7 +288,7 @@ testLineTrack::checkResult(const LineTrack& LT,
   ELog::RegMethod RegA("testLineTrack","checkResults");
 
   const std::vector<long int>& cells=LT.getCells();
-  const std::vector<double>& tLen=LT.getTrack();
+  const std::vector<double>& tLen=LT.getSegmentLen();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
   long int cValue(0);
   double tValue(0.0);

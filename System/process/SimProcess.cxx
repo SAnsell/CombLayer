@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "PhysImp.h"
@@ -206,7 +205,7 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
 {  
   ELog::RegMethod RegA("SimProcess","registerOuter");
 
-  MonteCarlo::Qhull* Cptr=System.findQhull(cellNum);
+  MonteCarlo::Object* Cptr=System.findObject(cellNum);
   if (!Cptr)
     throw ColErr::InContainerError<int>(cellNum,RegA.getBase());
 
@@ -214,35 +213,6 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
   cx<<" #"<<vNum;
   Cptr->addSurfString(cx.str());
   return;
-}
-
-template<typename T>
-std::vector<T>
-getVarVec(const FuncDataBase& Control,
-	  const std::string& VName)
-  /*!
-    Get a general variable based on VName[index]
-    \tparam T :: Type of variable (int/double/vec3d etc)
-    \param Control :: Control name
-    \param VName :: Variable name
-    \return vector of components
-  */
-{
-  ELog::RegMethod RegA("SimProcess","getVarVec");
-
-  std::ostringstream cx;
-  std::vector<T> Out;
-
-  int index(0);
-  cx<<VName<<index;
-  while(Control.hasVariable(cx.str()))
-    {
-      Out.push_back(Control.EvalVar<T>(cx.str()));
-      index++;
-      cx.str("");
-      cx<<VName<<index;
-    }
-  return Out;
 }
 
 
@@ -274,16 +244,6 @@ getDefIndexVar(const FuncDataBase&,const std::string&,
 // template 
 // double
 // getDefVar(const FuncDataBase&,const std::string&,const double&);
-
-template
-std::vector<Geometry::Vec3D>
-getVarVec(const FuncDataBase&,const std::string&);
-
-template
-std::vector<double>
-getVarVec(const FuncDataBase&,const std::string&);
-
-///\endcond TEMPLATE  
 
 
 }  // NAMESPACE SimProcess

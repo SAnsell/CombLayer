@@ -61,7 +61,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Line.h"
-#include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -86,7 +85,7 @@ namespace constructSystem
 
 portItem::portItem(const std::string& baseKey,
 		   const std::string& Key) :
-  attachSystem::FixedComp(Key,5),
+  attachSystem::FixedComp(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(baseKey),
   statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
@@ -99,7 +98,7 @@ portItem::portItem(const std::string& baseKey,
 {}
 
 portItem::portItem(const std::string& Key) :
-  attachSystem::FixedComp(Key,5),
+  attachSystem::FixedComp(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(keyName),
   statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
@@ -385,6 +384,11 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
   FixedComp::setConnect(4,exitPoint+Y*externalLength,-Y);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
 
+  FixedComp::nameSideIndex(5,"VoidRadius");
+  FixedComp::setConnect(5,exitPoint+Y*externalLength,-Y);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+27));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+1));
+
   return;
 }
 
@@ -469,7 +473,7 @@ portItem::constructOuterFlange(Simulation& System,
 
   //  std::set<int> activeCell;
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  const std::vector<double>& Track=LT.getTrack();
+  const std::vector<double>& Track=LT.getSegmentLen();
   double T(0.0);   // extention base out point
 
   for(size_t i=startIndex;i<OVec.size() &&
@@ -496,7 +500,7 @@ portItem::constructOuterFlange(Simulation& System,
   // do essential outerCells
   for(const int ON : outerCell)
     {
-      MonteCarlo::Object* OPtr=System.findQhull(ON);
+      MonteCarlo::Object* OPtr=System.findObject(ON);
       if (!OPtr)
 	throw ColErr::InContainerError<int>(ON,"Cell not found");
       OPtr->addSurfString(getExclude());
@@ -520,12 +524,11 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("portItem","calcBoundaryCrossing");
 
-
   AIndex=0;
   BIndex=0;
   // no point checking first value
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-    
+
   for(size_t i=1;i<OVec.size();i++)
     {
       const MonteCarlo::Object* oPtr=OVec[i];
@@ -561,6 +564,26 @@ portItem::intersectPair(Simulation& System,
   this->insertComponent(System,"Void",outerComp);
   return;
 }
+
+void
+portItem::intersectVoidPair(Simulation& System,
+			    const portItem& Outer) const
+  /*!
+    Intersect two ports outer only
+    \param Simulation :: Simulation to use
+    \param Outer :: second port to intersect
+  */
+{
+  ELog::RegMethod RegA("portItem","intersectPair");
+
+  if (CellMap::hasItem("OutVoid"))
+    {
+      const HeadRule outerComp(Outer.getFullRule("VoidRadius").complement());
+      this->insertComponent(System,"OutVoid",outerComp);
+    }
+
+  return;
+}
   
 void
 portItem::constructTrack(Simulation& System)
@@ -581,10 +604,10 @@ portItem::constructTrack(Simulation& System)
   createSurfaces();
   System.populateCells();
   System.validateObjSurfMap();
- 
+
+  
   ModelSupport::LineTrack LT(Origin,Y,-1.0);
   LT.calculate(System);
-  
   size_t AIndex,BIndex;
 
   calcBoundaryCrossing(System,LT,AIndex,BIndex);

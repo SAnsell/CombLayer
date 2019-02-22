@@ -66,7 +66,6 @@
 #include "HeadRule.h"
 #include "RuleSupport.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -316,7 +315,7 @@ McDonaldFlowGuide::createObjects(Simulation& System,
   if (CM)
     {
       innerCell=CM->getCell("Inner");
-      InnerObj=System.findQhull(innerCell);
+      InnerObj=System.findObject(innerCell);
     }
   if (!InnerObj)
     throw ColErr::InContainerError<int>
@@ -329,15 +328,15 @@ McDonaldFlowGuide::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -501 502 503 ");
   wallExclude.procString(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -503 504 ");
   wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 10 -505 506 -2 ");
   wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());

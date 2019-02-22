@@ -59,7 +59,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -247,23 +246,23 @@ ConeModerator::createObjects(Simulation& System)
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -2 (17:-11) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
   
   // Hydrogne
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 11 -2 (27:-21) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // AL layer 
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 21 -2 (37:-31) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   // Mid Void
   Out=ModelSupport::getComposite(SMap,buildIndex," -37 31 -12 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   // Cap :
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 2 -12 37");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,alMat,modTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 1 -12 ");
   addOuterSurf(Out);

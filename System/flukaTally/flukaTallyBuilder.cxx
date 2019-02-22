@@ -61,6 +61,8 @@
 #include "userBinConstruct.h"
 #include "userDumpConstruct.h"
 #include "userBdxConstruct.h"
+#include "userRadDecayConstruct.h"
+#include "resnucConstruct.h"
 #include "flukaTallyBuilder.h"
 
 namespace flukaSystem
@@ -99,6 +101,10 @@ tallySelection(SimFLUKA& System,
 	userDumpConstruct::processDump(System,IParam,i);
       else if (TType=="surface")
 	userBdxConstruct::processBDX(System,IParam,i);
+      else if (TType=="raddecay")
+	userRadDecayConstruct::processRadDecay(System,IParam,i);
+      else if (TType=="resnuc")
+	resnucConstruct::processResNuc(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
 
@@ -123,9 +129,13 @@ helpTallyType(const std::string& HType)
     {}
   else
     {
-      ELog::EM<<"Tally Types:\n\n";
-      ELog::EM<<"-- mesh : \n";
-      ELog::EM<<"-- dump : \n";
+      ELog::EM<<"Tally Types:\n\n"
+	      <<"-- mesh : \n"
+	      <<"-- dump : \n"
+	      <<"-- surface : \n"
+	      <<"-- cell : \n"
+	      <<"-- raddecay : \n"
+	      <<"-- resnuc : \n";
     }
   
   ELog::EM<<ELog::endBasic;

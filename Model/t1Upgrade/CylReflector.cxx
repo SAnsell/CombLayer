@@ -60,7 +60,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -220,7 +219,7 @@ CylReflector::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
       if (i)
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out+OutX));
+      System.addCell(MonteCarlo::Object(cellIndex++,Mat[i],0.0,Out+OutX));
       RI+=10;
       addCell("Reflector",cellIndex-1);
       addCell("RefLayer"+std::to_string(i),cellIndex-1);

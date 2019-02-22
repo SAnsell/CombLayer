@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,19 @@ HeadRule::HeadRule(const std::string& RuleStr) :
   ELog::RegMethod RegA("HeadRule","HeadRule(string)");
   if (!RuleStr.empty() && !procString(RuleStr))
     throw ColErr::InvalidLine(RuleStr,"RuleStr",0);
+}
+
+HeadRule::HeadRule(const int surfNum) :
+  HeadNode(0)
+  /*!
+    Creates a new rule
+    \param surfNum :: rule as surface number
+  */
+{
+  ELog::RegMethod RegA("HeadRule","HeadRule(string)");
+
+  if (!surfNum || !procString(std::to_string(surfNum)))
+    throw ColErr::InvalidLine(std::to_string(surfNum),"surfNum",0);
 }
 
 HeadRule::HeadRule(const Rule* RPtr) :

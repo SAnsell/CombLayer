@@ -55,7 +55,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
+#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -227,7 +227,7 @@ namespace essSystem
 	if (CM)
 	  {
 	    beCell=CM->getCell(cellName);
-	    beObj=System.findQhull(beCell);
+	    beObj=System.findObject(beCell);
 	  }
 
 	if (!beObj)

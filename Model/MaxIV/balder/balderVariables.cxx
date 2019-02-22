@@ -3,7 +3,7 @@
  
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,11 +63,13 @@
 #include "FlangeMountGenerator.h"
 #include "BeamMountGenerator.h"
 #include "MirrorGenerator.h"
+#include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "MazeGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
+#include "WallLeadGenerator.h"
 
 namespace setVariable
 {
@@ -80,6 +82,7 @@ void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
 void heatDumpTable(FuncDataBase&,const std::string&);
 void heatDumpVariables(FuncDataBase&,const std::string&);
+void monoShutterVariables(FuncDataBase&,const std::string&);
 void shutterTable(FuncDataBase&,const std::string&);
   
 void
@@ -92,7 +95,7 @@ frontCaveVariables(FuncDataBase& Control,
     \param Control :: Database
     \param preName :: Name to describe system
     \param mazeFlag :: maze is present
-    \param mazeFlag :: door is present
+    \param doorFlag :: door is present
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
@@ -132,7 +135,7 @@ frontCaveVariables(FuncDataBase& Control,
   if (mazeFlag)
     MGen.generateMaze(Control,preName+"Maze",0.0);
   if (doorFlag)
-    RGen.generateDoor(Control,preName+"RingDoor",800.0);
+    RGen.generateDoor(Control,preName+"RingDoor",-800.0);
   return;
 }
 
@@ -259,7 +262,7 @@ collimatorVariables(FuncDataBase& Control,
     \param collKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","collimatorVariables");
+  ELog::RegMethod RegA("balderVariables[F]","collimatorVariables");
 
   Control.addVariable(collKey+"Width",4.0);
   Control.addVariable(collKey+"Height",4.0);
@@ -283,7 +286,7 @@ moveApertureTable(FuncDataBase& Control,
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("balderVariables[F]","moveAperatureTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -426,24 +429,17 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
 void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
-/*!
-    Set the variables for the frontend wall
+ /*!
+    Set the variables for the frontend lead wall
     \param Control :: DataBase to use
-    \param frontKey :: name before part names
+    \param wallKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","wallVariables");
-
-  Control.addVariable(wallKey+"FrontHeight",40.0);
-  Control.addVariable(wallKey+"FrontWidth",60.0);
-  Control.addVariable(wallKey+"FrontLength",20.0);
-  
-  Control.addVariable(wallKey+"BackWidth",20.0);
-  Control.addVariable(wallKey+"BackHeight",20.0);
-  
-  Control.addVariable(wallKey+"VoidRadius",3.0);
-  Control.addVariable(wallKey+"WallMat","Lead");
-  Control.addVariable(wallKey+"VoidMat","Void");
+  ELog::RegMethod RegA("balderVariables[F]","wallVariables");
+ 
+  WallLeadGenerator LGen;
+  LGen.setWidth(140.0,70.0);
+  LGen.generateWall(Control,wallKey,3.0);
   return;
 }
 
@@ -523,7 +519,7 @@ frontEndVariables(FuncDataBase& Control,
 
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
+  Control.addVariable(frontKey+"ECutDiskRadius",1.0);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
   BellowGen.setCF<setVariable::CF63>();
@@ -577,8 +573,6 @@ opticsHutVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
-
-  Control.addVariable(hutName+"BeamTubeRadius",50.0);
   
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
@@ -625,6 +619,61 @@ opticsHutVariables(FuncDataBase& Control,
   return;
 }
 
+void
+monoShutterVariables(FuncDataBase& Control,
+		     const std::string& preName)
+  /*!
+    Construct Mono Shutter variables
+    \param Control :: Database for variables
+    \param preName :: Control ssytem
+   */
+{
+  ELog::RegMethod RegA("balderVariables","monoShutterVariables");
+
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::ShutterUnitGenerator MSGen;
+
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF63>();
+  PTubeGen.setPortLength(3.0,3.0);
+  PTubeGen.setAPortOffset(0,-3.0);
+  PTubeGen.setBPortOffset(0,-3.0);
+
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,preName+"ShutterPipe",0.0,7.50,20.0);
+  Control.addVariable(preName+"ShutterPipeNPorts",2);
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,preName+"ShutterPipePort0",
+			Geometry::Vec3D(0,-6,0),ZVec);
+  PItemGen.generatePort(Control,preName+"ShutterPipePort1",
+			Geometry::Vec3D(0,6,0),ZVec);
+
+
+  const std::string mDumpA(preName+"MonoShutterA");
+  const std::string mDumpB(preName+"MonoShutterB");
+  MSGen.setCF<CF40>();
+  MSGen.setTopCF<CF40>();
+  MSGen.generateShutter(Control,mDumpA,1);  // both up
+  MSGen.generateShutter(Control,mDumpB,0);  // second down
+
+  
+  // bellows on shield block
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowG",0,10.0);    
+
+    // joined and open
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+  return;
+}
 
 void
 shieldVariables(FuncDataBase& Control)
@@ -677,7 +726,7 @@ monoVariables(FuncDataBase& Control,const double YStep)
   setVariable::PortItemGenerator PItemGen;
     
   const std::string preName("BalderOpticsLine");
-  
+
   Control.addVariable(preName+"MonoVacYStep",YStep);
   Control.addVariable(preName+"MonoVacZStep",2.0);
   Control.addVariable(preName+"MonoVacRadius",33.0);
@@ -741,7 +790,11 @@ opticsVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
 
   const std::string opticsName(beamName+"OpticsLine");
-  
+
+  Control.addVariable(opticsName+"OuterLeft",70.0);
+  Control.addVariable(opticsName+"OuterRight",50.0);
+  Control.addVariable(opticsName+"OuterTop",60.0);
+
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
@@ -751,6 +804,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::MirrorGenerator MirrGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -954,29 +1008,9 @@ opticsVariables(FuncDataBase& Control,
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
-  BellowGen.generateBellow(Control,opticsName+"BellowF",0,23.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowF",0,13.0);
 
-  // Shutter pipe
-  CrossGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
-  CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
-  CrossGen.generateCF<setVariable::CF63>
-    (Control,opticsName+"ShutterPipe",0.0,8.0,13.5,13.5);
-
-  FlangeGen.setCF<setVariable::CF63>();
-  FlangeGen.setBlade(5.0,5.0,5.0,0.0,"Tungsten",1);     // W / H / T
-  FlangeGen.setNoPlate();
-  FlangeGen.generateMount(Control,opticsName+"MonoShutter",0); 
-
-
-  // bellows on shield block
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,opticsName+"BellowG",0,10.0);    
-
-    // joined and open
-  GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,opticsName+"GateE",0.0,0);
-
+  monoShutterVariables(Control,opticsName);
   // pipe shield
   for(size_t i=0;i<4;i++)
     {
@@ -1094,7 +1128,7 @@ BALDERvariables(FuncDataBase& Control)
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,173.0);
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,170.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

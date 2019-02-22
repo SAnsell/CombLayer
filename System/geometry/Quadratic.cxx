@@ -593,7 +593,7 @@ Quadratic::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Quadratic","writeFLUKA");
   masterWrite& MW=masterWrite::Instance();
-  
+
   std::ostringstream cx;
   cx.precision(Geometry::Nprecision);
   cx<<"QUA s"<<getName();

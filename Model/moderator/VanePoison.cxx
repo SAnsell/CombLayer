@@ -57,7 +57,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -278,18 +277,18 @@ VanePoison::createObjects(Simulation& System,
       // inner abs:
       Out=ModelSupport::getComposite(SMap,surfN," 11 -12 ");
       Out+=zBase+zTop+yBack+yFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,modTemp,Out));      
+      System.addCell(MonteCarlo::Object(cellIndex++,absMat,modTemp,Out));      
       // Blade
       Out=ModelSupport::getComposite(SMap,surfN," 1 -2 (-11:12) ");
       Out+=zBase+zTop+yBack+yFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,modTemp,Out));      
+      System.addCell(MonteCarlo::Object(cellIndex++,bladeMat,modTemp,Out));      
       
       // Inner moderator material
       if (i)
 	{
 	  Out=ModelSupport::getComposite(SMap,surfN-100," 2 -101 ");
 	  Out+=zBase+zTop+yBack+yFront;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+	  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 	}
       surfN+=100;
     }

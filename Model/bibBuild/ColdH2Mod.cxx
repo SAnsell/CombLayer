@@ -56,7 +56,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -296,37 +295,37 @@ ColdH2Mod::createObjects(Simulation& System)
 
   // Water
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,modMat,modTemp,Out));
 
   // Wall of water moderator
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,modTemp,Out));
 
   // Gap between mod and premod
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-11:12:-13:14:-15:16) -202 201 203 -204 205 -206 ");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0,Out));
   
   // Water premoderator
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-211:-213:214:-215:216) -202 221 223 -224 225 -226 ");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,waterMat,waterTemp,Out));
   
   // Wall 1 of Water premoderator
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-201:-203:204:-205:206) -202 211 213 -214 215 -216 ");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,waterTemp,Out));
   
   // Wall 2 of Water premoderator
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "(-221:-223:224:-225:226) -202 231 233 -234 235 -236 ");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,waterTemp,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,waterTemp,Out));
 
   // Box
   Out=ModelSupport::getComposite(SMap,buildIndex,
 	     	 "21 -22 23 -24 25 -26 (-231:202:234:-233:-235:236)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"21 -22 23 -24 25 -26" );
   addOuterSurf(Out);

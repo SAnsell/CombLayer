@@ -52,7 +52,6 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "ObjSurfMap.h"
@@ -228,6 +227,7 @@ SimValid::runPoint(const Simulation& System,
 	      ELog::EM<<"Fail on Pts==1 and aDist INF"<<ELog::endDiag;
 	      ELog::EM<<"Index == "<<Pts.size()-2<<ELog::endDiag;
 	      ELog::EM<<"Pts[0] == "<<Pts[0].Pt<<ELog::endDiag;
+	      ELog::EM<<"Pts[0] == "<<Pts[0].Dir<<ELog::endDiag;
 	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
 	      aDist=1e-5;
 	    }
@@ -241,6 +241,8 @@ SimValid::runPoint(const Simulation& System,
       if (!OPtr)
 	{
 	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
+	  if (!InitObj)
+	    ELog::EM<<"Failed to calculate INITIAL cell correctly: "<<ELog::endCrit;
 	  diagnostics(System,Pts);
 	  return 0;
 	}

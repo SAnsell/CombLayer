@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachComp/FixedComp.cxx
+ * File:   attachComp/FixedCompSplitCell.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "HeadRule.h"
 #include "SurInter.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -105,6 +104,7 @@ FixedComp::splitObject(Simulation& System,
   Axis.makeUnit();
     
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,O,Axis);
+
   const int cellExtra=
     System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
 
@@ -235,10 +235,7 @@ FixedComp::splitObjectAbsolute(Simulation& System,
       
       CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
       if (CMapPtr)
-	{
-	  ELog::EM<<"This : "<<keyName<<ELog::endDiag;
-	  CMapPtr->registerExtra(cellN,CN);
-	}
+	CMapPtr->registerExtra(cellN,CN);
       SN++;
     }
   
@@ -246,7 +243,8 @@ FixedComp::splitObjectAbsolute(Simulation& System,
 }
 
 std::vector<int>
-FixedComp::splitObject(Simulation& System,const int SN,
+FixedComp::splitObject(Simulation& System,
+		       const int SN,
 		       const int cellN)
   /*!
     Carries out a splitObject function -- not 100% sure
@@ -263,15 +261,39 @@ FixedComp::splitObject(Simulation& System,const int SN,
 
   const int ASN=std::abs(SN);
   const int signSN=(SN>0) ? 1 : -1;
+  const int trueSN= (ASN<100000) ?
+    signSN*SMap.realSurf(buildIndex+ASN) : SN;
 
-  const int cellExtra=
-    System.splitObject(cellN,signSN*SMap.realSurf(buildIndex+ASN));
+  const int cellExtra=System.splitObject(cellN,trueSN);
+      
   
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);
   
   return OutCell;  
+}
+
+std::vector<int>
+FixedComp::splitObject(Simulation& System,const std::string& SName,
+		       const int cellN)
+  /*!
+    Carries out a splitObject function -- not 100% sure
+    is goes here but...
+    Note that the NEGATIVE surface constructed is the original cell.
+    \param SN :: Surface number to use [already in cell]
+    \param cellN :: Cell number
+    \return cellList 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","splitObject(surfmap)");
+
+  const SurfMap* SMapPtr=
+    dynamic_cast<const attachSystem::SurfMap*>(this);
+  if (!SMapPtr)
+    throw ColErr::TypeMatch("SurfMap",this->getKeyName(),"FixedComp convert");
+
+  return splitObject(System,SMapPtr->getSignedSurf(SName),cellN);
 }
 
   
