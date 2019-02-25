@@ -3,7 +3,7 @@
  
  * File:   insertUnit/addInsertObj.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,13 +126,16 @@ addInsertCurveCell(Simulation& System,
 {
   ELog::RegMethod RegA("addInsertObj","addInsertCurveCell(FC)");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   System.populateCells();
   System.validateObjSurfMap();
 
   std::shared_ptr<insertSystem::insertCurve>
     TCurve(new insertSystem::insertCurve(objName));
-
+  OR.addObject(TCurve);
+  
   //  OR.addObject(TCurve);
  
   // calc proper length
@@ -175,7 +178,10 @@ addInsertCylinderCell(Simulation& System,
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertCylinderCell(FC)");
-  
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
@@ -185,7 +191,7 @@ addInsertCylinderCell(Simulation& System,
 
   std::shared_ptr<insertSystem::insertCylinder>
     TCyl(new insertSystem::insertCylinder(objName));
-  
+  OR.addObject(TCyl);
   
   //  OR.addObject(TCyl);
   TCyl->setStep(XYZStep);
@@ -204,7 +210,7 @@ addInsertCylinderCell(Simulation& System,
                       const double radius,const double length,
                       const std::string& mat)
   /*!
-    Adds a cell for tallying in 
+    Adds a cylinder along an axis at an absolute position
     
     \param System :: Simulation to used
     \param objName :: new plate name
@@ -217,15 +223,17 @@ addInsertCylinderCell(Simulation& System,
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertCylinderCell");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
   
   System.populateCells();
   System.validateObjSurfMap();
 
   std::shared_ptr<insertSystem::insertCylinder>
     TCyl(new insertSystem::insertCylinder(objName));
-
+  OR.addObject(TCyl);
+  
   TCyl->setValues(radius,length,mat);
-
   TCyl->createAll(System,CentPos,YAxis);
 
   return;
@@ -257,7 +265,9 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
 {
   ELog::RegMethod RegA("addInsertObj","addInsertPlateCell(FC)");
   
- 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
@@ -267,7 +277,7 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
 
   std::shared_ptr<insertSystem::insertPlate>
     TPlate(new insertSystem::insertPlate(objName));
-
+  OR.addObject(TPlate);
   // OR.addObject(TPlate);
   TPlate->setStep(XYZStep);
   TPlate->setValues(xSize,ySize,zSize,mat);
@@ -304,6 +314,8 @@ addInsertPlateCell(Simulation& System,
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertPlateCell");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
  
   System.populateCells();
   System.validateObjSurfMap();
@@ -311,7 +323,8 @@ addInsertPlateCell(Simulation& System,
   std::shared_ptr<insertSystem::insertPlate>
     TPlate(new insertSystem::insertPlate(objName));
 
-  //  OR.addObject(TPlate);
+  OR.addObject(TPlate);
+
   TPlate->setValues(xSize,ySize,zSize,mat);
 
   TPlate->createAll(System,CentPos,YAxis,ZAxis);
@@ -349,6 +362,8 @@ addInsertGridCell(Simulation& System,
 {
   ELog::RegMethod RegA("addInsertObj","addInsertGridCell(FC)");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
@@ -359,8 +374,8 @@ addInsertGridCell(Simulation& System,
 
   std::shared_ptr<insertSystem::insertGrid>
     TGrid(new insertSystem::insertGrid(objName));
-
-  //  OR.addObject(TGrid);
+  OR.addObject(TGrid);
+  
   TGrid->setStep(XYZStep);
   TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
   for(size_t i=0;i<NL;i++)
@@ -405,6 +420,9 @@ addInsertGridCell(Simulation& System,
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertGridCell(Vec)");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
     
   System.populateCells();
   System.validateObjSurfMap();
@@ -412,7 +430,8 @@ addInsertGridCell(Simulation& System,
   std::shared_ptr<insertSystem::insertGrid>
     TGrid(new insertSystem::insertGrid(objName));
 
-  //  OR.addObject(TGrid);
+  OR.addObject(TGrid);
+  
   TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
   for(size_t i=0;i<NL;i++)
     {
@@ -446,15 +465,18 @@ addInsertSphereCell(Simulation& System,
   */
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertSphereCell");
-  
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   System.populateCells();
   System.validateObjSurfMap();
 
   
   std::shared_ptr<insertSystem::insertSphere>
     TSphere(new insertSystem::insertSphere(objName));
-
-  //  OR.addObject(TSphere);
+  OR.addObject(TSphere);
+  
   TSphere->setValues(radius,mat);
   TSphere->createAll(System,CentPos);
 
@@ -486,6 +508,8 @@ addInsertSphereCell(Simulation& System,
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertSphereCell(FC)");
   
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
@@ -496,8 +520,8 @@ addInsertSphereCell(Simulation& System,
 
   std::shared_ptr<insertSystem::insertSphere>
     TSphere(new insertSystem::insertSphere(objName));
-
-  //  OR.addObject(TSphere);
+  OR.addObject(TSphere);
+  
   TSphere->setStep(XYZStep);
   TSphere->setValues(radius,mat);
   TSphere->createAll(System,*mainFCPtr,linkIndex);
