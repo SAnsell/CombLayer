@@ -178,6 +178,7 @@ surfaceConstruct::processSurfObject(SimMCNP& System,
   const attachSystem::FixedComp* TPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   const long int linkPt=TPtr->getSideIndex(linkName);
+
   if (linkPt)
     {
       const int masterPlane= TPtr->getLinkSurf(linkPt);

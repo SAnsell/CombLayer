@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -159,7 +158,7 @@ insertGrid::populate(const FuncDataBase& Control)
       nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
       for(size_t i=0;i<nLayer;i++)
 	{
-	  const std::string NStr(StrFunc::makeString(i));
+	  const std::string NStr(std::to_string(i));
 	  wallThick.push_back
 	    (Control.EvalPair<double>(keyName+"Thick"+NStr,keyName+"Thick"));
 	  wallMat.push_back(ModelSupport::EvalMat<int>
