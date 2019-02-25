@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: maxpeem/maxpeemOpticsBeamline.cxx
+ * File: flexpes/flexpesOpticsBeamline.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -102,14 +102,14 @@
 #include "GratingMono.h"
 #include "TwinPipe.h"
 #include "Mirror.h"
-#include "maxpeemOpticsBeamline.h"
+#include "flexpesOpticsBeamline.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
+flexpesOpticsBeamline::flexpesOpticsBeamline(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -227,20 +227,20 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   OR.addObject(outPipeB);
 }
   
-maxpeemOpticsBeamline::~maxpeemOpticsBeamline()
+flexpesOpticsBeamline::~flexpesOpticsBeamline()
   /*!
     Destructor
    */
 {}
 
 void
-maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
+flexpesOpticsBeamline::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","populate");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","populate");
   FixedOffset::populate(Control);
 
   outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
@@ -248,7 +248,7 @@ maxpeemOpticsBeamline::populate(const FuncDataBase& Control)
 }
 
 void
-maxpeemOpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
+flexpesOpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
 					const long int sideIndex)
   /*!
     Create the unit vectors
@@ -259,7 +259,7 @@ maxpeemOpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","createUnitVector");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -268,12 +268,12 @@ maxpeemOpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-maxpeemOpticsBeamline::createSurfaces()
+flexpesOpticsBeamline::createSurfaces()
   /*!
     Create surfaces
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","createSurfaces");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","createSurfaces");
 
   if (outerRadius>Geometry::zeroTol)
     {
@@ -309,7 +309,7 @@ maxpeemOpticsBeamline::createSurfaces()
 
 
 void
-maxpeemOpticsBeamline::insertFlanges(Simulation& System,
+flexpesOpticsBeamline::insertFlanges(Simulation& System,
 				     const constructSystem::PipeTube& PT)
   /*!
     Boilerplate function to insert the flanges from pipetubes
@@ -318,7 +318,7 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
     \param PT :: PipeTube
    */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","insertFlanges");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","insertFlanges");
   
   const size_t voidN=this->getNItems("OuterVoid")-3;
 
@@ -331,7 +331,7 @@ maxpeemOpticsBeamline::insertFlanges(Simulation& System,
 }
 
 void
-maxpeemOpticsBeamline::buildSplitter(Simulation& System,
+flexpesOpticsBeamline::buildSplitter(Simulation& System,
 				     MonteCarlo::Object* masterCellA,
 				     MonteCarlo::Object* masterCellB,
 				     const attachSystem::FixedComp& initFC,
@@ -346,7 +346,7 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
   */
 
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamLine","buildSplitter");
+  ELog::RegMethod RegA("flexpesOpticsBeamLine","buildSplitter");
 
   int cellA(0),cellB(0);
   
@@ -416,7 +416,7 @@ maxpeemOpticsBeamline::buildSplitter(Simulation& System,
 
 
 void
-maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
+flexpesOpticsBeamline::buildM3Mirror(Simulation& System,
 				     MonteCarlo::Object* masterCell,
 				     const attachSystem::FixedComp& initFC, 
 				     const long int sideIndex)
@@ -428,7 +428,7 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM3Mirror");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","buildM3Mirror");
 
   int outerCell;
   
@@ -472,7 +472,7 @@ maxpeemOpticsBeamline::buildM3Mirror(Simulation& System,
 }
 
 void
-maxpeemOpticsBeamline::buildMono(Simulation& System,
+flexpesOpticsBeamline::buildMono(Simulation& System,
 				 MonteCarlo::Object* masterCell,
 				 const attachSystem::FixedComp& initFC, 
 				 const long int sideIndex)
@@ -485,7 +485,7 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildMono");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","buildMono");
 
   int outerCell;
   
@@ -513,7 +513,7 @@ maxpeemOpticsBeamline::buildMono(Simulation& System,
 
 
 void
-maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
+flexpesOpticsBeamline::buildSlitPackage(Simulation& System,
 					MonteCarlo::Object* masterCell,
 					const attachSystem::FixedComp& initFC, 
 					const long int sideIndex)
@@ -525,7 +525,7 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildSlitPackage");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","buildSlitPackage");
 
   int outerCell;
   
@@ -587,7 +587,7 @@ maxpeemOpticsBeamline::buildSlitPackage(Simulation& System,
 }
  
 void
-maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
+flexpesOpticsBeamline::buildM1Mirror(Simulation& System,
 				     MonteCarlo::Object* masterCell,
 				     const attachSystem::FixedComp& initFC, 
 				     const long int sideIndex)
@@ -599,7 +599,7 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
     \param sideIndex :: start link point
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildM1Mirror");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","buildM1Mirror");
 
   int outerCell;
 
@@ -641,14 +641,14 @@ maxpeemOpticsBeamline::buildM1Mirror(Simulation& System,
 }
 
 void
-maxpeemOpticsBeamline::buildObjects(Simulation& System)
+flexpesOpticsBeamline::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildObjects");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","buildObjects");
 
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -756,7 +756,7 @@ maxpeemOpticsBeamline::buildObjects(Simulation& System)
 }
 
 void
-maxpeemOpticsBeamline::createLinks()
+flexpesOpticsBeamline::createLinks()
   /*!
     Create a front/back link
    */
@@ -767,7 +767,7 @@ maxpeemOpticsBeamline::createLinks()
 }
   
 void
-maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
+flexpesOpticsBeamline::buildOutGoingPipes(Simulation& System,
 					  const int leftCell,
 					  const int rightCell,
 					  const std::vector<int>& hutCells)
@@ -779,7 +779,7 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
     \param hutCell :: Cells for construction in hut [common to both pipes]
   */
 {
-  ELog::RegMethod RegA("maxpeemOpticsBeamline","buildOutgoingPipes");
+  ELog::RegMethod RegA("flexpesOpticsBeamline","buildOutgoingPipes");
 
   outPipeA->addInsertCell(hutCells);
   outPipeA->addInsertCell(leftCell);
@@ -800,9 +800,8 @@ maxpeemOpticsBeamline::buildOutGoingPipes(Simulation& System,
   return;
 }
 
-
 void 
-maxpeemOpticsBeamline::createAll(Simulation& System,
+flexpesOpticsBeamline::createAll(Simulation& System,
 				 const attachSystem::FixedComp& FC,
 				 const long int sideIndex)
   /*!
@@ -813,7 +812,7 @@ maxpeemOpticsBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("maxpeemOpticsBeamline","build");
+  ELog::RegMethod RControl("flexpesOpticsBeamline","createAll");
 
   populate(System.getDataBase());
   

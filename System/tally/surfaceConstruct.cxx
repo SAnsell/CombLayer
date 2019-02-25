@@ -3,7 +3,7 @@
  
  * File:   tally/surfaceConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2010 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,6 +178,7 @@ surfaceConstruct::processSurfObject(SimMCNP& System,
   const attachSystem::FixedComp* TPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   const long int linkPt=TPtr->getSideIndex(linkName);
+
   if (linkPt)
     {
       const int masterPlane= TPtr->getLinkSurf(linkPt);

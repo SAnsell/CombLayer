@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertGrid.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -159,7 +158,7 @@ insertGrid::populate(const FuncDataBase& Control)
       nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
       for(size_t i=0;i<nLayer;i++)
 	{
-	  const std::string NStr(StrFunc::makeString(i));
+	  const std::string NStr(std::to_string(i));
 	  wallThick.push_back
 	    (Control.EvalPair<double>(keyName+"Thick"+NStr,keyName+"Thick"));
 	  wallMat.push_back(ModelSupport::EvalMat<int>
