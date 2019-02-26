@@ -109,6 +109,7 @@ TSW::TSW(const TSW& A) :
   width(A.width),nLayers(A.nLayers),
   wallMat(A.wallMat),
   airMat(A.airMat),
+  cableMat(A.cableMat),
   doorMat(A.doorMat),
   doorGap(A.doorGap),
   doorOffset(A.doorOffset),
@@ -170,6 +171,7 @@ TSW::operator=(const TSW& A)
       nLayers=A.nLayers;
       wallMat=A.wallMat;
       airMat=A.airMat;
+      cableMat=A.cableMat;
       doorMat=A.doorMat;
       doorGap=A.doorGap;
       doorOffset=A.doorOffset;
@@ -310,6 +312,7 @@ TSW::populate(const FuncDataBase& Control)
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
+  cableMat=ModelSupport::EvalMat<int>(Control,keyName+"CableMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
   doorGap=Control.EvalVar<double>(keyName+"DoorGap");
   doorOffset=Control.EvalVar<double>(keyName+"DoorOffset");
@@ -585,7 +588,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   // Hole 1
   Out = ModelSupport::getComposite(SMap,buildIndex," 301 -302 305 -306 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+  System.addCell(MonteCarlo::Object(cellIndex++,cableMat,0.0,Out+side));
 
   // Hole 2
   Out = ModelSupport::getComposite(SMap,buildIndex," -407 ");
@@ -597,7 +600,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   // Hole 4 [rectangular]
   Out = ModelSupport::getComposite(SMap,buildIndex," 601 -602 605 -606 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+  System.addCell(MonteCarlo::Object(cellIndex++,cableMat,0.0,Out+side));
 
   // Hole 5
   Out = ModelSupport::getComposite(SMap,buildIndex," -707 ");
@@ -610,12 +613,12 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   // Hole 7
   Out = ModelSupport::getComposite(SMap,buildIndex," -902 905 -906 ");
   Out += FC.getLinkString(wall1);
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+  System.addCell(MonteCarlo::Object(cellIndex++,cableMat,0.0,Out+side));
 
   // Hole 8
   Out = ModelSupport::getComposite(SMap,buildIndex," -1002 1005 -1006 ");
   Out += FC.getLinkString(wall1);
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+  System.addCell(MonteCarlo::Object(cellIndex++,cableMat,0.0,Out+side));
 
   // the wall
   Out = common+FC.getLinkString(wall1) + FC.getLinkString(wall2) +
