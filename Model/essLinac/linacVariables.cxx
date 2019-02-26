@@ -108,7 +108,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSW0XStep", 4760.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
-  Control.addVariable("LinacTSW0CableMat", "StbTCABL");
+  Control.addVariable("LinacTSW0CableMat", "StbTCABL"); // agreed with Lali and Wolfgang 26 Feb 2019
+  Control.addVariable("LinacTSW0SteelMat", "Stainless304");// just any cheep steel, geometry: see email from WH 26 Feb 2019
   // TSW door
   Control.addVariable("LinacTSW0DoorMat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0DoorGap", 2.0);

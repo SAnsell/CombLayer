@@ -50,6 +50,7 @@ class TSW : public attachSystem::ContainedComp,
   int wallMat;                  ///< Wall material
   int airMat;                   ///< Air material
   int cableMat;                 ///< cable material
+  int steelMat; ///< steel material
 
   int doorMat; ///< Door material
   double doorGap; ///< Gap size around the door

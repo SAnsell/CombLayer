@@ -551,8 +551,8 @@ FaradayCup::createAll(Simulation& System,
   if (active)
     {
       const size_t j=nShieldLayers-1;
-      layerProcess(System, "ForwardShield" + std::to_string(j), 7, 2, 10, shieldMat[j]);
-      layerProcess(System, "LateralShield" + std::to_string(j), -5, 6, 20, shieldMat[j]);
+      //      layerProcess(System, "ForwardShield" + std::to_string(j), 7, 2, 10, shieldMat[j]);
+      //      layerProcess(System, "LateralShield" + std::to_string(j), -5, 6, 20, shieldMat[j]);
     }
 
   return;

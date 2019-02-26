@@ -110,6 +110,7 @@ TSW::TSW(const TSW& A) :
   wallMat(A.wallMat),
   airMat(A.airMat),
   cableMat(A.cableMat),
+  steelMat(A.steelMat),
   doorMat(A.doorMat),
   doorGap(A.doorGap),
   doorOffset(A.doorOffset),
@@ -172,6 +173,7 @@ TSW::operator=(const TSW& A)
       wallMat=A.wallMat;
       airMat=A.airMat;
       cableMat=A.cableMat;
+      steelMat=A.steelMat;
       doorMat=A.doorMat;
       doorGap=A.doorGap;
       doorOffset=A.doorOffset;
@@ -313,6 +315,7 @@ TSW::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
   cableMat=ModelSupport::EvalMat<int>(Control,keyName+"CableMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
   doorGap=Control.EvalVar<double>(keyName+"DoorGap");
   doorOffset=Control.EvalVar<double>(keyName+"DoorOffset");
@@ -538,12 +541,17 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 103 -203 201 -202 -106 (-1103:1104:1105) ");
+    ModelSupport::getComposite(SMap,buildIndex,
+			       " 103 -203 201 -202 -106 (-1103:1104:1105) ");
+  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+
+  Out = ModelSupport::getComposite(SMap,buildIndex,
+				   " 203 -2 201 -202 1105 -206 ");
   System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
 
   Out = FC.getLinkString(floor) +
-    ModelSupport::getComposite(SMap,buildIndex," 203 -2 201 -202 -206 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,doorMat,0.0,Out));
+    ModelSupport::getComposite(SMap,buildIndex," 203 -2 201 -202 -1105 ");
+  System.addCell(MonteCarlo::Object(cellIndex++,steelMat,0.0,Out));
 
   // splitting the wall near the door to simplify the wall cell
   Out = FC.getLinkString(floor) +
