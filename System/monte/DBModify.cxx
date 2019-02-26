@@ -980,6 +980,7 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   " 17037.70c 3.21273836065E-02 "
 		   " 29063.70c 1.46695727581E-01 "
 		   " 29065.70c 6.53842615705E-02 ","",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-2.0272);
   MDB.resetMaterial(MObj);
 
