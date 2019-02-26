@@ -604,7 +604,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   // Hole 3
   Out = ModelSupport::getComposite(SMap,buildIndex," -507 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,airMat,0.0,Out+side));
+  System.addCell(MonteCarlo::Object(cellIndex++,cableMat,0.0,Out+side));
 
   // Hole 4 [rectangular]
   Out = ModelSupport::getComposite(SMap,buildIndex," 601 -602 605 -606 ");
