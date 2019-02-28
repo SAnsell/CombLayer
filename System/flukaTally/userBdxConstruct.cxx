@@ -83,7 +83,7 @@ userBdxConstruct::checkLinkCells(const Simulation& System,
   /*!
     Determine if two cells are connected via a common surface
     \param System :: Simulation for objects
-    \param cellA :: Cell A
+    \param cellA :: Cell A 
     \param cellB :: Cell B
   */
 {
@@ -113,6 +113,9 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
     \param System :: Simulation to use	
     \param FCname :: name of fixed comp
     \param FCiindex :: name of link point
+    \param cellA :: Cell from the -ve side
+    \param cellB :: Cell from the +ve side
+
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
@@ -197,6 +200,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param PType :: particle name
     \param fortranTape :: output stream
     \param CellA :: initial region
     \param CellB :: secondary region
@@ -204,6 +208,10 @@ userBdxConstruct::createTally(SimFLUKA& System,
     \param aLog :: angle in log bins
     \param Emin :: Min energy 
     \param Emax :: Max energy 
+    \param Amin :: Min angle 
+    \param Amax :: Max angle 
+    \param nE :: Number of energy bins
+    \param nA :: Number of angle bins
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","createTally");
@@ -277,7 +285,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const int nextId=System.getNextFTape();
   
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000,"tally",Index,itemIndex++);
+  const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
   const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
 
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);

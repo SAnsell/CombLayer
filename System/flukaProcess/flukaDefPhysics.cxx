@@ -136,6 +136,51 @@ setMagneticPhysics(SimFLUKA& System,
   return;
 }
 
+
+  
+void
+setMagneticExternal(SimFLUKA& System,
+		    const mainSystem::inputParam& IParam)
+  /*!
+    Sets the external magnetic fields in object(s) 
+    \param System :: Simulation
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
+
+  if (IParam.flag("MagExternal"))
+    {
+      const size_t nSet=IParam.setCnt("MagExternal");
+      for(size_t setIndex=0;setIndex<nSet;setIndex++)
+	{
+	  const size_t NIndex=IParam.itemCnt("MagExternal",setIndex);
+	  
+	  for(size_t index=0;index<NIndex;index++)
+	    {
+	      const std::string objName=
+		IParam.getValueError<std::string>
+		("MagField",setIndex,index,"No objName for MagField");
+	      const std::vector<int> Cells=System.getObjectRange(objName);
+	      if (Cells.empty())
+		throw ColErr::InContainerError<std::string>
+		  (objName,"Empty cell");
+	      
+	      Simulation::OTYPE& CellObjects=System.getCells();
+	      // Special to set cells in OBJECT  [REMOVE]
+	      for(const int CN : Cells)
+		{
+		  Simulation::OTYPE::iterator mc=
+		    CellObjects.find(CN);
+		  if (mc!=CellObjects.end())
+		    mc->second->setMagFlag();
+		}
+	    }
+	}
+    }
+  return;
+}
+
   
 void
 setModelPhysics(SimFLUKA& System,

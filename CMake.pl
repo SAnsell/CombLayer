@@ -50,6 +50,18 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
                scatMatInc specialInc transportInc testInclude );
 
 
+my @mainLib=qw( visit src simMC  construct physics input process 
+    transport scatMat endf crystal  source monte funcBase log monte 
+    flukaMagnetic flukaProcess flukaPhysics 
+    flukaTally phitsProcess phitsPhysics 
+    phitsTally phitsSupport tally 
+    geometry mersenne src world work 
+    xml poly support weights 
+    insertUnit md5 construct 
+    global constructVar physics simMC 
+    scatMat endf crystal transport 
+    attachComp visit poly);
+
 my $gM=new CMakeList;
 $gM->setParameters(\@ARGV);
 $gM->addMasterProgs(\@masterprog);
@@ -78,9 +90,10 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "commonVar","simpleItem","physics","simMC",
 			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			     "insertUnit",
+			     "insertUnit","flukaMagnetic",
 			     "flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
+			     "phitsProcess","phitsPhysics",
+			     "phitsTally","phitsSupport",
 			     "tally","source","instrument","work"
     	 	             ]);
 
@@ -109,371 +122,121 @@ $gM->addDepUnit("essBeamline",
 			     "commonVar","simpleItem","physics","simMC",
 			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			      "insertUnit","flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			      "tally","source",
+			      "insertUnit","flukaMagnetic",
+			      "flukaProcess","flukaPhysics","flukaTally",
+			      "phitsProcess","phitsPhysics","phitsTally",
+			      "phitsSupport","tally","source",
 			      "instrument","work"
     	 	             ]);
 
-$gM->addDepUnit("maxiv", ["maxivBuild","visit","src","simMC",
-			  "construct","physics","input","process",
-			  "transport","scatMat","endf","crystal",
-			  "source","monte","funcBase","log","monte",
-                          "flukaProcess","flukaPhysics","flukaTally",
-			   "phitsProcess","phitsPhysics","phitsTally",
-			  "phitsSupport","tally",
-			  "geometry","mersenne","src","world","work",
-			  "xml","poly","support","weights",
-			  "balder","cosaxs","commonBeam",
-			  "flexpes","formax","maxpeem",
-			  "commonGenerator","R3Common","R1Common",
-			  "species","insertUnit","md5","construct",
-			  "global","constructVar","physics","simMC",
-			  "scatMat","endf","crystal","transport",
-			  "attachComp","visit","poly"]);
 
-$gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
-			   "construct","physics","input","process",
-			   "transport","scatMat","endf","crystal",
-			   "source","monte","funcBase","log","monte",
-			   "flukaProcess","flukaPhysics","flukaTally",
-			   "phitsProcess","phitsPhysics","phitsTally",
-			   "phitsSupport",
-			   "tally","geometry","mersenne","src","world",
-			   "work","xml","poly","support","weights",
-   		           "physics","simMC","transport","scatMat",
-			   "endf","crystal","work",
-			   "insertUnit","md5","global","attachComp",
-			   "visit","poly"]);
-
-$gM->addDepUnit("bilbau", ["bibBuild","visit","chip","t1Upgrade",
-			   "imat","moderator","build","zoom","construct",
-			   "crystal","transport","scatMat","endf","t1Build",
-			   "src","physics","input","process","source",
-			   "monte","funcBase","log","geometry",
-			   "flukaProcess","flukaPhysics","flukaTally",
-			   "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			   "tally","mersenne","src","work","xml",
-			   "poly","support","physics","simMC",
-                           "transport","scatMat","endf","crystal",
-			   "world","weights","insertUnit",
-			   "md5","global","attachComp",
-			   "visit","poly"]);
+my @maxiv = qw( maxivBuild );
+push(@maxiv,@mainLib);
+$gM->addDepUnit("maxiv", [@maxiv,
+			  qw(balder cosaxs commonBeam  flexpes formax maxpeem 
+			   commonGenerator R3Common R1Common  species)]);
 
 
-$gM->addDepUnit("pressure", ["visit","zoom","src","monte","global",
-			     "funcBase","log","chip","monte","mersenne",
-			     "physics","geometry","flukaProcess","flukaPhysics",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "flukaTally","tally",
-			     "work","xml","poly","input","process",
-			     "visit","weights","insertUnit","md5",
-			     "attachComp","visit"]);
 
-$gM->addDepUnit("divide",   ["special","visit","chip","build","zoom",
-			     "src","physics","monte","funcBase","log",
-			     "monte","mersenne","src","geometry","input",
-			     "process","work","xml","poly","support",
-			     "insertUnit",
-			     "weights","md5","global","attachComp","visit"]);
+my @filter = qw( filter photon );
+push(@filter,@mainLib);
+$gM->addDepUnit("filter", [@filter]),
+			   
 
-$gM->addDepUnit("fullBuild",["build","visit","chip","moderator","build",
-			     "zoom","imat","src","simMC","physics","construct",
-			     "transport","scatMat","crystal","endf","input",
-			     "source","monte","funcBase","log","process",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			      "tally",
-			     "world","monte","geometry","mersenne",
-			     "src","work","xml","poly","support","weights",
-        		      "physics","simMC","source","chip","work",
-                             "transport","scatMat","endf","crystal",
-			     "insertUnit","md5","global","attachComp","visit"]);
+my @bilbau = qw( bibBuild );
+push(@bilbau,@mainLib);
+$gM->addDepUnit("bilbau", [@bilbau]),
+			   			   
+my @fullBuild = qw( build chip moderator build zoom imat );
+push(@fullBuild,@mainLib);
+$gM->addDepUnit("fullBuild", [@fullBuild]),
 
-$gM->addDepUnit("d4c",      ["d4cModel","lensModel","visit","src","physics",
-			     "input","instrument","source","simMC","monte",
-			     "funcBase","log","construct","crystal","transport",
-			     "scatMat","endf","transport","scatMat",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "process","tally","world","construct","monte",
-			     "geometry","mersenne","src","xml","poly",
-			     "support","weights","work","md5","global",
-			     "insertUnit","attachComp","visit"]);
+my @d4c = qw( d4cModel ) ;
+push(@d4c,@mainLib);
+$gM->addDepUnit("d4c", [@d4c]);
 
-$gM->addDepUnit("t3Expt",    ["t3Model","visit","src","physics",
-			     "input","instrument","source","simMC","monte",
-			     "funcBase","log","construct","crystal","transport",
-			     "scatMat","endf","transport","scatMat","tally",
-			      "process","flukaProcess","flukaPhysics","flukaTally","tally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			      "world","construct","monte",
-			     "geometry","mersenne","src","xml","poly",
-			     "support","weights","work","md5","global",
-			     "insertUnit","attachComp","visit"]);
+my @t3Expt = qw( t3Model ); 
+push(@t3Expt,@mainLib);
+$gM->addDepUnit("t3Expt", [@t3Expt]);
 
-$gM->addDepUnit("lens",     ["lensModel","visit","src","physics","input",
-			     "source","simMC","monte","funcBase","log",
-			     "construct","crystal","transport","scatMat",
-			     "endf","transport","scatMat",
-			     "process","flukaProcess","flukaPhysics","flukaTally","tally",
-			     "world","construct",
-			     "monte","geometry","mersenne","src",
-			     "xml","work","poly","support","insertUnit",
-			     "weights","md5","global","attachComp","visit"]);
+my @lens = qw( lensModel ) ;
+push(@lens,@mainLib);
+$gM->addDepUnit("lens", [@lens]);
 
-$gM->addDepUnit("simple",   ["visit","physics","src","input","source",
-			     "monte","funcBase","log","crystal","transport",
-			     "scatMat","endf","process",
-			     "flukaTally","tally","world",
-			     "phitsProcess","phitsPhysics",
-			     "monte","geometry","mersenne","src","xml",
-			     "poly","support","weights","md5","global",
-			     "attachComp","insertUnit",
-			     "process","work","tally","flukaProcess","flukaPhysics",
-			     "flukaTally","visit"]);
+$gM->addDepUnit("simple", [@mainLib]);
 
-$gM->addDepUnit("t1MarkII", ["t1Upgrade","t1Build","imat","chip","build",
-			     "visit","moderator","zoom","src","simMC",
-			     "construct","crystal","transport","scatMat",
-			     "endf","physics","input","process","source",
-			     "monte","funcBase","log","monte","tally",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics",
-			     "geometry","mersenne","src","world",
-             		      "physics","simMC","source","chip","work",
-                             "transport","scatMat","endf","crystal",
-			     "imat","chip",
-			     "xml","poly","support","weights","md5",
-			     "insertUnit","global","attachComp",
-			     "visit","poly"]);
+my @t1MarkII = qw( t1Upgrade t1Build imat chip zoom build moderator ) ;
+push(@t1MarkII,@mainLib);
+$gM->addDepUnit("t1MarkII", [@t1MarkII]);
 
-$gM->addDepUnit("t1Eng", ["t1Engineer","t1Upgrade","t1Build","imat","chip",
-			  "build","visit","moderator","zoom","src","simMC",
-			  "construct","crystal","transport","scatMat","endf",
-			  "physics","input","process","source","monte",
-			  "funcBase","log","monte",
-			  "flukaProcess","flukaPhysics",
-			  "phitsProcess","phitsPhysics",
-			  "flukaTally","tally","geometry",
-			  "mersenne","src","world","work","xml","poly",
-			  "support","weights","md5","global","attachComp",
-			  "insertUnit","visit","poly"]);
+my @t1Eng = qw( t1Engineer t1Upgrade t1Build imat chip zoom build moderator ) ;
+push(@t1Eng,@mainLib);
+$gM->addDepUnit("t1Eng", [@t1Eng]);
 
-$gM->addDepUnit("photonMod", ["photon","visit","src","simMC",
-			      "construct","physics","input","process",
-			      "transport","scatMat","endf","crystal",
-			      "source","monte","funcBase","log","monte",
-			      "flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-                              "tally","geometry",
-			      "mersenne","src","world",
-			      "work","xml","poly","support","weights",
-			      "insertUnit","md5","global",
-			      "attachComp","visit","poly"]);
+my @photonMod = qw( photon ) ;
+push(@photonMod,@mainLib);
+$gM->addDepUnit("photonMod", [@photonMod]);
 
-$gM->addDepUnit("photonMod2", ["photon","visit","src","simMC",
-			      "construct","physics","input","process",
-			      "transport","scatMat","endf","crystal",
-			      "source","monte","funcBase","log","monte",
-			       "flukaProcess","flukaPhysics","flukaTally",
-			       "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			       "tally","geometry",
-			       "mersenne","src","world",
-			       "work","xml","poly","support","weights",
-     		               "physics","simMC","transport","scatMat",
-			       "endf","crystal",
-			       "insertUnit","md5","global",
-			       "attachComp","visit","poly"]);
+my @photonMod2 = qw( photon ) ;
+push(@photonMod2,@mainLib);
+$gM->addDepUnit("photonMod2", [@photonMod2]);
 
-$gM->addDepUnit("photonMod3", ["photon","visit","src","simMC",
-			      "construct","physics","input","process",
-			      "transport","scatMat","endf","crystal",
-			      "source","monte","funcBase","log","monte",
-			      "flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			       "tally",
-			       "geometry","mersenne","src","world",
-			      "work","xml","poly","support","weights",
-			      "insertUnit","md5","global",
-			       "attachComp","visit","poly"]);
+my @photonMod3 = qw( photon ) ;
+push(@photonMod2,@mainLib);
+$gM->addDepUnit("photonMod3", [@photonMod3]);
 
-$gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
-			 "construct","physics","input","process",
-			 "transport","scatMat","endf","crystal",
-			 "source","monte","funcBase","log","monte",
-			 "flukaProcess","flukaPhysics","flukaTally",
-			 "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			 "tally","geometry","mersenne","src","world",
-			 "attachComp","beamline","support","commonVar",
-			 "work","xml","poly","support","weights",
-		         "physics","simMC",
-                         "transport","scatMat","endf","crystal",
-			 "insertUnit","md5","global",
-			 "attachComp","visit","poly","construct"]);
+my @pipe = qw( pipeBuild ) ;
+push(@pipe,@mainLib);
+$gM->addDepUnit("pipe", [@pipe]);
 
-$gM->addDepUnit("singleItem", ["singleItemBuild","visit","src",
-			       "construct","physics","input","process",
-			       "transport","scatMat","commonVar","commonBeam",
-			       "source","monte","funcBase","log","monte",
-			       "flukaProcess","flukaPhysics","flukaTally",
-			       "phitsProcess","phitsPhysics","phitsTally",
-			       "phitsSupport","tally","geometry","mersenne",
-			       "src","world","work","xml","poly",
-			       "support","weights","physics","simMC",
-			       "transport","scatMat", "endf","crystal",
-			       "md5","global","attachComp","visit","poly",
-			       "commonGenerator","construct","constructVar",
-			       "essConstruct","insertUnit","commonVar"
-		]);
+my @singleItem = qw( singleItemBuild ) ;
+push(@singleItem,@mainLib);
+$gM->addDepUnit("singleItem", [@singleItem,
+			       qw(commonGenerator commonVar commonBeam  )]);
 
-$gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
-			     "zoom","src","physics","input","process",
-			     "monte","funcBase","log","monte","tally",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "geometry","mersenne","src","work","xml",
-			     "poly","support","weights","md5","global",
-			     "insertUnit","attachComp","visit","poly"]);
-
-$gM->addDepUnit("t1Real",   ["t1Build","build","visit",
-			     "moderator","zoom","src","simMC","construct",
-			     "crystal","transport","scatMat","endf",
-			     "physics","input","process","source","monte",
-			     "funcBase","log","monte","tally",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "geometry","mersenne","src","world","work","xml",
-     			     "physics","simMC","transport","scatMat",
-			     "source","tally","work","crystal","chip",
-			     "imat","endf",
-			     "poly","support","weights","md5","global",
-			     "insertUnit","attachComp","visit","poly"]);
-
-$gM->addDepUnit("reactor",  ["delft","visit","src","simMC","physics",
-			     "input","source","monte","funcBase","log",
-			     "construct","transport","scatMat","crystal",
-			     "endf","process","flukaProcess",
-			     "flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics",
-			     "phitsTally","phitsSupport",
-			     "tally","world","monte",
-			     "geometry","mersenne","src","physics",
-			     "simMC","transport","scatMat","endf",
-			     "crystal","source","xml","poly","support",
-			     "weights","md5","work","insertUnit","global",
-			     "attachComp","visit"]);
-
-$gM->addDepUnit("siMod",    ["visit","src","physics","input","source","monte",
-			     "funcBase","log","tally","flukaProcess",
-			     "flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics",
-			     "phitsTally","phitsSupport",
-			     "construct","crystal",
-			     "transport","scatMat","endf","process","world",
-			     "monte","geometry","mersenne","src","xml",
-			     "poly","support","weights","global","attachComp",
-			     "insertUnit","visit"]);
-
-$gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
-			     "input","source","monte","funcBase","log",
-			     "tally","flukaProcess","flukaPhysics",
-			     "flukaTally","construct",
-			     "phitsProcess","phitsPhysics",
-			     "phitsTally","phitsSupport",
-			     "crystal","transport",
-			     "scatMat","md5","endf","process","world",
-			     "work","monte","geometry","mersenne","src",
-			     "xml","poly","support","weights","global",
-			     "insertUnit","attachComp","visit"]);
-
-$gM->addDepUnit("sinbad",   ["sinbadBuild","visit","src","simMC",
-			     "physics","input",
-			     "source","monte","funcBase","log","tally",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics",
-			     "phitsTally","phitsSupport",
-			     "construct","crystal","transport","scatMat",
-			     "md5","endf","process","world","work","monte",
-			     "geometry","mersenne","src","xml","poly",
-			     "support","weights","global","attachComp",
-			     "insertUnit","visit"]);
-
-$gM->addDepUnit("sns",      ["snsBuild","visit","src","input",
-			     "monte","funcBase","log",
-			     "construct","transport","scatMat",
-			     "md5","process","world","monte",
-			     "geometry","mersenne","src","xml","poly",
-  			     "support","weights","global","attachComp",
-			     "physics","simMC","transport","scatMat",
-			     "source","tally","flukaProcess",
-			     "flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "work","endf","crystal","insertUnit","visit"]);
-
-$gM->addDepUnit("epb",      ["epbBuild","visit","src","physics",
-			     "simMC","input","source","monte","funcBase","log",
-			     "tally","flukaProcess","flukaPhysics",
-			     "flukaTally","construct",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "crystal","transport",
-			     "scatMat","md5","endf","process","world",
-			     "work","monte","geometry","mersenne","src",
-			     "xml","poly","support","weights","global",
-			     "insertUnit","attachComp","visit"]);
+my @t1Real = qw( t1Build build imat moderator chip zoom ) ;
+push(@t1Real,@mainLib);
+$gM->addDepUnit("t1Real", [@t1Real]);
 
 
-$gM->addDepUnit("muBeam",   ["muon","visit","src","physics",
-			     "simMC","input","source","monte","funcBase","log",
-			     "tally","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "construct","transport",
-			     "scatMat","md5","process","world",
-			     "work","monte","geometry","mersenne","src",
-     			     "physics","simMC","transport","scatMat",
-			     "source","tally",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "work","endf",
-			     "crystal","xml","poly","support","weights",
-			     "global","insertUnit","attachComp","visit"]);
+my @reactor = qw( delft ) ;
+push(@reactor,@mainLib);
+$gM->addDepUnit("reactor", [@reactor]);
 
 
-$gM->addDepUnit("bnct",     ["bnctBuild","t1Build","imat","chip","build",
-			     "visit","moderator","zoom","src","construct",
-			     "crystal","transport","scatMat","endf","physics",
-			     "input","process","source","monte","funcBase",
-			     "log","monte","tally","flukaProcess",
-			     "flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "geometry","mersenne",
-			     "src","world","work","xml","poly","support",
-			     "weights","md5","global","attachComp","visit",
-			     "insertUnit","poly"]);
+$gM->addDepUnit("siMod", \@mainLib);
 
-$gM->addDepUnit("gamma",    ["gammaBuild","t1Build","imat","chip","build",
-			     "visit","moderator","zoom","src","construct",
-			     "crystal","transport","scatMat","endf",
-			     "physics","input","process","source","monte",
-			     "funcBase","log","monte",
-			     "flukaProcess","flukaPhysics",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "flukaTally","tally","geometry",
-			     "mersenne","src","world","work","xml","poly",
-			     "support","weights","md5","global","attachComp",
-			     "insertUnit","visit","poly"]);
+my @cuBuild = qw( cuBlock delft ) ;
+push(@cuBuild,@mainLib);
+$gM->addDepUnit("cuBuild", [@cuBuild]);
 
-$gM->addDepUnit("testMain", ["test","build","visit","chip","t1Upgrade",
-			     "build","zoom","construct",
-			     "crystal","transport","t1Build",
-			     "src","simMC","physics","input","process","source",
-			     "monte","funcBase","log","geometry","tally",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics","phitsTally","phitsSupport",
-			     "build","imat","moderator","chip","zoom",
-                             "simMC","transport","scatMat","crystal","endf",
-			     "mersenne","src","work","xml","poly","support",
-			     "world","weights","md5","global","attachComp",
-			     "insertUnit","visit","poly","essConstruct"]);
+
+my @sinbad = qw( sinbadBuild ) ;
+push(@sinbad,@mainLib);
+$gM->addDepUnit("sinbad", [@sinbad]);
+
+
+my @sns = qw( snsBuild ) ;
+push(@sns,@mainLib);
+$gM->addDepUnit("sns", [@sns]);
+
+my @epb = qw( epbBuild ) ;
+push(@epb,@mainLib);
+$gM->addDepUnit("epb", [@epb]);
+
+my @muBeam = qw( muon ) ;
+push(@muBeam,@mainLib);
+$gM->addDepUnit("muBeam", [@muBeam]);
+
+
+my @gamma = qw( gammaBuild ) ;
+push(@gamma,@mainLib);
+$gM->addDepUnit("gamma", [@gamma]);
+
+my @testMain = qw( test ) ;
+push(@testMain,@mainLib);
+$gM->addDepUnit("testMain", [@testMain]);
+
 
 $gM->writeCMake();
 
