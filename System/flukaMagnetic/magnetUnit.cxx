@@ -125,6 +125,17 @@ magnetUnit::populate(const FuncDataBase& Control)
   return;
 }
 
+  
+void
+magnetUnit::addCell(const int CN)
+  /*!
+    Add cell to system
+    \param CN :: Cell number
+   */
+{
+  activeCells.insert(CN);
+  return;
+}
 
 void
 magnetUnit::writeFLUKA(std::ostream& OX) const

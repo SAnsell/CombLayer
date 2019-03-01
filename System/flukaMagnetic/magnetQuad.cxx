@@ -110,6 +110,9 @@ magnetQuad::createAll(Simulation& System,
   /*!
     If the object is created as a normal object populate
     variables
+    \param System :: Simulation system
+    \param FC :: FixedComp for origin / axis
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("magnetQuad","createAll");

@@ -59,6 +59,8 @@ class magnetUnit :
   magnetUnit& operator=(const magnetUnit&);
   virtual ~magnetUnit();
 
+  void addCell(const int);
+  
   void writeFLUKA(std::ostream&) const;
 };
 
