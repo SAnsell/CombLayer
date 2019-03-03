@@ -143,7 +143,7 @@ main(int argc,char* argv[])
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       chipIRDatum::chipDataStore::Instance().writeMasterTable("chipIR.table");
-      SimPtr->write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {

@@ -189,6 +189,7 @@ ZoomPrimary::createUnitVector(const attachSystem::FixedGroup& LC)
 {
   ELog::RegMethod RegA("ZoomPrimary","createUnitVector");
   FixedGroup::createUnitVector(LC);
+  setDefault("Main","Beam");
   return;
 }
 
@@ -200,8 +201,9 @@ ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
   */
 {
   ELog::RegMethod RegA("ZoomPrimary","createSurface");
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  const Geometry::Vec3D& bEnter=beamFC.getCentre();
+
+  setDefault("Main","Beam");
+    
   SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*leftWidth,X);
@@ -213,13 +215,13 @@ ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
 
   // inner void
   ModelSupport::buildPlane(SMap,buildIndex+13,
-			   bEnter+X*(cutX-cutWidth/2.0),X);
+			   bOrigin+X*(cutX-cutWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
-			   bEnter+X*(cutX+cutWidth/2.0),X);
+			   bOrigin+X*(cutX+cutWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,
-			   bEnter+Z*(cutZ-cutHeight/2.0),Z);
+			   bOrigin+Z*(cutZ-cutHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,
-			   bEnter+Z*(cutZ+cutHeight/2.0),Z);
+			   bOrigin+Z*(cutZ+cutHeight/2.0),Z);
     
   return;
 }
@@ -257,18 +259,23 @@ ZoomPrimary::createLinks()
 {
   ELog::RegMethod RegA("ZoomPrimary","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);       
-  FixedComp::setConnect(1,Origin+Y*length,Y);     
-  FixedComp::setConnect(2,Origin-X*leftWidth/2.0,-X);     
-  FixedComp::setConnect(3,Origin+X*rightWidth/2.0,X);     
-  FixedComp::setConnect(4,Origin-Z*depth,-Z);     
-  FixedComp::setConnect(5,Origin+Z*height,Z);     
+    
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
+  mainFC.setConnect(0,Origin,-Y);       
+  mainFC.setConnect(1,Origin+Y*length,Y);     
+  mainFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
+  mainFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
+  mainFC.setConnect(4,Origin-Z*depth,-Z);     
+  mainFC.setConnect(5,Origin+Z*height,Z);     
   
   for(int i=0;i<6;i++)
-    FixedComp::setLinkSurf(static_cast<size_t>(i),
+    mainFC.setLinkSurf(static_cast<size_t>(i),
 			   SMap.realSurf(buildIndex+i+1));
 
-  //  setBeamExit(buildIndex+2,bExit,bY);
+  beamFC.setConnect(0,bOrigin,-bY);
+  beamFC.setExit(buildIndex+2,bOrigin,bY);
 
   return;
 }
@@ -366,7 +373,7 @@ ZoomPrimary::createAll(Simulation& System,
   
   populate(System);
   createUnitVector(ZC);
-  createSurfaces(ZC);
+  createSurfaces(ZC.getKey("Main"));
   createObjects(System);
   createLinks();
   layerProcess(System);

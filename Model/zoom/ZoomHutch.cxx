@@ -234,6 +234,8 @@ ZoomHutch::createUnitVector(const attachSystem::FixedGroup& TC)
   mainFC.applyAngleRotate(xyAngle,zAngle);
   beamFC.applyAngleRotate(xyAngle,zAngle);
 
+  setDefault("Main","Beam");
+  
   return;
 }
 
@@ -380,21 +382,25 @@ ZoomHutch::createLinks()
 {
   ELog::RegMethod RegA("ZoomHutch","createLinks");
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  
   // // set Links:
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*fullLen,Y);
-  FixedComp::setConnect(2,Origin-X*frontLeftWidth,-X);
-  FixedComp::setConnect(3,Origin+X*frontRightWidth,X);
-  FixedComp::setConnect(4,Origin+Z*floorDepth,X);
-  FixedComp::setConnect(5,Origin+Z*roofHeight,X);
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setConnect(1,Origin+Y*fullLen,Y);
+  mainFC.setConnect(2,Origin-X*frontLeftWidth,-X);
+  mainFC.setConnect(3,Origin+X*frontRightWidth,X);
+  mainFC.setConnect(4,Origin+Z*floorDepth,X);
+  mainFC.setConnect(5,Origin+Z*roofHeight,X);
   
   for(size_t i=0;i<6;i++)
     {
       int ii(static_cast<int>(i));
-      FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+1+ii));
+      mainFC.setLinkSurf(i,SMap.realSurf(buildIndex+1+ii));
     }
   
-  //  setBeamExit(buildIndex+2,bEnter,bY);
+  beamFC.setExit(buildIndex+2,bOrigin,bY);
 
 
   return;

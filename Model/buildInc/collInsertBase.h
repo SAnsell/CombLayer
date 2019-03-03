@@ -43,7 +43,7 @@ class collInsertBase  :
 {
  protected:
 
-  const std::string baseName;   ///< basenaem
+  const std::string baseName;   ///< basename
   const int blockID;            ///< Block number
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
 

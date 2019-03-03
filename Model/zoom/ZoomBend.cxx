@@ -244,7 +244,6 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-
   const attachSystem::FixedGroup* TCPtr=
     dynamic_cast<const attachSystem::FixedGroup*>(&ZS);
   if (TCPtr)
@@ -256,21 +255,13 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
     {
       mainFC.createUnitVector(ZS);
       beamFC.createUnitVector(ZS);
-      // Z*=-1;
-      // bX=X;
-      // bY=Y;
-      // bZ=Z;
-      // const Geometry::Quaternion Qbx=
-      // 	Geometry::Quaternion::calcQRot(bendXAngle/1000.0,X);
-      // Qbx.rotate(bZ);
-      // Qbx.rotate(bY);
-      // beamFC.setCentre(ZS.getCentre());
-      // beamFC.applyOffset(bxStep,0,bzStep);
     }
   // link point 
   //  FixedComp::createUnitVector(ZS.getBackPt(),ZS.getY());  
 
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  applyShift(xStep,yStep,zStep);
+  setDefault("Main","Beam");
+  ELog::EM<<"BZ == "<<bZ<<":"<<Z<<ELog::endErr;
   Geometry::Vec3D Diff=beamFC.getCentre()-Origin;
   // TODO :: 
   // STUFF FOR BEND OCCURS AT DIFFERENT PLACE :
@@ -287,11 +278,6 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   //    from E2.
 
   bendRadius=1000.0*bendLength/bendAngle;
-
-  Geometry::Vec3D bX(beamFC.getX());
-  Geometry::Vec3D bY(beamFC.getY());
-  Geometry::Vec3D bZ(beamFC.getZ());
-  Geometry::Vec3D bEnter(beamFC.getCentre());
   
   if(bendRadius<0)
     {
@@ -306,16 +292,24 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(normalOut);
   Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(zOut);
 
-  BCentre=bEnter-bZ*bendRadius;  // correct: X is tangent at this pt.
-  Geometry::Vec3D bExit= bZ*bendRadius;
-  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(bExit);
-  bExit += BCentre;
+  bOrigin-=bZ*bendRadius;  // correct: X is tangent at this pt.
 
+  Geometry::Vec3D bPoint= bZ*bendRadius;
+  ELog::EM<<"BPA == "<<bPoint<<":"<<bZ<<ELog::endDiag;
+  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(bPoint);
+  bPoint += bOrigin;
 
-  //  SecondTrack::setBeamExit(bExit,normalOut);
+  beamFC.setExit(bPoint,normalOut);
+  setDefault("Main","Beam");
+  
+
+  ELog::EM<<"BEter == "<<bOrigin<<ELog::endDiag;
+  ELog::EM<<"BZ == "<<bZ<<ELog::endDiag;
+  ELog::EM<<"BExit == "<<bExit<<ELog::endDiag;
+  
   CS.setVNum(chipIRDatum::zoomBendLength,bendLength);
   CS.setVNum(chipIRDatum::zoomBendRadius,bendRadius);
-  CS.setENum(chipIRDatum::zoomBendShutter,MR.calcRotate(bEnter));  
+  CS.setENum(chipIRDatum::zoomBendShutter,MR.calcRotate(bOrigin));  
   CS.setENum(chipIRDatum::zoomBendStart,MR.calcRotate(Origin));  
   CS.setENum(chipIRDatum::zoomBendCentre,MR.calcRotate(BCentre));  
   CS.setENum(chipIRDatum::zoomBendExit,MR.calcRotate(bExit));  
@@ -598,14 +592,11 @@ ZoomBend::createLinks()
   */
 {
   ELog::RegMethod RegA("ZoomBend","createLinks");
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  const Geometry::Vec3D& bX(beamFC.getX());
-  const Geometry::Vec3D& bZ(beamFC.getZ());
-  const Geometry::Vec3D& bEnter(beamFC.getCentre());
 
-  Y=normalOut-Z*(normalOut.dotProd(Z));
-  Y.makeUnit();
-  X=Y*Z;
+  setDefault("Main","Beam");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
 
   // Determine the low-left and upper-right corner of the bend intersect
   std::vector<Geometry::Vec3D> Pts=
@@ -625,21 +616,29 @@ ZoomBend::createLinks()
   MidPt+=SurInter::nearPoint(Pts,Origin+Y*bendLength);
   MidPt/=2.0;
 
+
   // Set inner link points:[pointing into the void]
-  BCentre=bEnter-bX*bendRadius;  // correct because X is tangent at this point
-  FixedComp::setConnect(2,bEnter-bX*(bendHeight/2.0),bX);
-  FixedComp::setConnect(3,bEnter+bX*(bendHeight/2.0),-bX);
-  FixedComp::setConnect(4,bEnter-bZ*(bendWidth/2.0),bZ);
-  FixedComp::setConnect(5,bEnter+bZ*(bendWidth/2.0),-bZ);
+  Geometry::Vec3D BCentre=bOrigin-bX*bendRadius;  // correct because X is tangent at this point
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+504));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+503));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+505));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+506));
+  
+  mainFC.setConnect(0,bOrigin,-bY);
+  mainFC.setConnect(2,bOrigin-bX*(bendHeight/2.0),bX);
+  mainFC.setConnect(3,bOrigin+bX*(bendHeight/2.0),-bX);
+  mainFC.setConnect(4,bOrigin-bZ*(bendWidth/2.0),bZ);
+  mainFC.setConnect(5,bOrigin+bZ*(bendWidth/2.0),-bZ);
 
+  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+504));
+  mainFC.setLinkSurf(3,-SMap.realSurf(buildIndex+503));
+  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+505));
+  mainFC.setLinkSurf(5,-SMap.realSurf(buildIndex+506));
 
-  //  SecondTrack::setBeamExit(MidPt,normalOut);
-  //  setExit(Origin+Y*bendLength,Y);
+  
+
+  beamFC.setConnect(0,Origin,-Y);
+  beamFC.setConnect(1,Origin+Y*bendLength,Y);
+  mainFC.setConnect(1,Origin+Y*bendLength,Y);
   return;
 }
 

@@ -345,6 +345,9 @@ BulkShield::createShutters(Simulation& System,
 			    SMap.realSurf(buildIndex+5));
       GData[i]->setDivide(40000);
       GData[i]->createAll(System,0.0,0);
+      if (i==zoomShutter) ELog::EM<<"GI == "<<
+			    GData[i]->getCentre()<<ELog::endDiag;
+
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 

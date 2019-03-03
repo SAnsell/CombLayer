@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomCollimator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -216,6 +216,7 @@ ZoomCollimator::createUnitVector(const attachSystem::FixedGroup& TC)
   mainFC.applyShift(xStep,0,zStep);
   beamFC.applyShift(xStep,0,zStep);
 
+  setDefault("Main","Beam");
   return;
 }
 
@@ -227,8 +228,7 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
   */
 {
   ELog::RegMethod RegA("ZoomCollimator","createSurface");
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  const Geometry::Vec3D& bEnter=beamFC.getCentre();
+  
   
   SMap.addMatch(buildIndex+1,LC.getLinkSurf(2));   // back plane
   //  SMap.addMatch(buildIndex+14,LC.getLinkSurf(4));   // right plane
@@ -269,9 +269,9 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
     
   // inner void
   ModelSupport::buildPlane(SMap,buildIndex+23,
-			   bEnter-X*stackWidth/2.0,X);
+			   bOrigin-X*stackWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+24,
-			   bEnter+X*stackWidth/2.0,X);
+			   bOrigin+X*stackWidth/2.0,X);
     
   return;
 }
@@ -318,19 +318,22 @@ ZoomCollimator::createLinks()
    */
 {
   ELog::RegMethod RegA("ZoomCollimator","createLinks");
+  
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(0,Origin,-Y);       
-  FixedComp::setConnect(1,Origin+Y*length,Y);     
-  FixedComp::setConnect(2,Origin-X*leftWidth/2.0,-X);     
-  FixedComp::setConnect(3,Origin+X*rightWidth/2.0,X);     
-  FixedComp::setConnect(4,Origin-Z*depth,-Z);     
-  FixedComp::setConnect(5,Origin+Z*height,Z);     
+  mainFC.setConnect(0,Origin,-Y);       
+  mainFC.setConnect(1,Origin+Y*length,Y);     
+  mainFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
+  mainFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
+  mainFC.setConnect(4,Origin-Z*depth,-Z);     
+  mainFC.setConnect(5,Origin+Z*height,Z);     
   
   for(size_t i=0;i<6;i++)
-    FixedComp::setLinkSurf
+    mainFC.setLinkSurf
       (i,SMap.realSurf(buildIndex+static_cast<int>(i)+1));
 
-  //  setBeamExit(buildIndex+2,bEnter,bY);
+  beamFC.setExit(buildIndex+2,bOrigin,bY);
 
   return;
 }
@@ -386,7 +389,7 @@ ZoomCollimator::createAll(Simulation& System,
   
   populate(System);
   createUnitVector(ZC);
-  createSurfaces(ZC);
+  createSurfaces(ZC.getKey("Main"));
   createObjects(System);
   createLinks();
   layerProcess(System);

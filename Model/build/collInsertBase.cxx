@@ -374,6 +374,7 @@ collInsertBase::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  OX<<"ID == "<<blockID<<std::endl;
   OX<<"Origin == "<<beamOrigin<<std::endl;
   OX<<"Width == "<<width<<" "<<beamX<<std::endl;
   OX<<"Height == "<<height<<":"<<beamZ<<std::endl;

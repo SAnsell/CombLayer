@@ -492,12 +492,21 @@ ZoomShutter::setTwinComp()
   
   Geometry::Vec3D bEnter=(*ac).getWindowCentre()-Z*zCShift;
   Geometry::Vec3D bExit=(*bc).getWindowCentre()-Z*zCShift;
+  ELog::EM<<"ac == "<<ELog::endDiag;
+  ac->write(ELog::EM.Estream());
+
+  ELog::EM<<"TC == "<<bEnter<<" "<<Z<<" "<<zCShift<<ELog::endDiag;
+  ELog::EM<<"TC == "<<bEnter<<ELog::endDiag;
+  ELog::EM<<"TC == "<<bExit<<ELog::endDiag;
+
   beamFC.createUnitVector(bEnter,X,(bExit-bEnter).unit(),Z);
   beamFC.applyAngleRotate(0,zAngle);
 
   beamFC.setConnect(0,bEnter,beamFC.getY());
   beamFC.setConnect(1,bExit,beamFC.getY());
 
+  ELog::EM<<"TC == "<<bEnter<<ELog::endDiag;
+  ELog::EM<<"TC == "<<bExit<<ELog::endDiag;
   return;
 }
 

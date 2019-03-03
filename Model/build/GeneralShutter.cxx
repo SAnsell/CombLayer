@@ -356,7 +356,9 @@ GeneralShutter::applyRotations(const double ZOffset)
 
   mainFC.setCentre(Y*voidXoffset);
   mainFC.applyAngleRotate(xyAngle,0);
-		
+
+  setDefault("Main","Beam");
+			
   BeamAxis=mainFC.getY();
   XYAxis=BeamAxis;
   
@@ -367,9 +369,9 @@ GeneralShutter::applyRotations(const double ZOffset)
   // Special note [close == 2: open imp =-1]
   //              [close == 3: close imp =-1]
 
-  targetPt=Origin+BeamAxis*outerRadius;
-  frontPt=Origin+BeamAxis*innerRadius+Z*openZShift;
-  endPt=frontPt+BeamAxis*(outerRadius-innerRadius);
+  targetPt=Origin+XYAxis*outerRadius;
+  frontPt=Origin+XYAxis*innerRadius+Z*openZShift;
+  endPt=frontPt+XYAxis*(outerRadius-innerRadius);
 
   // OUTPUT
   mainFC.setConnect(0,frontPt,-XYAxis);

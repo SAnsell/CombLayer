@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomChopper.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,23 +256,28 @@ ZoomChopper::createLinks()
   */
 {
   ELog::RegMethod RegA("ZoomChopper","createLinks");
-  
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  const Geometry::Vec3D& bY(beamFC.getY());
+  setDefault("Main","Beam");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::setConnect(1,Origin+bY*length,bY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  mainFC.setConnect(1,Origin+bY*length,bY);
+  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  beamFC.setConnect(0,Origin,-bY);
+  beamFC.setConnect(1,Origin+bY*length,bY);
+  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   Geometry::Vec3D LNorm(X);
   Geometry::Quaternion::calcQRotDeg(-leftAngle,Z).rotate(LNorm);  
   Geometry::Vec3D RNorm(X);
   Geometry::Quaternion::calcQRotDeg(rightAngle,Z).rotate(RNorm);  
     
-  FixedComp::setConnect(2,Origin+Y*length-X*leftWidth,LNorm);     
-  FixedComp::setConnect(3,Origin+Y*length+X*rightWidth,RNorm);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  mainFC.setConnect(2,Origin+Y*length-X*leftWidth,LNorm);     
+  mainFC.setConnect(3,Origin+Y*length+X*rightWidth,RNorm);
+  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
   // Link point is the join between BeamOrigin+
   // beam exit
@@ -287,6 +292,8 @@ ZoomChopper::createUnitVector(const zoomSystem::ZoomBend& ZB)
     \param ZB :: Zoom Bender
   */
 {
+  ELog::RegMethod RegA("ZoomChopper","createUnitVector");
+  
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
@@ -307,7 +314,7 @@ ZoomChopper::createSurfaces(const shutterSystem::GeneralShutter& GS)
     \param GS :: GeneralShutter [for divide]
   */
 {
-  ELog::RegMethod RegA("ZoomChopper","createSurface");
+  ELog::RegMethod RegA("ZoomChopper","createSurfaces(GS)");
   
   
   SMap.addMatch(buildIndex+100,GS.getDivideSurf());
@@ -322,9 +329,11 @@ ZoomChopper::createSurfaces()
     Create an new effective mono-wall
   */
 {
-  ModelSupport::buildPlane(SMap,buildIndex+100,Origin+Y*outerOffset,Y);     //
+  ELog::RegMethod RegA("ZoomChopper","createSurfaces");
+  
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin+Y*outerOffset,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+1,Origin+Y*outerOffset,
-			      Z,outerRadius);     //
+			      Z,outerRadius);     
   createSurfacesCommon();
   return;
 }
@@ -336,6 +345,8 @@ ZoomChopper::createSurfacesCommon()
   */
 {
   ELog::RegMethod RegA("ZoomChopper","createSurfacesCommon");
+
+  setDefault("Main","Beam");
   
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+
 			   Y*length,Y);     // back plane
@@ -359,10 +370,11 @@ ZoomChopper::createSurfacesCommon()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z); 
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
-  FixedComp::setConnect(4,Origin-Z*depth,Z);     
-  FixedComp::setConnect(5,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  mainFC.setConnect(4,Origin-Z*depth,Z);     
+  mainFC.setConnect(5,Origin+Z*height,Z);
+  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   // Void ::
   ModelSupport::buildPlane(SMap,buildIndex+11,
@@ -395,16 +407,11 @@ ZoomChopper::createSurfacesCommon()
 
   
   // Cut through
-  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  const Geometry::Vec3D& bEnter(beamFC.getCentre());
-  const Geometry::Vec3D& bX(beamFC.getX());
-  const Geometry::Vec3D& bY(beamFC.getX());
-  const Geometry::Vec3D& bZ(beamFC.getZ());
   
   if (voidEndMat>0)
     {
-      Geometry::Vec3D VECent=bEnter+bY*(length-voidEnd);
+      Geometry::Vec3D VECent=bOrigin+bY*(length-voidEnd);
       ModelSupport::buildPlane(SMap,buildIndex+1033,
 			       VECent-bX*voidEndBeamLeft,bX);     
       ModelSupport::buildPlane(SMap,buildIndex+1034,
