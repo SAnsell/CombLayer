@@ -3,7 +3,7 @@
  
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,12 +74,19 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedOffset.h"
 #include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "radDecay.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
+#include "magnetUnit.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 
@@ -299,6 +306,39 @@ SimFLUKA::writeTally(std::ostream& OX) const
 }
 
 void
+SimFLUKA::writeMagField(std::ostream& OX) const
+  /*!
+    Writes out the tallies using a nice boost binding
+    construction.
+    \param OX :: Output stream
+   */
+{
+  ELog::RegMethod RegA("SimFluka","writeMagField");
+  
+  OX<<"* ------------------------------------------------------"<<std::endl;
+  OX<<"* ------------------- MAGNETIC CARDS ----------------------"<<std::endl;
+  OX<<"* ------------------------------------------------------"<<std::endl;
+
+  std::ostringstream cx;
+  // Simple case - flat field
+  if (MagItem.empty())
+    {
+      if (BVec.abs()<Geometry::zeroTol)
+	cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
+      else
+	cx<<"MGNFIELD 15.0 0.05 0.1 "<<BVec;
+      
+      StrFunc::writeFLUKA(cx.str(),OX);
+      return;
+    }
+
+  for(const MagTYPE::value_type& MI : MagItem)
+    MI.second->writeFLUKA(OX);
+
+  return;
+}
+
+void
 SimFLUKA::writeTransform(std::ostream& OX) const
   /*!
     Write all the transforms in standard MCNPX output 
@@ -435,25 +475,6 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
   OX<<alignment<<std::endl;
   if (magField)
     writeMagField(OX);
-  return;
-}
-
-void
-SimFLUKA::writeMagField(std::ostream& OX) const
-  /*!
-    Write out the magnetic field if needed
-    \param OX :: Output stream
-  */
-{
-  ELog::RegMethod RegA("SimFLUKA","writeMagField");
-
-  std::ostringstream cx;
-  if (BVec.abs()<Geometry::zeroTol)
-    cx<<"MGNFIELD 15.0 0.05 0.1 - - - ";
-  else
-    cx<<"MGNFIELD 15.0 0.05 0.1 "<<BVec;
-  
-  StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 

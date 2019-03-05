@@ -1544,6 +1544,32 @@ FixedComp::getLinkAxis(const long int sideIndex) const
   return (sideIndex>0)  ? LItem.getAxis() : -LItem.getAxis();
 }
 
+Geometry::Vec3D
+FixedComp::getLinkZAxis(const long int sideIndex) const
+  /*!
+    Calculate the Z Axis based on a link point
+    \param sideIndex :: SIGNED +1 side index [Attention :: Y AXIS]
+    \return Z Axis from Y Axis for component
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkZAxis");
+
+  if (sideIndex==0) return Z;
+      
+  const Geometry::Vec3D yTest=getLinkAxis(sideIndex);
+  Geometry::Vec3D zTest=Z;
+  Geometry::Vec3D xTest=X;
+  if (std::abs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+    zTest=Y;
+  else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+    xTest=Y;
+
+  computeZOffPlane(xTest,yTest,zTest);
+  return zTest;
+}
+
+
+
 std::string
 FixedComp::getLinkString(const long int sideIndex) const
   /*!

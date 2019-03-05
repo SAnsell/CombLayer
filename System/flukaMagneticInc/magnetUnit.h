@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/magnetUnit.h
+ * File:   flukaMagneticInc/magnetUnit.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -29,7 +29,7 @@ namespace flukaSystem
   \class magnetUnit
   \version 1.0
   \date February 2019
-  \author S.Ansell
+  \author S. Ansell
   \brief Holds an external magnetic system
 
   FixedOffset holds the basis set for the axial components

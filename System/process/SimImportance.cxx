@@ -163,4 +163,4 @@ importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
 
 
 
-}  // NAMESPACE SimImportance
+}  // NAMESPACE SimProcess

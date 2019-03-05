@@ -44,18 +44,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -73,11 +66,13 @@
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 #include "Object.h"
+#include "ObjectAddition.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimFLUKA.h"
+
 
 #include "flukaImpConstructor.h"
 #include "flukaProcess.h"
@@ -86,9 +81,14 @@
 #include "flukaPhysics.h"
 #include "flukaDefPhysics.h"
 
+
 namespace flukaSystem
 {  
 
+void setMagneticExternal(SimFLUKA&,const mainSystem::inputParam&);
+
+
+  
 void
 setMagneticPhysics(SimFLUKA& System,
 		   const mainSystem::inputParam& IParam)
@@ -133,9 +133,9 @@ setMagneticPhysics(SimFLUKA& System,
 	    }
 	}
     }
+  if (nSet) setMagneticExternal(System,IParam);
   return;
 }
-
 
   
 void
@@ -147,34 +147,29 @@ setMagneticExternal(SimFLUKA& System,
     \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod Rega("flukaDefPhysics","setMagneticPhysics");
+  ELog::RegMethod Rega("flukaDefPhysics[F]","setMagneticExternal");
 
-  if (IParam.flag("MagExternal"))
+  if (IParam.flag("MagUnit"))
     {
-      const size_t nSet=IParam.setCnt("MagExternal");
+      const size_t nSet=IParam.setCnt("MagUnit");
       for(size_t setIndex=0;setIndex<nSet;setIndex++)
 	{
-	  const size_t NIndex=IParam.itemCnt("MagExternal",setIndex);
+	  Geometry::Vec3D AOrg;
+	  Geometry::Vec3D AX;
+	  Geometry::Vec3D AY;
+	  Geometry::Vec3D AZ;
 	  
-	  for(size_t index=0;index<NIndex;index++)
+	  const size_t NIndex=IParam.itemCnt("MagUnit",setIndex);
+
+	  // General form is ::  Type : location : Param
+	  size_t index(2);
+	  const std::string typeName=IParam.getValueError<std::string>
+	    ("MagUnit",setIndex,0,"typeName");
+	  ModelSupport::getObjectAxis(System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
+	  
+	  if (typeName=="Quad")
 	    {
-	      const std::string objName=
-		IParam.getValueError<std::string>
-		("MagField",setIndex,index,"No objName for MagField");
-	      const std::vector<int> Cells=System.getObjectRange(objName);
-	      if (Cells.empty())
-		throw ColErr::InContainerError<std::string>
-		  (objName,"Empty cell");
 	      
-	      Simulation::OTYPE& CellObjects=System.getCells();
-	      // Special to set cells in OBJECT  [REMOVE]
-	      for(const int CN : Cells)
-		{
-		  Simulation::OTYPE::iterator mc=
-		    CellObjects.find(CN);
-		  if (mc!=CellObjects.end())
-		    mc->second->setMagFlag();
-		}
 	    }
 	}
     }

@@ -27,6 +27,7 @@ namespace flukaSystem
 {
   class flukaTally;
   class flukaPhysics;
+  class magnetUnit;
   class radDecay;
 }
 
@@ -44,6 +45,9 @@ class SimFLUKA : public Simulation
 
   /// Tally fortranIO : tally
   typedef std::map<int,flukaSystem::flukaTally*> FTallyTYPE;
+  /// Tally fortranIO : tally
+  typedef std::map<std::string,
+    std::shared_ptr<flukaSystem::magnetUnit>> MagTYPE;
   
  private:
 
@@ -57,8 +61,11 @@ class SimFLUKA : public Simulation
   Geometry::Vec3D BVec;           ///< Magnetic field
 
   std::string sourceExtraName;    ///< Extra name if using combined sources
-  
+
+
   FTallyTYPE FTItem;              ///< Fluka tally map
+
+  MagTYPE MagItem;                ///< Fluka magnetic map 
 
   flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
   flukaSystem::radDecay* RadDecayPtr;   ///< Fluka rad decay modification

@@ -3,7 +3,7 @@
  
  * File:   flukaProcess/flukaProcess.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,15 +49,11 @@
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -65,8 +61,6 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "AttachSupport.h"
-#include "LinkSupport.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

@@ -52,6 +52,11 @@
 #include "MainProcess.h"
 #include "inputParam.h"
 #include "addInsertObj.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -60,6 +65,70 @@
 
 namespace ModelSupport
 {
+
+void
+getObjectAxis(const Simulation& System,
+	      const std::string& KName,
+	      const mainSystem::inputParam& IParam,
+	      const size_t setIndex,size_t& ID,
+	      Geometry::Vec3D& Org,Geometry::Vec3D& AY,
+	      Geometry::Vec3D& AZ)
+  /*
+    Gets a input param into a FULL origin + Axis system
+    based on the ptype which should be free/object
+
+     Case 1 :  object
+        -FixedComp linkPt
+     Case 2 :  free
+        -Origin Y Z 
+
+    \param System :: Simulation
+    \param IParam :: Input Parameters
+    \param KName :: IParam name
+    \param setIndex :: SEt Index in the IParam table
+    \param ID :: index of point
+    \param Org :: Origin point
+    \param AY :: Y Axis
+    \param AZ :: Z Axis
+    \return size of index consumed
+  */
+{
+  ELog::RegMethod RegA("ObjectAddition","getObjectAxis");
+
+  const std::string eMess
+	("Insufficient item for "+KName+
+	 "["+std::to_string(setIndex)+"]"+
+	 "["+std::to_string(ID)+"]");
+
+
+  const std::string PType=IParam.getValueError<std::string>
+    (KName,setIndex,ID,"object/free");
+
+  if (PType=="free" || PType=="Free")
+    {
+      Org=IParam.getCntVec3D(KName,setIndex,ID,eMess+"Origin");
+      AY=IParam.getCntVec3D(KName,setIndex,ID,eMess+"YAxis");
+      AZ=IParam.getCntVec3D(KName,setIndex,ID,eMess+"ZAxis");
+    }
+  else if (PType=="Object" || PType=="object")
+    {
+      const std::string FCname=
+	IParam.getValueError<std::string>(KName,setIndex,ID++,eMess);
+      const std::string LName=
+	IParam.getValueError<std::string>(KName,setIndex,ID++,eMess);
+      const attachSystem::FixedComp* mainFCPtr=
+	System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
+      const long int linkIndex=mainFCPtr->getSideIndex(LName);
+      Org=mainFCPtr->getLinkPt(linkIndex);
+      AY=mainFCPtr->getLinkAxis(linkIndex);
+      AZ=mainFCPtr->getLinkZAxis(linkIndex);
+    }
+  else
+    throw ColErr::InContainerError<std::string>
+      (PType,"PType unknown for"+eMess);
+
+  return;
+}
 
 void
 objectAddition(Simulation& System,
@@ -159,7 +228,6 @@ const size_t nP=IParam.setCnt("OAdd");
 	      ptI=4;
 	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess);
 	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess);
-	      VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
 	    }
 	  else if (PType=="free")
 	    {

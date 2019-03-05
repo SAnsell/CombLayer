@@ -191,12 +191,14 @@ class FixedComp
   Geometry::Vec3D getLinkAxis(const std::string&) const;
   int getLinkSurf(const std::string&) const;
   
-  virtual Geometry::Vec3D getLinkPt(const long int) const;
-  virtual Geometry::Vec3D getLinkAxis(const long int) const;
+  Geometry::Vec3D getLinkPt(const long int) const;
+  Geometry::Vec3D getLinkAxis(const long int) const;
+  Geometry::Vec3D getLinkZAxis(const long int) const;
+  
   virtual std::string getLinkString(const long int) const;
-  virtual double getLinkDistance(const long int,const long int) const;
-  virtual double getLinkDistance(const long int,const FixedComp&,
-				 const long int) const;
+  double getLinkDistance(const long int,const long int) const;
+  double getLinkDistance(const long int,const FixedComp&,
+			 const long int) const;
   virtual int getLinkSurf(const long int) const;
 
   HeadRule getFullRule(const std::string&) const;
