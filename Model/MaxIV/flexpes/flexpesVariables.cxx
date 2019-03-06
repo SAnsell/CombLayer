@@ -951,7 +951,7 @@ shutterTable(FuncDataBase& Control,
 void
 transferVariables(FuncDataBase& Control,
 		  const std::string& transKey)
-/*!
+  /*!
     Set the variables for the transfer regions
     \param Control :: DataBase to use
     \param transKey :: name before part names
@@ -1013,10 +1013,10 @@ frontEndVariables(FuncDataBase& Control,
    
   Control.addVariable(frontKey+"ECutDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.11);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
-    Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
   Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
   Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
