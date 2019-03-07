@@ -63,6 +63,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 #include "Object.h"
@@ -79,6 +80,8 @@
 #include "cellValueSet.h"
 #include "pairValueSet.h"
 #include "flukaPhysics.h"
+#include "magnetUnit.h"
+#include "magnetQuad.h"
 #include "flukaDefPhysics.h"
 
 
@@ -149,27 +152,32 @@ setMagneticExternal(SimFLUKA& System,
 {
   ELog::RegMethod Rega("flukaDefPhysics[F]","setMagneticExternal");
 
+
   if (IParam.flag("MagUnit"))
     {
       const size_t nSet=IParam.setCnt("MagUnit");
       for(size_t setIndex=0;setIndex<nSet;setIndex++)
 	{
 	  Geometry::Vec3D AOrg;
-	  Geometry::Vec3D AX;
 	  Geometry::Vec3D AY;
 	  Geometry::Vec3D AZ;
 	  
 	  const size_t NIndex=IParam.itemCnt("MagUnit",setIndex);
 
 	  // General form is ::  Type : location : Param
-	  size_t index(2);
+	  size_t index(1);
 	  const std::string typeName=IParam.getValueError<std::string>
 	    ("MagUnit",setIndex,0,"typeName");
 	  ModelSupport::getObjectAxis(System,"MagUnit",IParam,setIndex,index,AOrg,AY,AZ);
-	  
+	  const Geometry::Vec3D Extent=IParam.getCntVec3D("MagUnit",setIndex,index,"QuadExtent");
+	  const double KV=IParam.getValueError<double> ("MagUnit",setIndex,index,"K Value");
 	  if (typeName=="Quad")
 	    {
-	      
+	      // Need 
+	      std::shared_ptr<flukaSystem::magnetQuad>
+		QPtr(new magnetQuad("Quad",setIndex));
+	      QPtr->createAll(System,AOrg,AY,AZ,Extent,KV);
+	      System.addMagnetObject(QPtr);
 	    }
 	}
     }

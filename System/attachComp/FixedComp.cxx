@@ -280,6 +280,29 @@ FixedComp::createUnitVector(const FixedComp& FC,
 
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
+			    const Geometry::Vec3D& YAxis,
+                            const Geometry::Vec3D& ZAxis)
+  /*!
+    Create the unit vectors [using beam directions]
+    \param OG :: Origin
+    \param YAxis :: Direction for Y
+    \param ZAxis :: Direction for Z
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
+
+  Y=YAxis.unit();
+  Z=ZAxis.unit();
+  X=Y*Z;
+  
+  makeOrthogonal();
+  Origin=OG;
+  if (primeAxis>0) reOrientate();
+  return;
+}
+
+void
+FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& XAxis,
                             const Geometry::Vec3D& YAxis,
 			    const Geometry::Vec3D& ZAxis)
@@ -291,9 +314,8 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(4xVec3D))");
 
-  //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
   X=XAxis.unit();
   Y=YAxis.unit();
   Z=ZAxis.unit();

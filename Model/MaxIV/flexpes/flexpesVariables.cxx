@@ -1022,10 +1022,11 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
   Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
+  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
   Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
   Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutWallDiskWidth",20.0);
-  Control.addVariable(frontKey+"ECutWallDiskHeight",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
   Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
 
   setVariable::PreDipoleGenerator PGen;

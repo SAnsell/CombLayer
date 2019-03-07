@@ -29,8 +29,14 @@ namespace attachSystem
 
 class objectGroups;
 
+namespace MonteCarlo
+{
+  class Object;
+}
+
 namespace ModelSupport
 {
+
 
 /*!
   \class objectRegister 

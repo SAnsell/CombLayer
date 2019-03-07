@@ -72,8 +72,8 @@ namespace flukaSystem
 
 magnetUnit::magnetUnit(const std::string& Key,
 		       const size_t I) :
-  attachSystem::FixedOffset(Key,0),
-  index(I)
+  attachSystem::FixedOffset(Key+std::to_string(I),0),
+  index(I),length(0.0),height(0.0),width(0.0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -87,6 +87,25 @@ magnetUnit::~magnetUnit()
    */
 {}
 
+
+void
+magnetUnit::populate(const FuncDataBase& Control)
+  /*!
+    If the object is created as a normal object populate
+    variables
+    \param Control :: DataBase for variaibles
+   */
+{
+  ELog::RegMethod RegA("magnetUnit","populate");
+  
+  FixedOffset::populate(Control);
+
+  length=Control.EvalDefVar<double>(keyName+"Length",length);
+  height=Control.EvalDefVar<double>(keyName+"Height",height);
+  width=Control.EvalDefVar<double>(keyName+"Width",width);
+  
+  return;
+}
 
 void
 magnetUnit::createUnitVector(const attachSystem::FixedComp& FC,
@@ -107,24 +126,50 @@ magnetUnit::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-magnetUnit::populate(const FuncDataBase& Control)
+magnetUnit::createUnitVector(const Geometry::Vec3D& OG,
+			     const Geometry::Vec3D& AY,
+			     const Geometry::Vec3D& AZ)
   /*!
-    If the object is created as a normal object populate
-    variables
-    \param Control :: DataBase for variaibles
-   */
+    Create the unit vectors.
+    \param OG :: New origin
+    \param AY :: Y Axis
+    \param AZ :: Z Axis [reothorgalized]
+  */
 {
-  ELog::RegMethod RegA("magnetQuad","populate");
-  
-  magnetUnit::populate(Control);
+  ELog::RegMethod RegA("magnetUnit","createUnitVector");
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  height=Control.EvalVar<double>(keyName+"Height");
-  width=Control.EvalVar<double>(keyName+"Width");
-  
+  attachSystem::FixedComp::createUnitVector(OG,AY,AZ);
+  applyOffset();  
+
   return;
 }
 
+void
+magnetUnit::setExtent(const double EX,const double EY,
+		      const double EZ)
+  /*!
+    Set the extent based on the vectorized distances
+    \param EX :: Width
+    \param EY :: Length
+    \param EZ :: Height
+  */
+{
+  if (EX>Geometry::zeroTol &&
+      EY>Geometry::zeroTol &&
+      EZ>Geometry::zeroTol)
+    {
+      length=EY;
+      width=EX;
+      height=EZ;
+    }
+  else
+    {
+      length=0.0;
+      width=0.0;
+      height=0.0;
+    }
+  return;
+}
   
 void
 magnetUnit::addCell(const int CN)
@@ -144,6 +189,7 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
+  ELog::EM<<"WRONG WRITE"<<ELog::endDiag;
   return;
 }
   

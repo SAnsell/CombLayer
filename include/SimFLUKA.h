@@ -45,7 +45,7 @@ class SimFLUKA : public Simulation
 
   /// Tally fortranIO : tally
   typedef std::map<int,flukaSystem::flukaTally*> FTallyTYPE;
-  /// Tally fortranIO : tally
+  /// Name : magnet
   typedef std::map<std::string,
     std::shared_ptr<flukaSystem::magnetUnit>> MagTYPE;
   
@@ -105,7 +105,7 @@ class SimFLUKA : public Simulation
   /// Access tally items
   FTallyTYPE& getTallyMap() { return FTItem; }
 
-
+  void addMagnetObject(const MagTYPE::mapped_type&);
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
   int getNextFTape() const;
@@ -126,6 +126,7 @@ class SimFLUKA : public Simulation
   void setNoThermal() { lowEnergyNeutron=0; }
   /// Set the vector field
   void setMagField(const Geometry::Vec3D& B) { BVec=B; }
+  
   void setDefaultPhysics(const std::string&);
   void setForCinder();
   void processActiveMaterials() const;

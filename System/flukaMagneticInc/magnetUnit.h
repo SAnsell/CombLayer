@@ -51,6 +51,8 @@ class magnetUnit :
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
+			const Geometry::Vec3D&);
   
  public:
 
@@ -59,9 +61,10 @@ class magnetUnit :
   magnetUnit& operator=(const magnetUnit&);
   virtual ~magnetUnit();
 
+  void setExtent(const double,const double,const double);
   void addCell(const int);
-  
-  void writeFLUKA(std::ostream&) const;
+
+  virtual void writeFLUKA(std::ostream&) const;
 };
 
 }

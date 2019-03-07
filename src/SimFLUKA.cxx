@@ -630,6 +630,20 @@ SimFLUKA::getLowMat(const size_t Z,const size_t A,
 }
 
 void
+SimFLUKA::addMagnetObject
+(const std::shared_ptr<flukaSystem::magnetUnit>& MUnit)
+  /*!
+    Add an object to this data base
+    \param MUnit :: Magnetic unit
+   */
+{
+  ELog::RegMethod RegA("SimFLUKA","addMagnetObject");
+  addObject(MUnit);
+  MagItem.emplace(MUnit->getKeyName(),MUnit);
+  return;
+}
+
+void
 SimFLUKA::prepareWrite()
   /*!
     Stuff that should be done once before output 

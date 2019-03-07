@@ -96,10 +96,11 @@ magnetQuad::populate(const FuncDataBase& Control)
    */
 {
   ELog::RegMethod RegA("magnetQuad","populate");
-  
-  magnetUnit::populate(Control);
 
-  KFactor=Control.EvalVar<double>(keyName+"KFactor");
+
+  magnetUnit::populate(Control);
+  
+  KFactor=Control.EvalDefVar<double>(keyName+"KFactor",KFactor);
   return;
 }
 
@@ -123,14 +124,43 @@ magnetQuad::createAll(Simulation& System,
   return;
 }
 
+void
+magnetQuad::createAll(Simulation& System,
+		      const Geometry::Vec3D& OG,
+		      const Geometry::Vec3D& AY,
+		      const Geometry::Vec3D& AZ,
+		      const Geometry::Vec3D& extent,
+		      const double kValue)
+  /*!
+    If the object is created as a normal object populate
+    variables
+    \param System :: Simulation system
+    \param OG :: New origin
+    \param AY :: Y Axis
+    \param AZ :: Z Axis [reothorgalizd]
+    \param extent :: XYZ Extent distance [0 in an dimestion for all space]
+    \param kValue :: K Value of quadrupole
+  */
+{
+  ELog::RegMethod RegA("magnetQuad","createAll");
+
+  this->populate(System.getDataBase());
+  magnetUnit::createUnitVector(OG,AY,AZ);
+  setExtent(extent[0],extent[1],extent[2]);
   
+  KFactor=kValue;
+  
+  return;
+}
+
 void
 magnetQuad::writeFLUKA(std::ostream& OX) const
   /*!
     Write out the magnetic unit
     \param OX :: Output stream
-   */
+  */
 {
+  ELog::EM<<"WRITE"<<ELog::endDiag;
   return;
 }
   

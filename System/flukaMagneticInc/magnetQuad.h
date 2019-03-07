@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/magnetQuad.h
+ * File:   flukaMagnetInc/magnetQuad.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -51,7 +51,11 @@ class magnetQuad :
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void writeFLUKA(std::ostream&) const;
+  void createAll(Simulation&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const double);
+
+  virtual void writeFLUKA(std::ostream&) const;
 
 };
 

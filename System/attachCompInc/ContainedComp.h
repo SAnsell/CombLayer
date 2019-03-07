@@ -28,7 +28,10 @@ namespace Geometry
 {
   class Line;
 }
-
+namespace MonteCarlo
+{
+  class Object;
+}
 namespace attachSystem
 {
 /*!

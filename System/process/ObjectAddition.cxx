@@ -96,13 +96,13 @@ getObjectAxis(const Simulation& System,
   ELog::RegMethod RegA("ObjectAddition","getObjectAxis");
 
   const std::string eMess
-	("Insufficient item for "+KName+
+	(" Item for "+KName+
 	 "["+std::to_string(setIndex)+"]"+
 	 "["+std::to_string(ID)+"]");
 
 
   const std::string PType=IParam.getValueError<std::string>
-    (KName,setIndex,ID,"object/free");
+    (KName,setIndex,ID++,"object/free");
 
   if (PType=="free" || PType=="Free")
     {
@@ -116,6 +116,7 @@ getObjectAxis(const Simulation& System,
 	IParam.getValueError<std::string>(KName,setIndex,ID++,eMess);
       const std::string LName=
 	IParam.getValueError<std::string>(KName,setIndex,ID++,eMess);
+
       const attachSystem::FixedComp* mainFCPtr=
 	System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
       const long int linkIndex=mainFCPtr->getSideIndex(LName);
