@@ -188,7 +188,7 @@ magnetQuad::writeFLUKA(std::ostream& OX) const
   magnetUnit::writeFLUKA(OX);
 
   std::ostringstream cx;
-  cx<<"5 "<<StrFunc::makeString(KFactor)<<" - - - - "<<keyName;
+  cx<<"USRICALL 5 "<<StrFunc::makeString(KFactor)<<" - - - - "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   return;

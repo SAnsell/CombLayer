@@ -2379,8 +2379,6 @@ Acomp::displayDepth(const int dval) const
   */
 {
   std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-
 
   cx<<unitsDisplay();
 

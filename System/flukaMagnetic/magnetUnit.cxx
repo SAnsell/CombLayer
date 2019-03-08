@@ -223,19 +223,19 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
   ELog::RegMethod RegA("magnetUnit","writeFLUKA");
 
   std::ostringstream cx;
-  cx<<"0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
+  cx<<"USERICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"1 "<<StrFunc::makeString(X)<<" - - "<<keyName;
+  cx<<"USRICALL 1 "<<StrFunc::makeString(X)<<" - - "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"2 "<<StrFunc::makeString(Y)<<" - - "<<keyName;
+  cx<<"USRICALL 2 "<<StrFunc::makeString(Y)<<" - - "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"3 "<<StrFunc::makeString(Z)<<" - - "<<keyName;
+  cx<<"USRICALL 3 "<<StrFunc::makeString(Z)<<" - - "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   if (length>Geometry::zeroTol &&
@@ -243,7 +243,7 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
       height>Geometry::zeroTol)
     {
       cx.str("");
-      cx<<"4 "<<StrFunc::makeString(width)<<" "
+      cx<<"USRICALL 4 "<<StrFunc::makeString(width)<<" "
 	<<StrFunc::makeString(length)<<" "
 	<<StrFunc::makeString(height)<<" - - "
 	<<keyName;

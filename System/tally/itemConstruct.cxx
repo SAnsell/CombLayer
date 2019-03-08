@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -216,7 +216,6 @@ itemConstruct::addBeamLineItem(SimMCNP& System,
 		 std::bind(std::minus<Geometry::Vec3D>(),std::placeholders::_1,
 			   BAxis*windowOffset));
   
-  std::vector<Geometry::Vec3D>::iterator vc;  
   ELog::EM<<"Tally: "<<tNum<<" "<<MidPt-BAxis*beamDist<<ELog::endTrace;
   // (NORMAL VIEW):
   // tallySystem::setF5Position(System,tNum,RefPtr->getViewOrigin(beamNum),

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/makeT1Upgrade.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -765,7 +763,7 @@ makeT1Upgrade::build(Simulation& System,
   TarObj->addProtonLine(System,*RefObj,-3);
 
   // Cold centre
-  ColdCentObj->createAll(System.getDataBase(),World::masterOrigin());
+  ColdCentObj->createAll(System,World::masterOrigin(),0);
   const std::string H2ModExclude=
     buildH2Mod(System,*ColdCentObj,H2ModName);
 

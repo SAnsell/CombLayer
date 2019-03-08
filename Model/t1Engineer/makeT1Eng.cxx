@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/makeT1Eng.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -377,7 +377,7 @@ makeT1Eng::build(Simulation& System,
     (System,*RefObj,"Reflector",*TriMod,*TriMod);
 
   
-  ColdCentObj->createAll(System.getDataBase(),World::masterOrigin());
+  ColdCentObj->createAll(System,World::masterOrigin(),0);
 
   H2Mod->createAll(System,*ColdCentObj,0,0);
   attachSystem::addToInsertControl
