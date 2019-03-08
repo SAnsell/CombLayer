@@ -3,7 +3,7 @@
  
  * File:   monte/AcompExtra.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -761,7 +761,6 @@ Acomp::removeUnionPair()
   bool falseFlag(0);
   if (Intersect==1)
     {
-      std::vector<int>::iterator au;
       // remove units from literals
       for(const int CN : Units)
 	{

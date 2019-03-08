@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -603,7 +603,6 @@ Material::setDensity(const double D)
   ELog::RegMethod RegA("Material","setDensity");
 
   std::vector<Zaid>::const_iterator zcc;
-  std::vector<Zaid>::iterator zc;
   double FSum(0.0);
   for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
     FSum+=zcc->getDensity();
@@ -716,7 +715,7 @@ Material::print() const
   */
 {
   std::cout<<"Material "<<Name<<" N == "<<zaidVec.size()<<std::endl;
-  std::vector<Zaid>::const_iterator zc;
+
 
   for(const Zaid& ZItem : zaidVec)
     std::cout<<ZItem<<std::endl;
@@ -828,8 +827,6 @@ Material::writePHITS(std::ostream& OX) const
   OX<<"mat["<<Mnum<<"]\n";
   
   cx.precision(10);
-  std::vector<Zaid>::const_iterator zc;
-  std::vector<std::string>::const_iterator vc;
   for(const Zaid& ZItem: zaidVec)
     {
       if (ZItem.getZ())

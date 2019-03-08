@@ -3,7 +3,7 @@
  
  * File:   monte/BnId.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -439,8 +439,6 @@ BnId::makeCombination(const BnId& A) const
     return std::pair<int,BnId>(0,BnId());
 
   int flag(0);         // numb of diff
-  std::pair<int,int> Tcnt(0,0);        // this counter 
-  std::pair<int,int> Acnt(0,0);        // A counter 
   std::vector<int>::const_iterator tvc;
   std::vector<int>::const_iterator avc=A.Tval.begin();
   std::vector<int>::const_iterator chpt;   // change point

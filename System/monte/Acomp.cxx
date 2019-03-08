@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1630,10 +1630,8 @@ Acomp::algDiv(const Acomp& G)
   std::vector<Acomp> V;
 
   std::map<int,int>::const_iterator mc;
-  // Only have First level components to consider
-  std::vector<Acomp>::const_iterator cc; 
 
-  
+  // Only have First level components to consider
   std::vector<Acomp> Flist,Glist;
   if (!getDNFpart(Flist) || !G.getDNFpart(Glist))
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
@@ -2299,7 +2297,7 @@ Acomp::strUnit(const int IC)
   if (val>52)
     cx<<"%"<<val-52;
   else
-    cx<<StrFunc::indexToRevAlpha(val-1);
+    cx<<StrFunc::indexToRevAlpha(static_cast<size_t>(val-1));
   
   if (sign<0) cx<<'\'';
   return cx.str();

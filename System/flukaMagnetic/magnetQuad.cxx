@@ -47,6 +47,8 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "stringCombine.h"
+#include "writeSupport.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
@@ -59,9 +61,6 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
-#include "support.h"
-#include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -80,6 +79,31 @@ magnetQuad::magnetQuad(const std::string& Key,
     \param I :: Index number
   */
 {}
+
+magnetQuad::magnetQuad(const magnetQuad& A) : 
+  magnetUnit(A),
+  KFactor(A.KFactor)
+  /*!
+    Copy constructor
+    \param A :: magnetQuad to copy
+  */
+{}
+
+magnetQuad&
+magnetQuad::operator=(const magnetQuad& A)
+  /*!
+    Assignment operator
+    \param A :: magnetQuad to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      magnetUnit::operator=(A);
+      KFactor=A.KFactor;
+    }
+  return *this;
+}
 
 magnetQuad::~magnetQuad()
   /*!
@@ -160,7 +184,13 @@ magnetQuad::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::EM<<"WRITE"<<ELog::endDiag;
+  ELog::RegMethod RegA("magnetQuad","writeFLUKA");
+  magnetUnit::writeFLUKA(OX);
+
+  std::ostringstream cx;
+  cx<<"5 "<<StrFunc::makeString(KFactor)<<" - - - - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);
+
   return;
 }
   

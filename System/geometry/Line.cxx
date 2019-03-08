@@ -393,8 +393,6 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const ArbPoly& APoly) const
  */
 {
   size_t cnt(0);
-  std::vector<Geometry::Vec3D>::const_iterator vc;
-
   for(size_t i=0;i<APoly.getNSurf();i++)
     {
       std::vector<Geometry::Vec3D> PlanePts;

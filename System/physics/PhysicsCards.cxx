@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -801,7 +801,6 @@ PhysicsCards::getPhysImp(const std::string& Type,
 
   ELog::RegMethod RegA("PhysicsCards","getPhysImp");
 
-  std::vector<PhysImp>::iterator vc;
   for(PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type &&
@@ -826,7 +825,6 @@ PhysicsCards::getPhysImp(const std::string& Type,
 {
   ELog::RegMethod RegA("PhysicsCards","getPhysImp(const)");
     
-  std::vector<PhysImp>::const_iterator vc;
   for(const PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type &&

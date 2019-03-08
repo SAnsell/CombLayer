@@ -1372,7 +1372,7 @@ FixedComp::hasSideIndex(const std::string& sideName) const
   if (StrFunc::convert(sideName,linkPt))
     {
       if (!linkPt) return 1;      // Origin true
-      lp=std::abs(linkPt)-1;
+      lp=static_cast<size_t>(std::abs(linkPt)-1);
     }
   else
     {

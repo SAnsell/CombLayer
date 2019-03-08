@@ -393,7 +393,7 @@ PipeLine::createUnits(Simulation& System)
     {
       forcedInsertCells(i);
       PUnits[i]->setNAngle(nAngle);
-      PUnits[i]->createAll(System,activeFlags[i],CV);
+      PUnits[i]->createUnit(System,activeFlags[i],CV);
     }
   return 0;
 }

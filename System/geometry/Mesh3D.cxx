@@ -3,7 +3,7 @@
  
  * File:   geometry/Mesh3D.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -382,7 +382,6 @@ Mesh3D::write(std::ostream& OX) const
 
   // imesh :
   char c[3]={'i','j','k'};
-  std::vector<double>::const_iterator vc;
   for(size_t i=0;i<3;i++)
     {
       const std::vector<double>& Vec=

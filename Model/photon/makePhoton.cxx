@@ -3,7 +3,7 @@
  
  * File:   photon/makePhoton.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,18 +144,17 @@ makePhoton::~makePhoton()
 
 void 
 makePhoton::build(Simulation* SimPtr,
-		  const mainSystem::inputParam& IParam)
-/*!
+		  const mainSystem::inputParam&)
+  /*!
     Carry out the full build
     \param SimPtr :: Simulation system
     \param IParam :: Input parameters
-   */
+  */
 {
   // For output stream
   ELog::RegMethod RControl("makePhoton","build");
 
   int voidCell(74123);
-
   
   OuterObj->addInsertCell(voidCell);
   OuterObj->createAll(*SimPtr,World::masterOrigin(),0);

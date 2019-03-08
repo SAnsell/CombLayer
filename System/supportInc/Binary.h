@@ -3,7 +3,7 @@
  
  * File:   supportInc/Binary.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ public:
   /// Conversion operator
   operator unsigned long int () const { return num; }
   /// Set Padding
-  void setPad(const int P) { pad=P; }
+  void setPad(const unsigned long int P) { pad=P; }
 
   /// Set Padding
   unsigned long int getPad() const { return pad; }

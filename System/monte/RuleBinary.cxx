@@ -3,7 +3,7 @@
  
  * File:   monte/RuleBinary.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -594,7 +594,6 @@ RuleBinary::write(std::ostream& OX) const
     \param OX :: ostream parameter
   */
 {
-  std::vector<BnId>::const_iterator vc;
   int cnt(0);
   OX<<"DNF: ";
   for(const BnId& id : DNFobj)

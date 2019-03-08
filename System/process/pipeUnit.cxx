@@ -495,17 +495,17 @@ pipeUnit::insertObjects(Simulation& System)
 
 
 void 
-pipeUnit::createAll(Simulation& System,
-		    const size_t AF,
-		    const std::vector<cylValues>& CV)
-  /*!
+pipeUnit::createUnit(Simulation& System,
+		     const size_t AF,
+		     const std::vector<cylValues>& CV)
+/*!
     Build a pipe unit and insert it into the model
     \param System :: Simulation to 
     \param AF :: activeFlag
     \param CV :: Values for each layer
    */
 {
-  ELog::RegMethod RegA("pipeUnit","createAll");
+  ELog::RegMethod RegA("pipeUnit","createUnit");
 
   populate(AF,CV);
   createSurfaces();

@@ -40,29 +40,21 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "stringCombine.h"
+#include "writeSupport.h"
 #include "Surface.h"
-#include "surfIndex.h"
-#include "Quadratic.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "support.h"
-#include "inputParam.h"
-#include "LinkUnit.h"
+#include "LinkUnit.h" 
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "magnetUnit.h"
@@ -73,13 +65,44 @@ namespace flukaSystem
 magnetUnit::magnetUnit(const std::string& Key,
 		       const size_t I) :
   attachSystem::FixedOffset(Key+std::to_string(I),0),
-  index(I),length(0.0),height(0.0),width(0.0)
+  index(I),length(0.0),width(0.0),height(0.0)
   /*!
     Constructor
     \param Key :: Name of construction key
     \param I :: Index number
   */
 {}
+
+magnetUnit::magnetUnit(const magnetUnit& A) : 
+  attachSystem::FixedOffset(A),
+  index(A.index),length(A.length),width(A.width),
+  height(A.height),activeCells(A.activeCells)
+  /*!
+    Copy constructor
+    \param A :: magnetUnit to copy
+  */
+{}
+
+magnetUnit&
+magnetUnit::operator=(const magnetUnit& A)
+  /*!
+    Assignment operator
+    \param A :: magnetUnit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      index=A.index;
+      length=A.length;
+      width=A.width;
+      height=A.height;
+      activeCells=A.activeCells;
+    }
+  return *this;
+}
+
 
 magnetUnit::~magnetUnit()
   /*!
@@ -186,10 +209,47 @@ void
 magnetUnit::writeFLUKA(std::ostream& OX) const
   /*!
     Write out the magnetic unit
+    Structure is :
+    - 0 x y z :: [origin]
+    - 2 x1 x2 x3 :: [x axis]
+    - 3 y1 y2 y3 :: [y axis]
+    - 4 z1 z2 x3 :: [z axis]
+    - 5 extX extY extZ :: [Extent vector [optional]]
+    - 6 kValue :: [kValue]
+    
     \param OX :: Output stream
    */
 {
-  ELog::EM<<"WRONG WRITE"<<ELog::endDiag;
+  ELog::RegMethod RegA("magnetUnit","writeFLUKA");
+
+  std::ostringstream cx;
+  cx<<"0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  cx.str("");
+  cx<<"1 "<<StrFunc::makeString(X)<<" - - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  cx.str("");
+  cx<<"2 "<<StrFunc::makeString(Y)<<" - - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  cx.str("");
+  cx<<"3 "<<StrFunc::makeString(Z)<<" - - "<<keyName;
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  if (length>Geometry::zeroTol &&
+      width>Geometry::zeroTol &&
+      height>Geometry::zeroTol)
+    {
+      cx.str("");
+      cx<<"4 "<<StrFunc::makeString(width)<<" "
+	<<StrFunc::makeString(length)<<" "
+	<<StrFunc::makeString(height)<<" - - "
+	<<keyName;
+      StrFunc::writeFLUKA(cx.str(),OX);
+    }
+ 
   return;
 }
   

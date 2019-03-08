@@ -162,8 +162,6 @@ setMagneticExternal(SimFLUKA& System,
 	  Geometry::Vec3D AY;
 	  Geometry::Vec3D AZ;
 	  
-	  const size_t NIndex=IParam.itemCnt("MagUnit",setIndex);
-
 	  // General form is ::  Type : location : Param
 	  size_t index(1);
 	  const std::string typeName=IParam.getValueError<std::string>
