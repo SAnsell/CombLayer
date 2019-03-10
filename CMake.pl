@@ -77,57 +77,21 @@ $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model/MaxIV");
 $gM->findSubSrcDir("","Aunit");
 
-$gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
-			     "funcBase","log","construct","md5",
-			     "process","world","monte","geometry",
-                             "mersenne","src","xml","poly",
-			     "weights","global","attachComp","visit",
-                             "beer","bifrost","cspec","dream","estia",
-			     "freia","heimdal","loki","magic","miracles",
-			     "nmx","nnbar","odin","skadi","testBeam",
-			     "trex","vor","vespa","common",
-			     "shortDream","shortNmx","shortOdin","longLoki",
-			     "commonVar","simpleItem","physics","simMC",
-			     "constructVar","essConstruct","construct",
-			     "transport","scatMat","endf","crystal",
-			     "insertUnit","flukaMagnetic",
-			     "flukaProcess","flukaPhysics","flukaTally",
-			     "phitsProcess","phitsPhysics",
-			     "phitsTally","phitsSupport",
-			     "tally","source","instrument","work"
-    	 	             ]);
+my @ess = qw( essBuild );
+my @essSupport = qw( essConstruct commonVar common
+		     beer  bifrost  cspec  dream  estia 
+		     freia  heimdal  loki  magic  miracles 
+		     nmx  nnbar  odin  skadi  testBeam 
+		     trex  vor  vespa shortOdin shortNmx
+		     shortDream simpleItem beamline instrument );
 
-#$gM->addDepUnit("linac",
-#		["essLinac","visit","src","simMC",
-#		 "beamline","physics","support",
-#		 "input","instrument","source","monte",
-#		 "funcBase","log","tally","construct",
-#		 "crystal","transport","scatMat","md5",
-#		 "endf","process","world","work",
-#		 "monte","geometry","mersenne","src","xml","poly",
-#		 "weights","global","attachComp","visit"
-#		]);
+push(@ess,@mainLib);
+$gM->addDepUnit("ess", [@ess,@essSupport]);
+ 
 
-$gM->addDepUnit("essBeamline",
-                             ["essBuild","beamline","support","input",
-			     "funcBase","log","construct","md5",
-			     "process","world","monte","geometry",
-                             "mersenne","src","xml","poly","weights",
-			     "global","attachComp","visit","essConstruct",
-                             "beer","bifrost","cspec","dream","estia",
-			     "freia","heimdal","loki","magic","miracles",
-			     "nmx","nnbar","odin","skadi","testBeam",
-			     "trex","vor","vespa","common",
-			     "shortDream","shortNmx","shortOdin","longLoki",
-			     "commonVar","simpleItem","physics","simMC",
-			     "constructVar","essConstruct","construct",
-			     "transport","scatMat","endf","crystal",
-			      "insertUnit","flukaMagnetic",
-			      "flukaProcess","flukaPhysics","flukaTally",
-			      "phitsProcess","phitsPhysics","phitsTally",
-			      "phitsSupport","tally","source",
-			      "instrument","work"
-    	 	             ]);
+my @essBeam = qw( essBuild );
+push(@essBeam,@mainLib);
+$gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);
 
 
 my @maxiv = qw( maxivBuild );
