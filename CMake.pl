@@ -68,7 +68,7 @@ $gM->findSubSrcDir("Model");
 $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("","Aunit");
 
-my @saxs = qw( saxs ) ;
+my @saxs = qw( saxs instrument ) ;
 push(@saxs,@mainLib);
 $gM->addDepUnit("saxs", [@saxs]);
 

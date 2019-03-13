@@ -162,6 +162,7 @@ main(int argc,char* argv[])
       exitFlag= -1;
     }
 
+  // RUN TRANSPORT PART OF MODEL:
   if (MSim)
     {
       Transport::AreaBeam A;
@@ -179,21 +180,9 @@ main(int argc,char* argv[])
       
       const std::string DFile=
 	IParam.getValue<std::string>("detFile");
-      
-      MSim->writeDetectors(DFile,NPS);
-    }
-  else
-    {
-      ELog::EM<<"No simulation done : use -Monte to enable"
-	      <<ELog::endDiag;
-    }
-  // EXIT
 
-  delete SimPtr; 
-  ModelSupport::surfIndex::Instance().reset();
-  return exitFlag;
-  
-  //   System.setDetector(200,200,30,
+
+        //   System.setDetector(200,200,30,
   // 		     Geometry::Vec3D(0,875.0,0),
   // 		     Geometry::Vec3D(detSize,0,0),
   // 		     Geometry::Vec3D(0,0,detSize),
@@ -209,6 +198,20 @@ main(int argc,char* argv[])
   // System.writeMCNPX(primaryFile+".i");
   
   // System.writeXML("test.xml");
+
+      MSim->writeDetectors(DFile,NPS);
+    }
+  else
+    {
+      ELog::EM<<"No simulation done : use -Monte to enable"
+	      <<ELog::endDiag;
+    }
+  // EXIT
+
+  delete SimPtr; 
+  ModelSupport::surfIndex::Instance().reset();
+  return exitFlag;
+  
   return 0;
 }
 

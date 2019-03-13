@@ -3,7 +3,7 @@
  
  * File:   saxsModel/makeSAXS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,9 @@ namespace saxsSystem
 
 makeSAXS::makeSAXS() :
   NDet(9),BellObj(new BellJar("belljar")),
-  CellObj(new instrumentSystem::CylSample("cell"))
+  sampleObj(new Capillary("SampleCap")),
+  waterObj(new Capillary("WaterCap")),
+  energyObj(new Capillary("EnergyCap"))
   /*!
     Constructor
   */
@@ -96,7 +98,10 @@ makeSAXS::makeSAXS() :
     }
 
   OR.addObject(BellObj);
-  OR.addObject(CellObj);
+  OR.addObject(sampleObj);
+  OR.addObject(waterObj);
+  OR.addObject(energyObj);
+    
 }
 
 makeSAXS::~makeSAXS()
@@ -132,25 +137,35 @@ makeSAXS::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makeSAXS","build");
 
-  BellObj->setInsertCell(74123);
-  BellObj->createAll(System,World::masterOrigin(),0);
-  CellObj->setInsertCell(BellObj->innerCell());
-  CellObj->createAll(System,*BellObj,0);
+  sampleObj->setInsertCell(74123);
+  sampleObj->createAll(System,World::masterOrigin(),0);
 
-  SimMonte* SM=dynamic_cast<SimMonte*>(&System);
-  for(size_t i=0;i<NDet;i++)
-    {
-      DetObj[i]->setInsertCell(BellObj->outerCell());
-      DetObj[i]->createAll(System,*BellObj,0);
-      DetObj[i]->createTally(System);
+  waterObj->setInsertCell(74123);
+  waterObj->createAll(System,sampleObj,0);
+
+  energyObj->setInsertCell(74123);
+  energyObj->createAll(System,waterObj,0);
+
+  
+  // BellObj->setInsertCell(74123);
+  // BellObj->createAll(System,World::masterOrigin(),0);
+  // CellObj->setInsertCell(BellObj->innerCell());
+  // CellObj->createAll(System,*BellObj,0);
+
+  // SimMonte* SM=dynamic_cast<SimMonte*>(&System);
+  // for(size_t i=0;i<NDet;i++)
+  //   {
+  //     DetObj[i]->setInsertCell(BellObj->outerCell());
+  //     DetObj[i]->createAll(System,*BellObj,0);
+  //     DetObj[i]->createTally(System);
       
-      if (SM)
-	DetObj[i]->createTally(SM->getDU());
-    }
+  //     if (SM)
+  // 	DetObj[i]->createTally(SM->getDU());
+  //   }
 
   return;
 }
 
 
 
-}   // NAMESPACE lensSystem
+}   // NAMESPACE saxsSystem

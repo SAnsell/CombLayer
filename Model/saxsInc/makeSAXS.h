@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   saxsModelInc/makeD4C.h
+ * File:   saxsModelInc/makeSAXS.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ namespace instrumentSystem
 namespace saxsSystem
 {
   class BellJar;
+  class Capillary;
   class DetectorArray;
   class DetectorBank;
   /*!
@@ -47,10 +48,13 @@ class makeSAXS
   typedef std::shared_ptr<DetectorBank> DTYPE;
 
   const size_t NDet;
+
   /// Outer bell jar
   std::shared_ptr<BellJar> BellObj;
-  /// Cell object
-  std::shared_ptr<instrumentSystem::CylSample> CellObj;
+
+  /// Capillary
+  std::shared_ptr<Capillary> capObj;
+
   /// Detector array object [9 objects]
   DTYPE DetObj[9];
 

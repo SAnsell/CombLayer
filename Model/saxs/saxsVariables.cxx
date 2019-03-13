@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   d4cModel/d4cVariables.cxx
+ * File:   saxsModel/saxsVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,6 @@ SAXSModel(FuncDataBase& Control)
     \param Control :: Function data base to add constants too
   */
 {
-
 // -----------
 // GLOBAL stuff
 // -----------
@@ -71,18 +70,29 @@ SAXSModel(FuncDataBase& Control)
 // ------------
 // Cell stuff
 // ------------
-  Control.addVariable("cellXStep",0.0);         // Radius the beam
-  Control.addVariable("cellYStep",0.0);         // Radius the beam
-  Control.addVariable("cellZStep",0.0);         // Radius the beam
-  Control.addVariable("cellZAngle",0.0);         // Radius the beam
-  Control.addVariable("cellXYAngle",0.0);         // Radius the beam
-  Control.addVariable("cellNLayers",2);         // Radius the beam
-  Control.addVariable("cellRadius1",0.25);       //
-  Control.addVariable("cellRadius2",0.325);       //
-  Control.addVariable("cellHeight1",3.5);       //
-  Control.addVariable("cellHeight2",4.5);       //
-  Control.addVariable("cellMaterial1","Li7ClD2O6Mol");       //
-  Control.addVariable("cellMaterial2","TiZr");       //
+  
+  // wall thickness 10 micron! 
+  Control.addVariable("SampleCapRadius",(0.17-0.002)/2.0);    // Radius (outer-wall)
+  Control.addVariable("SampleCapWallThick",0.001);       
+  Control.addVariable("SampleCapInnerMat","H2O");
+  Control.addVariable("SampleCapWallMat","SiO2");       
+  Control.addVariable("SampleCapLength",10.0);
+
+  // wall thickness 10 micron! 
+  Control.addVariable("WaterCapRadius",(0.17-0.002)/2.0);    // Radius (outer-wall)
+  Control.addVariable("WaterCapWallThick",0.001);       
+  Control.addVariable("WaterCapInnerMat","H2O");
+  Control.addVariable("WaterCapWallMat","SiO2");       
+  Control.addVariable("WaterCapLength",10.0);
+
+
+  // wall thickness 10 micron! 
+  Control.addVariable("EnergyCapRadius",(0.17-0.002)/2.0);    // Radius (outer-wall)
+  Control.addVariable("EnergyCapWallThick",0.001);       
+  Control.addVariable("EnergyCapInnerMat","H2O");
+  Control.addVariable("EnergyCapWallMat",Void);       
+  Control.addVariable("EnergyCapLength",10.0);
+
 
 
 // ------------
