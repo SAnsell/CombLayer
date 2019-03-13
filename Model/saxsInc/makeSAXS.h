@@ -53,7 +53,11 @@ class makeSAXS
   std::shared_ptr<BellJar> BellObj;
 
   /// Capillary
-  std::shared_ptr<Capillary> capObj;
+  std::shared_ptr<Capillary> sampleObj;
+  /// Capillary
+  std::shared_ptr<Capillary> waterObj;
+  /// Capillary
+  std::shared_ptr<Capillary> energyObj;
 
   /// Detector array object [9 objects]
   DTYPE DetObj[9];

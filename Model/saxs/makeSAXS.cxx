@@ -65,6 +65,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "CylSample.h"
 #include "BellJar.h"
@@ -72,6 +75,7 @@
 #include "DetectorBank.h"
 #include "Detector.h"
 #include "DetGroup.h"
+#include "Capillary.h"
 #include "SimMonte.h"
 #include "makeSAXS.h"
 
@@ -141,10 +145,10 @@ makeSAXS::build(Simulation& System,
   sampleObj->createAll(System,World::masterOrigin(),0);
 
   waterObj->setInsertCell(74123);
-  waterObj->createAll(System,sampleObj,0);
+  waterObj->createAll(System,*sampleObj,0);
 
   energyObj->setInsertCell(74123);
-  energyObj->createAll(System,waterObj,0);
+  energyObj->createAll(System,*waterObj,0);
 
   
   // BellObj->setInsertCell(74123);

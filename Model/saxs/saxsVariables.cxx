@@ -79,6 +79,7 @@ SAXSModel(FuncDataBase& Control)
   Control.addVariable("SampleCapLength",10.0);
 
   // wall thickness 10 micron! 
+  Control.addVariable("WaterCapZStep",-1.0);    // Radius (outer-wall)
   Control.addVariable("WaterCapRadius",(0.17-0.002)/2.0);    // Radius (outer-wall)
   Control.addVariable("WaterCapWallThick",0.001);       
   Control.addVariable("WaterCapInnerMat","H2O");
@@ -86,11 +87,12 @@ SAXSModel(FuncDataBase& Control)
   Control.addVariable("WaterCapLength",10.0);
 
 
-  // wall thickness 10 micron! 
+  // wall thickness 10 micron!
+  Control.addVariable("EnergyCapZStep",-1.0);    // Radius (outer-wall)
   Control.addVariable("EnergyCapRadius",(0.17-0.002)/2.0);    // Radius (outer-wall)
   Control.addVariable("EnergyCapWallThick",0.001);       
   Control.addVariable("EnergyCapInnerMat","H2O");
-  Control.addVariable("EnergyCapWallMat",Void);       
+  Control.addVariable("EnergyCapWallMat","Void");       
   Control.addVariable("EnergyCapLength",10.0);
 
 
