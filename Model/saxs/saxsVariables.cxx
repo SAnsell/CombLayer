@@ -53,7 +53,7 @@ namespace setVariable
 {
 
 void
-D4CModel(FuncDataBase& Control)
+SAXSModel(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
     -- This version is for TS1 (real version : non-model)

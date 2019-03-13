@@ -79,10 +79,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
-#include "tallyConstructFactory.h"
 #include "World.h"
 #include "SimInput.h"
 #include "neutron.h"
@@ -93,7 +89,7 @@
 #include "DetGroup.h"
 #include "SimMonte.h"
 
-#include "makeD4C.h"
+#include "makeSAXS.h"
 
 class SimMonte;
 namespace ELog 
@@ -111,7 +107,7 @@ main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
   // For output stream
-  ELog::RegMethod RControl("d4c","main");
+  ELog::RegMethod RControl("saxs","main");
   mainSystem::activateLogging(RControl);
   
   // For output stream
@@ -121,71 +117,37 @@ main(int argc,char* argv[])
 
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
-  createSAXSInputs(IParam);
+  createInputs(IParam);
   const int iteractive(0);   
 
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   SimMonte* MSim=dynamic_cast<SimMonte*>(SimPtr);
   if (!SimPtr) return -1;
-
-  setVariable::D4CModel(SimPtr->getDataBase());
-
-  InputModifications(SimPtr,IParam,Names);
-
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
   try
     {
-      while(MCIndex<multi)
-	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	    }
-	  SimPtr->resetAll();
-
-	  d4cSystem::makeD4C dObj; 
-	  World::createOuterObjects(*SimPtr);
-	  dObj.build(SimPtr,IParam);
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createInputs(IParam);
       
-	  SDef::sourceSelection(*SimPtr,IParam);
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
 
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork(0); // =beamTallySelection(*SimPtr,IParam);
+      // The big variable setting
+      setVariable::SAXSModel(SimPtr->getDataBase());
 
-	  SimPtr->masterRotation();
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();	  
-	  
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+      InputModifications(SimPtr,IParam,Names);
+      mainSystem::setMaterialsDataBase(IParam);
 
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-	  
-	  // ACTUAL SIM:
-      	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
+      saxsSystem::makeSAXS dObj; 
+      World::createOuterObjects(*SimPtr);
+      dObj.build(*SimPtr,IParam);
+
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+
       ModelSupport::calcVolumes(SimPtr,IParam);
-      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      SimPtr->objectGroups::write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -199,7 +161,6 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-  //  SimPtr->getBeam()->setBias(yBias);
 
   if (MSim)
     {
@@ -229,11 +190,7 @@ main(int argc,char* argv[])
   // EXIT
 
   delete SimPtr; 
-  ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
-  masterRotate::Instance().reset();
-
-
   return exitFlag;
   
   //   System.setDetector(200,200,30,
