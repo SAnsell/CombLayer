@@ -186,20 +186,17 @@ IMatBulkInsert::createSurfaces()
 {
   ELog::RegMethod RegA("IMatBulkInsert","createSurface");
 
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  const Geometry::Vec3D& bX(beamFC.getX());
-  const Geometry::Vec3D& bY(beamFC.getX());
-  const Geometry::Vec3D& bZ(beamFC.getX());
-  const Geometry::Vec3D& bEnter(beamFC.getCentre());
+  FixedGroup::setDefault("Main","Beam");
+
   
   ModelSupport::buildPlane(SMap,insIndex+3,
-			   bEnter-bX*width/2.0,bX);
+			   bOrigin-bX*width/2.0,bX);
   ModelSupport::buildPlane(SMap,insIndex+4,
-			   bEnter+bX*width/2.0,bX);
+			   bOrigin+bX*width/2.0,bX);
   ModelSupport::buildPlane(SMap,insIndex+5,
-			   bEnter-bZ*height/2.0,bZ);
+			   bOrigin-bZ*height/2.0,bZ);
   ModelSupport::buildPlane(SMap,insIndex+6,
-			   bEnter+bZ*height/2.0,bZ);
+			   bOrigin+bZ*height/2.0,bZ);
   return;
 }
 

@@ -75,6 +75,7 @@ $gM->findSubSrcDir("Model");
 $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model/MaxIV");
+print STDERR "ERER \n";
 $gM->findSubSrcDir("","Aunit");
 
 my @ess = qw( essBuild );

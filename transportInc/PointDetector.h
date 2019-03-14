@@ -3,7 +3,7 @@
  
  * File:   transportInc/PointDetector.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef Transport_PointDetector_h
@@ -30,7 +30,7 @@ namespace Transport
   \brief Defines a detector
   \version 1.0
   \author S. Ansell
-  \date  2014
+  \date  March 2014
 */
 
 class PointDetector : public Detector
@@ -60,10 +60,10 @@ class PointDetector : public Detector
   virtual void acceptVisitor(Global::BaseModVisit& A)
     { A.Accept(*this); }
 
-  virtual double project(const MonteCarlo::neutron&,
-			 MonteCarlo::neutron&) const;
+  virtual double project(const MonteCarlo::particle&,
+			 MonteCarlo::particle&) const;
 
-  virtual void addEvent(const MonteCarlo::neutron&);
+  virtual void addEvent(const MonteCarlo::particle&);
   virtual void clear();
   virtual void normalize(const size_t);
 

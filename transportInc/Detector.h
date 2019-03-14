@@ -22,6 +22,11 @@
 #ifndef Transport_Detector_h
 #define Transport_Detector_h
 
+namespace MonteCarlo
+{
+  class particle;
+}
+
 namespace Transport
 {
 
@@ -48,9 +53,9 @@ class Detector
   virtual Detector* clone() const =0;
   virtual ~Detector();
   
-  virtual double project(const MonteCarlo::neutron&,
-		       MonteCarlo::neutron&) const =0;
-  virtual void addEvent(const MonteCarlo::neutron&) =0;
+  virtual double project(const MonteCarlo::particle&,
+		       MonteCarlo::particle&) const =0;
+  virtual void addEvent(const MonteCarlo::particle&) =0;
 
   virtual void clear() =0;
   virtual void normalize(const size_t) {}

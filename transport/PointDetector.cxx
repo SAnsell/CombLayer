@@ -3,7 +3,7 @@
  
  * File:   transport/PointPointDetector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
+#include "particle.h"
 #include "neutron.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -147,7 +148,7 @@ PointDetector::normalize(const size_t TN)
 }
 
 void
-PointDetector::addEvent(const MonteCarlo::neutron& N) 
+PointDetector::addEvent(const MonteCarlo::particle& N) 
   /*!
     Add a point to the detector
     Tracks from the point to the detector.
@@ -174,8 +175,8 @@ PointDetector::addEvent(const MonteCarlo::neutron& N)
 }
 
 double
-PointDetector::project(const MonteCarlo::neutron& Nin,
-		       MonteCarlo::neutron& Nout) const
+PointDetector::project(const MonteCarlo::particle& Nin,
+		       MonteCarlo::particle& Nout) const
   /*!
     Project the neutron into the detector.
     The output neutron is copied from Nin and then

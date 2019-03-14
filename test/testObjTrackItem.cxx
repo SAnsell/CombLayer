@@ -55,6 +55,8 @@
 #include "BnId.h"
 #include "Rules.h"
 #include "surfIndex.h"
+#include "particle.h"
+#include "eTrack.h"
 #include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
@@ -232,9 +234,9 @@ testObjTrackItem::testTrackNeutron()
   typedef std::tuple<size_t,int,double> RTYPE;
 
   // Test neutrons
-  const std::vector<MonteCarlo::neutron> TNeut=
+  const std::vector<MonteCarlo::eTrack> TNeut=
     {
-      MonteCarlo::neutron(10,Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0))
+      MonteCarlo::eTrack(Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0))
     };
     
   // Results [number / sum Mat / length sum]
@@ -253,7 +255,7 @@ testObjTrackItem::testTrackNeutron()
     {
       const TTYPE& tc(TestIndex[index]);
 
-      MonteCarlo::neutron nOut(TNeut[std::get<0>(tc)]);
+      MonteCarlo::eTrack nOut(TNeut[std::get<0>(tc)]);
       ObjTrackItem OA(nOut.Pos,nOut.uVec);
 			    
       LineTrack A(nOut.Pos,nOut.uVec,8.0);

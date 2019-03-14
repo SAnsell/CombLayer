@@ -62,7 +62,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "neutron.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"

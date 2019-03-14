@@ -37,55 +37,25 @@ namespace MonteCarlo
   class Object;
 /*!  
   \class neutron
-  \brief Defines single point neutron
-  \version 1.0
+  \brief Defines single point neutron [special case]
+  \version 2.0
   \author S. Ansell
-  \date December 2009
+  \date March 2019
 */
 
-class neutron
+class neutron : public particle
 {
  private:
 
-  static int masterID;      ///< ID iteration to next new neutron
 
  public:
-
-  int ID;                   ///< ID number
-
-  double wavelength;        ///< Wavelength [A]
-  Geometry::Vec3D Pos;      ///< Position
-  Geometry::Vec3D uVec;     ///< Direction 
-  double weight;            ///< Weight
-  double travel;            ///< Distance travelled
-  double time;              ///< Time Travelled
-  double nCollision;        ///< Number of collisions
-  const Object* OPtr;             ///< Object for collision [if set]
 
   neutron(const double,const Geometry::Vec3D&,const Geometry::Vec3D&);
   neutron(const neutron&);
   neutron& operator=(const neutron&);
-  ~neutron() {}  ///< Destructor
+  virtual ~neutron() {}  ///< Destructor
   
-  int equalityFlag(const neutron&) const;
-
-  double velocity() const;
-  void moveForward(const double);
-  int refract(const double,const double,const Geometry::Vec3D&);
-  double energy() const;
-  void setEnergy(const double);
-  double Q(const neutron&) const;
-  double eLoss(const neutron&) const;
-  void addCollision();
-  void setObject(const Object* OP) { OPtr=OP; }
-
-  // Output stuff
-  void write(std::ostream&) const;
-
 };
-
-std::ostream&
-operator<<(std::ostream&,const neutron&);
 
 
 }  // NAMESPACE MonteCarlo

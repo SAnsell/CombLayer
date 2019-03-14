@@ -3,7 +3,7 @@
  
  * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "RefCon.h"
+#include "polySupport.h"
 #include "particleConv.h"
 
 pName::pName(const std::string& mcnpN,const int mI,
@@ -78,6 +80,7 @@ pName::pName(const pName& A) :
 // mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
 particleConv::particleConv() : 
   particleVec({
+  {"v", 0,  "void",       0,  "void",       0,       0,   0.0,          0},
   {"h", 9,  "proton",     1,  "proton",     1,    2212,   938.2720813,  1},
   {"n", 1,  "neutron",    8,  "neutron",    2,    2112,   939.5654133,  1},   
   {"/", 20, "pion+",     13,  "pion+",      3,     211,   139.57018,    1},
@@ -178,6 +181,24 @@ particleConv::getFLUKAIndex(const int ID) const
 }
 
 size_t
+particleConv::getMCPLIndex(const int ID) const
+  /*!
+    Get the PName index item from the system
+    \param ID :: Particle id
+    \return index+1 
+  */
+{
+  std::vector<pName>::const_iterator vc=
+    std::find_if(particleVec.begin(),particleVec.end(),
+	    [&ID](const pName& PN) -> bool
+		 {
+		   return (ID == PN.mcplNumber);
+		 } );
+  if (vc==particleVec.end()) return 0;
+  return static_cast<size_t>(vc-particleVec.begin())+1;
+}
+
+size_t
 particleConv::getMCNPIndex(const std::string& MC) const
   /*!
     Get the PName index item from the system
@@ -219,60 +240,10 @@ particleConv::getPHITSIndex(const std::string& MC) const
   return mc->second+1;
 }
 
- // MCNP CHAR:
-const pName&
-particleConv::getMCNPpItem(const std::string& MC) const
-  /*!
-    Get  the PName item from the system
-    \param MC :: Particle char [mcnp]
-    \return pName found
-  */
-{
-  std::map<std::string,size_t>::const_iterator mc;
-  mc=mcnpIndex.find(MC);
-  if (mc == mcnpIndex.end())
-    throw ColErr::InContainerError<std::string>
-      (MC,"MCNP particle not in particleDataBase");
-  return particleVec[mc->second];
-}
-
-
-const pName&
-particleConv::getPHITSpItem(const std::string& MC) const
-  /*!
-    Get  the PName item from the system
-    \param MC :: Particle char [phits]
-    \return pName found
-  */
-{
-  std::map<std::string,size_t>::const_iterator mc;
-  mc=phitsIndex.find(MC);
-  if (mc == phitsIndex.end())
-    throw ColErr::InContainerError<std::string>
-      (MC,"PHITS particle not in particleDataBase");
-  return particleVec[mc->second];
-}
-
-const pName&
-particleConv::getFLUKApItem(const std::string& MC) const
-  /*!
-    Get  the PName item from the system
-    \param MC :: Particle char [fluka]
-    \return pName found
-  */
-{
-  std::map<std::string,size_t>::const_iterator mc;
-  mc=flukaIndex.find(MC);
-  if (mc == flukaIndex.end())
-    throw ColErr::InContainerError<std::string>
-      (MC,"FLUKA particle not in particleDataBase");
-  return particleVec[mc->second];
-}
-
 size_t
 particleConv::getNameIndex(const std::string& particleName) const
   /*!
-    Access a particle name from any name
+    Access a particle name from any name 
     \param particleName :: Particle to look for
     \return index+1 / 0 on failuire
   */
@@ -285,7 +256,21 @@ particleConv::getNameIndex(const std::string& particleName) const
   return index;
 }
   
+const pName&
+particleConv::getMCPLPItem(const int mcplIndex) const
+  /*!
+    Access a particle type from mcplIndex number
+    \param mcplIndex :: Particle mcpl number
+    \return pName found
+  */
+{
+  const size_t index=getMCPLIndex(mcplIndex);
+  if (!index)
+    throw ColErr::InContainerError<int>
+      (mcplIndex,"mcplIndex not in particleDataBase");
 
+  return particleVec[index-1];
+}
 
 const pName&
 particleConv::getNamePItem(const std::string& particleName) const
@@ -330,13 +315,25 @@ particleConv::flukaITYP(const std::string& particleName) const
 int 
 particleConv::phitsITYP(const std::string& particleName) const
   /*
-    Accessor to mcnpITYP number by fluka/phits/mcnp name
+    Accessor to phitsITYP number by fluka/phits/mcnp name
     \param particleName :: full name
-    \return mcnpITYP
+    \return phitsITYP (phits id number)
   */
 {
   const pName& PN=getNamePItem(particleName);
   return PN.phitsITYP;
+}
+
+int 
+particleConv::mcplITYP(const std::string& particleName) const
+  /*
+    Accessor to mcplITYP number by fluka/phits/mcnp name
+    \param particleName :: full name
+    \return mcplITYP (mcpl id number)
+  */
+{
+  const pName& PN=getNamePItem(particleName);
+  return PN.mcplNumber;
 }
 
 
@@ -348,7 +345,7 @@ particleConv::nucleon(const std::string& particleName) const
     \return nucleon count
   */
 {
-  const pName& PN=getFLUKApItem(particleName);
+  const pName& PN = getNamePItem(particleName);
   return PN.nucleon;
 }
 
@@ -373,6 +370,20 @@ particleConv::mcnpToFLUKA(const int ID) const
   const size_t index=getMCNPIndex(ID);
   if (!index)
     throw ColErr::InContainerError<int>(ID,"ID no in particleDataBase");
+  return particleVec[index-1].flukaName;
+}
+
+const std::string&
+particleConv::mcplToFLUKA(const int ID) const
+  /*!
+    Get FLUKA name base on mcnp id number
+    \param ID :: mcpl ID number
+    \return fluka name						
+  */
+{
+  const size_t index=getMCPLIndex(ID);
+  if (!index)
+    throw ColErr::InContainerError<int>(ID,"MCPL ID no in particleDataBase");
   return particleVec[index-1].flukaName;
 }
  
@@ -420,7 +431,7 @@ particleConv::momentumFromKE(const std::string& particleName,
   /*!
     Convert the kenetic energy to momenum
     Convertions from E_tot=m(1+(p/m)^2)^0.5
-    \param KE :: Kenetic energy [MeV/c2]
+    \param KE :: Kinetic energy [MeV/c2]
     \return momentum [MeV/c]
   */
 {
@@ -428,3 +439,99 @@ particleConv::momentumFromKE(const std::string& particleName,
   return sqrt(KE*KE+2.0*PN.mass*KE);
 }
 
+double
+particleConv::mcplMomentumFromKE(const int mcplIndex,
+				 const double KE) const
+  /*!
+    Convert the kenetic energy to momenum
+    Convertions from E_tot=m(1+(p/m)^2)^0.5
+    \param mcplNum :: MCPL number 
+    \param KE :: Kinetic energy [MeV/c2]
+    \return momentum [MeV/c]
+  */
+{
+  const pName& PN = getMCPLPItem(mcplIndex);
+  return sqrt(KE*KE+2.0*PN.mass*KE);
+}
+
+
+double
+particleConv::mcplKEWavelength(const int mcplNum,const double KE) const
+  /*!
+    Convert the kinetic energy to wavelength
+    \param mcplNum :: MCPL number 
+    \param KE :: Kinetic energy [MeV]
+    \return wavelength [Angstrom]
+    \todo -- do I need a low energy check for numerical accuracy?
+  */
+{
+  const pName& PN = getMCPLPItem(mcplNum);
+  
+  return RefCon::hc_e/sqrt(KE*KE+2.0*KE*PN.mass);
+}
+
+double
+particleConv::KEWavelength(const std::string& particleName,
+			     const double KE) const
+  /*!
+    Convert the kinetic energy to wavelength
+    \param particleName :: generic name to find
+    \param KE :: Kinetic energy [MeV]
+    \return wavelength [Angstrom]
+    \todo -- do I need a low energy check for numerical accuracy?
+  */
+{
+  const pName& PN = getNamePItem(particleName);
+  
+  return RefCon::hc_e/sqrt(KE*KE+2.0*KE*PN.mass);
+}
+
+double
+particleConv::wavelengthKE(const std::string& particleName,
+			     const double wave) const
+  /*!
+    Convert the kinetic energy to wavelength
+    \param particleName :: generic name to find
+    \param wave :: Wavelength [Angstrom]
+    \return KE :: kinetic energy [MeV]
+    \todo -- do I need a low energy check for numerical accuracy?
+  */
+{
+  const pName& PN = getNamePItem(particleName);
+
+  std::pair<double,double> AB;
+  const size_t ansN=solveRealQuadratic
+    (wave*wave,2*wave*PN.mass,-RefCon::hc_e*RefCon::hc_e,AB);
+  return (!ansN) ? 0.0 : AB.second;
+}
+
+double
+particleConv::mcplWavelengthKE(const int mcplNum,const double wave) const
+  /*!
+    Convert the kinetic energy to wavelength
+    \param mcplNum :: mcplNumber
+    \param wave :: Wavelenght [Angstrom]
+    \return KE :: kinetic energy [MeV]
+    \todo -- do I need a low energy check for numerical accuracy?
+  */
+{
+  const pName& PN = getMCPLPItem(mcplNum);
+
+  std::pair<double,double> AB;
+  const size_t ansN=solveRealQuadratic
+    (wave*wave,2*wave*PN.mass,-RefCon::hc_e*RefCon::hc_e,AB);
+
+  return (!ansN) ? 0.0 : AB.second;
+}
+
+double
+particleConv::mcplMass(const int mcplNum) const
+  /*!
+    Accessor to mass from mcpl number
+    \param mcplNum :: mcpl index number
+    \return rest mass [MeV/c2]
+   */
+{
+  const pName& PN = getMCPLPItem(mcplNum);
+  return PN.mass;
+}

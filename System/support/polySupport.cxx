@@ -3,7 +3,7 @@
  
  * File:   support/polySupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,58 @@ quad(const double aa,const double bb,const double cc,const double x)
 */
 {
   return aa*x*x+bb*x+cc;
+}
+
+size_t 
+solveRealQuadratic(const double& a,const double& b,const double& c,
+		   std::pair<double,double>& OutAns)
+/*!
+  Solves quadratic  \f[ Ax^2+Bx+C \f]. with only the real roots
+  \param a :: x^2 coeff
+  \param b :: x coeff
+  \param c :: const coeff
+  \param OutAns :: roots of the equation 
+  \return number of unique and real solutions 
+*/
+{
+  double cf;
+
+  OutAns.first=0.0;
+  OutAns.second=0.0;
+  
+  if (a==0.0)
+    {
+      if (b==0.0) return 0;
+      OutAns.first= -c/b;
+      OutAns.second= OutAns.first;
+      return 1;
+    }
+  
+  cf=b*b-4*a*c;
+  if (cf>=0)          /* Real Roots */
+    {
+      const double q=(b>=0) ? -0.5*(b+sqrt(cf)) : -0.5*(b-sqrt(cf));
+      OutAns.first=q/a;
+      OutAns.second=c/q;
+      if (OutAns.first>OutAns.second)
+	std::swap(OutAns.first,OutAns.second);
+      return (cf==0) ? 1 : 2;
+    } 
+  return 0;
+}
+
+size_t 
+solveRealQuadratic(const std::vector<double>& Coeff,
+		   std::pair<double,double>& OutAns)
+/*!
+  Solves quadratic  \f[ Ax^2+Bx+C \f]. with only the real roots
+  \param Coef :: iterator over all the coefficients in the order
+  \f[ Ax^2+Bx+C \f].
+  \param OutAns :: roots of the equation 
+  \return number of unique and real solutions 
+*/
+{
+  return solveRealQuadratic(Coeff[0],Coeff[1],Coeff[2],OutAns);
 }
 
 size_t 

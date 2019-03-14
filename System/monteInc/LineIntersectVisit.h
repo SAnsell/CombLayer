@@ -3,7 +3,7 @@
  
  * File:   monteInc/LineIntersectVisit.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 
 namespace MonteCarlo
 {
-  class neutron;
+  class particle;
 
 /*!
   \class LineIntersectVisit
@@ -45,7 +45,7 @@ class LineIntersectVisit : public Global::BaseVisit
     std::vector<Geometry::Vec3D> PtOut;   ///< Output point 
     std::vector<double> DOut;             ///< Output distances
     std::vector<const Geometry::Surface*> SurfIndex;           ///< SurfNames
-    int neutIndex;                        ///< Neutron number
+    int neutIndex;                        ///< Particle number
 
     void procTrack(const Geometry::Surface*);
     ///\cond PRIVATE
@@ -57,7 +57,7 @@ class LineIntersectVisit : public Global::BaseVisit
     
     LineIntersectVisit(const Geometry::Vec3D&,
 		       const Geometry::Vec3D&);
-    LineIntersectVisit(const MonteCarlo::neutron&);
+    LineIntersectVisit(const MonteCarlo::particle&);
 
     /// Destructor
     virtual ~LineIntersectVisit() {};
@@ -105,7 +105,7 @@ class LineIntersectVisit : public Global::BaseVisit
 
     // Re-set the line
     void setLine(const Geometry::Vec3D&,const Geometry::Vec3D&);
-    void setLine(const neutron&);
+    void setLine(const particle&);
 
     // Accessors:
     double getDist(const Geometry::Surface*);

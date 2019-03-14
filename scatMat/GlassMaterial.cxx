@@ -50,7 +50,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "neutron.h"
 #include "neutMaterial.h"
 #include "GlassMaterial.h"
 

@@ -3,7 +3,7 @@
  
  * File:   scatMat/SQWmaterial.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
+#include "particle.h"
 #include "neutron.h"
 #include "SQWtable.h"
 #include "SEtable.h"
@@ -277,8 +278,8 @@ SQWmaterial::dSdOdE(const MonteCarlo::neutron& NIn,
   
   // First calculate dSDoDE for the given energy difference.
   // InElastic scatter:
-  const double Ei=NIn.energy();
-  const double Ef=NOut.energy();
+  const double Ei=NIn.energy;
+  const double Ef=NOut.energy;
   const double mu=NOut.uVec.dotProd(NIn.uVec);
 
   const double SOut=HMat.dSdOdE(Ei,Ef,mu);

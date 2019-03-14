@@ -58,7 +58,7 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Token.h"
-#include "neutron.h"
+#include "particle.h"
 #include "objectRegister.h"
 #include "masterWrite.h"
 #include "Element.h"
@@ -1072,13 +1072,13 @@ Object::forwardIntercept(const Geometry::Vec3D& IP,
 
 
 int
-Object::trackOutCell(const MonteCarlo::neutron& N,double& D,
+Object::trackOutCell(const MonteCarlo::particle& N,double& D,
 		     const Geometry::Surface*& SPtr,
 		     const int startSurf) const
   /*!
     Track the distance to exit the cell 
     - if already out of the cell, distance is to the cell+to the exit
-    \param N :: Neutron
+    \param N :: particle
     \param D :: Distance to exit
     \param SPtr :: Surface at exit
     \param startSurf :: Start surface (not to be used) [0 to ignore]
@@ -1089,12 +1089,12 @@ Object::trackOutCell(const MonteCarlo::neutron& N,double& D,
 }
 
 int
-Object::trackIntoCell(const MonteCarlo::neutron& N,double& D,
+Object::trackIntoCell(const MonteCarlo::particle& N,double& D,
 		      const Geometry::Surface*& SPtr,
 		      const int startSurf) const
   /*!
     Track the distance to a cell
-    \param N :: Neutron
+    \param N :: Particle
     \param D :: Distance to entrance
     \param SPtr :: Surface at exit
     \param startSurf :: Start surface 
@@ -1126,13 +1126,13 @@ Object::calcInOut(const int pAB,const int N) const
 }
 
 int
-Object::trackCell(const MonteCarlo::neutron& N,double& D,
+Object::trackCell(const MonteCarlo::particle& N,double& D,
 		  const int direction,
 		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
-    Track to a neutron into/out of a cell. 
-    \param N :: Neutron 
+    Track to a particle into/out of a cell. 
+    \param N :: Particle 
     \param D :: Distance traveled to the cell [get added too]
     \param direction :: direction to track [+1/-1 : in/out ] 
     \param surfPtr :: Surface at exit
@@ -1203,7 +1203,7 @@ Object::forwardInterceptInit(const Geometry::Vec3D& IP,
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects).
-    Has special test for the case that the neutron 
+    Has special test for the case that the particle 
     starts on a surface and we need to effectively move it inside.
 
     \param IP :: Initial point

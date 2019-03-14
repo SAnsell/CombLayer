@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,8 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "ObjSurfMap.h"
-#include "neutron.h"
+#include "particle.h"
+#include "eTrack.h"
 #include "objectRegister.h"
 #include "surfRegister.h"
 #include "LinkUnit.h"
@@ -128,7 +129,7 @@ SimValid::diagnostics(const Simulation& System,
       double aDist;
       const Geometry::Surface* SPtr;          // Output surface
       const size_t index(Pts.size()-3);
-      MonteCarlo::neutron TNeut(1,Pts[index].Pt,Pts[index].Dir);
+      MonteCarlo::eTrack TNeut(Pts[index].Pt,Pts[index].Dir);
                                       
       ELog::EM<<"Base Obj == "<<*Pts[index].OPtr
 	      <<ELog::endDiag;
@@ -159,7 +160,7 @@ SimValid::diagnostics(const Simulation& System,
       MonteCarlo::Object* NOPtr=System.findCell(TNeut.Pos,0);
       if (NOPtr)
 	{
-	  ELog::EM<<"Neutron == "<<TNeut<<ELog::endDiag;
+	  ELog::EM<<"ETRack == "<<TNeut<<ELog::endDiag;
 	  ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDiag;
 	  ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDiag;
 	}
@@ -212,7 +213,7 @@ SimValid::runPoint(const Simulation& System,
       Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
-      MonteCarlo::neutron TNeut(1,CP,uVec);
+      MonteCarlo::eTrack TNeut(CP,uVec);
 
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);

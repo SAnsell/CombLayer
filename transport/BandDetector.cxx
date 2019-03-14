@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transport/BandDetector.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "neutron.h"
+#include "particle.h"
 #include "Detector.h"
 #include "BandDetector.h"
 
@@ -241,13 +241,13 @@ BandDetector::getAxis() const
 }
 
 int
-BandDetector::calcCell(const MonteCarlo::neutron& N,
+BandDetector::calcCell(const MonteCarlo::particle& N,
 		   int& NH,int& NV) const
   /*!
     Calc a cell
     Tracks from the point to the detector.
     Debug method only.
-    \param N :: Neutron
+    \param N :: Particle
     \param NH :: horrizontal position
     \param NV :: vertical position
     \return 1 on hit / 0 on a miss
@@ -274,12 +274,12 @@ BandDetector::calcCell(const MonteCarlo::neutron& N,
 
 
 void
-BandDetector::addEvent(const MonteCarlo::neutron& N) 
+BandDetector::addEvent(const MonteCarlo::particle& N) 
   /*!
     Add a point to the detector
     Tracks from the point to the detector.
     Added correction for solid angle
-    \param N :: Neutron
+    \param N :: Particle
   */
 {
   ELog::RegMethod RegA("BandDetector","addEvent");
@@ -346,8 +346,8 @@ BandDetector::calcEnergyPoint(const double E) const
 }
 
 double
-BandDetector::project(const MonteCarlo::neutron& Nin,
-		  MonteCarlo::neutron& Nout) const
+BandDetector::project(const MonteCarlo::particle& Nin,
+		  MonteCarlo::particle& Nout) const
   /*!
     Project the neutron into the detector.
     The output neutron is copied from Nin and then

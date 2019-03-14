@@ -57,7 +57,8 @@
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "neutron.h"
+#include "particle.h"
+#include "eTrack.h"
 
 #include "Debug.h"
 
@@ -593,7 +594,7 @@ testObject::testTrackCell()
       A.setObject(std::get<0>(tc));
       A.createSurfaceList();
 
-      neutron TNeut(1,std::get<2>(tc),std::get<3>(tc));
+      eTrack TNeut(std::get<2>(tc),std::get<3>(tc));
 
       const int outFaceSurf(std::get<1>(tc));
       const int SN= -A.trackOutCell(TNeut,aDist,SPtr,0);

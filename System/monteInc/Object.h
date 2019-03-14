@@ -3,7 +3,7 @@
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class Token;
 
 namespace MonteCarlo
 {
-  class neutron;
+  class particle;
 
 /*!
   \class Object
@@ -191,12 +191,12 @@ class Object
     forwardIntercept(const Geometry::Vec3D&,
 		     const Geometry::Vec3D&) const;
 
-  int trackCell(const MonteCarlo::neutron&,double&,
+  int trackCell(const MonteCarlo::particle&,double&,
 		const int,const Geometry::Surface*&,
 		const int) const;
-  int trackIntoCell(const MonteCarlo::neutron&,double&,
+  int trackIntoCell(const MonteCarlo::particle&,double&,
 		    const Geometry::Surface*&,const int =0) const;
-  int trackOutCell(const MonteCarlo::neutron&,double&,
+  int trackOutCell(const MonteCarlo::particle&,double&,
 		   const Geometry::Surface*&,const int =0) const;
 
 

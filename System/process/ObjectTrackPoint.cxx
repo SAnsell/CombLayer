@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackPoint.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,19 +46,12 @@
 #include "Code.h"
 #include "FItem.h"
 #include "FuncDataBase.h"
-#include "BnId.h"
 #include "Rules.h"
-#include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "ObjSurfMap.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "Zaid.h"
-#include "MXcards.h"
-#include "Material.h"
-#include "DBMaterial.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
