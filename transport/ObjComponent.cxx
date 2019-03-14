@@ -30,7 +30,6 @@
 #include <map>
 #include <algorithm>
 #include <stdexcept> 
-#include <boost/test/floating_point_comparison.hpp>
 
 #include "MersenneTwister.h"
 #include "Exception.h"
@@ -53,6 +52,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Rules.h"
+#include "particle.h"
 #include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
@@ -112,7 +112,7 @@ ObjComponent::~ObjComponent()
 
 
 int
-ObjComponent::hasIntercept(const MonteCarlo::neutron& N) const
+ObjComponent::hasIntercept(const MonteCarlo::particle& N) const
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects)

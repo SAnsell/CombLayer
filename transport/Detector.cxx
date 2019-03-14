@@ -47,7 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "neutron.h"
 #include "Detector.h"
 
 extern MTRand RNG;

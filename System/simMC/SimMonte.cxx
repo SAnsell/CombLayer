@@ -71,6 +71,7 @@
 #include "DBNeutMaterial.h"
 #include "ObjComponent.h"
 #include "Beam.h"
+#include "particle.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
@@ -172,13 +173,13 @@ SimMonte::setDetector(const Transport::Detector& DObj)
 void
 SimMonte::attenPath(const MonteCarlo::Object* startObj,
 		    const double Dist,
-		    MonteCarlo::neutron& N) const
+		    MonteCarlo::particle& N) const
   /*!
-    Calculate and update the neutron path staring
+    Calculate and update the particle path staring
     from N through a distance 
     \param startObj :: Initial object [for recording track]
     \param Dist :: Distance to travel
-    \param N :: Neutron
+    \param N :: Particle
    */
 {
   ELog::RegMethod RegA("SimMonte","attenPath");
@@ -223,8 +224,8 @@ SimMonte::runMonte(const size_t Npts)
     
   //  const int aim((Npts>10) ? Npts/10 : 1);
   const Geometry::Surface* surfPtr;
-  MonteCarlo::neutron Nout(0,Geometry::Vec3D(0,0,0),
-			   Geometry::Vec3D(1,0,0));
+  MonteCarlo::neutron Nout(0.0,Geometry::Vec3D(0,0,0),
+			       Geometry::Vec3D(1,0,0));
   const ModelSupport::ObjSurfMap* OSMPtr =getOSM();
 
   //  double tDist;  // Track disnace 
@@ -254,7 +255,7 @@ SimMonte::runMonte(const size_t Npts)
 	      double R=RNG.randExc();
 	      // Calculate forward Track:
 	      int surfN;
-	      surfN=Cell.trackWeight(n,R,surfPtr);   
+	      surfN=Cell.trackWeight(n,R,surfPtr);
 	      if (surfN)  
 		OPtr=OSMPtr->findNextObject(surfN,n.Pos,
 					    OPtr->getName());

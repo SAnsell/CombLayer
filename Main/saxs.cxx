@@ -81,6 +81,7 @@
 #include "ImportControl.h"
 #include "World.h"
 #include "SimInput.h"
+#include "photon.h"
 #include "neutron.h"
 #include "World.h"
 

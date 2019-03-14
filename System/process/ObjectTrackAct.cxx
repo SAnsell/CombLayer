@@ -48,7 +48,6 @@
 #include "FuncDataBase.h"
 #include "BnId.h"
 #include "Rules.h"
-#include "neutron.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "ObjSurfMap.h"

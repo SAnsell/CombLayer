@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transportInc/ObjComponent.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,10 +33,10 @@ namespace Transport
     \author S. Ansell
     \date October 2012  
     \version 2.0
-    \brief Second light-weight version of ObjCompx
+    \brief Second light-weight version of Object
 
     Object Component class, this class brings together the physical attributes 
-    of the component to the pos itioning and geometry tree.
+    of the component to the positioning and geometry tree.
   */
 
 class ObjComponent 
@@ -76,7 +76,7 @@ class ObjComponent
   double getRefractive(const double) const;
 
   int isValid(const Geometry::Vec3D&) const;       
-  int hasIntercept(const MonteCarlo::neutron&) const;
+  int hasIntercept(const MonteCarlo::particle&) const;
   void scatterNeutron(MonteCarlo::neutron&) const;
 
   virtual void selectEnergy(const MonteCarlo::neutron&,

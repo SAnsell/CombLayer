@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,7 +61,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "neutron.h"
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -75,6 +73,8 @@
 #include "pairBase.h"
 #include "pairItem.h"
 #include "pairFactory.h"
+#include "particle.h"
+#include "eTrack.h"
 #include "Window.h"
 
 namespace constructSystem
@@ -181,7 +181,7 @@ Window::createCentre(Simulation& System)
       return;
     }
   FSurf=IPt.first;
-  const MonteCarlo::neutron N(1,Origin,WAxis);
+  const MonteCarlo::eTrack N(Origin,WAxis);
   fSign=-FSurf->side(Centre);
    
   Origin=Centre+WAxis*IPt.second;

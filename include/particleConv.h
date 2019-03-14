@@ -3,7 +3,7 @@
  
  * File:   include/particleConv.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,10 +76,7 @@ class particleConv
   size_t getMCNPIndex(const int) const;
   size_t getPHITSIndex(const int) const;
   size_t getFLUKAIndex(const int) const;
-
-  const pName& getMCNPpItem(const std::string&) const;
-  const pName& getPHITSpItem(const std::string&) const;
-  const pName& getFLUKApItem(const std::string&) const;
+  size_t getMCPLIndex(const int) const;
 
   size_t getMCNPIndex(const std::string&) const;
   size_t getPHITSIndex(const std::string&) const;
@@ -88,24 +85,19 @@ class particleConv
   size_t getNameIndex(const std::string&) const;
   const pName& getNamePItem(const std::string&) const;
 
-  
+  const pName& getMCPLPItem(const int) const;
+
  public:
 
   static const particleConv& Instance();
   
-  /* const std::string& phitsType(const char) const; */
-  /* int phitsITYP(const char) const; */
-  /* int nucleon(const char) const; */
-
-  //  const std::string& phitsType(const std::string&) const;
-
   int nucleon(const std::string&) const;
   int mcnpITYP(const std::string&) const;
   int flukaITYP(const std::string&) const;
   int phitsITYP(const std::string&) const;
+  int mcplITYP(const std::string&) const;
   //  int flukaITYP(const std::string&) const;
   //  int phitsITYP(const std::string&) const;
-
 
   bool hasName(const std::string&) const;
 
@@ -114,10 +106,20 @@ class particleConv
   const std::string& nameToFLUKA(const std::string&) const;
   
   const std::string& mcnpToFLUKA(const int) const;
+  const std::string& mcplToFLUKA(const int) const;
   //  const std::string& mcnpToFluka(const int) const;
 
-  double momentumFromKE(const std::string&,const double) const; 
-    
+  double wavelengthKE(const std::string&,const double) const;
+  double KEWavelength(const std::string&,const double) const;
+
+  double mcplWavelengthKE(const int,const double) const;
+  double mcplKEWavelength(const int,const double) const;
+
+  double momentumFromKE(const std::string&,const double) const;
+  double mcplMomentumFromKE(const int,const double) const; 
+
+  double mcplMass(const int) const;
+
 };
  
 

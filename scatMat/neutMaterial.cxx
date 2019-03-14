@@ -3,7 +3,7 @@
  
  * File:   scatMat/neutMaterial.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "particle.h"
 #include "neutron.h"
 #include "neutMaterial.h"
 
@@ -281,8 +282,8 @@ neutMaterial::dSdOdE(const MonteCarlo::neutron& NIn,
   
   // First calculate dSDoDE for the given energy difference.
   // InElastic scatter:
-  const double Ei=NIn.energy();
-  const double Ef=NOut.energy();
+  const double Ei=NIn.energy;
+  const double Ef=NOut.energy;
 
   const double mu=NOut.uVec.dotProd(NIn.uVec);
   

@@ -23,6 +23,11 @@
 #ifndef SimMonte_h
 #define SimMonte_h
 
+namespace MonteCarlo
+{
+  class particle;
+}
+
 namespace Transport
 {
   class Detector;
@@ -63,7 +68,7 @@ class SimMonte : public Simulation
   void setMS(const int M) { MSActive=M; }
 
   void attenPath(const MonteCarlo::Object*,const double,
-		 MonteCarlo::neutron&) const;
+		 MonteCarlo::particle&) const;
 
   Transport::Beam* getBeam() const { return B; }
 

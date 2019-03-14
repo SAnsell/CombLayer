@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,6 @@
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
@@ -64,7 +62,8 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
-#include "neutron.h"
+#include "particle.h"
+#include "eTrack.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -169,7 +168,7 @@ LineTrack::calculate(const Simulation& ASim)
   const Geometry::Surface* SPtr;           // Surface
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
 
-  MonteCarlo::neutron nOut(1.0,InitPt,EndPt-InitPt);
+  MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
 					 (EndPt-InitPt).unit()*1e-5,0);
@@ -216,7 +215,7 @@ LineTrack::calculateError(const Simulation& ASim)
   const Geometry::Surface* SPtr;           // Surface
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
 
-  MonteCarlo::neutron nOut(1.0,InitPt,EndPt-InitPt);
+  MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
 					 (EndPt-InitPt).unit()*1e-5,0);
@@ -230,7 +229,7 @@ LineTrack::calculateError(const Simulation& ASim)
     {
       ELog::EM<<std::setprecision(12)<<ELog::endDiag;
       ELog::EM<<"== Tracking in cell == "<<*OPtr;
-      ELog::EM<<"Neutron == "<<nOut<<" "<<aDist<<ELog::endDiag;
+      ELog::EM<<"Track == "<<nOut<<" "<<aDist<<ELog::endDiag;
       ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
 
       // Note: Need OPPOSITE Sign on exiting surface
@@ -247,13 +246,12 @@ LineTrack::calculateError(const Simulation& ASim)
 	  ELog::EM<<"AA NEUT == "<<nOut<<ELog::endDiag;
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 
-	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
+	  ELog::EM<<"Track == "<<nOut<<" "<<ELog::endDiag;
 	  ELog::EM<<" ============== "<<ELog::endDiag;
 
 
 	  if (OPtr==0)
 	    {
-	      const masterRotate& MR=masterRotate::Instance();
 	      // ALL FAILURE CODE:
 	      const MonteCarlo::Object* OPtr=ASim.findCell(nOut.Pos,0);
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
@@ -275,10 +273,10 @@ LineTrack::calculateError(const Simulation& ASim)
 	      if (prevOPtr)
 		ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDiag;
               
-	      ELog::EM<<"Point = "<<MR.calcRotate(nOut.Pos)<<ELog::endDiag;
+	      ELog::EM<<"Point = "<<nOut.Pos<<ELog::endDiag;
 	      ELog::EM<<"DIR = "<<nOut.uVec<<ELog::endDiag;
-	      ELog::EM<<"Init = "<<MR.calcRotate(InitPt)<<ELog::endDiag;
-	      ELog::EM<<"Final = "<<MR.calcRotate(EndPt)<<ELog::endDiag;
+	      ELog::EM<<"Init = "<<InitPt<<ELog::endDiag;
+	      ELog::EM<<"Final = "<<EndPt<<ELog::endDiag;
               
 	      ELog::EM<<ELog::endErr;
 	    }

@@ -3,7 +3,7 @@
  
  * File:   monte/LineIntersectVisit.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@
 #include "Torus.h"
 #include "Line.h"
 #include "SurInter.h"
-#include "neutron.h"
+#include "particle.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "LineIntersectVisit.h"
@@ -96,11 +96,11 @@ LineIntersectVisit::LineIntersectVisit
 {}
 
 LineIntersectVisit::LineIntersectVisit
-  (const MonteCarlo::neutron& N) :
+  (const MonteCarlo::particle& N) :
     BaseVisit(),ATrack(N.Pos,N.uVec),neutIndex(N.ID)
   /*!
     Constructor
-    \param N :: Neutron to track
+    \param N :: Particle to track
   */
 {}
 
@@ -119,7 +119,7 @@ LineIntersectVisit::setLine(const Geometry::Vec3D& Pt,
 }
 
 void
-LineIntersectVisit::setLine(const neutron& N)
+LineIntersectVisit::setLine(const particle& N)
   /*!
     Set the line to a new track.
     \param N :: Neutron

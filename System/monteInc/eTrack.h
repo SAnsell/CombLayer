@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monteInc/neutron.h
+ * File:   monteInc/eTrack.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,42 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef MonteCarlo_neutron_h
-#define MonteCarlo_neutron_h
-
-
-/*!
-  \namespace moderatorSystem
-  \version 1.0
-  \author S. Ansell
-  \date April 2012
-  \brief CompLayer internal transport
-*/
+#ifndef MonteCarlo_eTrack_h
+#define MonteCarlo_eTrack_h
 
 namespace MonteCarlo
 {
 
   class Object;
+  
 /*!  
-  \class neutron
-  \brief Defines single point neutron [special case]
-  \version 2.0
+  \class eTrack
+  \brief Special non-particle particle type
+  \version 1.0
   \author S. Ansell
   \date March 2019
 */
 
-class neutron : public particle
+class eTrack : public particle
 {
- private:
-
 
  public:
 
-  neutron(const double,const Geometry::Vec3D&,const Geometry::Vec3D&);
-  neutron(const neutron&);
-  neutron& operator=(const neutron&);
-  virtual ~neutron() {}  ///< Destructor
+  eTrack(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  eTrack(const eTrack&);
+  eTrack& operator=(const eTrack&);
+  virtual ~eTrack() {}  ///< Destructor
   
+  virtual double velocity() const { return 1; }
+  virtual void setEnergy(const double) { return; }
+  virtual void moveForward(const double);
+
+  // Output stuff
+  virtual void write(std::ostream&) const;
+
 };
 
 

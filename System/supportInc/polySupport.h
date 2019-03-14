@@ -3,7 +3,7 @@
  
  * File:   supportInc/polySupport.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,12 @@
 
 /// Calculate the value of a quadratic at x
 double quad(const double,const double,const double,const double);
+
+size_t 
+solveRealQuadratic(const double&,const double&,const double&,
+		   std::pair<double,double>&);
+size_t 
+solveRealQuadratic(const std::vector<double>&,std::pair<double,double>&);
 
 size_t 
 solveQuadratic(const double*,std::pair<std::complex<double>,

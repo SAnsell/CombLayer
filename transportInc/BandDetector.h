@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transportInc/BandDetector.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,10 +73,10 @@ class BandDetector : public Detector
   const Geometry::Vec3D& getCentre() const { return Cent; }
 
   Geometry::Vec3D getRandPos() const;
-  virtual double project(const MonteCarlo::neutron&,
-	        MonteCarlo::neutron&) const;
-  int calcCell(const MonteCarlo::neutron&,int&,int&) const;
-  void addEvent(const MonteCarlo::neutron&);
+  virtual double project(const MonteCarlo::particle&,
+	        MonteCarlo::particle&) const;
+  int calcCell(const MonteCarlo::particle&,int&,int&) const;
+  void addEvent(const MonteCarlo::particle&);
 
   void clear();
   void setDataSize(const int,const int,const int);

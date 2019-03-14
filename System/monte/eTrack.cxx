@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/neutron.cxx
+ * File:   monte/eTrack.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -40,16 +40,16 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "particleConv.h"
 #include "particle.h"
-#include "neutron.h"
+#include "eTrack.h"
 
 namespace MonteCarlo
 {
 
-neutron::neutron(const double W,const Geometry::Vec3D& Pt,
-		 const Geometry::Vec3D& D) :
-  particle("neutron",Pt,D,particleConv::Instance().mcplWavelengthKE(2112,W))
+
+eTrack::eTrack(const Geometry::Vec3D& Pt,
+	       const Geometry::Vec3D& D) :
+  particle(Pt,D)
   /*!
     Constructor 
     \param W :: Wavelength [Angstrom]
@@ -58,19 +58,19 @@ neutron::neutron(const double W,const Geometry::Vec3D& Pt,
   */
 {}
 
-neutron::neutron(const neutron& A) :
+eTrack::eTrack(const eTrack& A) :
   particle(A)
   /*!
     Copy constructor
-    \param A :: neutron to copy
+    \param A :: eTrack to copy
   */
 {}
 
-neutron&
-neutron::operator=(const neutron& A)
+eTrack&
+eTrack::operator=(const eTrack& A)
   /*!
     Assignment operator
-    \param A :: neutron to copy
+    \param A :: eTrack to copy
     \return *this
   */
 {
@@ -81,8 +81,32 @@ neutron::operator=(const neutron& A)
   return *this;
 }
 
+void
+eTrack::moveForward(const double Dist)
+  /*!
+    Move forward by the required distance
+    -- This does not change the intercept points
+    \param Dist :: Distance to move
+  */
+{
+  Pos+=uVec*Dist;
+  travel+=Dist;
+  time+=Dist;
+  return;
+}
 
 
-
+void
+eTrack::write(std::ostream& OX) const
+  /*!
+    Write a given eTrack to a stream
+    \param OX :: Output stream
+   */
+{
+  OX<<Pos<<" u: "<<uVec 
+    <<" W="<<weight<<" T="<<travel<<"("<<time<<")"<<" nCol="
+    <<nCollision<<" (ID="<<ID<<")";
+  return;
+}
 
 }  // NAMESPACE MonteCarlo
