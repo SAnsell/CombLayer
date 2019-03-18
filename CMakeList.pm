@@ -91,14 +91,11 @@ sub findSubSrcDir
 	      if ($dname=~/$exclude/)
 	      {
 		$flag=1;
-		print STDERR $dname,"\n";
-		
 		last;
 	      }
 	    }
 	  if (!$flag)
 	    {
-	      print STDERR "CFile == ",$1,,":",$dname,"\n";
 	      push(@subDir,$1) if (hasCPPFiles($dname));
 	    }
 	}
@@ -166,7 +163,6 @@ sub addSrcDir
       
   foreach my $name (@{$Ar})
     {
-      print STDERR "SFile == ",$DHead,":",$name,"\n";
       $self->{srcDir}{$name}=$DHead.$name;
     }
   return;

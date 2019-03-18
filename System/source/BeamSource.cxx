@@ -48,6 +48,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
+#include "masterWrite.h"
 #include "varList.h"
 #include "inputSupport.h"
 #include "Source.h"
@@ -167,8 +168,8 @@ BeamSource::rotate(const localRotate& LR)
   */
 {
   ELog::RegMethod Rega("BeamSource","rotate");
+
   FixedComp::applyRotation(LR);
-  ELog::EM<<"Applied Rotation == "<<Origin<<ELog::endDiag;
   return;
 }
   
@@ -234,7 +235,7 @@ BeamSource::createAll(const ITYPE& inputMap,
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
   ELog::EM<<"linkunit: == "<<FC.getKeyName()<<" "<<linkIndex<<ELog::endDiag;
-    
+
   populate(inputMap);
   createUnitVector(FC,linkIndex);
 
@@ -295,7 +296,8 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   ELog::RegMethod RegA("BeamSource","writeFLUKA");
 
   const flukaGenParticle& PC=flukaGenParticle::Instance();
-
+  masterWrite& MW=masterWrite::Instance();
+  
   // can be two for an energy range
   if (Energy.size()!=1)
     throw ColErr::SizeError<size_t>
@@ -311,7 +313,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   cx.str("");
 
   //Y Axis is Z in fluka, X is X
-  cx<<"BEAMAXES "<<X<<" "<<Y;
+  cx<<"BEAMAXES "<<MW.Num(X)<<" "<<MW.Num(Y);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
 

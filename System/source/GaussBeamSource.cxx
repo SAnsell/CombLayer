@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,6 +48,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
+#include "masterWrite.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -61,6 +63,7 @@
 #include "Transform.h"
 #include "localRotate.h"
 #include "particleConv.h"
+#include "flukaGenParticle.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "GaussBeamSource.h"
@@ -332,6 +335,9 @@ GaussBeamSource::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("GaussBeamSource","writeFLUKA");
 
+  const flukaGenParticle& PC=flukaGenParticle::Instance();
+  masterWrite& MW=masterWrite::Instance();
+  
   // can be two for an energy range
   if (Energy.size()!=1)
     throw ColErr::SizeError<size_t>
@@ -342,12 +348,11 @@ GaussBeamSource::writeFLUKA(std::ostream& OX) const
   // radius : innerRadius : -1 t o means radius
   cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
     <<" "<<-xWidth<<" "<<-zWidth<<" -1.0 ";
-  cx<<StrFunc::toUpperString(particleType);
+  cx<<StrFunc::toUpperString(PC.nameToFLUKA(particleType));
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
 
-  // Y Axis is Z in fluka, X is X
-  cx<<"BEAMAXES "<<X<<" "<<Y;
+  cx<<"BEAMAXES "<<MW.Num(X)<<" "<<MW.Num(Y);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
   cx<<"BEAMPOS "<<Origin;

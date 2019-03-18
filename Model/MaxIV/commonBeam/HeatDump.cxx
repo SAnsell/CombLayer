@@ -82,7 +82,7 @@ namespace xraySystem
 
 HeatDump::HeatDump(const std::string& Key) :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",4),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -168,7 +168,7 @@ HeatDump::createUnitVector(const attachSystem::FixedComp& centreFC,
   applyOffset();
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
-  setDefault("Main");
+  setDefault("Main","Beam");
   return;
 }
 
@@ -179,30 +179,23 @@ HeatDump::createSurfaces()
   */
 {
   ELog::RegMethod RegA("HeatDump","createSurfaces");
+  setDefault("Main","Beam");
+  
+  ModelSupport::buildPlane(SMap,buildIndex+3,bOrigin-bX*(width/2.0),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+4,bOrigin+bX*(width/2.0),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+5,bOrigin-bZ*cutHeight,bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+6,bOrigin+bZ*
+			   (height-cutHeight),bZ);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,bOrigin,bZ,radius);
 
+  const Geometry::Vec3D ZCut(bOrigin+bY*cutDepth); 
 
-  const attachSystem::FixedComp& beamFC=getKey("Beam");
-
-  const Geometry::Vec3D& beamOrg=beamFC.getCentre();
-  const Geometry::Vec3D& beamX=beamFC.getX();
-  const Geometry::Vec3D& beamY=beamFC.getY();
-  const Geometry::Vec3D& beamZ=beamFC.getZ();
-
-  ModelSupport::buildPlane(SMap,buildIndex+3,beamOrg-beamX*(width/2.0),beamX);
-  ModelSupport::buildPlane(SMap,buildIndex+4,beamOrg+beamX*(width/2.0),beamX);
-  ModelSupport::buildPlane(SMap,buildIndex+5,beamOrg-beamZ*cutHeight,beamZ);
-  ModelSupport::buildPlane(SMap,buildIndex+6,beamOrg+beamZ*
-			   (height-cutHeight),beamZ);
-  ModelSupport::buildCylinder(SMap,buildIndex+7,beamOrg,beamZ,radius);
-
-  const Geometry::Vec3D ZCut(beamOrg+beamY*cutDepth); 
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,beamZ);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,beamZ,
-				  beamX,-cutAngle);
+  ModelSupport::buildPlane(SMap,buildIndex+15,ZCut,bZ);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+16,ZCut,bZ,
+				  bX,-cutAngle);
   // water cut
-  ModelSupport::buildPlane(SMap,buildIndex+305,ZCut+beamZ*waterZStop,beamZ);
-  ModelSupport::buildCylinder(SMap,buildIndex+307,beamOrg,beamZ,waterRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+305,ZCut+bZ*waterZStop,bZ);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,bOrigin,bZ,waterRadius);
   // construct surround [Y is upwards]
   if (!isActive("mountSurf"))
     {
@@ -314,6 +307,26 @@ HeatDump::createLinks()
   */
 {
   ELog::RegMethod RegA("HeatDump","createLinks");
+
+  
+  attachSystem::FixedComp& mainFC=getKey("Main");
+  attachSystem::FixedComp& beamFC=getKey("Beam");
+
+  // Beam position is lift/no-lift so 1-2 are no-lift 3-4 are lifted
+
+  // currently no divider plane provided -- use with caution
+  beamFC.setLinkSurf(0,SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf(3,SMap.realSurf(buildIndex+7));
+
+  beamFC.setConnect(0,bOrigin-bY*radius-bZ*lift,-bY);
+  beamFC.setConnect(1,bOrigin+bY*radius-bZ*lift,bY);
+  beamFC.setConnect(2,bOrigin-bY*radius,-bY);
+  beamFC.setConnect(3,bOrigin+bY*radius,bY);
+
+  ELog::EM<<"IB == "<<bOrigin+bY*radius-bZ*lift<<ELog::endDiag;
+  
   
   return;
 }

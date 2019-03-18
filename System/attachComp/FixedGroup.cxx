@@ -348,6 +348,42 @@ FixedGroup::setSecondary(const std::string& defKey)
 }
 
 void
+FixedGroup::applyRotation(const Geometry::Vec3D& Axis,
+			  const double Angle)
+  /*!
+    Apply a rotation to all groups
+    \param Axis :: rotation axis 
+    \param Angle :: rotation angle
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","applyRotation");
+
+  FTYPE::iterator mc;
+  for(mc=FMap.begin();mc!=FMap.end();mc++)
+    mc->second->applyRotation(Axis,Angle);
+  
+  return;
+}
+    
+
+void
+FixedGroup::applyRotation(const localRotate& LR)
+  /*!
+    Apply rotation to all groups
+    \param LR :: Rotation to apply
+   */
+{
+  ELog::RegMethod RegA("FixedGroup","applyRotation(localRotate)");
+  
+  
+  FTYPE::iterator mc;
+  for(mc=FMap.begin();mc!=FMap.end();mc++)
+    mc->second->applyRotation(LR);
+
+  return;
+}
+  
+void
 FixedGroup::setAxisControl(const long int axisIndex,
                            const Geometry::Vec3D& NAxis)
   /*!
