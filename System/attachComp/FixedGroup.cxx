@@ -361,7 +361,8 @@ FixedGroup::applyRotation(const Geometry::Vec3D& Axis,
   FTYPE::iterator mc;
   for(mc=FMap.begin();mc!=FMap.end();mc++)
     mc->second->applyRotation(Axis,Angle);
-  
+
+  FixedComp::applyRotation(Axis,Angle);
   return;
 }
     
@@ -379,7 +380,7 @@ FixedGroup::applyRotation(const localRotate& LR)
   FTYPE::iterator mc;
   for(mc=FMap.begin();mc!=FMap.end();mc++)
     mc->second->applyRotation(LR);
-
+  FixedComp::applyRotation(LR);
   return;
 }
   
