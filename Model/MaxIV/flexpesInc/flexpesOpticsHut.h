@@ -74,9 +74,10 @@ class flexpesOpticsHut :
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
 
-  int innerMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls 
-  int outerMat;                ///< Conc layer material for ring walls
+  int voidMat;                 ///< void material (air)
+  int innerMat;                ///< covering inner material for walls
+  int pbMat;                   ///< Pb layer material for walls 
+  int outerMat;                ///< Outer layer of walls 
 
 
   /// Chicanes 

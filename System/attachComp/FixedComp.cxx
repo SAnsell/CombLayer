@@ -1949,6 +1949,7 @@ FixedComp::applyRotation(const localRotate& LR)
 {
   ELog::RegMethod RegA("FixedComp","applyRotation(localRotate)");
 
+  LR.applyFull(Origin);
   LR.applyFullAxis(X);
   LR.applyFullAxis(Y);
   LR.applyFullAxis(Z);

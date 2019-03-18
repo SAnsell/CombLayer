@@ -535,6 +535,7 @@ opticsBeamVariables(FuncDataBase& Control,
   setVariable::PipeShieldGenerator ShieldGen;
 
   Control.addVariable(opticKey+"OuterRadius",80.0);
+  Control.addVariable(opticKey+"VoidMat","Void");
   
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
@@ -632,7 +633,7 @@ opticsHutVariables(FuncDataBase& Control,
     Optics hut variables
     \param Control :: DataBase to add
     \param preName :: Beamline name
-    \param caveName :: Cave name
+    \param hutName :: Cave/Hut name (outer)
   */
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
@@ -657,6 +658,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PbBackThick",0.4);
   Control.addVariable(hutName+"OuterSkin",0.3);
 
+  Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"InnerMat","Stainless304");
   Control.addVariable(hutName+"PbMat","Lead");
   Control.addVariable(hutName+"OuterMat","Stainless304");

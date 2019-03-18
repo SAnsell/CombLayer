@@ -68,8 +68,6 @@
 #include "Simulation.h"
 #include "inputSupport.h"
 #include "SourceCreate.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "objectRegister.h"
 #include "particleConv.h"
 #include "SourceBase.h"

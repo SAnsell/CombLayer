@@ -3,7 +3,7 @@
  
  * File:   flexpes/flexpesOpticsHut.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,6 +135,7 @@ flexpesOpticsHut::populate(const FuncDataBase& Control)
   inletZStep=Control.EvalDefVar<double>(keyName+"InletZStep",0.0);
   inletRadius=Control.EvalDefVar<double>(keyName+"InletRadius",0.0);
 
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
@@ -274,12 +275,12 @@ flexpesOpticsHut::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
       makeCell("InnerFarVoid",System,cellIndex++,0,0.0,Out+floorStr);
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 1003 -4 (-14:-24) -6 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floorStr);
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 (-14:-24) -6  ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out+floorStr);
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floorStr);
     }
     
     

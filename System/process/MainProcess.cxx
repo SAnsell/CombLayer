@@ -694,7 +694,6 @@ buildFullSimulation(Simulation* SimPtr,
   reportSelection(*SimPtr,IParam);
   SimPtr->createObjSurfMap();
 
-  
   if (createVTK(IParam,SimPtr,OName))
     return;
 

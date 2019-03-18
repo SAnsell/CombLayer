@@ -199,6 +199,7 @@ FlukaSource::rotate(const localRotate& LR)
   */
 {
   ELog::RegMethod Rega("FlukaSource","rotate");
+
   FixedComp::applyRotation(LR);  
   return;
 }
