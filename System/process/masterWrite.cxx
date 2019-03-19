@@ -119,7 +119,7 @@ masterWrite::Num(const Geometry::Vec3D& V)
   std::string Out;
   for(int i=0;i<3;i++)
     {
-      Out +=(fabs(V[i])<zeroTol) ? "0.0" :
+      Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
 	(FMTdouble % V[i]).str();
       if (i!=2) Out+=" ";
     }
@@ -137,7 +137,7 @@ masterWrite::NumComma(const Geometry::Vec3D& V)
   std::string Out;
   for(int i=0;i<3;i++)
     {
-      Out +=(fabs(V[i])<zeroTol) ? "0.0" :
+      Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
 	(FMTdouble % V[i]).str();
       if (i!=2) Out+=",";
     }

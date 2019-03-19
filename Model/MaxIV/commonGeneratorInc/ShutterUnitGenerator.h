@@ -42,7 +42,8 @@ class ShutterUnitGenerator
   double height;           ///< height total 
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection  
-  double lift;             ///< Amount to lift [when raized]
+  double baseLift;         ///< Amount to lift [before raise]
+  double lift;             ///< Amount to lift [when raised]
   double liftScrewRadius;  ///< Radius of lifting thread
   double threadLength;     ///< Total length of thread
     
@@ -71,7 +72,8 @@ class ShutterUnitGenerator
   template<typename CF> void setCF();
   template<typename CF> void setOutCF();
   template<typename CF> void setTopCF();
-  
+
+  void setLift(const double,const double);
   void setMat(const std::string&,const double);
   
   void generateShutter(FuncDataBase&,const std::string&,

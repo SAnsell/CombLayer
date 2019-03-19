@@ -254,7 +254,7 @@ MonoShutter::buildComponents(Simulation& System)
   monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
   monoShutterB->addInsertCell("Inner",PIB.getCell("Void"));
   monoShutterB->addInsertCell("Outer",getCC("Main").getInsertCells());
-  monoShutterB->createAll(System,*shutterPipe,1,PIB,2);
+  monoShutterB->createAll(System,*shutterPipe,0,PIB,2);
 
 
   ContainedGroup::addOuterSurf("Main",shutterPipe->getCC("Main"));

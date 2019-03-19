@@ -70,7 +70,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h" 
-#include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

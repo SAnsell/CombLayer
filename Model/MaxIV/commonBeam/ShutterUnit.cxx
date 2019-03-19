@@ -64,7 +64,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -113,6 +112,7 @@ ShutterUnit::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   thick=Control.EvalVar<double>(keyName+"Thick");
+  baseLift=Control.EvalVar<double>(keyName+"BaseLift");
   lift=Control.EvalVar<double>(keyName+"Lift");
   liftScrewRadius=Control.EvalVar<double>(keyName+"LiftScrewRadius");
   threadLength=Control.EvalVar<double>(keyName+"ThreadLength");
@@ -164,22 +164,22 @@ ShutterUnit::createUnitVector(const attachSystem::FixedComp& centreFC,
   mainFC.createUnitVector(flangeFC,fIndex);
 
   applyOffset();
-  setDefault("Main");
-  setSecondary("Beam");
+  setDefault("Main","Beam");
   
   // Now construct new centre point:
   const Geometry::Line beamL(bOrigin,bY);
   const Geometry::Line mainL(Origin,Y);
   const std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
     beamL.closestPoints(mainL);
-
+  
   beamFC.setCentre(CP.second);
   
   if (upFlag)
     beamFC.applyShift(0,0,lift);  // only beam offset
+  else
+    beamFC.applyShift(0,0,baseLift);  // only beam offset
   
-  setDefault("Main");
-  setSecondary("Beam");
+  setDefault("Main","Beam");
   return;
 }
 

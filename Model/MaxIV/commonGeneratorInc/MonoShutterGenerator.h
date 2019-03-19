@@ -60,6 +60,7 @@ class MonoShutterGenerator
   template<typename CF> void setTopCF();
   
   void setMat(const std::string&,const double);
+  void setLift(const double,const double);
   
   void generateShutter(FuncDataBase&,const std::string&,
 		       const bool,const bool) const;

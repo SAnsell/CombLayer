@@ -405,7 +405,7 @@ createSimulation(inputParam& IParam,
   else if (IParam.flag("FLUKA"))
     {
       masterWrite::Instance().setSigFig(12);
-      masterWrite::Instance().setZero(1e-15);
+      masterWrite::Instance().setZero(1e-14);
       SimPtr=new SimFLUKA;
     }
   else if (IParam.flag("PovRay"))

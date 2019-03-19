@@ -63,7 +63,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -91,6 +90,63 @@ HeatDump::HeatDump(const std::string& Key) :
   */
 {}
 
+HeatDump::HeatDump(const HeatDump& A) : 
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffsetGroup(A),
+  attachSystem::ExternalCut(A),attachSystem::CellMap(A),
+  upFlag(A.upFlag),radius(A.radius),height(A.height),
+  width(A.width),thick(A.thick),lift(A.lift),cutHeight(A.cutHeight),
+  cutAngle(A.cutAngle),cutDepth(A.cutDepth),topInnerRadius(A.topInnerRadius),
+  topFlangeRadius(A.topFlangeRadius),topFlangeLength(A.topFlangeLength),
+  bellowLength(A.bellowLength),bellowThick(A.bellowThick),
+  outRadius(A.outRadius),outLength(A.outLength),
+  waterRadius(A.waterRadius),waterZStop(A.waterZStop),
+  mat(A.mat),flangeMat(A.flangeMat),bellowMat(A.bellowMat),
+  waterMat(A.waterMat)
+  /*!
+    Copy constructor
+    \param A :: HeatDump to copy
+  */
+{}
+
+HeatDump&
+HeatDump::operator=(const HeatDump& A)
+  /*!
+    Assignment operator
+    \param A :: HeatDump to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      upFlag=A.upFlag;
+      radius=A.radius;
+      height=A.height;
+      width=A.width;
+      thick=A.thick;
+      lift=A.lift;
+      cutHeight=A.cutHeight;
+      cutAngle=A.cutAngle;
+      cutDepth=A.cutDepth;
+      topInnerRadius=A.topInnerRadius;
+      topFlangeRadius=A.topFlangeRadius;
+      topFlangeLength=A.topFlangeLength;
+      bellowLength=A.bellowLength;
+      bellowThick=A.bellowThick;
+      outRadius=A.outRadius;
+      outLength=A.outLength;
+      waterRadius=A.waterRadius;
+      waterZStop=A.waterZStop;
+      mat=A.mat;
+      flangeMat=A.flangeMat;
+      bellowMat=A.bellowMat;
+      waterMat=A.waterMat;
+    }
+  return *this;
+}
 
 HeatDump::~HeatDump()
   /*!
@@ -308,8 +364,7 @@ HeatDump::createLinks()
 {
   ELog::RegMethod RegA("HeatDump","createLinks");
 
-  
-  attachSystem::FixedComp& mainFC=getKey("Main");
+  //  attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
   // Beam position is lift/no-lift so 1-2 are no-lift 3-4 are lifted
@@ -324,10 +379,7 @@ HeatDump::createLinks()
   beamFC.setConnect(1,bOrigin+bY*radius-bZ*lift,bY);
   beamFC.setConnect(2,bOrigin-bY*radius,-bY);
   beamFC.setConnect(3,bOrigin+bY*radius,bY);
-
-  ELog::EM<<"IB == "<<bOrigin+bY*radius-bZ*lift<<ELog::endDiag;
-  
-  
+    
   return;
 }
 

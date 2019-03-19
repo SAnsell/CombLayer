@@ -47,6 +47,7 @@ namespace xraySystem
   class MonoCrystals;
   class FlangeMount;
   class Mirror;
+  class MonoShutter;
   class PipeShield;
   class ShutterUnit;
     
@@ -168,13 +169,7 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeF;
 
   /// Shutter pipe
-  std::shared_ptr<constructSystem::PortTube> shutterPipe;
-
-  /// shutter to stop beam
-  std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
-
-  /// shutter to stop beam [second for redundency
-  std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
     
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeG;

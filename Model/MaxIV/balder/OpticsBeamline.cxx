@@ -45,7 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -65,7 +64,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -101,6 +99,7 @@
 #include "ShutterUnit.h"
 #include "Mirror.h"
 #include "HeatDump.h"
+#include "MonoShutter.h"
 #include "OpticsBeamline.h"
 
 namespace xraySystem
@@ -154,10 +153,8 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
 	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
-  shutterPipe(new constructSystem::PortTube(newName+"ShutterPipe")),
-  monoShutterA(new xraySystem::ShutterUnit(newName+"MonoShutterA")),
-  monoShutterB(new xraySystem::ShutterUnit(newName+"MonoShutterB")),
-
+  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
+  
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValve(newName+"GateE")),
   neutShield({
@@ -213,8 +210,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(slitsB);
   OR.addObject(viewPipe);
   OR.addObject(pipeF);
-  OR.addObject(shutterPipe);
-  OR.addObject(monoShutterA);
+  OR.addObject(monoShutter);
 
   OR.addObject(pipeG);
   OR.addObject(gateE);
@@ -545,41 +541,26 @@ OpticsBeamline::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeF,2);
   pipeF->insertInCell(System,outerCell);
 
-  // fake insert for ports
-  shutterPipe->addAllInsertCell(masterCell->getName());
-  shutterPipe->setFront(*pipeF,2);
-  shutterPipe->createAll(System,*pipeF,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*shutterPipe,2);
-  shutterPipe->insertAllInCell(System,outerCell);
 
-  const constructSystem::portItem& PIA=shutterPipe->getPort(0);
-  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
-  monoShutterA->addInsertCell("Inner",PIA.getCell("Void"));
-  monoShutterA->addInsertCell("Outer",outerCell);
-  monoShutterA->createAll(System,*shutterPipe,0,PIA,2);
+  monoShutter->addAllInsertCell(masterCell->getName());
+  monoShutter->setCutSurf("front",*pipeF,2);
+  monoShutter->createAll(System,*pipeF,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoShutter,2);
 
-  const constructSystem::portItem& PIB=shutterPipe->getPort(1);
-  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
-  monoShutterB->addInsertCell("Inner",PIB.getCell("Void"));
-  monoShutterB->addInsertCell("Outer",outerCell);
-  monoShutterB->createAll(System,*shutterPipe,1,PIB,2);
+  monoShutter->insertAllInCell(System,outerCell);
+  monoShutter->splitObject(System,"-PortACut",outerCell);
+  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
+  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
+  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
+  monoShutter->splitObject(System,"PortBCut",outerCell);
+  cellIndex+=3;
 
-  // monoShutter->addInsertCell("Body",shutterPipe->getCell("Void"));
-  // monoShutter->setBladeCentre(*shutterPipe,0);
-
-  // monoShutter->createAll
-  //   (System,*shutterPipe,shutterPipe->getSideIndex("topFlange"));
-
-  pipeG->addInsertCell(ContainedComp::getInsertCells());
-  pipeG->setFront(*shutterPipe,2);
-  pipeG->createAll(System,*shutterPipe,2);
-
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				*pipeG,2);
+  pipeG->setFront(*monoShutter,2);
+  pipeG->createAll(System,*monoShutter,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeG,2);
   pipeG->insertInCell(System,outerCell);
 
 
-  gateE->addInsertCell(ContainedComp::getInsertCells());
   gateE->setFront(*pipeG,2);
   gateE->createAll(System,*pipeG,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,

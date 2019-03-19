@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: R1/R1FrontEnd.cxx
+ * File: R1Common/R1FrontEnd.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -625,7 +625,6 @@ R1FrontEnd::buildObjects(Simulation& System)
   heatPipe->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*heatPipe,2);
   heatPipe->insertInCell(System,outerCell);
-
   
   buildHeatTable(System,masterCell,*heatPipe,2);  
   buildApertureTable(System,masterCell,*pipeB,2);

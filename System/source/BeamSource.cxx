@@ -3,7 +3,7 @@
  
  * File:   source/BeamSource.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -319,7 +319,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
 
   // Note the cos directs fro the beamPos are for particle
   // leaving the beam NOT the orientation of the disk
-  cx<<"BEAMPOS "<<Origin;
+  cx<<"BEAMPOS "<<MW.Num(Origin);
   StrFunc::writeFLUKA(cx.str(),OX);
 
   return;

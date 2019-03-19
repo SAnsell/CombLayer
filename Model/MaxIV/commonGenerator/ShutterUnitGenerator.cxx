@@ -59,7 +59,8 @@ namespace setVariable
 
 ShutterUnitGenerator::ShutterUnitGenerator() :
   height(5.0),width(5.0),
-  thick(5.0),lift(3.0),liftScrewRadius(1.0),
+  thick(5.0),baseLift(-3.0),
+  lift(6.0),liftScrewRadius(1.0),
   threadLength(30.0),
   topInnerRadius(CF100::innerRadius),
   topFlangeRadius(CF100::flangeRadius),
@@ -140,6 +141,19 @@ ShutterUnitGenerator::setTopCF()
 }
 
 void
+ShutterUnitGenerator::setLift(const double BL,const double L)
+  /*!
+    Set the lift parameters
+    \param BL :: base lift
+    \param L :: full lift
+  */
+{
+  baseLift=BL;
+  lift=L;
+  return;
+}
+  
+void
 ShutterUnitGenerator::generateShutter(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const bool upFlag) const
@@ -155,6 +169,7 @@ ShutterUnitGenerator::generateShutter(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Thick",thick);
+  Control.addVariable(keyName+"BaseLift",baseLift);
   Control.addVariable(keyName+"Lift",lift);
   Control.addVariable(keyName+"LiftScrewRadius",liftScrewRadius);
   Control.addVariable(keyName+"ThreadLength",threadLength);

@@ -48,6 +48,7 @@ class ShutterUnit :
   double height;           ///< height total 
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection  
+  double baseLift;         ///< Amount to lift [when closed]
   double lift;             ///< Amount to lift [when raized]
   double liftScrewRadius;  ///< Radius of lifting thread
   double threadLength;     ///< Total length of thread
