@@ -273,6 +273,7 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("MyObjectWidth", 5);
   Control.addVariable("MyObjectHeight", 5);
   Control.addVariable("MyObjectMainMat", "Void");
+  Control.addVariable("MyObjectMainTemp", 600.0);
 
   // FINAL:
   Control.resetActive();

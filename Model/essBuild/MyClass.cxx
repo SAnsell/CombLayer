@@ -100,7 +100,8 @@ MyClass::MyClass(const MyClass& A) :
   attachSystem::FixedOffset(A),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  mainMat(A.mainMat),
+  mainTemp(A.mainTemp)
   /*!
     Copy constructor
     \param A :: MyClass to copy
@@ -124,6 +125,7 @@ MyClass::operator=(const MyClass& A)
       width=A.width;
       height=A.height;
       mainMat=A.mainMat;
+      mainTemp=A.mainTemp;
     }
   return *this;
 }
@@ -161,6 +163,7 @@ MyClass::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  mainTemp=Control.EvalVar<double>(keyName+"MainTemp");
 
   return;
 }

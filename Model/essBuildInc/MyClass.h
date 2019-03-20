@@ -47,7 +47,8 @@ class MyClass : public attachSystem::ContainedComp,
   double height;                ///< height
 
   int mainMat;                   ///< main material
-  
+  double mainTemp; ///< main temperature
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -71,5 +72,5 @@ class MyClass : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 
