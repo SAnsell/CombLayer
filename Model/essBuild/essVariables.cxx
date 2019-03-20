@@ -269,6 +269,10 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("portSourceEEnd",4.0);
   Control.addVariable("portSourceNE",2);
 
+  Control.addVariable("MyObjectLength", 10);
+  Control.addVariable("MyObjectWidth", 5);
+  Control.addVariable("MyObjectHeight", 5);
+  Control.addVariable("MyObjectMainMat", "Void");
 
   // FINAL:
   Control.resetActive();

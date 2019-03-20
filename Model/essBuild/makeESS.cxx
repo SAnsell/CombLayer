@@ -130,6 +130,7 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Chicane.h"
+#include "MyClass.h"
 #include "makeESS.h"
 
 namespace essSystem
@@ -169,7 +170,8 @@ makeESS::makeESS() :
   ABHighBay(new HighBay("ABHighBay")),
   CDHighBay(new HighBay("CDHighBay")),
 
-  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding"))
+  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
+  myObject(new MyClass("MyObject"))
  /*!
     Constructor
  */
@@ -198,6 +200,7 @@ makeESS::makeESS() :
 
   OR.addObject(Bulk);
   OR.addObject(TSMainBuildingObj);
+  OR.addObject(myObject);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
@@ -924,7 +927,6 @@ makeESS::optionSummary(Simulation& System)
   return;
 }
 
-
 void
 makeESS::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
@@ -1364,6 +1366,11 @@ makeESS::build(Simulation& System,
       MatMesh m(System);
       m.Dump(matmesh);
     }
+
+  myObject->createAll(System, World::masterOrigin(),0);
+  attachSystem::addToInsertControl(System, *Target, *myObject);
+  //attachSystem::addToInsertSurfCtrl(System,*Target, *myObject);
+  //attachSystem::addToInsertForced(System,*Target, *myObject); // least effective
 
   return;
 }

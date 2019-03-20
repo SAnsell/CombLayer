@@ -82,6 +82,7 @@ namespace essSystem
   class TSMainBuilding;
   class Chicane;
   class EssModBase;
+  class MyClass;
 
       
   /*!
@@ -158,6 +159,7 @@ class makeESS
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array;
   std::shared_ptr<TSMainBuilding> TSMainBuildingObj;
+  std::shared_ptr<MyClass> myObject; ///< my object
 
   void buildFocusPoints(Simulation&);
 
