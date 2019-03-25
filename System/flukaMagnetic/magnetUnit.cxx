@@ -223,7 +223,7 @@ magnetUnit::writeFLUKA(std::ostream& OX) const
   ELog::RegMethod RegA("magnetUnit","writeFLUKA");
 
   std::ostringstream cx;
-  cx<<"USERICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
+  cx<<"USRICALL 0 "<<StrFunc::makeString(Origin)<<" - - "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");

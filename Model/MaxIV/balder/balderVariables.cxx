@@ -1146,6 +1146,7 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderExptHoleXStep",0.0);
   Control.addVariable("BalderExptHoleZStep",5.0);
   Control.addVariable("BalderExptHoleRadius",7.0);
+  Control.addVariable("BalderExptHoleMat","Lead");
 
   const std::string exptName="BalderExptLine";
   Control.addVariable(exptName+"BeamStopYStep",800.0);

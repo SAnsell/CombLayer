@@ -3,7 +3,7 @@
  
  * File:   balderInc/ExperimentalHutch.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,10 +58,12 @@ class ExperimentalHutch :
   double holeXStep;            ///< Hole XStep [front wall]
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
+
   
   int voidMat;                ///< Void material [air]
   int skinMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls 
+  int pbMat;                  ///< pb layer material for walls
+  int holeMat;                ///< Hole material [void/lead]
   int floorMat;               ///< Floor layer
   
   void populate(const FuncDataBase&);

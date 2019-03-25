@@ -3,7 +3,7 @@
  
  * File:   balder/ExperimentalHutch.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,17 +43,14 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -96,7 +93,7 @@ ExperimentalHutch::ExperimentalHutch(const ExperimentalHutch& A) :
   pbThick(A.pbThick),outerThick(A.outerThick),floorThick(A.floorThick),
   holeXStep(A.holeXStep),holeZStep(A.holeZStep),
   holeRadius(A.holeRadius),voidMat(A.voidMat),skinMat(A.skinMat),
-  pbMat(A.pbMat),floorMat(A.floorMat)
+  pbMat(A.pbMat),holeMat(A.holeMat),floorMat(A.floorMat)
   /*!
     Copy constructor
     \param A :: ExperimentalHutch to copy
@@ -131,6 +128,7 @@ ExperimentalHutch::operator=(const ExperimentalHutch& A)
       voidMat=A.voidMat;
       skinMat=A.skinMat;
       pbMat=A.pbMat;
+      holeMat=A.holeMat;
       floorMat=A.floorMat;
     }
   return *this;
@@ -174,6 +172,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
+  holeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"HoleMat",voidMat);
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
   return;
@@ -181,7 +180,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
 
 void
 ExperimentalHutch::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+				    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -289,7 +288,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   if (holeRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
-      makeCell("EnteranceHole",System,cellIndex++,0,0.0,Out);
+      makeCell("EnteranceHole",System,cellIndex++,holeMat,0.0,Out);
     }
   
   // floor

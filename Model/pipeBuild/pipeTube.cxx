@@ -3,7 +3,7 @@
  
  * File:   pipeBuild/pipeTube.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -221,14 +220,11 @@ pipeTube::createObjects(Simulation& System)
 
   // Inner 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("Inner",System,cellIndex++,0,0.0,Out);
 
-  CellMap::setCell("Inner",cellIndex-1);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 (-13:14:-15:16) ");
-  
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-  CellMap::setCell("Outer",cellIndex-1);
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
