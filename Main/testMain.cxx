@@ -46,7 +46,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Debug.h"
-#include "RefControl.h"
 #include "RotCounter.h"
 #include "BnId.h"
 #include "Triple.h"

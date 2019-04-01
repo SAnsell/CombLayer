@@ -52,8 +52,8 @@ class Report
   virtual ~Report();
 
   /// access stats to avoid writing
-  virtual Triple<int> getStatus() const 
-    { return Triple<int>(cnt,Dcnt,num); }
+  virtual std::tuple<int,int,int> getStatus() const 
+    { return std::tuple<int,int,int>(cnt,Dcnt,num); }
 
   int getNum() const { return num; }  ///< Return the identifier
   void setNum(const int);
