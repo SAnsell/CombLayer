@@ -142,7 +142,8 @@ FLEXPES::build(Simulation& System,
   ELog::RegMethod RControl("FLEXPES","build");
 
   const int voidCell(74123);
-
+  frontBeam->setStopPoint(stopPoint);
+    
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
@@ -158,6 +159,9 @@ FLEXPES::build(Simulation& System,
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
+  ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
+  if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+  
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r1Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r1Ring->getCell("OuterSegment",OIndex));

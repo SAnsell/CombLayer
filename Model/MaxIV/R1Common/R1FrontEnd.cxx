@@ -601,7 +601,13 @@ R1FrontEnd::buildObjects(Simulation& System)
   eCutMagDisk->createAll(System,*dipoleChamber,
 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
-  //  bellowA->registerSpaceCut(1,2);
+  if (stopPoint=="Dipole")
+    {
+      setCell("MasterVoid",masterCell->getName());
+      lastComp=dipolePipe;
+      return;
+    }
+
   bellowA->createAll(System,*dipolePipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);

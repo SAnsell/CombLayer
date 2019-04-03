@@ -66,11 +66,9 @@
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -110,6 +108,58 @@ makeMaxIV::~makeMaxIV()
   */
 {}
 
+
+std::string
+makeMaxIV::getActiveStop(const std::map<std::string,std::string>& beamStop,
+			 const std::string& BL) const
+  /*!
+    Get the current active stoppoint based on the beamline
+    \param beamStop :: Active units from IParam
+    \param BL :: Current beamline
+    \return active stop unit
+  */
+{
+  ELog::RegMethod RegA("makeMaxIV","getActiveStop");
+  
+  std::map<std::string,std::string>::const_iterator mc;
+  mc=beamStop.find(BL);
+  return (mc!=beamStop.end()) ? mc->second : "";
+}
+
+  
+void
+makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
+			     const std::set<std::string>& beamNAMES,
+			     std::map<std::string,std::string>& beamStop) const
+  /*!
+    Build hte beamstop map of stop points
+    \param IParam ::Input parameter
+    \param beamNAMES ::  beamlines to consider
+    \param beamStop ::  beamline : Stop point
+  */
+{
+  ELog::RegMethod RegA("makeMaxIV","populateStopPoint");
+  
+  typedef std::map<std::string,std::vector<std::string>> mTYPE;
+  mTYPE stopUnits=IParam.getMapItems("stopPoint");
+  
+  // create a map of beamname : stopPoint [or All : stoppoint]
+  std::string stopPoint;
+
+  for(const mTYPE::value_type& SP : stopUnits)
+    {
+      if (beamNAMES.find(SP.first)==beamNAMES.end())
+	{
+	  // make generic
+	  for(const std::string Item : beamNAMES)
+	    beamStop.emplace(Item,SP.first);    // doesn't overwrite specific
+	}
+      else if (!SP.second.empty())
+	beamStop[SP.first]=SP.second.front();   // ensures overwriting
+    }
+  return;
+}
+  
 void
 makeMaxIV::buildR1Ring(Simulation& System,
 		       const mainSystem::inputParam& IParam)
@@ -121,9 +171,16 @@ makeMaxIV::buildR1Ring(Simulation& System,
 {
   ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
 
+    static const std::set<std::string> beamNAMES
+    ({"SPECIES","FLEXPES","MAXPEEM"});
+    
   const int voidCell(74123);
 
+  bool outFlag(0);
+  std::map<std::string,std::string> beamStop;
+  populateStopPoint(IParam,beamNAMES,beamStop);
 
+  
   r1Ring->addInsertCell(voidCell);
   r1Ring->createAll(System,World::masterOrigin(),0);
 
@@ -137,9 +194,18 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
 
+	  // StopPoint
+	  const std::string activeStop=getActiveStop(beamStop,BL);
+
 	  if (BL=="FLEXPES")  // sector 
 	    {
 	      FLEXPES BL("FlexPes");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
+
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre5"));
@@ -148,6 +214,12 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  if (BL=="MAXPEEM")  // sector 11
 	    {
 	      MAXPEEM BL("MaxPeem");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
+
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre7"));
@@ -155,6 +227,11 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  if (BL=="SPECIES")  // sector 10
 	    {
 	      SPECIES BL("Species");
+	      if (!activeStop.empty())
+		{
+		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+		  BL.setStopPoint(activeStop);
+		}
 	      BL.setRing(r1Ring);
 	      BL.build(System,*r1Ring,
 		       r1Ring->getSideIndex("OpticCentre6"));
@@ -182,21 +259,9 @@ makeMaxIV::makeBeamLine(Simulation& System,
   static const std::set<std::string> beamNAMES
     ({"BALDER","COSAXS","FORMAX"});
 
-  bool outFlag(0);  
-
-  typedef std::map<std::string,std::vector<std::string>> mTYPE;
-  mTYPE stopUnits=IParam.getMapItems("stopPoint");
-  
-  // create a map of beamname : stopPoint [or All : stoppoint]
-  std::string stopPoint;
+  bool outFlag(0);
   std::map<std::string,std::string> beamStop;
-  for(const mTYPE::value_type& SP : stopUnits)
-    {
-      if (beamNAMES.find(SP.first)==beamNAMES.end())
-	stopPoint=SP.first;
-      else if (!SP.second.empty())
-	beamStop.emplace(SP.first,SP.second.front());
-    }
+  populateStopPoint(IParam,beamNAMES,beamStop);
 
   const size_t NSet=IParam.setCnt("beamlines");
   for(size_t j=0;j<NSet;j++)
@@ -217,10 +282,8 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	    System.getObjectThrow<attachSystem::FixedComp>
 	    (FCName,"FixedComp not found for origin");
 
-	  std::map<std::string,std::string>::const_iterator mc;
-	  mc=beamStop.find(BL);
-	  const std::string activeStop=
-	    (mc!=beamStop.end()) ? mc->second : stopPoint;
+	  const std::string activeStop=getActiveStop(beamStop,BL);
+
 	  if (BL=="BALDER")
 	    {
 	      BALDER BL("Balder");

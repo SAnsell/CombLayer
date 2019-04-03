@@ -84,7 +84,9 @@ class R1FrontEnd :
 {
  protected:   
 
-  /// construction of fluka cutting space
+    /// point to stop [normal none]
+  std::string stopPoint;          
+  /// Inner buildzone
   attachSystem::InnerZone buildZone;
   
   /// Shared point to use for last component:
@@ -205,6 +207,7 @@ class R1FrontEnd :
   R1FrontEnd& operator=(const R1FrontEnd&);
   virtual ~R1FrontEnd();
 
+  void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

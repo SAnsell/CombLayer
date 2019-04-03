@@ -3,7 +3,7 @@
  
  * File:   maxivBuildInc/makeMaxIV.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,14 @@ class makeMaxIV
 
   /// Main R1 Ring
   std::shared_ptr<R1Ring> r1Ring;
+
   
+  void populateStopPoint(const mainSystem::inputParam&,
+			 const std::set<std::string>&,
+			 std::map<std::string,std::string>&) const;
+  std::string getActiveStop(const std::map<std::string,std::string>&,
+			    const std::string&) const;
+    
   void buildR1Ring(Simulation&,const mainSystem::inputParam&);
 
   bool makeBeamLine(Simulation&,const mainSystem::inputParam&);

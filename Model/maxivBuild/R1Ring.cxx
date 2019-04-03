@@ -3,7 +3,7 @@
  
  * File:   maxivBuild/R1Ring.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -465,6 +465,7 @@ R1Ring::createObjects(Simulation& System)
 
 	  Out=ModelSupport::getComposite
 	    (SMap,buildIndex,fwdN," -2003M (-1013M:-1023M) 1033M 2013M 2023M ");
+
 	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
 	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
 	  surfN+=30;
@@ -474,15 +475,17 @@ R1Ring::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite  
 	    (SMap,buildIndex,surfN,divN," -1013M 2003M 2013M -1N ");
+
 	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
 	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
 	  if (index!=9)
 	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN,"1N -1023M 1033M 2023M ");
+	      (SMap,buildIndex,surfN,divN,"(1N:-2013M) -1023M 1033M 2023M ");
 	  else
 	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN,"1N -1023M 1003 2023M ");
-	  
+	      (SMap,buildIndex,surfN,divN," 1N -1023M 1003 2023M  ");
+
+	  ELog::EM<<"Extra == "<<cellIndex<<" == "<<Out<<ELog::endDiag;
 	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
 	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
 	  surfN+=20;
