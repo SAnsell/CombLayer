@@ -485,7 +485,6 @@ R1Ring::createObjects(Simulation& System)
 	    Out=ModelSupport::getComposite   
 	      (SMap,buildIndex,surfN,divN," 1N -1023M 1003 2023M  ");
 
-	  ELog::EM<<"Extra == "<<cellIndex<<" == "<<Out<<ELog::endDiag;
 	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
 	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
 	  surfN+=20;
