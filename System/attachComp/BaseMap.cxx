@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,6 +124,7 @@ BaseMap::hasItem(const std::string& Key,const size_t index) const
 
   return (!index || mc->second.size()>index) ? 1 : 0;
 }
+
   
 void
 BaseMap::setItem(const std::string& Key,const int CN)
@@ -448,14 +449,14 @@ BaseMap::findCell(const int cellN) const
 }
 
 bool
-BaseMap::hasCell(const int cellN) const
+BaseMap::hasUnit(const int cellN) const
   /*!
     Determine if cellN exists in set
     \param cellN :: Cell to test
     \return true if found
   */
 {
-  ELog::RegMethod RegA("BaseMap","hasCell");
+  ELog::RegMethod RegA("BaseMap","hasUnit");
   
   for(const LCTYPE::value_type& IUnit : Items)
     {
@@ -468,7 +469,7 @@ BaseMap::hasCell(const int cellN) const
 
 
 bool
-BaseMap::hasCell(const std::string& kName,const int cellN) const
+BaseMap::hasUnit(const std::string& kName,const int cellN) const
   /*!
     Determine if cellN exists in set
     \param kName :: unit to search

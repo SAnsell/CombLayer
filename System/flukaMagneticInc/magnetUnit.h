@@ -32,11 +32,11 @@ namespace flukaSystem
   \author S. Ansell
   \brief Holds an external magnetic system
 
-  FixedOffset holds the basis set for the axial components
+  FixedRotate holds the basis set for the axial components
 */
 
 class magnetUnit :
-  public attachSystem::FixedOffset
+  public attachSystem::FixedRotate
 {
  protected:
 

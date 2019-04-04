@@ -53,7 +53,11 @@ class SurfMap : public BaseMap
     Rename transform functions to BaseMap
     \param K :: Key name 
     \param CN :: Offset index
-  */  
+  */
+  
+  bool hasSurf(const std::string& K,const size_t index =0) const
+  { return BaseMap::hasItem(K,index); }
+
   void setSurf(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
       

@@ -80,6 +80,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"

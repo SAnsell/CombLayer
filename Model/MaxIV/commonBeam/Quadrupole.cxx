@@ -90,6 +90,7 @@ Quadrupole::Quadrupole(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -103,6 +104,7 @@ Quadrupole::Quadrupole(const std::string& Base,
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   baseName(Base)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -110,6 +112,61 @@ Quadrupole::Quadrupole(const std::string& Base,
     \param Key :: KeyName
   */
 {}
+
+Quadrupole::Quadrupole(const Quadrupole& A) : 
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  baseName(A.baseName),vertGap(A.vertGap),length(A.length),
+  width(A.width),height(A.height),coilLength(A.coilLength),
+  coilCornerRad(A.coilCornerRad),coilWidth(A.coilWidth),
+  frameThick(A.frameThick),poleLength(A.poleLength),
+  poleRadius(A.poleRadius),poleZStep(A.poleZStep),
+  poleYAngle(A.poleYAngle),poleStep(A.poleStep),
+  poleWidth(A.poleWidth),poleMat(A.poleMat),coreMat(A.coreMat),
+  coilMat(A.coilMat),frameMat(A.frameMat)
+  /*!
+    Copy constructor
+    \param A :: Quadrupole to copy
+  */
+{}
+
+Quadrupole&
+Quadrupole::operator=(const Quadrupole& A)
+  /*!
+    Assignment operator
+    \param A :: Quadrupole to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      vertGap=A.vertGap;
+      length=A.length;
+      width=A.width;
+      height=A.height;
+      coilLength=A.coilLength;
+      coilCornerRad=A.coilCornerRad;
+      coilWidth=A.coilWidth;
+      frameThick=A.frameThick;
+      poleLength=A.poleLength;
+      poleRadius=A.poleRadius;
+      poleZStep=A.poleZStep;
+      poleYAngle=A.poleYAngle;
+      poleStep=A.poleStep;
+      poleWidth=A.poleWidth;
+      poleMat=A.poleMat;
+      coreMat=A.coreMat;
+      coilMat=A.coilMat;
+      frameMat=A.frameMat;
+    }
+  return *this;
+}
 
 
 Quadrupole::~Quadrupole() 
@@ -259,8 +316,10 @@ Quadrupole::createSurfaces()
 		    sqrt(poleRadius*poleRadius-poleWidth*poleWidth/4.0));
 	  
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(poleLength/2.0),Y);
+  addSurf("FrontQuadPole",SMap.realSurf(buildIndex+201));
   ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(poleLength/2.0),Y);
-
+  addSurf("BackQuadPole",-SMap.realSurf(buildIndex+202));
+  
   int CI(buildIndex+200);
   for(size_t i=0;i<2;i++)
     {

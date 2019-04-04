@@ -48,6 +48,17 @@ class CellMap  : public BaseMap
   CellMap& operator=(const CellMap&);
   virtual ~CellMap() {}     ///< Destructor
 
+  //@{
+  /*!
+    Rename transform functions to BaseMap
+    \param K :: Key name 
+    \param CN :: Offset index
+  */
+
+  /// Accessor to has Item (to avoid ambiguity with SurfMap)
+  bool hasCell(const std::string& K,const size_t index =0) const
+    { return BaseMap::hasItem(K,index); }
+    
   /// Create named item
   void setCell(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
@@ -87,6 +98,8 @@ class CellMap  : public BaseMap
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
 
+  //@}
+  
   HeadRule getCellsHR(const Simulation&,const std::string&) const;
   const HeadRule& getCellHR(const Simulation&,const std::string&,
 		     const size_t =0) const;

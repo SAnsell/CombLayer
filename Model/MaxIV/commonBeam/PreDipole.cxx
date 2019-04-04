@@ -325,7 +325,7 @@ PreDipole::createQuads(Simulation& System,const int cellN)
       Out=ModelSupport::getComposite(SMap,buildIndex," (-21:-22) "); 
       QItem->insertComponent(System,"VoidPoleD",Out);
       
-      if (QItem->hasItem("ExtraPoleVoidA"))
+      if (QItem->CellMap::hasItem("ExtraPoleVoidA"))
 	{
 	  Out=ModelSupport::getComposite(SMap,buildIndex,
 					 "(-21:-22:-23:-14:-25:-26:-27)");
@@ -333,9 +333,37 @@ PreDipole::createQuads(Simulation& System,const int cellN)
 	  QItem->insertComponent(System,"ExtraPoleVoidB",Out);
 	}
     }
+
+  //
+  // Split void to give vacuum cell for magnetic field
+  //
+  std::string frontStr=getRuleStr("front");
+  std::string backStr=getRuleStr("back");
+  // Delete old cell and reconstruct front/back [note make a split cell]
+  CellMap::deleteCell(System,"Void");
+
+  Out=ModelSupport::getComposite
+	(SMap,buildIndex,"  11 12 13 14 15 16 17 ");
+  
+  for(const std::shared_ptr<Quadrupole>& QItem : {quadX,quadZ})
+    {
+      const HeadRule fHR=QItem->getSurfRule("FrontQuadPole");
+      const HeadRule bHR=QItem->getSurfRule("BackQuadPole");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+
+	       fHR.complement().display());
+      makeCell("QuadVoid",System,cellIndex++,voidMat,0.0,Out+
+	       fHR.display()+bHR.display());
+      frontStr=bHR.complement().display();
+    }
+  // make exit cell
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+
+	   backStr);
+
   return;
 }
 
+
+  
 void
 PreDipole::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,

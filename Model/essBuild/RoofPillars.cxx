@@ -231,7 +231,7 @@ RoofPillars::insertRoofCells(Simulation& System,
 	  for(const OTYPE::value_type Vunit : OMap)
 	    {
 	      const int cellN(Vunit.second->getName());
-	      if (roofCells->hasCell(cellN))
+	      if (roofCells->hasUnit(cellN))
 		cellName.insert(cellN);
 	    }
 

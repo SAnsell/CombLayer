@@ -64,6 +64,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 #include "Object.h"

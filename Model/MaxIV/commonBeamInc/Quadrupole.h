@@ -39,7 +39,8 @@ namespace xraySystem
 class Quadrupole : public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   

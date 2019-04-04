@@ -59,8 +59,8 @@ class BaseMap
   bool hasItem(const std::string&) const;
   bool hasItem(const std::string&,const size_t) const;
 
-  bool hasCell(const int) const;
-  bool hasCell(const std::string&,const int) const;
+  bool hasUnit(const int) const;
+  bool hasUnit(const std::string&,const int) const;
   
   void setItem(const std::string&,const int);
   void setItem(const std::string&,const size_t,const int);

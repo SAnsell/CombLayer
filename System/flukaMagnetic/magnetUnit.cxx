@@ -56,7 +56,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h" 
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "magnetUnit.h"
 
 namespace flukaSystem
@@ -64,7 +64,7 @@ namespace flukaSystem
 
 magnetUnit::magnetUnit(const std::string& Key,
 		       const size_t I) :
-  attachSystem::FixedOffset(Key+std::to_string(I),0),
+  attachSystem::FixedRotate(Key+std::to_string(I),0),
   index(I),length(0.0),width(0.0),height(0.0)
   /*!
     Constructor
@@ -74,7 +74,7 @@ magnetUnit::magnetUnit(const std::string& Key,
 {}
 
 magnetUnit::magnetUnit(const magnetUnit& A) : 
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
   index(A.index),length(A.length),width(A.width),
   height(A.height),activeCells(A.activeCells)
   /*!
@@ -93,7 +93,7 @@ magnetUnit::operator=(const magnetUnit& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       index=A.index;
       length=A.length;
       width=A.width;
@@ -121,7 +121,7 @@ magnetUnit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("magnetUnit","populate");
   
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalDefVar<double>(keyName+"Length",length);
   height=Control.EvalDefVar<double>(keyName+"Height",height);
