@@ -81,6 +81,7 @@
 #include "VacuumPipe.h"
 #include "insertObject.h"
 #include "insertCylinder.h"
+#include "insertPlate.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "LCollimator.h"
@@ -90,6 +91,8 @@
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "PreDipole.h"
+#include "DipoleChamber.h"
 #include "CrossPipe.h"
 #include "SqrCollimator.h"
 #include "BeamMount.h"
@@ -112,8 +115,12 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
+  preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
+  dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
-  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),    
+  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
+  eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
+  eCutWallDisk(new insertSystem::insertPlate(newName+"ECutWallDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collTubeA(new constructSystem::PipeTube(newName+"CollimatorTubeA")),
   collA(new xraySystem::SqrCollimator(newName+"CollA")),
@@ -168,6 +175,8 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(preDipole);
+  OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(bellowA);
   OR.addObject(collTubeA);
@@ -180,10 +189,11 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(collTubeC);
   OR.addObject(collC);
   OR.addObject(eCutDisk);
+  OR.addObject(eCutMagDisk);
+  OR.addObject(eCutWallDisk);
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
   OR.addObject(heatDump);    
-
 
   OR.addObject(pipeB);
   OR.addObject(bellowE);
@@ -276,7 +286,7 @@ R3FrontEnd::createSurfaces()
 
 void
 R3FrontEnd::insertFlanges(Simulation& System,
-			       const constructSystem::PipeTube& PT)
+			  const constructSystem::PipeTube& PT)
   /*!
     Boilerplate function to insert the flanges from pipetubes
     that extend past the linkzone in to ther neighbouring regions.
@@ -561,13 +571,46 @@ R3FrontEnd::buildObjects(Simulation& System)
   
   MonteCarlo::Object* masterCell=
     buildZone.constructMasterCell(System,*this);
+
+  const attachSystem::FixedComp& undulatorFC=
+    buildUndulator(System,masterCell,*this,0);
+
+  preDipole->setCutSurf("front",undulatorFC,2);
+  preDipole->createAll(System,undulatorFC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
+  preDipole->insertInCell(System,outerCell);
+
+  preDipole->createQuads(System,outerCell);
   
-  buildUndulator(System,masterCell,*this,0);
-  
+  dipoleChamber->setCutSurf("front",*preDipole,2);
+  dipoleChamber->createAll(System,*preDipole,2);
+  // two splits [main / exit]
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
+  dipoleChamber->insertInCell("Main",System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
+  dipoleChamber->insertInCell("Exit",System,outerCell);
+
+  eCutWallDisk->setNoInsert();
+  eCutWallDisk->addInsertCell(outerCell);
+  eCutWallDisk->createAll(System,*dipoleChamber,
+			 dipoleChamber->getSideIndex("dipoleExit"));
+
+  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
+  dipolePipe->createAll(System,*dipoleChamber,
+			dipoleChamber->getSideIndex("exit"));
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
+  dipolePipe->insertInCell(System,outerCell);
+
+
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
-  
+
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  eCutMagDisk->createAll(System,*dipoleChamber,
+			 -dipoleChamber->getSideIndex("dipoleExit"));
+
   if (stopPoint=="Dipole")
     {
       lastComp=dipolePipe;

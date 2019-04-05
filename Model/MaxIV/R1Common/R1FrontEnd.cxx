@@ -176,6 +176,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
+  OR.addObject(eCutWallDisk);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);

@@ -71,6 +71,8 @@
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "WallLeadGenerator.h"
+#include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
 
 namespace setVariable
 {
@@ -463,7 +465,9 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
-
+  setVariable::PreDipoleGenerator PGen;
+  setVariable::DipoleChamberGenerator DCGen;
+  
   Control.addVariable(frontKey+"OuterRadius",60.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -492,8 +496,31 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"WigglerVoidMat",0);
   Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
 
+
+  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
+  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
+  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
+  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
+  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
+
+  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
+
+  // SHORTENEND From 806 because of dipole chamge
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,596.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();

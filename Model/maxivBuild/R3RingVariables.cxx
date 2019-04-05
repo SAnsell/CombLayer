@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R1RingVariables.cxx
+ * File:   maxivBuild/R3RingVariables.cxx
  *
- * Copyright (c) 2004-2010 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,27 +51,22 @@
 #include "CFFlanges.h"
 
 namespace setVariable
-{
+{  
 
-namespace R1RingVar
-{
- 
-}  // NAMESPACE R1RingVar
-  
 void
-R1RingVariables(FuncDataBase& Control)
+R3RingVariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
-    for the R1 concrete shielding walls
+    for the R3 concrete shielding walls
     \param Control :: Function data base to add constants too
   */
 {
-  ELog::RegMethod RegA("R1RingVariables[F]","R1RingVariables");
+  ELog::RegMethod RegA("R3RingVariables[F]","R3RingVariables");
 
-  const std::string preName("R1Ring");
+  const std::string preName("R3Ring");
   
   Control.addVariable(preName+"FullOuterRadius",7000.0);
-  Control.addVariable(preName+"HexRadius",800.0);
+  Control.addVariable(preName+"HexRadius",8030.0);       // U
   Control.addVariable(preName+"HexWallThick",60.0);
   Control.addVariable(preName+"Height",160.0);
   Control.addVariable(preName+"Depth",130.0);

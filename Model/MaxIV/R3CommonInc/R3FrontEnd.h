@@ -24,6 +24,7 @@
 
 namespace insertSystem
 {
+  class insertPlate;
   class insertCylinder;
 }
 
@@ -57,6 +58,8 @@ namespace xraySystem
   class SqrCollimator;
   class SquareFMask;
   class BeamMount;
+  class PreDipole;
+  class DipoleChamber;
 
     
   /*!
@@ -86,9 +89,17 @@ class R3FrontEnd :
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
   /// dipole connection pipe
+  std::shared_ptr<xraySystem::PreDipole> preDipole;
+  /// dipole connection pipe
+  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
+  /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
+  /// electron cut cell [with magnetic field]
+  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// box for collimator

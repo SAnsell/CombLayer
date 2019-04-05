@@ -155,12 +155,9 @@ balderFrontEnd::buildUndulator(Simulation& System,
   CellMap::addCell("WiggerOuter",outerCell);
   wigglerBox->insertInCell(System,outerCell);
 
-  dipolePipe->setFront(*wigglerBox,2);
-  dipolePipe->createAll(System,*wigglerBox,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
+  return *wigglerBox;
 
-  return *dipolePipe;
+  // return *dipolePipe;
 }
 
   

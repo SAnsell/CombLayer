@@ -78,12 +78,12 @@
 #include "SurfMap.h"
 
 #include "RingDoor.h"
-#include "R1Ring.h"
+#include "R3Ring.h"
 
 namespace xraySystem
 {
 
-R1Ring::R1Ring(const std::string& Key) : 
+R3Ring::R3Ring(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -97,20 +97,20 @@ R1Ring::R1Ring(const std::string& Key) :
 {
 }
 
-R1Ring::~R1Ring() 
+R3Ring::~R3Ring() 
   /*!
     Destructor
   */
 {}
 
 void
-R1Ring::populate(const FuncDataBase& Control)
+R3Ring::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("R1Ring","populate");
+  ELog::RegMethod RegA("R3Ring","populate");
   
   FixedOffset::populate(Control);
 
@@ -158,7 +158,7 @@ R1Ring::populate(const FuncDataBase& Control)
 }
 
 void
-R1Ring::createUnitVector(const attachSystem::FixedComp& FC,
+R3Ring::createUnitVector(const attachSystem::FixedComp& FC,
 			       const long int sideIndex)
   /*!
     Create the unit vectors
@@ -166,7 +166,7 @@ R1Ring::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("R1Ring","createUnitVector");
+  ELog::RegMethod RegA("R3Ring","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -174,12 +174,12 @@ R1Ring::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-R1Ring::createSurfaces()
+R3Ring::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("R1Ring","createSurfaces");
+  ELog::RegMethod RegA("R3Ring","createSurfaces");
 
   ModelSupport::buildCylinder(SMap,buildIndex+9007,Origin,Z,fullOuterRadius);
   
@@ -295,13 +295,13 @@ R1Ring::createSurfaces()
 }
 
 void
-R1Ring::createFloor(Simulation& System)
+R3Ring::createFloor(Simulation& System)
   /*!
     Adds the main roof objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("R1Ring","createFloor");
+  ELog::RegMethod RegA("R3Ring","createFloor");
   std::string Out;
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 -5 15 ");
@@ -311,13 +311,13 @@ R1Ring::createFloor(Simulation& System)
 
 
 void
-R1Ring::createRoof(Simulation& System)
+R3Ring::createRoof(Simulation& System)
   /*!
     Adds the main roof objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("R1Ring","createRoof");
+  ELog::RegMethod RegA("R3Ring","createRoof");
 
   std::string Out;
   
@@ -373,13 +373,13 @@ R1Ring::createRoof(Simulation& System)
 }
 
 void
-R1Ring::createObjects(Simulation& System)
+R3Ring::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("R1Ring","createObjects");
+  ELog::RegMethod RegA("R3Ring","createObjects");
 
   std::string Out;
 
@@ -521,7 +521,7 @@ R1Ring::createObjects(Simulation& System)
 }
 
 void
-R1Ring::createLinks()
+R3Ring::createLinks()
   /*!
     Determines the link points for the beam direction first:
     This is special : each beamport has two coordinates (and axis)
@@ -529,7 +529,7 @@ R1Ring::createLinks()
     The second is the mid point on the wall it points to
   */
 {
-  ELog::RegMethod RegA("R1Ring","createLinks");
+  ELog::RegMethod RegA("R3Ring","createLinks");
 
   FixedComp::setNConnect(2*concaveNPoints+2);
   
@@ -559,13 +559,13 @@ R1Ring::createLinks()
 }
 
 void
-R1Ring::createDoor(Simulation& System)
+R3Ring::createDoor(Simulation& System)
   /*!
     Build if a ring-door is required
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R1Ring","createMaze");
+  ELog::RegMethod RegA("R3Ring","createMaze");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -589,7 +589,7 @@ R1Ring::createDoor(Simulation& System)
 
 
 void
-R1Ring::createAll(Simulation& System,
+R3Ring::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -599,7 +599,7 @@ R1Ring::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("R1Ring","createAll(FC)");
+  ELog::RegMethod RegA("R3Ring","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

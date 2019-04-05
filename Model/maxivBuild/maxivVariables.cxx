@@ -97,6 +97,9 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const std::set<std::string> R1Beam
     ({"RING1","FLEXPES","MAXPEEM","SPECIES"});
 
+  const std::set<std::string> R3Beam
+    ({"RING3","FORMAX","COSAXS","BALDER"});
+
   
   typedef void (*VariableFunction)(FuncDataBase&);
   typedef std::multimap<std::string,VariableFunction> VMap;
@@ -104,13 +107,14 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
      {"COSAXS",    &COSAXSvariables},
-     {"FLEXPES",    &FLEXPESvariables},
+     {"FLEXPES",   &FLEXPESvariables},
      {"FORMAX",    &FORMAXvariables},
      {"MAXPEEM",   &MAXPEEMvariables},
      {"SPECIES",   &SPECIESvariables}
    });
 
   bool r1Flag(0);
+  bool r3Flag(0);
   for(const std::string& beam : BL)
     {
       
@@ -118,6 +122,12 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	{
 	  R1RingVariables(Control);
 	  r1Flag=1;
+	}
+
+      if (!r3Flag && (R3Beam.find(beam)!=R3Beam.end()))
+	{
+	  R3RingVariables(Control);
+	  r3Flag=1;
 	}
 	  
       // std::pair<VMap::const_iterator,VMap::const_iterator>

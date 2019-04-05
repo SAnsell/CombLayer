@@ -94,10 +94,6 @@ class R1FrontEnd :
   
   /// dipole connection pipe
   std::shared_ptr<xraySystem::PreDipole> preDipole;
-  /// Quad for X shaping of beam
-  std::shared_ptr<xraySystem::Quadrupole> quadX;
-  /// Quad for Z shaping of beam
-  std::shared_ptr<xraySystem::Quadrupole> quadZ;
   /// dipole connection pipe
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe
