@@ -65,9 +65,12 @@ R3RingVariables(FuncDataBase& Control)
 
   const std::string preName("R3Ring");
   
-  Control.addVariable(preName+"FullOuterRadius",7000.0);
-  Control.addVariable(preName+"HexRadius",8030.0);       // U
-  Control.addVariable(preName+"HexWallThick",60.0);
+  Control.addVariable(preName+"FullOuterRadius",14000.0);
+  Control.addVariable(preName+"IcosagonRadius",8030.0);       // U
+  Control.addVariable(preName+"IcosagonWallThick",90.0);
+  Control.addVariable(preName+"OffsetCornerX",716.0);
+  Control.addVariable(preName+"OffsetCornerY",558.0);
+  
   Control.addVariable(preName+"Height",160.0);
   Control.addVariable(preName+"Depth",130.0);
   Control.addVariable(preName+"RoofThick",60.0);

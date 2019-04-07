@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   speciesInc/SPECIES.h
+ * File:   flexpesInc/R1Beamline.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,81 +19,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_SPECIES_h
-#define xraySystem_SPECIES_h
-
-namespace constructSystem
-{
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
-  class Bellows;
-  class LeadPipe;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
-  class GateValve;
-  class JawValve;
-}
-
-
-
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
+#ifndef xraySystem_R1Beamline_h
+#define xraySystem_R1Beamline_h
 
 namespace xraySystem
 {
-  class R1Ring;
-  class speciesFrontEnd;
-  class speciesOpticsHut;
-  class speciesOpticsBeamline;
-  class ExperimentalHutch;
-  class ExptBeamline;
-  class OpticsBeamline;
-  class ConnectZone;
-  class PipeShield;
-  class WallLead;
  
   /*!
-    \class SPECIES
+    \class R1Beamline
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class SPECIES :
-  public R1Beamline
+class R1Beamline :
+  public attachSystem::CopiedComp
 {
- private:
+ protected:
 
   /// ring component  [taken from main setup]
   std::shared_ptr<R1Ring> r1Ring;
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
 
-  std::shared_ptr<speciesFrontEnd> frontBeam;    ///< in ring front end
-  std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
-  std::shared_ptr<speciesOpticsHut> opticsHut;   ///< main optics hut
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
-  /// Main optics hutch components
-  std::shared_ptr<speciesOpticsBeamline> opticsBeam;
-
  public:
   
-  SPECIES(const std::string&);
-  SPECIES(const SPECIES&);
-  SPECIES& operator=(const SPECIES&);
-  virtual ~SPECIES();
+  R1Beamline(const std::string&,const std::string&);
+  R1Beamline(const R1Beamline&);
+  R1Beamline& operator=(const R1Beamline&);
+  virtual ~R1Beamline();
+
+  /// set ring
+  void setRing(std::shared_ptr<R1Ring> R)
+    { r1Ring=R; }
+
+  /// Accessor to stop point
+  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
 
   virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+		     const long int) =0;
 
 };
 

@@ -26,6 +26,7 @@
 namespace xraySystem
 {
   class R1Ring;
+  class R3Ring;
   /*!
     \class makeMaxIV
     \version 1.0
@@ -40,6 +41,8 @@ class makeMaxIV
 
   /// Main R1 Ring
   std::shared_ptr<R1Ring> r1Ring;
+  /// Main R1 Ring
+  std::shared_ptr<R3Ring> r3Ring;
 
   
   void populateStopPoint(const mainSystem::inputParam&,
@@ -48,9 +51,9 @@ class makeMaxIV
   std::string getActiveStop(const std::map<std::string,std::string>&,
 			    const std::string&) const;
     
-  void buildR1Ring(Simulation&,const mainSystem::inputParam&);
+  bool buildR1Ring(Simulation&,const mainSystem::inputParam&);
 
-  bool makeBeamLine(Simulation&,const mainSystem::inputParam&);
+  bool buildR3Ring(Simulation&,const mainSystem::inputParam&);
   
  public:
   

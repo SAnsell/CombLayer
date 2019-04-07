@@ -95,13 +95,14 @@
 #include "WallLead.h"
 
 
+#include "R1Beamline.h"
 #include "FLEXPES.h"
 
 namespace xraySystem
 {
 
 FLEXPES::FLEXPES(const std::string& KN) :
-  attachSystem::CopiedComp("Flexpes",KN),
+  R1Beamline("Flexpes",KN),
   frontBeam(new flexpesFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new flexpesOpticsHut(newName+"OpticsHut")),

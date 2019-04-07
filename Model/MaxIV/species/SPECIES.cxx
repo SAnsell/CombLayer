@@ -91,13 +91,14 @@
 #include "speciesOpticsBeamline.h"
 #include "WallLead.h"
 
+#include "R1Beamline.h"
 #include "SPECIES.h"
 
 namespace xraySystem
 {
 
 SPECIES::SPECIES(const std::string& KN) :
-  attachSystem::CopiedComp("Species",KN),
+  R1Beamline("Species",KN),
   frontBeam(new speciesFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new speciesOpticsHut(newName+"OpticsHut")),

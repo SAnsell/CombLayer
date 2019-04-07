@@ -98,13 +98,14 @@
 #include "cosaxsOpticsLine.h"
 #include "ConnectZone.h"
 #include "WallLead.h"
+#include "R3Beamline.h"
 #include "COSAXS.h"
 
 namespace xraySystem
 {
 
 COSAXS::COSAXS(const std::string& KN) :
-  attachSystem::CopiedComp("Balder",KN),
+  R3Beamline("Balder",KN),
   ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
   ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new cosaxsFrontEnd(newName+"FrontBeam")),

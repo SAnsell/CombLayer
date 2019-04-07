@@ -3,7 +3,7 @@
  
  * File:   formaxInc/FORMAX.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,12 +65,10 @@ namespace xraySystem
     \brief General constructor for the xray system
   */
 
-class FORMAX : public attachSystem::CopiedComp
+class FORMAX : public R3Beamline
 {
  private:
 
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
   /// Front end cave volume
   std::shared_ptr<R3FrontEndCave> ringCaveA;
   // Joining front cave
@@ -94,11 +92,10 @@ class FORMAX : public attachSystem::CopiedComp
   FORMAX(const std::string&);
   FORMAX(const FORMAX&);
   FORMAX& operator=(const FORMAX&);
-  ~FORMAX();
+  virtual ~FORMAX();
 
-  /// set stop point(s)
-  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
-  void build(Simulation&,const attachSystem::FixedComp&,
+
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);
 
 };

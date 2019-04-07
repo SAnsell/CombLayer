@@ -3,7 +3,7 @@
  
  * File:   maxivBuildInc/R3Ring.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,15 @@ class R3Ring :
 {
  private:
 
-  double fullOuterRadius;         ///< full outer radius
-  double hexRadius;               ///< Inner hex radius
-  double hexWallThick;            ///< Inner hex wall thickness
+  const size_t NInnerSurf;           ///< Number of inner surf
+  
+  double fullOuterRadius;          ///< full outer radius [beamline endpoint]
+  
+  double icosagonRadius;           ///< Inner 20 side radius
+  double icosagonWallThick;        ///< Inner 20 side wall thickness
+  double outerRadius;              ///< OuterWall distance [near corner]
+  double offsetCornerX;            ///< Outer wall offset X (tangentially)
+  double offsetCornerY;            ///< Outer wall offset Y (radially outward)
 
   double height;                  ///< Main height
   double depth;                   ///< Main depth

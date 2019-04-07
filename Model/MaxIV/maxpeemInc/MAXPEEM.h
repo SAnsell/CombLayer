@@ -3,7 +3,7 @@
  
  * File:   maxpeemInc/MAXPEEM.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,14 +68,10 @@ namespace xraySystem
   */
 
 class MAXPEEM :
-  public attachSystem::CopiedComp
+  public R1Beamline
 {
  private:
 
-  /// ring component  [taken from main setup]
-  std::shared_ptr<R1Ring> r1Ring;
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
 
   std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
@@ -90,15 +86,10 @@ class MAXPEEM :
   MAXPEEM(const std::string&);
   MAXPEEM(const MAXPEEM&);
   MAXPEEM& operator=(const MAXPEEM&);
-  ~MAXPEEM();
+  virtual ~MAXPEEM();
 
-  /// set ring
-  void setRing(std::shared_ptr<R1Ring> R) { r1Ring=R; }
-
-  /// Accessor to stop point
-  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
-  void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
 
 };
 

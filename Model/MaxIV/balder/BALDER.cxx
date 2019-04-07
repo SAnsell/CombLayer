@@ -99,13 +99,14 @@
 #include "PipeShield.h"
 #include "ExptBeamline.h"
 
+#include "R3Beamline.h"
 #include "BALDER.h"
 
 namespace xraySystem
 {
 
 BALDER::BALDER(const std::string& KN) :
-  attachSystem::CopiedComp("Balder",KN),
+  R3Beamline("Balder",KN),
   ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
   ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new balderFrontEnd(newName+"FrontBeam")),

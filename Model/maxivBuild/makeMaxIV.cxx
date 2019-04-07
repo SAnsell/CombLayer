@@ -76,7 +76,11 @@
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 
+
 #include "R1Ring.h"
+#include "R1Beamline.h"
+#include "R3Ring.h"
+#include "R3Beamline.h"
 #include "BALDER.h"
 #include "COSAXS.h"
 #include "MAXPEEM.h"
@@ -90,7 +94,8 @@ namespace xraySystem
 {
 
 makeMaxIV::makeMaxIV() :
-   r1Ring(new R1Ring("R1Ring"))
+  r1Ring(new R1Ring("R1Ring")),
+  r3Ring(new R3Ring("R3Ring"))
  /*!
     Constructor
  */
@@ -99,6 +104,7 @@ makeMaxIV::makeMaxIV() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(r1Ring);
+  OR.addObject(r3Ring);
 }
 
 
@@ -160,7 +166,7 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
   return;
 }
   
-void
+bool
 makeMaxIV::buildR1Ring(Simulation& System,
 		       const mainSystem::inputParam& IParam)
   /*!
@@ -171,20 +177,20 @@ makeMaxIV::buildR1Ring(Simulation& System,
 {
   ELog::RegMethod RegA("makeMaxIV","buildR1Ring");
 
-    static const std::set<std::string> beamNAMES
-    ({"SPECIES","FLEXPES","MAXPEEM"});
-    
-  const int voidCell(74123);
+  static const std::map<std::string,std::string> beamNAMES
+    ({ {"FLEXPES","OpticCentre5"},
+	{"MAXPEEM","OpticCentre7"},
+	{"SPECIES","OpticCentre8"}
+	  
+    });
 
-  bool outFlag(0);
-  std::map<std::string,std::string> beamStop;
-  populateStopPoint(IParam,beamNAMES,beamStop);
 
-  
-  r1Ring->addInsertCell(voidCell);
-  r1Ring->createAll(System,World::masterOrigin(),0);
-
+  // Determine if R1Ring/beamlines need to be built 
+  std::set<std::string> activeBL;
+  bool activeR1(0);
   const size_t NSet=IParam.setCnt("beamlines");
+
+
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",j);
@@ -193,59 +199,58 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	{
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
-
-	  // StopPoint
-	  const std::string activeStop=getActiveStop(beamStop,BL);
-
-	  if (BL=="FLEXPES")  // sector 
+	    
+	  if (BL=="R1RING" || BL=="RING1")
+	    activeR1=1;
+	  else if (beamNAMES.find(BL) != beamNAMES.end())
 	    {
-	      FLEXPES BL("FlexPes");
-	      if (!activeStop.empty())
-		{
-		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		  BL.setStopPoint(activeStop);
-		}
-
-	      BL.setRing(r1Ring);
-	      BL.build(System,*r1Ring,
-		       r1Ring->getSideIndex("OpticCentre5"));
-	    }
-
-	  if (BL=="MAXPEEM")  // sector 11
-	    {
-	      MAXPEEM BL("MaxPeem");
-	      if (!activeStop.empty())
-		{
-		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		  BL.setStopPoint(activeStop);
-		}
-
-	      BL.setRing(r1Ring);
-	      BL.build(System,*r1Ring,
-		       r1Ring->getSideIndex("OpticCentre7"));
-	    }
-	  if (BL=="SPECIES")  // sector 10
-	    {
-	      SPECIES BL("Species");
-	      if (!activeStop.empty())
-		{
-		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		  BL.setStopPoint(activeStop);
-		}
-	      BL.setRing(r1Ring);
-	      BL.build(System,*r1Ring,
-		       r1Ring->getSideIndex("OpticCentre6"));
+	      activeR1=1;
+	      activeBL.insert(BL);
 	    }
 	  index++;
 	}
     }
-  return;
+  
+  if (!activeR1) return 0;
+  
+  const int voidCell(74123);
+  r1Ring->addInsertCell(voidCell);
+  r1Ring->createAll(System,World::masterOrigin(),0);
+  
+  std::map<std::string,std::string> beamStop;
+  populateStopPoint(IParam,activeBL,beamStop);
+  
+
+  for(const std::string& BL : activeBL)
+    {
+      // StopPoint
+      const std::string activeStop=getActiveStop(beamStop,BL);
+      //\todo make beamlines inherrit from generic
+      std::unique_ptr<R1Beamline> BLPtr;
+      if (BL=="FLEXPES")  // sector
+	BLPtr.reset(new FLEXPES("FlexPes"));
+      else if (BL=="MAXPEEM")	
+	BLPtr.reset(new MAXPEEM("MaxPeem"));
+      else if (BL=="SPECIES")	
+	BLPtr.reset(new SPECIES("Species"));
+        
+      if (!activeStop.empty())
+	{
+	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+	  BLPtr->setStopPoint(activeStop);
+	}
+      BLPtr->setRing(r1Ring);
+      BLPtr->build(System,*r1Ring,
+		   r1Ring->getSideIndex(beamNAMES.at(BL)));
+    }
+      
+  return 1;    // R1 Built
 }  
   
 bool
-makeMaxIV::makeBeamLine(Simulation& System,
+makeMaxIV::buildR3Ring(Simulation& System,
 		      const mainSystem::inputParam& IParam)
-  /*!
+/*!
     Build a beamline based on LineType
      -- to construct a beamline the name of the guide Item 
      and the beamline typename is required
@@ -254,16 +259,20 @@ makeMaxIV::makeBeamLine(Simulation& System,
     \retrun true if object(s) built
   */
 {
-  ELog::RegMethod RegA("makeMaxIV","makeBeamLine");
+  ELog::RegMethod RegA("makeMaxIV","buildR3Ring");
 
-  static const std::set<std::string> beamNAMES
-    ({"BALDER","COSAXS","FORMAX"});
+  static const std::map<std::string,std::string> beamNAMES
+    ({ {"BALDER","OpticCentre5"},
+	{"COSAXS","OpticCentre7"},
+	{"FORMAX","OpticCentre8"}
+	  
+    });
 
-  bool outFlag(0);
-  std::map<std::string,std::string> beamStop;
-  populateStopPoint(IParam,beamNAMES,beamStop);
-
+  // Determine if R1Ring/beamlines need to be built 
+  std::set<std::string> activeBL;
+  bool activeR3(0);
   const size_t NSet=IParam.setCnt("beamlines");
+
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",j);
@@ -272,57 +281,55 @@ makeMaxIV::makeBeamLine(Simulation& System,
 	{
 	  const std::string BL=
 	    IParam.getValue<std::string>("beamlines",j,index);
-	  const std::string FCName=
-	    IParam.getValue<std::string>("beamlines",j,index+1);
-	  const long int linkIndex=
-	    IParam.getValue<long int>("beamlines",j,index+2);
-	  index+=3;
 
-          const attachSystem::FixedComp* FCOrigin=
-	    System.getObjectThrow<attachSystem::FixedComp>
-	    (FCName,"FixedComp not found for origin");
-
-	  const std::string activeStop=getActiveStop(beamStop,BL);
-
-	  if (BL=="BALDER")
+	  if (BL=="R3RING")
+	    activeR3=1;
+	  else if (beamNAMES.find(BL) != beamNAMES.end())
 	    {
-	      BALDER BL("Balder");
-	      if (!activeStop.empty())
-		{
-		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		  BL.setStopPoint(activeStop);
-		}
-	      BL.build(System,*FCOrigin,linkIndex);
-	      outFlag=1;
+	      activeR3=1;
+	      activeBL.insert(BL);
 	    }
-	  else if (BL=="COSAXS")
-	    {
-	      COSAXS BL("Cosaxs");
-	      if (!activeStop.empty())
-		{
-		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		  BL.setStopPoint(activeStop);
-		}
-	      BL.build(System,*FCOrigin,linkIndex);
-	      outFlag=1;
-	    }
-	  else if (BL=="FORMAX")
-	    {
-	      FORMAX BL("Formax");
-	      if (!activeStop.empty())
-		{
-		  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
-		  BL.setStopPoint(activeStop);
-		}
-	      BL.build(System,*FCOrigin,linkIndex);
-	      outFlag=1;
-	    }
-
+	  index++;
 	}
     }
+  if (!activeR3) return 0;
+  
 
-  return outFlag;
-}
+  const int voidCell(74123);
+  r3Ring->addInsertCell(voidCell);
+  r3Ring->createAll(System,World::masterOrigin(),0);
+
+  ELog::EM<<"ERERE "<<ELog::endDiag;
+  
+  std::map<std::string,std::string> beamStop;
+  populateStopPoint(IParam,activeBL,beamStop);
+  
+
+  for(const std::string& BL : activeBL)
+    {
+      // StopPoint
+      const std::string activeStop=getActiveStop(beamStop,BL);
+      //\todo make beamlines inherrit from generic
+      std::unique_ptr<R3Beamline> BLPtr;
+      if (BL=="BALDER")  // sector
+	BLPtr.reset(new BALDER("Balder"));
+      else if (BL=="COSAXS")	
+	BLPtr.reset(new COSAXS("Cosaxs"));
+      else if (BL=="FORMAX")	
+	BLPtr.reset(new FORMAX("Formax"));
+        
+      if (!activeStop.empty())
+	{
+	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
+	  BLPtr->setStopPoint(activeStop);
+	}
+      BLPtr->setRing(r3Ring);
+      BLPtr->build(System,*r3Ring,
+		   r3Ring->getSideIndex(beamNAMES.at(BL)));
+    }
+      
+  return 1;    // R3 Built
+}  
 
 void 
 makeMaxIV::build(Simulation& System,
@@ -339,13 +346,14 @@ makeMaxIV::build(Simulation& System,
   //  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
-  if (makeBeamLine(System,IParam))  // 3GeV Ring
+  if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
+
+  else if(buildR1Ring(System,IParam))
+    ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
+
   else
-    {
-      buildR1Ring(System,IParam);
-      ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
-    }
+    ELog::EM<<"NO R1 / R3 Ring built"<<ELog::endCrit;
 
   return;
 }

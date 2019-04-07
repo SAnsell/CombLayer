@@ -68,7 +68,7 @@ namespace xraySystem
   */
 
 class FLEXPES :
-  public attachSystem::CopiedComp
+  public xraySystem::R1Beamline
 {
  private:
 

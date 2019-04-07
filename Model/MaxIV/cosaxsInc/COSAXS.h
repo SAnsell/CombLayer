@@ -64,12 +64,10 @@ namespace xraySystem
     \brief General constructor for the xray system
   */
 
-class COSAXS : public attachSystem::CopiedComp
+class COSAXS : public R3Beamline
 {
  private:
 
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
   /// Front end cave volume
   std::shared_ptr<R3FrontEndCave> ringCaveA;
   // Joining front cave
@@ -97,11 +95,9 @@ class COSAXS : public attachSystem::CopiedComp
   COSAXS(const std::string&);
   COSAXS(const COSAXS&);
   COSAXS& operator=(const COSAXS&);
-  ~COSAXS();
+  virtual ~COSAXS();
 
-  /// set stop point(s)
-  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
-  void build(Simulation&,const attachSystem::FixedComp&,
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);
 
 };

@@ -3,7 +3,7 @@
  
  * File:   maxviBuildInc/DefUnitsMaxIV.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,7 +117,11 @@ setMaxIVSingle(defaultConfig& A,
       { "FORMAX", "World 0"},
       { "MAXPEEM", "World 0"},
       { "SPECIES", "World 0"},
-      { "RING1", "World 0"}
+      { "RING1", "World 0"},
+      { "RING3", "World 0"},
+      { "R1RING", "World 0"},
+      { "R3RING", "World 0"}
+      
     };
   size_t beamLineIndex(0);
 

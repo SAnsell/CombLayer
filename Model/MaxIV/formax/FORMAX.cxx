@@ -98,13 +98,15 @@
 #include "ConnectZone.h"
 #include "PipeShield.h"
 #include "ExptBeamline.h"
+
+#include "R3Beamline.h"
 #include "FORMAX.h"
 
 namespace xraySystem
 {
 
 FORMAX::FORMAX(const std::string& KN) :
-  attachSystem::CopiedComp("Formax",KN),
+  R3Beamline("Formax",KN),
   ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
   ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new formaxFrontEnd(newName+"FrontBeam")),
