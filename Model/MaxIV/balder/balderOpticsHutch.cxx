@@ -250,7 +250,6 @@ balderOpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
-  
   if (innerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
@@ -293,7 +292,9 @@ balderOpticsHutch::createSurfaces()
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(ringWidth+steelThick+pbWallThick),X);
+
   setSurf("ringFlat",SMap.realSurf(buildIndex+34));
+
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			       Origin+Z*(height+steelThick+pbRoofThick),Z);  
 
@@ -317,8 +318,10 @@ balderOpticsHutch::createSurfaces()
       ModelSupport::buildPlaneRotAxis
 	(SMap,buildIndex+134,RPoint,X,-Z,ringWallAngle);
       RPoint += X*ringConcThick;
+
       if (!ExternalCut::isActive("ringWall"))
 	{
+	  ELog::EM<<"AAAAAA "<<ELog::endDiag;
 	  ModelSupport::buildPlaneRotAxis
 	    (SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
 	  ExternalCut::setCutSurf("ringWall",-SMap.realSurf(buildIndex+2004));

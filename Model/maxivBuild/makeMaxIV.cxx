@@ -262,7 +262,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
   ELog::RegMethod RegA("makeMaxIV","buildR3Ring");
 
   static const std::map<std::string,std::string> beamNAMES
-    ({ {"BALDER","OpticCentre5"},
+    ({ {"BALDER","OpticCentre1"},
 	{"COSAXS","OpticCentre7"},
 	{"FORMAX","OpticCentre8"}
 	  

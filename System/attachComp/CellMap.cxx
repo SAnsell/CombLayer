@@ -324,7 +324,7 @@ CellMap::insertComponent(Simulation& System,
   /*!
     Insert an exclude component into a cell
     \param System :: Simulation to obtain cell from
-    \param Key :: keyName for cell
+    \param Key :: keyName for cel
     \param index :: Index on this cell [to be inserted]
     \param CM :: Cell map to extract obbject for insertion
     \param CMKey :: Key of cell map to insert
@@ -342,6 +342,31 @@ CellMap::insertComponent(Simulation& System,
   HeadRule HR=otherObj->getHeadRule();
   HR.makeComplement();
   insertComponent(System,Key,index,HR);
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
+			 const size_t index,
+			 const FixedComp& FC,
+			 const long int sideIndex) const
+  /*!
+    Insert an exclude component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: Index on this cell [to be inserted]
+    \param FC :: FixedComp for link surface
+    \param sideIndex :: signed direction side
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(FC,index)");
+
+  if (!sideIndex)
+    throw ColErr::InContainerError<long int>
+      (0,"Zero line surface not defined for : "+FC.getKeyName());
+
+  insertComponent(System,Key,index,FC.getLinkString(sideIndex));
   return;
 }
 

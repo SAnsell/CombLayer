@@ -441,7 +441,7 @@ wallVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","wallVariables");
  
   WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
+  LGen.setWidth(70.0,140.0);
   LGen.generateWall(Control,wallKey,3.0);
   return;
 }
@@ -605,8 +605,8 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1034.6);
-  Control.addVariable(hutName+"OutWidth",250.0);
-  Control.addVariable(hutName+"RingWidth",60.0);
+  Control.addVariable(hutName+"OutWidth",200.0);
+  Control.addVariable(hutName+"RingWidth",110.0);
   Control.addVariable(hutName+"RingWallLen",105.0);
   Control.addVariable(hutName+"RingWallAngle",18.50);
   Control.addVariable(hutName+"RingConcThick",100.0);

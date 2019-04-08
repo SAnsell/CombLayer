@@ -167,37 +167,38 @@ BALDER::build(Simulation& System,
 
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % r3Ring->getNInnerSurf();
-
+  const std::string exitLink="ExitCentre"+std::to_string(PIndex);
+  
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",PIndex));
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
-  ELog::EM<<"Front == "<<r3Ring->getSurf("BeamInner",PIndex)<<ELog::endDiag;			 
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
-  wallLead->setFront(-r3Ring->getSurf("BeamInner",SIndex));
-  wallLead->setBack(r3Ring->getSurf("BeamOuter",SIndex));
+  wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
-
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
   
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r3Ring->getSurf("BeamOuter",SIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  opticsHut->createAll(System,*wallLead,2);
+
 
   opticsHut->addInsertCell(voidCell);
-  opticsHut->setCutSurf("ringWall",*r3Ring,"FlatOuter");
-  opticsHut->createAll(System,*r3Ring,PIndex);
+  opticsHut->setCutSurf("ringWall",r3Ring->getSurf("FlatOuter",PIndex));
+  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
-  /*
   // Ugly HACK to get the two objects to merge
   const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
-  ringCaveB->insertComponent
-    (System,"OuterWall",*opticsHut,opticsHut->getSideIndex("frontCut"));
+  r3Ring->insertComponent
+    (System,"OuterFlat",SIndex,
+     *opticsHut,opticsHut->getSideIndex("frontCut"));
+
+  /*
   ringCaveB->insertComponent
     (System,"FloorA",*opticsHut,opticsHut->getSideIndex("floorCut"));
   ringCaveB->insertComponent

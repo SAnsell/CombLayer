@@ -144,7 +144,7 @@ R3Ring::populate(const FuncDataBase& Control)
 
 void
 R3Ring::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -233,7 +233,7 @@ R3Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+1001,APt+XX*ratchetWall,XX);
       SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+1001));
       ModelSupport::buildPlane(SMap,surfN+1003,APt+YY*outerWall,YY);
-      SurfMap::addSurf("FlatOuter",SMap.realSurf(surfN+1001));
+      SurfMap::addSurf("FlatOuter",SMap.realSurf(surfN+1003));
 
       surfN+=10;
     }
@@ -375,24 +375,30 @@ R3Ring::createLinks()
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
   for(size_t i=0;i<NInnerSurf;i++)
     {
-      Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
+      const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D PtX(Origin+Axis*beamRadius);
       const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamInner",(i+NInnerSurf-1) % NInnerSurf));
       const Geometry::Plane* BWall=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamInner",i));
+      const Geometry::Plane* BExit=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("BeamOuter",i));
       
       const Geometry::Vec3D Beam= BWall->getNormal();
 
       const Geometry::Vec3D beamOrigin=
 	SurInter::getLinePoint(PtX,Beam,BInner);
-
-      ELog::EM<<"PTx == "<<PtX<<" "<<Beam<<ELog::endDiag;
+      const Geometry::Vec3D exitCentre=
+	SurInter::getLinePoint(PtX,Beam,BExit);
 
       FixedComp::nameSideIndex(i,"OpticCentre"+std::to_string(i));
       FixedComp::setLinkSurf(i,-BInner->getName());
       FixedComp::setConnect(i,beamOrigin,Beam);
 
+      FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
+      FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
+      FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
+					
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
   return;
