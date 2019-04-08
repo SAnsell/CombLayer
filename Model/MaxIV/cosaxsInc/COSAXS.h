@@ -49,7 +49,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
+  class balderOpticsHutch;
   class ExperimentalHutch;
   class cosaxsFrontEnd;
   class cosaxsOpticsLine;
@@ -83,7 +83,7 @@ class COSAXS : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  std::shared_ptr<balderOpticsHutch> opticsHut;
   /// Optics beamlines 
   std::shared_ptr<cosaxsOpticsLine> opticsBeam;
 

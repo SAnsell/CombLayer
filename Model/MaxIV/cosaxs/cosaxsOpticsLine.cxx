@@ -90,7 +90,6 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "BremColl.h"
 #include "MonoVessel.h"

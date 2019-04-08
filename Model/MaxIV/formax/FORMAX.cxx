@@ -86,7 +86,8 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "OpticsHutch.h"
+#include "balderOpticsHutch.h"
+
 #include "ExperimentalHutch.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
@@ -112,7 +113,7 @@ FORMAX::FORMAX(const std::string& KN) :
   frontBeam(new formaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
+  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new formaxOpticsLine(newName+"OpticsLine"))
   /*!
     Constructor

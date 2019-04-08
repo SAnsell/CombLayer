@@ -51,6 +51,7 @@ namespace xraySystem
   class WallLead;
 
   class balderFrontEnd;
+  class balderOpticsHutch;
   /*!
     \class BALDER
     \version 1.0
@@ -63,11 +64,6 @@ class BALDER : public R3Beamline
 {
  private:
 
-  /// Front end cave volume
-  std::shared_ptr<R3FrontEndCave> ringCaveA;
-  // Joining front cave
-  std::shared_ptr<R3FrontEndCave> ringCaveB;
-
   /// the components in the front end
   std::shared_ptr<balderFrontEnd> frontBeam;
 
@@ -78,7 +74,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  std::shared_ptr<balderOpticsHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<OpticsBeamline> opticsBeam;

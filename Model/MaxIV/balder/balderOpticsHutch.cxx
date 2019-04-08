@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/OpticsHutch.cxx
+ * File:   balder/balderOpticsHutch.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -77,12 +77,12 @@
 #include "ExternalCut.h"
 #include "PortChicane.h"
 
-#include "OpticsHutch.h"
+#include "balderOpticsHutch.h"
 
 namespace xraySystem
 {
 
-OpticsHutch::OpticsHutch(const std::string& Key) : 
+balderOpticsHutch::balderOpticsHutch(const std::string& Key) : 
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -99,7 +99,7 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
   nameSideIndex(17,"frontCut");
 }
 
-OpticsHutch::OpticsHutch(const OpticsHutch& A) : 
+balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -114,15 +114,15 @@ OpticsHutch::OpticsHutch(const OpticsHutch& A) :
   skinMat(A.skinMat),pbMat(A.pbMat),floorMat(A.floorMat)
   /*!
     Copy constructor
-    \param A :: OpticsHutch to copy
+    \param A :: balderOpticsHutch to copy
   */
 {}
 
-OpticsHutch&
-OpticsHutch::operator=(const OpticsHutch& A)
+balderOpticsHutch&
+balderOpticsHutch::operator=(const balderOpticsHutch& A)
   /*!
     Assignment operator
-    \param A :: OpticsHutch to copy
+    \param A :: balderOpticsHutch to copy
     \return *this
   */
 {
@@ -159,20 +159,20 @@ OpticsHutch::operator=(const OpticsHutch& A)
   return *this;
 }
 
-OpticsHutch::~OpticsHutch() 
+balderOpticsHutch::~balderOpticsHutch() 
   /*!
     Destructor
   */
 {}
 
 void
-OpticsHutch::populate(const FuncDataBase& Control)
+balderOpticsHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","populate");
+  ELog::RegMethod RegA("balderOpticsHutch","populate");
   
   FixedOffset::populate(Control);
 
@@ -215,7 +215,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 }
 
 void
-OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
+balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -223,7 +223,7 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createUnitVector");
+  ELog::RegMethod RegA("balderOpticsHutch","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -234,12 +234,12 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-OpticsHutch::createSurfaces()
+balderOpticsHutch::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createSurfaces");
+  ELog::RegMethod RegA("balderOpticsHutch","createSurfaces");
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -338,13 +338,13 @@ OpticsHutch::createSurfaces()
 }
 
 void
-OpticsHutch::createObjects(Simulation& System)
+balderOpticsHutch::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("OpticsHutch","createObjects");
+  ELog::RegMethod RegA("balderOpticsHutch","createObjects");
 
   std::string Out;
 
@@ -436,13 +436,13 @@ OpticsHutch::createObjects(Simulation& System)
 }
 
 void
-OpticsHutch::createLinks()
+balderOpticsHutch::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createLinks");
+  ELog::RegMethod RegA("balderOpticsHutch","createLinks");
 
   const double extraFront(innerThick+outerThick+pbFrontThick);
   const double extraBack(innerThick+outerThick+pbBackThick);
@@ -526,13 +526,13 @@ OpticsHutch::createLinks()
 }
 
 void
-OpticsHutch::createChicane(Simulation& System)
+balderOpticsHutch::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
     \param System :: Simulation 
   */
 {
-  ELog::RegMethod Rega("OpticsHutch","createChicane");
+  ELog::RegMethod Rega("balderOpticsHutch","createChicane");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -569,7 +569,7 @@ OpticsHutch::createChicane(Simulation& System)
 }
 
 void
-OpticsHutch::createAll(Simulation& System,
+balderOpticsHutch::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -579,7 +579,7 @@ OpticsHutch::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createAll(FC)");
+  ELog::RegMethod RegA("balderOpticsHutch","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

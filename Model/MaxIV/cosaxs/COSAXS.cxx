@@ -85,7 +85,7 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "OpticsHutch.h"
+#include "balderOpticsHutch.h"
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"
@@ -111,7 +111,7 @@ COSAXS::COSAXS(const std::string& KN) :
   frontBeam(new cosaxsFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
+  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
   /*!

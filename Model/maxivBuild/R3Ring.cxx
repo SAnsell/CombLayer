@@ -55,6 +55,7 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Rules.h"
+#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -118,7 +119,7 @@ R3Ring::populate(const FuncDataBase& Control)
   icosagonRadius=Control.EvalVar<double>(keyName+"IcosagonRadius");
   icosagonWallThick=Control.EvalVar<double>(keyName+"IcosagonWallThick");
 
-  outerRadius=Control.EvalVar<double>(keyName+"IcosagonWallThick");
+  beamRadius=Control.EvalVar<double>(keyName+"BeamRadius");
   offsetCornerX=Control.EvalVar<double>(keyName+"OffsetCornerX");
   offsetCornerY=Control.EvalVar<double>(keyName+"OffsetCornerY");
 
@@ -225,14 +226,17 @@ R3Ring::createSurfaces()
       const Geometry::Vec3D& YY(outerY[i]);
 
       ModelSupport::buildPlane(SMap,surfN+1,APt,XX);
+      SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+1));
       ModelSupport::buildPlane(SMap,surfN+3,APt,YY);
 
       // outer wall
       ModelSupport::buildPlane(SMap,surfN+1001,APt+XX*ratchetWall,XX);
+      SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+1001));
       ModelSupport::buildPlane(SMap,surfN+1003,APt+YY*outerWall,YY);
+      SurfMap::addSurf("FlatOuter",SMap.realSurf(surfN+1001));
 
       surfN+=10;
-      }
+    }
   
   return;
 }
@@ -336,7 +340,7 @@ R3Ring::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite
 	(SMap,BNext,BPrev," 1 -1001 -1003M  3 ");
-      makeCell("RatchetWall",System,cellIndex++,wallMat,0.0,Out+fullBase);
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+fullBase);
 
       Out=ModelSupport::getComposite
 	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  1003 -9007N ");
@@ -366,6 +370,31 @@ R3Ring::createLinks()
 {
   ELog::RegMethod RegA("R3Ring","createLinks");
 
+  FixedComp::setNConnect(2*(NInnerSurf+1));
+
+  double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
+  for(size_t i=0;i<NInnerSurf;i++)
+    {
+      Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
+      const Geometry::Vec3D PtX(Origin+Axis*beamRadius);
+      const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("BeamInner",(i+NInnerSurf-1) % NInnerSurf));
+      const Geometry::Plane* BWall=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("BeamInner",i));
+      
+      const Geometry::Vec3D Beam= BWall->getNormal();
+
+      const Geometry::Vec3D beamOrigin=
+	SurInter::getLinePoint(PtX,Beam,BInner);
+
+      ELog::EM<<"PTx == "<<PtX<<" "<<Beam<<ELog::endDiag;
+
+      FixedComp::nameSideIndex(i,"OpticCentre"+std::to_string(i));
+      FixedComp::setLinkSurf(i,-BInner->getName());
+      FixedComp::setConnect(i,beamOrigin,Beam);
+
+      theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
+    }
   return;
 }
 
@@ -380,7 +409,7 @@ R3Ring::createDoor(Simulation& System)
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+    
 
   if (doorActive)
     {

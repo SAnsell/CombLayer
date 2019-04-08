@@ -127,7 +127,6 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 
       if (!r3Flag && (R3Beam.find(beam)!=R3Beam.end()))
 	{
-	  ELog::EM<<"Call R3 "<<ELog::endDiag;
 	  R3RingVariables(Control);
 	  r3Flag=1;
 	}

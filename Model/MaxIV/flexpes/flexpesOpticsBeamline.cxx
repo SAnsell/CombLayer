@@ -92,7 +92,6 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "OpticsHutch.h"
 #include "BlockStand.h"
 #include "CrossPipe.h"
 #include "GateValve.h"

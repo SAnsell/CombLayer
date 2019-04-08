@@ -299,8 +299,6 @@ makeMaxIV::buildR3Ring(Simulation& System,
   r3Ring->addInsertCell(voidCell);
   r3Ring->createAll(System,World::masterOrigin(),0);
 
-  ELog::EM<<"ERERE "<<ELog::endDiag;
-  
   std::map<std::string,std::string> beamStop;
   populateStopPoint(IParam,activeBL,beamStop);
   

@@ -88,7 +88,6 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"

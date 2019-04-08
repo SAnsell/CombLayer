@@ -67,6 +67,7 @@ R3RingVariables(FuncDataBase& Control)
   
   Control.addVariable(preName+"FullOuterRadius",14000.0);
   Control.addVariable(preName+"IcosagonRadius",8030.0);       // U
+  Control.addVariable(preName+"BeamRadius",8409.0);       // 528m circum.
   Control.addVariable(preName+"IcosagonWallThick",90.0);
   Control.addVariable(preName+"OffsetCornerX",716.0);
   Control.addVariable(preName+"OffsetCornerY",558.0);

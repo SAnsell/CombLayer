@@ -86,7 +86,7 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "OpticsHutch.h"
+#include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
@@ -99,6 +99,7 @@
 #include "PipeShield.h"
 #include "ExptBeamline.h"
 
+#include "R3Ring.h"
 #include "R3Beamline.h"
 #include "BALDER.h"
 
@@ -107,12 +108,10 @@ namespace xraySystem
 
 BALDER::BALDER(const std::string& KN) :
   R3Beamline("Balder",KN),
-  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new balderFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
+  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new OpticsBeamline(newName+"OpticsLine")),
   joinPipeB(new constructSystem::LeadPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
@@ -130,8 +129,6 @@ BALDER::BALDER(const std::string& KN) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(ringCaveA);
-  OR.addObject(ringCaveB);
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
@@ -160,41 +157,43 @@ BALDER::build(Simulation& System,
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param FCOrigin :: Start origin
+    \param FCOrigin :: R3Ring position
     \param sideIndex :: link point for origin
   */
 {
   ELog::RegMethod RControl("BALDER","build");
 
   const int voidCell(74123);
+
+  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
+  const size_t SIndex=(PIndex+1) % r3Ring->getNInnerSurf();
+
   frontBeam->setStopPoint(stopPoint);
-  
-  ringCaveA->addInsertCell(voidCell);
-  ringCaveA->createAll(System,FCOrigin,sideIndex);
+  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",PIndex));
+  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
-  ringCaveB->addInsertCell(voidCell);
-  ringCaveB->setCutSurf("front",*ringCaveA,"connectPt");
-  ringCaveB->createAll(System,*ringCaveA,
-		       ringCaveA->getSideIndex("connectPt"));
+  frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
+  ELog::EM<<"Front == "<<r3Ring->getSurf("BeamInner",PIndex)<<ELog::endDiag;			 
+  frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
-  frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
-
-  //  const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
-  frontBeam->addInsertCell(ringCaveA->getCell("Void"));
-  frontBeam->createAll(System,*ringCaveA,-1);
-
-  wallLead->addInsertCell(ringCaveA->getCell("FrontWall"));
-  wallLead->setFront(-ringCaveA->getSurf("BeamInner"));
-  wallLead->setBack(-ringCaveA->getSurf("BeamOuter"));
+  wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
+  wallLead->setFront(-r3Ring->getSurf("BeamInner",SIndex));
+  wallLead->setBack(r3Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
+
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
+  
+  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  opticsHut->setCutSurf("RingWall",-r3Ring->getSurf("BeamOuter",SIndex));
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  opticsHut->createAll(System,*wallLead,2);
 
   opticsHut->addInsertCell(voidCell);
-  opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
-  opticsHut->createAll(System,*ringCaveA,2);
+  opticsHut->setCutSurf("ringWall",*r3Ring,"FlatOuter");
+  opticsHut->createAll(System,*r3Ring,PIndex);
 
+  /*
   // Ugly HACK to get the two objects to merge
   const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
   ringCaveB->insertComponent
@@ -203,7 +202,7 @@ BALDER::build(Simulation& System,
     (System,"FloorA",*opticsHut,opticsHut->getSideIndex("floorCut"));
   ringCaveB->insertComponent
     (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
-
+  */
   if (stopPoint=="opticsHut") return;
   
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
@@ -229,9 +228,10 @@ BALDER::build(Simulation& System,
   joinPipeB->createAll(System,*opticsBeam,2);
 
 
+  /*
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*ringCaveA,2);
-
+  */
   connectZone->registerJoinPipe(joinPipeC);
   connectZone->addInsertCell(voidCell);
   connectZone->setCutSurf("front",*opticsHut,2);

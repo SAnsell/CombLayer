@@ -91,7 +91,6 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"

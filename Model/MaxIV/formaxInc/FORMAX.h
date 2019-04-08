@@ -47,7 +47,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class BeamMount;
-  class OpticsHutch;
+  class bladerOpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class formaxOpticsLine;
@@ -82,7 +82,7 @@ class FORMAX : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  std::shared_ptr<balderOpticsHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<formaxOpticsLine> opticsBeam;

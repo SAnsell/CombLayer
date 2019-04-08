@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/OpticsHutch.h
+ * File:   balderInc/bladerOpticsHutch.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_OpticsHutch_h
-#define xraySystem_OpticsHutch_h
+#ifndef xraySystem_bladerOpticsHutch_h
+#define xraySystem_balderOpticsHutch_h
 
 class Simulation;
 
@@ -28,16 +28,16 @@ namespace xraySystem
 {
   class PortChicane;
 /*!
-  \class OpticsHutch
+  \class balderOpticsHutch
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief OpticsHutch unit  
+  \brief balderOpticsHutch unit  
 
   Built around the central beam axis
 */
 
-class OpticsHutch :
+class balderOpticsHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
@@ -94,10 +94,10 @@ class OpticsHutch :
 
  public:
 
-  OpticsHutch(const std::string&);
-  OpticsHutch(const OpticsHutch&);
-  OpticsHutch& operator=(const OpticsHutch&);
-  virtual ~OpticsHutch();
+  balderOpticsHutch(const std::string&);
+  balderOpticsHutch(const balderOpticsHutch&);
+  balderOpticsHutch& operator=(const balderOpticsHutch&);
+  virtual ~balderOpticsHutch();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

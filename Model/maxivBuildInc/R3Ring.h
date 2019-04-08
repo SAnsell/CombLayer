@@ -51,12 +51,12 @@ class R3Ring :
   
   double icosagonRadius;           ///< Inner 20 side radius
   double icosagonWallThick;        ///< Inner 20 side wall thickness
-  double outerRadius;              ///< OuterWall distance [near corner]
+  double beamRadius;               ///< Beamline radius
   double offsetCornerX;            ///< Outer wall offset X (tangentially)
   double offsetCornerY;            ///< Outer wall offset Y (radially outward)
 
   double outerWall;                ///< Default outer wall thick
-  double ratchetWall;               ///< Default ratchet wall thick
+  double ratchetWall;              ///< Default ratchet wall thick
   
   double height;                  ///< Main height
   double depth;                   ///< Main depth
@@ -90,6 +90,8 @@ class R3Ring :
   R3Ring& operator=(const R3Ring&);
   virtual ~R3Ring();
 
+  /// Accessor to Number of inner surfaces
+  size_t getNInnerSurf() const { return  NInnerSurf; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
