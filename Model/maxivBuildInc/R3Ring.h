@@ -55,19 +55,15 @@ class R3Ring :
   double offsetCornerX;            ///< Outer wall offset X (tangentially)
   double offsetCornerY;            ///< Outer wall offset Y (radially outward)
 
+  double outerWall;                ///< Default outer wall thick
+  double ratchetWall;               ///< Default ratchet wall thick
+  
   double height;                  ///< Main height
   double depth;                   ///< Main depth
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
   double roofExtra;               ///< Roof Extra void above roof
 
-  size_t NPoints;                 ///< number of points in track
-  size_t concaveNPoints;          ///< number of concave points in track
-  std::vector<size_t> concavePts;    ///< number of points in track
-  /// points that create the inner wall
-  std::vector<Geometry::Vec3D> voidTrack;
-  /// points that create the outer wall
-  std::vector<Geometry::Vec3D> outerTrack;
   
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
@@ -94,8 +90,6 @@ class R3Ring :
   R3Ring& operator=(const R3Ring&);
   virtual ~R3Ring();
 
-  /// accessor to size of concave points
-  size_t nConcave() const { return concaveNPoints; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
