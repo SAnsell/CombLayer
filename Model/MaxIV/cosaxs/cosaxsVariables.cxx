@@ -73,14 +73,15 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 
+#include "PreDipoleGenerator.h"
+#include "DipoleChamberGenerator.h"
+
 namespace setVariable
 {
 
 namespace cosaxsVar
 {
   void undulatorVariables(FuncDataBase&,const std::string&);
-  void frontCaveVariables(FuncDataBase&,const std::string&,
-			  const bool,const bool);
   void wallVariables(FuncDataBase&,const std::string&);
   void heatDumpTable(FuncDataBase&,const std::string&);
   void heatDumpVariables(FuncDataBase&,const std::string&);
@@ -96,7 +97,7 @@ undulatorVariables(FuncDataBase& Control,
     \param undKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","undulatorVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
   const double L(210.0);
@@ -125,64 +126,41 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UndulatorMagnetMat","NbFeB");
   Control.addVariable(undKey+"UndulatorSupportMat","Copper");
   Control.addVariable(undKey+"UndulatorStandMat","Aluminium");
-
     
   return;
 }
 
 void
-frontCaveVariables(FuncDataBase& Control,
-		   const std::string& preName,
-		   const bool mazeFlag,
-		   const bool doorFlag)
+ecutVariables(FuncDataBase& Control,
+	      const std::string& frontKey)
   /*!
-    Variable for the main ring front shielding
-    \param Control :: Database
-    \param preName :: Name to describe system
-    \param mazeFlag :: maze is present
-    \param mazeFlag :: door is present
+    Set the variables for the frontend wall
+    \param Control :: DataBase to use
+    \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("cosaxVariables[F]","frontCaveVariables");
-
-  MazeGenerator MGen;
-  RingDoorGenerator RGen;
+  ELog::RegMethod RegA("cosaxsVariables[F]","ecutVariables");
   
-  Control.addVariable(preName+"Length",2100.0);
-  Control.addVariable(preName+"OuterGap",140.0);
-  Control.addVariable(preName+"RingGap",250.0);
+  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
+  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
-  // If this is changed then need to change joinPipe as well
-  Control.addVariable(preName+"FrontWallThick",160.0);
-  Control.addVariable(preName+"OuterWallThick",100.0);
-  Control.addVariable(preName+"RingWallThick",100.0);
-  Control.addVariable(preName+"InnerRingWidth",400.0);
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
+  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
+  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
-  Control.addVariable(preName+"FloorDepth",130.0);
-  Control.addVariable(preName+"FloorThick",100.0);
-
-  Control.addVariable(preName+"RoofHeight",180.0);
-  Control.addVariable(preName+"RoofThick",100.0);
-
-  Control.addVariable(preName+"SegmentAngle",18.0);
-  Control.addVariable(preName+"SegmentLength",1365.0);
-  Control.addVariable(preName+"SegmentThick",100.0);
-
-  Control.addVariable(preName+"FrontHoleRadius",7.0);
-
-  
-  Control.addVariable(preName+"FrontWallMat","Concrete");
-  Control.addVariable(preName+"WallMat","Concrete");
-  Control.addVariable(preName+"FloorMat","Concrete");
-  Control.addVariable(preName+"RoofMat","Concrete");
-
-  if (mazeFlag)
-    MGen.generateMaze(Control,preName+"Maze",0.0);
-  if (doorFlag)
-    RGen.generateDoor(Control,preName+"RingDoor",800.0);
-  return;
+  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
+  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
+  return;  
 }
-
+  
 void
 wallVariables(FuncDataBase& Control,
 	      const std::string& wallKey)
@@ -234,7 +212,7 @@ moveApertureTable(FuncDataBase& Control,
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","moveAperatureTable");
+  ELog::RegMethod RegA("cosaxsVariables[F]","moveAperatureTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -504,6 +482,8 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::PreDipoleGenerator PGen;
+  setVariable::DipoleChamberGenerator DCGen;
 
   Control.addVariable(frontKey+"OuterRadius",60.0);  
 
@@ -511,7 +491,10 @@ frontEndVariables(FuncDataBase& Control,
   PipeGen.setMat("Stainless304");
 
   undulatorVariables(Control,frontKey);
+  ecutVariables(Control,frontKey);
   
+  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
 
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);
@@ -1042,8 +1025,6 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   
-  cosaxsVar::frontCaveVariables(Control,"CosaxsRingCaveA",1,1);
-  cosaxsVar::frontCaveVariables(Control,"CosaxsRingCaveB",0,0);  
   cosaxsVar::frontEndVariables(Control,"CosaxsFrontBeam");  
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   

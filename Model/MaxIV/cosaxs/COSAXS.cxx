@@ -92,7 +92,6 @@
 #include "JawValve.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
-#include "R3FrontEndCave.h"
 #include "R3FrontEnd.h"
 #include "cosaxsFrontEnd.h"
 #include "cosaxsOpticsLine.h"
@@ -163,11 +162,15 @@ COSAXS::build(Simulation& System,
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
+
+  ELog::EM<<"ASDFAF"<<ELog::endDiag;
+  return;  
+
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
+
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 

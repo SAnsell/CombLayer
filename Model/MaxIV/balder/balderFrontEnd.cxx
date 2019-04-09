@@ -157,7 +157,6 @@ balderFrontEnd::buildUndulator(Simulation& System,
 
   return *wigglerBox;
 
-  // return *dipolePipe;
 }
 
   

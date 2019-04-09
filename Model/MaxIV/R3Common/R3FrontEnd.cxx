@@ -581,7 +581,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   preDipole->insertInCell(System,outerCell);
 
   preDipole->createQuads(System,outerCell);
-  
+
   dipoleChamber->setCutSurf("front",*preDipole,2);
   dipoleChamber->createAll(System,*preDipole,2);
   // two splits [main / exit]
@@ -664,8 +664,14 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
+  ELog::EM<<"ASDFAF"<<ELog::endDiag;
+  lastComp=dipolePipe;
+  return;
+
 
   buildHeatTable(System,masterCell,*collExitPipe,2);
+
+
   buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
 
