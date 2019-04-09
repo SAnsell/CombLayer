@@ -98,6 +98,7 @@
 #include "cosaxsOpticsLine.h"
 #include "ConnectZone.h"
 #include "WallLead.h"
+#include "R3Ring.h"
 #include "R3Beamline.h"
 #include "COSAXS.h"
 
@@ -106,8 +107,6 @@ namespace xraySystem
 
 COSAXS::COSAXS(const std::string& KN) :
   R3Beamline("Balder",KN),
-  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new cosaxsFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
@@ -122,8 +121,6 @@ COSAXS::COSAXS(const std::string& KN) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
-  OR.addObject(ringCaveA);
-  OR.addObject(ringCaveB);
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
@@ -154,66 +151,62 @@ COSAXS::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("COSAXS","build");
 
-  int voidCell(74123);
+  const size_t NS=r3Ring->getNInnerSurf();
+  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
+  const size_t SIndex=(PIndex+1) % NS;
+  const size_t prevIndex=(NS+PIndex-1) % NS;
+
+  const std::string exitLink="ExitCentre"+std::to_string(PIndex);
+  
   frontBeam->setStopPoint(stopPoint);
+  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
+
+  frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
+  frontBeam->createAll(System,FCOrigin,sideIndex);
   
-  ringCaveA->addInsertCell(voidCell);
-  ringCaveA->createAll(System,FCOrigin,sideIndex);
-
-  ringCaveB->addInsertCell(voidCell);
-  ringCaveB->setCutSurf("front",*ringCaveA,"connectPt");
-  ringCaveB->createAll(System,*ringCaveA,
-		       ringCaveA->getSideIndex("connectPt"));
-
-  frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
-  frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
-  
-  frontBeam->addInsertCell(ringCaveA->getCell("Void"));
-  frontBeam->createAll(System,*ringCaveA,-1);
-
-  wallLead->addInsertCell(ringCaveA->getCell("FrontWall"));
-  wallLead->setFront(-ringCaveA->getSurf("BeamInner"));
-  wallLead->setBack(-ringCaveA->getSurf("BeamOuter"));
+  wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
+  wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
-  opticsHut->addInsertCell(voidCell);
-  opticsHut->setCutSurf("ringWall",*ringCaveB,"outerWall");
-  opticsHut->createAll(System,*ringCaveA,2);
+  opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  opticsHut->setCutSurf("RingWall",-r3Ring->getSurf("BeamOuter",SIndex));
 
-    // UgLY HACK to get the two objects to merge
-  const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
-  ringCaveB->insertComponent
-    (System,"OuterWall",*opticsHut,opticsHut->getSideIndex("frontCut"));
-  ringCaveB->insertComponent
-    (System,"FloorA",*opticsHut,opticsHut->getSideIndex("floorCut"));
-  ringCaveB->insertComponent
-    (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+
+  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
+  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
+  opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+
+  // Ugly HACK to get the two objects to merge
+  r3Ring->insertComponent
+    (System,"OuterFlat",SIndex,
+     *opticsHut,opticsHut->getSideIndex("frontCut"));
+
+  // Inner space
 
   if (stopPoint=="opticsHut") return;
+
 
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
-
+  // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
+  
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("floor",opticsHut->getSurf("Floor"));
+  opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
-  
-  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
-  joinPipeB->setFront(*opticsBeam,2);
-  joinPipeB->createAll(System,*opticsBeam,2);
-
-
 
   return;
 }

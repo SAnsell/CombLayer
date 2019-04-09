@@ -68,11 +68,6 @@ class COSAXS : public R3Beamline
 {
  private:
 
-  /// Front end cave volume
-  std::shared_ptr<R3FrontEndCave> ringCaveA;
-  // Joining front cave
-  std::shared_ptr<R3FrontEndCave> ringCaveB;
-
   /// the components in the front end
   std::shared_ptr<cosaxsFrontEnd> frontBeam;
 

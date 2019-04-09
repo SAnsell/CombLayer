@@ -163,8 +163,6 @@ BALDER::build(Simulation& System,
 {
   ELog::RegMethod RControl("BALDER","build");
 
-  const int voidCell(74123);
-
   const size_t NS=r3Ring->getNInnerSurf();
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
@@ -173,7 +171,6 @@ BALDER::build(Simulation& System,
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
   
   frontBeam->setStopPoint(stopPoint);
-  //  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",PIndex));
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -192,7 +189,6 @@ BALDER::build(Simulation& System,
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
 
-  opticsHut->addInsertCell(voidCell);
   opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
   opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
