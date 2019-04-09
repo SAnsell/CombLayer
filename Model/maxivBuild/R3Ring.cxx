@@ -228,7 +228,8 @@ R3Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+1,APt,XX);
       SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+1));
       ModelSupport::buildPlane(SMap,surfN+3,APt,YY);
-
+      SurfMap::addSurf("FlatInner",-SMap.realSurf(surfN+3));
+      
       // outer wall
       ModelSupport::buildPlane(SMap,surfN+1001,APt+XX*ratchetWall,XX);
       SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+1001));

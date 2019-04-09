@@ -277,7 +277,7 @@ R3FrontEnd::createSurfaces()
   
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*180.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*100.0,Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
   

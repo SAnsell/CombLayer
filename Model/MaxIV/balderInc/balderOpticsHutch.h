@@ -46,8 +46,7 @@ class balderOpticsHutch :
 {
  private:
   
-  double depth;                 ///< void height 
-  double height;                ///< void depth
+  double height;                ///< void height
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
   double ringWallLen;           ///< void flat length [before angle]
@@ -62,7 +61,6 @@ class balderOpticsHutch :
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
-  double floorThick;            ///< Floor thickness
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space 
@@ -78,7 +76,6 @@ class balderOpticsHutch :
   int skinMat;                ///< Fe layer material for walls
   int ringMat;                ///< Conc layer material for ring walls
   int pbMat;                  ///< pb layer material for walls 
-  int floorMat;               ///< Floor layer
 
   double beamTubeRadius;      ///< Void to construct components in
   

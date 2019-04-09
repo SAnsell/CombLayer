@@ -165,12 +165,15 @@ BALDER::build(Simulation& System,
 
   const int voidCell(74123);
 
+  const size_t NS=r3Ring->getNInnerSurf();
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
-  const size_t SIndex=(PIndex+1) % r3Ring->getNInnerSurf();
+  const size_t SIndex=(PIndex+1) % NS;
+  const size_t prevIndex=(NS+PIndex-1) % NS;
+  
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
   
   frontBeam->setStopPoint(stopPoint);
-  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",PIndex));
+  //  frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",PIndex));
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
@@ -185,40 +188,38 @@ BALDER::build(Simulation& System,
   
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",-r3Ring->getSurf("BeamOuter",SIndex));
+
+  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
 
-
   opticsHut->addInsertCell(voidCell);
-  opticsHut->setCutSurf("ringWall",r3Ring->getSurf("FlatOuter",PIndex));
+  opticsHut->setCutSurf("SideWall",r3Ring->getSurf("FlatOuter",PIndex));
+  opticsHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
   // Ugly HACK to get the two objects to merge
-  const std::string OH=opticsHut->SurfMap::getSurfString("ringFlat");
   r3Ring->insertComponent
     (System,"OuterFlat",SIndex,
      *opticsHut,opticsHut->getSideIndex("frontCut"));
 
-  /*
-  ringCaveB->insertComponent
-    (System,"FloorA",*opticsHut,opticsHut->getSideIndex("floorCut"));
-  ringCaveB->insertComponent
-    (System,"RoofA",*opticsHut,opticsHut->getSideIndex("roofCut"));
-  */
+  // Inner space
+
   if (stopPoint=="opticsHut") return;
   
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
-  
+
 
     // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
+  
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("floor",opticsHut->getSurf("Floor"));
+  opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
@@ -228,13 +229,13 @@ BALDER::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-
-  /*
-  exptHut->addInsertCell(voidCell);
-  exptHut->createAll(System,*ringCaveA,2);
-  */
+  //  exptHut->addInsertCell(voidCell);
+  //  exptHut->addInsertCell(voidCell);
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+  
   connectZone->registerJoinPipe(joinPipeC);
-  connectZone->addInsertCell(voidCell);
+  connectZone->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   connectZone->setCutSurf("front",*opticsHut,2);
   connectZone->setCutSurf("back",*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
