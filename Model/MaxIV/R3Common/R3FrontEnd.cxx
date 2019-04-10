@@ -237,6 +237,7 @@ R3FrontEnd::populate(const FuncDataBase& Control)
 {
   FixedOffset::populate(Control);
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  frontOffset=Control.EvalDefVar<double>(keyName+"FrontOffset",0.0);
   return;
 }
 
@@ -277,7 +278,7 @@ R3FrontEnd::createSurfaces()
   
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*100.0,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
   
@@ -664,19 +665,10 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collExitPipe,2);
   collExitPipe->insertInCell(System,outerCell);
 
-  ELog::EM<<"ASDFAF"<<ELog::endDiag;
-  lastComp=dipolePipe;
-  return;
-
 
   buildHeatTable(System,masterCell,*collExitPipe,2);
-
-
-  buildApertureTable(System,masterCell,*pipeB,2);
+  buildApertureTable(System,masterCell,*pipeB,2); 
   buildShutterTable(System,masterCell,*pipeC,2);
-
-
-
 
   exitPipe->createAll(System,*bellowK,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*exitPipe,2);

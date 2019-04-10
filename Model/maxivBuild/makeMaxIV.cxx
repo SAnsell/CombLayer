@@ -138,7 +138,7 @@ makeMaxIV::populateStopPoint(const mainSystem::inputParam& IParam,
 			     const std::set<std::string>& beamNAMES,
 			     std::map<std::string,std::string>& beamStop) const
   /*!
-    Build hte beamstop map of stop points
+    Build the beamstop map of stop points
     \param IParam ::Input parameter
     \param beamNAMES ::  beamlines to consider
     \param beamStop ::  beamline : Stop point
@@ -263,7 +263,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
   static const std::map<std::string,std::string> beamNAMES
     ({ {"BALDER","OpticCentre1"},
-	{"COSAXS","OpticCentre7"},
+	{"COSAXS","OpticCentre1"},
 	{"FORMAX","OpticCentre8"}
 	  
     });

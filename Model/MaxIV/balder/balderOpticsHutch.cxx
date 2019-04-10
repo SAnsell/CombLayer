@@ -88,7 +88,6 @@ balderOpticsHutch::balderOpticsHutch(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
-  
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -273,8 +272,13 @@ balderOpticsHutch::createSurfaces()
   const double steelThick(innerThick+outerThick);
   
   // OuterWall
-  ModelSupport::buildPlane(SMap,buildIndex+31,
-			   Origin-Y*(steelThick+pbFrontThick),Y);
+  if (!ExternalCut::isActive("RingWall"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+31,
+			       Origin-Y*(steelThick+pbFrontThick),Y);
+      ExternalCut::setCutSurf("RingWall",SMap.realSurf(buildIndex+31));
+    }
+
   ModelSupport::buildPlane(SMap,buildIndex+32,
 			   Origin+Y*(length+steelThick+pbBackThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+33,
@@ -342,6 +346,7 @@ balderOpticsHutch::createObjects(Simulation& System)
   const std::string innerSideWall=
     ExternalCut::getComplementStr("InnerSideWall");
   const std::string floor=ExternalCut::getRuleStr("Floor");
+  const std::string frontWall=ExternalCut::getRuleStr("RingWall");
 
   std::string Out;
 
@@ -379,8 +384,10 @@ balderOpticsHutch::createObjects(Simulation& System)
       //front wall
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"-1M 11M 33 -34 -6M 107 ");
+      if (layer=="Outer") Out+=frontWall;
+	
       makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out+floor);
-
+      
       //back wall
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"2M -12M 33 (-34:-134) -6 117 ");
@@ -389,47 +396,51 @@ balderOpticsHutch::createObjects(Simulation& System)
       // roof
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      setCell(layer+"Roof",cellIndex-1);
+      if (layer=="Outer") Out+=frontWall;
+      makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
       HI+=10;
     }
   
 
   // Outer void for pipe
+
   if (inletRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
-      makeCell("Inlet",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -107 ");
+      makeCell("Inlet",System,cellIndex++,0,0.0,Out+frontWall);
     }
+
 
   if (holeRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 2 -2M -117 ");
       makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
     }
+    
   // Filler space :
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 34 134 -36 -22");
-  makeCell("Filler",System,cellIndex++,0,0.0,Out+sideWall+floor);
+  makeCell("Filler",System,cellIndex++,0,0.0,Out+sideWall+floor+frontWall);
+  ELog::EM<<"Front == "<<frontWall<<ELog::endDiag;
   
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,HI,"1M -2M 1033 -3M -6M ");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out+floor);
+	(SMap,buildIndex,HI,"-2M 1033 -3M -6M ");
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out+floor+frontWall);
 
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,HI," 1M -2M 1033 -6M ");
+	(SMap,buildIndex,HI," -2M 1033 -6M ");
       Out+=innerSideWall;
-      ELog::EM<<"Inner == "<<innerSideWall<<ELog::endDiag;
     }
   else
     Out=ModelSupport::getComposite
-      (SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) -6M ");
+      (SMap,buildIndex,HI," -2M 3M (-4M:-104M) -6M ");
+      
 
   
-  addOuterSurf(Out+floor);      
+  addOuterSurf(Out+floor+frontWall);      
 
   return;
 }

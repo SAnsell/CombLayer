@@ -72,6 +72,7 @@
 #include "RingDoorGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
+#include "MonoShutterGenerator.h"
 
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
@@ -86,6 +87,7 @@ namespace cosaxsVar
   void heatDumpTable(FuncDataBase&,const std::string&);
   void heatDumpVariables(FuncDataBase&,const std::string&);
   void collimatorVariables(FuncDataBase&,const std::string&);
+  void monoShutterVariables(FuncDataBase&,const std::string&);
   void shutterTable(FuncDataBase&,const std::string&);
 
 void
@@ -174,7 +176,7 @@ wallVariables(FuncDataBase& Control,
 
   WallLeadGenerator LGen;
   LGen.setWidth(140.0,70.0);
-  LGen.generateWall(Control,wallKey,3.0);
+  LGen.generateWall(Control,wallKey,2.0);
 
   return;
 }
@@ -463,6 +465,36 @@ shutterTable(FuncDataBase& Control,
   
   return;
 }
+
+void
+monoShutterVariables(FuncDataBase& Control,
+		     const std::string& preName)
+  /*!
+    Construct Mono Shutter variables
+    \param Control :: Database for variables
+    \param preName :: Control ssytem
+   */
+{
+  ELog::RegMethod RegA("cosaxsVariables","monoShutterVariables");
+
+  setVariable::GateValveGenerator GateGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::MonoShutterGenerator MShutterGen;
+  
+
+  MShutterGen.generateShutter(Control,preName+"MonoShutter",0,0);  
+  
+  // bellows on shield block
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowJ",0,10.0);    
+
+    // joined and open
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateH",0.0,0);
+  return;
+}
+  
 void
 frontEndVariables(FuncDataBase& Control,
 		  const std::string& frontKey)
@@ -472,7 +504,7 @@ frontEndVariables(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("formaxVariables[F]","frontEndVariables");
+  ELog::RegMethod RegA("cosaxsVariables[F]","frontEndVariables");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -485,7 +517,10 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PreDipoleGenerator PGen;
   setVariable::DipoleChamberGenerator DCGen;
 
-  Control.addVariable(frontKey+"OuterRadius",60.0);  
+    
+  Control.addVariable(frontKey+"YStep",310.0);  
+  Control.addVariable(frontKey+"OuterRadius",60.0);
+  Control.addVariable(frontKey+"FrontOffset",0.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
@@ -583,12 +618,11 @@ opticsHutVariables(FuncDataBase& Control,
 
   const std::string hutName(preName+"OpticsHut");
 
-  Control.addVariable(hutName+"Depth",132.0);
   Control.addVariable(hutName+"Height",250.0);
-  Control.addVariable(hutName+"Length",1034.6);
-  Control.addVariable(hutName+"OutWidth",260.0);
-  Control.addVariable(hutName+"RingWidth",61.3);
-  Control.addVariable(hutName+"RingWallLen",109.0);
+  Control.addVariable(hutName+"Length",906.1);
+  Control.addVariable(hutName+"OutWidth",200.0);
+  Control.addVariable(hutName+"RingWidth",75.0);
+  Control.addVariable(hutName+"RingWallLen",80.0);
   Control.addVariable(hutName+"RingWallAngle",18.50);
   Control.addVariable(hutName+"RingConcThick",100.0);
 
@@ -601,18 +635,16 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"OuterThick",0.3);
     
-  Control.addVariable(hutName+"FloorThick",50.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);  // side wall for chicane
   Control.addVariable(hutName+"OuterOutVoid",10.0);
   
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
 
   Control.addVariable(hutName+"HoleXStep",0.0);
   Control.addVariable(hutName+"HoleZStep",1.0);
-  Control.addVariable(hutName+"HoleRadius",7.0);
+  Control.addVariable(hutName+"HoleRadius",9.0);
 
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
@@ -772,8 +804,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
-  PTubeGen.setCF<CF40>();
-  PTubeGen.setAFlangeCF<CF63>();
+  PTubeGen.setCF<CF63>();
   PTubeGen.setPortLength(-5.0,-5.0);
   // ystep/radius length
   PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
@@ -849,7 +880,6 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setWindow(-2.0,0.0);   // no window
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
 
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
@@ -985,6 +1015,11 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
 
   cosaxsVar::diagUnit2(Control,preName+"DiagBoxC");
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowI",0,12.0);
+
+  cosaxsVar::monoShutterVariables(Control,preName);
   
   return;
 }
@@ -1029,9 +1064,8 @@ COSAXSvariables(FuncDataBase& Control)
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
-  PipeGen.setAFlangeCF<setVariable::CF120>(); 
-  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,195.0);
+  PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,126.0);
 
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");

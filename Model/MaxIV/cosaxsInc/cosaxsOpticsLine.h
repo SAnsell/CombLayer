@@ -57,9 +57,10 @@ namespace xraySystem
   class BremColl;
   class FlangeMount;
   class Mirror;
-  class MonoCrystals;
   class MonoBox;
-    
+  class MonoCrystals;
+  class MonoShutter;
+  
   /*!
     \class cosaxsOpticsLine
     \version 1.0
@@ -157,10 +158,23 @@ class cosaxsOpticsLine :
   /// Bellow to end station
   std::shared_ptr<constructSystem::Bellows> bellowI;
 
+  /// Shutter pipe
+  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
+    
+  /// Joining Bellows (pipe large):
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+
+  /// Last gate valve:
+  std::shared_ptr<constructSystem::GateValve> gateH;
+
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
+
+  int constructMonoShutter
+    (Simulation&,MonteCarlo::Object**,
+     const attachSystem::FixedComp&,const long int);
 
   int constructDiag
     (Simulation&,

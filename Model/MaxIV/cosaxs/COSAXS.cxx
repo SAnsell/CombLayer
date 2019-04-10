@@ -163,19 +163,16 @@ COSAXS::build(Simulation& System,
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  ELog::EM<<"ASDFAF"<<ELog::endDiag;
-  return;  
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",-r3Ring->getSurf("BeamOuter",SIndex));
+  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
 
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -188,6 +185,7 @@ COSAXS::build(Simulation& System,
   r3Ring->insertComponent
     (System,"OuterFlat",SIndex,
      *opticsHut,opticsHut->getSideIndex("frontCut"));
+
 
   // Inner space
 

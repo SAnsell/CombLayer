@@ -183,6 +183,7 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   double outerRadius;   ///< radius of tube for divisions
+  double frontOffset;   ///< Distance to move start point from origin
 
   void insertFlanges(Simulation&,const constructSystem::PipeTube&);
   virtual const attachSystem::FixedComp&

@@ -102,7 +102,7 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param VR :: void radius						
+    \param VR :: void radius 						
   */
 {
   ELog::RegMethod RegA("WallLeadGenerator","generateWall");
