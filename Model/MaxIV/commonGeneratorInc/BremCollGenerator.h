@@ -55,6 +55,8 @@ class BremCollGenerator
   double holeZStep;            ///< Z-offset of hole
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidWidth;         ///< Mid width of hole
+  double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
 

@@ -893,10 +893,10 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowA",0,17.0);
+  BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
 
   BremGen.setCF<CF63>();
-  BremGen.generateColl(Control,preName+"BremCollA",0,6.5);
+  BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
 
   PTubeGen.setMat("Stainless304");
   PTubeGen.setCF<CF63>();

@@ -61,7 +61,10 @@ BremCollGenerator::BremCollGenerator() :
   width(7.2),height(6.6),wallThick(0.5),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
-  holeBWidth(0.7),holeBHeight(0.7),
+  holeMidWidth(0.7),holeMidHeight(0.7),
+  holeBWidth(1.0),holeBHeight(1.0),
+  extLength(5.0),extRadius(2.5),
+  
   voidMat("Void"),innerMat("Tungsten"),
   wallMat("Stainless304")
   /*!
@@ -108,20 +111,25 @@ BremCollGenerator::setMaterial(const std::string& IMat,
 }
 
 void
-BremCollGenerator::setAperature(const double outerW,const double outerH,
-				const double minW,const double minH)
+BremCollGenerator::setAperature(const double frontW,const double frontH,
+				const double minW,const double minH,
+				const double backW,const double backH)
   /*!
     Set the widths
     \param outerW :: Outer width
     \param outerH :: Outer height
     \param minW :: min width
     \param minH :: min height
+    \param backW :: back width
+    \param backH :: back height
   */
 {
   holeAWidth=outerW;
   holeAHeight=outerH;
-  holeBWidth=minW;
-  holeBHeight=minH;
+  holeMidWidth=midW;
+  holeMidHeight=midH;
+  holeBWidth=backW;
+  holeBHeight=backH;
   return;
 }
 
@@ -147,6 +155,10 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"WallThick",wallThick);
+
+  Control.addVariable(keyName+"ExtLength",extLenght);
+  Control.addVariable(keyName+"ExtRadius",extRadius);
+  
 
 
   Control.addVariable(keyName+"InnerRadius",innerRadius);
