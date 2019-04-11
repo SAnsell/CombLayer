@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BremColl.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -70,10 +69,10 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "FrontBackCut.h"
+#include "ExternalCut.h"
 
 #include "BremColl.h"
 
@@ -82,8 +81,9 @@ namespace xraySystem
 
 BremColl::BremColl(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::ContainedGroup("Main","Extention"),
+  attachSystem::CellMap(),
+  attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -91,8 +91,8 @@ BremColl::BremColl(const std::string& Key) :
 {}
 
 BremColl::BremColl(const BremColl& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),attachSystem::ExternalCut(A),
   height(A.height),width(A.width),length(A.length),
   wallThick(A.wallThick),innerRadius(A.innerRadius),
   flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
@@ -118,9 +118,9 @@ BremColl::operator=(const BremColl& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       height=A.height;
       width=A.width;
       length=A.length;
@@ -186,9 +186,15 @@ BremColl::populate(const FuncDataBase& Control)
   holeZStep=Control.EvalVar<double>(keyName+"HoleZStep");
   holeAHeight=Control.EvalVar<double>(keyName+"HoleAHeight");
   holeAWidth=Control.EvalVar<double>(keyName+"HoleAWidth");
+  holeMidDist=Control.EvalVar<double>(keyName+"HoleMidDist");
+  holeMidHeight=Control.EvalVar<double>(keyName+"HoleMidHeight");
+  holeMidWidth=Control.EvalVar<double>(keyName+"HoleMidWidth");
   holeBHeight=Control.EvalVar<double>(keyName+"HoleBHeight");
   holeBWidth=Control.EvalVar<double>(keyName+"HoleBWidth");
-  
+
+  extLength=Control.EvalVar<double>(keyName+"ExtLength");
+  extRadius=Control.EvalVar<double>(keyName+"ExtRadius");
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -224,45 +230,80 @@ BremColl::createSurfaces()
   ELog::RegMethod RegA("BremColl","createSurfaces");
 
   // Do outer surfaces (vacuum ports)
-  if (!frontActive())
+  if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,
 			       Origin-Y*(flangeALength+length/2.0),Y);
-      setFront(SMap.realSurf(buildIndex+1));
+      setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
-  if (!backActive())
+  if (!isActive("back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,
 			       Origin+Y*(flangeBLength+length/2.0),Y);
-      setBack(-SMap.realSurf(buildIndex+2));
+      setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
   // hole [front]:
   const Geometry::Vec3D holeFront=
     Origin+X*holeXStep+Z*holeZStep-Y*(length/2.0);
+
+  const Geometry::Vec3D holeMid=
+    Origin+X*holeXStep+Z*holeZStep+Y*(holeMidDist-length/2.0);
+
   const Geometry::Vec3D holeBack=
     Origin+X*holeXStep+Z*holeZStep+Y*(length/2.0);
 
+  // mid divider:
+  ModelSupport::buildPlane(SMap,buildIndex+1001,holeMid,Y);
   ModelSupport::buildPlane(SMap,buildIndex+1003,
 			   holeFront-X*(holeAWidth/2.0),
-			   holeBack-X*(holeBWidth/2.0),
-			   holeBack-X*(holeBWidth/2.0)+Z,
+			   holeMid-X*(holeMidWidth/2.0),
+			   holeMid-X*(holeMidWidth/2.0)+Z,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,
 			   holeFront+X*(holeAWidth/2.0),
-			   holeBack+X*(holeBWidth/2.0),
-			   holeBack+X*(holeBWidth/2.0)+Z,
+			   holeMid+X*(holeMidWidth/2.0),
+			   holeMid+X*(holeMidWidth/2.0)+Z,
 			   X);
   ModelSupport::buildPlane(SMap,buildIndex+1005,
 			   holeFront-Z*(holeAHeight/2.0),
-			   holeBack-Z*(holeBHeight/2.0),
-			   holeBack-Z*(holeBHeight/2.0)+X,
+			   holeMid-Z*(holeMidHeight/2.0),
+			   holeMid-Z*(holeMidHeight/2.0)+X,
 			   Z);
   ModelSupport::buildPlane(SMap,buildIndex+1006,
 			   holeFront+Z*(holeAHeight/2.0),
+			   holeMid+Z*(holeMidHeight/2.0),
+			   holeMid+Z*(holeMidHeight/2.0)+X,
+			   Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+2003,
+			   holeMid-X*(holeMidWidth/2.0),
+			   holeBack-X*(holeBWidth/2.0),
+			   holeBack-X*(holeBWidth/2.0)+Z,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+2004,
+			   holeMid+X*(holeMidWidth/2.0),
+			   holeBack+X*(holeBWidth/2.0),
+			   holeBack+X*(holeBWidth/2.0)+Z,
+			   X);
+  ModelSupport::buildPlane(SMap,buildIndex+2005,
+			   holeMid-Z*(holeMidHeight/2.0),
+			   holeBack-Z*(holeBHeight/2.0),
+			   holeBack-Z*(holeBHeight/2.0)+X,
+			   Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,
+			   holeMid+Z*(holeMidHeight/2.0),
 			   holeBack+Z*(holeBHeight/2.0),
 			   holeBack+Z*(holeBHeight/2.0)+X,
 			   Z);
+  // Extension space
+  ModelSupport::buildPlane(SMap,buildIndex+3002,holeBack+Y*(extLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3003,holeBack-X*(holeBWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3004,holeBack+X*(holeBWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3005,holeBack-Z*(holeBHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3006,holeBack+Z*(holeBHeight/2.0),Z);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+3007,holeBack,Y,extRadius);
   
   // void space:
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -294,23 +335,31 @@ BremColl::createSurfaces()
 void
 BremColl::createObjects(Simulation& System)
   /*!
-    Adds the vacuum box
+    Builds the brem-collimator
     \param System :: Simulation to create objects in
    */
 {
   ELog::RegMethod RegA("BremColl","createObjects");
 
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
+  const std::string frontSurf(getRuleStr("front"));
+  const std::string backSurf(getRuleStr("back"));
 
   std::string Out;
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "101 -102 1003 -1004 1005 -1006 ");
+				 "101 -1001 1003 -1004 1005 -1006 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 "1001 -102 2003 -2004 2005 -2006 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
   
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 3 -4 5 -6 (-1003: 1004 : -1005: 1006)");
+    (SMap,buildIndex," 101 -1001 3 -4 5 -6 (-1003: 1004 : -1005: 1006)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1001 -102 3 -4 5 -6 (-2003: 2004 : -2005: 2006)");
   makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
 
   Out=ModelSupport::getComposite
@@ -330,11 +379,14 @@ BremColl::createObjects(Simulation& System)
 
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 13 -14 15 -16");
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -101 ");
-  addOuterUnionSurf(Out+frontSurf);
+  addOuterUnionSurf("Main",Out+frontSurf);
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 102 ");
-  addOuterUnionSurf(Out+backSurf);
+  addOuterUnionSurf("Main",Out+backSurf);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," ");
+  addOuterSurf("Extention",Out);
 
   return;
 }
@@ -352,8 +404,8 @@ BremColl::createLinks()
 
   // port centre
   
-  FrontBackCut::createFrontLinks(*this,Origin,Y); 
-  FrontBackCut::createBackLinks(*this,Origin,Y);  
+  ExternalCut::createLink("front",*this,0,Origin,-Y); 
+  ExternalCut::createLink("back",*this,1,Origin,Y);  
   
   return;
 }

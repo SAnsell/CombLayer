@@ -119,7 +119,8 @@ balderFrontEnd::createLinks()
     Create a front/back link
    */
 {
-
+  ELog::RegMethod RegA("balderFrontEnd","createLinks");
+  
   setLinkSignedCopy(0,*wigglerBox,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
@@ -154,7 +155,7 @@ balderFrontEnd::buildUndulator(Simulation& System,
   
   CellMap::addCell("WiggerOuter",outerCell);
   wigglerBox->insertInCell(System,outerCell);
-
+  ELog::EM<<"Point == "<<wigglerBox->getLinkPt(2)<<ELog::endDiag;
   return *wigglerBox;
 
 }

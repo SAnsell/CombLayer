@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/BremColl.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ namespace xraySystem
 
 class BremColl :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -58,11 +58,17 @@ class BremColl :
   double holeZStep;            ///< Z-offset of hole
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidDist;          ///< Mid hole distance from front
+  double holeMidWidth;         ///< Mid width of hole
+  double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
+
+  double extLength;           ///< Extention length [into next comp]
+  double extRadius;           ///< Radius of outer extention
   
   int voidMat;                ///< void material
-  int innerMat;               ///< void material
+  int innerMat;               ///< Tungsten material
   int wallMat;                ///< Fe material layer
   
   void populate(const FuncDataBase&);

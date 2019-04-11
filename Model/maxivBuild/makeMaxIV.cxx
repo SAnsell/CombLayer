@@ -67,6 +67,7 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -239,9 +240,12 @@ makeMaxIV::buildR1Ring(Simulation& System,
 	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
 	  BLPtr->setStopPoint(activeStop);
 	}
+
       BLPtr->setRing(r1Ring);
+      ELog::EM<<"R1 == "<<r1Ring.get()<<ELog::endDiag;
       BLPtr->build(System,*r1Ring,
 		   r1Ring->getSideIndex(beamNAMES.at(BL)));
+      ELog::EM<<"R1 == "<<r1Ring->getKeyName()<<ELog::endDiag;
     }
       
   return 1;    // R1 Built

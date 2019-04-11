@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: flexpes/R3Beamline.cxx
+ * File: R3Common/R3Beamline.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -68,14 +68,14 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "ExternalCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 
-#include "R1Ring.h"
+#include "R3Ring.h"
 #include "R3Beamline.h"
 
 namespace xraySystem

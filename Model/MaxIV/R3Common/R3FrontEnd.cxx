@@ -275,7 +275,6 @@ R3FrontEnd::createSurfaces()
       buildZone.setSurround(HeadRule(-SMap.realSurf(buildIndex+7)));
     }
 
-  
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);

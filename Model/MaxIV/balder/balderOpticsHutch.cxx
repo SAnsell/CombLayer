@@ -347,7 +347,7 @@ balderOpticsHutch::createObjects(Simulation& System)
     ExternalCut::getComplementStr("InnerSideWall");
   const std::string floor=ExternalCut::getRuleStr("Floor");
   const std::string frontWall=ExternalCut::getRuleStr("RingWall");
-
+  
   std::string Out;
 
   if (innerOutVoid>Geometry::zeroTol)
@@ -419,9 +419,8 @@ balderOpticsHutch::createObjects(Simulation& System)
     
   // Filler space :
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 34 134 -36 -22");
+    (SMap,buildIndex," 34 134 -36 -32");
   makeCell("Filler",System,cellIndex++,0,0.0,Out+sideWall+floor+frontWall);
-  ELog::EM<<"Front == "<<frontWall<<ELog::endDiag;
   
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)

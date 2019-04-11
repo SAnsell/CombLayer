@@ -63,15 +63,14 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "ExternalCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -143,18 +142,22 @@ FLEXPES::build(Simulation& System,
   ELog::RegMethod RControl("FLEXPES","build");
 
   const int voidCell(74123);
+  ELog::EM<<"ASFSAFDSF"<<r1Ring.get()<<ELog::endDiag;
   frontBeam->setStopPoint(stopPoint);
-    
+
+
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
-
+  
+  ELog::EM<<"ASFSAFDSF"<<ELog::endDiag;
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
-
+  ELog::EM<<"ASFSAFDSF"<<ELog::endDiag;
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-
+  ELog::EM<<"ASFSAFDSF"<<ELog::endDiag;
+  
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));

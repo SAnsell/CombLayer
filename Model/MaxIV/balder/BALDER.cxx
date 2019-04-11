@@ -70,9 +70,9 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "ExternalCut.h"
 #include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -184,7 +184,7 @@ BALDER::build(Simulation& System,
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
   
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
-  opticsHut->setCutSurf("RingWall",-r3Ring->getSurf("BeamOuter",SIndex));
+  opticsHut->setCutSurf("RingWall",r3Ring->getSurf("BeamOuter",PIndex));
 
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));

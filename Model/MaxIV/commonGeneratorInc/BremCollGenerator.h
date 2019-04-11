@@ -55,11 +55,15 @@ class BremCollGenerator
   double holeZStep;            ///< Z-offset of hole
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidDist;          ///< Mid distance [-ve for fraction of length]
   double holeMidWidth;         ///< Mid width of hole
   double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
 
+  double extLength;            ///< Extent unit length
+  double extRadius;            ///< Extent unit radius
+  
   std::string voidMat;                ///< void material
   std::string innerMat;               ///< void material
   std::string wallMat;                ///< Fe material layer
@@ -73,7 +77,8 @@ class BremCollGenerator
 
   template<typename CF> void setCF();
 
-  void setAperature(const double,const double,const double,const double);
+  void setAperature(const double,const double,const double,const double,
+		    const double,const double);
   void setMaterial(const std::string&,const std::string&);
   
   void generateColl(FuncDataBase&,const std::string&,

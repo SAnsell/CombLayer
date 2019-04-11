@@ -80,6 +80,7 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "SurInter.h"
 #include "insertObject.h"

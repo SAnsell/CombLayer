@@ -75,6 +75,7 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "FixedOffset.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "Bunker.h"
 #include "Chicane.h"

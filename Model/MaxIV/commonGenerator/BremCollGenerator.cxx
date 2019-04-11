@@ -3,7 +3,7 @@
  
  * File:   constructVar/BremCollGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ BremCollGenerator::BremCollGenerator() :
   width(7.2),height(6.6),wallThick(0.5),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
-  holeMidWidth(0.7),holeMidHeight(0.7),
+  holeMidDist(-0.7),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
   extLength(5.0),extRadius(2.5),
   
@@ -112,20 +112,20 @@ BremCollGenerator::setMaterial(const std::string& IMat,
 
 void
 BremCollGenerator::setAperature(const double frontW,const double frontH,
-				const double minW,const double minH,
+				const double midW,const double midH,
 				const double backW,const double backH)
   /*!
     Set the widths
-    \param outerW :: Outer width
-    \param outerH :: Outer height
-    \param minW :: min width
-    \param minH :: min height
+    \param frontW :: Front width
+    \param frontH :: Front height
+    \param midW :: min width
+    \param midH :: min height
     \param backW :: back width
     \param backH :: back height
   */
 {
-  holeAWidth=outerW;
-  holeAHeight=outerH;
+  holeAWidth=frontW;
+  holeAHeight=frontH;
   holeMidWidth=midW;
   holeMidHeight=midH;
   holeBWidth=backW;
@@ -144,7 +144,7 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Forward step
-    \param lenght :: length
+    \param length :: length of W block
   */
 {
   ELog::RegMethod RegA("BremCollGenerator","generatorColl");
@@ -156,10 +156,6 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"WallThick",wallThick);
 
-  Control.addVariable(keyName+"ExtLength",extLenght);
-  Control.addVariable(keyName+"ExtRadius",extRadius);
-  
-
 
   Control.addVariable(keyName+"InnerRadius",innerRadius);
   Control.addVariable(keyName+"FlangeARadius",flangeARadius);
@@ -167,12 +163,19 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBRadius",flangeARadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);  
 
+  const double HD(holeMidDist<0.0 ? -length*holeMidDist : holeMidDist);
   Control.addVariable(keyName+"HoleXStep",holeXStep);
   Control.addVariable(keyName+"HoleZStep",holeZStep);
   Control.addVariable(keyName+"HoleAWidth",holeAWidth);
   Control.addVariable(keyName+"HoleAHeight",holeAHeight);
+  Control.addVariable(keyName+"HoleMidDist",HD);
+  Control.addVariable(keyName+"HoleMidWidth",holeMidWidth);
+  Control.addVariable(keyName+"HoleMidHeight",holeMidHeight);
   Control.addVariable(keyName+"HoleBWidth",holeBWidth);
   Control.addVariable(keyName+"HoleBHeight",holeBHeight);
+
+  Control.addVariable(keyName+"ExtLength",extLength);
+  Control.addVariable(keyName+"ExtRadius",extRadius);
 
 
   Control.addVariable(keyName+"InnerMat",innerMat);

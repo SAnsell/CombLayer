@@ -52,7 +52,7 @@ class R3Beamline :
   virtual ~R3Beamline();
 
   /// set ring
-  void setRing(std::shared_ptr<R3Ring> R)
+  void setRing(std::shared_ptr<R3Ring>& R)
     { r3Ring=R; }
 
   /// Accessor to stop point

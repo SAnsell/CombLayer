@@ -77,6 +77,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 
 #include "TelescopicPipe.h"
