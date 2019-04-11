@@ -64,6 +64,9 @@ BremCollGenerator::BremCollGenerator() :
   holeMidDist(-0.7),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
   extLength(5.0),extRadius(2.5),
+  pipeRadius(0.3),pipeWallThick(0.1),
+  pipeYStep(3.0),pipeZStep(2.0),
+  pipeWidth(4.0),
   
   voidMat("Void"),innerMat("Tungsten"),
   wallMat("Stainless304")
@@ -178,9 +181,17 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtRadius",extRadius);
 
 
+  Control.addVariable(keyName+"PipeRadius",pipeRadius);
+  Control.addVariable(keyName+"PipeWallThick",pipeWallThick);
+  Control.addVariable(keyName+"PipeYStep",pipeYStep);
+  Control.addVariable(keyName+"PipeZStep",pipeZStep);
+  Control.addVariable(keyName+"PipeWidth",pipeWidth);
+  
   Control.addVariable(keyName+"InnerMat",innerMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WaterMat",waterMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
        
   return;
 

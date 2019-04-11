@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/BremCollGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,10 +63,19 @@ class BremCollGenerator
 
   double extLength;            ///< Extent unit length
   double extRadius;            ///< Extent unit radius
-  
+
+  double pipeRadius;          ///< Pipe radius
+  double pipeWallThick;       ///< Pipe wall thickness
+  double pipeYStep;           ///< Pipe step down block
+  double pipeZStep;           ///< Pipe under step 
+  double pipeWidth;           ///< Centre-centre width
+
   std::string voidMat;                ///< void material
   std::string innerMat;               ///< void material
   std::string wallMat;                ///< Fe material layer
+  std::string waterMat;               ///< water cooling material 
+  std::string pipeMat;                ///< pipe outer material 
+
   
  public:
 

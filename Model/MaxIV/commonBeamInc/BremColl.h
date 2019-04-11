@@ -66,10 +66,19 @@ class BremColl :
 
   double extLength;           ///< Extention length [into next comp]
   double extRadius;           ///< Radius of outer extention
+
+  double pipeRadius;          ///< Pipe radius
+  double pipeWallThick;       ///< Pipe wall thickness
+  double pipeYStep;           ///< Pipe step down block
+  double pipeZStep;           ///< Pipe under step 
+  double pipeWidth;           ///< Centre-centre width
+
   
   int voidMat;                ///< void material
   int innerMat;               ///< Tungsten material
   int wallMat;                ///< Fe material layer
+  int waterMat;               ///< water cooling material 
+  int pipeMat;                ///< pipe outer material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

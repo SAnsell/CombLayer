@@ -199,6 +199,9 @@ BremColl::populate(const FuncDataBase& Control)
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
+
   return;
 }
 
