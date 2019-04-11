@@ -428,6 +428,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   filterBoxA->splitObject(System,1001,outerCell,
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   cellIndex++;
+  bremCollA->createExtension(System,filterBoxA->getCell("FrontPortVoid"));
   
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Body",PI.getCell("Void"));

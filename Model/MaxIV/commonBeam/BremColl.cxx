@@ -81,7 +81,7 @@ namespace xraySystem
 
 BremColl::BremColl(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
-  attachSystem::ContainedGroup("Main","Extention"),
+  attachSystem::ContainedGroup("Main","Extension"),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
   /*!
@@ -369,15 +369,17 @@ BremColl::createObjects(Simulation& System)
   // flanges
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -101 ");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7  102 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7  102 3007");
   makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backSurf);
 
+
+  
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 -101 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontSurf);
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 7 102 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
 
-  
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 13 -14 15 -16");
   addOuterSurf("Main",Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 -101 ");
@@ -385,8 +387,8 @@ BremColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 102 ");
   addOuterUnionSurf("Main",Out+backSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," ");
-  addOuterSurf("Extention",Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -3002 -3007  ");
+  addOuterSurf("Extension",Out);
 
   return;
 }
@@ -410,6 +412,32 @@ BremColl::createLinks()
   return;
 }
 
+void
+BremColl::createExtension(Simulation& System,
+			  const int insertCell)
+  /*!
+    Nasty method to build the extension of the bremcollimator
+    that feeds into the next object. If it gets any more
+    complex then build the brem collimator OUTSIDE the build zone
+    \param System :: Simulation to use
+    \param insertCell :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("BremColl","createEntension");
+  
+  std::string Out;
+  // Extension
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -3007 102 -3002 (-3003 : 3004 : -3005 : 3006)");
+  makeCell("Extension",System,cellIndex++,innerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -3007 102 -3002 3003 -3004 3005 -3006 ");
+  makeCell("ExtVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  this->insertInCell("Extension",System,insertCell);
+  return;
+}
   
   
   

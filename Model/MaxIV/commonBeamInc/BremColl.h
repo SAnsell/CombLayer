@@ -84,6 +84,7 @@ class BremColl :
   BremColl& operator=(const BremColl&);
   virtual ~BremColl();
 
+  void createExtension(Simulation&,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
