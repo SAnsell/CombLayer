@@ -72,11 +72,6 @@ class FLEXPES :
 {
  private:
 
-  /// ring component  [taken from main setup]
-  std::shared_ptr<R1Ring> r1Ring;
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
-
   std::shared_ptr<flexpesFrontEnd> frontBeam;    ///< in ring front end
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
   std::shared_ptr<flexpesOpticsHut> opticsHut;   ///< main optics hut

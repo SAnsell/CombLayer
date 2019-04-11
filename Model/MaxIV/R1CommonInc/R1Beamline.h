@@ -52,8 +52,7 @@ class R1Beamline :
 
   /// set ring
   void setRing(std::shared_ptr<R1Ring>& R)
-  { r1Ring=R;
-    ELog::EM<<"B == "<<r1Ring.get()<<" "<<R.get()<<ELog::endDiag;}
+  { r1Ring=R; }
 
   /// Accessor to stop point
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }

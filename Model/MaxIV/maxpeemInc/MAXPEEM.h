@@ -72,7 +72,6 @@ class MAXPEEM :
 {
  private:
 
-
   std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
   std::shared_ptr<maxpeemOpticsHut> opticsHut;   ///< main optics hut
