@@ -67,12 +67,12 @@ class BremColl :
   double extLength;           ///< Extention length [into next comp]
   double extRadius;           ///< Radius of outer extention
 
-  double pipeRadius;          ///< Pipe radius
-  double pipeWallThick;       ///< Pipe wall thickness
+  double pipeDepth;           ///< Pipe Y depth
+  double pipeXSec;            ///< Pipe X/Z width
   double pipeYStep;           ///< Pipe step down block
   double pipeZStep;           ///< Pipe under step 
   double pipeWidth;           ///< Centre-centre width
-
+  double pipeMidGap;           ///< Top pipe mid gap
   
   int voidMat;                ///< void material
   int innerMat;               ///< Tungsten material

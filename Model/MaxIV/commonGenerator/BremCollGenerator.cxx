@@ -63,13 +63,12 @@ BremCollGenerator::BremCollGenerator() :
   holeAWidth(3.0),holeAHeight(1.5),
   holeMidDist(-0.7),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
-  extLength(5.0),extRadius(2.5),
-  pipeRadius(0.3),pipeWallThick(0.1),
-  pipeYStep(3.0),pipeZStep(2.0),
-  pipeWidth(4.0),
+  extLength(5.0),extRadius(2.5),pipeDepth(2.0),pipeXSec(0.9),
+  pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
   
   voidMat("Void"),innerMat("Tungsten"),
-  wallMat("Stainless304")
+  wallMat("Stainless304"),waterMat("H2O"),
+  pipeMat("Copper")
   /*!
     Constructor and defaults
   */
@@ -181,11 +180,12 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtRadius",extRadius);
 
 
-  Control.addVariable(keyName+"PipeRadius",pipeRadius);
-  Control.addVariable(keyName+"PipeWallThick",pipeWallThick);
+  Control.addVariable(keyName+"PipeDepth",pipeDepth);
+  Control.addVariable(keyName+"PipeXSec",pipeXSec);
   Control.addVariable(keyName+"PipeYStep",pipeYStep);
   Control.addVariable(keyName+"PipeZStep",pipeZStep);
   Control.addVariable(keyName+"PipeWidth",pipeWidth);
+  Control.addVariable(keyName+"PipeMidGap",pipeMidGap);
   
   Control.addVariable(keyName+"InnerMat",innerMat);
   Control.addVariable(keyName+"WallMat",wallMat);

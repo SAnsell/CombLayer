@@ -64,11 +64,12 @@ class BremCollGenerator
   double extLength;            ///< Extent unit length
   double extRadius;            ///< Extent unit radius
 
-  double pipeRadius;          ///< Pipe radius
-  double pipeWallThick;       ///< Pipe wall thickness
+  double pipeDepth;           ///< Pipe Y depth
+  double pipeXSec;            ///< Pipe X/Z width
   double pipeYStep;           ///< Pipe step down block
   double pipeZStep;           ///< Pipe under step 
   double pipeWidth;           ///< Centre-centre width
+  double pipeMidGap;          ///< Gap between top halves
 
   std::string voidMat;                ///< void material
   std::string innerMat;               ///< void material

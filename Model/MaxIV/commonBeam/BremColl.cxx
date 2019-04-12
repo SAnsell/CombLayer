@@ -195,6 +195,13 @@ BremColl::populate(const FuncDataBase& Control)
   extLength=Control.EvalVar<double>(keyName+"ExtLength");
   extRadius=Control.EvalVar<double>(keyName+"ExtRadius");
 
+  pipeDepth=Control.EvalVar<double>(keyName+"PipeDepth");
+  pipeXSec=Control.EvalVar<double>(keyName+"PipeXSec");
+  pipeYStep=Control.EvalVar<double>(keyName+"PipeYStep");
+  pipeZStep=Control.EvalVar<double>(keyName+"PipeZStep");
+  pipeWidth=Control.EvalVar<double>(keyName+"PipeWidth");
+  pipeMidGap=Control.EvalVar<double>(keyName+"PipeMidGap");
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -307,6 +314,31 @@ BremColl::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3006,holeBack+Z*(holeBHeight/2.0),Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+3007,holeBack,Y,extRadius);
+
+  // PipeWork [rect cross sect]
+  const Geometry::Vec3D PCent(Origin+Y*(pipeYStep-length/2.0)-Z*pipeZStep);
+  const Geometry::Vec3D QCent(Origin+Y*(pipeYStep-length/2.0)+Z*pipeZStep);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+4001,PCent-Y*(pipeDepth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+4002,PCent+Y*(pipeDepth/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+4003,PCent-X*(pipeWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4004,PCent+X*(pipeWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4005,PCent-Z*(pipeXSec/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+4006,PCent+Z*(pipeXSec/2.0),Z);
+
+  // left / righ side
+  ModelSupport::buildPlane(SMap,buildIndex+4103,
+			   PCent-X*(pipeWidth/2.0-pipeXSec),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4104,
+			   PCent+X*(pipeWidth/2.0-pipeXSec),X);
+
+  // Pipe Top
+  ModelSupport::buildPlane(SMap,buildIndex+4505,QCent-Z*(pipeXSec/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+4506,QCent+Z*(pipeXSec/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+4803,QCent-X*(pipeMidGap/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4804,QCent+X*(pipeMidGap/2.0),X);
+
   
   // void space:
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -356,10 +388,17 @@ BremColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1001 -102 2003 -2004 2005 -2006 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-  
+
+  // Pre Water:
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -1001 3 -4 5 -6 (-1003: 1004 : -1005: 1006)");
+    (SMap,buildIndex," 101 -4001 3 -4 5 -6 (-1003: 1004 : -1005: 1006) ");
   makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+
+  // Post Water
+  Out=ModelSupport::getComposite
+      (SMap,buildIndex," 4002 -1001  3 -4 5 -6 (-1003: 1004 : -1005: 1006) ");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1001 -102 3 -4 5 -6 (-2003: 2004 : -2005: 2006)");
@@ -375,13 +414,49 @@ BremColl::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -7  102 3007");
   makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backSurf);
 
+  // water cooling
 
+  // Part with water
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002 4103 -4104 4006 -4505 "
+     "(-1003: 1004 : -1005: 1006)");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002 4003 -4004 4005 -4006 ");
+  makeCell("BaseWater",System,cellIndex++,waterMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002 4003 -4103 4006 -4505 ");
+  makeCell("LeftWater",System,cellIndex++,waterMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002  4104 -4004 4006 -4505 ");
+  makeCell("RightWater",System,cellIndex++,waterMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002 4003 -4803 4505 -4506 ");
+  makeCell("TopWaterA",System,cellIndex++,waterMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002  4804 -4004 4505 -4506 ");
+  makeCell("TopWaterB",System,cellIndex++,waterMat,0.0,Out);
+
+  // Outer layer on water
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002 3 -4 5 -6 (-4003:4004:-4005:4506) ");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+
+  // Mid Gap
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 4001 -4002 4803 -4804 4505  -4506 ");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,Out);
+  
   
   Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 -101 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+frontSurf);
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 7 102 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,Out+backSurf);
-
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 13 -14 15 -16");
   addOuterSurf("Main",Out);
