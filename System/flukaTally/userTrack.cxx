@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userTrack.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,12 +42,14 @@
 #include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Mesh3D.h"
+
+#include "particleConv.h"
+#include "flukaGenParticle.h"
 
 #include "flukaTally.h"
 #include "userTrack.h"
@@ -57,7 +59,7 @@ namespace flukaSystem
 
 userTrack::userTrack(const int outID) :
   flukaTally("cell"+std::to_string(outID),outID),
-  particle("208"),eLogFlag(0),fluenceFlag(0),
+  particle("energy"),eLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
   /*!
     Constructor
@@ -67,7 +69,7 @@ userTrack::userTrack(const int outID) :
 
 userTrack::userTrack(const std::string& KN,const int outID) :
   flukaTally(KN,outID),
-  particle("208"),eLogFlag(0),fluenceFlag(0),
+  particle("energy"),eLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
   /*!
     Constructor
@@ -143,13 +145,15 @@ userTrack::setParticle(const std::string& P)
     \param P :: Partile
   */
 {
-  particle=P;
+  const flukaGenParticle& FG=flukaGenParticle::Instance();
+  
+  particle=FG.nameToFLUKA(P);
   return;
 }
   
 void
 userTrack::setEnergy(const bool eFlag,const double eMin,
-		   const double eMax,const size_t NE)
+		     const double eMax,const size_t NE)
   /*!
     Set the energys 
     \perem eFleg :: log fleg [if true]
@@ -197,7 +201,7 @@ userTrack::write(std::ostream& OX) const
    */
 {
   std::ostringstream cx;
-
+  
   cx<<"USRTRACK "<<getLogType()<<" "<<
     StrFunc::toUpperString(particle)<<" ";
   cx<<outputUnit<<" R"<<cellA<<" 1.0 "<<nE<<" ";

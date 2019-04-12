@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userTrackConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,6 @@
 
 #include "Object.h"
 #include "SimFLUKA.h"
-#include "particleConv.h"
-#include "flukaGenParticle.h"
 #include "TallySelector.h"
 #include "flukaTally.h"
 #include "userTrack.h"
@@ -86,8 +84,9 @@ userTrackConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param PType :: Particle type
     \param fortranTape :: output stream
-    \param CellA :: initial region
+    \param cellA :: initial region
     \param eLog :: energy in log bins
     \param aLog :: angle in log bins
     \param Emin :: Min energy 
@@ -96,10 +95,9 @@ userTrackConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userTrackConstruct","createTally");
 
-  const flukaGenParticle& FG=flukaGenParticle::Instance();
     
   userTrack UD(fortranTape);
-  UD.setParticle(FG.nameToFLUKA(PType));
+  UD.setParticle(PType);
 
   UD.setCell(cellA);
   UD.setEnergy(eLog,Emin,Emax,nE);
@@ -113,7 +111,7 @@ userTrackConstruct::createTally(SimFLUKA& System,
 void
 userTrackConstruct::processTrack(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+ 			     const size_t Index) 
   /*!
     Add TRACK tally (s) as needed
     - Input:
@@ -126,12 +124,14 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("userTrackConstruct","processTrack");
-
   
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+
+  
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
+  
   const std::string FCindex=
     IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 

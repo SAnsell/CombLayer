@@ -72,7 +72,7 @@ class BremColl :
   double pipeYStep;           ///< Pipe step down block
   double pipeZStep;           ///< Pipe under step 
   double pipeWidth;           ///< Centre-centre width
-  double pipeMidGap;           ///< Top pipe mid gap
+  double pipeMidGap;          ///< Top pipe mid gap
   
   int voidMat;                ///< void material
   int innerMat;               ///< Tungsten material

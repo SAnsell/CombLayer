@@ -3,7 +3,7 @@
  
  * File:   flukaTally/flukaTallyBuilder.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "userDumpConstruct.h"
 #include "userBdxConstruct.h"
 #include "userRadDecayConstruct.h"
+#include "userTrackConstruct.h"
 #include "resnucConstruct.h"
 #include "flukaTallyBuilder.h"
 
@@ -99,10 +100,12 @@ tallySelection(SimFLUKA& System,
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")
 	userDumpConstruct::processDump(System,IParam,i);
-      else if (TType=="surface")
-	userBdxConstruct::processBDX(System,IParam,i);
       else if (TType=="raddecay")
 	userRadDecayConstruct::processRadDecay(System,IParam,i);
+      else if (TType=="surface")
+	userBdxConstruct::processBDX(System,IParam,i);
+      else if (TType=="track" || TType=="cell")
+	userTrackConstruct::processTrack(System,IParam,i);
       else if (TType=="resnuc")
 	resnucConstruct::processResNuc(System,IParam,i);
       else
@@ -133,9 +136,11 @@ helpTallyType(const std::string& HType)
 	      <<"-- mesh : \n"
 	      <<"-- dump : \n"
 	      <<"-- surface : \n"
-	      <<"-- cell : \n"
+	      <<"-- cell :  particle FC index eMin eMax NE \n"
 	      <<"-- raddecay : \n"
-	      <<"-- resnuc : \n";
+	      <<"-- resnuc : \n"
+	      <<"-- track :  particle FC index eMin eMax NE \n";
+
     }
   
   ELog::EM<<ELog::endBasic;

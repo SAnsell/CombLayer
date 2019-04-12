@@ -245,10 +245,10 @@ ShutterUnit::createObjects(Simulation& System)
     (ExternalCut::getRuleStr("mountSurf"));
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4  5 -6  " );
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6  " );
   makeCell("Dump",System,cellIndex++,blockMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4  5 -6 " );
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
   addOuterSurf("Inner",Out);
   
   // create Flange:
