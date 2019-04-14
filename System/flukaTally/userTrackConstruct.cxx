@@ -131,30 +131,24 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-  
-  const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
-  size_t itemIndex(4);
-  int cellA(0);
-  if (!StrFunc::convert(FCname,cellA))
-    {
-      throw ColErr::InContainerError<std::string>
-	(FCname+":"+FCindex,"No regions");
-    }
+  // throws on error
+  const std::vector<int> cellList=System.getObjectRange(FCname);
   
-  ELog::EM<<"Regions connected from "<<cellA<<ELog::endDiag;  
+  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,3);
+  const double EB=IParam.getDefValue<double>(1000,"tally",Index,4);
+  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,5); 
+
 
   // This needs to be more sophisticated
-  const int nextId=System.getNextFTape();
-  
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
-  
-  userTrackConstruct::createTally(System,particleType,nextId,
-				  cellA,1,EA,EB,NE);
-  
+
+  for(const int cellA : cellList)
+    {
+      const int nextId=System.getNextFTape();
+      userTrackConstruct::createTally(System,particleType,nextId,
+				    cellA,1,EA,EB,NE);
+      
+    }  
   return;      
 }  
   

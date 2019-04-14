@@ -488,7 +488,8 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PreDipoleGenerator PGen;
   setVariable::DipoleChamberGenerator DCGen;
   
-  Control.addVariable(frontKey+"OuterRadius",60.0);  
+  Control.addVariable(frontKey+"OuterRadius",60.0);
+  Control.addVariable(frontKey+"FrontOffset",30.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");

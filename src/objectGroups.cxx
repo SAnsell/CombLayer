@@ -659,15 +659,17 @@ objectGroups::getObjectRange(const std::string& objName) const
     Processes down to cellMap items if objName is of the 
     form objecName:cellMapName
     \param objName :: Object name
-    \return vector of item
+    \return vector of items
   */
 {
   ELog::RegMethod RegA("objectGroups","getObjectRange");
 
   const std::vector<std::string> Units=
     StrFunc::StrSeparate(objName,":");
-  
+
+
   // CELLMAP Range ::  objectName:cellName
+  // FixedComp :: OffsetIndex
   if ((Units.size()==2 || Units.size()==3) &&
       !Units[0].empty() && !Units[1].empty())
     {
@@ -679,7 +681,7 @@ objectGroups::getObjectRange(const std::string& objName) const
 
       if (CPtr)
 	{
-	  if (Units.size()==3)
+	  if (Units.size()==3)   // CellMap : Name : Index
 	    {
 	      size_t cellIndex;
 	      if(!StrFunc::convert(Units[2],cellIndex))
@@ -687,32 +689,23 @@ objectGroups::getObjectRange(const std::string& objName) const
 		  (objName,"CellMap:cellName:Index");
 	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
 	    }
-	  // case 2:
+	  // case 2: CellMap : Name 
 	  const std::vector<int> Out=CPtr->getCells(cellName);
-	  
-	  if (Out.empty())
-	    {
-	      ELog::EM<<"EMPTY NAME::Possible names["<<itemName
-		      <<"] == "<<ELog::endDiag;
-	      std::vector<std::string> NameVec=CPtr->getNames();
-	      for(const std::string CName : NameVec)
-		ELog::EM<<"  "<<CName<<ELog::endDiag;
-	      throw ColErr::InContainerError<std::string>
-		(objName,"Object empty");
-	    }
-	  return Out;
+	  if (!Out.empty())
+	    return Out;
 	}
-    }
-  // FIXED COMP and number
-  if (Units.size()==2)
-    {
-      const std::string& itemName=Units[0];
-      size_t index;
-      if (StrFunc::convert(Units[1],index) &&
-	  hasObject(itemName))
+
+      // FIXED COMP [index :: cell index offset]
+      if (Units.size()==2) 
 	{
-	  const groupRange& fcGroup=getGroup(itemName);
-	  return std::vector<int>({ fcGroup.getCellIndex(index) });
+	  const std::string& itemName=Units[0];
+	  size_t index;
+	  if (StrFunc::convert(Units[1],index) &&
+	      hasObject(itemName))
+	    {
+	      const groupRange& fcGroup=getGroup(itemName);
+	      return std::vector<int>({ fcGroup.getCellIndex(index) });
+	    }
 	}
     }
   
@@ -742,9 +735,21 @@ objectGroups::getObjectRange(const std::string& objName) const
   if (objName=="All" || objName=="all")
     return std::vector<int>(activeCells.begin(),activeCells.end());
 
-  // BASIC
-  const groupRange& GRP=getGroup(objName); 
-  return GRP.getAllCells();
+  // FixedComp  -- All
+  ELog::EM<<"ObjName == "<<objName<<ELog::endDiag;
+  if (Units.size()==1)
+    {
+      if (hasObject(objName))
+	{
+	  const groupRange& fcGroup=getGroup(objName);
+	  return fcGroup.getAllCells();
+	}
+    }
+
+  throw ColErr::InContainerError<std::string>
+    (objName,"objectName does not convert to cells");
+
+  
 }
   
 void

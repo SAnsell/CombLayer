@@ -101,7 +101,14 @@ MonoShutter::MonoShutter(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  OR.addObject(shutterPipe);
+  OR.addObject(monoShutterA);
+  OR.addObject(monoShutterB);
+}
 
 MonoShutter::~MonoShutter()
   /*!

@@ -132,10 +132,11 @@ int
 userTrack::getLogType() const
   /*!
     Gets the flag based on the log type of energy/angle
-    'return flag
+    returns the fluka what card for log.
+    \return fluka card value
   */
 {
-  return (eLogFlag) ? 1 : 0;
+  return (eLogFlag) ? -1 : 1;
 }
   
 void
@@ -156,10 +157,10 @@ userTrack::setEnergy(const bool eFlag,const double eMin,
 		     const double eMax,const size_t NE)
   /*!
     Set the energys 
-    \perem eFleg :: log fleg [if true]
-    \perem eMin :: Min energy [min 0.001MeV if log]
-    \perem eMax :: Max energy [MeV]
-    \perem NE :: Number of points [min 3 if log]
+    \parem eFleg :: log fleg [if true]
+    \parem eMin :: Min energy [min 0.001MeV if log]
+    \parem eMax :: Max energy [MeV]
+    \parem NE :: Number of points [min 3 if log]
   */
 {
   ELog::RegMethod RegE("userTrack","setEnergy");
@@ -209,7 +210,7 @@ userTrack::write(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - &";
+  cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - - &";
   StrFunc::writeFLUKA(cx.str(),OX);  
   return;
 }

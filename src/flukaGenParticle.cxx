@@ -47,7 +47,7 @@
 flukaGenParticle::flukaGenParticle() : 
   flukaGen({
       {"all-part",201}, {"all-char",202}, {"all-neut",203}, {"all-nega",204},
-      {"all-posi",205}, {"nucleons",206}, {"nuc&pi+-",207}, {"energy ",208},
+      {"all-posi",205}, {"nucleons",206}, {"nuc&pi+-",207}, {"energy",208},
       {"pions+-",209}, {"beampart",210}, {"em-enrgy",211}, {"muons",212},
       {"e+&e-",213}, {"ap&an",214}, {"kaons",215}, {"strange",216},
       {"kaons+-",217}, {"had-char",218}, {"fissions",219}, {"he-fiss",220},
