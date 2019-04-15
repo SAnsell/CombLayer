@@ -508,10 +508,12 @@ OpticsBeamline::buildObjects(Simulation& System)
   viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
   viewPipe->createAll(System,*slitsB,2);
-  outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
   viewPipe->insertAllInCell(System,outerCell);
 
+  const constructSystem::portItem& CPI=viewPipe->getPort(3);
+  CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
+		   
   // split the object into four
   const int cNumOffset(outerCell);
   viewPipe->splitObject(System,1001,outerCell,

@@ -830,7 +830,8 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF50>(20.0);
   PItemGen.setPlate(0.0,"Void");  
   FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten",1);  // 22 rotation
+  // width 
+  FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);
@@ -987,10 +988,13 @@ opticsVariables(FuncDataBase& Control,
 
 
   // centre of mid point
-  const std::string fname=opticsName+"ViewMount"+std::to_string(0);      
+  const std::string fname=opticsName+"ViewMount"+std::to_string(0);
+  FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
   FlangeGen.setCF<setVariable::CF40>();
   FlangeGen.generateMount(Control,fname,0);    // out of  beam
 
+  
+  
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
