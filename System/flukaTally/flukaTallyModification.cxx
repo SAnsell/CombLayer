@@ -87,9 +87,7 @@ getActiveTally(const SimFLUKA& Sim,const std::string& tName)
 	  KN.back()='*';
 	}
       if (KN==tName)
-	{
-	  Out.insert(mc.second);
-	}
+	Out.insert(mc.second);
     }
   return Out;
 }
