@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R1Ring.cxx
+ * File:   maxivBuild/R3Ring.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -72,7 +72,6 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -130,13 +129,10 @@ R3Ring::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
-  roofExtra=Control.EvalVar<double>(keyName+"RoofExtraVoid");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
-
-
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
   return;
@@ -179,8 +175,10 @@ R3Ring::createSurfaces()
       Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D APt(Origin+Axis*icosagonRadius);
       ModelSupport::buildPlane(SMap,surfN+3,APt,Axis);
+      SurfMap::addSurf("CentInner",-SMap.realSurf(surfN+3));
       ModelSupport::buildPlane
 	(SMap,surfN+1003,APt+Axis*icosagonWallThick,Axis);
+      SurfMap::addSurf("RingInner",SMap.realSurf(surfN+1003));
       // mid point
       innerPts.push_back(APt+Axis*icosagonWallThick);
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
@@ -193,8 +191,6 @@ R3Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+26,
-			   Origin+Z*(height+roofThick+roofExtra),Z);
 
   // Inner coordinate points are all offset from the inner points
 
@@ -257,22 +253,6 @@ R3Ring::createFloor(Simulation& System)
   return;
 }
 
-
-void
-R3Ring::createRoof(Simulation& System)
-  /*!
-    Adds the main roof objects
-    \param System :: Simulation to create objects in
-   */
-{
-  ELog::RegMethod RegA("R3Ring","createRoof");
-
-  std::string Out;
-  
-  int surfN(buildIndex);
-  return;
-}
-
 void
 R3Ring::createObjects(Simulation& System)
   /*!
@@ -282,13 +262,11 @@ R3Ring::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3Ring","createObjects");
 
-  const std::string wallBase=
+  const std::string fullLayer=
     ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
-  const std::string extraBase=
-    ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
-  const std::string fullBase=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -26 ");
-  const std::string innerBase=
+  const std::string roofLayer=
+    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
+  const std::string innerLayer=
     ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");
 
   // horrible code to build a list of 20 values
@@ -309,14 +287,14 @@ R3Ring::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,lineBuild);
   
   HeadRule IV(Out);
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullBase);
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullLayer);
 
   IV.makeComplement();
   Out=ModelSupport::getComposite(SMap,buildIndex+1000,lineBuild);
   HeadRule XV(Out);
   XV.makeComplement();
   makeCell("InnerWall",System,cellIndex++,wallMat,0.0,
-	   Out+fullBase+IV.display());
+	   Out+fullLayer+IV.display());
 
   // Now build each individial segment
 
@@ -333,19 +311,20 @@ R3Ring::createObjects(Simulation& System)
       // inner
       Out+=ModelSupport::getComposite(SMap,IPrev,INext," (3:3M) ");
       //      Out+=XV.display();
-      makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullBase);
+      makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+innerLayer);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,Out+roofLayer);
 
       Out=ModelSupport::getComposite
 	(SMap,BNext,BPrev," 1001M -1003M  -1 3M");
-      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,Out+fullBase);
+      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,Out+fullLayer);
 
       Out=ModelSupport::getComposite
 	(SMap,BNext,BPrev," 1 -1001 -1003M  3 ");
-      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+fullBase);
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+fullLayer);
 
       Out=ModelSupport::getComposite
 	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  1003 -9007N ");
-      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullBase);
+      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullLayer);
       
       IPrev=INext;
       BPrev=BNext;
@@ -354,7 +333,7 @@ R3Ring::createObjects(Simulation& System)
     }
   
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -26");  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");  
   addOuterSurf(Out);    
 
   return;
@@ -408,11 +387,11 @@ R3Ring::createLinks()
 void
 R3Ring::createDoor(Simulation& System)
   /*!
-    Build if a ring-door is required
+    Build if a ring-door is required [ access to area outside of ring]
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R3Ring","createMaze");
+  ELog::RegMethod RegA("R3Ring","createDoor");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -424,12 +403,12 @@ R3Ring::createDoor(Simulation& System)
       OR.addObject(doorPtr);
 
       doorPtr->setCutSurf
-	("innerWall",SurfMap::getSurf("SideInner",doorActive-1));
+	("innerWall",-SurfMap::getSurf("FlatInner",doorActive-1));
       doorPtr->setCutSurf
-	("outerWall",-SurfMap::getSurf("SideOuter",doorActive-1));
+	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
 
-      doorPtr->addInsertCell(getCell("Wall",doorActive % 10));
-      doorPtr->createAll(System,*this,doorActive+2);
+      doorPtr->addInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
+      doorPtr->createAll(System,*this,doorActive+1);
     }
   return;
 }

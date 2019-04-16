@@ -62,18 +62,15 @@ class R3Ring :
   double depth;                   ///< Main depth
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
-  double roofExtra;               ///< Roof Extra void above roof
-
   
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
 
-  size_t doorActive;           ///< Flag/sector for door if modeled
+  size_t doorActive;           ///< Flag/sector for door if modeled (+1)
   std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
 
 
-  void createRoof(Simulation&);
   void createFloor(Simulation&);
   void createDoor(Simulation&);
     

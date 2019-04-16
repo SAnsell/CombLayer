@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,7 @@ class SurfMap : public BaseMap
 
   std::string getSurfString(const std::string&) const;
   std::string getSurfComplement(const std::string&) const;
+
 };
 
 }

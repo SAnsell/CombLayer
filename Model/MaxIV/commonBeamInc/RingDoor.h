@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/RingDoor.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ namespace xraySystem
     \version 1.0
     \author S. Ansell
     \date June 2018
-    \brief Extra beam stop for opticshutch
+    \brief Door for the outer wall of the R1/R3 rings
   */
   
 class RingDoor :

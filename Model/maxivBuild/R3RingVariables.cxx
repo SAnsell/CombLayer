@@ -49,10 +49,30 @@
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
+#include "MazeGenerator.h"
+#include "RingDoorGenerator.h"
 
 namespace setVariable
 {  
 
+void
+R3RingDoors(FuncDataBase& Control,const std::string& preName)
+  /*!
+    Construct variables for R3RingDoors 
+    \param Control :: Control value
+    \param preName :: Prename (r3ring typcially)
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","R3RingDoors");
+
+  RingDoorGenerator RGen;
+  
+  Control.addVariable(preName+"RingDoorWallID",1);
+  
+  RGen.generateDoor(Control,preName+"RingDoor",2300.0);
+  return;
+}
+  
 void
 R3RingVariables(FuncDataBase& Control)
   /*!
@@ -76,15 +96,14 @@ R3RingVariables(FuncDataBase& Control)
   
   Control.addVariable(preName+"Height",160.0);
   Control.addVariable(preName+"Depth",130.0);
-  Control.addVariable(preName+"RoofThick",60.0);
-  Control.addVariable(preName+"RoofExtraVoid",40.0);
+  Control.addVariable(preName+"RoofThick",100.0);
   Control.addVariable(preName+"FloorThick",100.0);
 
   Control.addVariable(preName+"WallMat","Concrete");  
   Control.addVariable(preName+"FloorMat","Concrete");
   Control.addVariable(preName+"RoofMat","Concrete");
-
-
+  
+  R3RingDoors(Control,preName);
 
   return;
 }

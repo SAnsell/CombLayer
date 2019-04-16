@@ -3,7 +3,7 @@
  
  * File:   commonBeam/RingDoor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,10 +140,10 @@ RingDoor::createUnitVector(const attachSystem::FixedComp& FC,
   if (PPtr)
     {
       Geometry::Vec3D PAxis=PPtr->getNormal();
-      if (Y.dotProd(PAxis)*SN < 0)
+      if (Y.dotProd(PAxis)*SN < -Geometry::zeroTol)
 	PAxis*=-1;
       FixedComp::reOrientate(1,PAxis);
-    }  
+    }
   applyOffset();
   return;
 }
@@ -197,7 +197,6 @@ RingDoor::createSurfaces()
     (SMap,"innerWall",buildIndex+200,-1,Y,innerThick);
   ExternalCut::makeShiftedSurf
     (SMap,"innerWall",buildIndex+201,-1,Y,innerThick+gapSpace);
-
   return;
 }
 
@@ -213,7 +212,7 @@ RingDoor::createObjects(Simulation& System)
   std::string Out;
   const std::string innerStr=ExternalCut::getRuleStr("innerWall");
   const std::string outerStr=ExternalCut::getRuleStr("outerWall");
-
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"200 3 -4 5 -6 ");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr);
 
@@ -226,11 +225,11 @@ RingDoor::createObjects(Simulation& System)
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,Out+innerStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-200 201 3 -4 5 -6 ");
-  makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,Out+outerStr);
+  makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-200 201 23 -24 25 -26 (-3:4:-5:6) ");
-  makeCell("MidGap",System,cellIndex++,0,0.0,Out+outerStr);
+  makeCell("MidGap",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-201 23 -24 25 -26 ");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,Out+outerStr);
