@@ -396,7 +396,7 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,26.6);
 
   // ystep : wing
-  ShieldGen.setPlate(80.0,80.0,10.0)
+  ShieldGen.setPlate(80.0,80.0,10.0);
   ShieldGen.generateShield(Control,slitKey+"ScreenA",-4.0,30.0);
 
   PipeGen.setCF<setVariable::CF63>();
