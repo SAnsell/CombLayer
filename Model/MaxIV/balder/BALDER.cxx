@@ -178,6 +178,7 @@ BALDER::build(Simulation& System,
 
   frontBeam->setFront(ringCaveA->getSurf("BeamFront"));
   frontBeam->setBack(ringCaveA->getSurf("BeamInner"));
+  ELog::EM<<"Surf == "<<ringCaveA->getSurf("BeamInner")<<ELog::endDiag;
 
   //  const HeadRule caveVoid=ringCaveA->getCellHR(System,"Void");
   frontBeam->addInsertCell(ringCaveA->getCell("Void"));
@@ -209,7 +210,6 @@ BALDER::build(Simulation& System,
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
-  
 
     // new
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
@@ -217,6 +217,7 @@ BALDER::build(Simulation& System,
 			 opticsHut->getSideIndex("innerFront"));
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
+
   opticsBeam->setCutSurf("floor",opticsHut->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 

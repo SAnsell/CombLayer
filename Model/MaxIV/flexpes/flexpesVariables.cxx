@@ -223,6 +223,7 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,splitKey+"OutPipeA",0,82.5);
   PipeGen.generatePipe(Control,splitKey+"OutPipeB",0,82.5);
 
+  ShieldGen.setPlate(150.0,100.0,10.0);
   ShieldGen.generateShield(Control,splitKey+"ScreenB",0.0,0.0);
   
   return;
@@ -395,8 +396,8 @@ slitPackageVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,slitKey+"PipeC",0,26.6);
 
   // ystep : wing
+  ShieldGen.setPlate(80.0,80.0,10.0)
   ShieldGen.generateShield(Control,slitKey+"ScreenA",-4.0,30.0);
-
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
@@ -590,9 +591,9 @@ opticsBeamVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,opticKey+"PipeB",0,169.5);
 
+  // ystep : wing
   ShieldGen.setMaterial("Stainless304","Stainless304","Stainless304");
-  ShieldGen.setPlate(25.0,25.0,5.0);
-  // ystep : wing  
+  ShieldGen.setPlate(20.0,20.0,7.5);
   ShieldGen.generateShield(Control,opticKey+"ScreenExtra",-80.0,0.0);
 
   // will be rotated vertical

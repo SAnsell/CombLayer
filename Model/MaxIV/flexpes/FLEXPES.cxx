@@ -140,7 +140,7 @@ FLEXPES::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("FLEXPES","build");
-
+  
   const int voidCell(74123);
   frontBeam->setStopPoint(stopPoint);
     
