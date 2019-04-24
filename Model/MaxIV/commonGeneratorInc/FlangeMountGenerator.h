@@ -27,24 +27,24 @@ class FuncDataBase;
 namespace setVariable
 {
 
-/*!
-  \class FlangeMountGenerator
-  \version 1.0
-  \author S. Ansell
-  \date May 2016
-  \brief FlangeMountGenerator for variables
-*/
+ /*!
+   \class FlangeMountGenerator
+   \version 1.0
+   \author S. Ansell
+   \date May 2016
+   \brief FlangeMountGenerator for variables
+ */
 
 class FlangeMountGenerator
 {
  private:
 
   
-  double plateRadius;            ///< Port inner radius (opening)
-  double plateThick;             ///< Port outer ring
+  double plateRadius;           ///< Port inner radius (opening)
+  double plateThick;            ///< Port outer ring
 
-  double threadRadius;           ///< Thread radius
-  double threadLength;           ///< Thread length
+  double threadRadius;          ///< Thread radius
+  double threadLength;          ///< Thread length
   
   double bladeLift;             ///< Height of blade up
   double bladeXYAngle;          ///< Angle of blade up
@@ -59,7 +59,6 @@ class FlangeMountGenerator
   std::string bladeMat;         ///< blade material
   std::string plateMat;         ///< Pipe material
     
-
  public:
 
   FlangeMountGenerator();

@@ -49,7 +49,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
+  class balderOpticsHutch;
   class ExperimentalHutch;
   class cosaxsFrontEnd;
   class cosaxsOpticsLine;
@@ -64,16 +64,9 @@ namespace xraySystem
     \brief General constructor for the xray system
   */
 
-class COSAXS : public attachSystem::CopiedComp
+class COSAXS : public R3Beamline
 {
  private:
-
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
-  /// Front end cave volume
-  std::shared_ptr<R3FrontEndCave> ringCaveA;
-  // Joining front cave
-  std::shared_ptr<R3FrontEndCave> ringCaveB;
 
   /// the components in the front end
   std::shared_ptr<cosaxsFrontEnd> frontBeam;
@@ -85,7 +78,7 @@ class COSAXS : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  std::shared_ptr<balderOpticsHutch> opticsHut;
   /// Optics beamlines 
   std::shared_ptr<cosaxsOpticsLine> opticsBeam;
 
@@ -97,11 +90,9 @@ class COSAXS : public attachSystem::CopiedComp
   COSAXS(const std::string&);
   COSAXS(const COSAXS&);
   COSAXS& operator=(const COSAXS&);
-  ~COSAXS();
+  virtual ~COSAXS();
 
-  /// set stop point(s)
-  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
-  void build(Simulation&,const attachSystem::FixedComp&,
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);
 
 };

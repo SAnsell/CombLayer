@@ -63,15 +63,14 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "ExternalCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -95,13 +94,14 @@
 #include "WallLead.h"
 
 
+#include "R1Beamline.h"
 #include "FLEXPES.h"
 
 namespace xraySystem
 {
 
 FLEXPES::FLEXPES(const std::string& KN) :
-  attachSystem::CopiedComp("Flexpes",KN),
+  R1Beamline("Flexpes",KN),
   frontBeam(new flexpesFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new flexpesOpticsHut(newName+"OpticsHut")),
@@ -142,24 +142,25 @@ FLEXPES::build(Simulation& System,
   ELog::RegMethod RControl("FLEXPES","build");
   
   const int voidCell(74123);
+
   frontBeam->setStopPoint(stopPoint);
-    
+
   const size_t PIndex=static_cast<size_t>(sideIndex-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
-
+  
   frontBeam->addInsertCell(r1Ring->getCell("Void"));
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
-
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
-
+  
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
+  if (!stopPoint.empty())
+    ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
   
   opticsHut->setCutSurf("Floor",r1Ring->getSurf("Floor"));

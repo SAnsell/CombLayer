@@ -82,6 +82,7 @@
 #include "FixedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h" 
 #include "ShapeUnit.h"
 #include "PlateUnit.h"

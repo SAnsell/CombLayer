@@ -70,9 +70,9 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -86,7 +86,8 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "OpticsHutch.h"
+#include "balderOpticsHutch.h"
+
 #include "ExperimentalHutch.h"
 #include "FlangeMount.h"
 #include "BeamMount.h"
@@ -98,19 +99,21 @@
 #include "ConnectZone.h"
 #include "PipeShield.h"
 #include "ExptBeamline.h"
+
+#include "R3Beamline.h"
 #include "FORMAX.h"
 
 namespace xraySystem
 {
 
 FORMAX::FORMAX(const std::string& KN) :
-  attachSystem::CopiedComp("Formax",KN),
+  R3Beamline("Formax",KN),
   ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
   ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new formaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsHutch(newName+"OpticsHut")),
+  opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new formaxOpticsLine(newName+"OpticsLine"))
   /*!
     Constructor

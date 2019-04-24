@@ -72,6 +72,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"

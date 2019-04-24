@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userTrackConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,6 @@
 
 #include "Object.h"
 #include "SimFLUKA.h"
-#include "particleConv.h"
-#include "flukaGenParticle.h"
 #include "TallySelector.h"
 #include "flukaTally.h"
 #include "userTrack.h"
@@ -86,8 +84,9 @@ userTrackConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param PType :: Particle type
     \param fortranTape :: output stream
-    \param CellA :: initial region
+    \param cellA :: initial region
     \param eLog :: energy in log bins
     \param aLog :: angle in log bins
     \param Emin :: Min energy 
@@ -96,10 +95,9 @@ userTrackConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userTrackConstruct","createTally");
 
-  const flukaGenParticle& FG=flukaGenParticle::Instance();
     
   userTrack UD(fortranTape);
-  UD.setParticle(FG.nameToFLUKA(PType));
+  UD.setParticle(PType);
 
   UD.setCell(cellA);
   UD.setEnergy(eLog,Emin,Emax,nE);
@@ -113,7 +111,7 @@ userTrackConstruct::createTally(SimFLUKA& System,
 void
 userTrackConstruct::processTrack(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+ 			     const size_t Index) 
   /*!
     Add TRACK tally (s) as needed
     - Input:
@@ -126,35 +124,31 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("userTrackConstruct","processTrack");
-
   
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+
+  
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-  const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
-  size_t itemIndex(4);
-  int cellA(0);
-  if (!StrFunc::convert(FCname,cellA))
-    {
-      throw ColErr::InContainerError<std::string>
-	(FCname+":"+FCindex,"No regions");
-    }
+  // throws on error
+  const std::vector<int> cellList=System.getObjectRange(FCname);
   
-  ELog::EM<<"Regions connected from "<<cellA<<ELog::endDiag;  
+  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,3);
+  const double EB=IParam.getDefValue<double>(1000,"tally",Index,4);
+  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,5); 
+
 
   // This needs to be more sophisticated
-  const int nextId=System.getNextFTape();
-  
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
-  
-  userTrackConstruct::createTally(System,particleType,nextId,
-				  cellA,1,EA,EB,NE);
-  
+
+  for(const int cellA : cellList)
+    {
+      const int nextId=System.getNextFTape();
+      userTrackConstruct::createTally(System,particleType,nextId,
+				    cellA,1,EA,EB,NE);
+      
+    }  
   return;      
 }  
   

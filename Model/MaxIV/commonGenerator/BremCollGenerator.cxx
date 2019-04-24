@@ -3,7 +3,7 @@
  
  * File:   constructVar/BremCollGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,9 +61,14 @@ BremCollGenerator::BremCollGenerator() :
   width(7.2),height(6.6),wallThick(0.5),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
-  holeBWidth(0.7),holeBHeight(0.7),
+  holeMidDist(-0.7),holeMidWidth(0.7),holeMidHeight(0.7),
+  holeBWidth(1.0),holeBHeight(1.0),
+  extLength(5.0),extRadius(2.5),pipeDepth(2.0),pipeXSec(0.9),
+  pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
+  
   voidMat("Void"),innerMat("Tungsten"),
-  wallMat("Stainless304")
+  wallMat("Stainless304"),waterMat("H2O"),
+  pipeMat("Copper")
   /*!
     Constructor and defaults
   */
@@ -108,20 +113,25 @@ BremCollGenerator::setMaterial(const std::string& IMat,
 }
 
 void
-BremCollGenerator::setAperature(const double outerW,const double outerH,
-				const double minW,const double minH)
+BremCollGenerator::setAperature(const double frontW,const double frontH,
+				const double midW,const double midH,
+				const double backW,const double backH)
   /*!
     Set the widths
-    \param outerW :: Outer width
-    \param outerH :: Outer height
-    \param minW :: min width
-    \param minH :: min height
+    \param frontW :: Front width
+    \param frontH :: Front height
+    \param midW :: min width
+    \param midH :: min height
+    \param backW :: back width
+    \param backH :: back height
   */
 {
-  holeAWidth=outerW;
-  holeAHeight=outerH;
-  holeBWidth=minW;
-  holeBHeight=minH;
+  holeAWidth=frontW;
+  holeAHeight=frontH;
+  holeMidWidth=midW;
+  holeMidHeight=midH;
+  holeBWidth=backW;
+  holeBHeight=backH;
   return;
 }
 
@@ -136,7 +146,7 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Forward step
-    \param lenght :: length
+    \param length :: length of W block
   */
 {
   ELog::RegMethod RegA("BremCollGenerator","generatorColl");
@@ -155,17 +165,33 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBRadius",flangeARadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);  
 
+  const double HD(holeMidDist<0.0 ? -length*holeMidDist : holeMidDist);
   Control.addVariable(keyName+"HoleXStep",holeXStep);
   Control.addVariable(keyName+"HoleZStep",holeZStep);
   Control.addVariable(keyName+"HoleAWidth",holeAWidth);
   Control.addVariable(keyName+"HoleAHeight",holeAHeight);
+  Control.addVariable(keyName+"HoleMidDist",HD);
+  Control.addVariable(keyName+"HoleMidWidth",holeMidWidth);
+  Control.addVariable(keyName+"HoleMidHeight",holeMidHeight);
   Control.addVariable(keyName+"HoleBWidth",holeBWidth);
   Control.addVariable(keyName+"HoleBHeight",holeBHeight);
 
+  Control.addVariable(keyName+"ExtLength",extLength);
+  Control.addVariable(keyName+"ExtRadius",extRadius);
 
+
+  Control.addVariable(keyName+"PipeDepth",pipeDepth);
+  Control.addVariable(keyName+"PipeXSec",pipeXSec);
+  Control.addVariable(keyName+"PipeYStep",pipeYStep);
+  Control.addVariable(keyName+"PipeZStep",pipeZStep);
+  Control.addVariable(keyName+"PipeWidth",pipeWidth);
+  Control.addVariable(keyName+"PipeMidGap",pipeMidGap);
+  
   Control.addVariable(keyName+"InnerMat",innerMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WaterMat",waterMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
        
   return;
 

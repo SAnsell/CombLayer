@@ -80,6 +80,8 @@ namespace setVariable
 namespace balderVar
 {
 
+void wigglerVariables(FuncDataBase&,const std::string&);
+void ecutVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
@@ -88,60 +90,79 @@ void heatDumpVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void shutterTable(FuncDataBase&,const std::string&);
   
+
 void
-frontCaveVariables(FuncDataBase& Control,
-		   const std::string& preName,
-		   const bool mazeFlag,
-		   const bool doorFlag)
+wigglerVariables(FuncDataBase& Control,
+		   const std::string& frontKey)
   /*!
-    Variable for the main ring front shielding
+    Builds the variables for the wiggler
     \param Control :: Database
-    \param preName :: Name to describe system
-    \param mazeFlag :: maze is present
-    \param doorFlag :: door is present
+    \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
+  ELog::RegMethod RegA("balderVariables[F]","wigglerVariables");
 
-  MazeGenerator MGen;
-  RingDoorGenerator RGen;
+  setVariable::VacBoxGenerator VBoxGen;
   
-  Control.addVariable(preName+"Length",2100.0);
-  Control.addVariable(preName+"OuterGap",140.0);
-  Control.addVariable(preName+"RingGap",250.0);
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF40>();
+  VBoxGen.setPortLength(5.0,5.0); // La/Lb
+  // ystep/width/height/depth/length 
+  VBoxGen.generateBox(Control,frontKey+"WigglerBox",
+		      598.0,30.0,15.0,15.0,210.0);
 
-  // If this is changed then need to change joinPipe as well
-  Control.addVariable(preName+"FrontWallThick",160.0);
-  Control.addVariable(preName+"OuterWallThick",100.0);
-  Control.addVariable(preName+"RingWallThick",100.0);
-  Control.addVariable(preName+"InnerRingWidth",400.0);
+  // Wiggler
+  Control.addVariable(frontKey+"WigglerLength",200.0);
+  Control.addVariable(frontKey+"WigglerBlockWidth",8.0);
+  Control.addVariable(frontKey+"WigglerBlockHeight",8.0);
+  Control.addVariable(frontKey+"WigglerBlockDepth",8.0);
+  Control.addVariable(frontKey+"WigglerBlockHGap",0.2);
+  Control.addVariable(frontKey+"WigglerBlockVGap",0.96);
 
-  Control.addVariable(preName+"FloorDepth",130.0);
-  Control.addVariable(preName+"FloorThick",100.0);
-
-  Control.addVariable(preName+"RoofHeight",180.0);
-  Control.addVariable(preName+"RoofThick",100.0);
-
-  Control.addVariable(preName+"SegmentAngle",18.0);
-  Control.addVariable(preName+"SegmentLength",1365.0);
-  Control.addVariable(preName+"SegmentThick",100.0);
-
-  Control.addVariable(preName+"FrontHoleRadius",7.0);
+  Control.addVariable(frontKey+"WigglerBlockVCorner",1.0);
+  Control.addVariable(frontKey+"WigglerBlockHCorner",2.0);
 
   
-  Control.addVariable(preName+"FrontWallMat","Concrete");
-  Control.addVariable(preName+"WallMat","Concrete");
-  Control.addVariable(preName+"FloorMat","Concrete");
-  Control.addVariable(preName+"RoofMat","Concrete");
-
-
-  if (mazeFlag)
-    MGen.generateMaze(Control,preName+"Maze",0.0);
-  if (doorFlag)
-    RGen.generateDoor(Control,preName+"RingDoor",-800.0);
+  Control.addVariable(frontKey+"WigglerVoidMat",0);
+  Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
+    
   return;
 }
 
+void
+ecutVariables(FuncDataBase& Control,
+	      const std::string& frontKey)
+  /*!
+    Set the variables for the frontend wall
+    \param Control :: DataBase to use
+    \param frontKey :: prename
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","ecutVariables");
+  
+  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
+  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
+  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
+  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
+  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
+  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
+  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
+  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
+
+
+  return;  
+}
+  
 void
 shutterTable(FuncDataBase& Control,
 	     const std::string& frontKey)
@@ -151,7 +172,7 @@ shutterTable(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("maxpeemVariables[F]","shutterTable");
+  ELog::RegMethod RegA("balderVariables[F]","shutterTable");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
@@ -441,7 +462,7 @@ wallVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","wallVariables");
  
   WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
+  LGen.setWidth(70.0,140.0);
   LGen.generateWall(Control,wallKey,3.0);
   return;
 }
@@ -460,7 +481,6 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
@@ -468,52 +488,15 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PreDipoleGenerator PGen;
   setVariable::DipoleChamberGenerator DCGen;
   
-  Control.addVariable(frontKey+"OuterRadius",60.0);  
+  Control.addVariable(frontKey+"OuterRadius",60.0);
+  Control.addVariable(frontKey+"FrontOffset",30.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
-  
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF40>();
-  VBoxGen.setPortLength(5.0,5.0); // La/Lb
-  // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      115.0,30.0,15.0,15.0,210.0);
 
-  // Wiggler
-  Control.addVariable(frontKey+"WigglerLength",200.0);
-  Control.addVariable(frontKey+"WigglerBlockWidth",8.0);
-  Control.addVariable(frontKey+"WigglerBlockHeight",8.0);
-  Control.addVariable(frontKey+"WigglerBlockDepth",8.0);
-  Control.addVariable(frontKey+"WigglerBlockHGap",0.2);
-  Control.addVariable(frontKey+"WigglerBlockVGap",0.96);
+  wigglerVariables(Control,frontKey);
+  ecutVariables(Control,frontKey);
 
-  Control.addVariable(frontKey+"WigglerBlockVCorner",1.0);
-  Control.addVariable(frontKey+"WigglerBlockHCorner",2.0);
-
-  
-  Control.addVariable(frontKey+"WigglerVoidMat",0);
-  Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
-
-
-  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
-  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
-  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
-  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
-  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
-  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
 
   PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
   DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
@@ -545,10 +528,6 @@ frontEndVariables(FuncDataBase& Control,
   PipeGen.setCF<CF100>();
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
 
-  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",1.0);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -602,11 +581,10 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
   
-  Control.addVariable(hutName+"Depth",100.0);
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",1034.6);
-  Control.addVariable(hutName+"OutWidth",250.0);
-  Control.addVariable(hutName+"RingWidth",60.0);
+  Control.addVariable(hutName+"OutWidth",200.0);
+  Control.addVariable(hutName+"RingWidth",110.0);
   Control.addVariable(hutName+"RingWallLen",105.0);
   Control.addVariable(hutName+"RingWallAngle",18.50);
   Control.addVariable(hutName+"RingConcThick",100.0);
@@ -620,14 +598,12 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"OuterThick",0.3);
 
-  Control.addVariable(hutName+"FloorThick",50.0);
   Control.addVariable(hutName+"InnerOutVoid",10.0);
   Control.addVariable(hutName+"OuterOutVoid",10.0);
 
   Control.addVariable(hutName+"SkinMat","Stainless304");
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
-  Control.addVariable(hutName+"FloorMat","Concrete");
 
   Control.addVariable(hutName+"HoleXStep",0.0);
   Control.addVariable(hutName+"HoleZStep",5.0);
@@ -854,7 +830,8 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF50>(20.0);
   PItemGen.setPlate(0.0,"Void");  
   FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten",1);  // 22 rotation
+  // width 
+  FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);
@@ -1011,10 +988,13 @@ opticsVariables(FuncDataBase& Control,
 
 
   // centre of mid point
-  const std::string fname=opticsName+"ViewMount"+std::to_string(0);      
+  const std::string fname=opticsName+"ViewMount"+std::to_string(0);
+  FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
   FlangeGen.setCF<setVariable::CF40>();
   FlangeGen.generateMount(Control,fname,0);    // out of  beam
 
+  
+  
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
@@ -1124,15 +1104,11 @@ BALDERvariables(FuncDataBase& Control)
 
   Control.addVariable("sdefType","Wiggler");
 
-  
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
-
-  balderVar::frontCaveVariables(Control,"BalderRingCaveA",1,1);
-  balderVar::frontCaveVariables(Control,"BalderRingCaveB",0,0);
   balderVar::frontEndVariables(Control,"BalderFrontBeam");  
   balderVar::wallVariables(Control,"BalderWallLead");
   

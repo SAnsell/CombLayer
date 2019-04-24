@@ -68,10 +68,10 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "ExternalCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -91,13 +91,14 @@
 #include "speciesOpticsBeamline.h"
 #include "WallLead.h"
 
+#include "R1Beamline.h"
 #include "SPECIES.h"
 
 namespace xraySystem
 {
 
 SPECIES::SPECIES(const std::string& KN) :
-  attachSystem::CopiedComp("Species",KN),
+  R1Beamline("Species",KN),
   frontBeam(new speciesFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new speciesOpticsHut(newName+"OpticsHut")),
@@ -138,7 +139,7 @@ SPECIES::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("SPECIES","build");
 
-  const size_t PIndex=static_cast<size_t>(sideIndex-2);
+  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-2);
   const size_t SIndex=(PIndex+1) % r1Ring->nConcave();
   const size_t OIndex=(sideIndex+1) % r1Ring->getNCells("OuterSegment");
 

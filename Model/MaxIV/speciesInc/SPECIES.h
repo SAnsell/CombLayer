@@ -68,14 +68,9 @@ namespace xraySystem
   */
 
 class SPECIES :
-  public attachSystem::CopiedComp
+  public R1Beamline
 {
  private:
-
-  /// ring component  [taken from main setup]
-  std::shared_ptr<R1Ring> r1Ring;
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
 
   std::shared_ptr<speciesFrontEnd> frontBeam;    ///< in ring front end
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
@@ -90,14 +85,9 @@ class SPECIES :
   SPECIES(const std::string&);
   SPECIES(const SPECIES&);
   SPECIES& operator=(const SPECIES&);
-  ~SPECIES();
+  virtual ~SPECIES();
 
-  /// set ring
-  void setRing(std::shared_ptr<R1Ring> R) { r1Ring=R; }
-
-  /// Accessor to stop point
-  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
-  void build(Simulation&,const attachSystem::FixedComp&,
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
 	     const long int);
 
 };

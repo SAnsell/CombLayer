@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userTrack.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,12 +42,14 @@
 #include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Mesh3D.h"
+
+#include "particleConv.h"
+#include "flukaGenParticle.h"
 
 #include "flukaTally.h"
 #include "userTrack.h"
@@ -57,7 +59,7 @@ namespace flukaSystem
 
 userTrack::userTrack(const int outID) :
   flukaTally("cell"+std::to_string(outID),outID),
-  particle("208"),eLogFlag(0),fluenceFlag(0),
+  particle("energy"),eLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
   /*!
     Constructor
@@ -67,7 +69,7 @@ userTrack::userTrack(const int outID) :
 
 userTrack::userTrack(const std::string& KN,const int outID) :
   flukaTally(KN,outID),
-  particle("208"),eLogFlag(0),fluenceFlag(0),
+  particle("energy"),eLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
   /*!
     Constructor
@@ -130,10 +132,11 @@ int
 userTrack::getLogType() const
   /*!
     Gets the flag based on the log type of energy/angle
-    'return flag
+    returns the fluka what card for log.
+    \return fluka card value
   */
 {
-  return (eLogFlag) ? 1 : 0;
+  return (eLogFlag) ? -1 : 1;
 }
   
 void
@@ -143,19 +146,21 @@ userTrack::setParticle(const std::string& P)
     \param P :: Partile
   */
 {
-  particle=P;
+  const flukaGenParticle& FG=flukaGenParticle::Instance();
+  
+  particle=FG.nameToFLUKA(P);
   return;
 }
   
 void
 userTrack::setEnergy(const bool eFlag,const double eMin,
-		   const double eMax,const size_t NE)
+		     const double eMax,const size_t NE)
   /*!
     Set the energys 
-    \perem eFleg :: log fleg [if true]
-    \perem eMin :: Min energy [min 0.001MeV if log]
-    \perem eMax :: Max energy [MeV]
-    \perem NE :: Number of points [min 3 if log]
+    \parem eFleg :: log fleg [if true]
+    \parem eMin :: Min energy [min 0.001MeV if log]
+    \parem eMax :: Max energy [MeV]
+    \parem NE :: Number of points [min 3 if log]
   */
 {
   ELog::RegMethod RegE("userTrack","setEnergy");
@@ -197,7 +202,7 @@ userTrack::write(std::ostream& OX) const
    */
 {
   std::ostringstream cx;
-
+  
   cx<<"USRTRACK "<<getLogType()<<" "<<
     StrFunc::toUpperString(particle)<<" ";
   cx<<outputUnit<<" R"<<cellA<<" 1.0 "<<nE<<" ";
@@ -205,7 +210,7 @@ userTrack::write(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - &";
+  cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - - &";
   StrFunc::writeFLUKA(cx.str(),OX);  
   return;
 }

@@ -68,14 +68,9 @@ namespace xraySystem
   */
 
 class FLEXPES :
-  public attachSystem::CopiedComp
+  public xraySystem::R1Beamline
 {
  private:
-
-  /// ring component  [taken from main setup]
-  std::shared_ptr<R1Ring> r1Ring;
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
 
   std::shared_ptr<flexpesFrontEnd> frontBeam;    ///< in ring front end
   std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall

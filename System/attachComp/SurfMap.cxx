@@ -217,8 +217,5 @@ SurfMap::combine(const std::set<std::string>& KeySet) const
 
   return Out;
 }
-
-
-
  
 }  // NAMESPACE attachSystem

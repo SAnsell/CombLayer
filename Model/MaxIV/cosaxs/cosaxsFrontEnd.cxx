@@ -171,12 +171,8 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  dipolePipe->setFront(*undulatorPipe,2);
-  dipolePipe->createAll(System,*undulatorPipe,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
-  dipolePipe->insertInCell(System,outerCell);
 
-  return *dipolePipe;
+  return *undulatorPipe;
 }
 
   

@@ -68,11 +68,11 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "ExternalCut.h"
 #include "InnerZone.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
@@ -88,7 +88,6 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
@@ -509,10 +508,12 @@ OpticsBeamline::buildObjects(Simulation& System)
   viewPipe->addAllInsertCell(masterCell->getName());
   viewPipe->setFront(*slitsB,2);
   viewPipe->createAll(System,*slitsB,2);
-  outerCell=
-    buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*viewPipe,2);
   viewPipe->insertAllInCell(System,outerCell);
 
+  const constructSystem::portItem& CPI=viewPipe->getPort(3);
+  CPI.insertInCell(System,slitsB->getCell("OuterVoid"));
+		   
   // split the object into four
   const int cNumOffset(outerCell);
   viewPipe->splitObject(System,1001,outerCell,

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/OpticsHutch.cxx
+ * File:   balder/balderOpticsHutch.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,18 +77,17 @@
 #include "ExternalCut.h"
 #include "PortChicane.h"
 
-#include "OpticsHutch.h"
+#include "balderOpticsHutch.h"
 
 namespace xraySystem
 {
 
-OpticsHutch::OpticsHutch(const std::string& Key) : 
+balderOpticsHutch::balderOpticsHutch(const std::string& Key) : 
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
-  
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -99,30 +98,30 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
   nameSideIndex(17,"frontCut");
 }
 
-OpticsHutch::OpticsHutch(const OpticsHutch& A) : 
+balderOpticsHutch::balderOpticsHutch(const balderOpticsHutch& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  depth(A.depth),height(A.height),length(A.length),
+  height(A.height),length(A.length),
   ringWidth(A.ringWidth),ringWallLen(A.ringWallLen),
   ringWallAngle(A.ringWallAngle),outWidth(A.outWidth),
   innerThick(A.innerThick),pbWallThick(A.pbWallThick),
   pbFrontThick(A.pbFrontThick),pbBackThick(A.pbBackThick),
   pbRoofThick(A.pbRoofThick),outerThick(A.outerThick),
-  floorThick(A.floorThick),holeXStep(A.holeXStep),
+  holeXStep(A.holeXStep),
   holeZStep(A.holeZStep),holeRadius(A.holeRadius),
-  skinMat(A.skinMat),pbMat(A.pbMat),floorMat(A.floorMat)
+  skinMat(A.skinMat),pbMat(A.pbMat)
   /*!
     Copy constructor
-    \param A :: OpticsHutch to copy
+    \param A :: balderOpticsHutch to copy
   */
 {}
 
-OpticsHutch&
-OpticsHutch::operator=(const OpticsHutch& A)
+balderOpticsHutch&
+balderOpticsHutch::operator=(const balderOpticsHutch& A)
   /*!
     Assignment operator
-    \param A :: OpticsHutch to copy
+    \param A :: balderOpticsHutch to copy
     \return *this
   */
 {
@@ -133,7 +132,6 @@ OpticsHutch::operator=(const OpticsHutch& A)
       attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      depth=A.depth;
       height=A.height;
       length=A.length;
       ringWidth=A.ringWidth;
@@ -147,37 +145,34 @@ OpticsHutch::operator=(const OpticsHutch& A)
       pbBackThick=A.pbBackThick;
       pbRoofThick=A.pbRoofThick;
       outerThick=A.outerThick;
-      floorThick=A.floorThick;
       holeXStep=A.holeXStep;
       holeZStep=A.holeZStep;
       holeRadius=A.holeRadius;
       skinMat=A.skinMat;
       ringMat=A.ringMat;
       pbMat=A.pbMat;
-      floorMat=A.floorMat;
     }
   return *this;
 }
 
-OpticsHutch::~OpticsHutch() 
+balderOpticsHutch::~balderOpticsHutch() 
   /*!
     Destructor
   */
 {}
 
 void
-OpticsHutch::populate(const FuncDataBase& Control)
+balderOpticsHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","populate");
+  ELog::RegMethod RegA("balderOpticsHutch","populate");
   
   FixedOffset::populate(Control);
 
   // Void + Fe special:
-  depth=Control.EvalVar<double>(keyName+"Depth");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
@@ -193,7 +188,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
 
-  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
 
@@ -208,14 +202,13 @@ OpticsHutch::populate(const FuncDataBase& Control)
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   ringMat=ModelSupport::EvalMat<int>(Control,keyName+"RingMat");
-  floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
   
   return;
 }
 
 void
-OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
+balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -223,7 +216,7 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createUnitVector");
+  ELog::RegMethod RegA("balderOpticsHutch","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -234,29 +227,23 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-OpticsHutch::createSurfaces()
+balderOpticsHutch::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createSurfaces");
+  ELog::RegMethod RegA("balderOpticsHutch","createSurfaces");
 
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
-  
   if (innerOutVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
       (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
-
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
 
   // Steel inner layer
   ModelSupport::buildPlane(SMap,buildIndex+11,
@@ -285,15 +272,22 @@ OpticsHutch::createSurfaces()
   const double steelThick(innerThick+outerThick);
   
   // OuterWall
-  ModelSupport::buildPlane(SMap,buildIndex+31,
-			   Origin-Y*(steelThick+pbFrontThick),Y);
+  if (!ExternalCut::isActive("RingWall"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+31,
+			       Origin-Y*(steelThick+pbFrontThick),Y);
+      ExternalCut::setCutSurf("RingWall",SMap.realSurf(buildIndex+31));
+    }
+
   ModelSupport::buildPlane(SMap,buildIndex+32,
 			   Origin+Y*(length+steelThick+pbBackThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,
 			   Origin+X*(ringWidth+steelThick+pbWallThick),X);
+
   setSurf("ringFlat",SMap.realSurf(buildIndex+34));
+
   ModelSupport::buildPlane(SMap,buildIndex+36,
 			       Origin+Z*(height+steelThick+pbRoofThick),Z);  
 
@@ -317,11 +311,12 @@ OpticsHutch::createSurfaces()
       ModelSupport::buildPlaneRotAxis
 	(SMap,buildIndex+134,RPoint,X,-Z,ringWallAngle);
       RPoint += X*ringConcThick;
-      if (!ExternalCut::isActive("ringWall"))
+
+      if (!ExternalCut::isActive("SideWall"))
 	{
 	  ModelSupport::buildPlaneRotAxis
 	    (SMap,buildIndex+2004,RPoint,X,-Z,ringWallAngle);
-	  ExternalCut::setCutSurf("ringWall",-SMap.realSurf(buildIndex+2004));
+	  ExternalCut::setCutSurf("SideWall",-SMap.realSurf(buildIndex+2004));
 	}
     }
   
@@ -338,27 +333,36 @@ OpticsHutch::createSurfaces()
 }
 
 void
-OpticsHutch::createObjects(Simulation& System)
+balderOpticsHutch::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("OpticsHutch","createObjects");
+  ELog::RegMethod RegA("balderOpticsHutch","createObjects");
 
+  // ring wall
+  const std::string sideWall=ExternalCut::getRuleStr("SideWall");
+  const std::string innerSideWall=
+    ExternalCut::getComplementStr("InnerSideWall");
+  const std::string floor=ExternalCut::getRuleStr("Floor");
+  const std::string frontWall=ExternalCut::getRuleStr("RingWall");
+  
   std::string Out;
 
   if (innerOutVoid>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 5 -6 ");
-      makeCell("WallVoid",System,cellIndex++,0,0.0,Out);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 (-4:-104) 5 -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
+      makeCell("WallVoid",System,cellIndex++,0,0.0,Out+floor);
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,"1 -2 1003 (-4:-104) -6 3007 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 (-4:-104) 5 -6 3007 ");
-      makeCell("Void",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,"1 -2 3 (-4:-104) -6 3007 ");
+      makeCell("Void",System,cellIndex++,0,0.0,Out+floor);
     }
 
   // walls:
@@ -370,45 +374,42 @@ OpticsHutch::createObjects(Simulation& System)
     {
       const int mat=matList.front();
       matList.pop_front();
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2 -3M 13M 5 -6 ");
-      makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2 -3M 13M -6 ");
+      makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor);
 
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-					"1 -2  4M  104M  (-14M:-114M) 5 -6 ");
-      makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
+					"1 -2  4M  104M  (-14M:-114M) -6 ");
+      makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor);
       
       //front wall
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"-1M 11M 33 -34 5 -6M 107 ");
-      makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out);
-
+	(SMap,buildIndex,HI,"-1M 11M 33 -34 -6M 107 ");
+      if (layer=="Outer") Out+=frontWall;
+	
+      makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out+floor);
+      
       //back wall
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI,"2M -12M 33 (-34:-134) 5 -6 117 ");
-      makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out);
+	(SMap,buildIndex,HI,"2M -12M 33 (-34:-134) -6 117 ");
+      makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out+floor);
       
       // roof
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"11M -32 33 (-34:-134) 6M -16M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      setCell(layer+"Roof",cellIndex-1);
+      if (layer=="Outer") Out+=frontWall;
+      makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
       HI+=10;
     }
   
-  // floor
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-				    "1M -2M 3M (-4M:-104M) 15 -5 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
-
-    // ring wall
-  const std::string ringWall=ExternalCut::getRuleStr("ringWall");
 
   // Outer void for pipe
+
   if (inletRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
-      makeCell("Inlet",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -1 -107 ");
+      makeCell("Inlet",System,cellIndex++,0,0.0,Out+frontWall);
     }
+
 
   if (holeRadius>Geometry::zeroTol)
     {
@@ -416,33 +417,41 @@ OpticsHutch::createObjects(Simulation& System)
       makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
     }
     
-  // Exclude:
+  // Filler space :
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 34 134 -36 -32");
+  makeCell("Filler",System,cellIndex++,0,0.0,Out+sideWall+floor+frontWall);
+  
+  // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,HI,"1M -2M 1033 -3M 15 -6M ");
-      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+	(SMap,buildIndex,HI,"-2M 1033 -3M -6M ");
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out+floor+frontWall);
+
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,HI," 1M -2M 1033 15 -6M ");
-      Out+=ringWall;
+	(SMap,buildIndex,HI," -2M 1033 -6M ");
+      Out+=innerSideWall;
     }
   else
     Out=ModelSupport::getComposite
-      (SMap,buildIndex,HI," 1M -2M 3M (-4M:-104M) 15 -6M ");
+      (SMap,buildIndex,HI," -2M 3M (-4M:-104M) -6M ");
+      
+
   
-  addOuterSurf(Out);      
+  addOuterSurf(Out+floor+frontWall);      
 
   return;
 }
 
 void
-OpticsHutch::createLinks()
+balderOpticsHutch::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createLinks");
+  ELog::RegMethod RegA("balderOpticsHutch","createLinks");
 
   const double extraFront(innerThick+outerThick+pbFrontThick);
   const double extraBack(innerThick+outerThick+pbBackThick);
@@ -505,11 +514,11 @@ OpticsHutch::createLinks()
   const double steelThick(innerThick+outerThick);
   HeadRule mainCut;
   //  Out=ModelSupport::getComposite(SMap,buildIndex," 4:104 15 ");
-  setConnect(15,Origin-Z*(depth+floorThick),Z);
-  setLinkSurf(15,SMap.realSurf(buildIndex+34));
-  addLinkSurf(15,SMap.realSurf(buildIndex+134));
-  addLinkComp(15,-SMap.realSurf(buildIndex+15));
-  addLinkComp(15,SMap.realSurf(buildIndex+32));
+  // setConnect(15,Origin-Z*(depth+floorThick),Z);
+  // setLinkSurf(15,SMap.realSurf(buildIndex+34));
+  // addLinkSurf(15,SMap.realSurf(buildIndex+134));
+  // addLinkComp(15,-SMap.realSurf(buildIndex+15));
+  // addLinkComp(15,SMap.realSurf(buildIndex+32));
 
   setConnect(16,Origin+Z*(height+steelThick+pbRoofThick),Y);  
   setLinkSurf(16,SMap.realSurf(buildIndex+34));
@@ -526,13 +535,13 @@ OpticsHutch::createLinks()
 }
 
 void
-OpticsHutch::createChicane(Simulation& System)
+balderOpticsHutch::createChicane(Simulation& System)
   /*!
     Generic function to create chicanes
     \param System :: Simulation 
   */
 {
-  ELog::RegMethod Rega("OpticsHutch","createChicane");
+  ELog::RegMethod Rega("balderOpticsHutch","createChicane");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -569,7 +578,7 @@ OpticsHutch::createChicane(Simulation& System)
 }
 
 void
-OpticsHutch::createAll(Simulation& System,
+balderOpticsHutch::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -579,7 +588,7 @@ OpticsHutch::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createAll(FC)");
+  ELog::RegMethod RegA("balderOpticsHutch","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

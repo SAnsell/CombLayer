@@ -90,15 +90,16 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
     \param BL :: Set for the beamlines
     \param Control :: Database for variables
    */
+  
 {
   ELog::RegMethod RegA("maxivVariables[F]",
                        "maxivInstrumentVariables");
 
   const std::set<std::string> R1Beam
-    ({"RING1","FLEXPES","MAXPEEM","SPECIES"});
+    ({"R1RING","RING1","FLEXPES","MAXPEEM","SPECIES"});
 
   const std::set<std::string> R3Beam
-    ({"RING3","FORMAX","COSAXS","BALDER"});
+    ({"R3RING","RING3","FORMAX","COSAXS","BALDER"});
 
   
   typedef void (*VariableFunction)(FuncDataBase&);

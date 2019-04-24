@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuildInc/makeMaxIV.h
+ * File:   R3CommonInc/R3Beamline.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -12,57 +12,54 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNMaxIV FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_makeMaxIV_h
-#define xraySystem_makeMaxIV_h
-
+#ifndef xraySystem_R3Beamline_h
+#define xraySystem_R3Beamline_h
 
 namespace xraySystem
 {
-  class R1Ring;
+
   class R3Ring;
   /*!
-    \class makeMaxIV
+    \class R3Beamline
     \version 1.0
     \author S. Ansell
-    \date May 2018
-    \brief Main beamline system for MaxIV
+    \date January 2018
+    \brief General constructor for the xray system
   */
-  
-class makeMaxIV
+
+class R3Beamline :
+  public attachSystem::CopiedComp
 {
- private:
+ protected:
 
-  /// Main R1 Ring
-  std::shared_ptr<R1Ring> r1Ring;
-  /// Main R1 Ring
+  /// ring component  [taken from main setup]
   std::shared_ptr<R3Ring> r3Ring;
+  std::string startPoint;       ///< Start point
+  std::string stopPoint;        ///< End point
 
-  
-  void populateStopPoint(const mainSystem::inputParam&,
-			 const std::set<std::string>&,
-			 std::map<std::string,std::string>&) const;
-  std::string getActiveStop(const std::map<std::string,std::string>&,
-			    const std::string&) const;
-    
-  bool buildR1Ring(Simulation&,const mainSystem::inputParam&);
-
-  bool buildR3Ring(Simulation&,const mainSystem::inputParam&);
-  
  public:
   
-  makeMaxIV();
-  makeMaxIV(const makeMaxIV&);
-  makeMaxIV& operator=(const makeMaxIV&);
-  ~makeMaxIV();
-  
-  void build(Simulation&,const mainSystem::inputParam&);
+  R3Beamline(const std::string&,const std::string&);
+  R3Beamline(const R3Beamline&);
+  R3Beamline& operator=(const R3Beamline&);
+  virtual ~R3Beamline();
+
+  /// set ring
+  void setRing(std::shared_ptr<R3Ring>& R)
+    { r3Ring=R; }
+
+  /// Accessor to stop point
+  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
+
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
+		     const long int) =0;
 
 };
 

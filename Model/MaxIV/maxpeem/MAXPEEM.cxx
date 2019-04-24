@@ -68,10 +68,10 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "InnerZone.h"
 #include "CopiedComp.h"
-#include "ExternalCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -95,13 +95,14 @@
 #include "WallLead.h"
 
 
+#include "R1Beamline.h"
 #include "MAXPEEM.h"
 
 namespace xraySystem
 {
 
 MAXPEEM::MAXPEEM(const std::string& KN) :
-  attachSystem::CopiedComp("Maxpeem",KN),
+  R1Beamline("Maxpeem",KN),
   frontBeam(new maxpeemFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new maxpeemOpticsHut(newName+"OpticsHut")),

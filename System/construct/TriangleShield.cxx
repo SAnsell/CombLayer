@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"

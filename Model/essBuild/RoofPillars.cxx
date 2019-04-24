@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"

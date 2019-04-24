@@ -71,8 +71,8 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
 #include "FrontBackCut.h"
+#include "InnerZone.h"
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -90,7 +90,6 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "BremColl.h"
 
@@ -357,17 +356,15 @@ formaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeA,2);
   gaugeA->insertInCell(System,outerCell);
 
-
   bellowA->setFront(*gaugeA,2);
   bellowA->createAll(System,*gaugeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
 
-
-  bremCollA->setFront(*bellowA,2);
+  bremCollA->setCutSurf("front",*bellowA,2);
   bremCollA->createAll(System,*bellowA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
-  bremCollA->insertInCell(System,outerCell);
+  bremCollA->insertInCell("Main",System,outerCell);
 
 
   filterBoxA->addAllInsertCell(masterCell->getName());

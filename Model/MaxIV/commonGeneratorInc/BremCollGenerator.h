@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/BremCollGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,12 +55,28 @@ class BremCollGenerator
   double holeZStep;            ///< Z-offset of hole
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidDist;          ///< Mid distance [-ve for fraction of length]
+  double holeMidWidth;         ///< Mid width of hole
+  double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
+
+  double extLength;            ///< Extent unit length
+  double extRadius;            ///< Extent unit radius
+
+  double pipeDepth;           ///< Pipe Y depth
+  double pipeXSec;            ///< Pipe X/Z width
+  double pipeYStep;           ///< Pipe step down block
+  double pipeZStep;           ///< Pipe under step 
+  double pipeWidth;           ///< Centre-centre width
+  double pipeMidGap;          ///< Gap between top halves
 
   std::string voidMat;                ///< void material
   std::string innerMat;               ///< void material
   std::string wallMat;                ///< Fe material layer
+  std::string waterMat;               ///< water cooling material 
+  std::string pipeMat;                ///< pipe outer material 
+
   
  public:
 
@@ -71,7 +87,8 @@ class BremCollGenerator
 
   template<typename CF> void setCF();
 
-  void setAperature(const double,const double,const double,const double);
+  void setAperature(const double,const double,const double,const double,
+		    const double,const double);
   void setMaterial(const std::string&,const std::string&);
   
   void generateColl(FuncDataBase&,const std::string&,

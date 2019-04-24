@@ -71,6 +71,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 
 #include "WallLead.h"
@@ -177,7 +178,7 @@ WallLead::createSurfaces()
 
   if (backLength>Geometry::zeroTol)
     FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,backLength);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*extraLeadOutWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*extraLeadRingWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(extraLeadHeight/2.0),Z);

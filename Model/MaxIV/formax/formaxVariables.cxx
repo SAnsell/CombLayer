@@ -901,7 +901,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowA",0,17.0);
 
   BremGen.setCF<CF63>();
-  BremGen.setAperature(1.0,1.0,0.2,0.2);
+  BremGen.setAperature(1.0,1.0,0.2,0.2,0.3,0.3);
   BremGen.generateColl(Control,preName+"BremCollA",0,8.0);
 
   PTubeGen.setMat("Stainless304");

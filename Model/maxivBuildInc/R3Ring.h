@@ -3,7 +3,7 @@
  
  * File:   maxivBuildInc/R3Ring.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,33 +45,32 @@ class R3Ring :
 {
  private:
 
-  double fullOuterRadius;         ///< full outer radius
-  double hexRadius;               ///< Inner hex radius
-  double hexWallThick;            ///< Inner hex wall thickness
+  const size_t NInnerSurf;           ///< Number of inner surf
+  
+  double fullOuterRadius;          ///< full outer radius [beamline endpoint]
+  
+  double icosagonRadius;           ///< Inner 20 side radius
+  double icosagonWallThick;        ///< Inner 20 side wall thickness
+  double beamRadius;               ///< Beamline radius
+  double offsetCornerX;            ///< Outer wall offset X (tangentially)
+  double offsetCornerY;            ///< Outer wall offset Y (radially outward)
 
+  double outerWall;                ///< Default outer wall thick
+  double ratchetWall;              ///< Default ratchet wall thick
+  
   double height;                  ///< Main height
   double depth;                   ///< Main depth
   double floorThick;              ///< Floor depth
   double roofThick;               ///< Roof thickness
-  double roofExtra;               ///< Roof Extra void above roof
-
-  size_t NPoints;                 ///< number of points in track
-  size_t concaveNPoints;          ///< number of concave points in track
-  std::vector<size_t> concavePts;    ///< number of points in track
-  /// points that create the inner wall
-  std::vector<Geometry::Vec3D> voidTrack;
-  /// points that create the outer wall
-  std::vector<Geometry::Vec3D> outerTrack;
   
   int wallMat;               ///< Wall material
   int roofMat;               ///< Roof material
   int floorMat;              ///< Floor material
 
-  size_t doorActive;           ///< Flag/sector for door if modeled
+  size_t doorActive;           ///< Flag/sector for door if modeled (+1)
   std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
 
 
-  void createRoof(Simulation&);
   void createFloor(Simulation&);
   void createDoor(Simulation&);
     
@@ -88,8 +87,8 @@ class R3Ring :
   R3Ring& operator=(const R3Ring&);
   virtual ~R3Ring();
 
-  /// accessor to size of concave points
-  size_t nConcave() const { return concaveNPoints; }
+  /// Accessor to Number of inner surfaces
+  size_t getNInnerSurf() const { return  NInnerSurf; }
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);

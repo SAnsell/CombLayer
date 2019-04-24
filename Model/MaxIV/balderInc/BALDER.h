@@ -51,6 +51,7 @@ namespace xraySystem
   class WallLead;
 
   class balderFrontEnd;
+  class balderOpticsHutch;
   /*!
     \class BALDER
     \version 1.0
@@ -59,16 +60,9 @@ namespace xraySystem
     \brief General constructor for the xray system
   */
 
-class BALDER : public attachSystem::CopiedComp
+class BALDER : public R3Beamline
 {
  private:
-
-  std::string startPoint;       ///< Start point
-  std::string stopPoint;        ///< End point
-  /// Front end cave volume
-  std::shared_ptr<R3FrontEndCave> ringCaveA;
-  // Joining front cave
-  std::shared_ptr<R3FrontEndCave> ringCaveB;
 
   /// the components in the front end
   std::shared_ptr<balderFrontEnd> frontBeam;
@@ -80,7 +74,7 @@ class BALDER : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  std::shared_ptr<balderOpticsHutch> opticsHut;
   
   /// Beamline
   std::shared_ptr<OpticsBeamline> opticsBeam;
@@ -116,12 +110,10 @@ class BALDER : public attachSystem::CopiedComp
   BALDER(const std::string&);
   BALDER(const BALDER&);
   BALDER& operator=(const BALDER&);
-  ~BALDER();
+  virtual ~BALDER();
 
-  /// set stop point(s)
-  void setStopPoint(const std::string& SP)  { stopPoint=SP; }
-  void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  virtual  void build(Simulation&,const attachSystem::FixedComp&,
+		      const long int);
 
 };
 

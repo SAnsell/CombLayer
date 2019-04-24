@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R1Ring.cxx
+ * File:   maxivBuild/R3Ring.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -55,6 +55,7 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Rules.h"
+#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -71,7 +72,6 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -88,8 +88,7 @@ R3Ring::R3Ring(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  NPoints(0),concaveNPoints(0),
-  doorActive(0)
+  NInnerSurf(20)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -116,42 +115,24 @@ R3Ring::populate(const FuncDataBase& Control)
 
   fullOuterRadius=Control.EvalVar<double>(keyName+"FullOuterRadius");
   
-  hexRadius=Control.EvalVar<double>(keyName+"HexRadius");
-  hexWallThick=Control.EvalVar<double>(keyName+"HexWallThick");
+  icosagonRadius=Control.EvalVar<double>(keyName+"IcosagonRadius");
+  icosagonWallThick=Control.EvalVar<double>(keyName+"IcosagonWallThick");
 
+  beamRadius=Control.EvalVar<double>(keyName+"BeamRadius");
+  offsetCornerX=Control.EvalVar<double>(keyName+"OffsetCornerX");
+  offsetCornerY=Control.EvalVar<double>(keyName+"OffsetCornerY");
 
+  outerWall=Control.EvalVar<double>(keyName+"OuterWall");
+  ratchetWall=Control.EvalVar<double>(keyName+"RatchetWall");
+  
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
-  roofExtra=Control.EvalVar<double>(keyName+"RoofExtraVoid");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
-
-  NPoints=Control.EvalVar<size_t>(keyName+"NPoints");
-  for(size_t i=0;i<NPoints;i++)
-    {
-      const std::string NStr=std::to_string(i);
-      const Geometry::Vec3D PtA=
-	Control.EvalVar<Geometry::Vec3D>(keyName+"VPoint"+NStr);
-      const Geometry::Vec3D PtB=
-	Control.EvalVar<Geometry::Vec3D>(keyName+"OPoint"+NStr);
-      voidTrack.push_back(PtA);
-      outerTrack.push_back(PtB);
-    }
-  for(size_t i=1;i<NPoints+1;i++)
-    {
-      const Geometry::Vec3D& C(voidTrack[i % NPoints]);
-      const Geometry::Vec3D A((voidTrack[i-1]-C).unit());
-      const Geometry::Vec3D B((voidTrack[(i+1) % NPoints]-C).unit());
-      Geometry::Vec3D XA=A*B;
-      if (XA.dotProd(Z)<0.0)
-	concavePts.push_back(i);
-    }
-  concaveNPoints=concavePts.size();
-
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
   return;
@@ -159,7 +140,7 @@ R3Ring::populate(const FuncDataBase& Control)
 
 void
 R3Ring::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -185,19 +166,22 @@ R3Ring::createSurfaces()
   
   // quick way to rotate outgoing vector to
   // dividing vector
-  const Geometry::Quaternion Qz=Geometry::Quaternion::calcQRotDeg(-120.0,Z);
   double theta(0.0);
   int surfN(buildIndex);
-  
-  for(size_t i=0;i<6;i++)
+
+  std::vector<Geometry::Vec3D> innerPts;
+  for(size_t i=0;i<NInnerSurf;i++)
     {
       Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
-      ModelSupport::buildPlane(SMap,surfN+3,Origin+Axis*hexRadius,Axis);
-      ModelSupport::buildPlane(SMap,surfN+103,
-			       Origin+Axis*(hexRadius+hexWallThick),Axis);
-      // divider vector
-      ModelSupport::buildPlane(SMap,surfN+7,Origin,Qz.rotate(Axis));
-      theta+=M_PI/3.0;
+      const Geometry::Vec3D APt(Origin+Axis*icosagonRadius);
+      ModelSupport::buildPlane(SMap,surfN+3,APt,Axis);
+      SurfMap::addSurf("CentInner",-SMap.realSurf(surfN+3));
+      ModelSupport::buildPlane
+	(SMap,surfN+1003,APt+Axis*icosagonWallThick,Axis);
+      SurfMap::addSurf("RingInner",SMap.realSurf(surfN+1003));
+      // mid point
+      innerPts.push_back(APt+Axis*icosagonWallThick);
+      theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
       surfN+=10;
     }
   
@@ -207,89 +191,49 @@ R3Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+26,
-			   Origin+Z*(height+roofThick+roofExtra),Z);
 
-  surfN=buildIndex+1000;
-  for(size_t i=0;i<NPoints;i++)
+  // Inner coordinate points are all offset from the inner points
+
+  // length of flat extent either side of mid point
+  double LLength=(icosagonRadius+icosagonWallThick)*
+    sin(M_PI/static_cast<double>(NInnerSurf));
+  
+  std::vector<Geometry::Vec3D> outerPts;
+  std::vector<Geometry::Vec3D> outerX;
+  std::vector<Geometry::Vec3D> outerY;
+  for(size_t i=0;i<NInnerSurf;i++)
     {
-      const Geometry::Vec3D AP(X*voidTrack[i].X()+Y*voidTrack[i].Y());
-      const Geometry::Vec3D BP
-	(X*voidTrack[(i+1)% NPoints].X()+Y*voidTrack[(i+1) % NPoints].Y());
-      // note that voidTrack is about (0,0,0)
-      const Geometry::Vec3D NDir=(-BP);  
-      
-      ModelSupport::buildPlane(SMap,surfN+3,
-			       Origin+AP,
-			       Origin+BP,
-			       Origin+BP+Z,NDir);
-
-      surfN+=10;
+      Geometry::Vec3D APt=innerPts[i];
+      const Geometry::Vec3D YY=(APt-Origin).unit();
+      const Geometry::Vec3D XX=YY*Z;
+      APt-= XX*LLength;  // start point of flat
+      outerPts.push_back(APt+XX*offsetCornerX+YY*offsetCornerY);
+      outerX.push_back(XX);
+      outerY.push_back(YY);
+      LLength+=0.1;
     }
-
-  size_t cIndex(0);
+  // outer walls [inner] == 2000
   surfN=buildIndex+2000;
-  for(size_t i=0;i<NPoints;i++)
+  for(size_t i=0;i<NInnerSurf;i++)
     {
-      const Geometry::Vec3D AP(X*outerTrack[i].X()+Y*outerTrack[i].Y());
-      const Geometry::Vec3D BP
-	(X*outerTrack[(i+1)% NPoints].X()+Y*outerTrack[(i+1) % NPoints].Y());
-      const Geometry::Vec3D NDir=(Origin-BP);
-      
-      ModelSupport::buildPlane(SMap,surfN+3,
-			       Origin+AP,Origin+BP,
-			       Origin+BP+Z,NDir);
-      // trick to get exit walls [inner /outer]
-      if (concavePts[cIndex]==i+1)
-	{
-	  SurfMap::addSurf("BeamInner",SMap.realSurf(surfN-1000+3));
-	  SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+3));
+      const size_t li((!i) ? NInnerSurf-1 : i-1);
+      const Geometry::Vec3D& APt(outerPts[i]);
+      const Geometry::Vec3D& XX(outerX[li]);
+      const Geometry::Vec3D& YY(outerY[i]);
 
-	  if (cIndex)
-	    {
-	      SurfMap::addSurf("SideInner",-SMap.realSurf(surfN-1010+3));
-	      SurfMap::addSurf("SideOuter",-SMap.realSurf(surfN-10+3));
-	    }
-	  cIndex = (cIndex+1) % concaveNPoints;
-	}
+      ModelSupport::buildPlane(SMap,surfN+1,APt,XX);
+      SurfMap::addSurf("BeamInner",SMap.realSurf(surfN+1));
+      ModelSupport::buildPlane(SMap,surfN+3,APt,YY);
+      SurfMap::addSurf("FlatInner",-SMap.realSurf(surfN+3));
+      
+      // outer wall
+      ModelSupport::buildPlane(SMap,surfN+1001,APt+XX*ratchetWall,XX);
+      SurfMap::addSurf("BeamOuter",SMap.realSurf(surfN+1001));
+      ModelSupport::buildPlane(SMap,surfN+1003,APt+YY*outerWall,YY);
+      SurfMap::addSurf("FlatOuter",SMap.realSurf(surfN+1003));
+
       surfN+=10;
     }
-  // last wall
-  SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1010+3));
-  SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
-	  
-
-  // Exit wall dividers
-  surfN=buildIndex+3000;
-  for(size_t i=0;i<concaveNPoints;i++)
-    {
-      const size_t aI=concavePts[i];
-      const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
-      const Geometry::Vec3D BP(X*outerTrack[aI].X()+Y*outerTrack[aI].Y());
-      // going round ring clockwize 
-      const Geometry::Vec3D NDir=((BP-AP)*Z).unit();      
-      ModelSupport::buildPlane(SMap,surfN+1,
-			       Origin+AP,Origin+BP,
-			       Origin+BP+Z,NDir);
-      surfN+=10;
-    } 
-
-  // Inner cut points
-  surfN=buildIndex+5000;
-  for(size_t i=1;i<concaveNPoints+1;i++)
-    {
-      const size_t aI=concavePts[i-1];
-      const size_t bI=concavePts[i % concaveNPoints];
-      const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
-      const Geometry::Vec3D BP(X*voidTrack[bI].X()+Y*voidTrack[bI].Y());
-      const Geometry::Vec3D NDir=(-BP);
-      
-      ModelSupport::buildPlane(SMap,surfN+9,
-			       Origin+AP,Origin+BP,
-			       Origin+BP+Z,NDir);
-      surfN+=10;
-    }
-
   
   return;
 }
@@ -309,69 +253,6 @@ R3Ring::createFloor(Simulation& System)
   return;
 }
 
-
-void
-R3Ring::createRoof(Simulation& System)
-  /*!
-    Adds the main roof objects
-    \param System :: Simulation to create objects in
-   */
-{
-  ELog::RegMethod RegA("R3Ring","createRoof");
-
-  std::string Out;
-  
-  int surfN(buildIndex);
-
-  // Create inner roof
-  std::string Unit;
-  surfN=5000;
-  for(size_t i=0;i<concaveNPoints;i++)
-    {
-      Unit+=std::to_string(surfN+9)+" ";
-      surfN+=10;
-    }
-
-  const std::string TBase=
-    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
-  const std::string EBase=
-    ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,Unit+"(103:113:123:133:143:153)");
-  makeCell("InnerRoof",System,cellIndex++,roofMat,0.0,Out+TBase);
-  makeCell("InnerExtra",System,cellIndex++,0,0.0,Out+EBase);  
-
-     // loop to make individual units:
-  size_t index=0;
-  surfN=1000;
-  int convexN=5000;
-  Out="";
-  std::string WOut;
-  for(size_t i=1;i<NPoints+2;i++)
-    {
-      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (index<concavePts.size() && i==concavePts[index])
-	{
-	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-	  if (index)
-	    {
-	      makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+TBase);
-	      makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+EBase);
-	      convexN+=10;
-	    }
-
-	  index++;
-	  Out="";
-	}
-      surfN= (i==NPoints) ? 1000 : surfN+10;
-    }
-  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("RoofTriangle",System,cellIndex++,roofMat,0.0,Out+TBase);
-  makeCell("RoofExtra",System,cellIndex++,0,0.0,Out+EBase);
-  return;
-}
-
 void
 R3Ring::createObjects(Simulation& System)
   /*!
@@ -381,142 +262,80 @@ R3Ring::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3Ring","createObjects");
 
-  std::string Out;
-
-  createRoof(System);
-  createFloor(System);
-
-  const std::string wallBase=
+  const std::string fullLayer=
     ModelSupport::getComposite(SMap,buildIndex," 5 -16 ");
-  const std::string extraBase=
-    ModelSupport::getComposite(SMap,buildIndex," 16 -26 ");
-  const std::string fullBase=
-    ModelSupport::getComposite(SMap,buildIndex," 5 -26 ");
-  const std::string innerBase=
+  const std::string roofLayer=
+    ModelSupport::getComposite(SMap,buildIndex," 6 -16 ");
+  const std::string innerLayer=
     ModelSupport::getComposite(SMap,buildIndex," 5 -6 ");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -3 -13 -23 -33 -43 -53 " );
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullBase);
+  // horrible code to build a list of 20 values
+  std::ostringstream cx;
+  cx<<" ";
+  for(long int i=0;i<static_cast<long int>(NInnerSurf);i++)
+    cx<<-(10*i+3)<<" ";
+  const std::string lineBuild(cx.str());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -103 -113 -123 -133 -143 -153 "
-				 " (3 : 13 : 23 : 33 : 43 : 53) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-  makeCell("WallExtra",System,cellIndex++,wallMat,0.0,Out+extraBase);
-
-
-
-  // Create inner voids
-  std::string Unit;
-  int surfN=5000;
-  for(size_t i=0;i<concaveNPoints;i++)
-    {
-      Unit+=std::to_string(surfN+9)+" ";
-      surfN+=10;
-    }
-  Out=ModelSupport::getComposite(SMap,buildIndex,Unit);
-  Out+=ModelSupport::getComposite
-    (SMap,buildIndex,"(103:113:123:133:143:153)");
-  makeCell("Void",System,cellIndex++,0,0.0,Out+innerBase);  
-
-   // loop to make individual units:
-  size_t index=0;
-  surfN=1000;
-  int convexN=5000;
-  Out="";
-  std::string WOut;
-  for(size_t i=1;i<NPoints+2;i++)
-    {
-      Out+=ModelSupport::getComposite(SMap,buildIndex+surfN," 3 ");
-      if (index<concavePts.size() && i==concavePts[index])
-	{
-	  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-	  if (index)
-	    {
-	      makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
-	      convexN+=10;
-	    }
-
-	  index++;
-	  Out="";
-	}
-      surfN= (i==NPoints) ? 1000 : surfN+10;
-    }
-  Out+=ModelSupport::getComposite(SMap,buildIndex+convexN," -9 ");
-  makeCell("VoidTriangle",System,cellIndex++,0,0.0,Out+innerBase);
-
-  // WALLS:
-
-  int divN=buildIndex+3000;
-  surfN=buildIndex-10;
-  for(size_t index=0;index<10;index++)
-    {
-      if (index==0 || index==3)
-	{
-	  const int prevN=(!index) ? buildIndex+210 : buildIndex+60;
-	  const int fwdN=(!index) ? buildIndex : buildIndex+70;
-	  // LONG SEGMENT 1:
-	  Out=ModelSupport::getComposite    // s=1000 
-	    (SMap,buildIndex,prevN,fwdN," 2003M -1003N -1013N 2003N ");
-	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
-
-	  Out=ModelSupport::getComposite
-	    (SMap,buildIndex,fwdN," -2003M (-1013M:-1023M) 1033M 2013M 2023M ");
-
-	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-	  surfN+=30;
-	  divN+=10;
-	}
-      else
-	{
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,divN," -1013M 2003M 2013M -1N ");
-
-	  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("FrontExtra",System,cellIndex++,0,0.0,Out+extraBase);
-	  if (index!=9)
-	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN,"(1N:-2013M) -1023M 1033M 2023M ");
-	  else
-	    Out=ModelSupport::getComposite   
-	      (SMap,buildIndex,surfN,divN," 1N -1023M 1003 2023M  ");
-
-	  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+wallBase);
-	  makeCell("Extra",System,cellIndex++,0,0.0,Out+extraBase);
-	  surfN+=20;
-	  divN+=10;
-	}
-    }
-
-  // NOW DO external void-triangles:
-  int prevN=buildIndex+2200;
-  surfN=buildIndex+2000;
   
-  for(size_t i=0;i<12;i++)
-    {      
-      if (i==1 || i==5)
-	{
-	  // long segment :  
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,prevN," -9007 -3M 13N ");
-	  surfN+=10;
-	}
-      else
-	{
-	  // short segment :  
-	  Out=ModelSupport::getComposite  
-	    (SMap,buildIndex,surfN,prevN," -9007 -3M -13M 13N ");
-	  surfN+=20;
-	}
-      prevN=surfN-20;
-      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullBase);
+  std::string Out;
+
+  //  createRoof(System);
+  createFloor(System);
+
+  // INNER VOID:
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,lineBuild);
+  
+  HeadRule IV(Out);
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+fullLayer);
+
+  IV.makeComplement();
+  Out=ModelSupport::getComposite(SMap,buildIndex+1000,lineBuild);
+  HeadRule XV(Out);
+  XV.makeComplement();
+  makeCell("InnerWall",System,cellIndex++,wallMat,0.0,
+	   Out+fullLayer+IV.display());
+
+  // Now build each individial segment
+
+  int BPrev(buildIndex+2190);
+  int BNext(buildIndex+2000);
+  int IPrev(buildIndex+1190);
+  int INext(buildIndex+1000);
+  for(size_t i=0;i<NInnerSurf;i++)
+    {
+
+      // outer
+      Out=ModelSupport::getComposite
+	(SMap,BNext,BPrev," 1M -3M  -1 ");
+      // inner
+      Out+=ModelSupport::getComposite(SMap,IPrev,INext," (3:3M) ");
+      //      Out+=XV.display();
+      makeCell("InnerVoid",System,cellIndex++,0,0.0,Out+innerLayer);
+      makeCell("Roof",System,cellIndex++,roofMat,0.0,Out+roofLayer);
+
+      Out=ModelSupport::getComposite
+	(SMap,BNext,BPrev," 1001M -1003M  -1 3M");
+      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,Out+fullLayer);
+
+      Out=ModelSupport::getComposite
+	(SMap,BNext,BPrev," 1 -1001 -1003M  3 ");
+      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out+fullLayer);
+
+      Out=ModelSupport::getComposite
+	(SMap,BNext,BPrev,buildIndex," 1001 -1003M  1003 -9007N ");
+      makeCell("OuterSegment",System,cellIndex++,0,0.0,Out+fullLayer);
+      
+      IPrev=INext;
+      BPrev=BNext;
+      INext+=10;
+      BNext+=10;
     }
-	  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -26");
+  
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-9007 15 -16");  
   addOuterSurf(Out);    
+
   return;
 }
 
@@ -531,29 +350,36 @@ R3Ring::createLinks()
 {
   ELog::RegMethod RegA("R3Ring","createLinks");
 
-  FixedComp::setNConnect(2*concaveNPoints+2);
-  
-  const double beamStepOut(1510.55);  // from origin
-  // Main beam start points DONT have a surface [yet]
-  
-  for(size_t i=1;i<concaveNPoints+1;i++)
+  FixedComp::setNConnect(2*(NInnerSurf+1));
+
+  double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
+  for(size_t i=0;i<NInnerSurf;i++)
     {
-      const size_t index(i-1);
-
+      const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
+      const Geometry::Vec3D PtX(Origin+Axis*beamRadius);
       const Geometry::Plane* BInner=dynamic_cast<const Geometry::Plane*>
-	(SurfMap::getSurfPtr("BeamInner",((i+1) % concaveNPoints)));
-      if (!BInner)
-	throw ColErr::InContainerError<std::string>
-	  ("BeamInner"+std::to_string(index),"Surf map no found");
+	(SurfMap::getSurfPtr("BeamInner",(i+NInnerSurf-1) % NInnerSurf));
+      const Geometry::Plane* BWall=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("BeamInner",i));
+      const Geometry::Plane* BExit=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("BeamOuter",i));
+      
+      const Geometry::Vec3D Beam= BWall->getNormal();
 
-      const Geometry::Vec3D Beam= -BInner->getNormal();
-      const Geometry::Vec3D Axis= -Beam*Z;
-      const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
-      
-      FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
-      FixedComp::setLinkSurf(index+2,-BInner->getName());
-      FixedComp::setConnect(index+2,PtX,Beam);
-      
+      const Geometry::Vec3D beamOrigin=
+	SurInter::getLinePoint(PtX,Beam,BInner);
+      const Geometry::Vec3D exitCentre=
+	SurInter::getLinePoint(PtX,Beam,BExit);
+
+      FixedComp::nameSideIndex(i,"OpticCentre"+std::to_string(i));
+      FixedComp::setLinkSurf(i,-BInner->getName());
+      FixedComp::setConnect(i,beamOrigin,Beam);
+
+      FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
+      FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
+      FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
+					
+      theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
   return;
 }
@@ -561,15 +387,15 @@ R3Ring::createLinks()
 void
 R3Ring::createDoor(Simulation& System)
   /*!
-    Build if a ring-door is required
+    Build if a ring-door is required [ access to area outside of ring]
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R3Ring","createMaze");
+  ELog::RegMethod RegA("R3Ring","createDoor");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+    
 
   if (doorActive)
     {
@@ -577,12 +403,12 @@ R3Ring::createDoor(Simulation& System)
       OR.addObject(doorPtr);
 
       doorPtr->setCutSurf
-	("innerWall",SurfMap::getSurf("SideInner",doorActive-1));
+	("innerWall",-SurfMap::getSurf("FlatInner",doorActive-1));
       doorPtr->setCutSurf
-	("outerWall",-SurfMap::getSurf("SideOuter",doorActive-1));
+	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
 
-      doorPtr->addInsertCell(getCell("Wall",doorActive % 10));
-      doorPtr->createAll(System,*this,doorActive+2);
+      doorPtr->addInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
+      doorPtr->createAll(System,*this,doorActive+1);
     }
   return;
 }
@@ -603,7 +429,6 @@ R3Ring::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  
   createSurfaces();    
   createObjects(System);
   

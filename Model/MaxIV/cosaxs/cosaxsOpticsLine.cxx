@@ -90,7 +90,6 @@
 #include "PipeTube.h"
 #include "PortTube.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "BremColl.h"
 #include "MonoVessel.h"
@@ -101,6 +100,7 @@
 #include "FlangeMount.h"
 #include "Mirror.h"
 #include "MonoBox.h"
+#include "MonoShutter.h"
 #include "cosaxsOpticsLine.h"
 
 namespace xraySystem
@@ -155,8 +155,13 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   jawCompC({
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
-	})
-    /*!
+	}),
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
+  
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
+  gateH(new constructSystem::GateValve(newName+"GateH"))
+  /*!
     Constructor
     \param Key :: Name of construction key
   */
@@ -193,6 +198,9 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   OR.addObject(gateG);
   OR.addObject(bellowH);
   OR.addObject(diagBoxC);
+  OR.addObject(bellowJ);
+  OR.addObject(monoShutter);
+  OR.addObject(gateH);
 }
   
 cosaxsOpticsLine::~cosaxsOpticsLine()
@@ -259,6 +267,52 @@ cosaxsOpticsLine::createSurfaces()
     }
   return;
 }
+
+int
+cosaxsOpticsLine::constructMonoShutter
+(Simulation& System,
+ MonteCarlo::Object** masterCellPtr,
+ const attachSystem::FixedComp& FC,const long int linkPt)
+/*!
+    Construct a monoshutter system
+    \param System :: Simulation for building
+    \param masterCellPtr Pointer to mast cell
+    \param FC :: FixedComp for start point
+    \param linkPt :: side index
+    \return outerCell
+   */
+{
+  ELog::RegMethod RegA("cosaxsOpticsLine","constructMonoShutter");
+
+  int outerCell;
+    
+  monoShutter->addAllInsertCell((*masterCellPtr)->getName());
+  monoShutter->setCutSurf("front",FC,linkPt);
+  monoShutter->createAll(System,FC,linkPt);
+  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*monoShutter,2);
+
+  monoShutter->insertAllInCell(System,outerCell);
+  monoShutter->splitObject(System,"-PortACut",outerCell);
+  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
+  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
+  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
+  monoShutter->splitObject(System,"PortBCut",outerCell);
+  cellIndex+=3;
+
+  bellowJ->setFront(*monoShutter,2);
+  bellowJ->createAll(System,*monoShutter,2);
+  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*bellowJ,2);
+  bellowJ->insertInCell(System,outerCell);
+
+
+  gateH->setFront(*bellowJ,2);
+  gateH->createAll(System,*bellowJ,2);
+  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateH,2);
+  gateH->insertInCell(System,outerCell);
+  
+  return outerCell;
+}
+
 
 int
 cosaxsOpticsLine::constructDiag
@@ -360,10 +414,10 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   bellowA->insertInCell(System,outerCell);
 
 
-  bremCollA->setFront(*bellowA,2);
+  bremCollA->setCutSurf("front",*bellowA,2);
   bremCollA->createAll(System,*bellowA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
-  bremCollA->insertInCell(System,outerCell);
+  bremCollA->insertInCell("Main",System,outerCell);
 
 
   filterBoxA->addAllInsertCell(masterCell->getName());
@@ -374,6 +428,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   filterBoxA->splitObject(System,1001,outerCell,
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   cellIndex++;
+  bremCollA->createExtension(System,filterBoxA->getCell("FrontPortVoid"));
   
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Body",PI.getCell("Void"));
@@ -517,10 +572,16 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   bellowH->insertInCell(System,outerCell);
 
-  ELog::EM<<"DFSAFDSAFDSA"<<ELog::endDiag;
   constructDiag(System,&masterCell,*diagBoxC,jawCompC,*bellowH,2);
 
-  lastComp=diagBoxC;
+  bellowI->setFront(*diagBoxC,2);
+  bellowI->createAll(System,*diagBoxC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowI,2);
+  bellowI->insertInCell(System,outerCell);
+
+  constructMonoShutter(System,&masterCell,*bellowI,2);
+
+  lastComp=gateH;
   return;
 }
 

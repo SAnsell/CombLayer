@@ -70,6 +70,7 @@
 #include "ContainedComp.h"
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "LayerComp.h"
 #include "CopiedComp.h"

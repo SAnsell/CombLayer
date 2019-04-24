@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/balderFrontEnd.cxx
+ * File: R1Common/R1Beamline.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -47,6 +47,7 @@
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "Surface.h"
+#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
@@ -60,106 +61,43 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
 #include "FixedOffset.h"
-#include "FixedRotate.h"
-#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "CopiedComp.h"
 #include "InnerZone.h"
+#include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "generateSurf.h"
-#include "ModelSupport.h"
 
-#include "VacuumPipe.h"
-#include "VacuumBox.h"
-#include "Wiggler.h"
-#include "R3FrontEnd.h"
-
-#include "balderFrontEnd.h"
+#include "R1Ring.h"
+#include "R1Beamline.h"
 
 namespace xraySystem
 {
 
-// Note currently uncopied:
-  
-balderFrontEnd::balderFrontEnd(const std::string& Key) :
-  R3FrontEnd(Key),
-  wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
-  wiggler(new Wiggler(newName+"Wiggler"))
+R1Beamline::R1Beamline(const std::string& beamName,
+			 const std::string& copiedName) :
+  attachSystem::CopiedComp(beamName,copiedName)
   /*!
     Constructor
-    \param Key :: Name of construction key
-    \param Index :: Index number
+    \param beamName :: Full current naem
+    \param copiedName :: copiedName
   */
 {
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  OR.addObject(wigglerBox);
-  OR.addObject(wiggler);
 }
-  
-balderFrontEnd::~balderFrontEnd()
+
+R1Beamline::~R1Beamline()
   /*!
     Destructor
    */
 {}
 
-void
-balderFrontEnd::createLinks()
-  /*!
-    Create a front/back link
-   */
-{
-  ELog::RegMethod RegA("balderFrontEnd","createLinks");
-  
-  setLinkSignedCopy(0,*wigglerBox,1);
-  setLinkSignedCopy(1,*lastComp,2);
-  return;
-}
-  
 
-const attachSystem::FixedComp&
-balderFrontEnd::buildUndulator(Simulation& System,
-				MonteCarlo::Object* masterCell,
-				const attachSystem::FixedComp& preFC,
-				const long int preSideIndex)
-  /*!
-    Build all the objects relative to the main FC
-    point.
-    \param System :: Simulation to use
-    \param masterCell :: Main cell with all components in
-    \param preFC :: Initial cell
-    \param preSideIndex :: Initial side index
-    \return link object 
-  */
-{
-  ELog::RegMethod RegA("balderFrontEnd","buildUndulator");
-
-  int outerCell;
-
-  wigglerBox->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*wigglerBox,2);
-  
-  wiggler->addInsertCell(wigglerBox->getCell("Void"));
-  wiggler->createAll(System,*wigglerBox,0);
-
-  
-  CellMap::addCell("WiggerOuter",outerCell);
-  wigglerBox->insertInCell(System,outerCell);
-  ELog::EM<<"Point == "<<wigglerBox->getLinkPt(2)<<ELog::endDiag;
-  return *wigglerBox;
-
-}
-
-  
 }   // NAMESPACE xraySystem
 

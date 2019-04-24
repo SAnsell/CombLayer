@@ -84,6 +84,7 @@
 #include "AttachSupport.h"
 
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "TelescopicPipe.h"
 #include "PBW.h"

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/BremColl.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ namespace xraySystem
 
 class BremColl :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+  public attachSystem::ExternalCut
 {
  private:
 
@@ -58,12 +58,27 @@ class BremColl :
   double holeZStep;            ///< Z-offset of hole
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidDist;          ///< Mid hole distance from front
+  double holeMidWidth;         ///< Mid width of hole
+  double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
+
+  double extLength;           ///< Extention length [into next comp]
+  double extRadius;           ///< Radius of outer extention
+
+  double pipeDepth;           ///< Pipe Y depth
+  double pipeXSec;            ///< Pipe X/Z width
+  double pipeYStep;           ///< Pipe step down block
+  double pipeZStep;           ///< Pipe under step 
+  double pipeWidth;           ///< Centre-centre width
+  double pipeMidGap;          ///< Top pipe mid gap
   
   int voidMat;                ///< void material
-  int innerMat;               ///< void material
+  int innerMat;               ///< Tungsten material
   int wallMat;                ///< Fe material layer
+  int waterMat;               ///< water cooling material 
+  int pipeMat;                ///< pipe outer material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -78,6 +93,7 @@ class BremColl :
   BremColl& operator=(const BremColl&);
   virtual ~BremColl();
 
+  void createExtension(Simulation&,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -70,6 +70,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "InnerZone.h"
@@ -78,7 +79,7 @@
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "ExternalCut.h"
+
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -91,7 +92,6 @@
 #include "PortTube.h"
 #include "PipeShield.h"
 
-#include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"

@@ -74,6 +74,7 @@
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
