@@ -58,92 +58,42 @@ namespace setVariable
 {
 
 R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
-  radius(0.0),length(80.0),thick(1.0),width(5.0),
-  baseTop(0.1),baseDepth(2.0),baseGap(0.5),baseOutWidth(1.0),
-  mirrMat("Silicon300K"),baseMat("Copper")
+  radius(CF120::innerRadius),wallThick(CF120::wallThick),
+  length(9.0),flangeRadius(CF120::flangeRadius),
+  flangeLength(CF120::flangeLength),
+
+  inletWidth(4.0),inletHeight(1.0),inletLength(3.0),
+  inletThick(0.5),flangeInletRadius(CF63::flangeRadius),
+  flangeInletLength(CF63::flangeLength),
+
+  electronXStep(1.0),electronXYAngle(1.5),
+  electronRadius(CF40::innerRadius),electronLength(7.0),
+  electronThick(CF40::wallThick),
+  flangeElectronRadius(CF40::flangeRadius),
+  flangeElectronLength(CF40::flangeLength),
+
+  photonXStep(0.0),photonXYAngle(0.0),
+  photonRadius(CF40::innerRadius),photonLength(7.0),
+  photonThick(CF40::wallThick),
+  flangePhotonRadius(CF40::flangeRadius),
+  flangePhotonLength(CF40::flangeLength),
+
+  sideRadius(CF63::innerRadius),sideLength(5.0),
+  sideThick(CF63::wallThick),
+  flangeSideRadius(CF63::flangeRadius),
+  flangeSideLength(CF63::flangeLength),
+  voidMat("Void"),wallMat("Copper"),flangeMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
 
-R3ChokeChamberGenerator::R3ChokeChamberGenerator(const R3ChokeChamberGenerator& A) : 
-  radius(A.radius),length(A.length),thick(A.thick),
-  width(A.width),baseTop(A.baseTop),baseDepth(A.baseDepth),
-  baseGap(A.baseGap),baseOutWidth(A.baseOutWidth),
-  mirrMat(A.mirrMat),baseMat(A.baseMat)
-  /*!
-    Copy constructor
-    \param A :: R3ChokeChamberGenerator to copy
-  */
-{}
-
-R3ChokeChamberGenerator&
-R3ChokeChamberGenerator::operator=(const R3ChokeChamberGenerator& A)
-  /*!
-    Assignment operator
-    \param A :: R3ChokeChamberGenerator to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      radius=A.radius;
-      length=A.length;
-      thick=A.thick;
-      width=A.width;
-      baseTop=A.baseTop;
-      baseDepth=A.baseDepth;
-      baseGap=A.baseGap;
-      baseOutWidth=A.baseOutWidth;
-      mirrMat=A.mirrMat;
-      baseMat=A.baseMat;
-    }
-  return *this;
-}
 
 R3ChokeChamberGenerator::~R3ChokeChamberGenerator() 
  /*!
    Destructor
  */
 {}
-
-void
-R3ChokeChamberGenerator::setPlate(const double L,const double T,
-			  const double W)
-
-  /*!
-    Set the mirror plate
-    \param L :: Length of mirror [Y]
-    \param T :: Thickness [Z] of mirror plate
-    \param W :: Width [X]  mirror plate
-   */
-{
-  length=L;
-  thick=T;
-  width=W;
-  return;
-}
-
-
-void
-R3ChokeChamberGenerator::setSupport(const double top,const double depth,
-			    const double gap,const double extra)
-  /*!
-    Set support sizes
-    \param top :: Extra on top
-    \param depth :: Full depth [> gap]
-  */
-{
-  ELog::RegMethod RegA("R3ChokeChamberGenerator","setSupport");
-
-  if (gap>=depth)
-    throw ColErr::OrderError<double>(gap,depth,"Depth must be > gap");
-  baseTop=top;
-  baseDepth=depth;
-  baseGap=gap;
-  baseOutWidth=extra;
-  return;
-}
 
 void
 R3ChokeChamberGenerator::setRadius(const double R)
@@ -158,24 +108,24 @@ R3ChokeChamberGenerator::setRadius(const double R)
 }
 
 void
-R3ChokeChamberGenerator::setMaterial(const std::string& MMat,
-				     const std::string& BMat)
+R3ChokeChamberGenerator::setMaterial(const std::string& WMat,
+				     const std::string& FMat)
   /*!
     Set the materials
-    \param MMat :: R3ChokeChamber Material
-    \param BMat :: Base Material
+    \param WMat :: Wall Material
+    \param FMat :: Flange Material
   */
 {
-  mirrMat=MMat;
-  baseMat=BMat;
+  wallMat=WMat;
+  flangeMat=FMat;
   return;
 }
 
 				  
 void
 R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
-					 const std::string& keyName)
-  /*!
+					 const std::string& keyName) const
+   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable

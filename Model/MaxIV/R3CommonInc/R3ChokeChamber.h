@@ -54,8 +54,8 @@ class R3ChokeChamber :
   double inletHeight;          ///< In pipe height
   double inletLength;          ///< In pipe length [inc flange]
   double inletThick;           ///< In pipe wall thickness
-  double flangeARadius;        ///< In Flange radius
-  double flangeALength;        ///< In Flange length
+  double flangeInletRadius;    ///< In Flange radius
+  double flangeInletLength;    ///< In Flange length
 
   double electronXStep;          ///< Electron X step
   double electronXYAngle;        ///< Electron Angle 
