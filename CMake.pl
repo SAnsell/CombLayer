@@ -157,7 +157,8 @@ $gM->addDepUnit("pipe", [@pipe]);
 my @singleItem = qw( singleItemBuild ) ;
 push(@singleItem,@mainLib);
 $gM->addDepUnit("singleItem", [@singleItem,
-			       qw(commonGenerator commonVar commonBeam  )]);
+			       qw(commonGenerator commonVar 
+			       commonBeam R3Common )]);
 
 my @t1Real = qw( t1Build build imat moderator chip zoom ) ;
 push(@t1Real,@mainLib);

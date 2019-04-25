@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_R3ChokeChamber_h
-#define constructSystem_R3ChokeChamber_h
+#ifndef xraySystem_R3ChokeChamber_h
+#define xraySystem_R3ChokeChamber_h
 
 class Simulation;
 
-namespace constructSystem
+namespace xraySystem
 {
   
 /*!
@@ -59,9 +59,9 @@ class R3ChokeChamber :
 
   double electronXStep;          ///< Electron X step
   double electronXYAngle;        ///< Electron Angle 
-  double electronRadius;     ///< Electron out radius
-  double electronLength;     ///< Electron out lenght
-  double electronThick;      ///< Electron pipe wall thickness
+  double electronRadius;         ///< Electron out radius
+  double electronLength;         ///< Electron out lenght
+  double electronThick;          ///< Electron pipe wall thickness
   double flangeElectronRadius;   ///< Electron Flange radius
   double flangeElectronLength;   ///< Electron Flange length
   
@@ -75,9 +75,9 @@ class R3ChokeChamber :
 
   double sideRadius;           ///< Side out radius
   double sideLength;           ///< Side out lenght
-  double sideThick;      ///< Side pipe wall thickness
-  double flangeSideRadius;   ///< Side Flange radius
-  double flangeSideLength;   ///< Side Flange length
+  double sideThick;            ///< Side pipe wall thickness
+  double flangeSideRadius;     ///< Side Flange radius
+  double flangeSideLength;     ///< Side Flange length
   
   int voidMat;                ///< void material
   int wallMat;                ///< Wall material 

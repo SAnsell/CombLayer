@@ -40,35 +40,25 @@ class EPSeparatorGenerator
  private:
 
   double length;                ///< frame length
-  double photonOuterGap;        ///< Gap to outer radius
-  double photonRadius;          ///< photon inner radius
-  double photonAGap;            ///< Initial photon gap
-  double photonBGap;            ///< Final photon gap  
-  double electronRadius;        ///< Electron radius
 
-  double initEPSeparation;       ///< initial separation between e / p
+  double photonXStep;            ///< Initial photon gap
+  double electronXStep;          ///< Initial electorn gap  
+  double photonXYAngle;          ///< XY angle of electron beam to proton
+  double electronXYAngle;        ///< XY angle of electron beam to proton
 
-  double wallPhoton;            ///< Extra on photon side 
-  double wallElectron;          ///< Extra on elextron side
-  double wallHeight;            ///< Extra above/below 
+  double photonRadius;           ///< Photon radius    
+  double electronRadius;         ///< Electron radius
 
-  double electronAngle;         ///< XY angle of electron beam to proton
+  double wallWidth;              ///< Outer wall box
+  double wallHeight;             ///< Outer wall box
+
+  double flangeRadius;           ///< flange  radius
+  double flangeLength;           ///< flange length
   
-  double portAPipeRadius;   ///< Front port pipe radius
-  double portAFlangeRadius; ///< Front port flange radius
-  double portAThick;        ///< In Port
+  std::string voidMat;                    ///< void material
+  std::string wallMat;                    ///< wall material
+  std::string flangeMat;                  ///< Port material
 
-  double portBPipeRadius;   ///< Out Port inner radius
-  double portBWall;         ///< Out Port wall thickness
-  double portBFlangeRadius; ///< Out Port inner radius
-  double portBLen;          ///< Out Port in step length
-  double portBThick;        ///< Out Port y-thick
-
-  
-  std::string voidMat;                     ///< void material
-  std::string wallMat;                     ///< wall material
-  std::string portMat;                     ///< Pipe/flange material
-  
  public:
 
   EPSeparatorGenerator();

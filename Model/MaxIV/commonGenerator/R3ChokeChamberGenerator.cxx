@@ -58,27 +58,27 @@ namespace setVariable
 {
 
 R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
-  radius(CF120::innerRadius),wallThick(CF120::wallThick),
-  length(9.0),flangeRadius(CF120::flangeRadius),
-  flangeLength(CF120::flangeLength),
+  radius(CF100::innerRadius),wallThick(CF100::wallThick),
+  length(22.8),flangeRadius(CF100::flangeRadius),
+  flangeLength(CF100::flangeLength),
 
-  inletWidth(4.0),inletHeight(1.0),inletLength(3.0),
+  inletWidth(4.0),inletHeight(1.0),inletLength(10.0),
   inletThick(0.5),flangeInletRadius(CF63::flangeRadius),
   flangeInletLength(CF63::flangeLength),
 
-  electronXStep(1.0),electronXYAngle(1.5),
-  electronRadius(CF40::innerRadius),electronLength(7.0),
+  electronXStep(2.0),electronXYAngle(0.0),
+  electronRadius(CF40::innerRadius),electronLength(10.0),
   electronThick(CF40::wallThick),
   flangeElectronRadius(CF40::flangeRadius),
   flangeElectronLength(CF40::flangeLength),
 
-  photonXStep(0.0),photonXYAngle(0.0),
-  photonRadius(CF40::innerRadius),photonLength(7.0),
+  photonXStep(-2.0),photonXYAngle(1.5),
+  photonRadius(1.0),photonLength(17.0),
   photonThick(CF40::wallThick),
   flangePhotonRadius(CF40::flangeRadius),
   flangePhotonLength(CF40::flangeLength),
 
-  sideRadius(CF63::innerRadius),sideLength(5.0),
+  sideRadius(CF63::innerRadius),sideLength(11.5),
   sideThick(CF63::wallThick),
   flangeSideRadius(CF63::flangeRadius),
   flangeSideLength(CF63::flangeLength),
@@ -133,7 +133,42 @@ R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("R3ChokeChamberGenerator","generateChamber");
   
-       
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
+  Control.addVariable(keyName+"InletWidth",inletWidth);
+  Control.addVariable(keyName+"InletHeight",inletHeight);
+  Control.addVariable(keyName+"InletLength",inletLength);
+  Control.addVariable(keyName+"InletThick",inletThick);
+  Control.addVariable(keyName+"FlangeInletRadius",flangeInletRadius);
+  Control.addVariable(keyName+"FlangeInletLength",flangeInletLength);
+  Control.addVariable(keyName+"ElectronXStep",electronXStep);
+  Control.addVariable(keyName+"ElectronXYAngle",electronXYAngle);
+  Control.addVariable(keyName+"ElectronRadius",electronRadius);
+  Control.addVariable(keyName+"ElectronLength",electronLength);
+  Control.addVariable(keyName+"ElectronThick",electronThick);
+  Control.addVariable(keyName+"FlangeElectronRadius",flangeElectronRadius);
+  Control.addVariable(keyName+"FlangeElectronLength",flangeElectronLength);
+  Control.addVariable(keyName+"PhotonXStep",photonXStep);
+  Control.addVariable(keyName+"PhotonXYAngle",photonXYAngle);
+  Control.addVariable(keyName+"PhotonRadius",photonRadius);
+  Control.addVariable(keyName+"PhotonLength",photonLength);
+  Control.addVariable(keyName+"PhotonThick",photonThick);
+  Control.addVariable(keyName+"FlangePhotonRadius",flangePhotonRadius);
+  Control.addVariable(keyName+"FlangePhotonLength",flangePhotonLength);
+  Control.addVariable(keyName+"SideRadius",sideRadius);
+  Control.addVariable(keyName+"SideLength",sideLength);
+  Control.addVariable(keyName+"SideThick",sideThick);
+  Control.addVariable(keyName+"FlangeSideRadius",flangeSideRadius);
+  Control.addVariable(keyName+"FlangeSideLength",flangeSideLength);
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
+
+
   return;
 
 }

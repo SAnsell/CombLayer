@@ -80,7 +80,7 @@
 
 #include "R3ChokeChamber.h"
 
-namespace constructSystem
+namespace xraySystem
 {
 
 R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
@@ -127,8 +127,8 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
   inletHeight=Control.EvalVar<double>(keyName+"InletHeight");
   inletLength=Control.EvalVar<double>(keyName+"InletLength");
   inletThick=Control.EvalVar<double>(keyName+"InletThick");
-  flangeARadius=Control.EvalVar<double>(keyName+"FlangeARadius");
-  flangeALength=Control.EvalVar<double>(keyName+"FlangeALength");
+  flangeInletRadius=Control.EvalVar<double>(keyName+"FlangeInletRadius");
+  flangeInletLength=Control.EvalVar<double>(keyName+"FlangeInletLength");
 
   electronXStep=Control.EvalVar<double>(keyName+"ElectronXStep");
   electronXYAngle=Control.EvalVar<double>(keyName+"ElectronXYAngle");
@@ -173,7 +173,7 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   // move origin to centre of main tube
-  FixedComp::applyShift(0,pipeALength,0);
+  FixedComp::applyShift(0,inletLength,0);
   return;
 }
 
@@ -187,11 +187,10 @@ R3ChokeChamber::createSurfaces()
   ELog::RegMethod RegA("R3ChokeChamber","createSurfaces");
 
   // Do outer surfaces (vacuum ports)
-  if (!frontActive())
+  if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(pipeALength),Y);
-      setFront(SMap.realSurf(buildIndex+101));
+      ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*inletLength,Y);
+      setCutSurf("front",SMap.realSurf(buildIndex+101));
     }
 
   // centre dividers
@@ -218,46 +217,63 @@ R3ChokeChamber::createSurfaces()
 
   // Inlet Pipe (100)
   //-----------------
-  const Geometry::Quaternion photonQ=
-    Geometry::Quaternion::calcQRotDeg(photonXYAngle,Z);
-  const Geometry::Vec3D PX=photonQ.makeRotate(X);
-  const Geometry::Vec3D PY=photonQ.makeRotate(Y);
-  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
   
-  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,Y,flangeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,Y,flangeInletRadius);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(inletWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(inletWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(inletHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(inletHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+112,
-			   Origin-Y*(inletLength/2.0-flangeInletLength),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+113,Origin-X*(inletWidth/2.0+inletThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+114,Origin+X*(inletWidth/2.0+inletThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+115,Origin-Z*(inletHeight/2.0+inletThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+116,Origin+Z*(inletHeight/2.0+inletThick),Z);
 
-  // Electron Pipe (200)
+  ModelSupport::buildPlane(SMap,buildIndex+102,
+			   Origin-Y*inletLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+112,
+			   Origin-Y*(inletLength-flangeInletLength),Y);
+
+  // Photon Pipe (200)
   //--------------------
 
-  const Geometry::Vec3D EOrigin(Origin+X*electronXStep);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,electronRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+217,Origin,Y,electronRadius+electronThick);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+227,Origin,Y,flangeElectronRadius);
+  const Geometry::Quaternion photonQ=
+    Geometry::Quaternion::calcQRotDeg(photonXYAngle,Z);
+  const Geometry::Vec3D PX=photonQ.makeRotate(X);
+  const Geometry::Vec3D PY=photonQ.makeRotate(Y);
+  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(electronLength/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,PY,photonRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,POrigin,PY,photonRadius+photonThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+227,POrigin,PY,flangePhotonRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+202,POrigin+PY*photonLength,PY);
   ModelSupport::buildPlane
-    (SMap,buildIndex+212,Origin+Y*(electronLength/2.0-flangeElectronLength),Y);
+    (SMap,buildIndex+212,POrigin+PY*(photonLength-flangePhotonLength),PY);
 
-  // photon Pipe (300)
+  // electron Pipe (300)
   //---------------
-  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,photonRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+317,Origin,Y,photonRadius+photonThick);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+327,Origin,Y,flangePhotonRadius);
+  const Geometry::Quaternion electronQ=
+    Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
+  const Geometry::Vec3D EX=electronQ.makeRotate(X);
+  const Geometry::Vec3D EY=electronQ.makeRotate(Y);
+  const Geometry::Vec3D EOrigin(Origin+X*electronXStep);
 
-  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(photonLength/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,EOrigin,EY,electronRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+317,EOrigin,EY,electronRadius+electronThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+327,EOrigin,EY,flangeElectronRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+302,EOrigin+PY*electronLength,EY);
   ModelSupport::buildPlane
-    (SMap,buildIndex+312,Origin+Y*(photonLength/2.0-flangePhotonLength),Y);
+    (SMap,buildIndex+312,EOrigin+PY*(electronLength-flangeElectronLength),EY);
 
   // side Pipe (400)
   //---------------
@@ -267,10 +283,16 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+427,Origin,X,flangeSideRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+402,Origin-X*(sideLength/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+402,Origin-X*sideLength,X);
   ModelSupport::buildPlane
-    (SMap,buildIndex+412,Origin-X*(sideLength/2.0-flangeSideLength),X);
+    (SMap,buildIndex+412,Origin-X*(sideLength-flangeSideLength),X);
 
+  
+  // Link 
+  FixedComp::setConnect(2,Origin+PY*photonLength,PY);
+  FixedComp::setConnect(3,Origin+EY*electronLength,EY);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
   
   return;
 }
@@ -284,7 +306,7 @@ R3ChokeChamber::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("R3ChokeChamber","createObjects");
 
-  const std::string frontSurf(frontRule());
+  const std::string frontSurf(ExternalCut::getRuleStr("front"));  
     
   std::string Out;
 
@@ -293,7 +315,9 @@ R3ChokeChamber::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -7  ");
   makeCell("MainVoid",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 7 -17  ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 5 -6 7 -17 (-113:114:-115:116:1) "
+     "(217:-1) (317:-1) (417:3)");
   makeCell("MainWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 5 -15 17 -27  ");
@@ -302,6 +326,11 @@ R3ChokeChamber::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -6 16 17 -27  ");
   makeCell("MainFlangeB",System,cellIndex++,flangeMat,0.0,Out);
 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 15 -16 17 -27 (-113:114:-115:116:1) (217:-1)"
+     "(317:-1) (417:3)");
+  makeCell("MainOuter",System,cellIndex++,0,0.0,Out);
+
   //  Inlet pipe
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 7 -1 ");
@@ -309,54 +338,85 @@ R3ChokeChamber::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 113 -114 115 -116 (-103:104:-105:106) 7 -1 ");
-  makeCell("InletWall",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  makeCell("InletWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," (-113:114:-115:116) -127 -112 ");
-  makeCell("InletFlange",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  makeCell("InletFlange",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-113:114:-115:116) -127 112 17 -1 ");
+    (SMap,buildIndex," (-113:114:-115:116) -127 112 27 -1 ");
   makeCell("InletOuterVoid",System,cellIndex++,0,0.0,Out);
 
 
   //  photon pipe
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 203 -204 205 -206 7 1 -202");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -207 7 1 -202");
   makeCell("PhotonVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 213 -214 215 -216 (-203:204:-205:206) 7 1 -202 ");
-  makeCell("PhotonWall",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," -217 207 7 1 -202 ");
+  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-213:214:-215:216) -227 212 -202 ");
-  makeCell("PhotonFlange",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," 217 -227 212 -202 ");
+  makeCell("PhotonFlange",System,cellIndex++,flangeMat,0.0,Out);
 
+  // cut by electron flange
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-213:214:-215:216) -227 -212 17 1 ");
+    (SMap,buildIndex," 217 -227 -212 27 1 (302:-312:327)");
   makeCell("PhotonOuterVoid",System,cellIndex++,0,0.0,Out);
 
 
   //  electron pipe
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 203 -204 205 -206 7 1 -202");
-  makeCell("PhotonVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -307 7 1 -302");
+  makeCell("ElectronVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 213 -214 215 -216 (-203:204:-205:206) 7 1 -202 ");
-  makeCell("PhotonWall",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," 307 -317 7 1 -302 ");
+  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-213:214:-215:216) -227 212 -202 ");
-  makeCell("PhotonFlange",System,cellIndex++,voidMat,0.0,Out);
+    (SMap,buildIndex," 317 -327 312 -302 ");
+  makeCell("ElectronFlange",System,cellIndex++,flangeMat,0.0,Out);
+
+  // cut by photon pipe
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 317 -327 -312 27 1 227 ");
+  makeCell("ElectronOuterVoid",System,cellIndex++,0,0.0,Out);
+
+  //  Side Pipe  
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-407 7 -3 402");
+  makeCell("SideVoid",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," (-213:214:-215:216) -227 -212 17 1 ");
-  makeCell("PhotonOuterVoid",System,cellIndex++,0,0.0,Out);
+    (SMap,buildIndex," 407 -417 7 -3 402 ");
+  makeCell("SideWall",System,cellIndex++,wallMat,0.0,Out);
 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 417 -427 -412 402 ");
+  makeCell("SideFlange",System,cellIndex++,flangeMat,0.0,Out);
 
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -427 417 412 27 -3 (1:127)");
+  makeCell("SideOuterVoid",System,cellIndex++,0,0.0,Out);
 
+  // External
+  Out=ModelSupport::getComposite(SMap,buildIndex," 5 -6 -27  ");  
+  addOuterSurf("Main",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -127 -1  ");  
+  addOuterSurf("Inlet",Out+frontSurf);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -227 1 -202 ");  
+  addOuterSurf("Photon",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -327 1 -302 ");  
+  addOuterSurf("Electron",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -427 -3 402 ");  
+  addOuterSurf("Side",Out);
   return;
 }
 
@@ -371,44 +431,11 @@ R3ChokeChamber::createLinks()
 {
   ELog::RegMethod RegA("R3ChokeChamber","createLinks");
 
-  // port centre
-  FrontBackCut::createFrontLinks(*this,Origin,Y); 
-  FrontBackCut::createBackLinks(*this,Origin,Y);  
-  // getlinke points
-  FixedComp::setConnect(2,FixedComp::getLinkPt(1),-Y);
-  FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
-
-  // make a composite flange
-  std::string Out;
-  const std::string frontSurf(frontRule());
-  const std::string backSurf(backRule());
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -107 ");
-  FixedComp::setLinkComp(2,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
-  FixedComp::setLinkComp(3,Out+backSurf);
-
+  // inlet centre
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
   
   return;
 }
-
-  
-
-void
-R3ChokeChamber::insertAllInCell(Simulation& System,const int cellN)
-  /*!
-    Overload of containdGroup so that the ports can also 
-    be inserted if needed
-  */
-{
-  ContainedGroup::insertAllInCell(System,cellN);
-  if (!delayPortBuild)
-    {
-      for(const portItem& PC : Ports)
-	PC.insertInCell(System,cellN);
-    }
-  return;
-}
-  
   
 void
 R3ChokeChamber::createAll(Simulation& System,
@@ -424,17 +451,14 @@ R3ChokeChamber::createAll(Simulation& System,
   ELog::RegMethod RegA("R3ChokeChamber","createAll(FC)");
 
   populate(System.getDataBase());
+  
   createUnitVector(FC,FIndex);
   createSurfaces();    
-  createObjects(System);
-  
+  createObjects(System);  
   createLinks();
-
   insertObjects(System);
-  if (!delayPortBuild)
-    createPorts(System);
 
   return;
 }
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE xraySystem
