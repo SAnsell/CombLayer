@@ -1073,6 +1073,27 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
+  Control.addVariable("CosaxsExptHutYStep",1000.0);
+  Control.addVariable("CosaxsExptHutDepth",120.0);
+  Control.addVariable("CosaxsExptHutHeight",200.0);
+  Control.addVariable("CosaxsExptHutLength",858.4);
+  Control.addVariable("CosaxsExptHutOutWidth",198.50);
+  Control.addVariable("CosaxsExptHutRingWidth",248.6);
+  Control.addVariable("CosaxsExptHutInnerThick",0.3);
+  Control.addVariable("CosaxsExptHutPbThick",0.5);
+  Control.addVariable("CosaxsExptHutOuterThick",0.3);
+  Control.addVariable("CosaxsExptHutFloorThick",50.0);
+
+  Control.addVariable("CosaxsExptHutVoidMat","Void");
+  Control.addVariable("CosaxsExptHutSkinMat","Stainless304");
+  Control.addVariable("CosaxsExptHutPbMat","Lead");
+  Control.addVariable("CosaxsExptHutFloorMat","Concrete");
+
+  Control.addVariable("CosaxsExptHutHoleXStep",0.0);
+  Control.addVariable("CosaxsExptHutHoleZStep",5.0);
+  Control.addVariable("CosaxsExptHutHoleRadius",7.0);
+  Control.addVariable("CosaxsExptHutHoleMat","Lead");
+
   return;
 }
 

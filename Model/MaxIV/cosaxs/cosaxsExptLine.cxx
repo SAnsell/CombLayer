@@ -101,7 +101,7 @@
 #include "Mirror.h"
 #include "MonoBox.h"
 #include "MonoShutter.h"
-#include "cosaxsExpLine.h"
+#include "cosaxsExptLine.h"
 
 namespace xraySystem
 {

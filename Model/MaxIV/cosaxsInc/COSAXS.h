@@ -85,9 +85,10 @@ class COSAXS : public R3Beamline
 
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+  std::shared_ptr<ExperimentalHutch> exptHut;
 
   /// Experimental beamline
-  std::shared_ptr<cosaxsExpLine> expBeam;
+  std::shared_ptr<cosaxsExpLine> exptBeam;
 
  public:
   

@@ -86,6 +86,7 @@
 #include "PortTube.h"
 
 #include "balderOpticsHutch.h"
+#include "ExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"
@@ -95,7 +96,7 @@
 #include "R3FrontEnd.h"
 #include "cosaxsFrontEnd.h"
 #include "cosaxsOpticsLine.h"
-#include "cosaxsExpLine.h"
+#include "cosaxsExptLine.h"
 #include "ConnectZone.h"
 #include "WallLead.h"
 #include "R3Ring.h"
@@ -113,7 +114,8 @@ COSAXS::COSAXS(const std::string& KN) :
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
-  expBeam(new cosaxsExpLine(newName+"ExpLine"))
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  exptBeam(new cosaxsExpLine(newName+"ExpLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -129,7 +131,8 @@ COSAXS::COSAXS(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
-  OR.addObject(expBeam);
+  OR.addObject(exptHut);
+  OR.addObject(exptBeam);
 }
 
 COSAXS::~COSAXS()
@@ -217,7 +220,11 @@ COSAXS::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-  expBeam->createAll(System,*opticsBeam,2);
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("Floor"));
+  exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+
+  //  exptBeam->createAll(System,*exptHut,2);
 
   return;
 }
