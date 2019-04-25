@@ -581,6 +581,8 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
 
   constructMonoShutter(System,&masterCell,*bellowI,2);
 
+  setCell("LastVoid",masterCell->getName());
+
   lastComp=gateH;
   return;
 }

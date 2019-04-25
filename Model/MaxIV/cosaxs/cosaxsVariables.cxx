@@ -1071,7 +1071,7 @@ COSAXSvariables(FuncDataBase& Control)
   cosaxsVar::opticsVariables(Control,"Cosaxs");
 
 
-  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,1195.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
   return;
 }

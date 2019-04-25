@@ -209,6 +209,12 @@ COSAXS::build(Simulation& System,
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
+  joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
+  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
+  joinPipeB->addInsertCell(r3Ring->getCell("OuterSegment", PIndex));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
   return;
 }
 
