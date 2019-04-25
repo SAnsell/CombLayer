@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   cosaxsInc/COSAXS.h
+ * File:   cosaxsInc/cosaxsExpLine.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_COSAXS_h
-#define xraySystem_COSAXS_h
+#ifndef xraySystem_cosaxsExpLine_h
+#define xraySystem_cosaxsExpLine_h
+
+namespace insertSystem
+{
+  class insertPlate;
+}
 
 namespace constructSystem
 {
@@ -28,13 +33,12 @@ namespace constructSystem
   class CrossPipe;
   class VacuumPipe;
   class Bellows;
-  class LeadPipe;
   class VacuumBox;
   class portItem;
   class PortTube;
+  class PipeTube;
   class GateValve;
   class JawValve;
-    
 }
 
 
@@ -49,55 +53,47 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class balderOpticsHutch;
-  class ExperimentalHutch;
-  class cosaxsFrontEnd;
-  class cosaxsOpticsLine;
-  class cosaxsExpLine;
-  class FrontEndCave;
-  class ConnectZone;
+  class OpticsHutch;
+  class BremColl;
+  class FlangeMount;
+  class Mirror;
+  class MonoBox;
+  class MonoCrystals;
+  class MonoShutter;
   
   /*!
-    \class COSAXS
+    \class cosaxsExpLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class COSAXS : public R3Beamline
+class cosaxsExpLine :
+  public attachSystem::CopiedComp,
+  public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset,
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap
 {
  private:
 
-  /// the components in the front end
-  std::shared_ptr<cosaxsFrontEnd> frontBeam;
-
-  /// lead in beam wall
-  std::shared_ptr<WallLead> wallLead;
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void createSurfaces();
+  void buildObjects(Simulation&);
+  void createLinks();
   
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
-
-  /// Optics hutch
-  std::shared_ptr<balderOpticsHutch> opticsHut;
-  /// Optics beamlines 
-  std::shared_ptr<cosaxsOpticsLine> opticsBeam;
-
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
-
-  /// Experimental beamline
-  std::shared_ptr<cosaxsExpLine> expBeam;
-
  public:
   
-  COSAXS(const std::string&);
-  COSAXS(const COSAXS&);
-  COSAXS& operator=(const COSAXS&);
-  virtual ~COSAXS();
-
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  cosaxsExpLine(const std::string&);
+  cosaxsExpLine(const cosaxsExpLine&);
+  cosaxsExpLine& operator=(const cosaxsExpLine&);
+  ~cosaxsExpLine();
+  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 
