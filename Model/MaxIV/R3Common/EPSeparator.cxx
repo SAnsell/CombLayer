@@ -96,7 +96,7 @@ EPSeparator::EPSeparator(const std::string& Key) :
 {}
 
 
-EPSeparator::~EPSeparator() 
+EPSeparator::~EPSeparator()  
   /*!
     Destructor
   */

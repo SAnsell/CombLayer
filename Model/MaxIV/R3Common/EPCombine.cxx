@@ -56,7 +56,6 @@
 #include "Cylinder.h"
 #include "Line.h"
 #include "Rules.h"
-#include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -200,9 +199,9 @@ EPCombine::createSurfaces()
 
   // flange cylinder/plangs
   ModelSupport::buildCylinder
-    (SMap,buildIndex+7,Origin+X*flangeAStep,Y,flangeARadius);
+    (SMap,buildIndex+7,Origin+X*flangeAXStep,Y,flangeARadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+17,Origin+X*flangeBStep,Y,flangeBRadius);
+    (SMap,buildIndex+17,Origin+X*flangeBXStep,Y,flangeBRadius);
 
   
   ModelSupport::buildPlane
@@ -215,31 +214,32 @@ EPCombine::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+103,EOrigin,EX);
   ModelSupport::buildCylinder(SMap,buildIndex+107,EOrigin,EY,electronRadius);
   
+  // Electron walls: [All point to center]
+  const Geometry::Vec3D XZ((EX+Z).unit());
+  const Geometry::Vec3D mXZ((Z-EX).unit());
+  ModelSupport::buildPlane
+    (SMap,buildIndex+111,EOrigin-Z*(electronRadius+skinThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+112,EOrigin-XZ*(electronRadius+skinThick),XZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+113,EOrigin+mXZ*(electronRadius+skinThick),-mXZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+114,EOrigin+Z*(electronRadius+skinThick),-Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+115,EOrigin+XZ*(electronRadius+skinThick),-XZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+116,EOrigin-mXZ*(electronRadius+skinThick),mXZ);
+
+  
   // photon inner :
   ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,PY,photonRadius);
   ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,PX);
   ModelSupport::buildPlane(SMap,buildIndex+205,POrigin-Z*photonRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,POrigin+Z*photonRadius,Z);
   
-  // Electron walls: [All point to center]
-  const Geometry::Vec3D XZ((EX+Z).unit());
-  const Geometry::Vec3D mXZ((Z-EX).unit());
-  ModelSupport::buildPlane
-    (SMap,buildIndex+211,EOrigin-Z*(electronRadius+skinThick),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+212,EOrigin-XZ*(electronRadius+skinThick),XZ);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+213,EOrigin+mXZ*(electronRadius+skinThick),-mXZ);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+214,EOrigin+Z*(electronRadius+skinThick),-Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+215,EOrigin+XZ*(electronRadius+skinThick),-XZ);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+216,EOrigin-mXZ*(electronRadius+skinThick),mXZ);
 
   
-  // Photon Wall
-
+  // Photon Wall 
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,POrigin,PY,photonRadius+skinThick);
   ModelSupport::buildPlane
