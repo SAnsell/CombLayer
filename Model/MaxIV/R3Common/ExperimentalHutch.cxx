@@ -235,8 +235,8 @@ ExperimentalHutch::createObjects(Simulation& System)
       if (!isActive("frontWall"))
 	{
 	  Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-					    " 11M -1M  33 -34 5 -6 107 ");
-	  makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out);
+					    " 11M -1M  33 -34 -6 107 ");
+	  makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out+floor);
 	}
       
       // roof
@@ -249,7 +249,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   if (!isActive("frontWall") && holeRadius>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI," 1M -1 -107 ");
-      makeCell("EnteranceHole",System,cellIndex++,holeMat,0.0,Out);
+      makeCell("EntranceHole",System,cellIndex++,holeMat,0.0,Out);
     }
   
   // Exclude:
