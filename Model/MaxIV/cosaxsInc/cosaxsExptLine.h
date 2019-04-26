@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   cosaxsInc/cosaxsExpLine.h
+ * File:   cosaxsInc/cosaxsExptLine.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsExpLine_h
-#define xraySystem_cosaxsExpLine_h
+#ifndef xraySystem_cosaxsExptLine_h
+#define xraySystem_cosaxsExptLine_h
 
 namespace insertSystem
 {
@@ -29,16 +29,7 @@ namespace insertSystem
 
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
-  class Bellows;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
-  class PipeTube;
   class GateValve;
-  class JawValve;
 }
 
 
@@ -53,23 +44,15 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;
-  class BremColl;
-  class FlangeMount;
-  class Mirror;
-  class MonoBox;
-  class MonoCrystals;
-  class MonoShutter;
-  
   /*!
-    \class cosaxsExpLine
+    \class cosaxsExptLine
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class cosaxsExpLine :
+class cosaxsExptLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
@@ -77,6 +60,12 @@ class cosaxsExpLine :
   public attachSystem::CellMap
 {
  private:
+  /// construction space for main object
+  attachSystem::InnerZone buildZone;
+
+  double outerLeft;    ///< Left Width for cut rectangle
+  double outerRight;   ///< Right width for cut rectangle
+  double outerTop;     ///< Top lift for cut rectangle
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -87,10 +76,10 @@ class cosaxsExpLine :
   
  public:
   
-  cosaxsExpLine(const std::string&);
-  cosaxsExpLine(const cosaxsExpLine&);
-  cosaxsExpLine& operator=(const cosaxsExpLine&);
-  ~cosaxsExpLine();
+  cosaxsExptLine(const std::string&);
+  cosaxsExptLine(const cosaxsExptLine&);
+  cosaxsExptLine& operator=(const cosaxsExptLine&);
+  ~cosaxsExptLine();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

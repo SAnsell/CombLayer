@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: cosaxs/cosaxsExpLine.cxx
+ * File: cosaxs/cosaxsExptLine.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
@@ -82,25 +82,6 @@
 
 #include "insertObject.h"
 #include "insertPlate.h"
-#include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-
-#include "CrossPipe.h"
-#include "BremColl.h"
-#include "MonoVessel.h"
-#include "MonoCrystals.h"
-#include "GateValve.h"
-#include "JawUnit.h"
-#include "JawFlange.h"
-#include "FlangeMount.h"
-#include "Mirror.h"
-#include "MonoBox.h"
-#include "MonoShutter.h"
 #include "cosaxsExptLine.h"
 
 namespace xraySystem
@@ -108,12 +89,13 @@ namespace xraySystem
 
 // Note currently uncopied:
   
-cosaxsExpLine::cosaxsExpLine(const std::string& Key) :
+cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  buildZone(*this,cellIndex)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -124,29 +106,31 @@ cosaxsExpLine::cosaxsExpLine(const std::string& Key) :
   
 }
   
-cosaxsExpLine::~cosaxsExpLine()
+cosaxsExptLine::~cosaxsExptLine()
   /*!
     Destructor
    */
 {}
 
 void
-cosaxsExpLine::populate(const FuncDataBase& Control)
+cosaxsExptLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
    */
 {
+  ELog::RegMethod RegA("cosaxsExptLine","populate");
+
   FixedOffset::populate(Control);
 
-  // outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
-  // outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
-  // outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+  outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
+  outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
+  outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
   
   return;
 }
 
 void
-cosaxsExpLine::createUnitVector(const attachSystem::FixedComp& FC,
+cosaxsExptLine::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -157,7 +141,7 @@ cosaxsExpLine::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("cosaxsExpLine","createUnitVector");
+  ELog::RegMethod RegA("cosaxsExptLine","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -166,25 +150,38 @@ cosaxsExpLine::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-cosaxsExpLine::createSurfaces()
+cosaxsExptLine::createSurfaces()
   /*!
     Create surfaces for outer void
   */
 {
-  ELog::RegMethod RegA("cosaxsExpLine","createSurface");
+  ELog::RegMethod RegA("cosaxsExptLine","createSurface");
+
+  ELog::EM << "Remove surfaces?" << ELog::endCrit;
+  ELog::EM << "Is buildZone needed here?" << ELog::endCrit;
+  if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
+    {
+      std::string Out;
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerLeft,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*outerRight,X);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*outerTop,Z);
+      Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 -6");
+      const HeadRule HR(Out+getRuleStr("floor"));
+      buildZone.setSurround(HR);
+    }
 
   return;
 }
 
 void
-cosaxsExpLine::buildObjects(Simulation& System)
+cosaxsExptLine::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("cosaxsExpLine","buildObjects");
+  ELog::RegMethod RegA("cosaxsExptLine","buildObjects");
 
 
   //  setCell("LastVoid",masterCell->getName());
@@ -195,12 +192,12 @@ cosaxsExpLine::buildObjects(Simulation& System)
 }
 
 void
-cosaxsExpLine::createLinks()
+cosaxsExptLine::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RControl("cosaxsExpLine","createLinks");
+  ELog::RegMethod RControl("cosaxsExptLine","createLinks");
   
   //  setLinkSignedCopy(0,*pipeInit,1);
   //  setLinkSignedCopy(1,*lastComp,2);
@@ -209,7 +206,7 @@ cosaxsExpLine::createLinks()
   
   
 void 
-cosaxsExpLine::createAll(Simulation& System,
+cosaxsExptLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -219,7 +216,7 @@ cosaxsExpLine::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RControl("cosaxsExpLine","createAll");
+  ELog::RegMethod RControl("cosaxsExptLine","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

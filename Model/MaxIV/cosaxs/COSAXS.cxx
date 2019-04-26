@@ -115,7 +115,7 @@ COSAXS::COSAXS(const std::string& KN) :
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
-  exptBeam(new cosaxsExpLine(newName+"ExpLine"))
+  exptBeam(new cosaxsExptLine(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -224,7 +224,8 @@ COSAXS::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("Floor"));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
-  //  exptBeam->createAll(System,*exptHut,2);
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->createAll(System,*joinPipeB,2);
 
   return;
 }

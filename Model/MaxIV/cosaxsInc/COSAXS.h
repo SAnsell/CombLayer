@@ -53,7 +53,7 @@ namespace xraySystem
   class ExperimentalHutch;
   class cosaxsFrontEnd;
   class cosaxsOpticsLine;
-  class cosaxsExpLine;
+  class cosaxsExptLine;
   class FrontEndCave;
   class ConnectZone;
   
@@ -88,7 +88,7 @@ class COSAXS : public R3Beamline
   std::shared_ptr<ExperimentalHutch> exptHut;
 
   /// Experimental beamline
-  std::shared_ptr<cosaxsExpLine> exptBeam;
+  std::shared_ptr<cosaxsExptLine> exptBeam;
 
  public:
   
