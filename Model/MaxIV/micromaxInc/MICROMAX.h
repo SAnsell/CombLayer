@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/BALDER.h
+ * File:   micromaxInc/MICROMAX.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_BALDER_h
-#define xraySystem_BALDER_h
+#ifndef xraySystem_MICROMAX_h
+#define xraySystem_MICROMAX_h
 
 namespace constructSystem
 {
@@ -36,39 +36,45 @@ namespace constructSystem
   class JawValve;
 }
 
+/*!
+  \namespace xraySystem
+  \brief General xray optics system
+  \version 1.0
+  \date January 2018
+  \author S. Ansell
+*/
+
 namespace xraySystem
 {
   class BeamMount;
-  class OpticsHutch;
+  class bladerOpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
+  class micromaxOpticsLine;
   class R3FrontEndCave;
-  class R3FrontEnd;
   class ConnectZone;
-  class balderFrontEnd;
+  class micromaxFrontEnd;
   class PipeShield;
   class WallLead;
-
-  class balderOpticsBeamline;
-  class balderFrontEnd;
-  class balderOpticsHutch;
+  
   /*!
-    \class BALDER
+    \class MICROMAX
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class BALDER : public R3Beamline
+class MICROMAX : public R3Beamline
 {
  private:
 
+
   /// the components in the front end
-  std::shared_ptr<balderFrontEnd> frontBeam;
+  std::shared_ptr<micromaxFrontEnd> frontBeam;
 
   /// lead in beam wall
-  std::shared_ptr<WallLead> wallLead;           
+  std::shared_ptr<WallLead> wallLead;
   
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
@@ -77,43 +83,18 @@ class BALDER : public R3Beamline
   std::shared_ptr<balderOpticsHutch> opticsHut;
   
   /// Beamline
-  std::shared_ptr<balderOpticsBeamline> opticsBeam;
-
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
-
-
-  /// Pipe shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> pShield;
-
-  /// Neutron shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> nShield;
-
-  /// Pipe shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> outerShield;
-  
-  /// Connection between hutches
-  std::shared_ptr<xraySystem::ConnectZone> connectZone;
-
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::LeadPipe> joinPipeC;
-
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
-
-  /// Beamline for experimental hutch
-  std::shared_ptr<ExptBeamline> exptBeam;
-
+  std::shared_ptr<micromaxOpticsLine> opticsBeam;
   
  public:
   
-  BALDER(const std::string&);
-  BALDER(const BALDER&);
-  BALDER& operator=(const BALDER&);
-  virtual ~BALDER();
+  MICROMAX(const std::string&);
+  MICROMAX(const MICROMAX&);
+  MICROMAX& operator=(const MICROMAX&);
+  virtual ~MICROMAX();
 
-  virtual  void build(Simulation&,const attachSystem::FixedComp&,
-		      const long int);
+
+  virtual void build(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
 
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/OpticsBeamline.h
+ * File:   balderInc/balderOpticsBeamline.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_OpticsBeamline_h
-#define xraySystem_OpticsBeamline_h
+#ifndef xraySystem_balderOpticsBeamline_h
+#define xraySystem_balderOpticsBeamline_h
 
 namespace insertSystem
 {
@@ -52,14 +52,14 @@ namespace xraySystem
   class ShutterUnit;
     
   /*!
-    \class OpticsBeamline
+    \class balderOpticsBeamline
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class OpticsBeamline :
+class balderOpticsBeamline :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
@@ -194,10 +194,10 @@ class OpticsBeamline :
   
  public:
   
-  OpticsBeamline(const std::string&);
-  OpticsBeamline(const OpticsBeamline&);
-  OpticsBeamline& operator=(const OpticsBeamline&);
-  ~OpticsBeamline();
+  balderOpticsBeamline(const std::string&);
+  balderOpticsBeamline(const balderOpticsBeamline&);
+  balderOpticsBeamline& operator=(const balderOpticsBeamline&);
+  ~balderOpticsBeamline();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
