@@ -226,6 +226,8 @@ BALDER::build(Simulation& System,
 
   //  exptHut->addInsertCell(voidCell);
   //  exptHut->addInsertCell(voidCell);
+
+  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
   
