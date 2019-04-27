@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: formax/formaxOpticsLine.cxx
+ * File: micromax/micromaxOpticsLine.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -101,14 +101,14 @@
 #include "MonoBox.h"
 #include "MonoCrystals.h"
 #include "MonoShutter.h"
-#include "formaxOpticsLine.h"
+#include "micromaxOpticsLine.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
+micromaxOpticsLine::micromaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -200,14 +200,14 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(monoShutter);
 }
   
-formaxOpticsLine::~formaxOpticsLine()
+micromaxOpticsLine::~micromaxOpticsLine()
   /*!
     Destructor
    */
 {}
 
 void
-formaxOpticsLine::populate(const FuncDataBase& Control)
+micromaxOpticsLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
@@ -223,7 +223,7 @@ formaxOpticsLine::populate(const FuncDataBase& Control)
 }
 
 void
-formaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
+micromaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -234,7 +234,7 @@ formaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("formaxOpticsLine","createUnitVector");
+  ELog::RegMethod RegA("micromaxOpticsLine","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -243,7 +243,7 @@ formaxOpticsLine::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 int
-formaxOpticsLine::constructDiag
+micromaxOpticsLine::constructDiag
   (Simulation& System,
    MonteCarlo::Object** masterCellPtr,
    constructSystem::PortTube& diagBoxItem,
@@ -259,7 +259,7 @@ formaxOpticsLine::constructDiag
     \return outerCell
    */
 {
-  ELog::RegMethod RegA("formaxOpticsLine","constructDiag");
+  ELog::RegMethod RegA("micromaxOpticsLine","constructDiag");
 
   int outerCell;
 
@@ -296,12 +296,12 @@ formaxOpticsLine::constructDiag
 }
   
 void
-formaxOpticsLine::createSurfaces()
+micromaxOpticsLine::createSurfaces()
   /*!
     Create surfaces for outer void
   */
 {
-  ELog::RegMethod RegA("formaxOpticsLine","createSurface");
+  ELog::RegMethod RegA("micromaxOpticsLine","createSurface");
 
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
@@ -320,14 +320,14 @@ formaxOpticsLine::createSurfaces()
 }
 
 void
-formaxOpticsLine::buildObjects(Simulation& System)
+micromaxOpticsLine::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("formaxOpticsLine","buildObjects");
+  ELog::RegMethod RegA("micromaxOpticsLine","buildObjects");
 
   int outerCell;
   buildZone.setFront(getRule("front"));
@@ -542,12 +542,12 @@ formaxOpticsLine::buildObjects(Simulation& System)
 }
 
 void
-formaxOpticsLine::createLinks()
+micromaxOpticsLine::createLinks()
   /*!
     Create a front/back link
    */
 {
-  ELog::RegMethod RControl("formaxOpticsLine","createLinks");
+  ELog::RegMethod RControl("micromaxOpticsLine","createLinks");
   
   setLinkSignedCopy(0,*pipeInit,1);
   setLinkSignedCopy(1,*lastComp,2);
@@ -556,7 +556,7 @@ formaxOpticsLine::createLinks()
   
   
 void 
-formaxOpticsLine::createAll(Simulation& System,
+micromaxOpticsLine::createAll(Simulation& System,
 			    const attachSystem::FixedComp& FC,
 			    const long int sideIndex)
   /*!
@@ -566,7 +566,7 @@ formaxOpticsLine::createAll(Simulation& System,
     \param sideIndex :: link point
    */
 {
-  ELog::RegMethod RControl("formaxOpticsLine","createAll");
+  ELog::RegMethod RControl("micromaxOpticsLine","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

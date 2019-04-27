@@ -96,6 +96,7 @@
 #include "PreDipole.h"
 #include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
+#include "EPCombine.h"
 
 #include "makeSingleItem.h"
 
@@ -130,6 +131,14 @@ makeSingleItem::build(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
+
+  std::shared_ptr<xraySystem::EPCombine>
+    EPcombine(new xraySystem::EPCombine("EPCombine"));
+  OR.addObject(EPcombine);
+  
+  EPcombine->addInsertCell(voidCell);
+  EPcombine->createAll(System,World::masterOrigin(),0);
+  return;
   
   std::shared_ptr<xraySystem::EPSeparator>
     EPsep(new xraySystem::EPSeparator("EPSeparator"));

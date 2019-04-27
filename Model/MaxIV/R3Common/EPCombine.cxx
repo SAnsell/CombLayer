@@ -124,6 +124,7 @@ EPCombine::populate(const FuncDataBase& Control)
 
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
 
+  wallXStep=Control.EvalVar<double>(keyName+"WallXStep") ;
   wallStartLen=Control.EvalVar<double>(keyName+"WallStartLen") ;
   wallWidth=Control.EvalVar<double>(keyName+"WallWidth");
   wallHeight=Control.EvalVar<double>(keyName+"WallHeight");
@@ -187,14 +188,14 @@ EPCombine::createSurfaces()
   const Geometry::Vec3D EY=electronQ.makeRotate(Y);
   const Geometry::Vec3D EOrigin(Origin+X*electronXStep);
 
+  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*(wallStartLen),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(wallStartLen),Y);
+  const Geometry::Vec3D WOrigin(Origin+X*wallXStep);
+  ModelSupport::buildPlane(SMap,buildIndex+3,WOrigin-X*(wallWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,WOrigin+X*(wallWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(wallWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(wallWidth/2.0),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,WOrigin-Z*(wallHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,WOrigin+Z*(wallHeight/2.0),Z);
     
 
   // flange cylinder/plangs
@@ -215,8 +216,9 @@ EPCombine::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+107,EOrigin,EY,electronRadius);
   
   // Electron walls: [All point to center]
-  const Geometry::Vec3D XZ((EX+Z).unit());
-  const Geometry::Vec3D mXZ((Z-EX).unit());
+  const Geometry::Vec3D XZ((EX*cos(M_PI/6.0)+Z*0.5).unit());
+  const Geometry::Vec3D mXZ((EX*cos(M_PI/6.0)-Z*0.5).unit());
+
   ModelSupport::buildPlane
     (SMap,buildIndex+111,EOrigin-Z*(electronRadius+skinThick),Z);
   ModelSupport::buildPlane
@@ -236,8 +238,6 @@ EPCombine::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,PX);
   ModelSupport::buildPlane(SMap,buildIndex+205,POrigin-Z*photonRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,POrigin+Z*photonRadius,Z);
-  
-
   
   // Photon Wall 
   ModelSupport::buildCylinder
@@ -268,22 +268,61 @@ EPCombine::createObjects(Simulation& System)
   makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 3 -4 5 -6 (107  207 (-205 : 206 : 103 : -203)");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+    (SMap,buildIndex," 1001 -2 3 -4 5 -6 107  207 (-205 : 206 : 103 : -203)");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1001  111 112 113 114 115 116 107 (-205:206:103)");
+  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"11 -1001 -4 5 -6 112 116 (-111:-113:-115:-114) ");
+  makeCell("ElectronOuter",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1001  (-112:-116) 207 (-205:206:-203) "
+                  " 215 -216 (-217 : 203)");
+  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"11 -1001 3  5 -6 (-112:-116) (-215:216) ");
+  makeCell("PhotonOuter",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"11 -1001 3 215 -216 217 -203 ");
+  makeCell("PhotonOuter",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -7 -11  (-3:4:-5:6) ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 (-3:4:-5:6) 12 -2 ");
+    (SMap,buildIndex,"-11 -4 5 -6 112 116 (-111:-113:-115:-114) ");
+  makeCell("ElectronOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-11 3 215 -216 217 -203 ");
+  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-11 3  5 -6 (-112:-116) (-215:216) ");
+  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -17 7 -11 ");
+  makeCell("FlangeAOuter",System,cellIndex++,0,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -17 (-3:4:-5:6) 12 -2 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
   
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 (-3:4:-5:6) 11 -12 ");
+    (SMap,buildIndex," -17 (-3:4:-5:6) 11 -12 ");
   makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -17 ");
   addOuterSurf(Out+frontSurf);
 
   return;
