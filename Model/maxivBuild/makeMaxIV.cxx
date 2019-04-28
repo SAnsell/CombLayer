@@ -87,6 +87,7 @@
 #include "MAXPEEM.h"
 #include "FLEXPES.h"
 #include "FORMAX.h"
+#include "MICROMAX.h"
 #include "SPECIES.h"
 
 #include "makeMaxIV.h"
@@ -265,8 +266,9 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
   static const std::map<std::string,std::string> beamNAMES
     ({ {"BALDER","OpticCentre1"},
-	{"COSAXS","OpticCentre1"},
-	{"FORMAX","OpticCentre8"}
+       {"COSAXS","OpticCentre1"},
+       {"FORMAX","OpticCentre8"},
+       {"MICROMAX","OpticCentre1"},
 	  
     });
 
@@ -317,6 +319,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new COSAXS("Cosaxs"));
       else if (BL=="FORMAX")	
 	BLPtr.reset(new FORMAX("Formax"));
+      else if (BL=="MICROMAX")	
+	BLPtr.reset(new MICROMAX("MicroMax"));
         
       if (!activeStop.empty())
 	{

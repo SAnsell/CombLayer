@@ -107,8 +107,6 @@ namespace xraySystem
 
 MICROMAX::MICROMAX(const std::string& KN) :
   R3Beamline("Micromax",KN),
-  ringCaveA(new R3FrontEndCave(newName+"RingCaveA")),
-  ringCaveB(new R3FrontEndCave(newName+"RingCaveB")),
   frontBeam(new micromaxFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
@@ -122,8 +120,6 @@ MICROMAX::MICROMAX(const std::string& KN) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(ringCaveA);
-  OR.addObject(ringCaveB);
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
@@ -156,7 +152,8 @@ MICROMAX::build(Simulation& System,
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
 
-    
+  const std::string exitLink="ExitCentre"+std::to_string(PIndex);
+  
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 

@@ -98,7 +98,8 @@ $gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);
 my @maxiv = qw( maxivBuild );
 push(@maxiv,@mainLib);
 $gM->addDepUnit("maxiv", [@maxiv,
-			  qw(balder cosaxs commonBeam  flexpes formax maxpeem 
+			  qw(balder cosaxs commonBeam  flexpes formax 
+                             maxpeem  micromax 
 			   commonGenerator R3Common R1Common  species)]);
 
 

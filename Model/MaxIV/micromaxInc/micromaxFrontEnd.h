@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   formaxInc/formaxFrontEnd.h
+ * File:   micromaxInc/micromaxFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_formaxFrontEnd_h
-#define xraySystem_formaxFrontEnd_h
+#ifndef xraySystem_micromaxFrontEnd_h
+#define xraySystem_micromaxFrontEnd_h
 
 namespace insertSystem
 {
@@ -62,14 +62,14 @@ namespace xraySystem
 
     
   /*!
-    \class formaxFrontEnd
+    \class micromaxFrontEnd
     \version 1.0
     \author S. Ansell
     \date March 2018
     \brief General constructor front end optics
   */
 
-class formaxFrontEnd :
+class micromaxFrontEnd :
   public R3FrontEnd
 {
  private:
@@ -89,10 +89,10 @@ class formaxFrontEnd :
   
  public:
   
-  formaxFrontEnd(const std::string&);
-  formaxFrontEnd(const formaxFrontEnd&);
-  formaxFrontEnd& operator=(const formaxFrontEnd&);
-  virtual ~formaxFrontEnd();
+  micromaxFrontEnd(const std::string&);
+  micromaxFrontEnd(const micromaxFrontEnd&);
+  micromaxFrontEnd& operator=(const micromaxFrontEnd&);
+  virtual ~micromaxFrontEnd();
 
 };
 
