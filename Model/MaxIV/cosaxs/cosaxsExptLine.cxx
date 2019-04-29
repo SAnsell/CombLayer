@@ -134,7 +134,7 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
-  
+
   return;
 }
 
@@ -166,8 +166,6 @@ cosaxsExptLine::createSurfaces()
 {
   ELog::RegMethod RegA("cosaxsExptLine","createSurface");
 
-  ELog::EM << "Remove surfaces?" << ELog::endCrit;
-  ELog::EM << "Is buildZone needed here?" << ELog::endCrit;
   if (outerLeft>Geometry::zeroTol &&  isActive("floor"))
     {
       std::string Out;
@@ -197,20 +195,22 @@ cosaxsExptLine::buildObjects(Simulation& System)
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
 
-  // MonteCarlo::Object* masterCell=
-  //buildZone.constructMasterCell(System,*this);
-
-  //  setCell("LastVoid",masterCell->getName());
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System,*this);
 
   pipeInit->createAll(System,*this,0);
 
-  
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
+  pipeInit->insertInCell(System,outerCell);
+
   gateA->setFront(*pipeInit,2);
   gateA->createAll(System,*pipeInit,2);
-  //outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  //  gateA->insertInCell(System,outerCell);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  gateA->insertInCell(System,outerCell);
 
   lastComp=gateA;
+  //  setCell("LastVoid",masterCell->getName());
 
   return;
 }
