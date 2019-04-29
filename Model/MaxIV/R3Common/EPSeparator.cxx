@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/EPSeparator.cxx
+ * File:   R3Comoon/EPSeparator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -48,7 +48,6 @@
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
@@ -97,7 +96,7 @@ EPSeparator::EPSeparator(const std::string& Key) :
 {}
 
 
-EPSeparator::~EPSeparator() 
+EPSeparator::~EPSeparator()  
   /*!
     Destructor
   */
@@ -115,51 +114,30 @@ EPSeparator::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  photonOuterGap=Control.EvalVar<double>(keyName+"PhotonOuterGap");
-  photonRadius=Control.EvalVar<double>(keyName+"PhotonRadius");
-  photonAGap=Control.EvalVar<double>(keyName+"PhotonAGap");
-  photonBGap=Control.EvalVar<double>(keyName+"PhotonBGap");
-  electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
-  initEPSeparation=Control.EvalVar<double>(keyName+"InitEPSeparation");
-  electronAngle=Control.EvalVar<double>(keyName+"ElectronAngle");
 
-  wallPhoton=Control.EvalVar<double>(keyName+"WallPhoton");
-  wallElectron=Control.EvalVar<double>(keyName+"WallElectron");
+  photonXStep=Control.EvalVar<double>(keyName+"PhotonXStep");
+  electronXStep=Control.EvalVar<double>(keyName+"ElectronXStep");
+  photonXYAngle=Control.EvalVar<double>(keyName+"PhotonXYAngle");
+  electronXYAngle=Control.EvalVar<double>(keyName+"ElectronXYAngle");
+  electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
+
+  photonRadius=Control.EvalVar<double>(keyName+"PhotonRadius");
+  wallWidth=Control.EvalVar<double>(keyName+"WallWidth");
   wallHeight=Control.EvalVar<double>(keyName+"WallHeight");
 
-    
-  portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
-  portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
-  portAPipeRadius=Control.EvalPair<double>(keyName+"PortAPipeRadius",
-					   keyName+"PortPipeRadius");
-  portAFlangeRadius=Control.EvalPair<double>(keyName+"PortAFlangeRadius",
-					     keyName+"PortFlangeRadius");
-  portAThick=Control.EvalPair<double>(keyName+"PortAThick",
-				      keyName+"PortThick");
-  
-  portBXStep=Control.EvalDefVar<double>(keyName+"PortBXStep",0.0);
-  portBZStep=Control.EvalDefVar<double>(keyName+"PortBZStep",0.0);
-
-  portBPipeRadius=Control.EvalPair<double>(keyName+"PortBPipeRadius",
-					   keyName+"PortPipeRadius");
-  portBFlangeRadius=Control.EvalPair<double>(keyName+"PortBFlangeRadius",
-					     keyName+"PortFlangeRadius");
-  portBWall=Control.EvalPair<double>(keyName+"PortBWall",keyName+"PortWall");
-  portBLen=Control.EvalPair<double>(keyName+"PortBLen",keyName+"PortLen");
-  portBThick=Control.EvalPair<double>(keyName+"PortBThick",
-				      keyName+"PortThick");
-  
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  portMat=ModelSupport::EvalMat<int>(Control,keyName+"PortMat");
-
+  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
+  
   return;
 }
 
 void
 EPSeparator::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp to attach to
@@ -181,38 +159,52 @@ EPSeparator::createSurfaces()
 {
   ELog::RegMethod RegA("EPSeparator","createSurface");
 
-  const Geometry::Vec3D eCent(Origin+X*initEPSeparation);
-  Geometry::Vec3D eX(X);
-  Geometry::Vec3D eY(Y);
-  const Geometry::Quaternion QR=
-    Geometry::Quaternion::calcQRotDeg(electronAngle,-Z);
-  QR.rotate(eX);
-  QR.rotate(eY);
-
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  // Do outer surfaces (vacuum ports)
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   
-  const Geometry::Vec3D photonCent(Origin+X*(photonRadius-photonOuterGap));
-  // photon cylinder is offset:
-  ModelSupport::buildCylinder(SMap,buildIndex+7,photonCent,Y,photonRadius);
-  // dividing plane
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
+  const Geometry::Quaternion photonQ=
+    Geometry::Quaternion::calcQRotDeg(photonXYAngle,Z);
+  const Geometry::Vec3D PX=photonQ.makeRotate(X);
+  const Geometry::Vec3D PY=photonQ.makeRotate(Y);
+  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(photonAGap/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(photonAGap/2.0),Z);
-
-  // electron Cylinder
-  ModelSupport::buildCylinder(SMap,buildIndex+1007,eCent,eY,electronRadius);
-  // electron divide plane
-  ModelSupport::buildPlane(SMap,buildIndex+1004,eCent,eX);
+  const Geometry::Quaternion electronQ=
+    Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
+  const Geometry::Vec3D EX=electronQ.makeRotate(X);
+  const Geometry::Vec3D EY=electronQ.makeRotate(Y);
+  const Geometry::Vec3D EOrigin(Origin+X*electronXStep);
 
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*wallPhoton,X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*wallElectron,eX);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(wallWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(wallWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallHeight/2.0),Z);
+    
+
+  // flange cylinder/plangs
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-flangeLength),Y);
   
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wallHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wallHeight/2.0),Z);
-
+  // electron inner :
+  // divider
+  ModelSupport::buildPlane(SMap,buildIndex+103,EOrigin,EX);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,EOrigin,EY,electronRadius);
+  
+  // photon inner :
+  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,PY,photonRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+205,POrigin-Z*photonRadius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,POrigin+Z*photonRadius,Z);
+  
+  
   return;
 }
 
@@ -224,22 +216,33 @@ EPSeparator::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("EPSeparator","createObjects");
+
+  const std::string frontSurf(ExternalCut::getRuleStr("front"));
   
   std::string Out;
-  // Outer steel
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 (-7:3) 5 -6 1007 -1004 ");
-  makeCell("photonVoid",System,cellIndex++,voidMat,0.0,Out);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 -1007 ");
-  makeCell("electronVoid",System,cellIndex++,voidMat,0.0,Out);
-  
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1 -2 13 -14 15 -16 1007 (1004 : -1007 : 6 : -5 : (7 -3))");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -2 (-107 : -207 : (-103 205 -206 203) )");
+  makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -2 3 -4 5 -6 (107  207 (-205 : 206 : 103 : -203)");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -7 -11  (-3:4:-5:6) ");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -7 (-3:4:-5:6) 12 -2 ");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -7 (-3:4:-5:6) 11 -12 ");
+  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -7 ");
+  addOuterSurf(Out+frontSurf);
 
   return;
 }
@@ -251,6 +254,7 @@ EPSeparator::createLinks()
    */
 {
   ELog::RegMethod RegA("EPSeparator","createLinks");
+
   
   return;
 }
@@ -279,4 +283,4 @@ EPSeparator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE epbSystem
+}  // NAMESPACE xraySystem

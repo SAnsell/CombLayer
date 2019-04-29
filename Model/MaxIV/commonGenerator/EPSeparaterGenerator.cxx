@@ -58,22 +58,14 @@ namespace setVariable
 {
 
 EPSeparatorGenerator::EPSeparatorGenerator() :
-  length(73.5),photonOuterGap(0.25),
-  photonRadius(0.35),
-  photonAGap(0.5),photonBGap(0.7),
-  electronRadius(1.1),initEPSeparation(2.8),   // guess
-  wallPhoton(0.3),wallElectron(4.1),wallHeight(2.4),
-  electronAngle(1.54),
-  portAPipeRadius(CF63::innerRadius),
-  portAFlangeRadius(CF63::flangeRadius),
-  portAThick(CF63::flangeLength),  
-  portBPipeRadius(CF63::innerRadius),
-  portBFlangeRadius(CF63::flangeRadius),
-  portBThick(CF63::flangeLength),  
-  portBWall(CF63::wallThick),
-  portBLen(8.0),
+  length(43.5),photonXStep(-0.50),electronXStep(1.1),
+  photonXYAngle(1.5),electronXYAngle(0.0),
+  photonRadius(0.3),electronRadius(1.1),
+  wallWidth(6.25),wallHeight(2.65),
+  flangeRadius(CF63::flangeRadius),
+  flangeLength(CF63::flangeLength),
   voidMat("Void"),wallMat("Copper"),
-  portMat("Stainless304")
+  flangeMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -98,33 +90,20 @@ EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("EPSeparatorGenerator","generateColl");
 
-  Control.addVariable(keyName+"YStep",yStep);
-  
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"PhotonOuterGap",photonOuterGap);
-  Control.addVariable(keyName+"PhotonRadius",photonRadius);
-  Control.addVariable(keyName+"PhotonAGap",photonAGap);
-  Control.addVariable(keyName+"PhotonBGap",photonBGap);
+  Control.addVariable(keyName+"PhotonXStep",photonXStep);
+  Control.addVariable(keyName+"ElectronXStep",electronXStep);
+  Control.addVariable(keyName+"PhotonXYAngle",photonXYAngle);
+  Control.addVariable(keyName+"ElectronXYAngle",electronXYAngle);
   Control.addVariable(keyName+"ElectronRadius",electronRadius);
-  Control.addVariable(keyName+"InitEPSeparation",initEPSeparation);
-  Control.addVariable(keyName+"ElectronAngle",electronAngle);
-
-  Control.addVariable(keyName+"WallPhoton",wallPhoton);
-  Control.addVariable(keyName+"WallElectron",wallElectron);
+  Control.addVariable(keyName+"PhotonRadius",photonRadius);
+  Control.addVariable(keyName+"WallWidth",wallWidth);
   Control.addVariable(keyName+"WallHeight",wallHeight);
-  
-  Control.addVariable(keyName+"PortAPipeRadius",portAPipeRadius);
-  Control.addVariable(keyName+"PortAFlangeRadius",portAFlangeRadius);
-  Control.addVariable(keyName+"PortAThick",portAThick);
-  Control.addVariable(keyName+"PortBPipeRadius",portBPipeRadius);
-  Control.addVariable(keyName+"PortBWall",portBWall);
-  Control.addVariable(keyName+"PortBFlangeRadius",portBFlangeRadius);
-  Control.addVariable(keyName+"PortBLen",portBLen);
-  Control.addVariable(keyName+"PortBThick",portBThick);
-  
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"PortMat",portMat);
+  Control.addVariable(keyName+"FlangeMat",flangeMat);
   
   return;
 }

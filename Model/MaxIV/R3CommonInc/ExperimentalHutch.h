@@ -40,7 +40,9 @@ namespace xraySystem
 class ExperimentalHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::ExternalCut,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   

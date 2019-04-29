@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/EPSeparator.h
+ * File:   R3CommonInc/EPSeparator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -46,38 +46,24 @@ class EPSeparator : public attachSystem::FixedOffset,
  private:
   
   double length;                ///< frame length
-  double photonOuterGap;        ///< Gap to outer radius
-  double photonRadius;          ///< photon inner radius
-  double photonAGap;            ///< Initial photon gap
-  double photonBGap;            ///< Final photon gap  
-  double electronRadius;        ///< Electron radius
 
-  double initEPSeparation;      ///< initial separation between e / p
+  double photonXStep;            ///< Initial photon gap
+  double electronXStep;          ///< Initial electorn gap  
+  double photonXYAngle;          ///< XY angle of electron beam to proton
+  double electronXYAngle;        ///< XY angle of electron beam to proton
 
-  double electronAngle;         ///< XY angle of electron beam to proton
+  double electronRadius;         ///< Electron radius
+  double photonRadius;           ///< Photon radius
 
-  double wallPhoton;            ///< Extra on photon side 
-  double wallElectron;          ///< Extra on elextron side
-  double wallHeight;            ///< Extra above/below 
+  double wallWidth;              ///< Outer wall box
+  double wallHeight;             ///< Outer wall box
 
-  double portAXStep;        ///< In Port
-  double portAZStep;        ///< In Port
-  double portAPipeRadius;   ///< Front port pipe radius
-  double portAFlangeRadius; ///< Front port flange radius
-  double portAThick;        ///< In Port
-
-  double portBXStep;        ///< Out Port offset from mid point
-  double portBZStep;        ///< Out Port offset from mid point
-  double portBPipeRadius;   ///< Out Port inner radius
-  double portBWall;         ///< Out Port wall thickness
-  double portBFlangeRadius; ///< Out Port inner radius
-  double portBLen;          ///< Out Port in step length
-  double portBThick;        ///< Out Port y-thick
-
+  double flangeRadius;           ///< flange  radius
+  double flangeLength;           ///< flange length
   
-  int voidMat;                  ///< void material
-  int wallMat;                  ///< wall material
-  int portMat;                  ///< Port material
+  int voidMat;                    ///< void material
+  int wallMat;                    ///< wall material
+  int flangeMat;                  ///< Port material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
