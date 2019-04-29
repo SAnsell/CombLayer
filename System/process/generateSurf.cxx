@@ -3,7 +3,7 @@
  
  * File:   process/generateSurf.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -317,7 +317,7 @@ buildCone(surfRegister& SMap,const int N,
     \return New cone
    */
 {
-  ELog::RegMethod("generateSurf","buildCone");
+  ELog::RegMethod("generateSurf","buildCone(O,Axis,angle)");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
@@ -336,30 +336,50 @@ buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& BPt)
   /*!
     Simple constructor to build a surface [type Cone]
+    Assumption is that the Points APt and BPt are at
+    different radii from the center line.
     \param SMap :: Surface Map
     \param N :: Surface number
-    \param Axis :: Axis of cone
     \param CentPt :: Point on centre line of cone
+    \param Axis :: Forward Axis of cone
     \param APt :: Point on cone
     \param BPt :: Point on cone
     \return New cone
    */
 {
-  ELog::RegMethod("generateSurf","buildCone");
+  ELog::RegMethod("generateSurf","buildCone(Org,Axis,Pt1,pt2)");
 
-  const Geometry::Line AL(CentPt,Axis.unit());
-  const Geometry::Line BL(APt,(BPt-APt).unit());
+  const Geometry::Vec3D AUnit(Axis.unit());
+  const Geometry::Line AL(CentPt,AUnit);
 
   // Taking closest on AL to be centre point
-  const std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    CPoints=AL.closestPoints(BL);
+  const Geometry::Vec3D ACent=AL.closestPoint(APt);
+  const Geometry::Vec3D BCent=AL.closestPoint(BPt);
+  const double ADist=APt.Distance(ACent);
+  const double BDist=BPt.Distance(BCent);
 
-  const double cosAng=std::abs(AL.getDirect().dotProd(BL.getDirect()));
+  Geometry::Vec3D coneCent;
+  double cosAng;
+  
+  const double S=BCent.Distance(ACent);
+  const double ABdiff(BDist-ADist);
+  if (ABdiff>Geometry::zeroTol)
+    {
+      const double L=S+(ADist*S)/ABdiff;
+      coneCent=BCent-AUnit*L;
+      cosAng=std::abs(L/sqrt(BDist*BDist+L*L));
+    }
+  else  // assum centre Cpt is centre [as degenerate]
+    {
+      const double L=CentPt.Distance(BCent);
+      coneCent=CentPt;
+      cosAng=std::abs(L/sqrt(+BDist*BDist));
+    }
   
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
+  
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
-  CX->setCone(CPoints.first,Axis.unit(),180.0*acos(cosAng)/M_PI);
+  CX->setCone(coneCent,AUnit,180.0*acos(cosAng)/M_PI);
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cone>(NFound);
