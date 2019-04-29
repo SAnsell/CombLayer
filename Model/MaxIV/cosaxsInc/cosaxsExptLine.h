@@ -29,6 +29,7 @@ namespace insertSystem
 
 namespace constructSystem
 {
+  class Bellows;
   class GateValve;
 }
 
@@ -62,6 +63,14 @@ class cosaxsExptLine :
  private:
   /// construction space for main object
   attachSystem::InnerZone buildZone;
+
+  /// Shared point to use for last component:
+  std::shared_ptr<attachSystem::FixedComp> lastComp;
+
+  /// Inital bellow
+  std::shared_ptr<constructSystem::Bellows> pipeInit;
+  /// First gate valve
+  std::shared_ptr<constructSystem::GateValve> gateA;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

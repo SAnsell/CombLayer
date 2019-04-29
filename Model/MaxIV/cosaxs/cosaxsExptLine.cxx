@@ -82,6 +82,11 @@
 
 #include "insertObject.h"
 #include "insertPlate.h"
+
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+#include "GateValve.h"
+
 #include "cosaxsExptLine.h"
 
 namespace xraySystem
@@ -95,7 +100,9 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   attachSystem::FixedOffset(newName,2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  buildZone(*this,cellIndex)
+  buildZone(*this,cellIndex),
+  pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
+  gateA(new constructSystem::GateValve(newName+"GateA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -104,6 +111,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
+  OR.addObject(pipeInit);
+  OR.addObject(gateA);
 }
   
 cosaxsExptLine::~cosaxsExptLine()
@@ -183,10 +192,25 @@ cosaxsExptLine::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsExptLine","buildObjects");
 
+  int outerCell;
+
+  buildZone.setFront(getRule("front"));
+  buildZone.setBack(getRule("back"));
+
+  // MonteCarlo::Object* masterCell=
+  //buildZone.constructMasterCell(System,*this);
 
   //  setCell("LastVoid",masterCell->getName());
 
-  //  lastComp=gateH;
+  pipeInit->createAll(System,*this,0);
+
+  
+  gateA->setFront(*pipeInit,2);
+  gateA->createAll(System,*pipeInit,2);
+  //outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  //  gateA->insertInCell(System,outerCell);
+
+  lastComp=gateA;
 
   return;
 }
@@ -199,8 +223,8 @@ cosaxsExptLine::createLinks()
 {
   ELog::RegMethod RControl("cosaxsExptLine","createLinks");
   
-  //  setLinkSignedCopy(0,*pipeInit,1);
-  //  setLinkSignedCopy(1,*lastComp,2);
+  setLinkSignedCopy(0,*pipeInit,1);
+  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
   
