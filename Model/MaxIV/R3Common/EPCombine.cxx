@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3Comoon/EPCombine.cxx
+ * File:   R3Common/EPCombine.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *

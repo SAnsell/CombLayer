@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3Comoon/EPSeparator.cxx
+ * File:   R3Common/EPSeparator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3Comoon/PreBendPipe.cxx
+ * File:   R3Common/PreBendPipe.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -168,20 +168,25 @@ PreBendPipe::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(straightLength),Y);
 
-  const Geometry::Vec3D coneCent=Origin+Y*(straightLength);
-  const Geometry::Vec3D PtA=Origin+Y*Length - X*radius;
-  const Geometry::Vec3D PtB=Origin+Y*Length + X*(radius+centreXStep);
-  ModelSupport::buildCone(SMap,buildIndex+107,
-			  Origin+Y*(straightLength),Y);  
+  const Geometry::Vec3D coneCentre=Origin+Y*(straightLength);
+  Geometry::Vec3D PtA=Origin+Y*length-X*radius;
+  Geometry::Vec3D PtB=Origin+Y*length+X*(radius+centreXStep);
+  const Geometry::Vec3D CAxis=((PtA+PtB)/2.0-coneCentre).unit();
+  
+  ModelSupport::buildCone(SMap,buildIndex+107,coneCentre,CAxis,PtA,PtB);
+  PtA-=X*wallThick;
+  PtB+=X*wallThick;
+  ModelSupport::buildCone(SMap,buildIndex+117,coneCentre,CAxis,PtA,PtB);
 
   
   // flange cylinder/planes
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,flangeARadius);
-  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*flangeALength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*flangeALength,Y);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+2007,Origin,Y,flangeBRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+2007,Origin,Y,flangeBRadius);
   ModelSupport::buildPlane
-  (SMap,buildIndex+2001,Origin+Y*(length-flangeBLength),Y);
+    (SMap,buildIndex+2001,Origin+Y*(length-flangeBLength),Y);
 
 
   return;
