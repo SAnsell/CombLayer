@@ -1025,6 +1025,33 @@ opticsVariables(FuncDataBase& Control,
 }
 
 void
+exptVariables(FuncDataBase& Control,
+		      const std::string& beamName)
+  /*
+    Components in the experimental hutch
+    \param Control :: Function data base
+    \param beamName :: Name of beamline
+  */
+{
+  const std::string preName(beamName+"ExptLine");
+
+  Control.addVariable(preName+"OuterLeft",70.0);
+  Control.addVariable(preName+"OuterRight",50.0);
+  Control.addVariable(preName+"OuterTop",60.0);
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
+
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+
+}
+
+void
 connectingVariables(FuncDataBase& Control)
   /*!
     Variables for the connecting region
@@ -1069,6 +1096,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
+  cosaxsVar::exptVariables(Control,"Cosaxs");
 
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
