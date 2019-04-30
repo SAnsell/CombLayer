@@ -60,6 +60,7 @@
 #include "QuadrupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
+#include "PreBendPipeGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "R3ChokeChamberGenerator.h"
@@ -171,6 +172,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");
+
+  setVariable::PreBendPipeGenerator PBGen;
+  PBGen.generatePipe(Control,"PreBendPipe");
 
   setVariable::PreDipoleGenerator PDGen;
   PDGen.generatePipe(Control,"PreDipole",0.0);

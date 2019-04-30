@@ -97,6 +97,7 @@
 #include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
 #include "EPCombine.h"
+#include "PreBendPipe.h"
 
 #include "makeSingleItem.h"
 
@@ -119,7 +120,7 @@ makeSingleItem::~makeSingleItem()
 void 
 makeSingleItem::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
-  /*!
+/*!
     Carry out the full build
     \param System :: Simulation system
     \param IParam :: Input parameters
@@ -131,6 +132,14 @@ makeSingleItem::build(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
+
+  std::shared_ptr<xraySystem::PreBendPipe>
+    preBend(new xraySystem::PreBendPipe("PreBendPipe"));
+  OR.addObject(preBend);
+  
+  preBend->addInsertCell(voidCell);
+  preBend->createAll(System,World::masterOrigin(),0);
+  return;
 
   std::shared_ptr<xraySystem::EPCombine>
     EPcombine(new xraySystem::EPCombine("EPCombine"));

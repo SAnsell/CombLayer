@@ -168,16 +168,34 @@ PreBendPipe::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(straightLength),Y);
 
-  const Geometry::Vec3D coneCentre=Origin+Y*(straightLength);
-  Geometry::Vec3D PtA=Origin+Y*length-X*radius;
-  Geometry::Vec3D PtB=Origin+Y*length+X*(radius+centreXStep);
-  const Geometry::Vec3D CAxis=((PtA+PtB)/2.0-coneCentre).unit();
+  // not real centre (yet)
   
-  ModelSupport::buildCone(SMap,buildIndex+107,coneCentre,CAxis,PtA,PtB);
-  PtA-=X*wallThick;
-  PtB+=X*wallThick;
-  ModelSupport::buildCone(SMap,buildIndex+117,coneCentre,CAxis,PtA,PtB);
+  Geometry::Vec3D coneCentre=Origin+Y*(straightLength);
+  const Geometry::Vec3D PtA=Origin+Y*length-X*radius;
+  const Geometry::Vec3D PtB=Origin+Y*length+X*(radius+centreXStep);
+  //  const Geometry::Vec3D CAxis=((PtA+PtB)/2.0-coneCentre).unit();
 
+  const Geometry::Vec3D PtX=
+    Y*(length-straightLength)+X*(radius+centreXStep/2.0);
+  const double L=PtX.abs();
+  const Geometry::Vec3D CAxis=
+    (Y*(length-straightLength)+X*centreXStep).unit();
+  const double cosAngle=CAxis.dotProd(Y);
+
+
+  // offset distance is x : x/x+L == R1 / R2
+  const double R=radius/(radius+centreXStep/2.0);
+  const double lPrime=R*L/(1.0-R);
+  const double angle=180.0*acos(cosAngle)/M_PI;
+  // The second cone is bigger by PtA + PtB increase by wallThick/cosAngle
+  const double RPrime=R+wallThick/cosAngle;
+  const double lSnd=RPrime*L/(1.0-RPrime);
+
+  ModelSupport::buildCone
+    (SMap,buildIndex+107,coneCentre-CAxis*lPrime,CAxis,angle);
+  ModelSupport::buildCone
+    (SMap,buildIndex+117,coneCentre-CAxis*lSnd,CAxis,angle);
+  
   
   // flange cylinder/planes
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,flangeARadius);
@@ -206,65 +224,17 @@ PreBendPipe::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 (-107 : -207 : (-103 205 -206 203) )");
+    (SMap,buildIndex," -101 -7 ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 1001 -2 3 -4 5 -6 107  207 (-205 : 206 : 103 : -203)");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
+    (SMap,buildIndex," 101 -2 -107 ");
+  makeCell("void",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1001  111 112 113 114 115 116 107 (-205:206:103)");
-  makeCell("ElectronWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1001 -4 5 -6 112 116 (-111:-113:-115:-114) ");
-  makeCell("ElectronOuter",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1001  (-112:-116) 207 (-205:206:-203) "
-                  " 215 -216 (-217 : 203)");
-  makeCell("PhotonWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1001 3  5 -6 (-112:-116) (-215:216) ");
-  makeCell("PhotonOuter",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"11 -1001 3 215 -216 217 -203 ");
-  makeCell("PhotonOuter",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 -11  (-3:4:-5:6) ");
-  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-11 -4 5 -6 112 116 (-111:-113:-115:-114) ");
-  makeCell("ElectronOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-11 3 215 -216 217 -203 ");
-  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-11 3  5 -6 (-112:-116) (-215:216) ");
-  makeCell("PhotonOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
 
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 7 -11 ");
-  makeCell("FlangeAOuter",System,cellIndex++,0,0.0,Out+frontSurf);
-
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 (-3:4:-5:6) 12 -2 ");
-  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,Out);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -17 (-3:4:-5:6) 11 -12 ");
-  makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2 (-107:-7) ");
   addOuterSurf(Out+frontSurf);
 
   return;

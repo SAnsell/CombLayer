@@ -357,23 +357,26 @@ buildCone(surfRegister& SMap,const int N,
   const Geometry::Vec3D BCent=AL.closestPoint(BPt);
   const double ADist=APt.Distance(ACent);
   const double BDist=BPt.Distance(BCent);
-
+  
   Geometry::Vec3D coneCent;
   double cosAng;
   
   const double S=BCent.Distance(ACent);
   const double ABdiff(BDist-ADist);
+
   if (ABdiff>Geometry::zeroTol)
     {
       const double L=S+(ADist*S)/ABdiff;
       coneCent=BCent-AUnit*L;
       cosAng=std::abs(L/sqrt(BDist*BDist+L*L));
     }
-  else  // assum centre Cpt is centre [as degenerate]
+  else  // assume centre Cpt is centre [as degenerate]
     {
       const double L=CentPt.Distance(BCent);
       coneCent=CentPt;
-      cosAng=std::abs(L/sqrt(+BDist*BDist));
+      cosAng=std::abs(L/sqrt(L*L+BDist*BDist));
+      ELog::EM<<"Cone Centre == "<<cosAng<<" "
+	      <<acos(cosAng)*180/M_PI<<ELog::endDiag;
     }
   
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
