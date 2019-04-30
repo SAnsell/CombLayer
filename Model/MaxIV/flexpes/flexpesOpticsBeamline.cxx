@@ -97,7 +97,7 @@
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+#include "JawValveCube.h"
 #include "BeamMount.h"
 #include "GrateMonoBox.h"
 #include "GratingMono.h"
@@ -153,7 +153,7 @@ flexpesOpticsBeamline::flexpesOpticsBeamline(const std::string& Key) :
   gateC(new constructSystem::GateValve(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
-  slitsB(new constructSystem::JawValve(newName+"SlitsB")),
+  slitsB(new constructSystem::JawValveCube(newName+"SlitsB")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
   offPipeC(new constructSystem::OffsetFlangePipe(newName+"OffPipeC")),
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),

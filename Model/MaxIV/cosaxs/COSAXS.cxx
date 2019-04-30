@@ -89,7 +89,7 @@
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+#include "JawValveCube.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
 #include "R3FrontEnd.h"

@@ -37,7 +37,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
 }
 
 
@@ -59,7 +59,7 @@ namespace xraySystem
   class BeamMount;
   class Mirror;
   class PipeShield;
-  class JawValve;
+  class JawValveCube;
   class TankMonoVessel;
   class TwinPipe;
     
@@ -141,7 +141,7 @@ class speciesOpticsBeamline :
   /// Small Pipe apperature converted
   std::shared_ptr<constructSystem::VacuumPipe> pipeF;
   /// Slits for mirror [uncooled]
-  std::shared_ptr<constructSystem::JawValve> mirrorJaws;
+  std::shared_ptr<constructSystem::JawValveCube> mirrorJaws;
   /// Mirror tube
   std::shared_ptr<constructSystem::PipeTube> M3Tube;
   /// Splitter
