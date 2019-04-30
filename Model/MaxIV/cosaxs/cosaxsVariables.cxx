@@ -1041,13 +1041,21 @@ exptVariables(FuncDataBase& Control,
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
+  setVariable::JawValveGenerator JawGen;
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
 
+  // Gate valve A - round
   GateGen.setLength(2.5);
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
+
+   // Double slits
+  JawGen.setCF<setVariable::CF100>();
+  JawGen.setLength(4.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,preName+"SlitsA",0.0,0.8,0.8);
 
 }
 

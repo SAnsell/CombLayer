@@ -31,6 +31,7 @@ namespace constructSystem
 {
   class Bellows;
   class GateValve;
+  class JawValve;
 }
 
 
@@ -48,9 +49,9 @@ namespace xraySystem
   /*!
     \class cosaxsExptLine
     \version 1.0
-    \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \author S. Ansell / K. Batkov
+    \date January-May 2018
+    \brief Constructor for the CoSAXS experimental beam line
   */
 
 class cosaxsExptLine :
@@ -69,8 +70,10 @@ class cosaxsExptLine :
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
-  /// First gate valve
+  /// Vacuum gate valve A - round
   std::shared_ptr<constructSystem::GateValve> gateA;
+  /// Double slits
+  std::shared_ptr<constructSystem::JawValve>  slitsA;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

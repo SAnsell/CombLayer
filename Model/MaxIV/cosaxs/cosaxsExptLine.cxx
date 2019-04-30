@@ -86,6 +86,8 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValve.h"
+#include "JawUnit.h"
+#include "JawValve.h"
 
 #include "cosaxsExptLine.h"
 
@@ -102,7 +104,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  gateA(new constructSystem::GateValve(newName+"GateA"))
+  gateA(new constructSystem::GateValve(newName+"GateA")),
+  slitsA(new constructSystem::JawValve(newName+"SlitsA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -113,6 +116,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   
   OR.addObject(pipeInit);
   OR.addObject(gateA);
+  OR.addObject(slitsA);
 }
   
 cosaxsExptLine::~cosaxsExptLine()
@@ -209,7 +213,12 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
-  lastComp=gateA;
+  slitsA->setFront(*gateA,2);
+  slitsA->createAll(System,*gateA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitsA,2);
+  slitsA->insertInCell(System,outerCell);
+
+  lastComp=slitsA;
   //  setCell("LastVoid",masterCell->getName());
 
   return;
