@@ -1055,7 +1055,7 @@ exptVariables(FuncDataBase& Control,
   JawGen.setCF<setVariable::CF100>();
   JawGen.setLength(4.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
-  JawGen.generateSlits(Control,preName+"SlitsA",0.0,0.8,0.8);
+  JawGen.generateSlits(Control,preName+"DoubleSlitA",0.0,0.8,0.8);
 
 }
 
