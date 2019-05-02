@@ -54,6 +54,8 @@ namespace xraySystem
     \brief Constructor for the CoSAXS experimental beam line
   */
 
+  class cosaxsDiagnosticUnit;
+
 class cosaxsExptLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
@@ -75,6 +77,7 @@ class cosaxsExptLine :
   /// Double slits
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
+  std::shared_ptr<cosaxsDiagnosticUnit>  diagUnit;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

@@ -1062,6 +1062,10 @@ exptVariables(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
   JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
 
+  Control.addVariable(preName+"DiagnosticUnitLength",20.0);
+  Control.addVariable(preName+"DiagnosticUnitWidth",10.0);
+  Control.addVariable(preName+"DiagnosticUnitHeight",15.0);
+  Control.addVariable(preName+"DiagnosticUnitMainMat","Aluminium");
 }
 
 void
