@@ -258,7 +258,7 @@ void
 Cone::rotate(const Geometry::Quaternion& QA) 
   /*!
     Rotate both the centre and the normal direction 
-    \param QA :: rotate usig Quaterion
+    \param QA :: rotate using Quaternion
   */
 {
   QA.rotate(Centre);
@@ -286,6 +286,9 @@ Cone::setCone(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
 	      const double angle)
   /*!
     Set the cone
+    \param C :: Centre point
+    \param A :: Axis direction
+    \param angle :: Angle [deg]
   */
 {
   Centre=C;
@@ -327,8 +330,8 @@ void
 Cone::setAngle(const double A) 
   /*!
     Set the angle of the cone.
-    \param A :: Angle in degrees.
     Resets the base equation
+    \param A :: Angle in degrees.
   */
 {
   alpha=A;

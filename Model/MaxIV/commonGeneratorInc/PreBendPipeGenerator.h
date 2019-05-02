@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3CommonInc/PreBendPipe.h
+ * File:   commonGeneratorInc/PreBendPipeGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,31 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_PreBendPipe_h
-#define xraySystem_PreBendPipe_h
+#ifndef setVariable_PreBendPipeGenerator_h
+#define setVariable_PreBendPipeGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-
-namespace xraySystem
+namespace setVariable
 {
+
 /*!
-  \class PreBendPipe
+  \class PreBendPipeGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2019
-
-  \brief PreBendPipe for Max-IV 
-
-  This is built relative to the proton channel
+  \date May 2018
+  \brief PreBendPipeGenerator for variables
 */
 
-class PreBendPipe : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+class PreBendPipeGenerator 
 {
  private:
+
   
   double length;                 ///< frame length
   double radius;                 ///< Primary radius
@@ -52,36 +47,28 @@ class PreBendPipe : public attachSystem::FixedOffset,
 
   double wallThick;              ///< wall thickness
 
-
-  double electronRadius;          ///< electron bend radius
-  double electronAngle;           ///< Electron bend angle
+  double electronRadius;          ///< radius of electron offset
+  double electronAngle;           ///< Angle of electron offset
 
   double flangeARadius;           ///< flange radius
   double flangeALength;           ///< flange length
 
   double flangeBRadius;           ///< back flange radius
   double flangeBLength;           ///< back flange length
-  
-  int voidMat;                    ///< void material
-  int wallMat;                    ///< wall material
-  int flangeMat;                  ///< Port material
-  
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+
+  std::string voidMat;                    ///< void material
+  std::string wallMat;                    ///< wall material
+  std::string flangeMat;                  ///< flange port material
 
  public:
 
-  PreBendPipe(const std::string&);
-  PreBendPipe(const PreBendPipe&);
-  PreBendPipe& operator=(const PreBendPipe&);
-  virtual ~PreBendPipe();
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  PreBendPipeGenerator();
+  PreBendPipeGenerator(const PreBendPipeGenerator&);
+  PreBendPipeGenerator& operator=(const PreBendPipeGenerator&);
+  virtual ~PreBendPipeGenerator();
+  
+  
+  virtual void generatePipe(FuncDataBase&,const std::string&) const;
 
 };
 

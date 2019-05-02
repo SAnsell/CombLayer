@@ -117,8 +117,10 @@ PreBendPipe::populate(const FuncDataBase& Control)
   straightLength=Control.EvalVar<double>(keyName+"StraightLength");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  centreXStep=Control.EvalVar<double>(keyName+"CentreXStep");
 
+  electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
+  electronAngle=Control.EvalVar<double>(keyName+"ElectronAngle");
+  
   flangeARadius=Control.EvalVar<double>(keyName+"FlangeARadius");
   flangeALength=Control.EvalVar<double>(keyName+"FlangeALength");
   flangeBRadius=Control.EvalVar<double>(keyName+"FlangeBRadius");
@@ -156,45 +158,65 @@ PreBendPipe::createSurfaces()
   ELog::RegMethod RegA("PreBendPipe","createSurface");
 
   // Do outer surfaces (vacuum ports)
+
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(straightLength),Y);
-
-  // not real centre (yet)
+  const Geometry::Vec3D StrOrg(Origin+Y*straightLength);
   
-  Geometry::Vec3D coneCentre=Origin+Y*(straightLength);
-  const Geometry::Vec3D PtA=Origin+Y*length-X*radius;
-  const Geometry::Vec3D PtB=Origin+Y*length+X*(radius+centreXStep);
-  //  const Geometry::Vec3D CAxis=((PtA+PtB)/2.0-coneCentre).unit();
-
-  const Geometry::Vec3D PtX=
-    Y*(length-straightLength)+X*(radius+centreXStep/2.0);
-  const double L=PtX.abs();
-  const Geometry::Vec3D CAxis=
-    (Y*(length-straightLength)+X*centreXStep).unit();
-  const double cosAngle=CAxis.dotProd(Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,StrOrg,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
+  
+  // mid layer divider
+  ModelSupport::buildPlane(SMap,buildIndex+10,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*radius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*radius,Z);
 
 
-  // offset distance is x : x/x+L == R1 / R2
-  const double R=radius/(radius+centreXStep/2.0);
-  const double lPrime=R*L/(1.0-R);
-  const double angle=180.0*acos(cosAngle)/M_PI;
-  // The second cone is bigger by PtA + PtB increase by wallThick/cosAngle
-  const double RPrime=R+wallThick/cosAngle;
-  const double lSnd=RPrime*L/(1.0-RPrime);
+  // wall
+    
+  ModelSupport::buildPlane
+    (SMap,buildIndex+115,Origin-Z*(radius+wallThick),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+116,Origin+Z*(radius+wallThick),Z);
 
-  ModelSupport::buildCone
-    (SMap,buildIndex+107,coneCentre-CAxis*lPrime,CAxis,angle);
-  ModelSupport::buildCone
-    (SMap,buildIndex+117,coneCentre-CAxis*lSnd,CAxis,angle);
+  // build extention plane system
+  
+  const Geometry::Quaternion QR=
+    Geometry::Quaternion::calcQRotDeg(-electronAngle,Z);
+
+  const Geometry::Vec3D XElec=QR.makeRotate(X);
+  const Geometry::Vec3D YElec=QR.makeRotate(Y);
+  
+  const Geometry::Vec3D cylCentre=StrOrg+X*(radius+electronRadius);
+
+  // divider plane
+  ModelSupport::buildPlane
+    (SMap,buildIndex+110,cylCentre-X*(electronRadius/2.0),X);
+  
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,cylCentre,Z,electronRadius);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,cylCentre+X*wallThick,Z,electronRadius);
+
+  // END plane
+  const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
+  const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
+  const Geometry::Vec3D cylEnd=StrOrg+X*xDisp+Y*yDisp;
+  ELog::EM<<"cylEnd == "<<cylEnd<<" :: "<<StrOrg<<ELog::endDiag;
+  ModelSupport::buildPlane(SMap,buildIndex+102,cylEnd,YElec);
+
+  // Exit cylinder [ levels]
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+207,cylEnd,YElec,electronRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,cylEnd,YElec,electronRadius+wallThick);
   
   
   // flange cylinder/planes
@@ -223,18 +245,77 @@ PreBendPipe::createObjects(Simulation& System)
   
   std::string Out;
 
+  // cylinder half
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -101 -7 ");
+    (SMap,buildIndex," -101 -7  ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
+  // photon full
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -2 -107 ");
+    (SMap,buildIndex," 101 -2 -7 -10 ");
+  makeCell("void",System,cellIndex++,voidMat,0.0,Out);
+
+  // electron  curve
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"10 101 -102 107 105 -106 -110 ");
+  makeCell("void",System,cellIndex++,voidMat,0.0,Out);
+
+  // electron straight
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"10 102 -2 207 105 -106  -110 ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out);
 
 
-  
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2 (-107:-7) ");
+  // WALLS:
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -101 7 -17 ");
+  makeCell("wall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+
+  // photon full
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-10 101 -2 -17 7 ");
+  makeCell("wall",System,cellIndex++,wallMat,0.0,Out);
+
+  // electron  curve
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"10 101 -102 117 115 -116 (-107:-105:106) -110");
+  makeCell("wall",System,cellIndex++,wallMat,0.0,Out);
+
+    // electron straight
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"10 102 -2 217 115 -116 (207:-105:106) ");
+  makeCell("wall",System,cellIndex++,wallMat,0.0,Out);
+    
+  // front flange
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1001 -1007 17 ");
+  makeCell("frontFlange",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1001 1007 -2007");
+  makeCell("frontFlangeVoid",System,cellIndex++,0,0.0,Out+frontSurf);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1001 -101 17 -2007");
+  makeCell("frontOuterVoid",System,cellIndex++,0,0.0,Out);
+
+  // back flange
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"  2001 -2 -2007 (( 17 -10 ):217:-115:116) ");
+  makeCell("backFlange",System,cellIndex++,flangeMat,0.0,Out);
+
+  // back Flange outer void
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ):217:-115:116) ");
+  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+
+  //  mid outer void
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 101 -102 -2007 (( 17 -10 ) : -117:-115:116) -110");
+  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 -2007 ");
   addOuterSurf(Out+frontSurf);
 
   return;

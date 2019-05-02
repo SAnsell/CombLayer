@@ -304,6 +304,40 @@ buildCylinder(surfRegister& SMap,const int N,
 
 Geometry::Cone*
 buildCone(surfRegister& SMap,const int N,
+	  const Geometry::Vec3D& circleCent,
+	  const double radius,
+	  const Geometry::Vec3D& Axis,
+	  const double angleDeg) 
+  /*!
+    Simple constructor to build a surface [type Cone]
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param circleCent :: Centre of circle
+    \param radius :: Radius of circle
+    \param A :: Axis [FORWARD going]
+    \param angleDeg :: angle of cone [deg]
+    \return New cone
+   */
+{
+  ELog::RegMethod("generateSurf","buildCone(cent,radius,Axis,angleDeg)");
+
+  
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+  // distance to move centre [half angle]
+  const double D=radius/tan(M_PI*angleDeg/(180.0));
+
+  ELog::EM<<"Cone == "<<circleCent-Axis.unit()*D<<ELog::endDiag;
+  Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
+  CX->setCone(circleCent-Axis.unit()*D,Axis,angleDeg);
+  const int NFound=SMap.registerSurf(N,CX);
+
+
+  return SMap.realPtr<Geometry::Cone>(NFound);
+}
+
+Geometry::Cone*
+buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& O,
 	  const Geometry::Vec3D& A,
 	  const double angleDeg) 

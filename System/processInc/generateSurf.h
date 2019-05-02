@@ -76,6 +76,11 @@ buildCone(surfRegister&,const int,const Geometry::Vec3D&,
 	  const Geometry::Vec3D&);
 
 Geometry::Cone* 
+buildCone(surfRegister&,const int,
+	  const Geometry::Vec3D&,const double,
+	  const Geometry::Vec3D&,const double);
+
+Geometry::Cone* 
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,
 	  const Geometry::Vec3D&,const double);
 
