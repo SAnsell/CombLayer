@@ -61,8 +61,8 @@ PreBendPipeGenerator::PreBendPipeGenerator() :
   length(205.5),radius(1.10),
   straightLength(109.4),
   wallThick(0.1),
-  electronRadius(191.0),
-  electronAngle(6.5),
+  electronRadius(1910.0),
+  electronAngle(1.5),
 
   flangeARadius(CF50::flangeRadius),
   flangeALength(CF50::flangeLength),

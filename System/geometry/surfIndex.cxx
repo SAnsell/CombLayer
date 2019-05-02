@@ -3,7 +3,7 @@
  
  * File:   geometry/surfIndex.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -418,6 +418,19 @@ surfIndex::getSurf(const int Index) const
 {
   STYPE::const_iterator mc=SMap.find(Index);
   return (mc==SMap.end()) ? 0 : mc->second;
+}
+
+template<typename T>
+T*
+surfIndex::realSurf(const int Index) const
+  /*!
+    Get a surface based on the index
+    \param Index :: Index varaible
+    \return Surface Ptr as type T [0 on fail]
+   */
+{
+  STYPE::const_iterator mc=SMap.find(Index);
+  return (mc==SMap.end()) ? 0 : dynamic_cast<T*>(mc->second);
 }
 
 void 
@@ -855,6 +868,10 @@ template Geometry::Plane*
 surfIndex::addTypeSurface(Geometry::Plane*);
 template Geometry::Cylinder*
 surfIndex::addTypeSurface(Geometry::Cylinder*);
+
+
+template Geometry::Plane*
+surfIndex::realSurf(const int) const;
 
 ///\endcond TEMPLATE
 

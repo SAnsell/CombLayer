@@ -41,7 +41,8 @@ namespace xraySystem
 class PreBendPipe : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
@@ -65,7 +66,10 @@ class PreBendPipe : public attachSystem::FixedOffset,
   int voidMat;                    ///< void material
   int wallMat;                    ///< wall material
   int flangeMat;                  ///< Port material
-  
+
+  Geometry::Vec3D cylEnd;         ///< End of electron bend
+  Geometry::Vec3D elecAxis;       ///< Exit axis of electrons
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   

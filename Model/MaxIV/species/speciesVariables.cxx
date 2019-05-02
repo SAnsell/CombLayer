@@ -599,16 +599,16 @@ opticsHutVariables(FuncDataBase& Control,
     \param caveName :: Cave name
   */
 {
-  ELog::RegMethod RegA("balderVariables","opticsHutVariables");
+  ELog::RegMethod RegA("speciesVariables","opticsHutVariables");
 
   Control.addVariable(hutName+"Height",242.0);  
   Control.addVariable(hutName+"Length",678.5);
   // total inner width [short] - 295.0cm
 
-  Control.addVariable(hutName+"OutWidth",221.9);   
-  Control.addVariable(hutName+"RingShortWidth",140.1);
+  Control.addVariable(hutName+"OutWidth",241.9);   
+  Control.addVariable(hutName+"RingShortWidth",115.1);
   // total inner width [short] - 400.0cm 
-  Control.addVariable(hutName+"RingLongWidth",196.3);
+  Control.addVariable(hutName+"RingLongWidth",176.3);
   // length to first full width point
   Control.addVariable(hutName+"StepLen",245.7);
   Control.addVariable(hutName+"Extension",100.0);
@@ -926,7 +926,7 @@ transferVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,145.0);
+  PipeGen.generatePipe(Control,transKey+"JoinPipe",0,185.0);
 
   return;
 }

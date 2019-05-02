@@ -139,7 +139,7 @@ makeSingleItem::build(Simulation& System,
   
   preBend->addInsertCell(voidCell);
   preBend->createAll(System,World::masterOrigin(),0);
-  return;
+
 
   std::shared_ptr<xraySystem::EPCombine>
     EPcombine(new xraySystem::EPCombine("EPCombine"));

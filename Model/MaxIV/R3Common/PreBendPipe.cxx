@@ -87,12 +87,16 @@ PreBendPipe::PreBendPipe(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(1,"photonExit");
+  FixedComp::nameSideIndex(2,"electronExit");
+}
 
 
 PreBendPipe::~PreBendPipe() 
@@ -208,15 +212,18 @@ PreBendPipe::createSurfaces()
   // END plane
   const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
   const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
-  const Geometry::Vec3D cylEnd=StrOrg+X*xDisp+Y*yDisp;
-  ELog::EM<<"cylEnd == "<<cylEnd<<" :: "<<StrOrg<<ELog::endDiag;
+  cylEnd=StrOrg+X*xDisp+Y*yDisp;
+  elecAxis=YElec;
+  
   ModelSupport::buildPlane(SMap,buildIndex+102,cylEnd,YElec);
-
+  SurfMap::setSurf("electronCut",SMap.realSurf(buildIndex+102));
+  
   // Exit cylinder [ levels]
+  ModelSupport::buildPlane(SMap,buildIndex+210,cylEnd,XElec);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+207,cylEnd,YElec,electronRadius);
+    (SMap,buildIndex+207,cylEnd,YElec,radius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+217,cylEnd,YElec,electronRadius+wallThick);
+    (SMap,buildIndex+217,cylEnd,YElec,radius+wallThick);
   
   
   // flange cylinder/planes
@@ -262,7 +269,7 @@ PreBendPipe::createObjects(Simulation& System)
 
   // electron straight
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"10 102 -2 207 105 -106  -110 ");
+    (SMap,buildIndex,"10 102 -2 (-207:-210) 105 -106  -110 ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out);
 
 
@@ -283,7 +290,7 @@ PreBendPipe::createObjects(Simulation& System)
 
     // electron straight
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"10 102 -2 217 115 -116 (207:-105:106) ");
+    (SMap,buildIndex,"10 102 -2 (-217:-210) 115 -116 ((210 207):-105:106) ");
   makeCell("wall",System,cellIndex++,wallMat,0.0,Out);
     
   // front flange
@@ -300,19 +307,20 @@ PreBendPipe::createObjects(Simulation& System)
   makeCell("frontOuterVoid",System,cellIndex++,0,0.0,Out);
 
   // back flange
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"  2001 -2 -2007 (( 17 -10 ):217:-115:116) ");
+  Out=ModelSupport::getComposite  //(217 210)
+    (SMap,buildIndex,"  2001 -2 -2007 (( 17 -10 ) : (217 210) : -115: 116) ");
   makeCell("backFlange",System,cellIndex++,flangeMat,0.0,Out);
 
-  // back Flange outer void
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ):217:-115:116) ");
-  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 
   //  mid outer void
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 -2007 (( 17 -10 ) : -117:-115:116) -110");
   makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ) : (210 217) :-115:116) ");
+  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+
 
 
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 -2007 ");
@@ -328,6 +336,17 @@ PreBendPipe::createLinks()
    */
 {
   ELog::RegMethod RegA("PreBendPipe","createLinks");
+
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+
+  // photon/electron
+  setConnect(1,Origin+Y*length,Y);
+  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  // electron surface is intersect from 102 normal into surface 2
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+2));
+  FixedComp::setLineConnect(2,cylEnd,elecAxis);
+
 
   
   return;

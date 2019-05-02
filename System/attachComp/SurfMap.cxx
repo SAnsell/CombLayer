@@ -141,10 +141,32 @@ SurfMap::getSurfPtr(const std::string& Key,
   const ModelSupport::surfIndex& SurI=
     ModelSupport::surfIndex::Instance();
 
-  
   if (Key.empty()) return 0;
   const int sn=getItem(Key,Index);
   return SurI.getSurf(sn);
+}
+
+template<typename T>
+T*
+SurfMap::realPtr(const std::string& Key,
+		 const size_t Index) const
+  /*!
+    Get the rule based on a surface
+    \tparam T :: Surf type						
+    \param Key :: Keyname
+    \param Index :: Index number
+    \return surface pointer as type T
+   */
+{
+  ELog::RegMethod RegA("SurfMap","realPtr");
+  // care hear this should not be singleton
+  const ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+
+  if (Key.empty()) return 0;
+
+  const int sn=getItem(Key,Index);
+  return SurI.realSurf<T>(sn);
 }
 
 HeadRule
@@ -217,5 +239,12 @@ SurfMap::combine(const std::set<std::string>& KeySet) const
 
   return Out;
 }
- 
+
+///\cond template
+template Geometry::Plane*
+SurfMap::realPtr(const std::string&,const size_t) const;
+  
+///\endcond template
+  
+  
 }  // NAMESPACE attachSystem
