@@ -74,6 +74,7 @@ class cosaxsExptLine :
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// Double slits
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
+  std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

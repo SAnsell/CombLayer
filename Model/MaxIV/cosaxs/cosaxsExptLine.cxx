@@ -105,7 +105,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   buildZone(*this,cellIndex),
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
-  doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA"))
+  doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
+  doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -117,6 +118,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   OR.addObject(pipeInit);
   OR.addObject(gateA);
   OR.addObject(doubleSlitA);
+  OR.addObject(doubleSlitB);
 }
   
 cosaxsExptLine::~cosaxsExptLine()
@@ -218,7 +220,12 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*doubleSlitA,2);
   doubleSlitA->insertInCell(System,outerCell);
 
-  lastComp=doubleSlitA;
+  doubleSlitB->setFront(*doubleSlitA,2);
+  doubleSlitB->createAll(System,*doubleSlitA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*doubleSlitB,2);
+  doubleSlitB->insertInCell(System,outerCell);
+
+  lastComp=doubleSlitB;
   //  setCell("LastVoid",masterCell->getName());
 
   return;

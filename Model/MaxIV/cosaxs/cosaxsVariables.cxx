@@ -1051,11 +1051,16 @@ exptVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
-   // Double slits
+   // Double slits A and B
   JawGen.setCF<setVariable::CF100>();
   JawGen.setLength(4.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,preName+"DoubleSlitA",0.0,0.8,0.8);
+
+  JawGen.setCF<setVariable::CF100>();
+  JawGen.setLength(4.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
+  JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
 
 }
 
