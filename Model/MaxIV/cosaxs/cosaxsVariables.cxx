@@ -1066,6 +1066,11 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiagnosticUnitWidth",10.0);
   Control.addVariable(preName+"DiagnosticUnitHeight",15.0);
   Control.addVariable(preName+"DiagnosticUnitMainMat","Aluminium");
+
+  // Gate valve B - flat
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateB",0.0,0);
 }
 
 void

@@ -108,7 +108,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   gateA(new constructSystem::GateValve(newName+"GateA")),
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
-  diagUnit(new cosaxsDiagnosticUnit(newName+"DiagnosticUnit"))
+  diagUnit(new cosaxsDiagnosticUnit(newName+"DiagnosticUnit")),
+  gateB(new constructSystem::GateValve(newName+"GateB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -122,6 +123,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   OR.addObject(doubleSlitA);
   OR.addObject(doubleSlitB);
   OR.addObject(diagUnit);
+  OR.addObject(gateB);
 }
   
 cosaxsExptLine::~cosaxsExptLine()
@@ -233,7 +235,12 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagUnit,2);
   diagUnit->insertInCell(System,outerCell);
 
-  lastComp=diagUnit;
+  gateB->setFront(*diagUnit,2);
+  gateB->createAll(System,*diagUnit,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
+  gateB->insertInCell(System,outerCell);
+
+  lastComp=gateB;
   //  setCell("LastVoid",masterCell->getName());
 
   return;
