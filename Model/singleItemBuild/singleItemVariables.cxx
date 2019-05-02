@@ -59,6 +59,7 @@
 #include "ChopperGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
+#include "EPCombineGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "R3ChokeChamberGenerator.h"
@@ -165,8 +166,11 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"Quad",0.0,10.0);
 
-  setVariable::EPSeparatorGenerator EPGen;
-  EPGen.generatePipe(Control,"EPSeparator",0.0);
+  setVariable::EPSeparatorGenerator EPSGen;
+  EPSGen.generatePipe(Control,"EPSeparator",0.0);
+
+  setVariable::EPCombineGenerator EPCGen;
+  EPCGen.generatePipe(Control,"EPCombine");
 
   setVariable::PreDipoleGenerator PDGen;
   PDGen.generatePipe(Control,"PreDipole",0.0);

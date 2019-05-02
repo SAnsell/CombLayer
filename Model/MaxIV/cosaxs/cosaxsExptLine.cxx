@@ -87,7 +87,7 @@
 #include "Bellows.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+#include "JawValveCube.h"
 
 #include "cosaxsExptLine.h"
 
@@ -105,7 +105,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   buildZone(*this,cellIndex),
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
-  slitsA(new constructSystem::JawValve(newName+"SlitsA"))
+  slitsA(new constructSystem::JawValveCube(newName+"SlitsA"))
   /*!
     Constructor
     \param Key :: Name of construction key

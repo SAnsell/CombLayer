@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   formaxInc/formaxOpticsLine.h
+ * File:   micromaxInc/micromaxOpticsLine.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_formaxOpticsLineX_h
-#define xraySystem_formaxOpticsLineX_h
+#ifndef xraySystem_micromaxOpticsLineX_h
+#define xraySystem_micromaxOpticsLineX_h
 
 namespace insertSystem
 {
@@ -56,14 +56,14 @@ namespace xraySystem
   class ShutterUnit;
     
   /*!
-    \class formaxOpticsLine
+    \class micromaxOpticsLine
     \version 1.0
     \author S. Ansell
     \date January 2019
-    \brief Constructor for the formax optics components
+    \brief Constructor for the micromax optics components
   */
 
-class formaxOpticsLine :
+class micromaxOpticsLine :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
@@ -177,10 +177,10 @@ class formaxOpticsLine :
   
  public:
   
-  formaxOpticsLine(const std::string&);
-  formaxOpticsLine(const formaxOpticsLine&);
-  formaxOpticsLine& operator=(const formaxOpticsLine&);
-  ~formaxOpticsLine();
+  micromaxOpticsLine(const std::string&);
+  micromaxOpticsLine(const micromaxOpticsLine&);
+  micromaxOpticsLine& operator=(const micromaxOpticsLine&);
+  ~micromaxOpticsLine();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

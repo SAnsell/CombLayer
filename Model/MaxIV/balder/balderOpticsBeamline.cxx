@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/OpticsBeamline.cxx
+ * File: balder/balderOpticsBeamline.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -93,20 +93,20 @@
 #include "MonoCrystals.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+#include "JawValveCube.h"
 #include "FlangeMount.h"
 #include "ShutterUnit.h"
 #include "Mirror.h"
 #include "HeatDump.h"
 #include "MonoShutter.h"
-#include "OpticsBeamline.h"
+#include "balderOpticsBeamline.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-OpticsBeamline::OpticsBeamline(const std::string& Key) :
+balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
@@ -139,14 +139,14 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   gateC(new constructSystem::GateValve(newName+"GateC")),
   driftC(new constructSystem::VacuumPipe(newName+"DriftC")),
   beamStop(new insertSystem::insertPlate(newName+"BeamStop")),
-  slitsA(new constructSystem::JawValve(newName+"SlitsA")),
+  slitsA(new constructSystem::JawValveCube(newName+"SlitsA")),
   shieldPipe(new constructSystem::PortTube(newName+"ShieldPipe")),
   pipeD(new constructSystem::Bellows(newName+"BellowD")),
   gateD(new constructSystem::GateValve(newName+"GateD")),
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
   mirrorB(new xraySystem::Mirror(newName+"MirrorB")),
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
-  slitsB(new constructSystem::JawValve(newName+"SlitsB")),
+  slitsB(new constructSystem::JawValveCube(newName+"SlitsB")),
   viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
   viewMount({
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
@@ -215,20 +215,20 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(gateE);
 }
   
-OpticsBeamline::~OpticsBeamline()
+balderOpticsBeamline::~balderOpticsBeamline()
   /*!
     Destructor
    */
 {}
 
 void
-OpticsBeamline::populate(const FuncDataBase& Control)
+balderOpticsBeamline::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("OpticsBeamline","populate");
+  ELog::RegMethod RegA("balderOpticsBeamline","populate");
   FixedOffset::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
@@ -239,7 +239,7 @@ OpticsBeamline::populate(const FuncDataBase& Control)
 }
 
 void
-OpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
+balderOpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -250,7 +250,7 @@ OpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("OpticsBeamline","createUnitVector");
+  ELog::RegMethod RegA("balderOpticsBeamline","createUnitVector");
 
   FixedOffset::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -259,7 +259,7 @@ OpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-OpticsBeamline::createSurfaces()
+balderOpticsBeamline::createSurfaces()
   /*!
     Create surfaces for outer void
    */
@@ -283,13 +283,13 @@ OpticsBeamline::createSurfaces()
 }
 
 void
-OpticsBeamline::buildObjects(Simulation& System)
+balderOpticsBeamline::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("OpticsBeamline","buildObjects");
+  ELog::RegMethod RegA("balderOpticsBeamline","buildObjects");
 
   
   int outerCell;
@@ -591,7 +591,7 @@ OpticsBeamline::buildObjects(Simulation& System)
 }
 
 void
-OpticsBeamline::createLinks()
+balderOpticsBeamline::createLinks()
   /*!
     Create a front/back link
    */
@@ -603,7 +603,7 @@ OpticsBeamline::createLinks()
   
   
 void 
-OpticsBeamline::createAll(Simulation& System,
+balderOpticsBeamline::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -614,7 +614,7 @@ OpticsBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("OpticsBeamline","createAll");
+  ELog::RegMethod RControl("balderOpticsBeamline","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

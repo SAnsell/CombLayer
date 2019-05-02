@@ -32,7 +32,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
     
 }
 

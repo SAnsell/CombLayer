@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   cosaxsInc/COSAXS.h
+ * File:   micromaxInc/MICROMAX.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_COSAXS_h
-#define xraySystem_COSAXS_h
+#ifndef xraySystem_MICROMAX_h
+#define xraySystem_MICROMAX_h
 
 namespace constructSystem
 {
@@ -34,10 +34,7 @@ namespace constructSystem
   class PortTube;
   class GateValve;
   class JawValveCube;
-    
 }
-
-
 
 /*!
   \namespace xraySystem
@@ -49,28 +46,32 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class balderOpticsHutch;
+  class BeamMount;
+  class bladerOpticsHutch;
   class ExperimentalHutch;
-  class cosaxsFrontEnd;
-  class cosaxsOpticsLine;
-  class cosaxsExptLine;
-  class FrontEndCave;
+  class ExptBeamline;
+  class micromaxOpticsLine;
+  class R3FrontEndCave;
   class ConnectZone;
+  class micromaxFrontEnd;
+  class PipeShield;
+  class WallLead;
   
   /*!
-    \class COSAXS
+    \class MICROMAX
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class COSAXS : public R3Beamline
+class MICROMAX : public R3Beamline
 {
  private:
 
+
   /// the components in the front end
-  std::shared_ptr<cosaxsFrontEnd> frontBeam;
+  std::shared_ptr<micromaxFrontEnd> frontBeam;
 
   /// lead in beam wall
   std::shared_ptr<WallLead> wallLead;
@@ -80,25 +81,20 @@ class COSAXS : public R3Beamline
 
   /// Optics hutch
   std::shared_ptr<balderOpticsHutch> opticsHut;
-  /// Optics beamlines 
-  std::shared_ptr<cosaxsOpticsLine> opticsBeam;
-
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
-  std::shared_ptr<ExperimentalHutch> exptHut;
-
-  /// Experimental beamline
-  std::shared_ptr<cosaxsExptLine> exptBeam;
-
+  
+  /// Beamline
+  std::shared_ptr<micromaxOpticsLine> opticsBeam;
+  
  public:
   
-  COSAXS(const std::string&);
-  COSAXS(const COSAXS&);
-  COSAXS& operator=(const COSAXS&);
-  virtual ~COSAXS();
+  MICROMAX(const std::string&);
+  MICROMAX(const MICROMAX&);
+  MICROMAX& operator=(const MICROMAX&);
+  virtual ~MICROMAX();
+
 
   virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+		     const long int);
 
 };
 

@@ -31,7 +31,7 @@ namespace constructSystem
 {
   class Bellows;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
 }
 
 
@@ -73,7 +73,7 @@ class cosaxsExptLine :
   /// Vacuum gate valve A - round
   std::shared_ptr<constructSystem::GateValve> gateA;
   /// Double slits
-  std::shared_ptr<constructSystem::JawValve>  slitsA;
+  std::shared_ptr<constructSystem::JawValveCube>  slitsA;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

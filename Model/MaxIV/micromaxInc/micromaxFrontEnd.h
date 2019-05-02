@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeemInc/MAXPEEM.h
+ * File:   micromaxInc/micromaxFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,24 +19,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_MAXPEEM_h
-#define xraySystem_MAXPEEM_h
+#ifndef xraySystem_micromaxFrontEnd_h
+#define xraySystem_micromaxFrontEnd_h
+
+namespace insertSystem
+{
+  class insertCylinder;
+}
 
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
   class Bellows;
-  class LeadPipe;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
+  class CrossPipe;
   class GateValve;
-  class JawValveCube;
+  class OffsetFlangePipe;
+  class portItem;
+  class PipeTube;
+  class PortTube;
+  class SupplyPipe;
+  class VacuumBox;
+  class VacuumPipe; 
 }
-
-
 
 /*!
   \namespace xraySystem
@@ -48,47 +51,48 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class R1Ring;
-  class maxpeemFrontEnd;
-  class maxpeemOpticsHut;
-  class maxpeemOpticsBeamline;
-  class ExperimentalHutch;
-  class ExptBeamline;
-  class OpticsBeamline;
-  class ConnectZone;
-  class PipeShield;
-  class WallLead;
- 
+
+  class HeatDump;
+  class LCollimator;
+  class SqrCollimator;
+  class SquareFMask;
+  class UTubePipe;
+  class Undulator;
+  class Wiggler;
+
+    
   /*!
-    \class MAXPEEM
+    \class micromaxFrontEnd
     \version 1.0
     \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \date March 2018
+    \brief General constructor front end optics
   */
 
-class MAXPEEM :
-  public R1Beamline
+class micromaxFrontEnd :
+  public R3FrontEnd
 {
  private:
 
-  std::shared_ptr<maxpeemFrontEnd> frontBeam;    ///< in ring front end
-  std::shared_ptr<WallLead> wallLead;            ///< lead in beam wall
-  std::shared_ptr<maxpeemOpticsHut> opticsHut;   ///< main optics hut
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
-  /// Main optics hutch components
-  std::shared_ptr<maxpeemOpticsBeamline> opticsBeam;
+  /// Pipe in undulator
+  std::shared_ptr<xraySystem::UTubePipe> undulatorPipe;
+  /// Undulator in vacuum box
+  std::shared_ptr<xraySystem::Undulator> undulator;
 
+  virtual const attachSystem::FixedComp&
+    buildUndulator(Simulation&,MonteCarlo::Object*,
+		   const attachSystem::FixedComp&,const long int);
+			      
+  void createSurfaces();
+  void buildObjects(Simulation&);
+  virtual void createLinks();
+  
  public:
   
-  MAXPEEM(const std::string&);
-  MAXPEEM(const MAXPEEM&);
-  MAXPEEM& operator=(const MAXPEEM&);
-  virtual ~MAXPEEM();
-
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+  micromaxFrontEnd(const std::string&);
+  micromaxFrontEnd(const micromaxFrontEnd&);
+  micromaxFrontEnd& operator=(const micromaxFrontEnd&);
+  virtual ~micromaxFrontEnd();
 
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/ExperimentalHutch.cxx
+ * File:   R3Common/ExperimentalHutch.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -167,6 +167,8 @@ ExperimentalHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);  
 
+  SurfMap::setSurf("innerBack",-SMap.realSurf(buildIndex+2));
+  
   // Walls
   double extraThick(0.0);
   int HI(buildIndex+10);

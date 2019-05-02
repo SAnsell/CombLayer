@@ -33,7 +33,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
 }
 
 namespace xraySystem
@@ -42,7 +42,6 @@ namespace xraySystem
   class OpticsHutch;
   class ExperimentalHutch;
   class ExptBeamline;
-  class OpticsBeamline;
   class R3FrontEndCave;
   class R3FrontEnd;
   class ConnectZone;
@@ -50,6 +49,7 @@ namespace xraySystem
   class PipeShield;
   class WallLead;
 
+  class balderOpticsBeamline;
   class balderFrontEnd;
   class balderOpticsHutch;
   /*!
@@ -77,7 +77,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<balderOpticsHutch> opticsHut;
   
   /// Beamline
-  std::shared_ptr<OpticsBeamline> opticsBeam;
+  std::shared_ptr<balderOpticsBeamline> opticsBeam;
 
   /// Pipe joining optics hut to outer 
   std::shared_ptr<constructSystem::LeadPipe> joinPipeB;

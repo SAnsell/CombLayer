@@ -37,7 +37,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
 }
 
 
@@ -59,7 +59,7 @@ namespace xraySystem
   class BeamMount;
   class Mirror;
   class PipeShield;
-  class JawValve;
+  class JawValveCube;
   class TwinPipe;
     
   /*!
@@ -150,7 +150,7 @@ class maxpeemOpticsBeamline :
   /// Small Pipe to slits on before M3
   std::shared_ptr<constructSystem::PipeTube> viewTube;
   /// Slits [second pair]
-  std::shared_ptr<constructSystem::JawValve> slitsB;
+  std::shared_ptr<constructSystem::JawValveCube> slitsB;
   /// Second pumping port
   std::shared_ptr<constructSystem::PipeTube> pumpTubeB;
   /// Front port of mirror box

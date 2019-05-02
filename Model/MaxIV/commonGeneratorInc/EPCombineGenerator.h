@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3CommonInc/EPCombine.h
+ * File:   commonBeamInc/EPCombineGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,32 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_EPCombine_h
-#define xraySystem_EPCombine_h
+#ifndef setVariable_EPCombineGenerator_h
+#define setVariable_EPCombineGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-
-namespace xraySystem
+namespace setVariable
 {
+
 /*!
-  \class EPCombine
+  \class EPCombineGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2019
-
-  \brief EPCombine for Max-IV 
-
-  This is built relative to the proton channel
+  \date May 2018
+  \brief EPCombineGenerator for variables
 */
 
-class EPCombine : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+class EPCombineGenerator 
 {
  private:
-  
+
   double length;                ///< frame length
 
   double photonXStep;            ///< Initial photon gap
@@ -56,8 +50,8 @@ class EPCombine : public attachSystem::FixedOffset,
   double photonRadius;           ///< Photon radius
 
   double skinThick;              ///< skin thickness
-
-  double wallXStep;              ///< X step for wall
+  
+  double wallXStep;              ///< Outer Wall centre offset
   double wallStartLen;           ///< Outer wall start length
   double wallWidth;              ///< Outer wall box
   double wallHeight;             ///< Outer wall box
@@ -69,27 +63,20 @@ class EPCombine : public attachSystem::FixedOffset,
   double flangeBXStep;            ///< back flange xstep
   double flangeBRadius;           ///< back flange radius
   double flangeBLength;           ///< back flange length
-  
-  int voidMat;                    ///< void material
-  int wallMat;                    ///< wall material
-  int flangeMat;                  ///< Port material
-  
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+
+  std::string voidMat;                    ///< void material
+  std::string wallMat;                    ///< wall material
+  std::string flangeMat;                  ///< Port material
 
  public:
 
-  EPCombine(const std::string&);
-  EPCombine(const EPCombine&);
-  EPCombine& operator=(const EPCombine&);
-  virtual ~EPCombine();
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  EPCombineGenerator();
+  EPCombineGenerator(const EPCombineGenerator&);
+  EPCombineGenerator& operator=(const EPCombineGenerator&);
+  virtual ~EPCombineGenerator();
+  
+  
+  virtual void generatePipe(FuncDataBase&,const std::string&) const;
 
 };
 
