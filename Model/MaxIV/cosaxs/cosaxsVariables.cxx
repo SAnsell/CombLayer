@@ -1074,9 +1074,9 @@ exptVariables(FuncDataBase& Control,
 
   // Differential pumping
   Control.addVariable(preName+"DiffPumpLength",20.0);
-  Control.addVariable(preName+"DiffPumpWidth",10.0);
-  Control.addVariable(preName+"DiffPumpHeight",15.0);
-  Control.addVariable(preName+"DiffPumpWallThick",3.0);
+  Control.addVariable(preName+"DiffPumpWidth",10.1);
+  Control.addVariable(preName+"DiffPumpHeight",15.1);
+  Control.addVariable(preName+"DiffPumpWallThick",3.1);
   Control.addVariable(preName+"DiffPumpWallMat","Aluminium");
 }
 

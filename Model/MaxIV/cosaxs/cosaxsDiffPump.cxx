@@ -203,13 +203,28 @@ cosaxsDiffPump::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
+
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
+    } else
+    {
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
+	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				      wallThick);
     }
+
   if (!backActive())
     {
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
+
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+    } else
+    {
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
+	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				      -wallThick);
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -217,6 +232,12 @@ cosaxsDiffPump::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   return;
 }
@@ -233,10 +254,17 @@ cosaxsDiffPump::createObjects(Simulation& System)
   std::string Out;
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ")+frontStr+backStr;
+  const std::string frontCompl(frontComplement());
+  const std::string backCompl(backComplement());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   makeCell("MainCell",System,cellIndex++,0,0.0,Out);
 
-  addOuterSurf(Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
+  addOuterSurf(Out+frontStr+backStr);
 
   return;
 }
