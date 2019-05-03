@@ -66,8 +66,8 @@ PreBendPipeGenerator::PreBendPipeGenerator() :
 
   flangeARadius(CF50::flangeRadius),
   flangeALength(CF50::flangeLength),
-  flangeBRadius(CF63::flangeRadius),
-  flangeBLength(CF63::flangeLength),
+  flangeBRadius(CF50::flangeRadius),
+  flangeBLength(CF50::flangeLength),
   voidMat("Void"),wallMat("Copper"),
   flangeMat("Stainless304")
   /*!

@@ -49,12 +49,12 @@ class EPSeparator : public attachSystem::FixedOffset,
 
   double photonXStep;            ///< Initial photon gap
   double electronXStep;          ///< Initial electorn gap  
-  double photonXYAngle;          ///< XY angle of electron beam to proton
   double electronXYAngle;        ///< XY angle of electron beam to proton
 
   double electronRadius;         ///< Electron radius
   double photonRadius;           ///< Photon radius
 
+  double wallXStep;              ///< Outer wall step
   double wallWidth;              ///< Outer wall box
   double wallHeight;             ///< Outer wall box
 
@@ -64,7 +64,14 @@ class EPSeparator : public attachSystem::FixedOffset,
   int voidMat;                    ///< void material
   int wallMat;                    ///< wall material
   int flangeMat;                  ///< Port material
+
+  bool epPairSet;                 ///< Setting of phot/elec Origin.
+  Geometry::Vec3D photOrg;        ///< Photon origin
+  Geometry::Vec3D elecOrg;        ///< Electron origin
   
+  Geometry::Vec3D elecXAxis;      ///< Electron X-axis
+  Geometry::Vec3D elecYAxis;      ///< Electron beam axis
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   
@@ -79,6 +86,8 @@ class EPSeparator : public attachSystem::FixedOffset,
   EPSeparator& operator=(const EPSeparator&);
   virtual ~EPSeparator();
 
+  void setEPOriginPair(const attachSystem::FixedComp&,const long int,
+		       const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -98,6 +98,11 @@
 #include "BeamMount.h"
 #include "HeatDump.h"
 
+
+#include "PreBendPipe.h"
+#include "EPCombine.h"
+#include "EPSeparator.h"
+
 #include "R3FrontEnd.h"
 
 namespace xraySystem
@@ -115,7 +120,11 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
-  preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
+  
+  preDipole(new xraySystem::PreBendPipe(newName+"PreDipole")),
+  epCombine(new xraySystem::EPCombine(newName+"EPCombine")),
+  epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
+  
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
@@ -176,6 +185,9 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(preDipole);
+  OR.addObject(epCombine);
+  OR.addObject(epSeparator);
+      
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(bellowA);
@@ -580,7 +592,27 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
   preDipole->insertInCell(System,outerCell);
 
-  preDipole->createQuads(System,outerCell);
+  epCombine->setCutSurf("front",*preDipole,2);
+  epCombine->createAll(System,*preDipole,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epCombine,2);
+  epCombine->insertInCell(System,outerCell);
+
+  ELog::EM<<"Photon == "<<epCombine->getLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Electron == "<<epCombine->getLinkPt(4)<<ELog::endDiag;
+
+  epSeparator->setEPOriginPair(*epCombine,3,4);
+  epSeparator->setCutSurf("front",*epCombine,2);
+  epSeparator->createAll(System,*epCombine,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epSeparator,2);
+  epSeparator->insertInCell(System,outerCell);
+
+  ELog::EM<<"Photon == "<<epSeparator->getLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Electron == "<<epSeparator->getLinkPt(4)<<ELog::endDiag;
+
+  
+  lastComp=epCombine;
+  return;
+  //  preDipole->createQuads(System,outerCell);
 
   dipoleChamber->setCutSurf("front",*preDipole,2);
   dipoleChamber->createAll(System,*preDipole,2);

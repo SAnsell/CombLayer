@@ -94,8 +94,9 @@ PreBendPipe::PreBendPipe(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  FixedComp::nameSideIndex(1,"photonExit");
-  FixedComp::nameSideIndex(2,"electronExit");
+  FixedComp::nameSideIndex(1,"centreExit");
+  FixedComp::nameSideIndex(2,"photonExit");
+  FixedComp::nameSideIndex(3,"electronExit");
 }
 
 
@@ -339,13 +340,17 @@ PreBendPipe::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);
 
-  // photon/electron
+  // centreline 
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
+  // Photon centre line [exit]
+  setConnect(2,Origin+Y*length,Y);
+  setLinkSurf(2,SMap.realSurf(buildIndex+2));
+
   // electron surface is intersect from 102 normal into surface 2
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+2));
-  FixedComp::setLineConnect(2,cylEnd,elecAxis);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::setLineConnect(3,cylEnd,elecAxis);
 
 
   

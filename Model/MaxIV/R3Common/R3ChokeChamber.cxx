@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/R3ChokeChamber.cxx
+ * File:   R3Common/R3ChokeChamber.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *

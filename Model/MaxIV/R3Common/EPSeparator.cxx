@@ -88,7 +88,8 @@ EPSeparator::EPSeparator(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  epPairSet(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -117,11 +118,12 @@ EPSeparator::populate(const FuncDataBase& Control)
 
   photonXStep=Control.EvalVar<double>(keyName+"PhotonXStep");
   electronXStep=Control.EvalVar<double>(keyName+"ElectronXStep");
-  photonXYAngle=Control.EvalVar<double>(keyName+"PhotonXYAngle");
   electronXYAngle=Control.EvalVar<double>(keyName+"ElectronXYAngle");
   electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
 
   photonRadius=Control.EvalVar<double>(keyName+"PhotonRadius");
+
+  wallXStep=Control.EvalVar<double>(keyName+"WallXStep");
   wallWidth=Control.EvalVar<double>(keyName+"WallWidth");
   wallHeight=Control.EvalVar<double>(keyName+"WallHeight");
 
@@ -166,25 +168,27 @@ EPSeparator::createSurfaces()
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-  
-  const Geometry::Quaternion photonQ=
-    Geometry::Quaternion::calcQRotDeg(photonXYAngle,Z);
-  const Geometry::Vec3D PX=photonQ.makeRotate(X);
-  const Geometry::Vec3D PY=photonQ.makeRotate(Y);
-  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
-
-  const Geometry::Quaternion electronQ=
-    Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
-  const Geometry::Vec3D EX=electronQ.makeRotate(X);
-  const Geometry::Vec3D EY=electronQ.makeRotate(Y);
-  const Geometry::Vec3D EOrigin(Origin+X*electronXStep);
+    
 
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(wallWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(wallWidth/2.0),X);
+  if (!epPairSet)
+    {
+      const Geometry::Quaternion electronQ=
+	Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
+      elecXAxis=electronQ.makeRotate(X);
+      elecYAxis=electronQ.makeRotate(Y);
+      elecOrg=Origin+X*electronXStep;
+    }
+  else
+    elecXAxis=elecYAxis*Z;
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(wallHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(wallHeight/2.0),Z);
+
+  const Geometry::Vec3D WOrigin(Origin+X*wallXStep);
+  ModelSupport::buildPlane(SMap,buildIndex+3,WOrigin-X*(wallWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,WOrigin+X*(wallWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+5,WOrigin-Z*(wallHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,WOrigin+Z*(wallHeight/2.0),Z);
     
 
   // flange cylinder/plangs
@@ -195,14 +199,15 @@ EPSeparator::createSurfaces()
   
   // electron inner :
   // divider
-  ModelSupport::buildPlane(SMap,buildIndex+103,EOrigin,EX);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,EOrigin,EY,electronRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+103,elecOrg,elecXAxis);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,elecOrg,elecYAxis,electronRadius);
   
   // photon inner :
-  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,PY,photonRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,PX);
-  ModelSupport::buildPlane(SMap,buildIndex+205,POrigin-Z*photonRadius,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+206,POrigin+Z*photonRadius,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+203,photOrg,X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,photOrg-Z*photonRadius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,photOrg+Z*photonRadius,Z);
   
   
   return;
@@ -255,10 +260,48 @@ EPSeparator::createLinks()
 {
   ELog::RegMethod RegA("EPSeparator","createLinks");
 
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+
+  // photon/electron
+  setConnect(1,Origin+Y*length,Y);
+  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  // Photon centre line [exit]
+  const Geometry::Vec3D photOrg(Origin+X*photonXStep);
+      
+  setConnect(2,photOrg+Y*length,Y);  
+  setLinkSurf(2,SMap.realSurf(buildIndex+2));
+  
+  // electron surface is intersect from 102 normal into surface 2
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::setLineConnect(3,elecOrg,elecYAxis);
   
   return;
 }
 
+void
+EPSeparator::setEPOriginPair(const attachSystem::FixedComp& FC,
+			     const long int photonIndex,
+			     const long int electronIndex)
+  /*!
+    SEt the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("EPSparator","setEPOriginPair");
+
+  photOrg=FC.getLinkPt(photonIndex);
+  elecOrg=FC.getLinkPt(electronIndex);
+  
+  elecYAxis=FC.getLinkAxis(electronIndex);
+
+  epPairSet=1;
+  
+  return;
+}
+  
 
 void
 EPSeparator::createAll(Simulation& System,

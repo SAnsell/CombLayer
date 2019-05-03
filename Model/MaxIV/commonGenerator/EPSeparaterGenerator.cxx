@@ -59,9 +59,10 @@ namespace setVariable
 
 EPSeparatorGenerator::EPSeparatorGenerator() :
   length(43.5),photonXStep(-0.72),electronXStep(1.817),
-  photonXYAngle(1.5),electronXYAngle(0.0),
+  photonXYAngle(0.0),electronXYAngle(1.5),
   photonRadius(0.3),electronRadius(1.1),
-  wallWidth(6.25),wallHeight(2.65),
+  wallXStep(1.8),wallWidth(6.25),
+  wallHeight(2.65),
   flangeRadius(CF63::flangeRadius),
   flangeLength(CF63::flangeLength),
   voidMat("Void"),wallMat("Copper"),
@@ -97,6 +98,7 @@ EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
   Control.addVariable(keyName+"ElectronXYAngle",electronXYAngle);
   Control.addVariable(keyName+"ElectronRadius",electronRadius);
   Control.addVariable(keyName+"PhotonRadius",photonRadius);
+  Control.addVariable(keyName+"WallXStep",wallXStep);
   Control.addVariable(keyName+"WallWidth",wallWidth);
   Control.addVariable(keyName+"WallHeight",wallHeight);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);

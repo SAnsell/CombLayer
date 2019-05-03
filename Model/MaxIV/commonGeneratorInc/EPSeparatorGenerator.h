@@ -49,6 +49,7 @@ class EPSeparatorGenerator
   double photonRadius;           ///< Photon radius    
   double electronRadius;         ///< Electron radius
 
+  double wallXStep;              ///< Outer wall step
   double wallWidth;              ///< Outer wall box
   double wallHeight;             ///< Outer wall box
 

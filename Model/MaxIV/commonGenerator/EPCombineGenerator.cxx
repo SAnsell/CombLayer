@@ -58,15 +58,15 @@ namespace setVariable
 {
 
 EPCombineGenerator::EPCombineGenerator() :
-  length(30.0),photonXStep(-0.72),electronXStep(1.817),
-  photonXYAngle(1.5),electronXYAngle(0.0),
+  length(30.0),photonXStep(-0.81),electronXStep(1.7270),
+  photonXYAngle(0.0),electronXYAngle(-1.5),
   electronRadius(1.1),photonRadius(0.3),
   skinThick(0.1),wallXStep(0.8),
-  wallStartLen(15.0),wallWidth(6.45),
+  wallStartLen(15.0),wallWidth(6.25),
   wallHeight(2.65),flangeAXStep(0.0),  
   flangeARadius(CF50::flangeRadius),
   flangeALength(CF50::flangeLength),
-  flangeBXStep(1.29),
+  flangeBXStep(0.0),
   flangeBRadius(CF63::flangeRadius),
   flangeBLength(CF63::flangeLength),
 

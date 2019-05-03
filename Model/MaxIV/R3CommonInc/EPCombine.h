@@ -49,7 +49,6 @@ class EPCombine : public attachSystem::FixedOffset,
 
   double photonXStep;            ///< Initial photon gap
   double electronXStep;          ///< Initial electorn gap  
-  double photonXYAngle;          ///< XY angle of electron beam to proton
   double electronXYAngle;        ///< XY angle of electron beam to proton
 
   double electronRadius;         ///< Electron radius
@@ -73,6 +72,10 @@ class EPCombine : public attachSystem::FixedOffset,
   int voidMat;                    ///< void material
   int wallMat;                    ///< wall material
   int flangeMat;                  ///< Port material
+
+  Geometry::Vec3D elecOrg;        ///< Electron origin
+  Geometry::Vec3D elecXAxis;       ///< Electron X-axis
+  Geometry::Vec3D elecYAxis;       ///< Electron beam axis
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

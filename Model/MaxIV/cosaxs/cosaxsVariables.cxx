@@ -77,6 +77,10 @@
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 
+#include "PreBendPipeGenerator.h"
+#include "EPCombineGenerator.h"
+#include "EPSeparatorGenerator.h"
+
 namespace setVariable
 {
 
@@ -517,9 +521,13 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PreDipoleGenerator PGen;
   setVariable::DipoleChamberGenerator DCGen;
 
+  setVariable::PreBendPipeGenerator PBGen;
+  setVariable::EPCombineGenerator EPCGen;
+  setVariable::EPSeparatorGenerator EPSGen;
     
   Control.addVariable(frontKey+"YStep",310.0);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
+  
   Control.addVariable(frontKey+"FrontOffset",0.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -527,9 +535,15 @@ frontEndVariables(FuncDataBase& Control,
 
   undulatorVariables(Control,frontKey);
   ecutVariables(Control,frontKey);
+
+  PBGen.generatePipe(Control,frontKey+"PreDipole");
+  EPCGen.generatePipe(Control,frontKey+"EPCombine");
+  EPSGen.generatePipe(Control,frontKey+"EPSeparator",0.0);
+
+
   
-  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
-  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
+  //  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+  //  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
 
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);

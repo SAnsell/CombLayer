@@ -38,7 +38,8 @@ namespace xraySystem
   This is built relative to the proton channel
 */
 
-class DipoleChamber : public attachSystem::FixedOffset,
+class DipoleChamber :
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
