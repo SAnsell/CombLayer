@@ -55,6 +55,7 @@ namespace xraySystem
   */
 
   class cosaxsDiagnosticUnit;
+  class cosaxsDiffPump;
 
 class cosaxsExptLine :
   public attachSystem::CopiedComp,
@@ -80,6 +81,8 @@ class cosaxsExptLine :
   std::shared_ptr<cosaxsDiagnosticUnit>  diagUnit;
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValve> gateB;
+  /// Differential pumping
+  std::shared_ptr<cosaxsDiffPump> diffPump;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

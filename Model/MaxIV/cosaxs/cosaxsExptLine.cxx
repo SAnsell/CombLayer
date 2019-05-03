@@ -89,6 +89,7 @@
 #include "JawUnit.h"
 #include "JawValveCylinder.h"
 #include "cosaxsDiagnosticUnit.h"
+#include "cosaxsDiffPump.h"
 
 #include "cosaxsExptLine.h"
 
@@ -109,7 +110,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
   diagUnit(new cosaxsDiagnosticUnit(newName+"DiagnosticUnit")),
-  gateB(new constructSystem::GateValve(newName+"GateB"))
+  gateB(new constructSystem::GateValve(newName+"GateB")),
+  diffPump(new cosaxsDiffPump(newName+"DiffPump"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -124,6 +126,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   OR.addObject(doubleSlitB);
   OR.addObject(diagUnit);
   OR.addObject(gateB);
+  OR.addObject(diffPump);
 }
   
 cosaxsExptLine::~cosaxsExptLine()
@@ -240,7 +243,12 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
   gateB->insertInCell(System,outerCell);
 
-  lastComp=gateB;
+  diffPump->setFront(*gateB,2);
+  diffPump->createAll(System,*gateB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPump,2);
+  diffPump->insertInCell(System,outerCell);
+
+  lastComp=diffPump;
   //  setCell("LastVoid",masterCell->getName());
 
   return;

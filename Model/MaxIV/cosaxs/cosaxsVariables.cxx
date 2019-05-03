@@ -1071,6 +1071,12 @@ exptVariables(FuncDataBase& Control,
   GateGen.setLength(2.5);
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
+
+  // Differential pumping
+  Control.addVariable(preName+"DiffPumpLength",20.0);
+  Control.addVariable(preName+"DiffPumpWidth",10.0);
+  Control.addVariable(preName+"DiffPumpHeight",15.0);
+  Control.addVariable(preName+"DiffPumpMainMat","Aluminium");
 }
 
 void
