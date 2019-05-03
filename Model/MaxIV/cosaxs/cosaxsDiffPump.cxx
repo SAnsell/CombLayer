@@ -107,7 +107,8 @@ cosaxsDiffPump::cosaxsDiffPump(const cosaxsDiffPump& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  wallThick(A.wallThick),
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: cosaxsDiffPump to copy
@@ -132,7 +133,8 @@ cosaxsDiffPump::operator=(const cosaxsDiffPump& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      mainMat=A.mainMat;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -167,8 +169,9 @@ cosaxsDiffPump::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
@@ -231,7 +234,7 @@ cosaxsDiffPump::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ")+frontStr+backStr;
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out);
+  makeCell("MainCell",System,cellIndex++,0,0.0,Out);
 
   addOuterSurf(Out+frontStr);
 

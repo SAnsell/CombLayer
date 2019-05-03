@@ -1076,7 +1076,8 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiffPumpLength",20.0);
   Control.addVariable(preName+"DiffPumpWidth",10.0);
   Control.addVariable(preName+"DiffPumpHeight",15.0);
-  Control.addVariable(preName+"DiffPumpMainMat","Aluminium");
+  Control.addVariable(preName+"DiffPumpWallThick",3.0);
+  Control.addVariable(preName+"DiffPumpWallMat","Aluminium");
 }
 
 void
