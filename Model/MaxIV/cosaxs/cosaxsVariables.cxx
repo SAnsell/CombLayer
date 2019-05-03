@@ -1042,6 +1042,7 @@ exptVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
+  setVariable::PipeGenerator PipeGen;
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
@@ -1078,6 +1079,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiffPumpHeight",15.1);
   Control.addVariable(preName+"DiffPumpWallThick",3.1);
   Control.addVariable(preName+"DiffPumpWallMat","Aluminium");
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
+
 }
 
 void

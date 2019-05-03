@@ -32,6 +32,7 @@ namespace constructSystem
   class Bellows;
   class GateValve;
   class JawValveCylinder;
+  class VacuumPipe;
 }
 
 
@@ -83,6 +84,9 @@ class cosaxsExptLine :
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Differential pumping
   std::shared_ptr<cosaxsDiffPump> diffPump;
+  /// Telescopic system - just a pipe with variable length
+  /// (so the next component is not attached to this pipe)
+  std::shared_ptr<constructSystem::VacuumPipe> telescopicSystem;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
