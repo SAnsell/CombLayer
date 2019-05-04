@@ -80,6 +80,7 @@
 #include "PreBendPipeGenerator.h"
 #include "EPCombineGenerator.h"
 #include "EPSeparatorGenerator.h"
+#include "R3ChokeChamberGenerator.h"
 
 namespace setVariable
 {
@@ -140,7 +141,8 @@ void
 ecutVariables(FuncDataBase& Control,
 	      const std::string& frontKey)
   /*!
-    Set the variables for the frontend wall
+    Set the variables for the electron cut disks
+    in the front-end
     \param Control :: DataBase to use
     \param frontKey :: prename
   */
@@ -524,6 +526,7 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PreBendPipeGenerator PBGen;
   setVariable::EPCombineGenerator EPCGen;
   setVariable::EPSeparatorGenerator EPSGen;
+  setVariable::R3ChokeChamberGenerator CCGen;
     
   Control.addVariable(frontKey+"YStep",310.0);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
@@ -539,6 +542,7 @@ frontEndVariables(FuncDataBase& Control,
   PBGen.generatePipe(Control,frontKey+"PreDipole");
   EPCGen.generatePipe(Control,frontKey+"EPCombine");
   EPSGen.generatePipe(Control,frontKey+"EPSeparator",0.0);
+  CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
 
   

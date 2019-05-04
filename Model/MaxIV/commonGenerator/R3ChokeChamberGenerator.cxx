@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/R3ChokeChamberGenerator.cxx
+ * File:   commonGenerator/R3ChokeChamberGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *

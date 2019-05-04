@@ -94,7 +94,10 @@ EPSeparator::EPSeparator(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(2,"Photon");
+  nameSideIndex(3,"Electron");
+}
 
 
 EPSeparator::~EPSeparator()  
@@ -150,6 +153,17 @@ EPSeparator::createUnitVector(const attachSystem::FixedComp& FC,
   
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+
+  if (!epPairSet)
+    {
+      const Geometry::Quaternion electronQ=
+	Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
+      elecXAxis=electronQ.makeRotate(X);
+      elecYAxis=electronQ.makeRotate(Y);
+      elecOrg=Origin+X*electronXStep;
+    }
+  else
+    elecXAxis=elecYAxis*Z;
   return;
 }
 
@@ -169,19 +183,6 @@ EPSeparator::createSurfaces()
     }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
     
-
-
-  if (!epPairSet)
-    {
-      const Geometry::Quaternion electronQ=
-	Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
-      elecXAxis=electronQ.makeRotate(X);
-      elecYAxis=electronQ.makeRotate(Y);
-      elecOrg=Origin+X*electronXStep;
-    }
-  else
-    elecXAxis=elecYAxis*Z;
-
 
   const Geometry::Vec3D WOrigin(Origin+X*wallXStep);
   ModelSupport::buildPlane(SMap,buildIndex+3,WOrigin-X*(wallWidth/2.0),X);
@@ -284,7 +285,7 @@ EPSeparator::setEPOriginPair(const attachSystem::FixedComp& FC,
 			     const long int photonIndex,
 			     const long int electronIndex)
   /*!
-    SEt the electron/Photon origins exactly
+    Set the electron/Photon origins exactly
     \param FC :: FixedPoint
     \param photonIndex :: link point for photon
     \param electornIndex :: link point for electron

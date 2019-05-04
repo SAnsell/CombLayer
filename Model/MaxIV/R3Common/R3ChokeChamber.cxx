@@ -88,7 +88,9 @@ R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
   attachSystem::ContainedGroup("Main","Photon","Electron","Inlet","Side"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::ExternalCut()  
+  attachSystem::ExternalCut(),
+  epPairSet(0)
+  
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -139,7 +141,6 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
   flangeElectronLength=Control.EvalVar<double>(keyName+"FlangeElectronLength");
 
   photonXStep=Control.EvalVar<double>(keyName+"PhotonXStep");
-  photonXYAngle=Control.EvalVar<double>(keyName+"PhotonXYAngle");
   photonRadius=Control.EvalVar<double>(keyName+"PhotonRadius");
   photonLength=Control.EvalVar<double>(keyName+"PhotonLength");
   photonThick=Control.EvalVar<double>(keyName+"PhotonThick");
@@ -174,6 +175,18 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // move origin to centre of main tube
   FixedComp::applyShift(0,inletLength,0);
+
+  if (!epPairSet)
+    {
+      const Geometry::Quaternion electronQ=
+	Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
+      elecXAxis=electronQ.makeRotate(X);
+      elecYAxis=electronQ.makeRotate(Y);
+      elecOrg=Origin+X*electronXStep;
+    }
+  else
+    elecXAxis=elecYAxis*Z;
+
   return;
 }
 
@@ -196,7 +209,7 @@ R3ChokeChamber::createSurfaces()
   // centre dividers
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
-
+  
   // Main cylinder
   //---------------
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);
@@ -241,21 +254,17 @@ R3ChokeChamber::createSurfaces()
   // Photon Pipe (200)
   //--------------------
 
-  const Geometry::Quaternion photonQ=
-    Geometry::Quaternion::calcQRotDeg(photonXYAngle,Z);
-  const Geometry::Vec3D PX=photonQ.makeRotate(X);
-  const Geometry::Vec3D PY=photonQ.makeRotate(Y);
   const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,PY,photonRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,Y,photonRadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+217,POrigin,PY,photonRadius+photonThick);
+    (SMap,buildIndex+217,POrigin,Y,photonRadius+photonThick);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+227,POrigin,PY,flangePhotonRadius);
+    (SMap,buildIndex+227,POrigin,Y,flangePhotonRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+202,POrigin+PY*photonLength,PY);
+  ModelSupport::buildPlane(SMap,buildIndex+202,POrigin+Y*photonLength,Y);
   ModelSupport::buildPlane
-    (SMap,buildIndex+212,POrigin+PY*(photonLength-flangePhotonLength),PY);
+    (SMap,buildIndex+212,POrigin+Y*(photonLength-flangePhotonLength),Y);
 
   // electron Pipe (300)
   //---------------
@@ -271,9 +280,9 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+327,EOrigin,EY,flangeElectronRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+302,EOrigin+PY*electronLength,EY);
+  ModelSupport::buildPlane(SMap,buildIndex+302,EOrigin+EY*electronLength,EY);
   ModelSupport::buildPlane
-    (SMap,buildIndex+312,EOrigin+PY*(electronLength-flangeElectronLength),EY);
+    (SMap,buildIndex+312,EOrigin+EY*(electronLength-flangeElectronLength),EY);
 
   // side Pipe (400)
   //---------------
@@ -288,11 +297,6 @@ R3ChokeChamber::createSurfaces()
     (SMap,buildIndex+412,Origin-X*(sideLength-flangeSideLength),X);
 
   
-  // Link 
-  FixedComp::setConnect(2,Origin+PY*photonLength,PY);
-  FixedComp::setConnect(3,Origin+EY*electronLength,EY);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
   
   return;
 }
@@ -433,10 +437,39 @@ R3ChokeChamber::createLinks()
 
   // inlet centre
   ExternalCut::createLink("front",*this,0,Origin,-Y);
+
+  // Link 
+  FixedComp::setConnect(2,Origin+Y*photonLength,Y);
+  FixedComp::setConnect(3,elecOrg+elecYAxis*electronLength,elecYAxis);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
   
   return;
 }
+
+void
+R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
+				const long int photonIndex,
+				const long int electronIndex)
+/*!
+    SEt the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("R3ChokeChamber","setEPOriginPair");
+
+  photOrg=FC.getLinkPt(photonIndex);
+  elecOrg=FC.getLinkPt(electronIndex);
   
+  elecYAxis=FC.getLinkAxis(electronIndex);
+
+  epPairSet=1;
+  
+  return;
+}
+
 void
 R3ChokeChamber::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,

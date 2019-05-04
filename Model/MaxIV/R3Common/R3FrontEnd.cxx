@@ -102,6 +102,7 @@
 #include "PreBendPipe.h"
 #include "EPCombine.h"
 #include "EPSeparator.h"
+#include "R3ChokeChamber.h"
 
 #include "R3FrontEnd.h"
 
@@ -124,6 +125,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   preDipole(new xraySystem::PreBendPipe(newName+"PreDipole")),
   epCombine(new xraySystem::EPCombine(newName+"EPCombine")),
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
+  chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
   
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
@@ -187,6 +189,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(preDipole);
   OR.addObject(epCombine);
   OR.addObject(epSeparator);
+  OR.addObject(chokeChamber);
       
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
@@ -608,6 +611,12 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   ELog::EM<<"Photon == "<<epSeparator->getLinkPt(3)<<ELog::endDiag;
   ELog::EM<<"Electron == "<<epSeparator->getLinkPt(4)<<ELog::endDiag;
+
+  //  chokeChamber->setEPOriginPair(*epCombine,3,4);
+  chokeChamber->setCutSurf("front",*epSeparator,2);
+  chokeChamber->createAll(System,*epSeparator,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
+  chokeChamber->insertAllInCell(System,outerCell);
 
   
   lastComp=epCombine;

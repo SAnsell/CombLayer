@@ -92,7 +92,10 @@ EPCombine::EPCombine(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(2,"Photon");
+  nameSideIndex(3,"Electron");
+}
 
 
 EPCombine::~EPCombine() 

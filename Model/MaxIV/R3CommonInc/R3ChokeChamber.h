@@ -49,7 +49,8 @@ class R3ChokeChamber :
   double length;              ///< Main length
   double flangeRadius;        ///< Main Flange radius
   double flangeLength;        ///< Main Flange length
-  
+
+  double inletXStep;           ///< Inlex X Step
   double inletWidth;           ///< In pipe radius
   double inletHeight;          ///< In pipe height
   double inletLength;          ///< In pipe length [inc flange]
@@ -66,7 +67,6 @@ class R3ChokeChamber :
   double flangeElectronLength;   ///< Electron Flange length
   
   double photonXStep;          ///< Photon X step
-  double photonXYAngle;        ///< Photon Angle 
   double photonRadius;         ///< Photon out radius
   double photonLength;         ///< Photon out lenght
   double photonThick;          ///< Photon  wall thickness
@@ -83,6 +83,14 @@ class R3ChokeChamber :
   int wallMat;                ///< Wall material 
   int flangeMat;              ///< Flange material 
 
+  bool epPairSet;                 ///< Setting of phot/elec Origin.
+  Geometry::Vec3D photOrg;        ///< Photon origin
+  Geometry::Vec3D elecOrg;        ///< Electron origin
+  
+  Geometry::Vec3D elecXAxis;      ///< Electron X-axis
+  Geometry::Vec3D elecYAxis;      ///< Electron beam axis
+
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -95,6 +103,9 @@ class R3ChokeChamber :
   R3ChokeChamber(const R3ChokeChamber&);
   R3ChokeChamber& operator=(const R3ChokeChamber&);
   virtual ~R3ChokeChamber();
+
+  void setEPOriginPair(const attachSystem::FixedComp&,
+		       const long int,const long int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
