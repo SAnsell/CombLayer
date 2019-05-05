@@ -169,9 +169,6 @@ COSAXS::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  ELog::EM<<"FC == "<<FCOrigin.getLinkPt(sideIndex)<<ELog::endDiag;
-  ELog::EM<<"FB == "<<frontBeam->getLinkPt(2)<<ELog::endDiag;
-  ELog::EM<<"FB == "<<frontBeam->getLinkAxis(2)<<ELog::endDiag;
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
