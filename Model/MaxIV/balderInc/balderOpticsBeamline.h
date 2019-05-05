@@ -37,7 +37,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
 }
 
 namespace xraySystem
@@ -136,7 +136,7 @@ class balderOpticsBeamline :
   std::shared_ptr<insertSystem::insertPlate> beamStop;
 
   /// Slits [first pair]
-  std::shared_ptr<constructSystem::JawValve> slitsA;
+  std::shared_ptr<constructSystem::JawValveCube> slitsA;
 
   /// Tungsten shield pipe
   std::shared_ptr<constructSystem::PortTube> shieldPipe;
@@ -157,7 +157,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeE;
 
   /// Slits [first pair]
-  std::shared_ptr<constructSystem::JawValve> slitsB;
+  std::shared_ptr<constructSystem::JawValveCube> slitsB;
 
   /// Pipe for diamond filter
   std::shared_ptr<constructSystem::PortTube> viewPipe;

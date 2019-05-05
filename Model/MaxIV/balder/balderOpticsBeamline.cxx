@@ -93,7 +93,7 @@
 #include "MonoCrystals.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+#include "JawValveCube.h"
 #include "FlangeMount.h"
 #include "ShutterUnit.h"
 #include "Mirror.h"
@@ -139,14 +139,14 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   gateC(new constructSystem::GateValve(newName+"GateC")),
   driftC(new constructSystem::VacuumPipe(newName+"DriftC")),
   beamStop(new insertSystem::insertPlate(newName+"BeamStop")),
-  slitsA(new constructSystem::JawValve(newName+"SlitsA")),
+  slitsA(new constructSystem::JawValveCube(newName+"SlitsA")),
   shieldPipe(new constructSystem::PortTube(newName+"ShieldPipe")),
   pipeD(new constructSystem::Bellows(newName+"BellowD")),
   gateD(new constructSystem::GateValve(newName+"GateD")),
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
   mirrorB(new xraySystem::Mirror(newName+"MirrorB")),
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
-  slitsB(new constructSystem::JawValve(newName+"SlitsB")),
+  slitsB(new constructSystem::JawValveCube(newName+"SlitsB")),
   viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
   viewMount({
       std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")

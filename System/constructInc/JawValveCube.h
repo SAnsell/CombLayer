@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/JawValve.h
+ * File:   constructInc/JawValveCube.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_JawValve_h
-#define constructSystem_JawValve_h
+#ifndef constructSystem_JawValveCube_h
+#define constructSystem_JawValveCube_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
   
 /*!
-  \class JawValve
+  \class JawValveCube
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief JawValve unit  
+  \brief JawValveCube unit  
 */
 
-class JawValve :
+class JawValveCube :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -69,10 +69,10 @@ class JawValve :
   
  public:
 
-  JawValve(const std::string&);
-  JawValve(const JawValve&);
-  JawValve& operator=(const JawValve&);
-  virtual ~JawValve();
+  JawValveCube(const std::string&);
+  JawValveCube(const JawValveCube&);
+  JawValveCube& operator=(const JawValveCube&);
+  virtual ~JawValveCube();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -38,7 +38,7 @@ namespace constructSystem
   class PortTube;
   class PipeTube;
   class GateValve;
-  class JawValve;
+  class JawValveCube;
   class JawFlange;
 
 }

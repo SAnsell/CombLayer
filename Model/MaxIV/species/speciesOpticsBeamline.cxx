@@ -95,7 +95,7 @@
 #include "CrossPipe.h"
 #include "GateValve.h"
 #include "JawUnit.h"
-#include "JawValve.h"
+#include "JawValveCube.h"
 #include "BeamMount.h"
 #include "TankMonoVessel.h"
 #include "GratingMono.h"
@@ -147,7 +147,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  mirrorJaws(new constructSystem::JawValve(newName+"MirrorJaws")),
+  mirrorJaws(new constructSystem::JawValveCube(newName+"MirrorJaws")),
   M3Tube(new constructSystem::PipeTube(newName+"M3Tube")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
 

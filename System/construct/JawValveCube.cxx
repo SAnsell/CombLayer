@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/JawValve
+ * File:   construct/JawValveCube
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -80,12 +80,12 @@
 #include "SurInter.h"
 
 #include "JawUnit.h"
-#include "JawValve.h" 
+#include "JawValveCube.h" 
 
 namespace constructSystem
 {
 
-JawValve::JawValve(const std::string& Key) : 
+JawValveCube::JawValveCube(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
@@ -96,7 +96,7 @@ JawValve::JawValve(const std::string& Key) :
   */
 {}
 
-JawValve::JawValve(const JawValve& A) : 
+JawValveCube::JawValveCube(const JawValveCube& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
@@ -107,15 +107,15 @@ JawValve::JawValve(const JawValve& A) :
   voidMat(A.voidMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: JawValve to copy
+    \param A :: JawValveCube to copy
   */
 {}
 
-JawValve&
-JawValve::operator=(const JawValve& A)
+JawValveCube&
+JawValveCube::operator=(const JawValveCube& A)
   /*!
     Assignment operator
-    \param A :: JawValve to copy
+    \param A :: JawValveCube to copy
     \return *this
   */
 {
@@ -142,20 +142,20 @@ JawValve::operator=(const JawValve& A)
 }
 
 
-JawValve::~JawValve() 
+JawValveCube::~JawValveCube() 
   /*!
     Destructor
   */
 {}
 
 void
-JawValve::populate(const FuncDataBase& Control)
+JawValveCube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("JawValve","populate");
+  ELog::RegMethod RegA("JawValveCube","populate");
   
   FixedOffset::populate(Control);
 
@@ -178,7 +178,7 @@ JawValve::populate(const FuncDataBase& Control)
 }
 
 void
-JawValve::createUnitVector(const attachSystem::FixedComp& FC,
+JawValveCube::createUnitVector(const attachSystem::FixedComp& FC,
                              const long int sideIndex)
   /*!
     Create the unit vectors
@@ -188,7 +188,7 @@ JawValve::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("JawValve","createUnitVector");
+  ELog::RegMethod RegA("JawValveCube","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -201,14 +201,14 @@ JawValve::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-JawValve::createSurfaces()
+JawValveCube::createSurfaces()
   /*!
     Create the surfaces
     If front/back given it is at portLen from the wall and 
     length/2+portLen from origin.
   */
 {
-  ELog::RegMethod RegA("JawValve","createSurfaces");
+  ELog::RegMethod RegA("JawValveCube","createSurfaces");
 
   // front planes
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -250,13 +250,13 @@ JawValve::createSurfaces()
 }
 
 void
-JawValve::createObjects(Simulation& System)
+JawValveCube::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("JawValve","createObjects");
+  ELog::RegMethod RegA("JawValveCube","createObjects");
 
   std::string Out;
 
@@ -319,13 +319,13 @@ JawValve::createObjects(Simulation& System)
 }
   
 void
-JawValve::createLinks()
+JawValveCube::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("JawValve","createLinks");
+  ELog::RegMethod RegA("JawValveCube","createLinks");
 
   //stufff for intersection
 
@@ -336,13 +336,13 @@ JawValve::createLinks()
 }
 
 void
-JawValve::createJaws(Simulation& System)
+JawValveCube::createJaws(Simulation& System)
   /*!
     Create the jaws
     \param System :: Simuation to use
    */
 {
-  ELog::RegMethod RegA("JawValve","creatJaws");
+  ELog::RegMethod RegA("JawValveCube","creatJaws");
 
   JItem.addInsertCell(this->getCells("Void"));
   JItem.createAll(System,*this,0);
@@ -350,7 +350,7 @@ JawValve::createJaws(Simulation& System)
 }
   
 void
-JawValve::createAll(Simulation& System,
+JawValveCube::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
  /*!
@@ -360,7 +360,7 @@ JawValve::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("JawValve","createAll(FC)");
+  ELog::RegMethod RegA("JawValveCube","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
