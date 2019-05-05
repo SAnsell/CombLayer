@@ -595,62 +595,46 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
   preDipole->insertInCell(System,outerCell);
 
-  epCombine->setCutSurf("front",*preDipole,2);
+
+  epCombine->setCutSurf("front",*preDipole,2);  
   epCombine->createAll(System,*preDipole,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epCombine,2);
   epCombine->insertInCell(System,outerCell);
 
-  ELog::EM<<"Photon == "<<epCombine->getLinkPt(3)<<ELog::endDiag;
-  ELog::EM<<"Electron == "<<epCombine->getLinkPt(4)<<ELog::endDiag;
-
+  
   epSeparator->setEPOriginPair(*epCombine,3,4);
   epSeparator->setCutSurf("front",*epCombine,2);
   epSeparator->createAll(System,*epCombine,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epSeparator,2);
   epSeparator->insertInCell(System,outerCell);
 
-  ELog::EM<<"Photon == "<<epSeparator->getLinkPt(3)<<ELog::endDiag;
-  ELog::EM<<"Electron == "<<epSeparator->getLinkPt(4)<<ELog::endDiag;
 
-  //  chokeChamber->setEPOriginPair(*epCombine,3,4);
+  chokeChamber->setEPOriginPair(*epSeparator,2,4);
+
   chokeChamber->setCutSurf("front",*epSeparator,2);
   chokeChamber->createAll(System,*epSeparator,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
-
   
-  lastComp=epCombine;
-  return;
-  //  preDipole->createQuads(System,outerCell);
+  // eCutWallDisk->setNoInsert();
+  // eCutWallDisk->addInsertCell(outerCell);
+  // eCutWallDisk->createAll(System,*dipoleChamber,
+  // 			 dipoleChamber->getSideIndex("dipoleExit"));
 
-  dipoleChamber->setCutSurf("front",*preDipole,2);
-  dipoleChamber->createAll(System,*preDipole,2);
-  // two splits [main / exit]
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
-  dipoleChamber->insertInCell("Main",System,outerCell);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
-  dipoleChamber->insertInCell("Exit",System,outerCell);
-
-  eCutWallDisk->setNoInsert();
-  eCutWallDisk->addInsertCell(outerCell);
-  eCutWallDisk->createAll(System,*dipoleChamber,
-			 dipoleChamber->getSideIndex("dipoleExit"));
-
-  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
-  dipolePipe->createAll(System,*dipoleChamber,
-			dipoleChamber->getSideIndex("exit"));
+  dipolePipe->setFront(*chokeChamber,chokeChamber->getSideIndex("photon"));
+  dipolePipe->createAll(System,*chokeChamber,
+			chokeChamber->getSideIndex("photon"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
-
 
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
 
-  eCutMagDisk->setNoInsert();
-  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
-  eCutMagDisk->createAll(System,*dipoleChamber,
-			 -dipoleChamber->getSideIndex("dipoleExit"));
+  // eCutMagDisk->setNoInsert();
+  // eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  // eCutMagDisk->createAll(System,*dipoleChamber,
+  // 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
   if (stopPoint=="Dipole")
     {
@@ -690,7 +674,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
-
 
   collTubeC->setFront(*collTubeB,2);
   collTubeC->createAll(System,*collTubeB,2);

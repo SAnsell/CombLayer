@@ -3,7 +3,7 @@
  
  * File:   epbBuildInc/Building.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,10 +36,11 @@ namespace epbSystem
 */
 
 class Building : public attachSystem::FixedOffset,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  private:
-  
+
   double height;               ///< Base of roof
   double depth;                ///< Top of floor level
   double width;                ///< Full width
@@ -51,8 +52,9 @@ class Building : public attachSystem::FixedOffset,
 
   int concMat;                    ///< wall material
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -65,7 +67,8 @@ class Building : public attachSystem::FixedOffset,
   Building& operator=(const Building&);
   virtual ~Building();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

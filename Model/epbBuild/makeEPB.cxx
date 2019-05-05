@@ -3,7 +3,7 @@
  
  * File:   epbBuild/makeEPB.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -68,6 +67,8 @@
 #include "ContainedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "Building.h"
 #include "EPBline.h"
@@ -150,7 +151,7 @@ makeEPB::build(Simulation* SimPtr,
 
   int voidCell(74123);
   Hall->addInsertCell(voidCell);
-  Hall->createAll(*SimPtr,World::masterOrigin());
+  Hall->createAll(*SimPtr,World::masterOrigin(),0);
 
   LineVoid->createAll(*SimPtr,World::masterOrigin());
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);

@@ -46,8 +46,9 @@ class R3ChokeChamberGenerator
   double flangeRadius;        ///< Main Flange radius
   double flangeLength;        ///< Main Flange length
   
-  double inletWidth;           ///< In pipe radius
-  double inletHeight;          ///< In pipe height
+  double inletXStep;           ///< Step of inlet from flange centre
+  double inletWidth;           ///< inlet width
+  double inletHeight;          ///< inlet height
   double inletLength;          ///< In pipe length [inc flange]
   double inletThick;           ///< In pipe wall thickness
   double flangeInletRadius;        ///< In Flange radius
@@ -62,7 +63,6 @@ class R3ChokeChamberGenerator
   double flangeElectronLength;   ///< Electron Flange length
   
   double photonXStep;          ///< Photon X step
-  double photonXYAngle;        ///< Photon Angle 
   double photonRadius;         ///< Photon out radius
   double photonLength;         ///< Photon out lenght
   double photonThick;          ///< Photon  wall thickness

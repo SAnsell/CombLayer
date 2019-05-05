@@ -90,6 +90,7 @@ class R3ChokeChamber :
   Geometry::Vec3D elecXAxis;      ///< Electron X-axis
   Geometry::Vec3D elecYAxis;      ///< Electron beam axis
 
+  Geometry::Vec3D flangeOrg;      ///< flange origin
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

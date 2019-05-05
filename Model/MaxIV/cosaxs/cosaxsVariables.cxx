@@ -550,7 +550,7 @@ frontEndVariables(FuncDataBase& Control,
   //  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,724.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();

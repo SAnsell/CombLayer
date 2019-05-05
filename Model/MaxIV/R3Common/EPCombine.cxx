@@ -343,7 +343,7 @@ EPCombine::createLinks()
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  // Photon centre line [exit]
+  // Photon edge line [exit]
   const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 
   setConnect(2,POrigin+Y*length,Y);  
