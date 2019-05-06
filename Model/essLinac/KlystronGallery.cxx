@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   essBuild/KlystronGallery.cxx
+ * File:   essLinac/KlystronGallery.cxx
  *
- * Copyright (c) 2018 by Konstantin Batkov
+ * Copyright (c) 2018-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -216,8 +215,8 @@ KlystronGallery::createSurfaces()
 {
   ELog::RegMethod RegA("KlystronGallery","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*lengthBack,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*lengthFront,Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);

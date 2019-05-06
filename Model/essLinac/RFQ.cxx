@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -75,11 +74,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
+#include "CellMap.h"
 #include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "RFQ.h"
 
@@ -203,7 +199,7 @@ RFQ::populate(const FuncDataBase& Control)
 
 void
 RFQ::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+		      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
@@ -250,6 +246,7 @@ RFQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(dx),dirZ);
 
   // outer surfaces
+  // THIS IS INSANE
   const double VL(vaneLength*cos(theta*M_PI/180));
   const std::vector<Geometry::Vec3D> coolantDir = {-X,X,-Z,Z};
   for (int i=0; i<4; i++)

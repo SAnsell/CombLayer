@@ -736,7 +736,6 @@ objectGroups::getObjectRange(const std::string& objName) const
     return std::vector<int>(activeCells.begin(),activeCells.end());
 
   // FixedComp  -- All
-  ELog::EM<<"ObjName == "<<objName<<ELog::endDiag;
   if (Units.size()==1)
     {
       if (hasObject(objName))
@@ -748,7 +747,6 @@ objectGroups::getObjectRange(const std::string& objName) const
 
   throw ColErr::InContainerError<std::string>
     (objName,"objectName does not convert to cells");
-
   
 }
   

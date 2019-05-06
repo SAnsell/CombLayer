@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -213,32 +212,10 @@ Spoke::createAll(Simulation& System,
   std::string Out;
 
 
-  /*
-  for (size_t i=0; i<nDTL; i++)
-    {
-      //std::shared_ptr<DTL> d(new DTL(baseName,"DTL",i+1));
+  // ADD OUTER UNION IS NOT GOOD HERE
+  // USE buildZone instead. [SA]
 
-      char numstr[21];
-      sprintf(numstr, "VacuumPipe%d", i+1);
-      //std::string stubY = numstr;
-      
-      std::shared_ptr<constructSystem::VacuumPipe> d(new constructSystem::VacuumPipe(baseName+numstr));
-      OR.addObject(d);
-      if (i==0)
-      	{
-	  d->createAll(System, FC, sideIndex);
-	  Out=d->getLinkString(-1)+" "+std::to_string(d->getLinkSurf(-3))+" ";
-      	} else
-      	{
-	  d->createAll(System, *dtl[i-1],2);
-      	}
-      dtl.push_back(d);
-    }
-  Out+=dtl.back()->getLinkString(-2);
-  addOuterSurf(Out);
-  */
-
-
+  
   int counter = 0;
   
   std::shared_ptr<constructSystem::VacuumPipe> d(new constructSystem::VacuumPipe(baseName+"SpokeSection0"));
@@ -260,10 +237,12 @@ Spoke::createAll(Simulation& System,
     //----------------
 
     
-    std::shared_ptr<constructSystem::VacuumPipe> d1(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12)));
+    std::shared_ptr<constructSystem::VacuumPipe> d1(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12)));
     OR.addObject(d1);
     d1->createAll(System, *vacPipe[counter-1], 2);
-    Out=d1->getLinkString(-1)+" "+std::to_string(d1->getLinkSurf(-9))+" "+std::to_string(d1->getLinkSurf(-2))+" ";
+    Out=d1->getLinkString(-1)+" "+
+      std::to_string(d1->getLinkSurf(-9))+" "+
+      std::to_string(d1->getLinkSurf(-2))+" ";
     vacPipe.push_back(d1);
     addOuterUnionSurf(Out);
   
@@ -275,7 +254,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     //----------------
      
-    std::shared_ptr<constructSystem::VacuumPipe> d2(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+1)));
+    std::shared_ptr<constructSystem::VacuumPipe> d2(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+1)));
     OR.addObject(d2);
     d2->createAll(System, *vacPipe[counter-1], 2);
     Out=d2->getLinkString(-1)+" "+std::to_string(d2->getLinkSurf(-9))+" "+std::to_string(d2->getLinkSurf(-2))+" ";
@@ -290,7 +269,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ----
     
-    std::shared_ptr<constructSystem::VacuumPipe> d3(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+2)));
+    std::shared_ptr<constructSystem::VacuumPipe> d3(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+2)));
     OR.addObject(d3);
     d3->createAll(System, *vacPipe[counter-1], 2);
     Out=d3->getLinkString(-1)+" "+std::to_string(d3->getLinkSurf(-9))+" "+std::to_string(d3->getLinkSurf(-2))+" ";
@@ -305,7 +284,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ----
     
-    std::shared_ptr<constructSystem::VacuumPipe> d4(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+3)));
+    std::shared_ptr<constructSystem::VacuumPipe> d4(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+3)));
     OR.addObject(d4);
     d4->createAll(System, *vacPipe[counter-1],2);
     Out=d4->getLinkString(-1)+" "+std::to_string(d4->getLinkSurf(-9))+" "+std::to_string(d4->getLinkSurf(-2))+" ";
@@ -321,7 +300,7 @@ Spoke::createAll(Simulation& System,
     // ----
 
      
-    std::shared_ptr<constructSystem::VacuumPipe> d5(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+4)));
+    std::shared_ptr<constructSystem::VacuumPipe> d5(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+4)));
     OR.addObject(d5);
     d5->createAll(System, *vacPipe[counter-1],2);
     Out=d5->getLinkString(-1)+" "+std::to_string(d5->getLinkSurf(-9))+" "+std::to_string(d5->getLinkSurf(-2))+" ";
@@ -336,7 +315,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ---
     
-    std::shared_ptr<constructSystem::VacuumPipe> d6(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+5)));
+    std::shared_ptr<constructSystem::VacuumPipe> d6(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+5)));
     OR.addObject(d6);
     d6->createAll(System, *vacPipe[counter-1], 2);
     Out=d6->getLinkString(-1)+" "+std::to_string(d6->getLinkSurf(-9))+" "+std::to_string(d6->getLinkSurf(-2))+" ";
@@ -351,7 +330,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ----
     
-    std::shared_ptr<constructSystem::VacuumPipe> d7(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+6)));
+    std::shared_ptr<constructSystem::VacuumPipe> d7(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+6)));
     OR.addObject(d7);
     d7->createAll(System, *vacPipe[counter-1],2);
     Out=d7->getLinkString(-1)+" "+std::to_string(d7->getLinkSurf(-9))+" "+std::to_string(d7->getLinkSurf(-2))+" ";
@@ -366,7 +345,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ----
     
-    std::shared_ptr<constructSystem::VacuumPipe> d8(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+7)));
+    std::shared_ptr<constructSystem::VacuumPipe> d8(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+7)));
     OR.addObject(d8);
     d8->createAll(System, *vacPipe[counter-1],2);
     Out=d8->getLinkString(-1)+" "+std::to_string(d8->getLinkSurf(-9))+" "+std::to_string(d8->getLinkSurf(-2))+" ";
@@ -381,7 +360,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ---
     
-    std::shared_ptr<constructSystem::VacuumPipe> d9(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+8)));
+    std::shared_ptr<constructSystem::VacuumPipe> d9(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+8)));
     OR.addObject(d9);
     d9->createAll(System, *vacPipe[counter-1], 2);
     Out=d9->getLinkString(-1)+" "+std::to_string(d9->getLinkSurf(-9))+" "+std::to_string(d9->getLinkSurf(-2))+" ";
@@ -396,7 +375,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ----
     
-    std::shared_ptr<constructSystem::VacuumPipe> d10(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+9)));
+    std::shared_ptr<constructSystem::VacuumPipe> d10(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+9)));
     OR.addObject(d10);
     d10->createAll(System, *vacPipe[counter-1],2);
     Out=d10->getLinkString(-1)+" "+std::to_string(d10->getLinkSurf(-9))+" "+std::to_string(d10->getLinkSurf(-2))+" ";
@@ -411,7 +390,7 @@ Spoke::createAll(Simulation& System,
     counter++;
     // ----
 
-    std::shared_ptr<constructSystem::VacuumPipe> d11(new constructSystem::VacuumPipe(baseName+"SpokeSection"+StrFunc::makeString(i*12+10)));
+    std::shared_ptr<constructSystem::VacuumPipe> d11(new constructSystem::VacuumPipe(baseName+"SpokeSection"+std::to_string(i*12+10)));
     OR.addObject(d11);
     d11->createAll(System, *vacPipe[counter-1],2);
     Out=d11->getLinkString(-1)+" "+std::to_string(d11->getLinkSurf(-9))+" "+std::to_string(d11->getLinkSurf(-2))+" ";
@@ -469,15 +448,6 @@ Spoke::createAll(Simulation& System,
   s3->createAll(System, *vacPipe[counter-1], 2);
   spkcvt.push_back(s3);
   counter++;
-
-
-
-
-
-
-
-
-
 
 
 
