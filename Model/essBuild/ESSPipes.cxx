@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESSPipes.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -63,11 +62,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "World.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -157,7 +154,6 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
                      const std::string& pipeAlName,
                      const std::string& pipeConnectName,
                      const std::string& pipeInvarName)
-{
   /*
     Build a pipe connected to a Butterfly lobe
     \param System :: Simulation
@@ -168,8 +164,8 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
     \param pipeInvarName  :: third piece of the pipe
     The pieces can be made from different materials.
    */
+{
   ELog::RegMethod RegA("makeESS", "buildH2Pipe");
-
 
   PipeTYPE& pipeAl=getPipe(pipeAlName);
   ///  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
@@ -308,8 +304,6 @@ ESSPipes::buildLowPipes(Simulation& System,
     }
   return;
 }
-
-  
 
 }   // NAMESPACE essSystem
 

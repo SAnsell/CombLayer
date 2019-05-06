@@ -64,6 +64,7 @@
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "R3ChokeChamberGenerator.h"
+#include "MagnetM1Generator.h"
 
 namespace setVariable
 {
@@ -184,7 +185,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::R3ChokeChamberGenerator CCGen;
   CCGen.generateChamber(Control,"R3Chamber");
-  
+
+  setVariable::MagnetM1Generator M1Gen;
+  M1Gen.generateBlock(Control,"M1Block");
+
   
   return;
 }

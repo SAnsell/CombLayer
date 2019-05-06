@@ -98,6 +98,7 @@
 #include "R3ChokeChamber.h"
 #include "EPCombine.h"
 #include "PreBendPipe.h"
+#include "MagnetM1.h"
 
 #include "makeSingleItem.h"
 
@@ -133,20 +134,13 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
-  std::shared_ptr<xraySystem::PreBendPipe>
-    preBend(new xraySystem::PreBendPipe("PreBendPipe"));
-  OR.addObject(preBend);
-  
-  preBend->addInsertCell(voidCell);
-  preBend->createAll(System,World::masterOrigin(),0);
+  std::shared_ptr<xraySystem::MagnetM1>
+    MagBlock(new xraySystem::MagnetM1("M1Block"));
+  OR.addObject(MagBlock);
 
-
-  std::shared_ptr<xraySystem::EPCombine>
-    EPcombine(new xraySystem::EPCombine("EPCombine"));
-  OR.addObject(EPcombine);
+  MagBlock->addInsertCell(voidCell);
+  MagBlock->createAll(System,World::masterOrigin(),0);
   
-  EPcombine->addInsertCell(voidCell);
-  EPcombine->createAll(System,World::masterOrigin(),0);
   return;
   
   std::shared_ptr<xraySystem::EPSeparator>
