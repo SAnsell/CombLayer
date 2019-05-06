@@ -87,8 +87,8 @@ setDefUnits(FuncDataBase& Control,inputParam& IParam)
 
   A.setOption("matDB", "neutronics");
   A.setOption("sdefType", "essLinac");
-  A.setVar("sdefEnergy", 75);
   A.setOption("mcnp", "10");
+  A.setOption("maxEnergy", "75");
 
   A.process(Control,IParam);
   return;

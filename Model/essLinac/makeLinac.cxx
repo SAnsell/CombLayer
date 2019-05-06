@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/makeLinac.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -48,7 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -66,22 +65,36 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "SpaceCut.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
 
+#include "FrontEndBuilding.h"
 #include "Linac.h"
+#include "KlystronGallery.h"
+#include "Stub.h"
+#include "Berm.h"
+#include "RFQ.h"
 #include "makeLinac.h"
+#include "StubWall.h"
 
 namespace essSystem
 {
 
 makeLinac::makeLinac() :
-  LinacTunnel(new Linac("Linac"))
+  feb(new FrontEndBuilding("FEB")),
+  LinacTunnel(new Linac("Linac")),
+  KG(new KlystronGallery("KG")),
+  berm(new Berm("Berm")),
+  rfq(new RFQ("RFQ"))
  /*!
     Constructor
  */
@@ -89,7 +102,11 @@ makeLinac::makeLinac() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(LinacTunnel);      
+  OR.addObject(feb);
+  OR.addObject(LinacTunnel);
+  OR.addObject(KG);
+  OR.addObject(berm);
+  OR.addObject(rfq);
 }
 
 
@@ -99,7 +116,7 @@ makeLinac::~makeLinac()
   */
 {}
 
-void 
+void
 makeLinac::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
@@ -112,10 +129,62 @@ makeLinac::build(Simulation& System,
   ELog::RegMethod RegA("makeLinac","build");
 
   int voidCell(74123);
-  
-  LinacTunnel->addInsertCell(voidCell);
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  //  LinacTunnel->addInsertCell(voidCell);
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
+  feb->addInsertCell(voidCell);
+  feb->createAll(System,*LinacTunnel,1,5,15,16,6);
+  
+  KG->addInsertCell(voidCell);
+  KG->createAll(System,*LinacTunnel,0);
+
+  berm->addInsertCell(voidCell);
+  berm->setCutSurf("farDivide",feb->getSurf("farDivide"));
+  berm->createAll(System,*LinacTunnel,0,*KG,3,5);
+
+  rfq->createAll(System,World::masterOrigin(),0);
+
+  // Stupidly expensive insert to force linac tunnel into the berm
+  // maybe we actually already know that so why are we testing all
+  // surface-surface-surface interections
+  berm->insertComponent(System,"MainLong",*LinacTunnel);
+//  berm->insertComponent(System,"MainShort",*LinacTunnel);
+  //attachSystem::addToInsertSurfCtrl(System,*berm,*LinacTunnel);
+  // attachSystem::addToInsertSurfCtrl(System,*berm,*feb);
+  berm->insertComponent(System,"MainShort",*feb);
+  berm->insertComponent(System,"MainRight",*feb);
+  attachSystem::addToInsertSurfCtrl(System,*feb,*LinacTunnel);
+  attachSystem::addToInsertSurfCtrl(System,*feb,*rfq);
+
+  const size_t nStubs(LinacTunnel->getNStubs());
+  for (size_t i=0; i<nStubs; i++)
+    {
+      const size_t stubNumber(100+i*10);
+      const size_t active = System.getDataBase().EvalDefVar<size_t>
+	("Stub"+std::to_string(stubNumber)+"Active", 1);
+      if (active)
+	{
+	  std::shared_ptr<Stub> stub(new Stub("Stub", stubNumber));
+	  OR.addObject(stub);
+	  stub->setFront(*KG,7);
+	  stub->setBack(*LinacTunnel,-14);
+	  stub->createAll(System,*LinacTunnel,0);
+	  attachSystem::addToInsertSurfCtrl(System,*berm,stub->getCC("Full"));
+	  attachSystem::addToInsertSurfCtrl(System,*LinacTunnel,
+					    stub->getCC("Leg1"));
+	  attachSystem::addToInsertSurfCtrl(System,*KG,stub->getCC("Leg3"));
+
+
+	  std::shared_ptr<StubWall> wall(new StubWall("","StubWall", 100+i*10));
+	  OR.addObject(wall);
+	  wall->createAll(System,*stub, 1, *KG, 8);
+	  attachSystem::addToInsertSurfCtrl(System,*KG,*wall);
+	  
+	}
+    }
   return;
 }
 

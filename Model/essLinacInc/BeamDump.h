@@ -40,18 +40,20 @@ class BeamDump : public attachSystem::ContainedComp,
 {
  private:
 
+  const int surfIndex;          ///< Index of surface offset
+  int cellIndex;                ///< Cell index
   std::string baseName;         ///< Base name
 
   int active;                   ///< Build/don't build flag
   int engActive;                ///< Engineering active flag
 
-  int steelMat;                 ///< Steel material
-  int concMat;                  ///< Concrete material
-  int alMat;                    ///< Aluminium material
-  int waterMat;                 ///< Collant Material
-  int airMat;                   ///< Air material
-  int cuMat;                    ///< Cu material
-  int graphiteMat;              ///< Graphite material
+  int    steelMat;              ///< Steel material
+  int    concMat;               ///< Concrete material
+  int    alMat;                 ///< Aluminium material
+  int waterMat; ///< Water Material
+  int airMat; ///< Air material
+  int cuMat; ///< Cu material
+  int graphiteMat; ///< Graphite material
 
   double frontWallLength;       ///< Front wall length (+y, vol 6 in SPLTDISH0001)
   double frontWallHeight;       ///< Front wall height (+z)
@@ -63,10 +65,10 @@ class BeamDump : public attachSystem::ContainedComp,
   double backWallDepth;         ///< Back wall depth (-z)
 
   double frontInnerWallHeight;   ///< pl29
-  double frontInnerWallDepth;    ///< pl29
-  double frontInnerWallLength;   ///< pl29
-  double frontInnerWallHoleRad;  ///< Front inner wall hole radius
-  double backInnerWallLength;    ///< thickness of back inner wal (plate 24+30+31)
+  double frontInnerWallDepth;   ///< pl29
+  double frontInnerWallLength;  ///< pl29
+  double frontInnerWallHoleRad; ////< Front inner wall hole radius
+  double backInnerWallLength;   ///< thickness of back inner wal (plate 24+30+31)
   double backInnerWallGapLength; ///< thickness of gap b/w back inner and outer walls
   double sideInnerWallThick;     ///< thickness of each of the inner side walls (plates 21+27)
   double sideWallThick; ///< outer side wall thick (Concrete)
@@ -79,26 +81,26 @@ class BeamDump : public attachSystem::ContainedComp,
 
   double plate38Depth;          ///< Thickness of Al plate 38
 
-  double roofThick;             ///< Thickness (height) of roof
-  double roofOverhangLength;    ///< Length of overhang of roof
+  double roofThick;           ///< Thickness (height) of roof
+  double roofOverhangLength;  ///< Length of overhang of roof
   double innerRoofThick;        ///< Thickness (height) of inner roof (plates 19 and 20)
 
   double vacPipeFrontInnerWallDist;   ///< distance b/w front inner wall and vacuum pipe
   double vacPipeLength;          ///< vacuum pipe length
   double vacPipeRad;             ///< vacuum pipe radius
   double vacPipeSideWallThick;   ///< vacuum pipe side wall thickness
-  double vacPipeLidRmax;         ///< Outer radius of vacuum pipe lid
-  double vacPipeLid1Length;      ///< Length of the 1st vacuum pipe lid
-  double vacPipeLid2Length;      ///< Length of the 2nd vacuum pipe lid
-  double vacPipeBaseLength;      ///< Length of the vacuum pipe base
+  double vacPipeLidRmax; ///< Outer radius of vacuum pipe lid
+  double vacPipeLid1Length; ///< Length of the 1st vacuum pipe lid
+  double vacPipeLid2Length; ///< Length of the 2nd vacuum pipe lid
+  double vacPipeBaseLength; ///< Length of the vacuum pipe base
   double vacPipeOuterConeOffset; ///< Offset of outer cone with respect to plane 102
   double vacPipeInnerConeTop; ///< Distance b/w top of the inner cone with respect to plane 102
-  double wallThick;             ///< Beam dump wall thick (between two cones)
-  double waterPipeRad;          ///< Water pipe radius
-  double waterPipeLength;       ///< Water pipe length
-  double waterPipeOffsetX;      ///< Water pipe offset along the x-axis
-  double waterPipeOffsetZ;      ///< Water pipe offset along the z-axis
-  double waterPipeDist;         ///< Vertical distance between water pipes
+  double wallThick; ///< Beam dump wall thick (between two cones)
+  double waterPipeRad; ///< Water pipe radius
+  double waterPipeLength; ///< Water pipe length
+  double waterPipeOffsetX; ///< Water pipe offset along the x-axis
+  double waterPipeOffsetZ; ///< Water pipe offset along the z-axis
+  double waterPipeDist; ///< Vertical distance between water pipes
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -114,7 +116,8 @@ class BeamDump : public attachSystem::ContainedComp,
   BeamDump(const std::string&, const std::string&);
   BeamDump(const BeamDump&);
   BeamDump& operator=(const BeamDump&);
-  ~BeamDump();
+  virtual BeamDump* clone() const;
+  virtual ~BeamDump();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 

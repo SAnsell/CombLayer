@@ -36,10 +36,14 @@ namespace essSystem
 */
 
 class FaradayCup : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
+  const std::string baseName; ///< base name (e.g. Linac)
+  const int surfIndex;             ///< Index of surface offset
+  int cellIndex;                ///< Cell index
 
   int active; ///< On/Off switch
   int engActive;                ///< Engineering active flag
@@ -55,17 +59,23 @@ class FaradayCup : public attachSystem::ContainedComp,
   int absMat; ///< Absorber material
   double baseLength; ///< Base length (e1)
 
-  double colLength;             ///< Collector length
+  double colLength; ///< Collector length
   int colMat;                   ///< collector material
 
   int wallMat;                   ///< wall material
-  int airMat;                    ///< air material
+  int airMat; ///< air material
 
-  double shieldRadius;          ///< shield radius
-  double shieldInnerRadius;     ///< shielding inner radius
-  double shieldLength;          ///< shield length
-  double shieldInnerLength;     ///< shielding inner length
-  int shieldMat;                ///< shielding material
+  size_t nShieldLayers; ///< Number of shield layers. No shielding if zero.
+  std::vector<double> shieldWidthLeft; ///< shield width towards x+
+  std::vector<double> shieldWidthRight; ///< Shield width towards x-
+  std::vector<double> shieldHeight; ///< Shield height
+  std::vector<double> shieldDepth; ///< Shield depth
+  std::vector<double> shieldForwardLength; ///< shield length
+  double shieldBackLength;         ///< shield length towards the proton beam origin
+  std::vector<int>    shieldMat;   ///< shielding material
+
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const long int& lpS, const long int& lsS, const size_t&, const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -77,7 +87,7 @@ class FaradayCup : public attachSystem::ContainedComp,
 
  public:
 
-  FaradayCup(const std::string&);
+  FaradayCup(const std::string&,const std::string&);
   FaradayCup(const FaradayCup&);
   FaradayCup& operator=(const FaradayCup&);
   virtual FaradayCup* clone() const;
