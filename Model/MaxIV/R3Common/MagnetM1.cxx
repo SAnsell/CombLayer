@@ -89,14 +89,21 @@ MagnetM1::MagnetM1(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  preDipole(new xraySystem::PreBendPipe("PreBendPipe"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {
+
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  OR.addObject(preDipole);
 }
 
 
@@ -195,7 +202,7 @@ MagnetM1::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -2 3 -4 5 -6 ");
-  makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -2 13 -14 15 -16 (-3:4:-5:6) ");
@@ -244,7 +251,15 @@ MagnetM1::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
+
+
+  preDipole->addInsertCell(getCell("Void"));
+  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
+  preDipole->createAll(System,FC,sideIndex);
+    
+
+
   
   return;
 }
