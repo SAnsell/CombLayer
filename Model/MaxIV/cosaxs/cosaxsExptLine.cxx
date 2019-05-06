@@ -91,6 +91,7 @@
 #include "JawValveCylinder.h"
 #include "cosaxsDiagnosticUnit.h"
 #include "cosaxsDiffPump.h"
+#include "cosaxsTube.h"
 
 #include "cosaxsExptLine.h"
 
@@ -113,7 +114,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   diagUnit(new cosaxsDiagnosticUnit(newName+"DiagnosticUnit")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   diffPump(new cosaxsDiffPump(newName+"DiffPump")),
-  telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem"))
+  telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
+  tube(new cosaxsTube(newName+"Tube"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -130,6 +132,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   OR.addObject(gateB);
   OR.addObject(diffPump);
   OR.addObject(telescopicSystem);
+  OR.addObject(tube);
 }
   
 cosaxsExptLine::~cosaxsExptLine()
@@ -256,7 +259,12 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*telescopicSystem,2);
   telescopicSystem->insertInCell(System,outerCell);
 
-  lastComp=telescopicSystem;
+  tube->setFront(*telescopicSystem,2);
+  tube->createAll(System,*telescopicSystem,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
+  tube->insertInCell(System,outerCell);
+
+  lastComp=tube;
   //  setCell("LastVoid",masterCell->getName());
 
   return;

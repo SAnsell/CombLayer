@@ -57,6 +57,7 @@ namespace xraySystem
 
   class cosaxsDiagnosticUnit;
   class cosaxsDiffPump;
+  class cosaxsTube;
 
 class cosaxsExptLine :
   public attachSystem::CopiedComp,
@@ -87,6 +88,7 @@ class cosaxsExptLine :
   /// Telescopic system - just a pipe with variable length
   /// (so the next component is not attached to this pipe)
   std::shared_ptr<constructSystem::VacuumPipe> telescopicSystem;
+  std::shared_ptr<cosaxsTube> tube;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

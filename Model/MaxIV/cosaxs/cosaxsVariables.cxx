@@ -1083,6 +1083,14 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 
+  // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
+  Control.addVariable(preName+"TubeLength",1676.7+51.65);
+  Control.addVariable(preName+"TubeRadius",50.8); // 50.8 = 101.6/2.0
+  Control.addVariable(preName+"TubeHeight",15.1); // 2del
+  Control.addVariable(preName+"TubeWallThick",3.1); // dummy
+  Control.addVariable(preName+"TubeMainMat","Void");
+  Control.addVariable(preName+"TubeWallMat","Aluminium"); // dummy
+  Control.addVariable(preName+"TubeMainYOffset",0.0);
 }
 
 void
