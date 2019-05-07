@@ -89,7 +89,8 @@
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValveCylinder.h"
-#include "cosaxsDiagnosticUnit.h"
+#include "portItem.h"
+#include "MonoBox.h"
 #include "cosaxsDiffPump.h"
 #include "cosaxsTube.h"
 
@@ -111,7 +112,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   gateA(new constructSystem::GateValve(newName+"GateA")),
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
-  diagUnit(new cosaxsDiagnosticUnit(newName+"DiagnosticUnit")),
+  diagUnit(new xraySystem::MonoBox(newName+"DiagnosticUnit")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   diffPump(new cosaxsDiffPump(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),

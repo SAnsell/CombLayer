@@ -1043,6 +1043,8 @@ exptVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::PipeGenerator PipeGen;
+  setVariable::MonoBoxGenerator VBoxGen;
+
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
@@ -1063,12 +1065,25 @@ exptVariables(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
   JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
 
-  Control.addVariable(preName+"DiagnosticUnitLength",43.0); // measured
-  Control.addVariable(preName+"DiagnosticUnitWidth",22.0); // measured
-  Control.addVariable(preName+"DiagnosticUnitHeight",17.0); // measured
-  Control.addVariable(preName+"DiagnosticUnitWallMat","Aluminium");
-  Control.addVariable(preName+"DiagnosticUnitSideWallThick",1.0); // measured
-  Control.addVariable(preName+"DiagnosticUnitRoofThick",2.48); // measured
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0); // measured
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setAPortCF<CF40>();
+  VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
+
+  // arguments: ystep/width/height/depth/length
+  // height+depth == 452mm  -- 110/ 342
+  VBoxGen.generateBox(Control,preName+"DiagnosticUnit",
+		      0.0,22.0,17.0/2,17.0/2,43.0);
+
+  
+  // Control.addVariable(preName+"DiagnosticUnitLength",43.0); // measured
+  // Control.addVariable(preName+"DiagnosticUnitWidth",22.0); // measured
+  // Control.addVariable(preName+"DiagnosticUnitHeight",17.0); // measured
+  // Control.addVariable(preName+"DiagnosticUnitWallMat","Aluminium");
+  // Control.addVariable(preName+"DiagnosticUnitSideWallThick",1.0); // measured
+  // Control.addVariable(preName+"DiagnosticUnitRoofThick",2.48); // measured
 
   // Gate valve B - flat
   GateGen.setLength(2.5);

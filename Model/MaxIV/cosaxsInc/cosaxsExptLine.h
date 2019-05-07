@@ -55,7 +55,7 @@ namespace xraySystem
     \brief Constructor for the CoSAXS experimental beam line
   */
 
-  class cosaxsDiagnosticUnit;
+  class MonoBox;
   class cosaxsDiffPump;
   class cosaxsTube;
 
@@ -80,7 +80,7 @@ class cosaxsExptLine :
   /// Double slits
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
-  std::shared_ptr<cosaxsDiagnosticUnit>  diagUnit;
+  std::shared_ptr<xraySystem::MonoBox>  diagUnit;
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Differential pumping
