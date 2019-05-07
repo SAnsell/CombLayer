@@ -263,6 +263,37 @@ LineIntersectVisit::Accept(const Geometry::MBrect& Surf)
 }
 
 void
+LineIntersectVisit::Accept(const HeadRule& HR)
+  /*!
+    Process an intersect track
+    \param HR :: HeadRules to Interesect
+  */
+{
+  const std::vector<const Geometry::Surface*> SurfList=
+    this->getSurfaces();
+  for(const Geometry::Surface* SPtr : SurfList)
+    SPtr->acceptVisitor(*this);
+
+  for(size_t i=0;i<PtOut.size();i++)
+    {
+      const int NS=SurfIndex[i]->getName();	    
+      const int pAB=HR.isDirectionValid(PtOut[i],NS);
+      const int mAB=HR.isDirectionValid(PtOut[i],-NS);
+      const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
+      if (pAB!=mAB)  // out going positive surface
+	    {
+	      bestPairValid=normD;
+	      if (dPts[i]>Geometry::zeroTol)
+		D=dPts[i];
+	      surfPtr=surfIndex[i];
+	    }
+	}
+    }
+  
+  return;
+}
+
+void
 LineIntersectVisit::Accept(const Geometry::Torus&)
   /*!
     Process an intersect track
@@ -293,6 +324,7 @@ LineIntersectVisit::procTrack(const Geometry::Surface* surfID)
   // Add stuff from neutReg
   return;
 }
+
 
 // ACCESSORS:
 double
@@ -381,21 +413,34 @@ LineIntersectVisit::getPoint(const std::string& RuleStr,
 {
   ELog::RegMethod RegA("LineIntersect","getPoint(String,Near)");
 
-  clearTrack();
   HeadRule HRule;
   if (!HRule.procString(RuleStr))
     throw ColErr::InvalidLine("RuleStr:",RuleStr,0);
 
+  return getPoint(HRule,nearPt);
+}
+
+Geometry::Vec3D
+LineIntersectVisit::getPoint(HeadRule& HRule,
+			     const Geometry::Vec3D& nearPt) 
+  /*!
+    Calculate the point at the closest point along the line
+    to the surface SPtr
+    \param RuleStr :: Rule descriptor to intersect
+    \param nearPt :: Point ot use to intersect
+    \return Points
+  */
+{
+  ELog::RegMethod RegA("LineIntersect","getPoint(HR,Near)");
+  
+  clearTrack();
   HRule.populateSurf();
-  //  const bool cFlag=HRule.isValid(ATrack.getOrigin());
   const std::vector<const Geometry::Surface*> SVec=
     HRule.getSurfaces();
 
   // Check all surfaces
   for(const Geometry::Surface* SPtr : SVec)
     SPtr->acceptVisitor(*this);
-  // remove if bit
-  //  remove_if(
 
   if (PtOut.empty())
     throw ColErr::EmptyValue<void>("Intersect with "+RuleStr);

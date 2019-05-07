@@ -80,6 +80,7 @@
 
 #include "PreBendPipe.h"
 #include "EPCombine.h"
+#include "Quadrupole.h"
 #include "MagnetM1.h"
 
 namespace xraySystem
@@ -90,13 +91,14 @@ MagnetM1::MagnetM1(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  preDipole(new xraySystem::PreBendPipe("PreBendPipe"))
+  preDipole(new xraySystem::PreBendPipe(keyName+"PreBendPipe")),
+  epCombine(new xraySystem::EPCombine(keyName+"EPCombine")),
+  QFend(new xraySystem::Quadrupole(keyName+"QFend"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {
-
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
 
@@ -104,6 +106,8 @@ MagnetM1::MagnetM1(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
   
   OR.addObject(preDipole);
+  OR.addObject(epCombine);
+  OR.addObject(QFend);
 }
 
 
@@ -165,11 +169,7 @@ MagnetM1::createSurfaces()
   ELog::RegMethod RegA("MagnetM1","createSurface");
 
   // Do outer surfaces (vacuum ports)
-  if (!isActive("front"))
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*blockYStep,Y);
-      setCutSurf("front",SMap.realSurf(buildIndex+1));
-    }
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*blockYStep,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+blockYStep),Y);
 
 
@@ -196,21 +196,19 @@ MagnetM1::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MagnetM1","createObjects");
 
-  const std::string frontSurf(ExternalCut::getRuleStr("front"));
-  
   std::string Out;
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 3 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+    (SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+    (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -2 13 -14 15 -16 ");
-  addOuterSurf(Out+frontSurf);
+    (SMap,buildIndex," 1 -2 13 -14 15 -16 ");
+  addOuterSurf(Out);
 
   return;
 }
@@ -223,12 +221,16 @@ MagnetM1::createLinks()
 {
   ELog::RegMethod RegA("MagnetM1","createLinks");
 
+  // link 0 / 1 from PreDipole / EPCombine
+  setLinkSignedCopy(0,*preDipole,1);
+  setLinkSignedCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
+  setLinkSignedCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
   
-  ExternalCut::createLink("front",*this,0,Origin,Y);
+  setConnect(4,Origin+Y*blockYStep,-Y);
+  setLinkSurf(4,-SMap.realSurf(buildIndex+1));
 
-  // photon/electron
-  setConnect(1,Origin+Y*length,Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setConnect(5,Origin+Y*(length+blockYStep),Y);
+  setLinkSurf(5,SMap.realSurf(buildIndex+2));
 
   return;
 }
@@ -247,19 +249,27 @@ MagnetM1::createAll(Simulation& System,
   ELog::RegMethod RegA("MagnetM1","createAll");
   
   populate(System.getDataBase());
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
+  preDipole->addInsertCell(this->getInsertCells());
+  epCombine->addInsertCell(this->getInsertCells());
   insertObjects(System);
 
-
-  preDipole->addInsertCell(getCell("Void"));
-  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
+  if (isActive("front"))
+    preDipole->copyCutSurf("front",*this,"front");
+  
+  preDipole->addInsertCell(getCells("Void"));
   preDipole->createAll(System,FC,sideIndex);
-    
 
+  epCombine->addInsertCell(getCells("Void"));
+  epCombine->createAll(System,*preDipole,2);
 
+  QFend->addInsertCell(getCells("Outer"));
+  QFend->addInsertCell(getCells("Void"));
+  QFend->createAll(System,*this,0);
   
   return;
 }

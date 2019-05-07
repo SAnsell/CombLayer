@@ -358,6 +358,19 @@ PreBendPipe::createLinks()
 }
 
 void
+PreBendPipe::cutVoid(Simulation& System,
+		     const HeadRule& frontHR,
+		     const HeadRule& backHR)
+  /*!
+    Cut the void cell to place magnets etc
+    \param System :: Simulation 
+    \param frontHR :: front cut surface
+    \param backHR :: back cut surface
+   */
+{
+}
+  
+void
 PreBendPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)

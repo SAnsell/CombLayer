@@ -1985,6 +1985,50 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 
 int
 HeadRule::trackSurf(const Geometry::Vec3D& Org,
+		    const Geometry::Vec3D& Unit)  const
+  /*!
+    Calculate a track of a line to a change in state surface
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \param D :: Distance travelled to surface
+    \return exit surface [signed??]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+
+  MonteCarlo::LineIntersectVisit LI(Org,Unit);
+
+  const std::vector<const Geometry::Surface*> SurfList=
+    this->getSurfaces();
+  for(const Geometry::Surface* SPtr : SurfList)
+    SPtr->acceptVisitor(LI);
+  
+  std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  const std::vector<double>& dPts(LI.getDistance());
+  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+
+
+  for(size_t i=0;i<dPts.size();i++)
+    {
+      const int NS=surfIndex[i]->getName();	    
+      const int pAB=isDirectionValid(IPts[i],NS);
+      const int mAB=isDirectionValid(IPts[i],-NS);
+      const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
+      if (pAB!=mAB)  // out going positive surface
+	    {
+	      bestPairValid=normD;
+	      if (dPts[i]>Geometry::zeroTol)
+		D=dPts[i];
+	      surfPtr=surfIndex[i];
+	    }
+	}
+    }
+      
+  return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
+}
+
+int
+HeadRule::trackSurf(const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& Unit,
 		    double& D) const
   /*!
@@ -1996,7 +2040,6 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurf");
-
 
   MonteCarlo::LineIntersectVisit LI(Org,Unit);
 

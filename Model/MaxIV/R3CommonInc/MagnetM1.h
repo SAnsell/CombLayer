@@ -65,6 +65,8 @@ class MagnetM1 :
   std::shared_ptr<xraySystem::PreBendPipe> preDipole;
   /// Electron/photon combined track
   std::shared_ptr<xraySystem::EPCombine> epCombine;
+  /// Quad [first]
+  std::shared_ptr<xraySystem::Quadrupole> QFend;
 
   
   void populate(const FuncDataBase&);

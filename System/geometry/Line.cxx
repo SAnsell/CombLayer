@@ -26,11 +26,13 @@
 #include <cmath>
 #include <list>
 #include <vector>
+#include <set>
 #include <map>
 #include <stack>
 #include <string>
 #include <algorithm>
 #include <complex>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -41,14 +43,13 @@
 #include "mathSupport.h"
 #include "polySupport.h"
 #include "support.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Transform.h"
+#include "Triple.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "ArbPoly.h"
@@ -61,6 +62,7 @@
 #include "Sphere.h"
 #include "Torus.h"
 #include "Line.h"
+#include "HeadRule.h"
 #include "LineIntersectVisit.h"
 
 namespace Geometry

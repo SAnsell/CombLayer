@@ -48,7 +48,9 @@ class MBrect;
 class Plane;
 class Sphere;
 class Torus;
-  
+
+class HeadRule;
+ 
 class Line 
 {
   
@@ -96,6 +98,7 @@ class Line
   int setLine(const Geometry::Plane&,const Geometry::Plane&);
   
   template<typename T> Geometry::Vec3D interPoint(const T&) const;
+
   size_t intersect(std::vector<Geometry::Vec3D>&,const Quadratic&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const ArbPoly&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Cone&) const;
@@ -106,6 +109,7 @@ class Line
   size_t intersect(std::vector<Geometry::Vec3D>&,const Plane&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Sphere&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Torus&) const;
+  size_t intersect(std::vector<Geometry::Vec3D>&,const HeadRule&) const;
 
   //  int intersect(std::vector<Geometry::Vec3D>&,const Line*) const;
   //  int intersect(std::vector<Geometry::Vec3D>&,const Circle*) const;

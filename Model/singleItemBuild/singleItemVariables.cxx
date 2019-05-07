@@ -165,20 +165,9 @@ SingleItemVariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
 
-  setVariable::QuadrupoleGenerator QGen;
-  QGen.generateQuad(Control,"Quad",0.0,10.0);
 
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator",0.0);
-
-  setVariable::EPCombineGenerator EPCGen;
-  EPCGen.generatePipe(Control,"EPCombine");
-
-  setVariable::PreBendPipeGenerator PBGen;
-  PBGen.generatePipe(Control,"PreBendPipe");
-
-  setVariable::PreDipoleGenerator PDGen;
-  PDGen.generatePipe(Control,"PreDipole",0.0);
 
   setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,"DipoleChamber",0.0);
@@ -189,7 +178,15 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
+  setVariable::PreBendPipeGenerator PBGen;
+  PBGen.generatePipe(Control,"M1BlockPreBendPipe");
+
+  setVariable::EPCombineGenerator EPCGen;
+  EPCGen.generatePipe(Control,"M1BlockEPCombine");
   
+  setVariable::QuadrupoleGenerator QGen;
+  QGen.generateQuad(Control,"M1BlockQFend",20.0,25.0);
+
   return;
 }
 

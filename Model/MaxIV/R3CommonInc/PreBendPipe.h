@@ -84,6 +84,10 @@ class PreBendPipe : public attachSystem::FixedOffset,
   PreBendPipe& operator=(const PreBendPipe&);
   virtual ~PreBendPipe();
 
+  void cutFrontVoid(Simulation& System,const HeadRule&,
+		    const HeadRule&);
+
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

@@ -22,6 +22,7 @@
 #ifndef LineIntersectVisit_h
 #define LineIntersectVisit_h
 
+class HeadRule;
 
 namespace MonteCarlo
 {
@@ -75,6 +76,8 @@ class LineIntersectVisit : public Global::BaseVisit
     void Accept(const Geometry::Sphere&);
     void Accept(const Geometry::Torus&);
 
+    void Accept(const HeadRule&);
+
     /// Clear track
     void clearTrack() 
       { PtOut.clear(); DOut.clear(); SurfIndex.clear(); } 
@@ -99,6 +102,8 @@ class LineIntersectVisit : public Global::BaseVisit
     Geometry::Vec3D getPoint(const Geometry::Surface*,
 			     const Geometry::Vec3D&);
     Geometry::Vec3D getPoint(const std::string&,
+			     const Geometry::Vec3D&);
+    Geometry::Vec3D getPoint(HeadRule&,
 			     const Geometry::Vec3D&);
     /// Get number in intersection
     int getNPoints() const { return static_cast<int>(PtOut.size()); }
