@@ -1068,6 +1068,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiagnosticUnitHeight",17.0); // measured
   Control.addVariable(preName+"DiagnosticUnitWallMat","Aluminium");
   Control.addVariable(preName+"DiagnosticUnitSideWallThick",1.0); // measured
+  Control.addVariable(preName+"DiagnosticUnitRoofThick",2.48); // measured
 
   // Gate valve B - flat
   GateGen.setLength(2.5);
