@@ -97,8 +97,8 @@ class GrateMonoBox :
   GrateMonoBox& operator=(const GrateMonoBox&);
   virtual ~GrateMonoBox();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 
