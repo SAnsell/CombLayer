@@ -108,6 +108,7 @@ cosaxsDiagnosticUnit::cosaxsDiagnosticUnit(const cosaxsDiagnosticUnit& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
+  wallThick(A.wallThick),
   wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -133,6 +134,7 @@ cosaxsDiagnosticUnit::operator=(const cosaxsDiagnosticUnit& A)
       length=A.length;
       width=A.width;
       height=A.height;
+      wallThick=A.wallThick;
       wallMat=A.wallMat;
     }
   return *this;
@@ -168,6 +170,7 @@ cosaxsDiagnosticUnit::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  wallThick=Control.EvalVar<int>(keyName+"WallThick");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
@@ -201,13 +204,27 @@ cosaxsDiagnosticUnit::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
+
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
+    } else
+    {
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
+	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				      wallThick);
     }
   if (!backActive())
     {
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
+
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+    } else
+    {
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
+	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				      -wallThick);
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -215,6 +232,12 @@ cosaxsDiagnosticUnit::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   return;
 }
@@ -231,9 +254,16 @@ cosaxsDiagnosticUnit::createObjects(Simulation& System)
   std::string Out;
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,0,0.0,Out+frontStr+backStr);
+  const std::string frontCompl(frontComplement());
+  const std::string backCompl(backComplement());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  makeCell("MainCell",System,cellIndex++,0,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
   addOuterSurf(Out+frontStr+backStr);
 
   return;
@@ -248,20 +278,20 @@ cosaxsDiagnosticUnit::createLinks()
 {
   ELog::RegMethod RegA("cosaxsDiagnosticUnit","createLinks");
 
-      
+
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect(2,Origin-X*(width/2.0+wallThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect(3,Origin+X*(width/2.0+wallThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
   return;
 }

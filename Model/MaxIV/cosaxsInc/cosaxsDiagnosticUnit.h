@@ -48,6 +48,7 @@ class cosaxsDiagnosticUnit :
   double width;                 ///< Inner width
   double height;                ///< Inner height
 
+  int wallThick; ///< Wall thickness
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
