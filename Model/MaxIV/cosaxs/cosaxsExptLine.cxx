@@ -220,7 +220,8 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   pipeInit->createAll(System,*this,0);
 
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  ELog::EM << "Do I need the line below?" << ELog::endCrit;
+  //outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
 
