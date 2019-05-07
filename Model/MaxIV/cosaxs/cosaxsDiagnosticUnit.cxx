@@ -108,7 +108,7 @@ cosaxsDiagnosticUnit::cosaxsDiagnosticUnit(const cosaxsDiagnosticUnit& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: cosaxsDiagnosticUnit to copy
@@ -133,7 +133,7 @@ cosaxsDiagnosticUnit::operator=(const cosaxsDiagnosticUnit& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      mainMat=A.mainMat;
+      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -169,7 +169,7 @@ cosaxsDiagnosticUnit::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
@@ -232,7 +232,7 @@ cosaxsDiagnosticUnit::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
   Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,Out+frontStr+backStr);
+  makeCell("MainCell",System,cellIndex++,0,0.0,Out+frontStr+backStr);
 
   addOuterSurf(Out+frontStr+backStr);
 

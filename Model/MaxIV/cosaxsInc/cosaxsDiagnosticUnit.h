@@ -44,11 +44,11 @@ class cosaxsDiagnosticUnit :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< height
+  double length;                ///< Inner length
+  double width;                 ///< Inner width
+  double height;                ///< Inner height
 
-  int mainMat;                   ///< main material
+  int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

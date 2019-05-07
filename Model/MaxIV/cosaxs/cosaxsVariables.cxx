@@ -1063,10 +1063,11 @@ exptVariables(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
   JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
 
-  Control.addVariable(preName+"DiagnosticUnitLength",20.0);
-  Control.addVariable(preName+"DiagnosticUnitWidth",10.0);
-  Control.addVariable(preName+"DiagnosticUnitHeight",15.0);
-  Control.addVariable(preName+"DiagnosticUnitMainMat","Aluminium");
+  Control.addVariable(preName+"DiagnosticUnitLength",43.0); // measured
+  Control.addVariable(preName+"DiagnosticUnitWidth",22.0); // measured
+  Control.addVariable(preName+"DiagnosticUnitHeight",17.0); // measured
+  Control.addVariable(preName+"DiagnosticUnitWallMat","Aluminium");
+  Control.addVariable(preName+"DiagnosticUnitWallThick",1.0); // measured
 
   // Gate valve B - flat
   GateGen.setLength(2.5);
