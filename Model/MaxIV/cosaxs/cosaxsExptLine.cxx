@@ -91,6 +91,7 @@
 #include "JawValveCylinder.h"
 #include "portItem.h"
 #include "MonoBox.h"
+#include "FilterHolder.h"
 #include "cosaxsDiffPump.h"
 #include "cosaxsTube.h"
 
@@ -113,6 +114,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
   diagUnit(new xraySystem::MonoBox(newName+"DiagnosticUnit")),
+  filterHolder(new xraySystem::FilterHolder(newName+"DiagnosticUnitFilterHolder")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   diffPump(new cosaxsDiffPump(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
@@ -130,6 +132,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   OR.addObject(doubleSlitA);
   OR.addObject(doubleSlitB);
   OR.addObject(diagUnit);
+  OR.addObject(filterHolder);
   OR.addObject(gateB);
   OR.addObject(diffPump);
   OR.addObject(telescopicSystem);
@@ -245,6 +248,11 @@ cosaxsExptLine::buildObjects(Simulation& System)
   diagUnit->createAll(System,*doubleSlitB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagUnit,2);
   diagUnit->insertInCell(System,outerCell);
+  //monoBox->splitObject(System,2001,outerCell,
+  //                       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+
+  filterHolder->addInsertCell(diagUnit->getCell("Void"));
+  filterHolder->createAll(System,*diagUnit,0);
 
   gateB->setFront(*diagUnit,2);
   gateB->createAll(System,*diagUnit,2);

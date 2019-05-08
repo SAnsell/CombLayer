@@ -1072,9 +1072,18 @@ exptVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(2.5,2.5); // La/Lb
   VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
 
+  const std::string duName(preName+"DiagnosticUnit");
+
   // arguments: ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,preName+"DiagnosticUnit",
+  VBoxGen.generateBox(Control,duName,
 		      0.0,22.0,8.5,8.5,43.0); // measured
+
+  Control.addVariable(duName+"FilterHolderThick",0.8); // measured
+  Control.addVariable(duName+"FilterHolderHeight",1.8);
+  Control.addVariable(duName+"FilterHolderDepth",3.7);
+  Control.addVariable(duName+"FilterHolderWidth",5.75);
+  Control.addVariable(duName+"FilterHolderMat","Stainless304");
+
 
   // Gate valve B - flat
   GateGen.setLength(2.5);

@@ -56,6 +56,7 @@ namespace xraySystem
   */
 
   class MonoBox;
+  class FilterHolder;
   class cosaxsDiffPump;
   class cosaxsTube;
 
@@ -81,6 +82,7 @@ class cosaxsExptLine :
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
   std::shared_ptr<xraySystem::MonoBox>  diagUnit;
+  std::shared_ptr<xraySystem::FilterHolder> filterHolder;
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Differential pumping
