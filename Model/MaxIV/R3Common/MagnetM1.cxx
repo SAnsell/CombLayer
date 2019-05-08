@@ -76,7 +76,8 @@
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "InnerZone.h" 
 
 #include "PreBendPipe.h"
 #include "EPCombine.h"
@@ -247,6 +248,8 @@ MagnetM1::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MagnetM1","createAll");
+
+  int outerCell;
   
   populate(System.getDataBase());
 
@@ -267,9 +270,12 @@ MagnetM1::createAll(Simulation& System,
   epCombine->addInsertCell(getCells("Void"));
   epCombine->createAll(System,*preDipole,2);
 
-  QFend->addInsertCell(getCells("Outer"));
-  QFend->addInsertCell(getCells("Void"));
+
+  MonteCarlo::Object* masterCell=
+    preDipole->getBuildZone().getMaster();
   QFend->createAll(System,*this,0);
+  outerCell=preDipole->getBuildZone().
+    createOuterVoidUnit(System,masterCell,*preDipole,2);
   
   return;
 }

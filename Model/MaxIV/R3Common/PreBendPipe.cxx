@@ -76,7 +76,8 @@
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
+#include "InnerZone.h" 
 
 #include "PreBendPipe.h"
 
@@ -88,7 +89,8 @@ PreBendPipe::PreBendPipe(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  buildZone(*this,cellIndex)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -230,7 +232,7 @@ PreBendPipe::createSurfaces()
   // flange cylinder/planes
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,flangeARadius);
   ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*flangeALength,Y);
-
+  
   ModelSupport::buildCylinder
     (SMap,buildIndex+2007,Origin,Y,flangeBRadius);
   ModelSupport::buildPlane
@@ -249,9 +251,19 @@ PreBendPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PreBendPipe","createObjects");
 
-  const std::string frontSurf(ExternalCut::getRuleStr("front"));
-  
   std::string Out;
+  
+  const std::string frontSurf(ExternalCut::getRuleStr("front"));
+
+  // Construct the inner zone a a innerZone
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 17  ");
+  buildZone.setSurround(HeadRule(Out));
+  buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1001)));
+  buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
+  buildZone.setVoidMat(voidMat);
+
+  MonteCarlo::Object* masterCell=
+    buildZone.constructMasterCell(System);
 
   // cylinder half
   Out=ModelSupport::getComposite
@@ -305,7 +317,7 @@ PreBendPipe::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1001 -101 17 -2007");
-  makeCell("frontOuterVoid",System,cellIndex++,0,0.0,Out);
+  //makeCell("frontOuterVoid",System,cellIndex++,0,0.0,Out);
 
   // back flange
   Out=ModelSupport::getComposite  //(217 210)
@@ -351,26 +363,51 @@ PreBendPipe::createLinks()
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,cylEnd,elecAxis);
-
-
   
   return;
 }
 
 void
-PreBendPipe::cutFrontVoid(Simulation& System,
-			  const HeadRule& frontHR,
-			  const HeadRule& backHR)
+PreBendPipe::addFrontVoidCut(Simulation& System,
+			     const HeadRule& frontHR,
+			     const HeadRule& backHR)
   /*!
     Cut the void cell to place magnets etc
+    Assumption that frontHR and backHR don't cut a boundary
     \param System :: Simulation 
     \param frontHR :: front cut surface
     \param backHR :: back cut surface
    */
 {
+  ELog::RegMethod RegA("PreBendPipe","cutFrontVoid");
+  
+  const Geometry::Vec3D PtA= frontHR.trackPoint(Origin,Y);
+  const Geometry::Vec3D PtB= backHR.trackPoint(Origin,Y);
+  const double D(PtB.Distance(PtA));
+  
+  const std::vector<int> VCells=getCells("frontVoid");
+  for(size_t i=0;i<VCells.size();i++)
+    {
+      const MonteCarlo::Object* OPtr=
+	System.findObject(VCells[i]);
+      // Case 1: PtsA in cell
+      if (OPtr->isValid(PtA))
+	{
+	  if (OPtr->isValid(PtB)) // both valid:
+	    {
+	      // createFrontV(frontHR);
+	      // createBothFront(frontHR,backHR);
+	      // createFront(frontHR,backHR);
+	    }
+	}
+    }
+					    
+
   return;
 }
   
+
+
 void
 PreBendPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,

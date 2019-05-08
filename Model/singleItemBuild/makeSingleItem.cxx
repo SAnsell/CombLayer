@@ -74,6 +74,8 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "InnerZone.h"
+
 #include "World.h"
 #include "AttachSupport.h"
 #include "insertObject.h"

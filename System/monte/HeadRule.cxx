@@ -2144,12 +2144,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
 
-  const std::vector<const Geometry::Surface*> SurfList=
-    this->getSurfaces();
-
-  for(const Geometry::Surface* SPtr : SurfList)
-      SPtr->acceptVisitor(LI);
-
+  
   // IPTS contains non-exit points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
@@ -2180,7 +2175,6 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 	  Pts.push_back(Org+Unit*lambda);
 	}
     }    
-
   return SNum.size();
 }
 

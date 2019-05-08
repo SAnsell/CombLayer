@@ -70,6 +70,9 @@ class PreBendPipe : public attachSystem::FixedOffset,
   Geometry::Vec3D cylEnd;         ///< End of electron bend
   Geometry::Vec3D elecAxis;       ///< Exit axis of electrons
 
+  /// Inner buildzone for inner void
+  attachSystem::InnerZone buildZone;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   
@@ -84,13 +87,12 @@ class PreBendPipe : public attachSystem::FixedOffset,
   PreBendPipe& operator=(const PreBendPipe&);
   virtual ~PreBendPipe();
 
-  void cutFrontVoid(Simulation& System,const HeadRule&,
-		    const HeadRule&);
-
+  void addFrontVoidCut(Simulation& System,const HeadRule&,
+		       const HeadRule&);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-
+  attachSystem::InnerZone& getBuildZone() { return buildZone; }
 };
 
 }

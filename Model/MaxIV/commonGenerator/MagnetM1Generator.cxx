@@ -58,8 +58,8 @@ namespace setVariable
 
 MagnetM1Generator::MagnetM1Generator() :
   blockYStep(1.5),length(229.0),
-  outerVoid(8.0),ringVoid(8.0),baseVoid(8.0),
-  topVoid(8.0),baseThick(5.0),wallThick(5.0),
+  outerVoid(12.0),ringVoid(12.0),baseVoid(12.0),
+  topVoid(12.0),baseThick(8.0),wallThick(6.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults

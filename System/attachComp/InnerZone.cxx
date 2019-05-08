@@ -87,7 +87,7 @@ InnerZone::InnerZone(attachSystem::FixedComp& FRef,
   FCName(FRef.getKeyName()),cellIndex(cRef),
   FCPtr(&FRef),
   CellPtr(dynamic_cast<CellMap*>(&FRef)),
-  voidMat(0)
+  voidMat(0),masterCell(0)
   /*!
     Add a fixed points to the system -- it is expected
     that this can be cast to a cellmap.
@@ -243,6 +243,40 @@ int
 InnerZone::createOuterVoidUnit(Simulation& System,
 			       MonteCarlo::Object* masterCell,
 			       HeadRule& FDivider,
+			       const HeadRule& backDivider)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param BDivider :: Back divider
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createOuterVoidUnit(HR,HR)");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+  
+  Out=surroundHR.display()+
+    FDivider.display()+backDivider.display();
+  
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  FDivider=backDivider;
+  FDivider.makeComplement();
+
+  // make the master cell valid:
+  refrontMasterCell(masterCell,FDivider);
+  return cellIndex-1;
+}
+  
+int
+InnerZone::createOuterVoidUnit(Simulation& System,
+			       MonteCarlo::Object* masterCell,
+			       HeadRule& FDivider,
 			       const attachSystem::FixedComp& FC,
 			       const long int sideIndex)
   /*!
@@ -257,26 +291,11 @@ InnerZone::createOuterVoidUnit(Simulation& System,
 {
   ELog::RegMethod RegA("InnerZone","createOuterVoidUnit(HR)");
 
-    // construct an cell based on previous cell:
-  std::string Out;
-
-  if (!FDivider.hasRule())
-    FDivider=frontHR;
-
   const HeadRule& backDivider=
     (sideIndex) ? FC.getFullRule(-sideIndex) :
     backHR;
-  
-  Out=surroundHR.display()+
-    FDivider.display()+backDivider.display();
-  
-  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-  FDivider=backDivider;
-  FDivider.makeComplement();
-
-  // make the master cell valid:
-  refrontMasterCell(masterCell,FDivider);
-  return cellIndex-1;
+    
+  return createOuterVoidUnit(System,masterCell,FDivider,backDivider);
 }
 
 int
@@ -345,6 +364,29 @@ InnerZone::createNamedOuterVoidUnit(Simulation& System,
   return cellN;
 }
   
+int
+InnerZone::createNamedOuterVoidUnit(Simulation& System,
+				    const std::string& extraName,
+				    MonteCarlo::Object* masterCell,
+				    HeadRule& FDivider,
+				    const HeadRule& BDivider)
+  /*!
+    Construct outer void object main pipe
+    \param System :: Simulation
+    \param extraName :: Name for outer void [in-addition to OuterVoid]
+    \param masterCell :: full master cell
+    \param fRule :: Front rule
+    \param bRule :: Back rule
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","createNamedOuterVoidUnit(HR,HR)");
+  const int cellN=
+    createOuterVoidUnit(System,masterCell,FDivider,BDivider);
+  CellPtr->addCell(extraName,cellN);
+  return cellN;
+}
+  
 void
 InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
 			     const HeadRule& FHR) const
@@ -381,9 +423,9 @@ InnerZone::constructMasterCell(Simulation& System)
   Out+=surroundHR.display() + backHR.display()+ frontHR.display();
   
   CellPtr->makeCell("MasterVoid",System,cellIndex++,voidMat,0.0,Out);
-  MonteCarlo::Object* OPtr= System.findObject(cellIndex-1);
+  masterCell= System.findObject(cellIndex-1);
 
-  return OPtr;
+  return masterCell;
 }
 
 
@@ -401,9 +443,10 @@ InnerZone::constructMasterCell(Simulation& System,
 {
   ELog::RegMethod RegA("InnerZone","constructMasterCell(CC)");
  
-  MonteCarlo::Object* ORef=constructMasterCell(System);
-  CC.insertExternalObject(System,*ORef);
-  return ORef;
+  masterCell=constructMasterCell(System);
+  CC.insertExternalObject(System,*masterCell);
+
+  return masterCell;
 }
 
 

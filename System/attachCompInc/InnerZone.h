@@ -64,6 +64,8 @@ class InnerZone
   HeadRule frontDivider;             ///< Local front divider [if needed]
 
   int voidMat;                       ///< Void material
+
+  MonteCarlo::Object* masterCell;    ///< Current end cell
   
  public:
 
@@ -97,6 +99,17 @@ class InnerZone
 			  MonteCarlo::Object*,
 			  const attachSystem::FixedComp&,
 			  const long int);
+
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
+			  const HeadRule&);
+
+  int createOuterVoidUnit(Simulation&,
+			  MonteCarlo::Object*,
+			  HeadRule&,
+			  const HeadRule&);
+
+
   int createNamedOuterVoidUnit(Simulation&,const std::string&,
 			  MonteCarlo::Object*,
 			  HeadRule&,
@@ -106,6 +119,13 @@ class InnerZone
 			       MonteCarlo::Object*,
 			       const attachSystem::FixedComp&,
 			       const long int);
+  int createNamedOuterVoidUnit(Simulation&,const std::string&,
+			       MonteCarlo::Object*,
+			       const HeadRule&);
+  int createNamedOuterVoidUnit(Simulation&,const std::string&,
+			       MonteCarlo::Object*,
+			       HeadRule&,
+			       const HeadRule&);
 
   
   void refrontMasterCell(MonteCarlo::Object*,
@@ -113,6 +133,8 @@ class InnerZone
 
   MonteCarlo::Object* constructMasterCell(Simulation&);
   MonteCarlo::Object* constructMasterCell(Simulation&,const ContainedComp&);
+
+  MonteCarlo::Object* getMaster() const { return masterCell; }
   
 };
 
