@@ -46,6 +46,11 @@ class FilterHolder : public attachSystem::ContainedComp,
   double height;                ///< Height
   double depth; ///< Depth
 
+  double legWidth; ///< Leg width
+  double legHeight; ///< Leg height
+  double baseWidth; ///< Base width
+  double baseHeight; ///< Base height
+
   int mat;                   ///< Main material
 
   void populate(const FuncDataBase&);

@@ -101,6 +101,10 @@ FilterHolder::FilterHolder(const FilterHolder& A) :
   attachSystem::CellMap(A),
   thick(A.thick),width(A.width),height(A.height),
   depth(A.depth),
+  legWidth(A.legWidth),
+  legHeight(A.legHeight),
+  baseWidth(A.baseWidth),
+  baseHeight(A.baseHeight),
   mat(A.mat)
   /*!
     Copy constructor
@@ -125,6 +129,10 @@ FilterHolder::operator=(const FilterHolder& A)
       width=A.width;
       height=A.height;
       depth=A.depth;
+      legWidth=A.legWidth;
+      legHeight=A.legHeight;
+      baseWidth=A.baseWidth;
+      baseHeight=A.baseHeight;
       mat=A.mat;
     }
   return *this;
@@ -161,6 +169,10 @@ FilterHolder::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
+  legWidth=Control.EvalVar<double>(keyName+"LegWidth");
+  legHeight=Control.EvalVar<double>(keyName+"LegHeight");
+  baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
+  baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -201,6 +213,17 @@ FilterHolder::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
 
+  // leg
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(legWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(legWidth/2.0),X);
+
+  // base
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(baseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(baseWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+25,
+			   Origin-Z*(depth+legHeight+baseHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin-Z*(depth+legHeight),Z);
   return;
 }
 
@@ -215,8 +238,27 @@ FilterHolder::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
+  makeCell("Main",System,cellIndex++,mat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -3 5 -6 ");
+  makeCell("MainVoid1",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 4 -24 5 -6 ");
+  makeCell("MainVoid2",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 26 -5 ");
+  makeCell("Leg",System,cellIndex++,mat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -13 26 -5 ");
+  makeCell("LegVoid1",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 14 -24 26 -5 ");
+  makeCell("LegVoid2",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -24 25 -26 ");
+  makeCell("Base",System,cellIndex++,mat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -24 25 -6 ");
   addOuterSurf(Out);
 
   return;
