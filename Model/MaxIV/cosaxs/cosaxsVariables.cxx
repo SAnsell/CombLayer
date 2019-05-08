@@ -1073,17 +1073,8 @@ exptVariables(FuncDataBase& Control,
   VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
 
   // arguments: ystep/width/height/depth/length
-  // height+depth == 452mm  -- 110/ 342
   VBoxGen.generateBox(Control,preName+"DiagnosticUnit",
-		      0.0,22.0,17.0/2,17.0/2,43.0);
-
-  
-  // Control.addVariable(preName+"DiagnosticUnitLength",43.0); // measured
-  // Control.addVariable(preName+"DiagnosticUnitWidth",22.0); // measured
-  // Control.addVariable(preName+"DiagnosticUnitHeight",17.0); // measured
-  // Control.addVariable(preName+"DiagnosticUnitWallMat","Aluminium");
-  // Control.addVariable(preName+"DiagnosticUnitSideWallThick",1.0); // measured
-  // Control.addVariable(preName+"DiagnosticUnitRoofThick",2.48); // measured
+		      0.0,22.0,8.5,8.5,43.0); // measured
 
   // Gate valve B - flat
   GateGen.setLength(2.5);
