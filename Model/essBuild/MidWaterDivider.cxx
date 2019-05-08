@@ -57,6 +57,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
+#include "geomSupport.h"
 #include "Line.h"
 #include "Rules.h"
 #include "varList.h"
@@ -64,6 +65,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "RuleSupport.h"
+
 #include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
@@ -82,7 +84,6 @@
 #include "CellMap.h"
 #include "AttachSupport.h"
 #include "SurInter.h"
-#include "geomSupport.h"
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "MidWaterDivider.h"

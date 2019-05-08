@@ -91,6 +91,14 @@ class HeadRule
 		double&) const;
   int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		double&,const std::set<int>&) const;
+
+  Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
+			     const Geometry::Vec3D&) const;
+  Geometry::Vec3D trackClosestPoint
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const Geometry::Vec3D&) const;
+
+
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::Vec3D>&,std::vector<int>&) const;

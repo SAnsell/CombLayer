@@ -200,6 +200,19 @@ Line::distance(const Geometry::Vec3D& A) const
   return L.abs();
 }
 
+double
+Line::lambdaDistance(const Geometry::Vec3D& A) const
+  /*!
+    Distance of along a line [signed] to the closest point
+    \param A :: test Point
+    \returns absolute distance (not signed)
+  */
+{
+  const Geometry::Vec3D LP=A-Origin;
+  return LP.dotProd(Direct);
+  
+}
+
 int 
 Line::isValid(const Geometry::Vec3D& A) const
   /*! 
@@ -545,8 +558,6 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
      \return Number of points found by intersection
   */
 {
-  ELog::RegMethod RegA("Line","intersect(Cyl)");
-
   const Geometry::Vec3D Cent=Cyl.getCentre();
   const Geometry::Vec3D Ax=Origin-Cent;
   const Geometry::Vec3D N= Cyl.getNormal();

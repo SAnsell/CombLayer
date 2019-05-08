@@ -22,6 +22,8 @@
 #ifndef Geometry_Line_h
 #define Geometry_Line_h
 
+class HeadRule;
+
 namespace Geometry
 {
 
@@ -48,8 +50,6 @@ class MBrect;
 class Plane;
 class Sphere;
 class Torus;
-
-class HeadRule;
  
 class Line 
 {
@@ -85,7 +85,9 @@ class Line
   Geometry::Vec3D getPoint(const double) const;   ///< gets the point O+lam*N
   Geometry::Vec3D getOrigin() const { return Origin; }   ///< returns the origin
   Geometry::Vec3D getDirect() const { return Direct; }   ///< returns the direction
-  double distance(const Geometry::Vec3D&) const;  ///< distance from line
+  double distance(const Geometry::Vec3D&) const;
+  double lambdaDistance(const Geometry::Vec3D&) const;
+  
   Geometry::Vec3D closestPoint(const Geometry::Vec3D&) const;
   std::pair<Geometry::Vec3D,Geometry::Vec3D>
     closestPoints(const Line&) const; 
