@@ -1096,22 +1096,28 @@ exptVariables(FuncDataBase& Control,
   VBoxGen.generateBox(Control,duName,
 		      0.0,22.0,8.5,8.5,43.0); // measured
 
-  Control.addVariable(duName+"FilterHolderThick",0.8); // measured
-  Control.addVariable(duName+"FilterHolderHeight",1.8);
-  Control.addVariable(duName+"FilterHolderDepth",1.4);
-  Control.addVariable(duName+"FilterHolderWidth",5.75);
-  Control.addVariable(duName+"FilterHolderMat","Stainless304");
-  Control.addVariable(duName+"FilterHolderLegHeight",1.3);
-  Control.addVariable(duName+"FilterHolderLegWidth",1.5);
-  Control.addVariable(duName+"FilterHolderBaseHeight",1.0);
-  Control.addVariable(duName+"FilterHolderBaseWidth",6.5);
-  Control.addVariable(duName+"FilterHolderFoilThick",1.0); // arbitrary
-  Control.addVariable(duName+"FilterHolderFoilMat","Silicon300K"); // arbitrary
-  Control.addVariable(duName+"FilterHolderNWindows",5); // measured
-  Control.addVariable(duName+"FilterHolderWindowHeight",0.6); // measured
-  Control.addVariable(duName+"FilterHolderWindowDepth",0.6); // measured
-  Control.addVariable(duName+"FilterHolderWindowWidth",0.7); // measured
+  Control.addVariable(duName+"FilterHolder1YStep",10.0);
+  Control.addVariable(duName+"FilterHolder1Thick",0.8); // measured
+  Control.addVariable(duName+"FilterHolder1Height",1.8);
+  Control.addVariable(duName+"FilterHolder1Depth",1.4);
+  Control.addVariable(duName+"FilterHolder1Width",5.75);
+  Control.addVariable(duName+"FilterHolder1Mat","Stainless304");
+  Control.addVariable(duName+"FilterHolder1LegHeight",1.3);
+  Control.addVariable(duName+"FilterHolder1LegWidth",1.5);
+  Control.addVariable(duName+"FilterHolder1BaseHeight",1.0);
+  Control.addVariable(duName+"FilterHolder1BaseWidth",6.5);
+  Control.addVariable(duName+"FilterHolder1FoilThick",1.0); // arbitrary
+  Control.addVariable(duName+"FilterHolder1FoilMat","Silicon300K"); // arbitrary
+  Control.addVariable(duName+"FilterHolder1NWindows",5); // measured
+  Control.addVariable(duName+"FilterHolder1WindowHeight",0.6); // measured
+  Control.addVariable(duName+"FilterHolder1WindowDepth",0.6); // measured
+  Control.addVariable(duName+"FilterHolder1WindowWidth",0.7); // measured
 
+  Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder2");
+  Control.addVariable(duName+"FilterHolder2YStep",15.0);
+
+  Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder3");
+  Control.addVariable(duName+"FilterHolder3YStep",20.0);
 
   // Gate valve B - flat
   GateGen.setLength(2.5);

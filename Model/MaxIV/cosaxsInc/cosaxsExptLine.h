@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   cosaxsInc/cosaxsExptLine.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_cosaxsExptLine_h
@@ -82,7 +82,8 @@ class cosaxsExptLine :
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
   std::shared_ptr<xraySystem::MonoBox>  diagUnit;
-  std::shared_ptr<xraySystem::FilterHolder> filterHolder;
+  int nFilterHolders; ///< Number of filter holders
+  std::vector<std::shared_ptr<xraySystem::FilterHolder> > filterHolder;
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Differential pumping
@@ -102,14 +103,14 @@ class cosaxsExptLine :
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   cosaxsExptLine(const std::string&);
   cosaxsExptLine(const cosaxsExptLine&);
   cosaxsExptLine& operator=(const cosaxsExptLine&);
   ~cosaxsExptLine();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

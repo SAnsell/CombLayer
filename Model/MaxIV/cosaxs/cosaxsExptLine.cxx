@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: cosaxs/cosaxsExptLine.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -101,7 +101,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -114,7 +114,6 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
   diagUnit(new xraySystem::MonoBox(newName+"DiagnosticUnit")),
-  filterHolder(new xraySystem::FilterHolder(newName+"DiagnosticUnitFilterHolder")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   diffPump(new cosaxsDiffPump(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
@@ -126,19 +125,18 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(pipeInit);
   OR.addObject(gateA);
   OR.addObject(doubleSlitA);
   OR.addObject(doubleSlitB);
   OR.addObject(diagUnit);
-  OR.addObject(filterHolder);
   OR.addObject(gateB);
   OR.addObject(diffPump);
   OR.addObject(telescopicSystem);
   OR.addObject(tube);
 }
-  
+
 cosaxsExptLine::~cosaxsExptLine()
   /*!
     Destructor
@@ -158,6 +156,8 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+
+  nFilterHolders=Control.EvalDefVar<double>(keyName+"NFilterHolders",3);
 
   return;
 }
@@ -251,8 +251,18 @@ cosaxsExptLine::buildObjects(Simulation& System)
   //monoBox->splitObject(System,2001,outerCell,
   //                       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
-  filterHolder->addInsertCell(diagUnit->getCell("Void"));
-  filterHolder->createAll(System,*diagUnit,0);
+  // filter holders
+  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+  for (size_t i=0; i<nFilterHolders; i++)
+    {
+      std::shared_ptr<xraySystem::FilterHolder>
+	fh(new xraySystem::FilterHolder(newName+"DiagnosticUnitFilterHolder"+
+					std::to_string(i+1)));
+      OR.addObject(fh);
+      fh->addInsertCell(diagUnit->getCell("Void"));
+      fh->createAll(System,*diagUnit,-2);
+      filterHolder.push_back(fh);
+    }
 
   gateB->setFront(*diagUnit,2);
   gateB->createAll(System,*diagUnit,2);
@@ -287,14 +297,14 @@ cosaxsExptLine::createLinks()
    */
 {
   ELog::RegMethod RControl("cosaxsExptLine","createLinks");
-  
+
   setLinkSignedCopy(0,*pipeInit,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
 }
-  
-  
-void 
+
+
+void
 cosaxsExptLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -310,7 +320,7 @@ cosaxsExptLine::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  
+
   buildObjects(System);
   createLinks();
   return;
