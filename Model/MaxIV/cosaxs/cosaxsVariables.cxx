@@ -1053,9 +1053,9 @@ exptVariables(FuncDataBase& Control,
 {
   const std::string preName(beamName+"ExptLine");
 
-  Control.addVariable(preName+"OuterLeft",70.0);
-  Control.addVariable(preName+"OuterRight",50.0);
-  Control.addVariable(preName+"OuterTop",60.0);
+  Control.addVariable(preName+"OuterLeft",80.0);
+  Control.addVariable(preName+"OuterRight",80.0);
+  Control.addVariable(preName+"OuterTop",80.0);
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
@@ -1096,7 +1096,7 @@ exptVariables(FuncDataBase& Control,
   VBoxGen.generateBox(Control,duName,
 		      0.0,22.0,8.5,8.5,43.0); // measured
 
-  Control.addVariable(duName+"FilterHolder1YStep",10.0);
+  Control.addVariable(duName+"FilterHolder1YStep",8.2);
   Control.addVariable(duName+"FilterHolder1Thick",0.8); // measured
   Control.addVariable(duName+"FilterHolder1Height",1.8);
   Control.addVariable(duName+"FilterHolder1Depth",1.4);
@@ -1114,10 +1114,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(duName+"FilterHolder1WindowWidth",0.7); // measured
 
   Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder2");
-  Control.addVariable(duName+"FilterHolder2YStep",15.0);
+  Control.addVariable(duName+"FilterHolder2YStep",2.0);
 
   Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder3");
-  Control.addVariable(duName+"FilterHolder3YStep",20.0);
+  Control.addVariable(duName+"FilterHolder3YStep",2.0);
 
   // Gate valve B - flat
   GateGen.setLength(2.5);
