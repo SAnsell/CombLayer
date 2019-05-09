@@ -58,6 +58,7 @@
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
 #include "QuadrupoleGenerator.h"
+#include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
 #include "PreBendPipeGenerator.h"
@@ -186,6 +187,9 @@ SingleItemVariables(FuncDataBase& Control)
   
   setVariable::QuadrupoleGenerator QGen;
   QGen.generateQuad(Control,"M1BlockQFend",20.0,25.0);
+
+  setVariable::OctupoleGenerator OGen;
+  OGen.generateOcto(Control,"M1BlockOXX",20.0,25.0);
 
   return;
 }

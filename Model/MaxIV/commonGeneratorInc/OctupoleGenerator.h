@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Octupole.h
+ * File:   commonBeamInc/OctupoleGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,33 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Octupole_h
-#define xraySystem_Octupole_h
+#ifndef setVariable_OctupoleGenerator_h
+#define setVariable_OctupoleGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-
-namespace xraySystem
+namespace setVariable
 {
+
 /*!
-  \class Octupole
+  \class OctupoleGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2019
-
-  \brief Octupole for Max-IV
+  \date May 2018
+  \brief OctupoleGenerator for variables
 */
 
-class Octupole : public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class OctupoleGenerator 
 {
  private:
-  
-  const std::string baseName;   ///< Base key
-  
+
   double length;                ///< frame length
 
   double frameRadius;           ///< Gap to start of frame
@@ -58,33 +51,23 @@ class Octupole : public attachSystem::FixedRotate,
 
   double coilRadius;            ///< Radius of coil start
   double coilWidth;             ///< Cross width of coil
-  
-  int poleMat;                     ///< pole piece of magnet
-  int coreMat;                     ///< core of magnet 
-  int coilMat;                     ///< coil material
-  int frameMat;                    ///< Iron material
 
-  HeadRule innerTube;              ///< Inner tube 
-  
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  std::string poleMat;          ///< pole piece of magnet
+  std::string coreMat;          ///< core of magnet 
+  std::string coilMat;          ///< coil material
+  std::string frameMat;         ///< Iron material
 
+  
  public:
 
-  Octupole(const std::string&);
-  Octupole(const std::string&,const std::string&);
-  Octupole(const Octupole&);
-  Octupole& operator=(const Octupole&);
-  virtual ~Octupole();
-
-  /// set innner tube
-  void setInnerTube(const HeadRule& HR) { innerTube=HR; }
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  OctupoleGenerator();
+  OctupoleGenerator(const OctupoleGenerator&);
+  OctupoleGenerator& operator=(const OctupoleGenerator&);
+  virtual ~OctupoleGenerator();
+  
+  
+  virtual void generateOcto(FuncDataBase&,const std::string&,
+			    const double,const double) const;
 
 };
 

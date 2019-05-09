@@ -138,8 +138,9 @@ Octupole::populate(const FuncDataBase& Control)
 
   poleGap=Control.EvalPair<double>(keyName,baseName,"PoleGap");
   poleRadius=Control.EvalPair<double>(keyName,baseName,"PoleRadius");
-  poleWidht=Control.EvalPair<double>(keyName,baseName,"PoleWidth");
+  poleWidth=Control.EvalPair<double>(keyName,baseName,"PoleWidth");
 
+  coilRadius=Control.EvalPair<double>(keyName,baseName,"CoilRadius");
   coilWidth=Control.EvalPair<double>(keyName,baseName,"CoilWidth");
   
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
@@ -179,120 +180,65 @@ Octupole::createSurfaces()
   ELog::RegMethod RegA("Octupole","createSurface");
 
   // mid line
-  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,X);
-  ModelSupport::buildPlane(SMap,buildIndex+2000,Origin,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
+  ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Z);
   
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
 
-  int CN(buildIndex+11);
-  
-  
-  
-  Geometry::Vec3D QY;
+  int CN(buildIndex+1000);
+  // Note there are 16 surfaces on the inner part of the pole peice
   double angle(M_PI*poleYAngle/180.0);
+  for(size_t i=0;i<16;i++)
+    {
+      const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
+      // const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
+
+      // Frame Items:
+      ModelSupport::buildPlane(SMap,CN+1,Origin+QR*frameRadius,QR);
+      ModelSupport::buildPlane
+	(SMap,CN+51,Origin+QR*(frameRadius+frameThick),QR);
+      angle+=M_PI/8.0;
+      CN++;
+    }
+
+  // TRIANGLE DIVIDERS:
+  CN=buildIndex+500;
+  angle=M_PI*(poleYAngle-22.5)/180.0;
   for(size_t i=0;i<8;i++)
     {
-      const Geometry::Vec3D QX=X*cos(angle)+Z*sin(angle);
-      const Geometry::Vec3D QY=X*cos(angle)+Z*sin(angle);
-      
+      const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
+      ModelSupport::buildPlane(SMap,CN+1,Origin,QX);
+      angle+=M_PI/4.0;
+      CN++;
+    }  
 
-  
-  ModelSupport::buildPlane(SMap,buildIndex+13,
-			   Origin-X*(frameThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,
-			   Origin+X*(frameThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,
-			   Origin-Z*(frameThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,
-			   Origin+Z*(frameThick+height/2.0),Z);
-
-
-  // coils:
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(coilLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(coilLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*coilWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*coilWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(vertGap/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(vertGap/2.0),Z);
-  // corners:
-  const Geometry::Vec3D LFACent
-    (Origin-X*(coilWidth-coilCornerRad)-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D LFBCent
-    (Origin-X*coilCornerRad-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D LBACent
-    (Origin-X*(coilWidth-coilCornerRad)+Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D LBBCent
-    (Origin-X*coilCornerRad+Y*(coilLength/2.0-coilCornerRad));
-
-  const Geometry::Vec3D RFACent
-    (Origin+X*(coilWidth-coilCornerRad)-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D RFBCent
-    (Origin+X*coilCornerRad-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D RBACent
-    (Origin+X*(coilWidth-coilCornerRad)+Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D RBBCent
-    (Origin+X*coilCornerRad+Y*(coilLength/2.0-coilCornerRad));
-
-  
-  ModelSupport::buildPlane(SMap,buildIndex+111,LFACent,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+112,LBACent,Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+113,LFACent,X);
-  ModelSupport::buildPlane(SMap,buildIndex+114,LFBCent,X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+133,RFACent,X);
-  ModelSupport::buildPlane(SMap,buildIndex+134,RFBCent,X);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+117,LFACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+127,LFBCent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+118,LBACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+128,LBBCent,Z,coilCornerRad);
-  
-  ModelSupport::buildCylinder(SMap,buildIndex+137,RFACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+147,RFBCent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+138,RBACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+148,RBBCent,Z,coilCornerRad);
-
-
-  // Pole pieces  
-  // gap to centre:
-  const double ang[]={poleYAngle,180-poleYAngle,-poleYAngle,180.0+poleYAngle};
-  const double CGap(poleRadius-
-		    sqrt(poleRadius*poleRadius-poleWidth*poleWidth/4.0));
-	  
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(poleLength/2.0),Y);
-  addSurf("FrontQuadPole",SMap.realSurf(buildIndex+201));
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(poleLength/2.0),Y);
-  addSurf("BackQuadPole",-SMap.realSurf(buildIndex+202));
-  
-  int CI(buildIndex+200);
-  for(size_t i=0;i<2;i++)
+  // MAIN POLE PIECES:
+  angle=M_PI*poleYAngle/180.0;
+  CN=buildIndex+2000;
+  for(size_t i=0;i<8;i++)
     {
-      const Geometry::Vec3D ZOrg((!i) ? Origin-Z*poleZStep : Origin+Z*poleZStep);
-      for(size_t j=0;j<2;j++)
-	{
-	  // centre of flat part
-	  const Geometry::Quaternion QR=
-	    Geometry::Quaternion::calcQRotDeg(ang[i*2+j],Y);
-	  
-	  Geometry::Vec3D AX(X);
-	  Geometry::Vec3D AZ(Z);
-	  QR.rotate(AX);
-	  QR.rotate(AZ);
-	  
-	  Geometry::Vec3D fPoint(ZOrg+AX*(CGap+poleStep));
-	  // centre of cylinder
-	  Geometry::Vec3D cPoint(ZOrg+AX*(poleStep+poleRadius));
-	  
-	  ModelSupport::buildPlane(SMap,CI+3,ZOrg-AZ*(poleWidth/2.0),AZ);
-	  ModelSupport::buildPlane(SMap,CI+4,ZOrg+AZ*(poleWidth/2.0),AZ);
-	  ModelSupport::buildCylinder(SMap,CI+7,cPoint,Y,poleRadius);
-	  ModelSupport::buildPlane(SMap,CI+6,fPoint,AX);
-	  CI+=100;
-	}
-    }
+      const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
+      const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
+      // Coil Items:
+      ModelSupport::buildPlane(SMap,CN+3,Origin-QX*(coilWidth/2.0),QX);
+      ModelSupport::buildPlane(SMap,CN+4,Origin+QX*(coilWidth/2.0),QX);
+      ModelSupport::buildPlane(SMap,CN+1,Origin+QR*coilRadius,QR);
+
+      // Pole Items:
+      ModelSupport::buildPlane(SMap,CN+103,Origin-QX*(poleWidth/2.0),QX);
+      ModelSupport::buildPlane(SMap,CN+104,Origin+QX*(poleWidth/2.0),QX);
+
+
+      const Geometry::Vec3D CPt(Origin+QR*(poleGap+poleRadius));
+      ModelSupport::buildCylinder(SMap,CN+107,CPt,Y,poleRadius);
+
+      ModelSupport::buildPlane(SMap,CN+101,CPt,QR);
+      
+      angle+=M_PI/4.0;
+      CN+=10;
+    }  
   return;
 }
 
@@ -306,117 +252,40 @@ Octupole::createObjects(Simulation& System)
   ELog::RegMethod RegA("Octupole","createObjects");
 
   std::string Out;
+  
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,
+     "1M -2M -51 -52 -53 -54 -55 -56 -57 -58 -59 -60 -61 -62 -63 -64 -65 -66 ");
+  addOuterSurf(Out);
+  
+  Out+=ModelSupport::getComposite(SMap,buildIndex+1000,
+			" (1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16) ");
+
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "101 -1 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("FFrame",System,cellIndex++,0,0.0,Out);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-102 2 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("BFrame",System,cellIndex++,0,0.0,Out);
+  /// create triangles
+  const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
 
-  std::string TB[2];
-  TB[0]=ModelSupport::getComposite(SMap,buildIndex," -105 5 ");
-  TB[1]=ModelSupport::getComposite(SMap,buildIndex," 106 -6 ");
-  for(size_t i=0;i<2;i++)
+  Out=ModelSupport::getComposite
+	  (SMap,buildIndex,"501 -502 -1016 -1001 -1002 ");
+  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB);
+  
+  int CN(buildIndex+1);
+  int TN(buildIndex+1);
+  for(size_t i=1;i<7;i++)
     {
-      // Left  coil
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "101 -102 103 -1000 "
-				     "(-117 : 111 : 113) "
-				     "(-118 : -112 : 113) "
-				     "(-127 : 111 : -114) "
-				     "(-128 : -112 : -114) ");
-      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,Out+TB[i]);
-      
-      // corners for coils
-      Out=ModelSupport::getComposite(SMap,buildIndex,"103 101 117 -111 -113 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"103 -102 118 112 -113 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-1000 101 127 -111 114 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-1000 -102 128  112 114 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      
-      // Right Lower coil
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "101 -102 -104 1000  "
-				     "(-137 : 111 : -133) "
-				     "(-138 : -112 : -133) "
-				     "(-147 : 111 : 134) "
-				     "(-148 : -112 : 134) ");
-      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,Out+TB[i]);
-  
-      // corners for coils
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-104 101 137 -111 133 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-104 -102 138 112 133 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "1000 101 147 -111 -134 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "1000 -102 148  112 -134 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-
-    }
-  // Now make edge voids:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 3 -103 5 -6 ");
-  makeCell("LEdge",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -4 5 -6 ");
-  makeCell("REdge",System,cellIndex++,0,0.0,Out);
-
-  // Pole Pieces
-  const std::string ICell=innerTube.display();
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 201 -202 203 -204 (206:-207) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
-  makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out+ICell);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 201 -202 303 -304 (306:-307) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
-  makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out+ICell);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 201 -202 403 -404 (406:-407) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
-  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out+ICell);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 201 -202 503 -504 (506:-507) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
-  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
-
-  if (poleLength<coilLength-Geometry::zeroTol)
-    {
+      // three index points
       Out=ModelSupport::getComposite
-	(SMap,buildIndex,"105 -106 202 -102 103 -104 ");
-      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,Out+ICell);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
-      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out+ICell);
+	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
+	
+      makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB);
+      CN+=2;
+      TN++;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
-  addOuterSurf(Out);      
-
+  Out=ModelSupport::getComposite
+	  (SMap,buildIndex,"508 -501 -1014 -1015 -1016 ");
+  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB);	
+      
   return;
 }
 
@@ -427,20 +296,6 @@ Octupole::createLinks()
    */
 {
   ELog::RegMethod RegA("Octupole","createLinks");
-
-  FixedComp::setConnect(0,Origin-Y*(coilLength/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(coilLength/2.0),Y);     
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);     
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);     
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);     
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);     
-
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+101));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
   
   return;
 }
@@ -468,4 +323,4 @@ Octupole::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE epbSystem
+}  // NAMESPACE xraySystem

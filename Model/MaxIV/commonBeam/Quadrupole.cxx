@@ -521,4 +521,4 @@ Quadrupole::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE epbSystem
+}  // NAMESPACE xraySystem
