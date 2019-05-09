@@ -1089,6 +1089,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(duName+"FilterHolderBaseWidth",6.5);
   Control.addVariable(duName+"FilterHolderFoilThick",1.0); // arbitrary
   Control.addVariable(duName+"FilterHolderFoilMat","Silicon300K"); // arbitrary
+  Control.addVariable(duName+"FilterHolderNWindows",5); // measured
+  Control.addVariable(duName+"FilterHolderWindowHeight",0.6); // measured
+  Control.addVariable(duName+"FilterHolderWindowDepth",0.6); // measured
+  Control.addVariable(duName+"FilterHolderWindowWidth",0.7); // measured
 
 
   // Gate valve B - flat

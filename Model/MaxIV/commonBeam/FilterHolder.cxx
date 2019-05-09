@@ -107,6 +107,10 @@ FilterHolder::FilterHolder(const FilterHolder& A) :
   baseHeight(A.baseHeight),
   foilThick(A.foilThick),
   foilMat(A.foilMat),
+  nWindows(A.nWindows),
+  wWidth(A.wWidth),
+  wHeight(A.wHeight),
+  wDepth(A.wDepth),
   mat(A.mat)
   /*!
     Copy constructor
@@ -137,6 +141,10 @@ FilterHolder::operator=(const FilterHolder& A)
       baseHeight=A.baseHeight;
       foilThick=A.foilThick;
       foilMat=A.foilMat;
+      nWindows=A.nWindows;
+      wWidth=A.wWidth;
+      wHeight=A.wHeight;
+      wDepth=A.wDepth;
       mat=A.mat;
     }
   return *this;
@@ -179,6 +187,10 @@ FilterHolder::populate(const FuncDataBase& Control)
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
   foilThick=Control.EvalVar<double>(keyName+"FoilThick");
   foilMat=ModelSupport::EvalMat<int>(Control,keyName+"FoilMat");
+  nWindows=Control.EvalVar<int>(keyName+"NWindows");
+  wWidth=Control.EvalVar<double>(keyName+"WindowWidth");
+  wHeight=Control.EvalVar<double>(keyName+"WindowHeight");
+  wDepth=Control.EvalVar<double>(keyName+"WindowDepth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -235,6 +247,29 @@ FilterHolder::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+31,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+1),
 				  -foilThick);
+
+  // windows
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(wDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(wHeight),Z);
+
+  const double dividerWidth((width-wWidth*nWindows)/(nWindows+1));
+  double dx(0.0);
+  int SI = buildIndex+40;
+  SMap.addMatch(SI-10+4,SMap.realSurf(buildIndex+3));
+
+  for (size_t i=0; i<nWindows; i++)
+    {
+      dx += dividerWidth;
+      ModelSupport::buildPlane(SMap,SI+3,
+			       Origin-X*(width/2.0-dx),X);
+      dx += wWidth;
+      ModelSupport::buildPlane(SMap,SI+4,
+			       Origin-X*(width/2.0-dx),X);
+
+      SI += 10;
+    }
+  SMap.addMatch(SI+3,SMap.realSurf(buildIndex+4));
+
   return;
 }
 
@@ -247,9 +282,29 @@ FilterHolder::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FilterHolder","createObjects");
 
-  std::string Out;
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("Main",System,cellIndex++,mat,0.0,Out);
+  std::string Out, side;
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -45 ");
+  makeCell("MainLow",System,cellIndex++,mat,0.0,Out);
+
+  // windows
+  side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 45 -46 ");
+  size_t SI(buildIndex+40);
+  for (size_t i=0; i<=nWindows; i++)
+    {
+      Out=ModelSupport::getComposite(SMap,SI-10,SI," 4 -3M ");
+      System.addCell(cellIndex++,mat,0,Out+side);
+      
+      if (i!=nWindows)
+	{
+	  Out=ModelSupport::getComposite(SMap,SI," 3 -4 ");
+	  System.addCell(cellIndex++,0,0,Out+side);
+	}
+      
+      SI += 10;
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 46 -6 ");
+  makeCell("MainUp",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -3 5 -6 ");
   makeCell("MainVoid1",System,cellIndex++,0,0.0,Out);
