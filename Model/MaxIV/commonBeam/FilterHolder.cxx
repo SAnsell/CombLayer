@@ -105,6 +105,8 @@ FilterHolder::FilterHolder(const FilterHolder& A) :
   legHeight(A.legHeight),
   baseWidth(A.baseWidth),
   baseHeight(A.baseHeight),
+  foilThick(A.foilThick),
+  foilMat(A.foilMat),
   mat(A.mat)
   /*!
     Copy constructor
@@ -133,6 +135,8 @@ FilterHolder::operator=(const FilterHolder& A)
       legHeight=A.legHeight;
       baseWidth=A.baseWidth;
       baseHeight=A.baseHeight;
+      foilThick=A.foilThick;
+      foilMat=A.foilMat;
       mat=A.mat;
     }
   return *this;
@@ -173,6 +177,8 @@ FilterHolder::populate(const FuncDataBase& Control)
   legHeight=Control.EvalVar<double>(keyName+"LegHeight");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
+  foilThick=Control.EvalVar<double>(keyName+"FoilThick");
+  foilMat=ModelSupport::EvalMat<int>(Control,keyName+"FoilMat");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -224,6 +230,11 @@ FilterHolder::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+25,
 			   Origin-Z*(depth+legHeight+baseHeight),Z);
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin-Z*(depth+legHeight),Z);
+
+  // filter
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+31,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+1),
+				  -foilThick);
   return;
 }
 
@@ -258,7 +269,20 @@ FilterHolder::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -24 25 -26 ");
   makeCell("Base",System,cellIndex++,mat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 23 -24 25 -6 ");
+  // filter
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 3 -4 5 -6 ");
+  makeCell("Filter",System,cellIndex++,foilMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 23 -3 5 -6 ");
+  makeCell("FilterVoid1",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 4 -24 5 -6 ");
+  makeCell("FilterVoid2",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -1 23 -24 25 -5 ");
+  makeCell("FilterVoid2",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -2 23 -24 25 -6 ");
   addOuterSurf(Out);
 
   return;

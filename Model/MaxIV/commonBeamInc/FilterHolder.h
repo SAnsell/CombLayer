@@ -51,6 +51,9 @@ class FilterHolder : public attachSystem::ContainedComp,
   double baseWidth; ///< Base width
   double baseHeight; ///< Base height
 
+  double foilThick; ///< Foil thickness
+  int foilMat; ///< Foil material
+
   int mat;                   ///< Main material
 
   void populate(const FuncDataBase&);
