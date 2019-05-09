@@ -3,7 +3,7 @@
  
  * File:   processInc/generateSurf.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef ModelSupport_generateSurf_h
@@ -74,6 +74,11 @@ Geometry::Cone*
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,
 	  const Geometry::Vec3D&,const Geometry::Vec3D&,
 	  const Geometry::Vec3D&);
+
+Geometry::Cone* 
+buildCone(surfRegister&,const int,
+	  const Geometry::Vec3D&,const double,
+	  const Geometry::Vec3D&,const double);
 
 Geometry::Cone* 
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,

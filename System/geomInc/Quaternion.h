@@ -33,7 +33,7 @@ namespace Geometry
   \date July 2008 
 
   This is a quaterion system, it allows 
-  it to be transported into 
+  rotations and other basic rotations. 
 */
 
 class Quaternion

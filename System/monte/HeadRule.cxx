@@ -1954,6 +1954,53 @@ HeadRule::procString(const std::string& Line)
   return 1; 
 }
 
+Geometry::Vec3D
+HeadRule::trackPoint(const Geometry::Vec3D& Org,
+		     const Geometry::Vec3D& VUnit) const
+  /*!
+    Calculate a track of a line to a head rule 
+    \param Org :: Origin of line
+    \param VUnit :: Direction of line
+    \return Exit point
+    \throw SizeError if no single point 
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackPoint");
+
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
+
+  if (Pts.size()!=1)
+    throw ColErr::MisMatch<size_t>
+      (Pts.size(),1,"Non-signular point intersect");
+  
+  return Pts.front();
+}
+
+Geometry::Vec3D
+HeadRule::trackClosestPoint(const Geometry::Vec3D& Org,
+			    const Geometry::Vec3D& VUnit,
+			    const Geometry::Vec3D& targetPt) const
+  /*!
+    Calculate a track of a line to a head rule 
+    \param Org :: Origin of line
+    \param VUnit :: Direction of line
+    \param TargetPt :: Target point
+    \return Exit point
+
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackPoint");
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+
+  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
+  if (Pts.empty())
+    throw ColErr::EmptyContainer("No points found");
+
+  const size_t index=SurInter::closestPt(Pts,targetPt);
+  return Pts[index];
+}
+
 int
 HeadRule::trackSurf(const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& Unit,
@@ -1967,8 +2014,8 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     \return exit surface [signed??]
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurf");
-
+  ELog::RegMethod RegA("HeadRule","trackSurf")
+;
   Geometry::Vec3D Pt(Org);
   D=0.0;
   double DD;
@@ -1983,6 +2030,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   return SN;
 }
 
+
 int
 HeadRule::trackSurf(const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& Unit,
@@ -1996,7 +2044,6 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurf");
-
 
   MonteCarlo::LineIntersectVisit LI(Org,Unit);
 
@@ -2094,14 +2141,10 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
 
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
 
-  const std::vector<const Geometry::Surface*> SurfList=
-    this->getSurfaces();
-
-  for(const Geometry::Surface* SPtr : SurfList)
-      SPtr->acceptVisitor(LI);
-
+  
   // IPTS contains non-exit points
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
@@ -2132,7 +2175,6 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 	  Pts.push_back(Org+Unit*lambda);
 	}
     }    
-
   return SNum.size();
 }
 

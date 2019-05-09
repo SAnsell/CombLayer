@@ -3,7 +3,7 @@
  
  * File:   epbBuild/Building.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
+#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
@@ -69,6 +70,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h" 
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+
 #include "Building.h"
 
 namespace epbSystem
@@ -76,7 +80,8 @@ namespace epbSystem
 
 Building::Building(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -85,6 +90,7 @@ Building::Building(const std::string& Key) :
 
 Building::Building(const Building& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   height(A.height),
   depth(A.depth),width(A.width),length(A.length),
   floorThick(A.floorThick),wallThick(A.wallThick),
@@ -107,6 +113,7 @@ Building::operator=(const Building& A)
     {
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       height=A.height;
       depth=A.depth;
       width=A.width;
@@ -126,17 +133,16 @@ Building::~Building()
 {}
 
 void
-Building::populate(const Simulation& System)
+Building::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database
   */
 {
   ELog::RegMethod RegA("Building","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
   FixedOffset::populate(Control);
-
+  
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -152,16 +158,19 @@ Building::populate(const Simulation& System)
 }
 
 void
-Building::createUnitVector(const attachSystem::FixedComp& FC)
+Building::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
-    \param FC :: TwinComp to attach to
+    \param FC :: FixedComp to attach to
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Building","createUnitVector");
-  FixedComp::createUnitVector(FC);
-  applyOffset();
 
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+  
   return;
 }
 
@@ -198,16 +207,17 @@ Building::createObjects(Simulation& System)
   ELog::RegMethod RegA("Building","createObjects");
 
   std::string Out;
-  // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
-  addOuterSurf(Out);      
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));
+  makeCell("Void",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "1 -2 13 -14 15 -16 (-3:4:-5:6)");
-  System.addCell(MonteCarlo::Object(cellIndex++,concMat,0.0,Out));
+  makeCell("Walls",System,cellIndex++,concMat,0.0,Out);
+
+  // Outer walls
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 13 -14 15 -16 ");
+  addOuterSurf(Out);      
 
   return;
 }
@@ -240,17 +250,19 @@ Building::createLinks()
 
 void
 Building::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed point track ( epbline)
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Building","createAll");
   
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

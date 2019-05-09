@@ -61,6 +61,10 @@ namespace xraySystem
   class PreDipole;
   class DipoleChamber;
 
+  class PreBendPipe;
+  class EPSeparator;
+  class EPCombine;
+  class R3ChokeChamber;
     
   /*!
     \class balderFrontEnd
@@ -87,9 +91,18 @@ class R3FrontEnd :
   
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
-  
+
   /// dipole connection pipe
-  std::shared_ptr<xraySystem::PreDipole> preDipole;
+  std::shared_ptr<xraySystem::PreBendPipe> preDipole;
+  /// Electron/photon combined track
+  std::shared_ptr<xraySystem::EPCombine> epCombine;
+  /// Electron/photon separator to choke 1
+  std::shared_ptr<xraySystem::EPSeparator> epSeparator;
+  /// Electron/photon separator to choke 1
+  std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
+
+  /// dipole connection pipe
+  //  std::shared_ptr<xraySystem::PreDipole> preDipole;
   /// dipole connection pipe
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe

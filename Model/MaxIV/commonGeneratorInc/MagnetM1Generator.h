@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/EPSeparatorGenerator.h
+ * File:   commonBeamInc/MagnetM1Generator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_EPSeparatorGenerator_h
-#define setVariable_EPSeparatorGenerator_h
+#ifndef setVariable_MagnetM1Generator_h
+#define setVariable_MagnetM1Generator_h
 
 class FuncDataBase;
 
@@ -28,48 +28,41 @@ namespace setVariable
 {
 
 /*!
-  \class EPSeparatorGenerator
+  \class MagnetM1Generator
   \version 1.0
   \author S. Ansell
   \date May 2018
-  \brief EPSeparatorGenerator for variables
+  \brief MagnetM1Generator for variables
 */
 
-class EPSeparatorGenerator 
+class MagnetM1Generator 
 {
  private:
 
+  double blockYStep;            ///< Step forward
   double length;                ///< frame length
 
-  double photonXStep;            ///< Initial photon gap
-  double electronXStep;          ///< Initial electorn gap  
-  double photonXYAngle;          ///< XY angle of electron beam to proton
-  double electronXYAngle;        ///< XY angle of electron beam to proton
+  double outerVoid;             ///< Size of outer void gap
+  double ringVoid;             ///< Size of outer void gap
+  double topVoid;             ///< Size of outer void gap
+  double baseVoid;             ///< Size of outer void gap
 
-  double photonRadius;           ///< Photon radius    
-  double electronRadius;         ///< Electron radius
+  double baseThick;              ///< base thickness
+  double wallThick;              ///< side wall thickness
 
-  double wallXStep;              ///< Outer wall step
-  double wallWidth;              ///< Outer wall box
-  double wallHeight;             ///< Outer wall box
 
-  double flangeRadius;           ///< flange  radius
-  double flangeLength;           ///< flange length
-  
   std::string voidMat;                    ///< void material
   std::string wallMat;                    ///< wall material
-  std::string flangeMat;                  ///< Port material
 
  public:
 
-  EPSeparatorGenerator();
-  EPSeparatorGenerator(const EPSeparatorGenerator&);
-  EPSeparatorGenerator& operator=(const EPSeparatorGenerator&);
-  virtual ~EPSeparatorGenerator();
+  MagnetM1Generator();
+  MagnetM1Generator(const MagnetM1Generator&);
+  MagnetM1Generator& operator=(const MagnetM1Generator&);
+  virtual ~MagnetM1Generator();
   
   
-  virtual void generatePipe(FuncDataBase&,const std::string&,
-			    const double) const;
+  virtual void generateBlock(FuncDataBase&,const std::string&) const;
 
 };
 

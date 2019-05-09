@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3CommonInc/EPSeparator.h
+ * File:   R3CommonInc/MagnetM1.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_EPSeparator_h
-#define xraySystem_EPSeparator_h
+#ifndef xraySystem_MagnetM1_h
+#define xraySystem_MagnetM1_h
 
 class Simulation;
 
@@ -28,50 +28,47 @@ class Simulation;
 namespace xraySystem
 {
 /*!
-  \class EPSeparator
+  \class MagnetM1
   \version 1.0
   \author S. Ansell
   \date January 2019
 
-  \brief EPSeparator for Max-IV 
+  \brief Magnet block M1 
 
-  This is built relative to the proton channel
+  This builds the M1 Magnet block around the EPCombine/EPSeparator
+
 */
 
-class EPSeparator : public attachSystem::FixedOffset,
+class MagnetM1 :
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
  private:
-  
+
+  double blockYStep;            ///< Step forward
   double length;                ///< frame length
 
-  double photonXStep;            ///< Initial photon gap
-  double electronXStep;          ///< Initial electorn gap  
-  double electronXYAngle;        ///< XY angle of electron beam to proton
+  double outerVoid;             ///< Size of outer void gap
+  double ringVoid;             ///< Size of outer void gap
+  double topVoid;             ///< Size of outer void gap
+  double baseVoid;             ///< Size of outer void gap
 
-  double electronRadius;         ///< Electron radius
-  double photonRadius;           ///< Photon radius
-
-  double wallXStep;              ///< Outer wall step
-  double wallWidth;              ///< Outer wall box
-  double wallHeight;             ///< Outer wall box
-
-  double flangeRadius;           ///< flange  radius
-  double flangeLength;           ///< flange length
+  double baseThick;              ///< base thickness
+  double wallThick;              ///< side wall thickness
   
   int voidMat;                    ///< void material
   int wallMat;                    ///< wall material
-  int flangeMat;                  ///< Port material
 
-  bool epPairSet;                 ///< Setting of phot/elec Origin.
-  Geometry::Vec3D photOrg;        ///< Photon origin
-  Geometry::Vec3D elecOrg;        ///< Electron origin
+  /// dipole connection pipe
+  std::shared_ptr<xraySystem::PreBendPipe> preDipole;
+  /// Electron/photon combined track
+  std::shared_ptr<xraySystem::EPCombine> epCombine;
+  /// Quad [first]
+  std::shared_ptr<xraySystem::Quadrupole> QFend;
+
   
-  Geometry::Vec3D elecXAxis;      ///< Electron X-axis
-  Geometry::Vec3D elecYAxis;      ///< Electron beam axis
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   
@@ -81,13 +78,11 @@ class EPSeparator : public attachSystem::FixedOffset,
 
  public:
 
-  EPSeparator(const std::string&);
-  EPSeparator(const EPSeparator&);
-  EPSeparator& operator=(const EPSeparator&);
-  virtual ~EPSeparator();
+  MagnetM1(const std::string&);
+  MagnetM1(const MagnetM1&);
+  MagnetM1& operator=(const MagnetM1&);
+  virtual ~MagnetM1();
 
-  void setEPOriginPair(const attachSystem::FixedComp&,const long int,
-		       const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

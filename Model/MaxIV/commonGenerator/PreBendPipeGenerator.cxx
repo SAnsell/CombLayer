@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/EPSeparatorGenerator.cxx
+ * File:   commonBeam/PreBendPipeGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -52,19 +52,22 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "EPSeparatorGenerator.h"
+#include "PreBendPipeGenerator.h"
 
 namespace setVariable
 {
 
-EPSeparatorGenerator::EPSeparatorGenerator() :
-  length(43.5),photonXStep(-0.72),electronXStep(1.817),
-  photonXYAngle(0.0),electronXYAngle(1.5),
-  photonRadius(0.3),electronRadius(1.1),
-  wallXStep(1.8),wallWidth(6.25),
-  wallHeight(2.65),
-  flangeRadius(CF63::flangeRadius),
-  flangeLength(CF63::flangeLength),
+PreBendPipeGenerator::PreBendPipeGenerator() :
+  length(205.5),radius(1.10),
+  straightLength(109.4),
+  wallThick(0.1),
+  electronRadius(1910.0),
+  electronAngle(1.5),
+
+  flangeARadius(CF50::flangeRadius),
+  flangeALength(CF50::flangeLength),
+  flangeBRadius(CF50::flangeRadius),
+  flangeBLength(CF50::flangeLength),
   voidMat("Void"),wallMat("Copper"),
   flangeMat("Stainless304")
   /*!
@@ -72,16 +75,15 @@ EPSeparatorGenerator::EPSeparatorGenerator() :
   */
 {}
   
-EPSeparatorGenerator::~EPSeparatorGenerator() 
+PreBendPipeGenerator::~PreBendPipeGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
-				   const std::string& keyName,
-				   const double yStep) const
+PreBendPipeGenerator::generatePipe(FuncDataBase& Control,
+				 const std::string& keyName) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -89,24 +91,24 @@ EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("EPSeparatorGenerator","generateColl");
+  ELog::RegMethod RegA("PreBendPipeGenerator","generateColl");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"PhotonXStep",photonXStep);
-  Control.addVariable(keyName+"ElectronXStep",electronXStep);
-  Control.addVariable(keyName+"PhotonXYAngle",photonXYAngle);
-  Control.addVariable(keyName+"ElectronXYAngle",electronXYAngle);
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"StraightLength",straightLength);
+  Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"ElectronRadius",electronRadius);
-  Control.addVariable(keyName+"PhotonRadius",photonRadius);
-  Control.addVariable(keyName+"WallXStep",wallXStep);
-  Control.addVariable(keyName+"WallWidth",wallWidth);
-  Control.addVariable(keyName+"WallHeight",wallHeight);
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLength);
+  Control.addVariable(keyName+"ElectronAngle",electronAngle);
+
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
-  
+
   return;
 }
 

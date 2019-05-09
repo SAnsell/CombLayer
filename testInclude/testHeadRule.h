@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   testInclude/testHeadRule.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ private:
   int testGetComponent();
   int testGetLevel();
   int testInterceptRule();
+  int testIntersectHeadRule();
   int testLevel();
   int testPartEqual();
   int testRemoveSurf();

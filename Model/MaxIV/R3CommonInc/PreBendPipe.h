@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3CommonInc/EPCombine.h
+ * File:   R3CommonInc/PreBendPipe.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_EPCombine_h
-#define xraySystem_EPCombine_h
+#ifndef xraySystem_PreBendPipe_h
+#define xraySystem_PreBendPipe_h
 
 class Simulation;
 
@@ -28,44 +28,38 @@ class Simulation;
 namespace xraySystem
 {
 /*!
-  \class EPCombine
+  \class PreBendPipe
   \version 1.0
   \author S. Ansell
   \date January 2019
 
-  \brief EPCombine for Max-IV 
+  \brief PreBendPipe for Max-IV 
 
   This is built relative to the proton channel
 */
 
-class EPCombine : public attachSystem::FixedOffset,
+class PreBendPipe : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
-  double length;                ///< frame length
+  double length;                 ///< frame length
+  double radius;                 ///< Primary radius
 
-  double photonXStep;            ///< Initial photon gap
-  double electronXStep;          ///< Initial electorn gap  
-  double electronXYAngle;        ///< XY angle of electron beam to proton
+  double straightLength;         ///< straight length
 
-  double electronRadius;         ///< Electron radius
-  double photonRadius;           ///< Photon radius
+  double wallThick;              ///< wall thickness
 
-  double skinThick;              ///< skin thickness
 
-  double wallXStep;              ///< X step for wall
-  double wallStartLen;           ///< Outer wall start length
-  double wallWidth;              ///< Outer wall box
-  double wallHeight;             ///< Outer wall box
+  double electronRadius;          ///< electron bend radius
+  double electronAngle;           ///< Electron bend angle
 
-  double flangeAXStep;            ///< flange x step
   double flangeARadius;           ///< flange radius
   double flangeALength;           ///< flange length
 
-  double flangeBXStep;            ///< back flange xstep
   double flangeBRadius;           ///< back flange radius
   double flangeBLength;           ///< back flange length
   
@@ -73,10 +67,12 @@ class EPCombine : public attachSystem::FixedOffset,
   int wallMat;                    ///< wall material
   int flangeMat;                  ///< Port material
 
-  Geometry::Vec3D elecOrg;        ///< Electron origin
-  Geometry::Vec3D elecXAxis;       ///< Electron X-axis
-  Geometry::Vec3D elecYAxis;       ///< Electron beam axis
-  
+  Geometry::Vec3D cylEnd;         ///< End of electron bend
+  Geometry::Vec3D elecAxis;       ///< Exit axis of electrons
+
+  /// Inner buildzone for inner void
+  attachSystem::InnerZone buildZone;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   
@@ -86,14 +82,14 @@ class EPCombine : public attachSystem::FixedOffset,
 
  public:
 
-  EPCombine(const std::string&);
-  EPCombine(const EPCombine&);
-  EPCombine& operator=(const EPCombine&);
-  virtual ~EPCombine();
-
+  PreBendPipe(const std::string&);
+  PreBendPipe(const PreBendPipe&);
+  PreBendPipe& operator=(const PreBendPipe&);
+  virtual ~PreBendPipe();
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-
+  attachSystem::InnerZone& getBuildZone() { return buildZone; }
 };
 
 }

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3Comoon/EPCombine.cxx
+ * File:   R3Common/EPCombine.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -92,7 +92,10 @@ EPCombine::EPCombine(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  nameSideIndex(2,"Photon");
+  nameSideIndex(3,"Electron");
+}
 
 
 EPCombine::~EPCombine() 
@@ -116,7 +119,6 @@ EPCombine::populate(const FuncDataBase& Control)
 
   photonXStep=Control.EvalVar<double>(keyName+"PhotonXStep");
   electronXStep=Control.EvalVar<double>(keyName+"ElectronXStep");
-  photonXYAngle=Control.EvalVar<double>(keyName+"PhotonXYAngle");
   electronXYAngle=Control.EvalVar<double>(keyName+"ElectronXYAngle");
 
   electronRadius=Control.EvalVar<double>(keyName+"ElectronRadius");
@@ -146,7 +148,7 @@ EPCombine::populate(const FuncDataBase& Control)
 
 void
 EPCombine::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp to attach to
@@ -175,18 +177,15 @@ EPCombine::createSurfaces()
       setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-  
-  const Geometry::Quaternion photonQ=
-    Geometry::Quaternion::calcQRotDeg(photonXYAngle,Z);
-  const Geometry::Vec3D PX=photonQ.makeRotate(X);
-  const Geometry::Vec3D PY=photonQ.makeRotate(Y);
+
   const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 
   const Geometry::Quaternion electronQ=
     Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
-  const Geometry::Vec3D EX=electronQ.makeRotate(X);
-  const Geometry::Vec3D EY=electronQ.makeRotate(Y);
-  const Geometry::Vec3D EOrigin(Origin+X*electronXStep);
+
+  elecXAxis=electronQ.makeRotate(X);
+  elecYAxis=electronQ.makeRotate(Y);
+  elecOrg=Origin+X*electronXStep;
 
   ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*(wallStartLen),Y);
 
@@ -212,36 +211,37 @@ EPCombine::createSurfaces()
   
   // electron inner :
   // divider
-  ModelSupport::buildPlane(SMap,buildIndex+103,EOrigin,EX);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,EOrigin,EY,electronRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+103,elecOrg,elecXAxis);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,elecOrg,elecYAxis,electronRadius);
   
   // Electron walls: [All point to center]
-  const Geometry::Vec3D XZ((EX*cos(M_PI/6.0)+Z*0.5).unit());
-  const Geometry::Vec3D mXZ((EX*cos(M_PI/6.0)-Z*0.5).unit());
+  const Geometry::Vec3D XZ((elecXAxis*cos(M_PI/6.0)+Z*0.5).unit());
+  const Geometry::Vec3D mXZ((elecXAxis*cos(M_PI/6.0)-Z*0.5).unit());
 
   ModelSupport::buildPlane
-    (SMap,buildIndex+111,EOrigin-Z*(electronRadius+skinThick),Z);
+    (SMap,buildIndex+111,elecOrg-Z*(electronRadius+skinThick),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+112,EOrigin-XZ*(electronRadius+skinThick),XZ);
+    (SMap,buildIndex+112,elecOrg-XZ*(electronRadius+skinThick),XZ);
   ModelSupport::buildPlane
-    (SMap,buildIndex+113,EOrigin+mXZ*(electronRadius+skinThick),-mXZ);
+    (SMap,buildIndex+113,elecOrg+mXZ*(electronRadius+skinThick),-mXZ);
   ModelSupport::buildPlane
-    (SMap,buildIndex+114,EOrigin+Z*(electronRadius+skinThick),-Z);
+    (SMap,buildIndex+114,elecOrg+Z*(electronRadius+skinThick),-Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+115,EOrigin+XZ*(electronRadius+skinThick),-XZ);
+    (SMap,buildIndex+115,elecOrg+XZ*(electronRadius+skinThick),-XZ);
   ModelSupport::buildPlane
-    (SMap,buildIndex+116,EOrigin-mXZ*(electronRadius+skinThick),mXZ);
+    (SMap,buildIndex+116,elecOrg-mXZ*(electronRadius+skinThick),mXZ);
 
   
   // photon inner :
-  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,PY,photonRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,PX);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,Y,photonRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,X);
   ModelSupport::buildPlane(SMap,buildIndex+205,POrigin-Z*photonRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,POrigin+Z*photonRadius,Z);
   
   // Photon Wall 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+217,POrigin,PY,photonRadius+skinThick);
+    (SMap,buildIndex+217,POrigin,Y,photonRadius+skinThick);
   ModelSupport::buildPlane
     (SMap,buildIndex+215,POrigin-Z*(photonRadius+skinThick),Z);
   ModelSupport::buildPlane
@@ -337,6 +337,23 @@ EPCombine::createLinks()
   ELog::RegMethod RegA("EPCombine","createLinks");
 
   
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+
+  // photon/electron
+  setConnect(1,Origin+Y*length,Y);
+  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  // Photon edge line [exit]
+  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
+
+  setConnect(2,POrigin+Y*length,Y);  
+  setLinkSurf(2,SMap.realSurf(buildIndex+2));
+  
+  // electron surface is intersect from 102 normal into surface 2
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
+  FixedComp::setLineConnect(3,elecOrg,elecYAxis);
+
+
   return;
 }
 

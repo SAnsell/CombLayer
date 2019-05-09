@@ -74,6 +74,8 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "InnerZone.h"
+
 #include "World.h"
 #include "AttachSupport.h"
 #include "insertObject.h"
@@ -97,6 +99,8 @@
 #include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
 #include "EPCombine.h"
+#include "PreBendPipe.h"
+#include "MagnetM1.h"
 
 #include "makeSingleItem.h"
 
@@ -119,7 +123,7 @@ makeSingleItem::~makeSingleItem()
 void 
 makeSingleItem::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
-  /*!
+/*!
     Carry out the full build
     \param System :: Simulation system
     \param IParam :: Input parameters
@@ -132,12 +136,13 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
-  std::shared_ptr<xraySystem::EPCombine>
-    EPcombine(new xraySystem::EPCombine("EPCombine"));
-  OR.addObject(EPcombine);
+  std::shared_ptr<xraySystem::MagnetM1>
+    MagBlock(new xraySystem::MagnetM1("M1Block"));
+  OR.addObject(MagBlock);
+
+  MagBlock->addInsertCell(voidCell);
+  MagBlock->createAll(System,World::masterOrigin(),0);
   
-  EPcombine->addInsertCell(voidCell);
-  EPcombine->createAll(System,World::masterOrigin(),0);
   return;
   
   std::shared_ptr<xraySystem::EPSeparator>

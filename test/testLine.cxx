@@ -3,7 +3,7 @@
  
  * File:   test/testLine.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,6 +90,7 @@ testLine::applyTest(const int extra)
     {
       &testLine::testConeIntersect,
       &testLine::testCylinderIntersect,
+      &testLine::testDistance,
       &testLine::testEllipticCylIntersect,
       &testLine::testInterDistance
     };
@@ -97,6 +98,7 @@ testLine::applyTest(const int extra)
     {
       "ConeIntersect",
       "CylinderIntersect",
+      "Distance",
       "EllipticCylIntersect",
       "InterDistance"
     };
@@ -406,6 +408,51 @@ testLine::testInterDistance()
 	  ELog::EM<<"Out  "<<out<<" != "<<std::get<3>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Track "<<LI.getTrack()<<ELog::endTrace;
 	  ELog::EM<<"Surface :"<<*SPtr<<ELog::endTrace;	      
+	  return -1;
+	}
+    }
+
+  return 0;
+}
+
+
+int
+testLine::testDistance()
+  /*!
+    Test the interPoint/interDistance template function
+    \return 0 sucess / -ve on failure
+  */
+{
+  ELog::RegMethod RegItem("testLine","testDistance");
+
+  // surfN : Origin : Axis : results 
+  typedef std::tuple<const Geometry::Vec3D,const Geometry::Vec3D,
+		     const Geometry::Vec3D,const double> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
+	    Geometry::Vec3D(0,8.0,0),8.0),
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,-1,0),
+	    Geometry::Vec3D(1,8.0,0),-8.0),
+      TTYPE(Geometry::Vec3D(0,4,0),Geometry::Vec3D(0,-1,0),
+	    Geometry::Vec3D(1,8.0,0),-4.0),
+      TTYPE(Geometry::Vec3D(7,4,7),Geometry::Vec3D(0,-2,0),
+	    Geometry::Vec3D(1,8.0,0),-4.0)
+    };
+  
+  // DO Tests:
+  for(const TTYPE& tc : Tests)
+    {
+      Geometry::Line LA(std::get<0>(tc),std::get<1>(tc));
+      const double R = LA.lambdaDistance(std::get<2>(tc));
+      const double RX = LA.distance(std::get<2>(tc));
+
+      if (std::abs(R-std::get<3>(tc))>1e-5)
+	{
+	  ELog::EM<<"Line :"<<LA<<ELog::endDiag;
+	  ELog::EM<<"Point :"<<std::get<2>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Out  "<<R<<" != "<<std::get<3>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Closest  "<<RX<<ELog::endDiag;
 	  return -1;
 	}
     }

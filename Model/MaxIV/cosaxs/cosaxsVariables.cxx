@@ -77,6 +77,11 @@
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 
+#include "PreBendPipeGenerator.h"
+#include "EPCombineGenerator.h"
+#include "EPSeparatorGenerator.h"
+#include "R3ChokeChamberGenerator.h"
+
 namespace setVariable
 {
 
@@ -136,7 +141,8 @@ void
 ecutVariables(FuncDataBase& Control,
 	      const std::string& frontKey)
   /*!
-    Set the variables for the frontend wall
+    Set the variables for the electron cut disks
+    in the front-end
     \param Control :: DataBase to use
     \param frontKey :: prename
   */
@@ -517,9 +523,14 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PreDipoleGenerator PGen;
   setVariable::DipoleChamberGenerator DCGen;
 
+  setVariable::PreBendPipeGenerator PBGen;
+  setVariable::EPCombineGenerator EPCGen;
+  setVariable::EPSeparatorGenerator EPSGen;
+  setVariable::R3ChokeChamberGenerator CCGen;
     
   Control.addVariable(frontKey+"YStep",310.0);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
+  
   Control.addVariable(frontKey+"FrontOffset",0.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
@@ -527,12 +538,19 @@ frontEndVariables(FuncDataBase& Control,
 
   undulatorVariables(Control,frontKey);
   ecutVariables(Control,frontKey);
+
+  PBGen.generatePipe(Control,frontKey+"PreDipole");
+  EPCGen.generatePipe(Control,frontKey+"EPCombine");
+  EPSGen.generatePipe(Control,frontKey+"EPSeparator",0.0);
+  CCGen.generateChamber(Control,frontKey+"ChokeChamber");
+
+
   
-  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
-  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
+  //  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+  //  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,806.0);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,724.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();

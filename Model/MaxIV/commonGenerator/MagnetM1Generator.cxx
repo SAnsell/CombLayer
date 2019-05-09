@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/EPSeparatorGenerator.cxx
+ * File:   commonBeam/MagnetM1Generator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -51,37 +51,30 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "CFFlanges.h"
-#include "EPSeparatorGenerator.h"
+#include "MagnetM1Generator.h"
 
 namespace setVariable
 {
 
-EPSeparatorGenerator::EPSeparatorGenerator() :
-  length(43.5),photonXStep(-0.72),electronXStep(1.817),
-  photonXYAngle(0.0),electronXYAngle(1.5),
-  photonRadius(0.3),electronRadius(1.1),
-  wallXStep(1.8),wallWidth(6.25),
-  wallHeight(2.65),
-  flangeRadius(CF63::flangeRadius),
-  flangeLength(CF63::flangeLength),
-  voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304")
+MagnetM1Generator::MagnetM1Generator() :
+  blockYStep(1.5),length(229.0),
+  outerVoid(12.0),ringVoid(12.0),baseVoid(12.0),
+  topVoid(12.0),baseThick(8.0),wallThick(6.0),
+  voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
   
-EPSeparatorGenerator::~EPSeparatorGenerator() 
+MagnetM1Generator::~MagnetM1Generator() 
  /*!
    Destructor
  */
 {}
 
 void
-EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
-				   const std::string& keyName,
-				   const double yStep) const
+MagnetM1Generator::generateBlock(FuncDataBase& Control,
+				 const std::string& keyName) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -89,23 +82,21 @@ EPSeparatorGenerator::generatePipe(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("EPSeparatorGenerator","generateColl");
+  ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
 
+  Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"PhotonXStep",photonXStep);
-  Control.addVariable(keyName+"ElectronXStep",electronXStep);
-  Control.addVariable(keyName+"PhotonXYAngle",photonXYAngle);
-  Control.addVariable(keyName+"ElectronXYAngle",electronXYAngle);
-  Control.addVariable(keyName+"ElectronRadius",electronRadius);
-  Control.addVariable(keyName+"PhotonRadius",photonRadius);
-  Control.addVariable(keyName+"WallXStep",wallXStep);
-  Control.addVariable(keyName+"WallWidth",wallWidth);
-  Control.addVariable(keyName+"WallHeight",wallHeight);
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLength);
+
+  Control.addVariable(keyName+"OuterVoid",outerVoid);
+  Control.addVariable(keyName+"RingVoid",ringVoid);
+  Control.addVariable(keyName+"TopVoid",topVoid);
+  Control.addVariable(keyName+"BaseVoid",baseVoid);
+
+  Control.addVariable(keyName+"BaseThick",baseThick);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"FlangeMat",flangeMat);
   
   return;
 }

@@ -89,11 +89,11 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
-
+  
   mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
 
   std::vector<Geometry::Vec3D> out;
-
+  
   if (sndHR.hasRule())
     {
       for(const Geometry::Vec3D& Pt : Pts)
@@ -724,17 +724,18 @@ interceptRuleConst(const HeadRule& HR,
 {
   ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
 
-  // Calc bunker edge intersectoin
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
+  MonteCarlo::LineIntersectVisit LI(Origin,N);
+  const std::vector<Geometry::Vec3D> Pts=
+    LI.getPoints(HR);
 
-  HR.calcSurfIntersection(Origin,N,Pts,SNum);
   if (Pts.empty())
     return std::pair<Geometry::Vec3D,int>(Origin,0);
-  
-  const size_t indexA=SurInter::closestPt(Pts,Origin);
-  return std::pair<Geometry::Vec3D,int>(Pts[indexA],SNum[indexA]); 
 
+  const size_t indexA=SurInter::closestPt(Pts,Origin);
+  const std::vector<const Geometry::Surface*>& SVec=
+    LI.getSurfIndex();
+  return std::pair<Geometry::Vec3D,int>
+    (Pts[indexA],SVec[indexA]->getName()); 
 }
 
 std::pair<Geometry::Vec3D,int>

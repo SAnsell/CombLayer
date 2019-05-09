@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/R3ChokeChamberGenerator.cxx
+ * File:   commonGenerator/R3ChokeChamberGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -62,7 +62,7 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   length(22.8),flangeRadius(CF100::flangeRadius),
   flangeLength(CF100::flangeLength),
 
-  inletWidth(4.0),inletHeight(1.0),inletLength(10.0),
+  inletXStep(0.5),inletWidth(6.2),inletHeight(1.0),inletLength(10.0),
   inletThick(0.5),flangeInletRadius(CF63::flangeRadius),
   flangeInletLength(CF63::flangeLength),
 
@@ -72,7 +72,7 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   flangeElectronRadius(CF40::flangeRadius),
   flangeElectronLength(CF40::flangeLength),
 
-  photonXStep(-2.0),photonXYAngle(1.5),
+  photonXStep(0),
   photonRadius(1.0),photonLength(17.0),
   photonThick(CF40::wallThick),
   flangePhotonRadius(CF40::flangeRadius),
@@ -138,12 +138,15 @@ R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
+
+  Control.addVariable(keyName+"InletXStep",inletXStep);
   Control.addVariable(keyName+"InletWidth",inletWidth);
   Control.addVariable(keyName+"InletHeight",inletHeight);
   Control.addVariable(keyName+"InletLength",inletLength);
   Control.addVariable(keyName+"InletThick",inletThick);
   Control.addVariable(keyName+"FlangeInletRadius",flangeInletRadius);
   Control.addVariable(keyName+"FlangeInletLength",flangeInletLength);
+
   Control.addVariable(keyName+"ElectronXStep",electronXStep);
   Control.addVariable(keyName+"ElectronXYAngle",electronXYAngle);
   Control.addVariable(keyName+"ElectronRadius",electronRadius);
@@ -151,8 +154,8 @@ R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
   Control.addVariable(keyName+"ElectronThick",electronThick);
   Control.addVariable(keyName+"FlangeElectronRadius",flangeElectronRadius);
   Control.addVariable(keyName+"FlangeElectronLength",flangeElectronLength);
+
   Control.addVariable(keyName+"PhotonXStep",photonXStep);
-  Control.addVariable(keyName+"PhotonXYAngle",photonXYAngle);
   Control.addVariable(keyName+"PhotonRadius",photonRadius);
   Control.addVariable(keyName+"PhotonLength",photonLength);
   Control.addVariable(keyName+"PhotonThick",photonThick);

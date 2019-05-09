@@ -22,6 +22,8 @@
 #ifndef Geometry_Line_h
 #define Geometry_Line_h
 
+class HeadRule;
+
 namespace Geometry
 {
 
@@ -48,7 +50,7 @@ class MBrect;
 class Plane;
 class Sphere;
 class Torus;
-  
+ 
 class Line 
 {
   
@@ -83,7 +85,9 @@ class Line
   Geometry::Vec3D getPoint(const double) const;   ///< gets the point O+lam*N
   Geometry::Vec3D getOrigin() const { return Origin; }   ///< returns the origin
   Geometry::Vec3D getDirect() const { return Direct; }   ///< returns the direction
-  double distance(const Geometry::Vec3D&) const;  ///< distance from line
+  double distance(const Geometry::Vec3D&) const;
+  double lambdaDistance(const Geometry::Vec3D&) const;
+  
   Geometry::Vec3D closestPoint(const Geometry::Vec3D&) const;
   std::pair<Geometry::Vec3D,Geometry::Vec3D>
     closestPoints(const Line&) const; 
@@ -96,6 +100,7 @@ class Line
   int setLine(const Geometry::Plane&,const Geometry::Plane&);
   
   template<typename T> Geometry::Vec3D interPoint(const T&) const;
+
   size_t intersect(std::vector<Geometry::Vec3D>&,const Quadratic&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const ArbPoly&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Cone&) const;
@@ -106,6 +111,7 @@ class Line
   size_t intersect(std::vector<Geometry::Vec3D>&,const Plane&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Sphere&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Torus&) const;
+  size_t intersect(std::vector<Geometry::Vec3D>&,const HeadRule&) const;
 
   //  int intersect(std::vector<Geometry::Vec3D>&,const Line*) const;
   //  int intersect(std::vector<Geometry::Vec3D>&,const Circle*) const;

@@ -98,6 +98,12 @@
 #include "BeamMount.h"
 #include "HeatDump.h"
 
+
+#include "PreBendPipe.h"
+#include "EPCombine.h"
+#include "EPSeparator.h"
+#include "R3ChokeChamber.h"
+
 #include "R3FrontEnd.h"
 
 namespace xraySystem
@@ -115,7 +121,12 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
-  preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
+  
+  preDipole(new xraySystem::PreBendPipe(newName+"PreDipole")),
+  epCombine(new xraySystem::EPCombine(newName+"EPCombine")),
+  epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
+  chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
+  
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
@@ -176,6 +187,10 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(preDipole);
+  OR.addObject(epCombine);
+  OR.addObject(epSeparator);
+  OR.addObject(chokeChamber);
+      
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(bellowA);
@@ -580,36 +595,46 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
   preDipole->insertInCell(System,outerCell);
 
-  preDipole->createQuads(System,outerCell);
 
-  dipoleChamber->setCutSurf("front",*preDipole,2);
-  dipoleChamber->createAll(System,*preDipole,2);
-  // two splits [main / exit]
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
-  dipoleChamber->insertInCell("Main",System,outerCell);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,3);
-  dipoleChamber->insertInCell("Exit",System,outerCell);
+  epCombine->setCutSurf("front",*preDipole,2);  
+  epCombine->createAll(System,*preDipole,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epCombine,2);
+  epCombine->insertInCell(System,outerCell);
 
-  eCutWallDisk->setNoInsert();
-  eCutWallDisk->addInsertCell(outerCell);
-  eCutWallDisk->createAll(System,*dipoleChamber,
-			 dipoleChamber->getSideIndex("dipoleExit"));
+  
+  epSeparator->setEPOriginPair(*epCombine,3,4);
+  epSeparator->setCutSurf("front",*epCombine,2);
+  epSeparator->createAll(System,*epCombine,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epSeparator,2);
+  epSeparator->insertInCell(System,outerCell);
 
-  dipolePipe->setFront(*dipoleChamber,dipoleChamber->getSideIndex("exit"));
-  dipolePipe->createAll(System,*dipoleChamber,
-			dipoleChamber->getSideIndex("exit"));
+
+  chokeChamber->setEPOriginPair(*epSeparator,2,4);
+
+  chokeChamber->setCutSurf("front",*epSeparator,2);
+  chokeChamber->createAll(System,*epSeparator,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
+  chokeChamber->insertAllInCell(System,outerCell);
+  
+  // eCutWallDisk->setNoInsert();
+  // eCutWallDisk->addInsertCell(outerCell);
+  // eCutWallDisk->createAll(System,*dipoleChamber,
+  // 			 dipoleChamber->getSideIndex("dipoleExit"));
+
+  dipolePipe->setFront(*chokeChamber,chokeChamber->getSideIndex("photon"));
+  dipolePipe->createAll(System,*chokeChamber,
+			chokeChamber->getSideIndex("photon"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
-
 
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
   eCutDisk->createAll(System,*dipolePipe,-2);
 
-  eCutMagDisk->setNoInsert();
-  eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
-  eCutMagDisk->createAll(System,*dipoleChamber,
-			 -dipoleChamber->getSideIndex("dipoleExit"));
+  // eCutMagDisk->setNoInsert();
+  // eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
+  // eCutMagDisk->createAll(System,*dipoleChamber,
+  // 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
   if (stopPoint=="Dipole")
     {
@@ -649,7 +674,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
-
 
   collTubeC->setFront(*collTubeB,2);
   collTubeC->createAll(System,*collTubeB,2);

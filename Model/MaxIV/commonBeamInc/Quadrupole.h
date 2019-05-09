@@ -70,6 +70,8 @@ class Quadrupole : public attachSystem::FixedRotate,
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material
 
+  HeadRule innerTube;              ///< Inner tube 
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   
@@ -85,6 +87,8 @@ class Quadrupole : public attachSystem::FixedRotate,
   Quadrupole& operator=(const Quadrupole&);
   virtual ~Quadrupole();
 
+  /// set innner tube
+  void setInnerTube(const HeadRule& HR) { innerTube=HR; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

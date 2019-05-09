@@ -3,7 +3,7 @@
  
  * File:   constructInc/SupplyPipe.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,10 @@
 #define constructSystem_SupplyPipe_h
 
 class Simulation;
+namespace attachSystem
+{
+  class LayerComp;
+}
 
 namespace constructSystem
 {
@@ -35,7 +39,8 @@ namespace constructSystem
   \brief SupplyPipe [insert object]
 */
 
-class SupplyPipe : public attachSystem::FixedComp
+class SupplyPipe :
+  public attachSystem::FixedComp
 {
  private:
   
