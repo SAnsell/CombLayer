@@ -270,13 +270,14 @@ MagnetM1::createAll(Simulation& System,
   epCombine->addInsertCell(getCells("Void"));
   epCombine->createAll(System,*preDipole,2);
 
-
-  MonteCarlo::Object* masterCell=
-    preDipole->getBuildZone().getMaster();
+  attachSystem::InnerZone& IZ=preDipole->getBuildZone();
+  MonteCarlo::Object* masterCell=IZ.getMaster();
+  QFend->setInnerTube(preDipole->getFullRule(5));
   QFend->createAll(System,*this,0);
-  outerCell=preDipole->getBuildZone().
-    createOuterVoidUnit(System,masterCell,*preDipole,2);
-  
+  outerCell=IZ.cutVoidUnit(System,masterCell,
+			   QFend->getMainRule(-1),
+			   QFend->getMainRule(-2));
+  QFend->insertInCell(System,getCell("Void"));
   return;
 }
   

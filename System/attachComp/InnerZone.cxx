@@ -3,7 +3,7 @@
  
  * File:   attachComp/InnerZone.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,12 +238,69 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
   return;
 }
 
+int
+InnerZone::cutVoidUnit(Simulation& System,
+		       MonteCarlo::Object* masterCell,
+		       HeadRule& FDivider,
+		       const HeadRule& CutA,
+		       const HeadRule& CutB)
+  /*!
+    Cutter for the main void.
+    Note that CutA and CutB define the region to be cut.
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param CutA :: Cut surface A
+    \param CutB :: Cut surface B
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","cutVoidUnit(FDivider,HR,HR)");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+  
+  Out=surroundHR.display()+
+    FDivider.display()+CutA.complement().display();
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
+  FDivider=CutB;
+  FDivider.makeComplement();
+
+  // make the master cell valid:
+  refrontMasterCell(masterCell,FDivider);
+  return cellIndex-1;
+}
+
+int
+InnerZone::cutVoidUnit(Simulation& System,
+		       MonteCarlo::Object* masterCell,
+		       const HeadRule& CutA,
+		       const HeadRule& CutB)
+  /*!
+    Cutter for the main void.
+    Note that CutA and CutB define the region to be cut.
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param CutA :: Cut surface A
+    \param CutB :: Cut surface B
+    \return cell nubmer for last cell unit
+  */
+{
+  ELog::RegMethod RegA("InnerZone","cutVoidUnit(HR,HR)");
+
+  return cutVoidUnit(System,masterCell,frontDivider,CutA,CutB);
+}
   
 int
 InnerZone::createOuterVoidUnit(Simulation& System,
 			       MonteCarlo::Object* masterCell,
 			       HeadRule& FDivider,
-			       const HeadRule& backDivider)
+			       const HeadRule& BDivider)
   /*!
     Construct outer void object main pipe
     \param System :: Simulation
@@ -262,10 +319,10 @@ InnerZone::createOuterVoidUnit(Simulation& System,
     FDivider=frontHR;
   
   Out=surroundHR.display()+
-    FDivider.display()+backDivider.display();
-  
+    FDivider.display()+BDivider.display();
+
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-  FDivider=backDivider;
+  FDivider=BDivider;
   FDivider.makeComplement();
 
   // make the master cell valid:
@@ -394,8 +451,7 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
     This horrific function to re-build MCell so that it is correct
     as createOuterVoid consumes the front of the master cell
     \param MCell :: master cell object
-    \param FC :: FixedComp
-    \param sideIndex :: side index for back of FC object
+    \param FHR :: Curs surface head rule 
   */
 {
   ELog::RegMethod RegA("InnerZone","refrontMasterCell");
@@ -404,8 +460,10 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
 
   Out=surroundHR.display() + backHR.display()+ FHR.display();
   MCell->procString(Out);
+  ELog::EM<<"Mcell = "<<*MCell<<ELog::endDiag;
   return;
 }
+
 
  
 MonteCarlo::Object*

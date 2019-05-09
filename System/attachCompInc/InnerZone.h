@@ -90,6 +90,15 @@ class InnerZone
 			      const int,const attachSystem::FixedComp&,
 			      const long int);
 
+
+  int cutVoidUnit(Simulation&, MonteCarlo::Object*,
+		  HeadRule&,const HeadRule&,const HeadRule&);
+
+  int cutVoidUnit(Simulation&, MonteCarlo::Object*,
+		  const HeadRule&,const HeadRule&);
+
+
+  
   int createOuterVoidUnit(Simulation&,
 			  MonteCarlo::Object*,
 			  HeadRule&,
@@ -115,6 +124,7 @@ class InnerZone
 			  HeadRule&,
 			  const attachSystem::FixedComp&,
 			  const long int);
+  
   int createNamedOuterVoidUnit(Simulation&,const std::string&,
 			       MonteCarlo::Object*,
 			       const attachSystem::FixedComp&,
@@ -126,14 +136,17 @@ class InnerZone
 			       MonteCarlo::Object*,
 			       HeadRule&,
 			       const HeadRule&);
-
   
   void refrontMasterCell(MonteCarlo::Object*,
 			 const HeadRule&) const;
+  void cutMasterCell(MonteCarlo::Object*,
+		     const HeadRule&,
+		     const HeadRule&) const;
 
   MonteCarlo::Object* constructMasterCell(Simulation&);
   MonteCarlo::Object* constructMasterCell(Simulation&,const ContainedComp&);
 
+  /// accessor to local master cell
   MonteCarlo::Object* getMaster() const { return masterCell; }
   
 };

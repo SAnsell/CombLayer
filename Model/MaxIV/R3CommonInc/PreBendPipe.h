@@ -86,9 +86,6 @@ class PreBendPipe : public attachSystem::FixedOffset,
   PreBendPipe(const PreBendPipe&);
   PreBendPipe& operator=(const PreBendPipe&);
   virtual ~PreBendPipe();
-
-  void addFrontVoidCut(Simulation& System,const HeadRule&,
-		       const HeadRule&);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

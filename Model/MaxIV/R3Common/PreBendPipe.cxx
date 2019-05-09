@@ -262,8 +262,7 @@ PreBendPipe::createObjects(Simulation& System)
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
   buildZone.setVoidMat(voidMat);
 
-  MonteCarlo::Object* masterCell=
-    buildZone.constructMasterCell(System);
+  buildZone.constructMasterCell(System);
 
   // cylinder half
   Out=ModelSupport::getComposite
@@ -363,51 +362,23 @@ PreBendPipe::createLinks()
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,cylEnd,elecAxis);
-  
-  return;
-}
 
-void
-PreBendPipe::addFrontVoidCut(Simulation& System,
-			     const HeadRule& frontHR,
-			     const HeadRule& backHR)
-  /*!
-    Cut the void cell to place magnets etc
-    Assumption that frontHR and backHR don't cut a boundary
-    \param System :: Simulation 
-    \param frontHR :: front cut surface
-    \param backHR :: back cut surface
-   */
-{
-  ELog::RegMethod RegA("PreBendPipe","cutFrontVoid");
-  
-  const Geometry::Vec3D PtA= frontHR.trackPoint(Origin,Y);
-  const Geometry::Vec3D PtB= backHR.trackPoint(Origin,Y);
-  const double D(PtB.Distance(PtA));
-  
-  const std::vector<int> VCells=getCells("frontVoid");
-  for(size_t i=0;i<VCells.size();i++)
-    {
-      const MonteCarlo::Object* OPtr=
-	System.findObject(VCells[i]);
-      // Case 1: PtsA in cell
-      if (OPtr->isValid(PtA))
-	{
-	  if (OPtr->isValid(PtB)) // both valid:
-	    {
-	      // createFrontV(frontHR);
-	      // createBothFront(frontHR,backHR);
-	      // createFront(frontHR,backHR);
-	    }
-	}
-    }
-					    
+  // pipe cutters for Magnets etc:
+
+  setConnect(4,Origin+Y*(straightLength/2.0),Z);
+  setLinkSurf(4,SMap.realSurf(buildIndex+17));
+
+  /*
+  std::string Out=ModelSupport::getComposite(SMap,buildIndex," 17 ");
+    
+  setConnect(5,Origin+Y*length,Z);
+  setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  setLinkSurf(Out);
+  */
 
   return;
 }
   
-
-
 void
 PreBendPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,

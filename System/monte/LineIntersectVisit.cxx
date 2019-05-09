@@ -539,7 +539,6 @@ LineIntersectVisit::getPoints(const HeadRule& HR)
   return PtVec;
 }
 
-
 void
 LineIntersectVisit::write(std::ostream& OX) const
   /*!

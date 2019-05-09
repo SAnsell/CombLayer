@@ -428,43 +428,44 @@ Quadrupole::createObjects(Simulation& System)
   makeCell("REdge",System,cellIndex++,0,0.0,Out);
 
   // Pole Pieces
+  const std::string ICell=innerTube.display();
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 201 -202 203 -204 (206:-207) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
-  makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out+ICell);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 201 -202 303 -304 (306:-307) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
-  makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out+ICell);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 201 -202 403 -404 (406:-407) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
-  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out+ICell);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 201 -202 503 -504 (506:-507) ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 "-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
-  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out);
+  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
 
   if (poleLength<coilLength-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"105 -106 202 -102 103 -104 ");
-      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,Out);
+      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,Out+ICell);
       Out=ModelSupport::getComposite
 	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
-      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out);
+      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out+ICell);
     }
   Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
   addOuterSurf(Out);      
@@ -480,15 +481,15 @@ Quadrupole::createLinks()
 {
   ELog::RegMethod RegA("Quadrupole","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+  FixedComp::setConnect(0,Origin-Y*(coilLength/2.0),-Y);     
+  FixedComp::setConnect(1,Origin+Y*(coilLength/2.0),Y);     
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);     
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);     
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);     
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);     
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+101));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
@@ -496,7 +497,6 @@ Quadrupole::createLinks()
   
   return;
 }
-
 
 void
 Quadrupole::createAll(Simulation& System,
