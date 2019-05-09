@@ -224,8 +224,8 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   pipeInit->createAll(System,*this,0);
 
-  ELog::EM << "Do I need the line below?" << ELog::endCrit;
-  //outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
+  // front surface of the build zone - must have it
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,-1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeInit,2);
   pipeInit->insertInCell(System,outerCell);
 
