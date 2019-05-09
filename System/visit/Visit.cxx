@@ -204,7 +204,6 @@ Visit::populateLine(const Simulation& System,
   const long int nC = nPts[IMax];
     
   Geometry::Vec3D aVec;  
-  const bool aEmptyFlag=Active.empty();
 
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
@@ -236,7 +235,6 @@ Visit::populateLine(const Simulation& System,
 	OTrack.calculate(System);
 	OTrack.createCellPath(cellVec,distVec);
 
-	double aim=XYZ[IMax];
 	double T=0.0;
 	long int index(0);
 	for(size_t ii=0;ii<cellVec.size();ii++)
@@ -247,7 +245,6 @@ Visit::populateLine(const Simulation& System,
 	    
 	    for(long int cnt=0;cnt<mid;cnt++)
 	      getMeshUnit(IMax,index++,i,j)=mValue;
-
 	  }
       }
   
