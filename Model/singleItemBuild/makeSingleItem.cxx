@@ -137,16 +137,6 @@ makeSingleItem::build(Simulation& System,
     ModelSupport::objectRegister::Instance();
   const int voidCell(74123);
 
-  std::shared_ptr<xraySystem::Octupole>
-    OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
-
-  OR.addObject(OXX);
-
-  OXX->addInsertCell(voidCell);
-  OXX->createAll(System,World::masterOrigin(),0);
-  
-  return;
-
   std::shared_ptr<xraySystem::MagnetM1>
     MagBlock(new xraySystem::MagnetM1("M1Block"));
 
@@ -154,6 +144,16 @@ makeSingleItem::build(Simulation& System,
 
   MagBlock->addInsertCell(voidCell);
   MagBlock->createAll(System,World::masterOrigin(),0);
+  
+  return;
+
+  std::shared_ptr<xraySystem::Octupole>
+    OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
+
+  OR.addObject(OXX);
+
+  OXX->addInsertCell(voidCell);
+  OXX->createAll(System,World::masterOrigin(),0);
   
   return;
   

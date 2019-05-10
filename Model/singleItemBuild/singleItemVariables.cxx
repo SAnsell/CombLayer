@@ -180,16 +180,16 @@ SingleItemVariables(FuncDataBase& Control)
   M1Gen.generateBlock(Control,"M1Block");
 
   setVariable::PreBendPipeGenerator PBGen;
-  PBGen.generatePipe(Control,"M1BlockPreBendPipe");
+  PBGen.generatePipe(Control,"PreBendPipe");
 
   setVariable::EPCombineGenerator EPCGen;
-  EPCGen.generatePipe(Control,"M1BlockEPCombine");
+  EPCGen.generatePipe(Control,"EPCombine");
   
   setVariable::QuadrupoleGenerator QGen;
-  QGen.generateQuad(Control,"M1BlockQFend",20.0,25.0);
+  QGen.generateQuad(Control,"QFend",20.0,25.0);
 
   setVariable::OctupoleGenerator OGen;
-  OGen.generateOcto(Control,"M1BlockOXX",20.0,25.0);
+  OGen.generateOcto(Control,"OXX",20.0,25.0);
 
   return;
 }

@@ -261,6 +261,7 @@ Octupole::createObjects(Simulation& System)
 
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
 
+  const std::string ICell=innerTube.display();
   /// create triangles
   const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
 
@@ -291,7 +292,7 @@ Octupole::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
 	  (SMap,buildIndex,"501 -502 -1016 -1001 -1002 ");
   makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   PoleExclude[0].complement().display());
+	   PoleExclude[0].complement().display()+ICell);
   int CN(buildIndex+1);
   int TN(buildIndex+1);
   for(size_t i=1;i<7;i++)
@@ -301,14 +302,14 @@ Octupole::createObjects(Simulation& System)
 	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
 	
       makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	       PoleExclude[i].complement().display());
+	       PoleExclude[i].complement().display()+ICell);
       CN+=2;
       TN++;
     }
   Out=ModelSupport::getComposite
 	  (SMap,buildIndex,"508 -501 -1014 -1015 -1016 ");
   makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
-	   	       PoleExclude[7].complement().display());	
+	   PoleExclude[7].complement().display()+ICell);	
 
   
   return;
@@ -321,7 +322,13 @@ Octupole::createLinks()
    */
 {
   ELog::RegMethod RegA("Octupole","createLinks");
-  
+
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
   return;
 }
 

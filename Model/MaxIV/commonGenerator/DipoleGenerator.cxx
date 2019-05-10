@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/MagnetM1Generator.cxx
+ * File:   commonBeam/DipoleGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -51,79 +51,61 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "PreBendPipeGenerator.h"
-#include "EPCombineGenerator.h"
-#include "QuadrupoleGenerator.h"
-#include "OctupoleGenerator.h"
-
-#include "MagnetM1Generator.h"
+#include "DipoleGenerator.h"
 
 namespace setVariable
 {
 
-MagnetM1Generator::MagnetM1Generator() :
-  blockYStep(1.5),length(229.0),
-  outerVoid(12.0),ringVoid(12.0),baseVoid(12.0),
-  topVoid(12.0),baseThick(8.0),wallThick(6.0),
-  voidMat("Void"),wallMat("Stainless304")
+DipoleGenerator::DipoleGenerator() :
+  poleAngle(1.5),poleRadius(191.4),
+  poleGap(1.5),poleWidth(3.0),poleHeight(4.0),
+  coilLength(8.0),coilWidth(6.0),
+  poleMat("Stainless304"),coilMat("Copper")
   /*!
     Constructor and defaults
   */
 {}
   
-MagnetM1Generator::~MagnetM1Generator() 
+DipoleGenerator::~DipoleGenerator() 
  /*!
    Destructor
  */
 {}
 
 void
-MagnetM1Generator::generateBlock(FuncDataBase& Control,
-				 const std::string& keyName) const
-  /*!
+DipoleGenerator::generateDipole(FuncDataBase& Control,
+				const std::string& keyName,
+				const double yStep,
+				const double length) const
+ /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
+    \param yStep :: Step along beam centre
+    \param length :: length
   */
 {
-  ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
+  ELog::RegMethod RegA("DipoleGenerator","generateColl");
 
-  Control.addVariable(keyName+"BlockYStep",blockYStep);
+  Control.addVariable(keyName+"YStep",yStep);
+  
   Control.addVariable(keyName+"Length",length);
 
-  Control.addVariable(keyName+"OuterVoid",outerVoid);
-  Control.addVariable(keyName+"RingVoid",ringVoid);
-  Control.addVariable(keyName+"TopVoid",topVoid);
-  Control.addVariable(keyName+"BaseVoid",baseVoid);
+  Control.addVariable(keyName+"PoleAngle",poleAngle);
+  Control.addVariable(keyName+"PoleAngle",poleRadius);
+  Control.addVariable(keyName+"PoleGap",poleGap);
+  Control.addVariable(keyName+"PoleWidth",poleWidth);
+  Control.addVariable(keyName+"PoleHeight",poleHeight);
 
-  Control.addVariable(keyName+"BaseThick",baseThick);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  
-  Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"CoilLength",coilLength);
+  Control.addVariable(keyName+"CoilWidth",coilWidth);
+  Control.addVariable(keyName+"CoilHeight",coilHeight);
 
-  setVariable::PreBendPipeGenerator PBGen;
-  PBGen.generatePipe(Control,keyName+"PreBendPipe");
+  Control.addVariable(keyName+"PoleMat",poleMat);
+  Control.addVariable(keyName+"CoilMat",coilMat);
 
-  setVariable::EPCombineGenerator EPCGen;
-  EPCGen.generatePipe(Control,keyName+"EPCombine");
-
-  setVariable::OctupoleGenerator OGen;
-  setVariable::QuadrupoleGenerator QGen;
-
-  OGen.generateOcto(Control,keyName+"OXX",20.0,10.0);
-
-  // length is lengh + coil extra [2cm]
-  QGen.generateQuad(Control,keyName+"QFend",42.50,23.0);
-
-  OGen.generateOcto(Control,keyName+"OXY",65.0,10.0);
-
-  // +5 cm
-  QGen.generateQuad(Control,keyName+"QDend",92.50,23.0);
-
-
-  
   return;
+
 }
 
   

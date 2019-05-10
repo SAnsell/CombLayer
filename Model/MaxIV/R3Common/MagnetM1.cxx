@@ -82,6 +82,7 @@
 #include "PreBendPipe.h"
 #include "EPCombine.h"
 #include "Quadrupole.h"
+#include "Octupole.h"
 #include "MagnetM1.h"
 
 namespace xraySystem
@@ -94,7 +95,10 @@ MagnetM1::MagnetM1(const std::string& Key) :
   attachSystem::CellMap(),
   preDipole(new xraySystem::PreBendPipe(keyName+"PreBendPipe")),
   epCombine(new xraySystem::EPCombine(keyName+"EPCombine")),
-  QFend(new xraySystem::Quadrupole(keyName+"QFend"))
+  Oxx(new xraySystem::Octupole(keyName+"OXX")),
+  QFend(new xraySystem::Quadrupole(keyName+"QFend")),
+  Oxy(new xraySystem::Octupole(keyName+"OXY")),
+  QDend(new xraySystem::Quadrupole(keyName+"QDend"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -108,7 +112,9 @@ MagnetM1::MagnetM1(const std::string& Key) :
   
   OR.addObject(preDipole);
   OR.addObject(epCombine);
+  OR.addObject(Oxx);
   OR.addObject(QFend);
+  OR.addObject(Oxy);
 }
 
 
@@ -140,8 +146,7 @@ MagnetM1::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
-  
+    
   return;
 }
 
@@ -172,7 +177,6 @@ MagnetM1::createSurfaces()
   // Do outer surfaces (vacuum ports)
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*blockYStep,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+blockYStep),Y);
-
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerVoid,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringVoid,X);
@@ -272,13 +276,36 @@ MagnetM1::createAll(Simulation& System,
 
   attachSystem::InnerZone& IZ=preDipole->getBuildZone();
   MonteCarlo::Object* masterCell=IZ.getMaster();
+  
+  Oxx->setInnerTube(preDipole->getFullRule(5));
+  Oxx->createAll(System,*this,0);
+  outerCell=IZ.cutVoidUnit(System,masterCell,
+			   Oxx->getMainRule(-1),
+			   Oxx->getMainRule(-2));
+  Oxx->insertInCell(System,getCell("Void"));
+
   QFend->setInnerTube(preDipole->getFullRule(5));
   QFend->createAll(System,*this,0);
   outerCell=IZ.cutVoidUnit(System,masterCell,
 			   QFend->getMainRule(-1),
 			   QFend->getMainRule(-2));
   QFend->insertInCell(System,getCell("Void"));
-  return;
+
+  Oxy->setInnerTube(preDipole->getFullRule(5));
+  Oxy->createAll(System,*this,0);
+  outerCell=IZ.cutVoidUnit(System,masterCell,
+			   Oxy->getMainRule(-1),
+			   Oxy->getMainRule(-2));
+  Oxy->insertInCell(System,getCell("Void"));
+
+  QDend->setInnerTube(preDipole->getFullRule(5));
+  QDend->createAll(System,*this,0);
+  outerCell=IZ.cutVoidUnit(System,masterCell,
+			   QDend->getMainRule(-1),
+			   QDend->getMainRule(-2));
+  QDend->insertInCell(System,getCell("Void"));
+
+return;
 }
   
 }  // NAMESPACE xraySystem

@@ -221,7 +221,8 @@ PreBendPipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+102,cylEnd,YElec);
   SurfMap::setSurf("electronCut",SMap.realSurf(buildIndex+102));
   
-  // Exit cylinder [ levels]
+  // Exit cylinder [levels]
+  
   ModelSupport::buildPlane(SMap,buildIndex+210,cylEnd,XElec);
   ModelSupport::buildCylinder
     (SMap,buildIndex+207,cylEnd,YElec,radius);

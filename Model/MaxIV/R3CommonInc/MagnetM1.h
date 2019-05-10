@@ -51,22 +51,29 @@ class MagnetM1 :
   double length;                ///< frame length
 
   double outerVoid;             ///< Size of outer void gap
-  double ringVoid;             ///< Size of outer void gap
-  double topVoid;             ///< Size of outer void gap
-  double baseVoid;             ///< Size of outer void gap
+  double ringVoid;              ///< Size of outer void gap
+  double topVoid;               ///< Size of outer void gap
+  double baseVoid;              ///< Size of outer void gap
 
-  double baseThick;              ///< base thickness
-  double wallThick;              ///< side wall thickness
+  double baseThick;             ///< base thickness
+  double wallThick;             ///< side wall thickness
   
-  int voidMat;                    ///< void material
-  int wallMat;                    ///< wall material
+  int voidMat;                  ///< void material
+  int wallMat;                  ///< wall material
 
   /// dipole connection pipe
   std::shared_ptr<xraySystem::PreBendPipe> preDipole;
   /// Electron/photon combined track
   std::shared_ptr<xraySystem::EPCombine> epCombine;
+
+  /// Octupole [first]
+  std::shared_ptr<xraySystem::Octupole> Oxx;
   /// Quad [first]
   std::shared_ptr<xraySystem::Quadrupole> QFend;
+  /// Octupole [second]
+  std::shared_ptr<xraySystem::Octupole> Oxy;
+  /// Quad [Second]
+  std::shared_ptr<xraySystem::Quadrupole> QDend;
 
   
   void populate(const FuncDataBase&);
