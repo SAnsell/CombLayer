@@ -107,8 +107,9 @@ cosaxsDiffPump::cosaxsDiffPump(const cosaxsDiffPump& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  wallMat(A.wallMat)
+  apertureHeight(A.apertureHeight),
+  apertureWidth(A.apertureWidth),
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: cosaxsDiffPump to copy
@@ -133,8 +134,9 @@ cosaxsDiffPump::operator=(const cosaxsDiffPump& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      wallThick=A.wallThick;
-      wallMat=A.wallMat;
+      apertureHeight=A.apertureHeight;
+      apertureWidth=A.apertureWidth;
+      mat=A.mat;
     }
   return *this;
 }
@@ -169,9 +171,10 @@ cosaxsDiffPump::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  apertureHeight=Control.EvalVar<double>(keyName+"ApertureHeight");
+  apertureWidth=Control.EvalVar<double>(keyName+"ApertureWidth");
 
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }
@@ -203,28 +206,15 @@ cosaxsDiffPump::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -233,11 +223,12 @@ cosaxsDiffPump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
+  // aperture
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(apertureWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(apertureWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(apertureHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(apertureHeight/2.0),Z);
 
   return;
 }
@@ -254,16 +245,15 @@ cosaxsDiffPump::createObjects(Simulation& System)
   std::string Out;
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
-  const std::string frontCompl(frontComplement());
-  const std::string backCompl(backComplement());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,0,0.0,Out);
+  //  const std::string frontCompl(frontComplement());
+  //  const std::string backCompl(backComplement());
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 (-13:14:-15:16) ");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,Out+frontStr+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
+  makeCell("Aperture",System,cellIndex++,0,0.0,Out+frontStr+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(Out+frontStr+backStr);
 
   return;
@@ -280,17 +270,17 @@ cosaxsDiffPump::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0+wallThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

@@ -47,8 +47,9 @@ class cosaxsDiffPump :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double wallThick;             ///< Wall thickness
-  int    wallMat;               ///< Wall material
+  double apertureHeight;        ///< Vertical dimension of aperture
+  double apertureWidth; ///< Horizontal dimension of aperture
+  int    mat;                  ///< Material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
