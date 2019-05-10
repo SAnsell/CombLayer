@@ -53,6 +53,9 @@ class cosaxsDiffPump :
   double flangeRadius; ///< Flange radius
   double flangeThick; ///< Flange thickness
   int    flangeMat; ///< Flange material
+  double flangeVoidWidth; ///< Flange void width
+  double flangeVoidHeight; ///< Flange void height
+  double flangeVoidThick; ///< Flange void thickness
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -1134,6 +1134,9 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiffPumpFlangeRadius",10.1); // measured
   Control.addVariable(preName+"DiffPumpFlangeThick",2.1); // measured
   Control.addVariable(preName+"DiffPumpFlangeMat","Stainless304"); // guess
+  Control.addVariable(preName+"DiffPumpFlangeVoidWidth",14.61); // measured
+  Control.addVariable(preName+"DiffPumpFlangeVoidHeight",5.71); // measured
+  Control.addVariable(preName+"DiffPumpFlangeVoidThick",4.44); // measured
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
