@@ -535,3 +535,15 @@ particleConv::mcplMass(const int mcplNum) const
   const pName& PN = getMCPLPItem(mcplNum);
   return PN.mass;
 }
+
+double
+particleConv::mass(const std::string& particleName) const
+  /*!
+    Accessor to mass from name
+    \param particleName :: Particle Name
+    \return rest mass [MeV/c2]
+   */
+{
+  const pName& PN = getNamePItem(particleName);
+  return PN.mass;
+}

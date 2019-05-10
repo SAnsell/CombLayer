@@ -43,7 +43,7 @@
 #include "particleConv.h"
 #include "flukaGenParticle.h"
 
-// mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
+
 flukaGenParticle::flukaGenParticle() : 
   flukaGen({
       {"all-part",201}, {"all-char",202}, {"all-neut",203}, {"all-nega",204},
@@ -79,7 +79,7 @@ int
 flukaGenParticle::flukaITYP(const std::string& particleName) const
   /*
     Accessor to mcnpITYP number by fluka/phits/mcnp name
-    \param particleName :: full name
+    \param particleName :: generic particle/type
     \return flukaITYP
   */
 {
@@ -95,7 +95,7 @@ bool
 flukaGenParticle::hasName(const std::string& particleName) const
   /*!
     See if we have the name in the data base
-    \param particleName to search
+    \param particleName :: generic particle/type
   */
 {
   if (flukaGen.find(particleName)!=flukaGen.end())
@@ -128,9 +128,22 @@ flukaGenParticle::momentumFromKE(const std::string& particleName,
 				 const double KE) const
   /*!
     Convert the kenetic energy to momenum
+    \param particleName :: Particle name
     \param KE :: Kenetic energy [MeV/c2]
     \return momentum [MeV/c]
   */
 {
   return particleConv::Instance().momentumFromKE(particleName,KE); 
 }
+
+double
+flukaGenParticle::mass(const std::string& particleName) const
+  /*!
+    Convert the kenetic energy to momenum
+    \param particleName :: Particle name
+    \return mass [MeV/c^2]
+  */
+{
+  return particleConv::Instance().mass(particleName); 
+}
+

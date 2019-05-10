@@ -57,11 +57,11 @@ namespace setVariable
 {
 
 OctupoleGenerator::OctupoleGenerator() :
-  frameRadius(20.0),frameThick(1.50),
+  frameRadius(4.5),frameThick(0.50),
   poleYAngle(22.5),poleGap(1.25),
-  poleRadius(1.8),poleWidth(0.8),
-  coilRadius(2.25),coilWidth(1.5),
-  poleMat("Stainless304"),coreMat("Iron"),
+  poleRadius(1.8),poleWidth(0.9),
+  coilRadius(2.31),coilWidth(1.75),
+  poleMat("Stainless304"),
   coilMat("Copper"),frameMat("Aluminium")
   /*!
     Constructor and defaults
@@ -102,7 +102,6 @@ OctupoleGenerator::generateOcto(FuncDataBase& Control,
   Control.addVariable(keyName+"CoilWidth",coilWidth);
 
   Control.addVariable(keyName+"PoleMat",poleMat);
-  Control.addVariable(keyName+"CoreMat",coreMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
   Control.addVariable(keyName+"FrameMat",frameMat);
     

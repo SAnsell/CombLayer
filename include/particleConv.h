@@ -119,6 +119,7 @@ class particleConv
   double mcplMomentumFromKE(const int,const double) const; 
 
   double mcplMass(const int) const;
+  double mass(const std::string&) const;
 
 };
  

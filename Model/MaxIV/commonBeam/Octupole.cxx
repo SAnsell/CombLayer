@@ -145,8 +145,6 @@ Octupole::populate(const FuncDataBase& Control)
   
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");
-  coreMat=ModelSupport::EvalMat<int>(Control,keyName+"CoreMat",
-				       baseName+"CoreMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat",
 				       baseName+"CoilMat");
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat",
@@ -266,10 +264,34 @@ Octupole::createObjects(Simulation& System)
   /// create triangles
   const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
 
+
+  std::vector<HeadRule> PoleExclude; 
+  int BN(buildIndex); // base
+  int PN(buildIndex);
+  for(size_t i=0;i<8;i++)
+    {
+      const std::string outerCut=
+	ModelSupport::getComposite(SMap,BN," -1001 ");
+
+      // Note a : is needed if poleRadius small (-2107 : 2101)");
+      Out=ModelSupport::getComposite(SMap,PN,"2103 -2104 -2107 ");
+      makeCell("Pole",System,cellIndex++,poleMat,0.0,Out+outerCut+FB);
+      PoleExclude.push_back(HeadRule(Out));
+
+
+      Out=ModelSupport::getComposite
+	(SMap,PN," 2003 -2004 2001 (-2103:2104) ");
+      makeCell("Coil",System,cellIndex++,coilMat,0.0,Out+outerCut+FB);
+      Out=ModelSupport::getComposite(SMap,PN," 2003 -2004 2001 ");
+      PoleExclude.back().addUnion(Out);
+      BN+=2;
+      PN+=10;
+    }
+
   Out=ModelSupport::getComposite
 	  (SMap,buildIndex,"501 -502 -1016 -1001 -1002 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB);
-  
+  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
+	   PoleExclude[0].complement().display());
   int CN(buildIndex+1);
   int TN(buildIndex+1);
   for(size_t i=1;i<7;i++)
@@ -278,14 +300,17 @@ Octupole::createObjects(Simulation& System)
       Out=ModelSupport::getComposite
 	  (SMap,TN,CN," 501 -502 -1001M -1002M -1003M ");
 	
-      makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB);
+      makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
+	       PoleExclude[i].complement().display());
       CN+=2;
       TN++;
     }
   Out=ModelSupport::getComposite
 	  (SMap,buildIndex,"508 -501 -1014 -1015 -1016 ");
-  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB);	
-      
+  makeCell("Triangle",System,cellIndex++,0,0.0,Out+FB+
+	   	       PoleExclude[7].complement().display());	
+
+  
   return;
 }
 

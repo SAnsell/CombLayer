@@ -238,8 +238,8 @@ MagnetM1::createLinks()
 
 void
 MagnetM1::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
