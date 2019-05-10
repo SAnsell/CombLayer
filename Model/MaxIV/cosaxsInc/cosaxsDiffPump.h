@@ -50,6 +50,9 @@ class cosaxsDiffPump :
   double apertureHeight;        ///< Vertical dimension of aperture
   double apertureWidth; ///< Horizontal dimension of aperture
   int    mat;                  ///< Material
+  double flangeRadius; ///< Flange radius
+  double flangeThick; ///< Flange thickness
+  int    flangeMat; ///< Flange material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

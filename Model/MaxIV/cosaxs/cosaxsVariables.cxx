@@ -1125,12 +1125,15 @@ exptVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   // Differential pumping
-  Control.addVariable(preName+"DiffPumpLength",20.0); // measured
+  Control.addVariable(preName+"DiffPumpLength",53.24); // measured - total length
   Control.addVariable(preName+"DiffPumpWidth",15.29); // measured
   Control.addVariable(preName+"DiffPumpHeight",6.52); // measured
   Control.addVariable(preName+"DiffPumpApertureHeight",1.02); // measured
   Control.addVariable(preName+"DiffPumpApertureWidth",1.51); // measured
   Control.addVariable(preName+"DiffPumpMat","Stainless304#0.01"); // guess
+  Control.addVariable(preName+"DiffPumpFlangeRadius",10.1); // measured
+  Control.addVariable(preName+"DiffPumpFlangeThick",2.1); // measured
+  Control.addVariable(preName+"DiffPumpFlangeMat","Stainless304"); // guess
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);

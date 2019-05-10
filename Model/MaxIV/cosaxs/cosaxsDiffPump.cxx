@@ -109,7 +109,10 @@ cosaxsDiffPump::cosaxsDiffPump(const cosaxsDiffPump& A) :
   length(A.length),width(A.width),height(A.height),
   apertureHeight(A.apertureHeight),
   apertureWidth(A.apertureWidth),
-  mat(A.mat)
+  mat(A.mat),
+  flangeRadius(A.flangeRadius),
+  flangeThick(A.flangeThick),
+  flangeMat(A.flangeMat)
   /*!
     Copy constructor
     \param A :: cosaxsDiffPump to copy
@@ -137,6 +140,9 @@ cosaxsDiffPump::operator=(const cosaxsDiffPump& A)
       apertureHeight=A.apertureHeight;
       apertureWidth=A.apertureWidth;
       mat=A.mat;
+      flangeRadius=A.flangeRadius;
+      flangeThick=A.flangeThick;
+      flangeMat=A.flangeMat;
     }
   return *this;
 }
@@ -175,6 +181,9 @@ cosaxsDiffPump::populate(const FuncDataBase& Control)
   apertureWidth=Control.EvalVar<double>(keyName+"ApertureWidth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
+  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
   return;
 }
@@ -206,16 +215,20 @@ cosaxsDiffPump::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+21,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+21));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+      ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(length),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+22));
 
     }
+
+  // main cell
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(flangeThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length-flangeThick),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -229,6 +242,9 @@ cosaxsDiffPump::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(apertureHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(apertureHeight/2.0),Z);
+
+  // flange
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
   return;
 }
@@ -247,13 +263,22 @@ cosaxsDiffPump::createObjects(Simulation& System)
   const std::string backStr(backRule());
   //  const std::string frontCompl(frontComplement());
   //  const std::string backCompl(backComplement());
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 (-13:14:-15:16) ");
-  makeCell("MainCell",System,cellIndex++,mat,0.0,Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -27 (-13:14:-15:16) ");
+  makeCell("FlangeBack",System,cellIndex++,flangeMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -27 (-13:14:-15:16) ");
+  makeCell("FlangeFront",System,cellIndex++,flangeMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 (-3:4:-5:6) ");
+  makeCell("VoidBetweenFlanges",System,cellIndex++,0,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 (-13:14:-15:16) ");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
   makeCell("Aperture",System,cellIndex++,0,0.0,Out+frontStr+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -27 ");
   addOuterSurf(Out+frontStr+backStr);
 
   return;
