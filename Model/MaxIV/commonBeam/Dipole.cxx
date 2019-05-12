@@ -139,6 +139,7 @@ Dipole::populate(const FuncDataBase& Control)
   poleWidth=Control.EvalVar<double>(keyName+"PoleWidth");
   poleHeight=Control.EvalVar<double>(keyName+"PoleHeight");
 
+  coilGap=Control.EvalVar<double>(keyName+"CoilGap");
   coilLength=Control.EvalVar<double>(keyName+"CoilLength");
   coilWidth=Control.EvalVar<double>(keyName+"CoilWidth");
   coilHeight=Control.EvalVar<double>(keyName+"CoilHeight");
@@ -191,96 +192,57 @@ Dipole::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,cylEnd,YPole);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(),YPole);
-  ModelSupport::buildPlane(SMap,buildIndex+16,cylEnd,YPole);
-      
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+15,Origin-Z*(poleGap/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+16,Origin-Z*(poleHeight+poleGap/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+25,Origin+Z*(poleGap/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+26,Origin+Z*(poleHeight+poleGap/2.0),Z);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+17,cylCentre-X*(poleWidth/2.0),Z,poleRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+27,cylCentre+X*(poleWidth/2.0),Z,poleRadius);
 
   
 
-  // coils:
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(coilLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(coilLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*coilWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*coilWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(vertGap/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(vertGap/2.0),Z);
-  // corners:
-  const Geometry::Vec3D LFACent
-    (Origin-X*(coilWidth-coilCornerRad)-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D LFBCent
-    (Origin-X*coilCornerRad-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D LBACent
-    (Origin-X*(coilWidth-coilCornerRad)+Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D LBBCent
-    (Origin-X*coilCornerRad+Y*(coilLength/2.0-coilCornerRad));
+  // COILS:
+  //coil angle is currently half of radius angle:
+  const Geometry::Quaternion QCR=
+    Geometry::Quaternion::calcQRotDeg(-poleAngle/2.0,Z);
 
-  const Geometry::Vec3D RFACent
-    (Origin+X*(coilWidth-coilCornerRad)-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D RFBCent
-    (Origin+X*coilCornerRad-Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D RBACent
-    (Origin+X*(coilWidth-coilCornerRad)+Y*(coilLength/2.0-coilCornerRad));
-  const Geometry::Vec3D RBBCent
-    (Origin+X*coilCornerRad+Y*(coilLength/2.0-coilCornerRad));
-
+  const Geometry::Vec3D XCoil=QR.makeRotate(X);
+  const Geometry::Vec3D YCoil=QR.makeRotate(Y);
   
-  ModelSupport::buildPlane(SMap,buildIndex+111,LFACent,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+112,LBACent,Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+113,LFACent,X);
-  ModelSupport::buildPlane(SMap,buildIndex+114,LFBCent,X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+133,RFACent,X);
-  ModelSupport::buildPlane(SMap,buildIndex+134,RFBCent,X);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+117,LFACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+127,LFBCent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+118,LBACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+128,LBBCent,Z,coilCornerRad);
+  const Geometry::Vec3D coilOrg=Origin+YCoil*(length/2.0);
   
-  ModelSupport::buildCylinder(SMap,buildIndex+137,RFACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+147,RFBCent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+138,RBACent,Z,coilCornerRad);
-  ModelSupport::buildCylinder(SMap,buildIndex+148,RBBCent,Z,coilCornerRad);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+101,coilOrg-(coidLength/2.0),YCoil);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+102,coilOrg+(coidLength/2.0),YCoil);
 
+  ModelSupport::buildPlane(SMap,buildIndex+103,coilOrg-X*coilWidth,XCoil);
+  ModelSupport::buildPlane(SMap,buildIndex+104,coilOrg+X*coilWidth,XCoil);
 
-  // Pole pieces  
-  // gap to centre:
-  const double ang[]={poleYAngle,180-poleYAngle,-poleYAngle,180.0+poleYAngle};
-  const double CGap(poleRadius-
-		    sqrt(poleRadius*poleRadius-poleWidth*poleWidth/4.0));
-	  
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(poleLength/2.0),Y);
-  addSurf("FrontQuadPole",SMap.realSurf(buildIndex+201));
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(poleLength/2.0),Y);
-  addSurf("BackQuadPole",-SMap.realSurf(buildIndex+202));
+  ModelSupport::buildPlane
+    (SMap,buildIndex+105,coilOrg-Z*(coilGap/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+115,coilOrg-Z*(coilHeight+coilGap/2.0),Z);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+106,coilOrg+Z*(coilGap/2.0),Z);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+116,coilOrg+Z*(coilHeight+coilGap/2.0),Z);
   
-  int CI(buildIndex+200);
-  for(size_t i=0;i<2;i++)
-    {
-      const Geometry::Vec3D ZOrg((!i) ? Origin-Z*poleZStep : Origin+Z*poleZStep);
-      for(size_t j=0;j<2;j++)
-	{
-	  // centre of flat part
-	  const Geometry::Quaternion QR=
-	    Geometry::Quaternion::calcQRotDeg(ang[i*2+j],Y);
-	  
-	  Geometry::Vec3D AX(X);
-	  Geometry::Vec3D AZ(Z);
-	  QR.rotate(AX);
-	  QR.rotate(AZ);
-	  
-	  Geometry::Vec3D fPoint(ZOrg+AX*(CGap+poleStep));
-	  // centre of cylinder
-	  Geometry::Vec3D cPoint(ZOrg+AX*(poleStep+poleRadius));
-	  
-	  ModelSupport::buildPlane(SMap,CI+3,ZOrg-AZ*(poleWidth/2.0),AZ);
-	  ModelSupport::buildPlane(SMap,CI+4,ZOrg+AZ*(poleWidth/2.0),AZ);
-	  ModelSupport::buildCylinder(SMap,CI+7,cPoint,Y,poleRadius);
-	  ModelSupport::buildPlane(SMap,CI+6,fPoint,AX);
-	  CI+=100;
-	}
-    }
+  // Coil end cylinders
+  ModelSupport::buildCyldiner
+    (SMap,buildIndex+107,coilOrg-(coidLength/2.0),Z,coilWidth);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+108,coilOrg+(coidLength/2.0),Z,coilWidth);
+
   return;
 }
 
@@ -293,10 +255,12 @@ Dipole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Dipole","createObjects");
 
+  
   std::string Out;
-  // Outer steel
+  // Pole pieces
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+				 "1 -2  ");
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex,

@@ -42,6 +42,7 @@ class DipoleGenerator
   double length;                 ///< frame length
 
   double poleAngle;              ///< Arc of cylinder angle
+  double poleRadius;             ///< radius of cylinder angle
   double poleGap;                ///< Gap from centre point
   double poleWidth;              ///< width [in rotated frame]
   double poleHeight;             ///< width [in rotated frame]

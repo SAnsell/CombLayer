@@ -55,6 +55,7 @@ class Dipole : public attachSystem::FixedRotate,
   double poleWidth;              ///< width [in rotated frame]
   double poleHeight;             ///< width [in rotated frame]
 
+  double coilGap;                ///< Separation of coils
   double coilLength;             ///< Length of coil
   double coilWidth;              ///< Width of coil
   double coilHeight;             ///< Height of coil
