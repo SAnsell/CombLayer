@@ -314,7 +314,7 @@ DiffPumpXIADP03::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DiffPumpXIADP03","createObjects");
 
-  std::string Out;
+  std::string Out,side;
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
   //  const std::string frontCompl(frontComplement());
@@ -339,28 +339,43 @@ DiffPumpXIADP03::createObjects(Simulation& System)
 				 " 32 -2 3 -4 5 -6 (-33:34:-35:36) ");
   System.addCell(cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -32 3 -4 5 -6 (-13:14:-15:16) ");
-  makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
+  side=ModelSupport::getComposite(SMap,buildIndex," 31 -32 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 (-13:14:-15:16) ");
+  makeCell("Body",System,cellIndex++,mat,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 31 -32 13 -14 15 -16 ");
-  makeCell("Aperture",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16 ");
+  makeCell("Aperture",System,cellIndex++,0,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 46 -5 ");
-  makeCell("MagnetLowVoid",System,cellIndex++,0,0.0,Out);
+  side=ModelSupport::getComposite(SMap,buildIndex,"41 -42 43 ");
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 45 -46 ");
-  makeCell("MagnetLow",System,cellIndex++,magnetMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -44 46 -5 ");
+  makeCell("MagnetLowVoid",System,cellIndex++,0,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 6 -55 ");
-  makeCell("MagnetUpVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -44 45 -46 ");
+  makeCell("MagnetLow",System,cellIndex++,magnetMat,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 55 -56 ");
-  makeCell("MagnetUp",System,cellIndex++,magnetMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -44 6 -55 ");
+  makeCell("MagnetUpVoid",System,cellIndex++,0,0.0,Out+side);
 
-  // TODO: split this cell
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 -27 (-3:4:-5:6) (-41:42:-43:44:-45:5) (-41:42:-43:44:-6:56)");
-  makeCell("VoidBetweenFlanges",System,cellIndex++,0,0.0,Out+backStr); // here
+  Out=ModelSupport::getComposite(SMap,buildIndex," -44 55 -56 ");
+  makeCell("MagnetUp",System,cellIndex++,magnetMat,0.0,Out+side);
+
+  // void around base and magnets
+  side=ModelSupport::getComposite(SMap,buildIndex,"41 -42 -27");
+
+  std::vector<std::string> vec = {" 6 44 "," 43 -44 56 "," -43 6 "," -3 5 -6 ",
+				  " -43 -5 "," 43 -44 -45 "," 44 -5 ",
+				  " 4 5 -6 "};
+  for (std::string& v: vec)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex,v)+side;
+      System.addCell(cellIndex++,0,0.0,Out);
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -41 -27 (-3:4:-5:6)");
+  System.addCell(cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 42 -2 -27 (-3:4:-5:6)");
+  System.addCell(cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 ");
   addOuterSurf(Out+frontStr+backStr);
