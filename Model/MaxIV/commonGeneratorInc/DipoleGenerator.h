@@ -40,16 +40,17 @@ class DipoleGenerator
  private:
 
   double length;                 ///< frame length
-
+  double height;                 ///< Height of coil/pole
+  
   double poleAngle;              ///< Arc of cylinder angle
   double poleRadius;             ///< radius of cylinder angle
   double poleGap;                ///< Gap from centre point
   double poleWidth;              ///< width [in rotated frame]
-  double poleHeight;             ///< width [in rotated frame]
 
+  double coilGap;                ///< Gap between coils [full]
   double coilLength;             ///< Length of coil
   double coilWidth;              ///< Width of coil
-  double coilHeight;             ///< Height of coil
+
   
   std::string poleMat;           ///< pole piece of magnet
   std::string coilMat;           ///< coil material

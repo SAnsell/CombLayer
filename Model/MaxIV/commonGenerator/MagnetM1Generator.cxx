@@ -53,6 +53,7 @@
 
 #include "PreBendPipeGenerator.h"
 #include "EPCombineGenerator.h"
+#include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "OctupoleGenerator.h"
 
@@ -63,8 +64,8 @@ namespace setVariable
 
 MagnetM1Generator::MagnetM1Generator() :
   blockYStep(1.5),length(229.0),
-  outerVoid(12.0),ringVoid(12.0),baseVoid(12.0),
-  topVoid(12.0),baseThick(8.0),wallThick(6.0),
+  outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
+  baseVoid(12.0),baseThick(8.0),wallThick(6.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -108,6 +109,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,keyName+"EPCombine");
 
+  setVariable::DipoleGenerator DGen;
   setVariable::OctupoleGenerator OGen;
   setVariable::QuadrupoleGenerator QGen;
 
@@ -120,6 +122,9 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 
   // +5 cm
   QGen.generateQuad(Control,keyName+"QDend",92.50,23.0);
+
+  // +5 cm
+  DGen.generateDipole(Control,keyName+"DIPm",135.50,60.0);
 
 
   

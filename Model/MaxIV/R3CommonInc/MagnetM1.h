@@ -61,6 +61,7 @@ class MagnetM1 :
   int voidMat;                  ///< void material
   int wallMat;                  ///< wall material
 
+  attachSystem::InnerZone buildZone;   ///<Main outerVoid
   /// dipole connection pipe
   std::shared_ptr<xraySystem::PreBendPipe> preDipole;
   /// Electron/photon combined track
@@ -74,8 +75,9 @@ class MagnetM1 :
   std::shared_ptr<xraySystem::Octupole> Oxy;
   /// Quad [Second]
   std::shared_ptr<xraySystem::Quadrupole> QDend;
+  /// Dipole
+  std::shared_ptr<xraySystem::Dipole> DIPm;
 
-  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   

@@ -72,6 +72,10 @@ class PreBendPipe : public attachSystem::FixedOffset,
 
   /// Inner buildzone for inner void
   attachSystem::InnerZone buildZone;
+  /// Inner buildzone for inner void
+  attachSystem::InnerZone bendZone;
+  /// Inner buildzone for inner void
+  attachSystem::InnerZone exitZone;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -90,6 +94,9 @@ class PreBendPipe : public attachSystem::FixedOffset,
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   attachSystem::InnerZone& getBuildZone() { return buildZone; }
+  attachSystem::InnerZone& getBendZone() { return bendZone; }
+  attachSystem::InnerZone& getExitZone() { return exitZone; }
+  
 };
 
 }

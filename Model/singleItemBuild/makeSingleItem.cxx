@@ -93,6 +93,7 @@
 #include "VacuumPipe.h"
 
 #include "CryoMagnetBase.h"
+#include "Dipole.h"
 #include "Quadrupole.h"
 #include "Octupole.h"
 #include "EPSeparator.h"

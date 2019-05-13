@@ -91,6 +91,12 @@ class InnerZone
 			      const long int);
 
 
+  int triVoidUnit(Simulation&, MonteCarlo::Object*,
+		  HeadRule&,const HeadRule&,const HeadRule&);
+
+  int triVoidUnit(Simulation&, MonteCarlo::Object*,
+		  const HeadRule&,const HeadRule&);
+
   int cutVoidUnit(Simulation&, MonteCarlo::Object*,
 		  HeadRule&,const HeadRule&,const HeadRule&);
 

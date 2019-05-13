@@ -239,6 +239,68 @@ InnerZone::constructMiddleSurface(ModelSupport::surfRegister& SMap,
 }
 
 int
+InnerZone::triVoidUnit(Simulation& System,
+		       MonteCarlo::Object* masterCell,
+		       const HeadRule& CutA,
+		       const HeadRule& CutB)
+  /*!
+    Tri construct for the main void.
+    Note that CutA and CutB define the region to be cut.
+    The regions created are pre-mid-post
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param CutA :: Cut surface A
+    \param CutB :: Cut surface B
+    \return cell nubmer for last cell unit
+  */
+{
+  ELog::RegMethod RegA("InnerZone","tirVoidUnit(HR,HR)");
+
+  return triVoidUnit(System,masterCell,frontDivider,CutA,CutB);
+}
+
+int
+InnerZone::triVoidUnit(Simulation& System,
+		       MonteCarlo::Object* masterCell,
+		       HeadRule& FDivider,
+		       const HeadRule& CutA,
+		       const HeadRule& CutB)
+  /*!
+    Tri-cutter for the main void.
+    Note that CutA and CutB define the region to be cut.
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param CutA :: Cut surface A
+    \param CutB :: Cut surface B
+    \return cell number of inner zone
+  */
+{
+  ELog::RegMethod RegA("InnerZone","cutVoidUnit(FDivider,HR,HR)");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+  
+  Out=surroundHR.display()+
+    FDivider.display()+CutA.complement().display();
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  Out=surroundHR.display()+CutA.display()+CutB.display();
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+
+  FDivider=CutB;
+  FDivider.makeComplement();
+
+  // make the master cell valid:
+  refrontMasterCell(masterCell,FDivider);
+  return cellIndex-1;
+}
+
+int
 InnerZone::cutVoidUnit(Simulation& System,
 		       MonteCarlo::Object* masterCell,
 		       HeadRule& FDivider,
@@ -266,12 +328,13 @@ InnerZone::cutVoidUnit(Simulation& System,
   Out=surroundHR.display()+
     FDivider.display()+CutA.complement().display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   FDivider=CutB;
   FDivider.makeComplement();
 
   // make the master cell valid:
   refrontMasterCell(masterCell,FDivider);
+  ELog::EM<<"Out["<<FCName<<"] == "<<*masterCell<<ELog::endDiag;
+    
   return cellIndex-1;
 }
 

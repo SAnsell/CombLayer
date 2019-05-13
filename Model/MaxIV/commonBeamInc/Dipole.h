@@ -48,17 +48,16 @@ class Dipole : public attachSystem::FixedRotate,
 
 
   double length;                 ///< frame length
-
+  double height;                 ///< height of frame
+  
   double poleAngle;              ///< Arc of cylinder angle
   double poleRadius;             ///< radius of cylinder angle
   double poleGap;                ///< Gap from centre point
   double poleWidth;              ///< width [in rotated frame]
-  double poleHeight;             ///< width [in rotated frame]
 
   double coilGap;                ///< Separation of coils
   double coilLength;             ///< Length of coil
   double coilWidth;              ///< Width of coil
-  double coilHeight;             ///< Height of coil
   
   int poleMat;                     ///< pole piece of magnet
   int coilMat;                     ///< coil material

@@ -57,6 +57,7 @@
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
+#include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
@@ -191,6 +192,9 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::OctupoleGenerator OGen;
   OGen.generateOcto(Control,"OXX",20.0,25.0);
 
+  setVariable::DipoleGenerator DGen;
+  DGen.generateDipole(Control,"M1BlockDIM",0.0,60.0);
+  
   return;
 }
 

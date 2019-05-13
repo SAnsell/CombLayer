@@ -90,7 +90,9 @@ PreBendPipe::PreBendPipe(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  buildZone(*this,cellIndex)
+  buildZone(*this,cellIndex),
+  bendZone(*this,cellIndex),
+  exitZone(*this,cellIndex)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -257,13 +259,21 @@ PreBendPipe::createObjects(Simulation& System)
   const std::string frontSurf(ExternalCut::getRuleStr("front"));
 
   // Construct the inner zone a a innerZone
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 17  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 17 ");
   buildZone.setSurround(HeadRule(Out));
   buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1001)));
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
   buildZone.setVoidMat(voidMat);
-
   buildZone.constructMasterCell(System);
+
+    // Construct the second inner zone a
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1007 ((17 -10):-117:-115:116:110) ");
+  bendZone.setSurround(HeadRule(Out));
+  bendZone.setFront(HeadRule(SMap.realSurf(buildIndex+101)));
+  bendZone.setBack(HeadRule(-SMap.realSurf(buildIndex+102)));
+  bendZone.setVoidMat(voidMat);
+  bendZone.constructMasterCell(System);
 
   // cylinder half
   Out=ModelSupport::getComposite
@@ -333,9 +343,7 @@ PreBendPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ) : (210 217) :-115:116) ");
   makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
-
-
-
+  
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 -2007 ");
   addOuterSurf(Out+frontSurf);
 

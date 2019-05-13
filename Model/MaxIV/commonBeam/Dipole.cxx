@@ -132,22 +132,20 @@ Dipole::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
+  height=Control.EvalVar<double>(keyName+"Height");
  
   poleAngle=Control.EvalVar<double>(keyName+"PoleAngle");
-  poleRadius=Control.EvalVar<double>(keyName+"PoleRadius");
   poleGap=Control.EvalVar<double>(keyName+"PoleGap");
   poleWidth=Control.EvalVar<double>(keyName+"PoleWidth");
-  poleHeight=Control.EvalVar<double>(keyName+"PoleHeight");
 
   coilGap=Control.EvalVar<double>(keyName+"CoilGap");
   coilLength=Control.EvalVar<double>(keyName+"CoilLength");
   coilWidth=Control.EvalVar<double>(keyName+"CoilWidth");
-  coilHeight=Control.EvalVar<double>(keyName+"CoilHeight");
 
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
   
-
+  poleRadius=length/(M_PI*poleAngle/180.0);
   return;
 }
 
@@ -192,15 +190,13 @@ Dipole::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,cylEnd,YPole);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+15,Origin-Z*(poleGap/2.0),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+16,Origin-Z*(poleHeight+poleGap/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+25,Origin+Z*(poleGap/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+26,Origin+Z*(poleHeight+poleGap/2.0),Z);
+    (SMap,buildIndex+16,Origin+Z*(poleGap/2.0),Z);
 
   ModelSupport::buildCylinder
     (SMap,buildIndex+17,cylCentre-X*(poleWidth/2.0),Z,poleRadius);
@@ -208,21 +204,19 @@ Dipole::createSurfaces()
     (SMap,buildIndex+27,cylCentre+X*(poleWidth/2.0),Z,poleRadius);
 
   
-
   // COILS:
   //coil angle is currently half of radius angle:
   const Geometry::Quaternion QCR=
     Geometry::Quaternion::calcQRotDeg(-poleAngle/2.0,Z);
 
-  const Geometry::Vec3D XCoil=QR.makeRotate(X);
-  const Geometry::Vec3D YCoil=QR.makeRotate(Y);
+  const Geometry::Vec3D XCoil=QCR.makeRotate(X);
+  const Geometry::Vec3D YCoil=QCR.makeRotate(Y);
   
   const Geometry::Vec3D coilOrg=Origin+YCoil*(length/2.0);
-  
   ModelSupport::buildPlane
-    (SMap,buildIndex+101,coilOrg-(coidLength/2.0),YCoil);
+    (SMap,buildIndex+101,coilOrg-YCoil*(coilLength/2.0),YCoil);
   ModelSupport::buildPlane
-    (SMap,buildIndex+102,coilOrg+(coidLength/2.0),YCoil);
+    (SMap,buildIndex+102,coilOrg+YCoil*(coilLength/2.0),YCoil);
 
   ModelSupport::buildPlane(SMap,buildIndex+103,coilOrg-X*coilWidth,XCoil);
   ModelSupport::buildPlane(SMap,buildIndex+104,coilOrg+X*coilWidth,XCoil);
@@ -230,18 +224,22 @@ Dipole::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+105,coilOrg-Z*(coilGap/2.0),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+115,coilOrg-Z*(coilHeight+coilGap/2.0),Z);
-
-  ModelSupport::buildPlane
     (SMap,buildIndex+106,coilOrg+Z*(coilGap/2.0),Z);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+116,coilOrg+Z*(coilHeight+coilGap/2.0),Z);
   
   // Coil end cylinders
-  ModelSupport::buildCyldiner
-    (SMap,buildIndex+107,coilOrg-(coidLength/2.0),Z,coilWidth);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,coilOrg-YCoil*(coilLength/2.0),Z,coilWidth);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+108,coilOrg+YCoil*(coilLength/2.0),Z,coilWidth);
+
+  // Cylinder cutters
   ModelSupport::buildPlane
-    (SMap,buildIndex+108,coilOrg+(coidLength/2.0),Z,coilWidth);
+    (SMap,buildIndex+201,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+202,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
+
+  FixedComp::setConnect(0,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
+  FixedComp::setConnect(1,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
 
   return;
 }
@@ -255,120 +253,55 @@ Dipole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Dipole","createObjects");
 
-  
-  std::string Out;
-  // Pole pieces
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "1 -2  ");
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "101 -1 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("FFrame",System,cellIndex++,0,0.0,Out);
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-102 2 13 -14 15 -16 (-3:4:-5:6) ");
-  makeCell("BFrame",System,cellIndex++,0,0.0,Out);
-
-  std::string TB[2];
-  TB[0]=ModelSupport::getComposite(SMap,buildIndex," -105 5 ");
-  TB[1]=ModelSupport::getComposite(SMap,buildIndex," 106 -6 ");
-  for(size_t i=0;i<2;i++)
-    {
-      // Left  coil
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "101 -102 103 -1000 "
-				     "(-117 : 111 : 113) "
-				     "(-118 : -112 : 113) "
-				     "(-127 : 111 : -114) "
-				     "(-128 : -112 : -114) ");
-      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,Out+TB[i]);
-      
-      // corners for coils
-      Out=ModelSupport::getComposite(SMap,buildIndex,"103 101 117 -111 -113 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"103 -102 118 112 -113 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,"-1000 101 127 -111 114 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-1000 -102 128  112 114 ");
-      makeCell("CoilLLCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      
-      // Right Lower coil
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "101 -102 -104 1000  "
-				     "(-137 : 111 : -133) "
-				     "(-138 : -112 : -133) "
-				     "(-147 : 111 : 134) "
-				     "(-148 : -112 : 134) ");
-      makeCell("CoilLowerLeft",System,cellIndex++,coilMat,0.0,Out+TB[i]);
-  
-      // corners for coils
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-104 101 137 -111 133 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "-104 -102 138 112 133 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "1000 101 147 -111 -134 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-      Out=ModelSupport::getComposite(SMap,buildIndex,
-				     "1000 -102 148  112 -134 ");
-      makeCell("CoilLRCorner",System,cellIndex++,0,0.0,Out+TB[i]);
-
-    }
-  // Now make edge voids:
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 3 -103 5 -6 ");
-  makeCell("LEdge",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 104 -4 5 -6 ");
-  makeCell("REdge",System,cellIndex++,0,0.0,Out);
-
-  // Pole Pieces
   const std::string ICell=innerTube.display();
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 201 -202 203 -204 (206:-207) ");
+  std::string Out;
+
+  // mid void
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 15 -16 103 -104 (-107:101) (-108:-102)");
+  makeCell("MidVoid",System,cellIndex++,0,0.0,Out+ICell);
+
+  // side voids
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (-1:2:17:-27) -15 105 103 -104 (-107:101) (-108:-102)");
+  makeCell("BaseVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (-1:2:17:-27) 16 -106 103 -104 (-107:101) (-108:-102)");
+  makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
+
+  // Pole pieces
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -15 5 -17 27 ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 -2000 201 -202 1000 -104  (-203:204:(-206  207) )");
-  makeCell("VoidPoleA",System,cellIndex++,0,0.0,Out+ICell);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 201 -202 303 -304 (306:-307) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 16 -6 -17 27 ");
   makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "105 -2000 201 -202 -1000 103  (-303:304:(-306  307) )");
-  makeCell("VoidPoleB",System,cellIndex++,0,0.0,Out+ICell);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 201 -202 403 -404 (406:-407) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 2000 201 -202 1000 -104  (-403:404:(-406  407) )");
-  makeCell("VoidPoleC",System,cellIndex++,0,0.0,Out+ICell);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 201 -202 503 -504 (506:-507) ");
-  makeCell("Pole",System,cellIndex++,poleMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 "-106 2000 201 -202 -1000 103  (-503:504:(-506  507) )");
-  makeCell("VoidPoleD",System,cellIndex++,0,0.0,Out+ICell);
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (-107:101) (-108:-102) -105 5 103 -104 "
+    " (-1:2:17:-27) ");
+  makeCell("CoilA",System,cellIndex++,coilMat,0.0,Out);
 
-  if (poleLength<coilLength-Geometry::zeroTol)
-    {
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"105 -106 202 -102 103 -104 ");
-      makeCell("ExtraPoleVoidA",System,cellIndex++,0,0.0,Out+ICell);
-      Out=ModelSupport::getComposite
-	(SMap,buildIndex,"105 -106 101 -201 103 -104 ");
-      makeCell("ExtraPoleVoidB",System,cellIndex++,0,0.0,Out+ICell);
-    }
-  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 13 -14 15 -16");  
-  addOuterSurf(Out);      
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," (-107:101) (-108:-102) 106 -6 103 -104 "
+    " (-1:2:17:-27) ");
+  makeCell("CoilB",System,cellIndex++,coilMat,0.0,Out);
 
+  // Void ends
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 201 107 -101 5 -6 103 -104 ");
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -202 108 102 5 -6 103 -104 ");
+  makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 5 -6 103 -104 201 -202 ");
+  addOuterSurf(Out);
+  
   return;
 }
 
@@ -380,27 +313,16 @@ Dipole::createLinks()
 {
   ELog::RegMethod RegA("Dipole","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(coilLength/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(coilLength/2.0),Y);     
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);     
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);     
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);     
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);     
-
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+101));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
   
   return;
 }
 
 void
 Dipole::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

@@ -57,9 +57,9 @@ namespace setVariable
 {
 
 DipoleGenerator::DipoleGenerator() :
-  poleAngle(1.5),poleRadius(191.4),
-  poleGap(1.5),poleWidth(3.0),poleHeight(4.0),
-  coilGap(4.0),coilLength(8.0),coilWidth(6.0),
+  height(20.0),poleAngle(1.5),poleRadius(1910.0),
+  poleGap(1.5),poleWidth(3.0),
+  coilGap(4.0),coilLength(60.0),coilWidth(6.0),
   poleMat("Stainless304"),coilMat("Copper")
   /*!
     Constructor and defaults
@@ -90,17 +90,17 @@ DipoleGenerator::generateDipole(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);
   
   Control.addVariable(keyName+"Length",length);
-
+  Control.addVariable(keyName+"Height",height);
+  
   Control.addVariable(keyName+"PoleAngle",poleAngle);
   Control.addVariable(keyName+"PoleRadius",poleRadius);
   Control.addVariable(keyName+"PoleGap",poleGap);
   Control.addVariable(keyName+"PoleWidth",poleWidth);
-  Control.addVariable(keyName+"PoleHeight",poleHeight);
 
   Control.addVariable(keyName+"CoilGap",coilGap);
   Control.addVariable(keyName+"CoilLength",coilLength);
   Control.addVariable(keyName+"CoilWidth",coilWidth);
-  Control.addVariable(keyName+"CoilHeight",coilHeight);
+
 
   Control.addVariable(keyName+"PoleMat",poleMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
