@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxs/cosaxsDiffPump.cxx
+ * File:   Model/MaxIV/cosaxs/DiffPumpXIADP03.cxx
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -83,12 +83,12 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
-#include "cosaxsDiffPump.h"
+#include "DiffPumpXIADP03.h"
 
-namespace xraySystem
+namespace constructSystem
 {
 
-cosaxsDiffPump::cosaxsDiffPump(const std::string& Key)  :
+DiffPumpXIADP03::DiffPumpXIADP03(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
@@ -100,7 +100,7 @@ cosaxsDiffPump::cosaxsDiffPump(const std::string& Key)  :
   */
 {}
 
-cosaxsDiffPump::cosaxsDiffPump(const cosaxsDiffPump& A) :
+DiffPumpXIADP03::DiffPumpXIADP03(const DiffPumpXIADP03& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
@@ -118,15 +118,15 @@ cosaxsDiffPump::cosaxsDiffPump(const cosaxsDiffPump& A) :
   flangeVoidThick(A.flangeVoidThick)
   /*!
     Copy constructor
-    \param A :: cosaxsDiffPump to copy
+    \param A :: DiffPumpXIADP03 to copy
   */
 {}
 
-cosaxsDiffPump&
-cosaxsDiffPump::operator=(const cosaxsDiffPump& A)
+DiffPumpXIADP03&
+DiffPumpXIADP03::operator=(const DiffPumpXIADP03& A)
   /*!
     Assignment operator
-    \param A :: cosaxsDiffPump to copy
+    \param A :: DiffPumpXIADP03 to copy
     \return *this
   */
 {
@@ -153,30 +153,30 @@ cosaxsDiffPump::operator=(const cosaxsDiffPump& A)
   return *this;
 }
 
-cosaxsDiffPump*
-cosaxsDiffPump::clone() const
+DiffPumpXIADP03*
+DiffPumpXIADP03::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new cosaxsDiffPump(*this);
+    return new DiffPumpXIADP03(*this);
 }
 
-cosaxsDiffPump::~cosaxsDiffPump()
+DiffPumpXIADP03::~DiffPumpXIADP03()
   /*!
     Destructor
   */
 {}
 
 void
-cosaxsDiffPump::populate(const FuncDataBase& Control)
+DiffPumpXIADP03::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("cosaxsDiffPump","populate");
+  ELog::RegMethod RegA("DiffPumpXIADP03","populate");
 
   FixedOffset::populate(Control);
 
@@ -198,7 +198,7 @@ cosaxsDiffPump::populate(const FuncDataBase& Control)
 }
 
 void
-cosaxsDiffPump::createUnitVector(const attachSystem::FixedComp& FC,
+DiffPumpXIADP03::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -206,7 +206,7 @@ cosaxsDiffPump::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("cosaxsDiffPump","createUnitVector");
+  ELog::RegMethod RegA("DiffPumpXIADP03","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -215,12 +215,12 @@ cosaxsDiffPump::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-cosaxsDiffPump::createSurfaces()
+DiffPumpXIADP03::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("cosaxsDiffPump","createSurfaces");
+  ELog::RegMethod RegA("DiffPumpXIADP03","createSurfaces");
 
   if (!frontActive())
     {
@@ -271,13 +271,13 @@ cosaxsDiffPump::createSurfaces()
 }
 
 void
-cosaxsDiffPump::createObjects(Simulation& System)
+DiffPumpXIADP03::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("cosaxsDiffPump","createObjects");
+  ELog::RegMethod RegA("DiffPumpXIADP03","createObjects");
 
   std::string Out;
   const std::string frontStr(frontRule());
@@ -321,12 +321,12 @@ cosaxsDiffPump::createObjects(Simulation& System)
 
 
 void
-cosaxsDiffPump::createLinks()
+DiffPumpXIADP03::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("cosaxsDiffPump","createLinks");
+  ELog::RegMethod RegA("DiffPumpXIADP03","createLinks");
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
@@ -346,7 +346,7 @@ cosaxsDiffPump::createLinks()
 }
 
 void
-cosaxsDiffPump::createAll(Simulation& System,
+DiffPumpXIADP03::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -356,7 +356,7 @@ cosaxsDiffPump::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("cosaxsDiffPump","createAll");
+  ELog::RegMethod RegA("DiffPumpXIADP03","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
@@ -368,4 +368,4 @@ cosaxsDiffPump::createAll(Simulation& System,
   return;
 }
 
-}  // xraySystem
+}  // constructSystem

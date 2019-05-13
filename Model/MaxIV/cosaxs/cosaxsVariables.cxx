@@ -1128,12 +1128,12 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiffPumpLength",53.24); // measured - total length
   Control.addVariable(preName+"DiffPumpWidth",15.29); // measured
   Control.addVariable(preName+"DiffPumpHeight",6.52); // measured
-  Control.addVariable(preName+"DiffPumpApertureHeight",1.02); // measured
-  Control.addVariable(preName+"DiffPumpApertureWidth",1.51); // measured
+  Control.addVariable(preName+"DiffPumpApertureHeight",0.7); // Roberto said
+  Control.addVariable(preName+"DiffPumpApertureWidth",0.7); // Roberto said
   Control.addVariable(preName+"DiffPumpMat","Stainless304#0.01"); // guess
   Control.addVariable(preName+"DiffPumpFlangeRadius",10.1); // measured
   Control.addVariable(preName+"DiffPumpFlangeThick",2.1); // measured
-  Control.addVariable(preName+"DiffPumpFlangeMat","Stainless304"); // guess
+  Control.addVariable(preName+"DiffPumpFlangeMat","Stainless304"); // XIA web site: https://www.xia.com/differential_pump.html
   Control.addVariable(preName+"DiffPumpFlangeVoidWidth",14.61); // measured
   Control.addVariable(preName+"DiffPumpFlangeVoidHeight",5.71); // measured
   Control.addVariable(preName+"DiffPumpFlangeVoidThick",4.44); // measured

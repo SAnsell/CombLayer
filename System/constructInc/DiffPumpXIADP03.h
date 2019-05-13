@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsDiffPump.h
+ * File:   Model/MaxIV/cosaxsInc/DiffPumpXIADP03.h
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -19,23 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsDiffPump_h
-#define xraySystem_cosaxsDiffPump_h
+#ifndef constructSystem_DiffPumpXIADP03_h
+#define constructSystem_DiffPumpXIADP03_h
 
 class Simulation;
 
-namespace xraySystem
+namespace constructSystem
 {
 
 /*!
-  \class cosaxsDiffPump
+  \class DiffPumpXIADP03
   \version 1.0
   \author Konstantin Batkov
   \date 3 May 2019
-  \brief CoSAXS differential pumping. B310A_E01_VAC_IPX02
+  \brief DP-03 differential pump by XIA
+         https://www.xia.com/differential_pump.html
 */
 
-class cosaxsDiffPump :
+class DiffPumpXIADP03 :
     public attachSystem::ContainedComp,
     public attachSystem::FixedOffset,
     public attachSystem::CellMap,
@@ -67,11 +68,11 @@ class cosaxsDiffPump :
 
  public:
 
-  cosaxsDiffPump(const std::string&);
-  cosaxsDiffPump(const cosaxsDiffPump&);
-  cosaxsDiffPump& operator=(const cosaxsDiffPump&);
-  virtual cosaxsDiffPump* clone() const;
-  virtual ~cosaxsDiffPump();
+  DiffPumpXIADP03(const std::string&);
+  DiffPumpXIADP03(const DiffPumpXIADP03&);
+  DiffPumpXIADP03& operator=(const DiffPumpXIADP03&);
+  virtual DiffPumpXIADP03* clone() const;
+  virtual ~DiffPumpXIADP03();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 

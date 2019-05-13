@@ -33,6 +33,7 @@ namespace constructSystem
   class GateValve;
   class JawValveCylinder;
   class VacuumPipe;
+  class DiffPumpXIADP03;
 }
 
 
@@ -57,7 +58,6 @@ namespace xraySystem
 
   class MonoBox;
   class FilterHolder;
-  class cosaxsDiffPump;
   class cosaxsTube;
 
 class cosaxsExptLine :
@@ -87,7 +87,7 @@ class cosaxsExptLine :
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValve> gateB;
   /// Differential pumping
-  std::shared_ptr<cosaxsDiffPump> diffPump;
+  std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPump;
   /// Telescopic system - just a pipe with variable length
   /// (so the next component is not attached to this pipe)
   std::shared_ptr<constructSystem::VacuumPipe> telescopicSystem;

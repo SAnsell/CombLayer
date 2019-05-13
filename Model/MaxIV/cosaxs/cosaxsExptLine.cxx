@@ -92,7 +92,7 @@
 #include "portItem.h"
 #include "MonoBox.h"
 #include "FilterHolder.h"
-#include "cosaxsDiffPump.h"
+#include "DiffPumpXIADP03.h"
 #include "cosaxsTube.h"
 
 #include "cosaxsExptLine.h"
@@ -115,7 +115,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
   diagUnit(new xraySystem::MonoBox(newName+"DiagnosticUnit")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
-  diffPump(new cosaxsDiffPump(newName+"DiffPump")),
+  diffPump(new constructSystem::DiffPumpXIADP03(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
   tube(new cosaxsTube(newName+"Tube"))
   /*!
