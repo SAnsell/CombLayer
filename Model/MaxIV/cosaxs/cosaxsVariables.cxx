@@ -1137,6 +1137,11 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiffPumpFlangeVoidWidth",14.61); // measured
   Control.addVariable(preName+"DiffPumpFlangeVoidHeight",5.71); // measured
   Control.addVariable(preName+"DiffPumpFlangeVoidThick",4.44); // measured
+  Control.addVariable(preName+"DiffPumpMagnetMat","CastIron"); ELog::EM << "fix magnetMat" << ELog::endDiag;
+  Control.addVariable(preName+"DiffPumpMagnetWidth",12.7); // measured
+  Control.addVariable(preName+"DiffPumpMagnetLength",36.83); // measured
+  Control.addVariable(preName+"DiffPumpMagnetThick",2.54); // measured
+  Control.addVariable(preName+"DiffPumpMagnetGapThick",0.17); // measured
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);

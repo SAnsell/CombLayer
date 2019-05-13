@@ -115,7 +115,12 @@ DiffPumpXIADP03::DiffPumpXIADP03(const DiffPumpXIADP03& A) :
   flangeMat(A.flangeMat),
   flangeVoidWidth(A.flangeVoidWidth),
   flangeVoidHeight(A.flangeVoidHeight),
-  flangeVoidThick(A.flangeVoidThick)
+  flangeVoidThick(A.flangeVoidThick),
+  magnetMat(A.magnetMat),
+  magnetWidth(A.magnetWidth),
+  magnetLength(A.magnetLength),
+  magnetThick(A.magnetThick),
+  magnetGapThick(A.magnetGapThick)
   /*!
     Copy constructor
     \param A :: DiffPumpXIADP03 to copy
@@ -149,6 +154,11 @@ DiffPumpXIADP03::operator=(const DiffPumpXIADP03& A)
       flangeVoidWidth=A.flangeVoidWidth;
       flangeVoidHeight=A.flangeVoidHeight;
       flangeVoidThick=A.flangeVoidThick;
+      magnetMat=A.magnetMat;
+      magnetWidth=A.magnetWidth;
+      magnetLength=A.magnetLength;
+      magnetThick=A.magnetThick;
+      magnetGapThick=A.magnetGapThick;
     }
   return *this;
 }
@@ -193,6 +203,11 @@ DiffPumpXIADP03::populate(const FuncDataBase& Control)
   flangeVoidWidth=Control.EvalVar<double>(keyName+"FlangeVoidWidth");
   flangeVoidHeight=Control.EvalVar<double>(keyName+"FlangeVoidHeight");
   flangeVoidThick=Control.EvalVar<double>(keyName+"FlangeVoidThick");
+  magnetMat=ModelSupport::EvalMat<int>(Control,keyName+"MagnetMat");
+  magnetWidth=Control.EvalVar<double>(keyName+"MagnetWidth");
+  magnetLength=Control.EvalVar<double>(keyName+"MagnetLength");
+  magnetThick=Control.EvalVar<double>(keyName+"MagnetThick");
+  magnetGapThick=Control.EvalVar<double>(keyName+"MagnetGapThick");
 
   return;
 }
@@ -267,6 +282,26 @@ DiffPumpXIADP03::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*(flangeVoidHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*(flangeVoidHeight/2.0),Z);
 
+  // magnets
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+Y*(length/2.0-magnetLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+42,Origin+Y*(length/2.0+magnetLength/2.0),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+43,Origin-X*(magnetWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+44,Origin+X*(magnetWidth/2.0),X);
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+45,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+5),
+				  -magnetThick-magnetGapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+46,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+45),
+				  magnetThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+55,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+6),
+				  magnetGapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+56,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+55),
+				  magnetThick);
+
   return;
 }
 
@@ -304,14 +339,28 @@ DiffPumpXIADP03::createObjects(Simulation& System)
 				 " 32 -2 3 -4 5 -6 (-33:34:-35:36) ");
   System.addCell(cellIndex++,flangeMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -27 (-3:4:-5:6) ");
-  makeCell("VoidBetweenFlanges",System,cellIndex++,0,0.0,Out+backStr);
-
   Out=ModelSupport::getComposite(SMap,buildIndex," 31 -32 3 -4 5 -6 (-13:14:-15:16) ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 31 -32 13 -14 15 -16 ");
   makeCell("Aperture",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 46 -5 ");
+  makeCell("MagnetLowVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 45 -46 ");
+  makeCell("MagnetLow",System,cellIndex++,magnetMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 6 -55 ");
+  makeCell("MagnetUpVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 43 -44 55 -56 ");
+  makeCell("MagnetUp",System,cellIndex++,magnetMat,0.0,Out);
+
+  // TODO: split this cell
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 1 -2 -27 (-3:4:-5:6) (-41:42:-43:44:-45:5) (-41:42:-43:44:-6:56)");
+  makeCell("VoidBetweenFlanges",System,cellIndex++,0,0.0,Out+backStr); // here
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -27 ");
   addOuterSurf(Out+frontStr+backStr);

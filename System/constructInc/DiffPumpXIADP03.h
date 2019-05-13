@@ -57,6 +57,11 @@ class DiffPumpXIADP03 :
   double flangeVoidWidth; ///< Flange void width
   double flangeVoidHeight; ///< Flange void height
   double flangeVoidThick; ///< Flange void thickness
+  int magnetMat; ///< Magnet material
+  double magnetWidth; ///< Magnet width
+  double magnetLength; ///< Magnet length
+  double magnetThick; ///< Magnet thickness
+  double magnetGapThick; ///< Thickness of gap between pump body and magnet
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
