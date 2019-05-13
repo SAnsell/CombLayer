@@ -54,7 +54,7 @@ class FilterHolder : public attachSystem::ContainedComp,
   double foilThick; ///< Foil thickness
   int foilMat; ///< Foil material
 
-  int nWindows; ///< Number of windows
+  size_t nWindows; ///< Number of windows
   double wWidth; ///< Window width
   double wHeight; ///< Window height
   double wDepth; ///< Window depth

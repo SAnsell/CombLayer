@@ -187,7 +187,7 @@ FilterHolder::populate(const FuncDataBase& Control)
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
   foilThick=Control.EvalVar<double>(keyName+"FoilThick");
   foilMat=ModelSupport::EvalMat<int>(Control,keyName+"FoilMat");
-  nWindows=Control.EvalVar<int>(keyName+"NWindows");
+  nWindows=Control.EvalVar<size_t>(keyName+"NWindows");
   wWidth=Control.EvalVar<double>(keyName+"WindowWidth");
   wHeight=Control.EvalVar<double>(keyName+"WindowHeight");
   wDepth=Control.EvalVar<double>(keyName+"WindowDepth");
@@ -288,7 +288,7 @@ FilterHolder::createObjects(Simulation& System)
 
   // windows
   side=ModelSupport::getComposite(SMap,buildIndex," 1 -2 45 -46 ");
-  size_t SI(buildIndex+40);
+  int SI(buildIndex+40);
   for (size_t i=0; i<=nWindows; i++)
     {
       Out=ModelSupport::getComposite(SMap,SI-10,SI," 4 -3M ");
