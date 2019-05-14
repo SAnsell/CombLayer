@@ -1137,7 +1137,8 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"DiffPumpFlangeVoidWidth",14.61); // measured
   Control.addVariable(preName+"DiffPumpFlangeVoidHeight",5.71); // measured
   Control.addVariable(preName+"DiffPumpFlangeVoidThick",4.44); // measured
-  Control.addVariable(preName+"DiffPumpMagnetMat","CastIron"); ELog::EM << "fix magnetMat" << ELog::endDiag;
+   ELog::EM << "Is Fe2O3 is correct for magnetMat?" << ELog::endDiag;
+  Control.addVariable(preName+"DiffPumpMagnetMat","Fe2O3");
   Control.addVariable(preName+"DiffPumpMagnetWidth",12.7); // measured
   Control.addVariable(preName+"DiffPumpMagnetLength",36.83); // measured
   Control.addVariable(preName+"DiffPumpMagnetThick",2.54); // measured
