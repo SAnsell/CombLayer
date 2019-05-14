@@ -267,6 +267,7 @@ MagnetM1::createAll(Simulation& System,
   ELog::RegMethod RegA("MagnetM1","createAll");
 
   int outerCell;
+  int testCell;
   
   populate(System.getDataBase());
 
@@ -298,7 +299,8 @@ MagnetM1::createAll(Simulation& System,
   MonteCarlo::Object* bendCell=BZ.getMaster();
   ELog::EM<<"B == "<<*pipeCell<<ELog::endDiag;
   ELog::EM<<"C == "<<*bendCell<<ELog::endDiag;
-  
+    
+    
   Oxx->setInnerTube(preDipole->getFullRule(5));
   Oxx->createAll(System,*this,0);
   IZ.cutVoidUnit(System,pipeCell,Oxx->getMainRule(-1), Oxx->getMainRule(-2));
@@ -313,6 +315,7 @@ MagnetM1::createAll(Simulation& System,
   QFend->setInnerTube(preDipole->getFullRule(5));
   QFend->createAll(System,*this,0);
   IZ.cutVoidUnit(System,pipeCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
+
   outerCell=buildZone.cutVoidUnit
     (System,masterCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
   preDipole->insertInCell(System,outerCell);
@@ -323,8 +326,10 @@ MagnetM1::createAll(Simulation& System,
   IZ.cutVoidUnit(System,pipeCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
   outerCell=buildZone.triVoidUnit
     (System,masterCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
+
   Oxy->insertInCell(System,outerCell);
   preDipole->insertInCell(System,outerCell-1);
+
     
   QDend->setInnerTube(preDipole->getFullRule(5));
   QDend->createAll(System,*this,0);
@@ -336,10 +341,14 @@ MagnetM1::createAll(Simulation& System,
   // move to next bend object
 
   DIPm->setInnerTube(preDipole->getFullRule(6));
+  DIPm->setCutSurf("MidSplit",preDipole->getSurf("electronCut"));
+  DIPm->setCutSurf("InnerA",preDipole->getFullRule(6));
+  DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
   DIPm->createAll(System,*this,0);
   BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
   outerCell=buildZone.triVoidUnit
     (System,masterCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
+
   DIPm->insertInCell(System,outerCell);
   preDipole->insertInCell(System,outerCell-1);
   

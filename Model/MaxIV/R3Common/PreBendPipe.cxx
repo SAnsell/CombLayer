@@ -85,7 +85,7 @@ namespace xraySystem
 {
 
 PreBendPipe::PreBendPipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -295,7 +295,6 @@ PreBendPipe::createObjects(Simulation& System)
     (SMap,buildIndex,"10 102 -2 (-207:-210) 105 -106  -110 ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out);
 
-
   // WALLS:
   Out=ModelSupport::getComposite
     (SMap,buildIndex," -101 7 -17 ");
@@ -338,11 +337,11 @@ PreBendPipe::createObjects(Simulation& System)
   //  mid outer void
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 -2007 (( 17 -10 ) : -117:-115:116) -110");
-  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+  //  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ) : (210 217) :-115:116) ");
-  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+  //  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"-2 -2007 ");
   addOuterSurf(Out+frontSurf);
@@ -377,13 +376,19 @@ PreBendPipe::createLinks()
   setConnect(4,Origin+Y*(straightLength/2.0),Z);
   setLinkSurf(4,SMap.realSurf(buildIndex+17));
 
-  /*
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex," 17 ");
-    
-  setConnect(5,Origin+Y*length,Z);
-  setLinkSurf(5,SMap.realSurf(buildIndex+17));
-  setLinkSurf(Out);
-  */
+  //  mid outer void
+  std::string Out=ModelSupport::getComposite
+    (SMap,buildIndex," (( 17 -10 ) : -117:-115:116) -110");
+  setConnect(5,Origin+Y*(straightLength),Z);
+  setLinkSurf(5,Out);
+
+  // electron straight
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," ((17 -10):(217 210):-115:116) ");
+  setConnect(6,cylEnd,elecAxis);
+  setLinkSurf(6,Out);
+
+
 
   return;
 }

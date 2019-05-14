@@ -277,7 +277,7 @@ InnerZone::triVoidUnit(Simulation& System,
     \return cell number of inner zone
   */
 {
-  ELog::RegMethod RegA("InnerZone","cutVoidUnit(FDivider,HR,HR)");
+  ELog::RegMethod RegA("InnerZone","triVoidUnit(FDivider,HR,HR)");
 
     // construct an cell based on previous cell:
   std::string Out;
@@ -333,7 +333,8 @@ InnerZone::cutVoidUnit(Simulation& System,
 
   // make the master cell valid:
   refrontMasterCell(masterCell,FDivider);
-  ELog::EM<<"Out["<<FCName<<"] == "<<*masterCell<<ELog::endDiag;
+
+  ELog::EM<<"Out["<<FCName<<"]["<<cellIndex<<"] == "<<*masterCell<<ELog::endDiag;
     
   return cellIndex-1;
 }
@@ -357,6 +358,38 @@ InnerZone::cutVoidUnit(Simulation& System,
   ELog::RegMethod RegA("InnerZone","cutVoidUnit(HR,HR)");
 
   return cutVoidUnit(System,masterCell,frontDivider,CutA,CutB);
+}
+
+int
+InnerZone::endVoidUnit(Simulation& System,
+		       MonteCarlo::Object* masterCell,
+		       HeadRule& FDivider,
+		       const HeadRule& CutA)
+  /*!
+    Cutter for the main void.
+    Note that CutA and CutB define the region to be cut.
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param FDivider :: Front divider
+    \param CutA :: Cut surface A
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","endVoidUnit(FDivider,HR)");
+
+    // construct an cell based on previous cell:
+  std::string Out;
+
+  if (!FDivider.hasRule())
+    FDivider=frontHR;
+  
+  Out=surroundHR.display()+
+    FDivider.display()+CutA.display();
+  CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
+  FDivider=CutA;
+
+  System.removeCell(masterCell->getName());
+  return cellIndex-1;
 }
   
 int

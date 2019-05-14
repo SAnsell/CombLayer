@@ -253,14 +253,33 @@ Dipole::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Dipole","createObjects");
 
-  const std::string ICell=innerTube.display();
-  
+
   std::string Out;
 
-  // mid void
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 15 -16 103 -104 (-107:101) (-108:-102)");
-  makeCell("MidVoid",System,cellIndex++,0,0.0,Out+ICell);
+  if (isActive("MidSplit"))
+    {
+      const std::string ACell=getRuleStr("InnerA");
+      const std::string BCell=getRuleStr("InnerB");
+      const HeadRule& MSplit=getRule("MidSplit");
+	    
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 15 -16 103 -104 201 ");
+      makeCell("MidVoidA",System,cellIndex++,0,0.0,
+	       Out+ACell+MSplit.complement().display());
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 15 -16 103 -104 -202");
+      makeCell("MidVoidB",System,cellIndex++,0,0.0,
+	       Out+BCell+MSplit.display());
+    }
+  else
+    {
+      const std::string ACell=
+	(isActive("Inner")) ? getRuleStr("Inner") : "";
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 15 -16 103 -104 201 -202");
+      makeCell("MidVoid",System,cellIndex++,0,0.0,Out+ACell);
+    }
 
   // side voids
   Out=ModelSupport::getComposite
@@ -291,11 +310,11 @@ Dipole::createObjects(Simulation& System)
 
   // Void ends
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," 201 107 -101 5 -6 103 -104 ");
+    (SMap,buildIndex," 201 107 -101 5 -6 103 -104 (-15 : 16)");
   makeCell("FrontVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -202 108 102 5 -6 103 -104 ");
+    (SMap,buildIndex," -202 108 102 5 -6 103 -104 (-15 : 16)");
   makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
   
   Out=ModelSupport::getComposite

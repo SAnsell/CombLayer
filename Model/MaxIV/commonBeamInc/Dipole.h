@@ -61,8 +61,6 @@ class Dipole : public attachSystem::FixedRotate,
   
   int poleMat;                     ///< pole piece of magnet
   int coilMat;                     ///< coil material
-
-  HeadRule innerTube;              ///< Inner tube 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -79,8 +77,6 @@ class Dipole : public attachSystem::FixedRotate,
   Dipole& operator=(const Dipole&);
   virtual ~Dipole();
 
-  /// set innner tube
-  void setInnerTube(const HeadRule& HR) { innerTube=HR; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
