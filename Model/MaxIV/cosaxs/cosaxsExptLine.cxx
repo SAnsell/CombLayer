@@ -93,6 +93,7 @@
 #include "MonoBox.h"
 #include "FilterHolder.h"
 #include "DiffPumpXIADP03.h"
+#include "cosaxsSampleArea.h"
 #include "cosaxsTube.h"
 
 #include "cosaxsExptLine.h"
@@ -117,7 +118,8 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   gateB(new constructSystem::GateValve(newName+"GateB")),
   diffPump(new constructSystem::DiffPumpXIADP03(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
-  tube(new cosaxsTube(newName+"Tube"))
+  sampleArea(new xraySystem::cosaxsSampleArea(newName+"SampleArea")),
+  tube(new xraySystem::cosaxsTube(newName+"Tube"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -134,6 +136,7 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   OR.addObject(gateB);
   OR.addObject(diffPump);
   OR.addObject(telescopicSystem);
+  OR.addObject(sampleArea);
   OR.addObject(tube);
 }
 
@@ -157,7 +160,7 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
-  nFilterHolders=Control.EvalDefVar<double>(keyName+"NFilterHolders",3);
+  nFilterHolders=Control.EvalDefVar<size_t>(keyName+"NFilterHolders",3);
 
   return;
 }
@@ -282,10 +285,17 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*telescopicSystem,2);
   telescopicSystem->insertInCell(System,outerCell);
 
-  tube->setFront(*telescopicSystem,2);
-  tube->createAll(System,*telescopicSystem,2);
+  tube->createAll(System,*this,0);
+
+  sampleArea->setFront(*telescopicSystem,2);
+  sampleArea->setBack(*tube,1);
+  sampleArea->createAll(System,*telescopicSystem,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*sampleArea,2);
+  sampleArea->insertInCell(System,outerCell);
+
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
   tube->insertInCell(System,outerCell);
+
 
   lastComp=tube;
   //  setCell("LastVoid",masterCell->getName());

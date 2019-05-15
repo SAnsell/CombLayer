@@ -58,6 +58,7 @@ namespace xraySystem
 
   class MonoBox;
   class FilterHolder;
+  class cosaxsSampleArea;
   class cosaxsTube;
 
 class cosaxsExptLine :
@@ -82,7 +83,7 @@ class cosaxsExptLine :
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
   std::shared_ptr<xraySystem::MonoBox>  diagUnit;
-  int nFilterHolders; ///< Number of filter holders
+  size_t nFilterHolders; ///< Number of filter holders
   std::vector<std::shared_ptr<xraySystem::FilterHolder> > filterHolder;
   /// Vacuum gate valve B - flat
   std::shared_ptr<constructSystem::GateValve> gateB;
@@ -91,7 +92,8 @@ class cosaxsExptLine :
   /// Telescopic system - just a pipe with variable length
   /// (so the next component is not attached to this pipe)
   std::shared_ptr<constructSystem::VacuumPipe> telescopicSystem;
-  std::shared_ptr<cosaxsTube> tube;
+  std::shared_ptr<xraySystem::cosaxsSampleArea> sampleArea;
+  std::shared_ptr<xraySystem::cosaxsTube> tube;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

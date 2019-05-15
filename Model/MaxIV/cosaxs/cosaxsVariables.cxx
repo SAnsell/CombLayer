@@ -1147,7 +1147,15 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 
+  // sample area dimensions are arbitrary
+  Control.addVariable(preName+"SampleAreaLength",100.0); // not actually used since the length is defined by the front/back cuts
+  Control.addVariable(preName+"SampleAreaWidth",100.0);
+  Control.addVariable(preName+"SampleAreaHeight",50.0);
+  Control.addVariable(preName+"SampleAreaDepth",10.0);
+  Control.addVariable(preName+"SampleAreaAirMat","Air");
+
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
+  Control.addVariable(preName+"TubeYStep", 340); // dummy
   Control.addVariable(preName+"TubeLength",1676.7+51.65);
   Control.addVariable(preName+"TubeRadius",50.8); // 50.8 = 101.6/2.0
   Control.addVariable(preName+"TubeHeight",15.1); // 2del
