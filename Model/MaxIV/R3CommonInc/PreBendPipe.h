@@ -39,7 +39,7 @@ namespace xraySystem
 */
 
 class PreBendPipe : public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap

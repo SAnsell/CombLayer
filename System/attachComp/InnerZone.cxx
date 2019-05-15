@@ -361,7 +361,23 @@ InnerZone::cutVoidUnit(Simulation& System,
 }
 
 int
-InnerZone::endVoidUnit(Simulation& System,
+InnerZone::singleVoidUnit(Simulation& System,
+			  MonteCarlo::Object* masterCell,
+			  const HeadRule& CutA)
+  /*!
+    Cutter for the main void (end unit)
+    \param System :: Simulation
+    \param masterCell :: full master cell
+    \param CutA :: Cut surface A
+    \return cell nubmer
+  */
+{
+  ELog::RegMethod RegA("InnerZone","singleVoidUnit(HR)");
+  return singleVoidUnit(System,masterCell,frontDivider,CutA);
+}
+
+int
+InnerZone::singleVoidUnit(Simulation& System,
 		       MonteCarlo::Object* masterCell,
 		       HeadRule& FDivider,
 		       const HeadRule& CutA)
@@ -375,7 +391,7 @@ InnerZone::endVoidUnit(Simulation& System,
     \return cell nubmer
   */
 {
-  ELog::RegMethod RegA("InnerZone","endVoidUnit(FDivider,HR)");
+  ELog::RegMethod RegA("InnerZone","singleVoidUnit(FDivider,HR)");
 
     // construct an cell based on previous cell:
   std::string Out;
@@ -384,11 +400,12 @@ InnerZone::endVoidUnit(Simulation& System,
     FDivider=frontHR;
   
   Out=surroundHR.display()+
-    FDivider.display()+CutA.display();
+    FDivider.display()+CutA.complement().display();
   CellPtr->makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,Out);
   FDivider=CutA;
 
-  System.removeCell(masterCell->getName());
+  // make the master cell valid:
+  refrontMasterCell(masterCell,FDivider);
   return cellIndex-1;
 }
   

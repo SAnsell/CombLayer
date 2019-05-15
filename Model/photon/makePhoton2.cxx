@@ -152,9 +152,7 @@ makePhoton2::buildWings(Simulation& System)
   const Geometry::Vec3D ZA=PModObj->getLinkPt(5);
   const Geometry::Vec3D ZB=PModObj->getLinkPt(6);
   
-  const double DX=XA.Distance(XB)/2.0;
   const double DY=YA.Distance(YB);   // Not divided
-  const double DZ=ZA.Distance(ZB)/2.0;
   
   for(size_t i=0;i<4;i++)
     {

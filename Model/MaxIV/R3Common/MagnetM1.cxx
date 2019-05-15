@@ -73,6 +73,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -279,7 +280,7 @@ MagnetM1::createAll(Simulation& System,
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
   // puts in 74123 etc.
-  preDipole->addInsertCell(this->getInsertCells());
+  preDipole->addInsertCell("FlangeA",this->getInsertCells());
   epCombine->addInsertCell(this->getInsertCells());
   insertObjects(System);
 
@@ -297,8 +298,6 @@ MagnetM1::createAll(Simulation& System,
 
   attachSystem::InnerZone& BZ=preDipole->getBendZone();
   MonteCarlo::Object* bendCell=BZ.getMaster();
-  ELog::EM<<"B == "<<*pipeCell<<ELog::endDiag;
-  ELog::EM<<"C == "<<*bendCell<<ELog::endDiag;
     
     
   Oxx->setInnerTube(preDipole->getFullRule(5));
@@ -309,7 +308,7 @@ MagnetM1::createAll(Simulation& System,
   //  Oxx->insertInCell(System,getCell("Void"));
 
   Oxx->insertInCell(System,outerCell);
-  preDipole->insertInCell(System,outerCell-1);
+  preDipole->insertInCell("Tube",System,outerCell-1);
 
   
   QFend->setInnerTube(preDipole->getFullRule(5));
@@ -318,7 +317,7 @@ MagnetM1::createAll(Simulation& System,
 
   outerCell=buildZone.cutVoidUnit
     (System,masterCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
-  preDipole->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell);
 
 
   Oxy->setInnerTube(preDipole->getFullRule(5));
@@ -328,7 +327,7 @@ MagnetM1::createAll(Simulation& System,
     (System,masterCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
 
   Oxy->insertInCell(System,outerCell);
-  preDipole->insertInCell(System,outerCell-1);
+  preDipole->insertInCell("Tube",System,outerCell-1);
 
     
   QDend->setInnerTube(preDipole->getFullRule(5));
@@ -336,21 +335,33 @@ MagnetM1::createAll(Simulation& System,
   IZ.cutVoidUnit(System,pipeCell,QDend->getMainRule(-1),QDend->getMainRule(-2));
   outerCell=buildZone.cutVoidUnit
     (System,masterCell,QDend->getMainRule(-1),QDend->getMainRule(-2));
-  preDipole->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell);
 
   // move to next bend object
 
-  DIPm->setInnerTube(preDipole->getFullRule(6));
   DIPm->setCutSurf("MidSplit",preDipole->getSurf("electronCut"));
   DIPm->setCutSurf("InnerA",preDipole->getFullRule(6));
   DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
   DIPm->createAll(System,*this,0);
   BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
+  
   outerCell=buildZone.triVoidUnit
     (System,masterCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
 
   DIPm->insertInCell(System,outerCell);
-  preDipole->insertInCell(System,outerCell-1);
+  preDipole->insertInCell("Tube",System,outerCell-1);
+
+  outerCell=buildZone.singleVoidUnit(System,masterCell,
+				     preDipole->getSurfRule("endFlange"));
+  preDipole->insertInCell("Tube",System,outerCell);
+  preDipole->insertInCell("Tube",System,masterCell->getName());
+
+  outerCell=
+    BZ.singleVoidUnit(System,bendCell, preDipole->getSurfRule("endFlange"));
+  preDipole->insertInCell("FlangeA",*bendCell);
+  
+		    
+
   
   return;
 }

@@ -73,6 +73,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -86,7 +87,7 @@ namespace xraySystem
 
 PreBendPipe::PreBendPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Tube","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -240,7 +241,7 @@ PreBendPipe::createSurfaces()
     (SMap,buildIndex+2007,Origin,Y,flangeBRadius);
   ModelSupport::buildPlane
     (SMap,buildIndex+2001,Origin+Y*(length-flangeBLength),Y);
-
+  SurfMap::setSurf("endFlange",SMap.realSurf(buildIndex+2001));
 
   return;
 }
@@ -271,7 +272,7 @@ PreBendPipe::createObjects(Simulation& System)
     (SMap,buildIndex," -1007 ((17 -10):-117:-115:116:110) ");
   bendZone.setSurround(HeadRule(Out));
   bendZone.setFront(HeadRule(SMap.realSurf(buildIndex+101)));
-  bendZone.setBack(HeadRule(-SMap.realSurf(buildIndex+102)));
+  bendZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
   bendZone.setVoidMat(voidMat);
   bendZone.constructMasterCell(System);
 
@@ -343,8 +344,13 @@ PreBendPipe::createObjects(Simulation& System)
     (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ) : (210 217) :-115:116) ");
   //  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 -2007 ");
-  addOuterSurf(Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 ");
+
+  addOuterSurf("Tube",Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 -2");
+  addOuterSurf("FlangeA",Out+frontSurf);
+  addOuterSurf("FlangeB",Out);
+      
 
   return;
 }

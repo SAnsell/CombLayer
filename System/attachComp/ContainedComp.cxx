@@ -754,6 +754,20 @@ ContainedComp::insertObjects(Simulation& System,
 }
 
 void
+ContainedComp::insertInCell(MonteCarlo::Object& outerObj) const
+  /*!
+    Insert the ContainedComp in a single cell.
+    \param outerObj :: Outer Object
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","insertInCell(Obj)");
+  
+  if (!hasOuterSurf()) return;
+  outerObj.addSurfString(getExclude());
+  return;
+}
+
+void
 ContainedComp::insertInCell(Simulation& System,
 			    const int cellN) const
   /*!
@@ -764,12 +778,9 @@ ContainedComp::insertInCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedComp","insertInCell");
   
-  if (!hasOuterSurf()) return;
-
   MonteCarlo::Object* outerObj=System.findObject(cellN);
-
   if (outerObj)
-    outerObj->addSurfString(getExclude());
+    ContainedComp::insertInCell(*outerObj);
   else
     throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
   return;

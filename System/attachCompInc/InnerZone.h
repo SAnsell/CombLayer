@@ -105,11 +105,11 @@ class InnerZone
 		  const HeadRule&,const HeadRule&);
 
   // chop leaving only first part:
-  int endVoidUnit(Simulation&, MonteCarlo::Object*,
-		  HeadRule&,const HeadRule&);
+  int singleVoidUnit(Simulation&, MonteCarlo::Object*,
+		     HeadRule&,const HeadRule&);
 
-  int endVoidUnit(Simulation&, MonteCarlo::Object*,
-		  const HeadRule&);
+  int singleVoidUnit(Simulation&, MonteCarlo::Object*,
+		     const HeadRule&);
 
 
   
