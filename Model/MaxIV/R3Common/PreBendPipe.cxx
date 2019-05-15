@@ -269,12 +269,21 @@ PreBendPipe::createObjects(Simulation& System)
 
     // Construct the second inner zone a
   Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1007 ((17 -10):-117:-115:116:110) ");
+    (SMap,buildIndex," -1007 ((17 -10): (217 210): -115 : 116) ");
   bendZone.setSurround(HeadRule(Out));
   bendZone.setFront(HeadRule(SMap.realSurf(buildIndex+101)));
   bendZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
   bendZone.setVoidMat(voidMat);
   bendZone.constructMasterCell(System);
+
+  // Construct the third inner zone a
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1007 ((17 -10): (217 210): -115 : 116) ");
+  exitZone.setSurround(HeadRule(Out));
+  exitZone.setFront(HeadRule(SMap.realSurf(buildIndex+101)));
+  exitZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
+  exitZone.setVoidMat(voidMat);
+  //  exitZone.constructMasterCell(System);
 
   // cylinder half
   Out=ModelSupport::getComposite

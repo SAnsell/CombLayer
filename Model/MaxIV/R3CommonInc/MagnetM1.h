@@ -77,6 +77,8 @@ class MagnetM1 :
   std::shared_ptr<xraySystem::Quadrupole> QDend;
   /// Dipole
   std::shared_ptr<xraySystem::Dipole> DIPm;
+  /// Octupole [third]
+  std::shared_ptr<xraySystem::Octupole> Oyy;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

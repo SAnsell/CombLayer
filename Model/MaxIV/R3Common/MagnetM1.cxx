@@ -102,7 +102,9 @@ MagnetM1::MagnetM1(const std::string& Key) :
   QFend(new xraySystem::Quadrupole(keyName+"QFend")),
   Oxy(new xraySystem::Octupole(keyName+"OXY")),
   QDend(new xraySystem::Quadrupole(keyName+"QDend")),
-  DIPm(new xraySystem::Dipole(keyName+"DIPm"))
+  DIPm(new xraySystem::Dipole(keyName+"DIPm")),
+  Oyy(new xraySystem::Octupole(keyName+"OYY"))
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -120,6 +122,7 @@ MagnetM1::MagnetM1(const std::string& Key) :
   OR.addObject(QFend);
   OR.addObject(Oxy);
   OR.addObject(DIPm);
+  OR.addObject(Oyy);
 }
 
 
@@ -346,12 +349,14 @@ MagnetM1::createAll(Simulation& System,
   DIPm->setCutSurf("InnerA",preDipole->getFullRule(6));
   DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
   DIPm->createAll(System,*this,0);
-  BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
-  
+  outerCell=
+    BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),
+		   DIPm->getMainRule(-2));
+
   outerCell=buildZone.triVoidUnit
     (System,masterCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
-
   DIPm->insertInCell(System,outerCell);
+
   preDipole->insertInCell("Tube",System,outerCell-1);
 
   outerCell=buildZone.singleVoidUnit(System,masterCell,
@@ -366,8 +371,6 @@ MagnetM1::createAll(Simulation& System,
   outerCell=buildZone.singleVoidUnit
     (System,masterCell,epCombine->getMainRule(-1));
   preDipole->insertInCell("Tube",System,outerCell);  
-  ELog::EM<<"Outer == "<<*System.findObject(outerCell)<<ELog::endDiag;
-  ELog::EM<<"Outer == "<<*masterCell<<ELog::endDiag;
 
   
   epCombine->insertInCell(*masterCell);
