@@ -166,7 +166,7 @@ cosaxsSampleArea::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  length=Control.EvalDefVar<double>(keyName+"Length", 100);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");

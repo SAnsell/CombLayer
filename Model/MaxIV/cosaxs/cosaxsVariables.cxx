@@ -1148,7 +1148,6 @@ exptVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 
   // sample area dimensions are arbitrary
-  Control.addVariable(preName+"SampleAreaLength",100.0); // not actually used since the length is defined by the front/back cuts
   Control.addVariable(preName+"SampleAreaWidth",100.0);
   Control.addVariable(preName+"SampleAreaHeight",50.0);
   Control.addVariable(preName+"SampleAreaDepth",10.0);
@@ -1162,7 +1161,6 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"TubeWallThick",3.1); // dummy
   Control.addVariable(preName+"TubeMainMat","Void");
   Control.addVariable(preName+"TubeWallMat","Aluminium"); // dummy
-  Control.addVariable(preName+"TubeMainYOffset",0.0);
 }
 
 void
