@@ -352,18 +352,28 @@ MagnetM1::createAll(Simulation& System,
   outerCell=
     BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),
 		   DIPm->getMainRule(-2));
-
   outerCell=buildZone.triVoidUnit
     (System,masterCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
   DIPm->insertInCell(System,outerCell);
-
   preDipole->insertInCell("Tube",System,outerCell-1);
+  
+  // Insert OYY
+  Oyy->setInnerTube(preDipole->getFullRule(5));
+  Oyy->createAll(System,*this,0);
+  BZ.cutVoidUnit(System,bendCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
+  outerCell=buildZone.triVoidUnit
+    (System,masterCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
+
+  Oyy->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell-1);
+  // end insert  
+
 
   outerCell=buildZone.singleVoidUnit(System,masterCell,
 				     preDipole->getSurfRule("endFlange"));
   preDipole->insertInCell("Tube",System,outerCell);
   preDipole->insertInCell("Tube",System,masterCell->getName());
-  BZ.singleVoidUnit(System,bendCell, preDipole->getSurfRule("endFlange"));
+  BZ.singleVoidUnit(System,bendCell,preDipole->getSurfRule("endFlange"));
   preDipole->insertInCell("Tube",*bendCell);
 
   // flange of EC:

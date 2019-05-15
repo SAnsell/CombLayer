@@ -122,7 +122,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   // extra +5 cm
   QGen.generateQuad(Control,keyName+"QDend",92.50,23.0);
   // +5 cm
-  DGen.generateDipole(Control,keyName+"DIPm",125.50,60.0);
+  DGen.generateDipole(Control,keyName+"DIPm",115.50,60.0);
 
   OGen.generateOcto(Control,keyName+"OYY",190.0,10.0);
   
