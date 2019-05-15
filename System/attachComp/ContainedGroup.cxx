@@ -657,10 +657,7 @@ ContainedGroup::insertObjects(Simulation& System)
   for(mc=CMap.begin();mc!=CMap.end();mc++)
     mc->second.insertObjects(System);
 
-      
-	
   return;
-      
 }
 
 }  // NAMESPACE attachSystem

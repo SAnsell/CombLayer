@@ -298,7 +298,10 @@ MagnetM1::createAll(Simulation& System,
 
   attachSystem::InnerZone& BZ=preDipole->getBendZone();
   MonteCarlo::Object* bendCell=BZ.getMaster();
-    
+
+  attachSystem::InnerZone& EZ=preDipole->getExitZone();
+  MonteCarlo::Object* exitCell=EZ.getMaster();
+
     
   Oxx->setInnerTube(preDipole->getFullRule(5));
   Oxx->createAll(System,*this,0);
@@ -355,11 +358,21 @@ MagnetM1::createAll(Simulation& System,
 				     preDipole->getSurfRule("endFlange"));
   preDipole->insertInCell("Tube",System,outerCell);
   preDipole->insertInCell("Tube",System,masterCell->getName());
+  BZ.singleVoidUnit(System,bendCell, preDipole->getSurfRule("endFlange"));
+  preDipole->insertInCell("Tube",*bendCell);
 
-  outerCell=
-    BZ.singleVoidUnit(System,bendCell, preDipole->getSurfRule("endFlange"));
-  preDipole->insertInCell("FlangeA",*bendCell);
+  // flange of EC:
+
+  outerCell=buildZone.singleVoidUnit
+    (System,masterCell,epCombine->getMainRule(-1));
+  preDipole->insertInCell("Tube",System,outerCell);  
+  ELog::EM<<"Outer == "<<*System.findObject(outerCell)<<ELog::endDiag;
+  ELog::EM<<"Outer == "<<*masterCell<<ELog::endDiag;
+
   
+  epCombine->insertInCell(*masterCell);
+  //  EZ.singleVoidUnit(System,exitCell, preDipole->getSurfRule("endFlange"));
+  //  exitZone
 		    
 
   
