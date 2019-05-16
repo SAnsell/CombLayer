@@ -334,7 +334,7 @@ InnerZone::cutVoidUnit(Simulation& System,
   // make the master cell valid:
   refrontMasterCell(masterCell,FDivider);
 
-  ELog::EM<<"Out["<<FCName<<"]["<<cellIndex<<"] == "<<*masterCell<<ELog::endDiag;
+  ELog::EM<<"Out["<<FCName<<"]["<<cellIndex-1<<"] == "<<*masterCell<<ELog::endDiag;
     
   return cellIndex-1;
 }
