@@ -75,6 +75,15 @@ OctupoleGenerator::~OctupoleGenerator()
 {}
 
 void
+OctupoleGenerator::setRadius(const double R,const double C)
+{
+  poleGap=R;
+  coilRadius=C;
+  return;
+}
+  
+  
+void
 OctupoleGenerator::generateOcto(FuncDataBase& Control,
 				const std::string& keyName,
 				const double yStep,

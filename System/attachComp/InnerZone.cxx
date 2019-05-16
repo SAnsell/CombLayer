@@ -378,9 +378,9 @@ InnerZone::singleVoidUnit(Simulation& System,
 
 int
 InnerZone::singleVoidUnit(Simulation& System,
-		       MonteCarlo::Object* masterCell,
-		       HeadRule& FDivider,
-		       const HeadRule& CutA)
+			  MonteCarlo::Object* masterCell,
+			  HeadRule& FDivider,
+			  const HeadRule& CutA)
   /*!
     Cutter for the main void.
     Note that CutA and CutB define the region to be cut.
@@ -567,7 +567,7 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
     \param FHR :: Curs surface head rule 
   */
 {
-  ELog::RegMethod RegA("InnerZone","refrontMasterCell");
+  ELog::RegMethod RegA("InnerZone","refrontMasterCell(HR)");
 
   std::string Out;  
 

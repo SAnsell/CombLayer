@@ -254,6 +254,7 @@ class FixedComp
 
   virtual void createAll(Simulation&,const FixedComp&,const long int)
   { };
+
 };
 
 }

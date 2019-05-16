@@ -124,6 +124,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   // +5 cm
   DGen.generateDipole(Control,keyName+"DIPm",116.50,60.0);
 
+  OGen.setRadius(2.8,3.4);
   OGen.generateOcto(Control,keyName+"OYY",190.0,10.0);
   
   return;

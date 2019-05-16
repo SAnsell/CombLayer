@@ -1590,14 +1590,38 @@ Simulation::splitObject(const int CA,const int SN)
   return CB;
 }
 
-void
+int
+Simulation::minimizeObject(const std::string& keyName)
+  /*!
+    Minimize and remove those objects that are not needed
+    \param System :: Simulation to use
+    \return true if an object changed/removed
+   */
+{
+  ELog::RegMethod RegA("Simulation","minimizeObject(keyname)");
+
+  int retFlag(0);
+  const std::vector<int> cVec=objectGroup::getObjectRange(keyName);
+  for(const int CN : cVec)
+    {
+      if (minimizeObject(CN))
+	retFlag=1;
+    }
+  return retFlag;
+}
+
+
+int
 Simulation::minimizeObject(const int CN)
   /*
     Carry out minimization of a cell to remove 
     literals which can be removed due to implicates [e.g. a->b etc]
     due to parallel surfaces
     \param CN :: Cell to minimize
-   */
+    \retval 1 :: if an object changed
+    \retval 0 :: if an object unchanged
+    \retval -1 :: if an object deleted
+  */
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
@@ -1605,26 +1629,33 @@ Simulation::minimizeObject(const int CN)
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   
-  if (!CPtr->isPlaceHold())
+  if (CPtr->isPlaceHold()) return 0;
+  
+  CPtr->populate();
+  CPtr->createSurfaceList();
+  
+  const std::vector<std::pair<int,int>>
+    IP=CPtr->getImplicatePairs();
+  
+  MonteCarlo::Algebra AX;
+  AX.setFunctionObjStr(CPtr->cellCompStr());
+  AX.addImplicates(IP);
+  
+  if (AX.constructShannonExpansion())
     {
-      CPtr->populate();
-      CPtr->createSurfaceList();
+      if (AX.isEmpty())
+	{
+	  Simulation::removeCell(CN);
+	  return -1;
+	}
       
-      const std::vector<std::pair<int,int>>
-	IP=CPtr->getImplicatePairs();
-            
-      MonteCarlo::Algebra AX;
-      AX.setFunctionObjStr(CPtr->cellCompStr());
-      AX.addImplicates(IP);
-	    
-      AX.constructShannonExpansion();
-
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
+      return 1;
     }
-      
-  return;
+
+  return 0;	
 }
   
 void

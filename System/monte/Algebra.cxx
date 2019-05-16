@@ -347,6 +347,7 @@ Algebra::constructShannonDivision(const int mcnpSN)
 
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
+      
       int SNA=IP.first;
       int SNB=IP.second;
       int ANA=std::abs(SNA);
@@ -386,10 +387,13 @@ Algebra::constructShannonExpansion()
 
   Acomp FX(F);
   FX.expandCNFBracket();
-
+  bool retFlag(0);
+  
   std::set<int> LitM;
   FX.getLiterals(LitM);
 
+  if (FX.isEmpty())  // object null
+    retFlag=1;
 
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
@@ -403,7 +407,9 @@ Algebra::constructShannonExpansion()
       
       Acomp FaFbT(FX);
       FaFbT.resolveTrue(-SNA);     // a=0
-      FaFbT.resolveTrue(SNB);    // b=1
+      FaFbT.resolveTrue(SNB);      // b=1
+
+
       if (FaFbT.isFalse())
 	{
 	  Acomp FaFbF(FX);
@@ -417,21 +423,22 @@ Algebra::constructShannonExpansion()
 	  // POST PROCESS
 	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
 	    {
+	      retFlag=1;
 	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
 	      FX=FaTbT;
 	      FX.addIntersect(SNB);
 	    }
 	  if (FaTbT.isFalse())
 	    {
+	      retFlag=1;
 	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
 	      FX=FaFbF;
 	      FX.addIntersect(-SNA);	      
 	    }
 	}
-	      
     }
-
-  return 1;
+  if (retFlag) F=FX;
+  return retFlag;
 }
   
 int

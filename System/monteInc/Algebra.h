@@ -3,7 +3,7 @@
  
  * File:   monteInc/Algebra.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ class Algebra
   bool logicalEqual(const Algebra&) const;
 
   void addImplicates(const std::vector<std::pair<int,int>>&);
+  bool isEmpty() const { return F.isEmpty(); }
   bool constructShannonExpansion();
   bool constructShannonDivision(const int);
   size_t countComponents() const;

@@ -65,7 +65,7 @@ class OctupoleGenerator
   OctupoleGenerator& operator=(const OctupoleGenerator&);
   virtual ~OctupoleGenerator();
   
-  
+  void setRadius(const double,const double);
   virtual void generateOcto(FuncDataBase&,const std::string&,
 			    const double,const double) const;
 
