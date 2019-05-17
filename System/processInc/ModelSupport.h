@@ -3,7 +3,7 @@
  
  * File:   processInc/ModelSupport.h
 *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,9 @@ namespace ModelSupport
 			      const std::string&);
   std::string getSetComposite(const surfRegister&,const int,
 			      const int,const std::string&);
+
+  std::string getSeqIntersection(int,int,int);
+  std::string getSeqUnion(int,int,int);
 
 }
 

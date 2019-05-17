@@ -304,9 +304,8 @@ MagnetM1::createAll(Simulation& System,
 
   attachSystem::InnerZone& EZ=preDipole->getExitZone();
   MonteCarlo::Object* exitCell=EZ.getMaster();
-
     
-  Oxx->setInnerTube(preDipole->getFullRule(5));
+  Oxx->setCutSurf("Inner",preDipole->getFullRule(5));
   Oxx->createAll(System,*this,0);
   IZ.cutVoidUnit(System,pipeCell,Oxx->getMainRule(-1), Oxx->getMainRule(-2));
   outerCell=buildZone.triVoidUnit(System,masterCell,
@@ -325,7 +324,7 @@ MagnetM1::createAll(Simulation& System,
   preDipole->insertInCell("Tube",System,outerCell);
 
 
-  Oxy->setInnerTube(preDipole->getFullRule(5));
+  Oxy->setCutSurf("Inner",preDipole->getFullRule(5));
   Oxy->createAll(System,*this,0);
   IZ.cutVoidUnit(System,pipeCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
   outerCell=buildZone.triVoidUnit
@@ -364,7 +363,7 @@ MagnetM1::createAll(Simulation& System,
 
   
   // Insert OYY
-  Oyy->setInnerTube(preDipole->getFullRule(7));
+  Oyy->setCutSurf("Inner",preDipole->getFullRule(7));
   Oyy->createAll(System,*this,0);
   EZ.cutVoidUnit(System,exitCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
   outerCell=buildZone.triVoidUnit

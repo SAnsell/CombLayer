@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/Octupole.cxx
+ * File:   commonBeam/Sexupole.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -80,12 +80,12 @@
 #include "SurfMap.h"
 #include "CellMap.h" 
 
-#include "Octupole.h"
+#include "Sexupole.h"
 
 namespace xraySystem
 {
 
-Octupole::Octupole(const std::string& Key) :
+Sexupole::Sexupole(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -98,7 +98,7 @@ Octupole::Octupole(const std::string& Key) :
   */
 {}
 
-Octupole::Octupole(const std::string& Base,
+Sexupole::Sexupole(const std::string& Base,
 		   const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
@@ -114,20 +114,20 @@ Octupole::Octupole(const std::string& Base,
 {}
 
 
-Octupole::~Octupole() 
+Sexupole::~Sexupole() 
   /*!
     Destructor
   */
 {}
 
 void
-Octupole::populate(const FuncDataBase& Control)
+Sexupole::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("Octupole","populate");
+  ELog::RegMethod RegA("Sexupole","populate");
 
   FixedRotate::populate(Control);
   
@@ -154,7 +154,7 @@ Octupole::populate(const FuncDataBase& Control)
 }
 
 void
-Octupole::createUnitVector(const attachSystem::FixedComp& FC,
+Sexupole::createUnitVector(const attachSystem::FixedComp& FC,
     	                     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -162,7 +162,7 @@ Octupole::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point
   */
 {
-  ELog::RegMethod RegA("Octupole","createUnitVector");
+  ELog::RegMethod RegA("Sexupole","createUnitVector");
   
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -170,12 +170,12 @@ Octupole::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-Octupole::createSurfaces()
+Sexupole::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("Octupole","createSurface");
+  ELog::RegMethod RegA("Sexupole","createSurface");
 
   // mid line
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
@@ -188,7 +188,7 @@ Octupole::createSurfaces()
   int CN(buildIndex+1000);
   // Note there are 16 surfaces on the inner part of the pole peice
   double angle(M_PI*poleYAngle/180.0);
-  for(size_t i=0;i<16;i++)
+  for(size_t i=0;i < 2*NPole;i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
       // const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
@@ -197,25 +197,25 @@ Octupole::createSurfaces()
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*frameRadius,QR);
       ModelSupport::buildPlane
 	(SMap,CN+51,Origin+QR*(frameRadius+frameThick),QR);
-      angle+=M_PI/8.0;
+      angle+=M_PI/static_cast<double>(NPole);
       CN++;
     }
 
   // TRIANGLE DIVIDERS:
   CN=buildIndex+500;
-  angle=M_PI*(poleYAngle-22.5)/180.0;
-  for(size_t i=0;i<8;i++)
+  angle=M_PI*(poleYAngle-180.0/static_cast<double>(NPole))/180.0;
+  for(size_t i=0;i<NPole;i++)
     {
       const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
       ModelSupport::buildPlane(SMap,CN+1,Origin,QX);
-      angle+=M_PI/4.0;
+      angle+=2.0*M_PI/static_cast<double>(NPole);
       CN++;
     }  
 
   // MAIN POLE PIECES:
   angle=M_PI*poleYAngle/180.0;
   CN=buildIndex+2000;
-  for(size_t i=0;i<8;i++)
+  for(size_t i=0;i<NPole;i++)
     {
       const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
       const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
@@ -234,35 +234,35 @@ Octupole::createSurfaces()
 
       ModelSupport::buildPlane(SMap,CN+101,CPt,QR);
       
-      angle+=M_PI/4.0;
+      angle+=2.0*M_PI/static_cast<double>(NPole);
       CN+=10;
     }  
   return;
 }
 
 void
-Octupole::createObjects(Simulation& System)
+Sexupole::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("Octupole","createObjects");
+  ELog::RegMethod RegA("Sexupole","createObjects");
 
   std::string Out;
+
   
-  // Outer steel
-  Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,
-     "1M -2M -51 -52 -53 -54 -55 -56 -57 -58 -59 -60 -61 -62 -63 -64 -65 -66 ");
+  std::string unitStr=" 1M -2M ";
+  unitStr+=ModelSupport::getSeqIntersection(-51,-(51+2*NPole),1);
+  Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,unitStr);
   addOuterSurf(Out);
-  
-  Out+=ModelSupport::getComposite(SMap,buildIndex+1000,
-			" (1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16) ");
+
+  unitStr=ModelSupport::getSeqUnion(1,2*NPole,1);
+  Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
 
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
 
-  const std::string ICell=      
-    (isActive("Inner")) ? getRuleStr("Inner") : "";
+  const std::string ICell=innerTube.display();
   /// create triangles
   const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
 
@@ -317,12 +317,12 @@ Octupole::createObjects(Simulation& System)
 }
 
 void 
-Octupole::createLinks()
+Sexupole::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("Octupole","createLinks");
+  ELog::RegMethod RegA("Sexupole","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
@@ -334,7 +334,7 @@ Octupole::createLinks()
 }
 
 void
-Octupole::createAll(Simulation& System,
+Sexupole::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
@@ -344,7 +344,7 @@ Octupole::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("Octupole","createAll");
+  ELog::RegMethod RegA("Sexupole","createAll");
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/Octupole.h
+ * File:   commonBeamInc/Sexupole.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Octupole_h
-#define xraySystem_Octupole_h
+#ifndef xraySystem_Sexupole_h
+#define xraySystem_Sexupole_h
 
 class Simulation;
 
@@ -28,15 +28,15 @@ class Simulation;
 namespace xraySystem
 {
 /*!
-  \class Octupole
+  \class Sexupole
   \version 1.0
   \author S. Ansell
   \date January 2019
 
-  \brief Octupole for Max-IV
+  \brief Sexupole for Max-IV
 */
 
-class Octupole : public attachSystem::FixedRotate,
+class Sexupole : public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
@@ -63,7 +63,7 @@ class Octupole : public attachSystem::FixedRotate,
   int coreMat;                     ///< core of magnet 
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material
-  
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   
@@ -73,12 +73,14 @@ class Octupole : public attachSystem::FixedRotate,
 
  public:
 
-  Octupole(const std::string&);
-  Octupole(const std::string&,const std::string&);
-  Octupole(const Octupole&);
-  Octupole& operator=(const Octupole&);
-  virtual ~Octupole();
+  Sexupole(const std::string&);
+  Sexupole(const std::string&,const std::string&);
+  Sexupole(const Sexupole&);
+  Sexupole& operator=(const Sexupole&);
+  virtual ~Sexupole();
 
+  /// set innner tube
+  void setInnerTube(const HeadRule& HR) { innerTube=HR; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

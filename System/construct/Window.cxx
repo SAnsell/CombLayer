@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -278,18 +278,6 @@ Window::createObjects(Simulation& System)
     }
 
   return;
-}
-
-
-std::string
-Window::getComposite(const std::string& surfList) const
-  /*!
-    Exposes local version of getComposite
-    \param surfList :: surface list
-    \return Composite string
-  */
-{
-  return ModelSupport::getComposite(SMap,buildIndex,surfList);
 }
 
 void

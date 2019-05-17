@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <utility>
 
 #include "support.h"
 #include "surfRegister.h"
@@ -507,4 +508,51 @@ getComposite(const surfRegister& SMap,
     getComposite(SMap,Offset,surfNC);
 }
 
+std::string
+getSeqIntersection(int A,int B,int step)
+  /*!
+    Generate a sequence of numbers in the string between the 
+    step size as an MCNP intersect unit
+    \param A :: First number
+    \param B :: Second number
+    \param step :: step size
+    \return string in form 1 2 3 4  etc.
+   */
+{
+  if (A>B) std::swap(A,B);
+  if (step<0) step*=-1;
+  if (!step) step=1;
+  
+  std::ostringstream cx;
+  cx<<" ";
+  for(int i=A;i<=B;i+=step)
+    cx<<i<<" ";
+  
+  return cx.str();
+}
+
+std::string
+getSeqUnion(int A,int B,int step)
+  /*!
+    Generate a sequence of numbers in the string between the 
+    step size as an MCNP union unit
+    \param A :: First number
+    \param B :: Second number
+    \param step :: step size
+    \return string in form (1:2:3:4...)
+   */
+{
+  if (A>B) std::swap(A,B);
+  if (step<0) step*=-1;
+  if (!step) step=1;
+  
+  std::ostringstream cx;
+  cx<<"(";
+  for(int i=A;i<B;i+=step)
+    cx<<i<<":";
+  cx<<B<<")";
+  return cx.str();
+}
+
+  
 }  // NAMESPACE ModelSupport
