@@ -76,6 +76,11 @@ OctupoleGenerator::~OctupoleGenerator()
 
 void
 OctupoleGenerator::setRadius(const double R,const double C)
+  /*!
+    Set the coil and pole radius
+    \param R :: Pole radius [closest point]
+    \param C :: Coil radius
+   */
 {
   poleGap=R;
   coilRadius=C;

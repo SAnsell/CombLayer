@@ -64,7 +64,9 @@ class OctupoleGenerator
   OctupoleGenerator(const OctupoleGenerator&);
   OctupoleGenerator& operator=(const OctupoleGenerator&);
   virtual ~OctupoleGenerator();
-  
+
+  /// Angle in deg for main axis rotation
+  void setPoleAngle(const double A) { poleYAngle=A; }
   void setRadius(const double,const double);
   virtual void generateOcto(FuncDataBase&,const std::string&,
 			    const double,const double) const;

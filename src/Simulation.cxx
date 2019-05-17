@@ -1596,12 +1596,12 @@ Simulation::minimizeObject(const std::string& keyName)
     Minimize and remove those objects that are not needed
     \param System :: Simulation to use
     \return true if an object changed/removed
-   */
+  */
 {
   ELog::RegMethod RegA("Simulation","minimizeObject(keyname)");
 
   int retFlag(0);
-  const std::vector<int> cVec=objectGroup::getObjectRange(keyName);
+  const std::vector<int> cVec=objectGroups::getObjectRange(keyName);
   for(const int CN : cVec)
     {
       if (minimizeObject(CN))

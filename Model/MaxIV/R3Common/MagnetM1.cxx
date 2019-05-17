@@ -298,7 +298,7 @@ MagnetM1::createAll(Simulation& System,
 
   attachSystem::InnerZone& IZ=preDipole->getBuildZone();
   MonteCarlo::Object* pipeCell=IZ.getMaster();
-v
+
   attachSystem::InnerZone& BZ=preDipole->getBendZone();
   MonteCarlo::Object* bendCell=BZ.getMaster();
 

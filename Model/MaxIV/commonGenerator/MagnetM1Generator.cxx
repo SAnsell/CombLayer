@@ -63,7 +63,7 @@ namespace setVariable
 {
 
 MagnetM1Generator::MagnetM1Generator() :
-  blockYStep(1.5),length(229.0),
+  blockYStep(10.5),length(220.0),
   outerVoid(12.0),ringVoid(12.0),topVoid(12.0),
   baseVoid(12.0),baseThick(8.0),wallThick(6.0),
   voidMat("Void"),wallMat("Stainless304")
@@ -113,17 +113,18 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   setVariable::OctupoleGenerator OGen;
   setVariable::QuadrupoleGenerator QGen;
 
-  OGen.generateOcto(Control,keyName+"OXX",20.0,10.0);
+  OGen.generateOcto(Control,keyName+"OXX",23.9,10.0); // 18.9+5
 
   // length is lengh + coil extra [2cm]
-  QGen.generateQuad(Control,keyName+"QFend",42.50,23.0);
+  QGen.generateQuad(Control,keyName+"QFend",46.0,23.0);  //33.5+12.5
 
-  OGen.generateOcto(Control,keyName+"OXY",65.0,10.0);
+  OGen.generateOcto(Control,keyName+"OXY",65.9,10.0);
   // extra +5 cm
-  QGen.generateQuad(Control,keyName+"QDend",92.50,23.0);
+  QGen.generateQuad(Control,keyName+"QDend",90.30,23.0);
   // +5 cm
-  DGen.generateDipole(Control,keyName+"DIPm",116.50,60.0);
+  DGen.generateDipole(Control,keyName+"DIPm",115.50,60.0);
 
+  OGen.setPoleAngle(0.0);
   OGen.setRadius(2.8,3.4);
   OGen.generateOcto(Control,keyName+"OYY",190.0,10.0);
   
