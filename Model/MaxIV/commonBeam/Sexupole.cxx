@@ -91,6 +91,7 @@ Sexupole::Sexupole(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
+  NPole(6),
   baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -105,6 +106,7 @@ Sexupole::Sexupole(const std::string& Base,
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
+  NPole(6),
   baseName(Base)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -262,7 +264,7 @@ Sexupole::createObjects(Simulation& System)
 
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);
 
-  const std::string ICell=innerTube.display();
+  const std::string ICell=isActive("Inner") ? getRuleStr("Inner") : "";
   /// create triangles
   const std::string FB=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
 

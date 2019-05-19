@@ -43,7 +43,8 @@ class Sexupole : public attachSystem::FixedRotate,
   public attachSystem::SurfMap
 {
  private:
-  
+
+  const size_t NPole; 
   const std::string baseName;   ///< Base key
   
   double length;                ///< frame length
@@ -79,8 +80,6 @@ class Sexupole : public attachSystem::FixedRotate,
   Sexupole& operator=(const Sexupole&);
   virtual ~Sexupole();
 
-  /// set innner tube
-  void setInnerTube(const HeadRule& HR) { innerTube=HR; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
