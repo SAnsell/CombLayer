@@ -460,7 +460,6 @@ InnerZone::refrontMasterCell(MonteCarlo::Object* MCell,
 
   Out=surroundHR.display() + backHR.display()+ FHR.display();
   MCell->procString(Out);
-  ELog::EM<<"Mcell = "<<*MCell<<ELog::endDiag;
   return;
 }
 
