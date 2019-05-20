@@ -144,10 +144,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPOVRay","writeMaterial");
 
-  // WRITE OUT ASSIGNMENT:
-  for(const OTYPE::value_type& mp : OList)
-    mp.second->writePOVRaymat(OX);
-    
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
 
@@ -158,6 +154,10 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
   DB.writePOVRay(OX);
   
   // Overwrite textures by a user-provided file
+  OX << "#if (file_exists(\"povray/materials.inc\"))" << std::endl;
+  OX << "#include \"povray/materials.inc\"" << std::endl;
+  OX << "#end"  << std::endl;
+
   OX << "#if (file_exists(\"materials.inc\"))" << std::endl;
   OX << "#include \"materials.inc\"" << std::endl;
   OX << "#end"  << std::endl;

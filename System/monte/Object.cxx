@@ -1508,30 +1508,6 @@ Object::writePOVRay(std::ostream& OX) const
   return;
 }
 
-void
-Object::writePOVRaymat(std::ostream& OX) const
-  /*!
-    Write the object material assignment to a standard stream
-    in POVRay output format.
-    \param OX :: Output stream (required for multiple std::endl)
-  */
-{
-  ELog::RegMethod RegA("Object","writePOVRaymat");
-  if (!placehold)
-    {      
-      OX<<"POVRay dummy material string    ";
-      if (!MatN)   // are we really rendering vacuum ????
-	OX<<" VACUUM";
-      else
-	OX<<"    M"<<MatN;
-      
-      OX<<"    "<<FCUnit<<"_"<<ObjName<<std::endl;
-    }
-  
-  return;
-}
-
-  
 void 
 Object::writePHITS(std::ostream& OX) const
   /*!
