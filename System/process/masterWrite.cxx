@@ -153,8 +153,9 @@ masterWrite::NameNoDot(std::string V)
     \return formated name
   */
 {
-  std::replace(V.begin(),V.end(),'.','x');
+  std::replace(V.begin(),V.end(),'.','d');
   std::replace(V.begin(),V.end(),'%','p');
+  std::replace(V.begin(),V.end(),'#','h');
   return V;
 }
 
