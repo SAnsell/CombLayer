@@ -144,10 +144,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPOVRay","writeMaterial");
 
-  // WRITE OUT ASSIGNMENT:
-  for(const OTYPE::value_type& mp : OList)
-    mp.second->writePOVRaymat(OX);
-    
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
 
