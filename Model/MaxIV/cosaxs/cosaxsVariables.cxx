@@ -1164,7 +1164,8 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(preName+"TubeNoseConeLength",35.0); // measured
   Control.addVariable(preName+"TubeNoseConeMainMat","Void"); //
-  Control.addVariable(preName+"TubeNoseConeWallMat","Stainless304"); //
+  Control.addVariable(preName+"TubeNoseConeWallMat","Stainless304"); // ???
+  Control.addVariable(preName+"TubeNoseConeWallThick",1.05); // measured
 
   Control.addVariable(preName+"TubeNoseConeBackPlateWidth",12.0); // measured
   Control.addVariable(preName+"TubeNoseConeBackPlateHeight",12.0); // measured

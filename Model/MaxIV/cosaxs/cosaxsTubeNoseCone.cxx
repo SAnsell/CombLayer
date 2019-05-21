@@ -112,7 +112,7 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   frontPlateHeight(A.frontPlateHeight),
   frontPlateThick(A.frontPlateThick),
   frontPlateRimThick(A.frontPlateRimThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  wallThick(A.wallThick),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: cosaxsTubeNoseCone to copy
@@ -142,7 +142,7 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       frontPlateHeight=A.frontPlateHeight;
       frontPlateThick=A.frontPlateThick;
       frontPlateRimThick=A.frontPlateRimThick;
-      mainMat=A.mainMat;
+      wallThick=A.wallThick;
       wallMat=A.wallMat;
     }
   return *this;
@@ -184,7 +184,7 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   frontPlateRimThick=Control.EvalVar<double>(keyName+"FrontPlateRimThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -223,7 +223,7 @@ cosaxsTubeNoseCone::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(backPlateThick+frontPlateThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(backPlateThick+frontPlateThick+length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
@@ -235,10 +235,6 @@ cosaxsTubeNoseCone::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(backPlateHeight/2.0),Z);
 
   // front plate
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+21,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				  backPlateThick);
-
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(frontPlateWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(frontPlateWidth/2.0),X);
 
@@ -259,6 +255,45 @@ cosaxsTubeNoseCone::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(buildIndex+26),
 				  -frontPlateRimThick);
 
+  // inclined walls
+  const double thetaV = std::atan((frontPlateHeight-backPlateHeight)/2.0/length)*180.0/M_PI;
+  const double thetaH = std::atan((frontPlateWidth-backPlateWidth)/2.0/length)*180.0/M_PI;
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+41,
+	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				  backPlateThick);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+42,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+41),
+				  length);
+
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+43,
+				  Origin-X*(backPlateWidth/2.0)+Y*(backPlateThick),
+				  X,Z,thetaH);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+44,
+				  Origin+X*(backPlateWidth/2.0)+Y*(backPlateThick),
+				  X,Z,-thetaH);
+
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+45,
+				  Origin-Z*(backPlateHeight/2.0)+Y*(backPlateThick),
+				  Z,X,-thetaV);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+46,
+				  Origin+Z*(backPlateHeight/2.0)+Y*(backPlateThick),
+				  Z,X,thetaV);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+53,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+43),
+				  wallThick*cos(thetaH*M_PI/180.0));
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+54,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+44),
+				  -wallThick*cos(thetaH*M_PI/180.0));
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+55,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+45),
+				  wallThick*cos(thetaV*M_PI/180.0));
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+56,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+46),
+				  -wallThick*cos(thetaV*M_PI/180.0));
   return;
 }
 
@@ -275,13 +310,30 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -21 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -41 13 -14 15 -16 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 23 -24 25 -26 (-33:34:-35:36)");
+  // void outside back plate
+  Out=ModelSupport::getComposite(SMap,buildIndex," -41 23 -24 25 -26 (-13:14:-15:16) ");
+  System.addCell(cellIndex++,0,0.0,Out+frontStr);
+
+  // trapeze area
+  Out=ModelSupport::getComposite(SMap,buildIndex,
+				 " 41 -42 43 -44 45 -46 (-53:54:-55:56) ");
+  makeCell("Trapeze",System,cellIndex++,wallMat,0.0,Out);
+
+  // void outside trapeze
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 23 -24 25 -26 (-41:42:-43:44:-45:46) ");
+  System.addCell(cellIndex++,0,0.0,Out);
+
+  // void inside trapeze
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 53 -54 55 -56 ");
+  System.addCell(cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 42 23 -24 25 -26 (-33:34:-35:36)");
   makeCell("FrontPlateRim",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 33 -34 35 -36 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 42 33 -34 35 -36 ");
   makeCell("FrontPlateVoid",System,cellIndex++,0,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 25 -26 ");

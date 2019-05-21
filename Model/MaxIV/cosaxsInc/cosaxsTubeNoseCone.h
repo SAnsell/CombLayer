@@ -53,7 +53,7 @@ class cosaxsTubeNoseCone :
   double frontPlateThick; ///< Front plate thickness
   double frontPlateRimThick; ///< Front plate rim thickness
 
-  int mainMat;                  ///< Main material
+  double wallThick;                ///< Thickness of inclined walls
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
