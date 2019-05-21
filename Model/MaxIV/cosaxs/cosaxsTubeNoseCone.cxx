@@ -111,6 +111,7 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   frontPlateWidth(A.frontPlateWidth),
   frontPlateHeight(A.frontPlateHeight),
   frontPlateThick(A.frontPlateThick),
+  frontPlateRimThick(A.frontPlateRimThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -140,6 +141,7 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       frontPlateWidth=A.frontPlateWidth;
       frontPlateHeight=A.frontPlateHeight;
       frontPlateThick=A.frontPlateThick;
+      frontPlateRimThick=A.frontPlateRimThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -180,6 +182,7 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
   frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
+  frontPlateRimThick=Control.EvalVar<double>(keyName+"FrontPlateRimThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -224,13 +227,14 @@ cosaxsTubeNoseCone::createSurfaces()
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-
+  // back plate
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(backPlateWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(backPlateWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(backPlateHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(backPlateHeight/2.0),Z);
 
+  // front plate
   ModelSupport::buildShiftedPlane(SMap, buildIndex+21,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
 				  backPlateThick);
@@ -240,6 +244,21 @@ cosaxsTubeNoseCone::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(frontPlateHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(frontPlateHeight/2.0),Z);
+
+  // front plate rim (band)
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+33,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+23),
+				  frontPlateRimThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+34,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+24),
+				  -frontPlateRimThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+35,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+25),
+				  frontPlateRimThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+36,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+26),
+				  -frontPlateRimThick);
+
   return;
 }
 
@@ -259,8 +278,11 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -21 13 -14 15 -16 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 21 23 -24 25 -26 ");
-  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 23 -24 25 -26 (-33:34:-35:36)");
+  makeCell("FrontPlateRim",System,cellIndex++,wallMat,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 21 33 -34 35 -36 ");
+  makeCell("FrontPlateVoid",System,cellIndex++,0,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 25 -26 ");
   addOuterSurf(Out+frontStr+backStr);

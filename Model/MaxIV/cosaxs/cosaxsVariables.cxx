@@ -1173,6 +1173,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"TubeNoseConeFrontPlateWidth",38.0); // measured
   Control.addVariable(preName+"TubeNoseConeFrontPlateHeight",38.0); // measured
   Control.addVariable(preName+"TubeNoseConeFrontPlateThick",2.5); // measured
+  Control.addVariable(preName+"TubeNoseConeFrontPlateRimThick",4.5); // measured
 
   Control.addParse<double>(preName+"TubeOuterRadius",
 			   "CosaxsExptLineTubeRadius+10");
