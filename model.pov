@@ -10,7 +10,7 @@ global_settings {
 assumed_gamma 1.0
 }
 
-#declare view = 1;
+#declare view = 7;
 
 #switch ( view )
 #case(0) // ExptHut start
@@ -87,7 +87,31 @@ sky_sphere{
       rotate <0,40,0> //
 }
 #break
-#else
+  #case(6) // SPECIES ring / optics hutch view
+    #declare cameraLocation   = <650, 1025, 150>;
+    #declare cameraLookAt   =    <50, 1838, 3>;
+    #declare cameraAngle = 100;
+    light_source {
+      < -380, 1509, 1000 >  White
+      shadowless
+    }
+    light_source {
+      < 500, 2000, 1000 >  White
+      shadowless
+    }
+    background { color rgb <0.1, 0.1, 0.1> }
+  #break
+  #case(7) // SPECIES ring / optics hutch view white background
+    #declare cameraLocation   = <650, 1025, 150>;
+    #declare cameraLookAt   =    <50, 1838, 3>;
+    #declare cameraAngle = 100;
+    light_source {
+      < 156, 1835, 100 >  White
+      shadowless
+    }
+    background { color rgb <1, 1, 1> }
+  #break
+  #else
  #declare cameraLocation = <-250, -160, 0>;
  #declare cameraLookAt   = <0, -1000, 0>;
  #declare cameraAngle = 20;
@@ -139,4 +163,4 @@ camera {
 #     < 260,    140, 190 >  White
 #}
 
-#include "b.x"
+#include "b.inc"
