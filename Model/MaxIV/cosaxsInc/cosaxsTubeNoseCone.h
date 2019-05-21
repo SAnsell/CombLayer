@@ -48,6 +48,9 @@ class cosaxsTubeNoseCone :
   double backPlateWidth;        ///< Back plate width
   double backPlateHeight;       ///< Back plate height
   double backPlateThick;        ///< Back plate thickness
+  double frontPlateWidth; ///< Front plate width
+  double frontPlateHeight; ///< Front plate height
+  double frontPlateThick; ///< Front plate thickness
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
