@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsTube.h
+ * File:   Model/MaxIV/cosaxsInc/cosaxsTubeNoseCone.h
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsTube_h
-#define xraySystem_cosaxsTube_h
+#ifndef xraySystem_cosaxsTubeNoseCone_h
+#define xraySystem_cosaxsTubeNoseCone_h
 
 class Simulation;
 
@@ -28,16 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class cosaxsTube
+  \class cosaxsTubeNoseCone
   \version 1.0
   \author Konstantin Batkov
-  \date 6 May 2019
-  \brief CoSAXS Submarine
+  \date 17 May 2019
+  \brief cosaxsTubeNoseCone
 */
 
-  class cosaxsTubeNoseCone;
-
-class cosaxsTube :
+class cosaxsTubeNoseCone :
     public attachSystem::ContainedComp,
     public attachSystem::FixedOffset,
     public attachSystem::CellMap,
@@ -45,17 +43,14 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
+
   double length;                ///< Total length including void
-  double radius;                 ///< Radius
+  double width;                 ///< Width
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
-
-  attachSystem::InnerZone buildZone;
-
-  std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -67,11 +62,11 @@ class cosaxsTube :
 
  public:
 
-  cosaxsTube(const std::string&);
-  cosaxsTube(const cosaxsTube&);
-  cosaxsTube& operator=(const cosaxsTube&);
-  virtual cosaxsTube* clone() const;
-  virtual ~cosaxsTube();
+  cosaxsTubeNoseCone(const std::string&);
+  cosaxsTubeNoseCone(const cosaxsTubeNoseCone&);
+  cosaxsTubeNoseCone& operator=(const cosaxsTubeNoseCone&);
+  virtual cosaxsTubeNoseCone* clone() const;
+  virtual ~cosaxsTubeNoseCone();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
