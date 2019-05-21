@@ -115,7 +115,8 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),radius(A.radius),height(A.height),
+  length(A.length),radius(A.radius),outerLength(A.outerLength),
+  outerRadius(A.outerRadius),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
   buildZone(A.buildZone),
@@ -143,7 +144,8 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
       radius=A.radius;
-      height=A.height;
+      outerRadius=A.outerRadius;
+      outerLength=A.outerLength;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -181,7 +183,8 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
-  height=Control.EvalVar<double>(keyName+"Height");
+  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  outerLength=Control.EvalVar<double>(keyName+"OuterLength");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -217,32 +220,17 @@ cosaxsTube::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(outerLength),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
 
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   const HeadRule HR(Out);
@@ -265,16 +253,16 @@ cosaxsTube::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " -17 (-1:2:7) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  // Out=ModelSupport::getComposite(SMap,buildIndex,
+  // 				 " -17 (-1:2:7) ");
+  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   addOuterSurf(Out+frontStr+backStr);
 
   int outerCell;
-  buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1)));
-  buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
+  buildZone.setFront(getRule("front"));//HeadRule(SMap.realSurf(buildIndex+1)));
+  buildZone.setBack(getRule("back"));//HeadRule(-SMap.realSurf(buildIndex+2)));
 
   MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
 

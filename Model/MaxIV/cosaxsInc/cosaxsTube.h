@@ -47,7 +47,8 @@ class cosaxsTube :
  private:
   double length;                ///< Total length including void
   double radius;                 ///< Radius
-  double height;                ///< Height
+  double outerRadius; ///< Radius of bounding volume
+  double outerLength; ///< Length of bounding volume
   double wallThick;             ///< Wall thickness
 
   int mainMat;                  ///< Main material

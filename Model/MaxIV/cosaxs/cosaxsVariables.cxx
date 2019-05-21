@@ -1163,11 +1163,16 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"TubeWallMat","Aluminium"); // dummy
 
   Control.addVariable(preName+"TubeNoseConeLength",35.0); // measured
-  Control.addVariable(preName+"TubeNoseConeWidth",1.0); //
-  Control.addVariable(preName+"TubeNoseConeHeight",1.0); //
-  Control.addVariable(preName+"TubeNoseConeWallThick",1.0); //
+  Control.addVariable(preName+"TubeNoseConeBackPlateWidth",12.0); // measured
+  Control.addVariable(preName+"TubeNoseConeBackPlateHeight",12.0); // measured
+  Control.addVariable(preName+"TubeNoseConeBackPlateThick",1.5); // measured
   Control.addVariable(preName+"TubeNoseConeMainMat","Void"); //
   Control.addVariable(preName+"TubeNoseConeWallMat","Stainless304"); //
+
+  Control.addParse<double>(preName+"TubeOuterRadius",
+			   "CosaxsExptLineTubeRadius+10");
+  Control.addParse<double>(preName+"TubeOuterLength",
+			   "CosaxsExptLineTubeLength+CosaxsExptLineTubeNoseConeLength+100");
 }
 
 void
