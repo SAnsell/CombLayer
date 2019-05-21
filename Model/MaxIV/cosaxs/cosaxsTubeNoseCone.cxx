@@ -106,8 +106,8 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
+  length(A.length),backPlateWidth(A.backPlateWidth),backPlateHeight(A.backPlateHeight),
+  backPlateThick(A.backPlateThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -131,9 +131,9 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
-      height=A.height;
-      wallThick=A.wallThick;
+      backPlateWidth=A.backPlateWidth;
+      backPlateHeight=A.backPlateHeight;
+      backPlateThick=A.backPlateThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -168,9 +168,9 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
+  backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
+  backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -205,41 +205,21 @@ cosaxsTubeNoseCone::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(backPlateThick),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(backPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(backPlateWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(backPlateHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(backPlateHeight/2.0),Z);
 
   return;
 }
@@ -257,14 +237,9 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 13 -14 15 -16");
   addOuterSurf(Out+frontStr+backStr);
 
   return;
@@ -281,16 +256,16 @@ cosaxsTubeNoseCone::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(backPlateWidth/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(backPlateWidth/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(backPlateHeight/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(backPlateHeight/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

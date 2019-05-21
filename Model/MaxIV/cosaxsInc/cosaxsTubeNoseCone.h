@@ -44,10 +44,10 @@ class cosaxsTubeNoseCone :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double length;                ///< Length of the pyramid-shaped segment
+  double backPlateWidth;        ///< Back plate width
+  double backPlateHeight;       ///< Back plate height
+  double backPlateThick;        ///< Back plate thickness
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
