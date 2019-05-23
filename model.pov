@@ -159,8 +159,4 @@ camera {
 // #break
 // #end
 
-#light_source {
-#     < 260,    140, 190 >  White
-#}
-
 #include "b.inc"
