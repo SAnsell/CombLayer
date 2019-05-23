@@ -10,16 +10,16 @@ global_settings {
 assumed_gamma 1.0
 }
 
-#declare view = 7;
+#declare view = 0;
 
 #switch ( view )
 #case(0) // ExptHut start
- #declare cameraLocation = <470, 2228, 50>;
- #declare cameraLookAt   = <406, 1978, 0>;
- #declare cameraAngle = 170;
+ #declare cameraLocation = <3670, 8202, 50>;
+ #declare cameraLookAt   = <3533, 8411, 0>;
+ #declare cameraAngle = 30;
   light_source {
-    < 2300, 2127, 200 >  White
-    shadowless
+    < 3714, 8534, 200 >  White
+//    shadowless
   }
 #break
 #case(1) // SPECIES 1 start
