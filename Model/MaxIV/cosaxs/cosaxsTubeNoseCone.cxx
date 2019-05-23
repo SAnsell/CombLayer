@@ -256,8 +256,10 @@ cosaxsTubeNoseCone::createSurfaces()
 				  -frontPlateRimThick);
 
   // inclined walls
-  const double thetaV = std::atan((frontPlateHeight-backPlateHeight)/2.0/length)*180.0/M_PI;
-  const double thetaH = std::atan((frontPlateWidth-backPlateWidth)/2.0/length)*180.0/M_PI;
+  const double tv(frontPlateHeight-frontPlateRimThick*2+wallThick*2);
+  const double th(frontPlateWidth-frontPlateRimThick*2+wallThick*2);
+  const double thetaV = std::atan((tv-backPlateHeight)/2.0/length)*180.0/M_PI;
+  const double thetaH = std::atan((th-backPlateWidth)/2.0/length)*180.0/M_PI;
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+41,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
@@ -283,17 +285,17 @@ cosaxsTubeNoseCone::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+53,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+43),
-				  wallThick*cos(thetaH*M_PI/180.0));
+				  wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+54,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+44),
-				  -wallThick*cos(thetaH*M_PI/180.0));
+				  -wallThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+55,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+45),
-				  wallThick*cos(thetaV*M_PI/180.0));
+				  wallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+56,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+46),
-				  -wallThick*cos(thetaV*M_PI/180.0));
+				  -wallThick);
   return;
 }
 
