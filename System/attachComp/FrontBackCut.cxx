@@ -376,7 +376,7 @@ FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
 			      const Geometry::Vec3D& YAxis,
 			      const double length) const
   /*!
-    Support function to calculate the shifted surface fo the front
+    Support function to calculate the shifted surface for the front
     \param SMap :: Surface register
     \param surfIndex :: offset index [new]
     \param dFlag :: direction flag
