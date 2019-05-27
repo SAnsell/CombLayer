@@ -3,7 +3,7 @@
  
  * File:   include/Simulation.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@ namespace ModelSupport
 
 namespace MonteCarlo
 {
-  class Object;
   class Material;
   class Object;
 }
@@ -174,7 +173,6 @@ class Simulation : public objectGroups
   int addCell(const int,const int,const double,const std::string&);
   int addCell(const int,const int,const double,const HeadRule&);
 
-
   /// Get values
 
   std::vector<int> getCellVector() const;
@@ -208,9 +206,10 @@ class Simulation : public objectGroups
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
   int splitObject(const int,const int);
-  void minimizeObject(const int);
+  int minimizeObject(const std::string&);
+  int minimizeObject(const int);
   void makeObjectsDNForCNF();
-  virtual void prepareWrite();
+  virtual void prepareWrite();  
 
   virtual void substituteAllSurface(const int,const int);
   virtual std::map<int,int> renumberCells(const std::vector<int>&,

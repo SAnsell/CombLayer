@@ -1957,7 +1957,6 @@ FixedComp::applyRotation(const localRotate& LR)
   
   return;
 }
-  
 
 int
 FixedComp::getExitWindow(const long int sideIndex,

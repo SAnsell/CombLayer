@@ -628,6 +628,20 @@ ContainedGroup::insertInCell(const std::string& Key,
   getCC(Key).insertInCell(System,CVec);
   return;
 }
+
+void 
+ContainedGroup::insertInCell(const std::string& Key,
+			     MonteCarlo::Object& outerObj)
+  /*!
+    Inserts a contained component into the cell 
+    \param Key :: Group name
+    \param outerObj :: Object to insert into
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","insertInCell(Obj)");
+  getCC(Key).insertInCell(outerObj);
+  return;
+}
   
 void
 ContainedGroup::insertObjects(Simulation& System)
@@ -643,10 +657,7 @@ ContainedGroup::insertObjects(Simulation& System)
   for(mc=CMap.begin();mc!=CMap.end();mc++)
     mc->second.insertObjects(System);
 
-      
-	
   return;
-      
 }
 
 }  // NAMESPACE attachSystem

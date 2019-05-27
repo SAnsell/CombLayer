@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -329,7 +328,7 @@ activationSelection(Simulation& System,
       for(size_t index=0;index<nP;index++)
 	{
 	  std::string eMess
-	    ("Insufficient item for activation["+StrFunc::makeString(index)+"]");
+	    ("Insufficient item for activation["+std::to_string(index)+"]");
 	  const std::string key=
 	    IParam.getValueError<std::string>("activation",index,0,eMess);
 	  eMess+=" at key "+key;

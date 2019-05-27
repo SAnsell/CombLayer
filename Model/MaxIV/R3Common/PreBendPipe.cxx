@@ -73,6 +73,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -85,12 +86,14 @@ namespace xraySystem
 {
 
 PreBendPipe::PreBendPipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,12),
+  attachSystem::ContainedGroup("Tube","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  buildZone(*this,cellIndex)
+  buildZone(*this,cellIndex),
+  bendZone(*this,cellIndex),
+  exitZone(*this,cellIndex)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -221,7 +224,8 @@ PreBendPipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+102,cylEnd,YElec);
   SurfMap::setSurf("electronCut",SMap.realSurf(buildIndex+102));
   
-  // Exit cylinder [ levels]
+  // Exit cylinder [levels]
+  
   ModelSupport::buildPlane(SMap,buildIndex+210,cylEnd,XElec);
   ModelSupport::buildCylinder
     (SMap,buildIndex+207,cylEnd,YElec,radius);
@@ -237,7 +241,7 @@ PreBendPipe::createSurfaces()
     (SMap,buildIndex+2007,Origin,Y,flangeBRadius);
   ModelSupport::buildPlane
     (SMap,buildIndex+2001,Origin+Y*(length-flangeBLength),Y);
-
+  SurfMap::setSurf("endFlange",SMap.realSurf(buildIndex+2001));
 
   return;
 }
@@ -256,13 +260,31 @@ PreBendPipe::createObjects(Simulation& System)
   const std::string frontSurf(ExternalCut::getRuleStr("front"));
 
   // Construct the inner zone a a innerZone
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 17  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1007 17 ");
   buildZone.setSurround(HeadRule(Out));
   buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1001)));
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
   buildZone.setVoidMat(voidMat);
-
   buildZone.constructMasterCell(System);
+
+    // Construct the second inner zone a
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1007 (-117: -115: 116:  (17 -10))");
+
+  bendZone.setSurround(HeadRule(Out));
+  bendZone.setFront(HeadRule(SMap.realSurf(buildIndex+101)));
+  bendZone.setBack(HeadRule(-SMap.realSurf(buildIndex+102)));
+  bendZone.setVoidMat(voidMat);
+  bendZone.constructMasterCell(System);
+
+  // Construct the third inner zone a
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," -1007 ((17 -10): (217 210): -115 : 116) ");
+  exitZone.setSurround(HeadRule(Out));
+  exitZone.setFront(HeadRule(SMap.realSurf(buildIndex+102)));
+  exitZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2001)));
+  exitZone.setVoidMat(voidMat);
+  exitZone.constructMasterCell(System);
 
   // cylinder half
   Out=ModelSupport::getComposite
@@ -283,7 +305,6 @@ PreBendPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"10 102 -2 (-207:-210) 105 -106  -110 ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out);
-
 
   // WALLS:
   Out=ModelSupport::getComposite
@@ -327,16 +348,19 @@ PreBendPipe::createObjects(Simulation& System)
   //  mid outer void
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 101 -102 -2007 (( 17 -10 ) : -117:-115:116) -110");
-  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+  //  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 102 -2001 -2007 (( 17 -10 ) : (210 217) :-115:116) ");
-  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+  //  makeCell("outerVoid",System,cellIndex++,0,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 ");
 
-
-
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-2 -2007 ");
-  addOuterSurf(Out+frontSurf);
+  addOuterSurf("Tube",Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 -2");
+  addOuterSurf("FlangeA",Out+frontSurf);
+  addOuterSurf("FlangeB",Out);
+      
 
   return;
 }
@@ -368,13 +392,19 @@ PreBendPipe::createLinks()
   setConnect(4,Origin+Y*(straightLength/2.0),Z);
   setLinkSurf(4,SMap.realSurf(buildIndex+17));
 
-  /*
-  std::string Out=ModelSupport::getComposite(SMap,buildIndex," 17 ");
-    
-  setConnect(5,Origin+Y*length,Z);
-  setLinkSurf(5,SMap.realSurf(buildIndex+17));
-  setLinkSurf(Out);
-  */
+  //  mid outer void
+  std::string Out=ModelSupport::getComposite
+    (SMap,buildIndex," (( 17 -10 ) : -117:-115:116) -110");
+  setConnect(5,Origin+Y*(straightLength),Z);
+  setLinkSurf(5,Out);
+
+  // electron straight
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," ((17 -10):(217 210):-115:116) ");
+  setConnect(6,cylEnd,elecAxis);
+  setLinkSurf(6,Out);
+
+
 
   return;
 }

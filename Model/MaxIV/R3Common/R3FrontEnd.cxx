@@ -593,7 +593,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   preDipole->setCutSurf("front",undulatorFC,2);
   preDipole->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
-  preDipole->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell);
 
 
   epCombine->setCutSurf("front",*preDipole,2);  

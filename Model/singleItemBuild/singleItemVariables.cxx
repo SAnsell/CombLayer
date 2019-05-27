@@ -57,7 +57,9 @@
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
 #include "ChopperGenerator.h"
+#include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
+#include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
 #include "PreBendPipeGenerator.h"
@@ -179,14 +181,20 @@ SingleItemVariables(FuncDataBase& Control)
   M1Gen.generateBlock(Control,"M1Block");
 
   setVariable::PreBendPipeGenerator PBGen;
-  PBGen.generatePipe(Control,"M1BlockPreBendPipe");
+  PBGen.generatePipe(Control,"PreBendPipe");
 
   setVariable::EPCombineGenerator EPCGen;
-  EPCGen.generatePipe(Control,"M1BlockEPCombine");
+  EPCGen.generatePipe(Control,"EPCombine");
   
   setVariable::QuadrupoleGenerator QGen;
-  QGen.generateQuad(Control,"M1BlockQFend",20.0,25.0);
+  QGen.generateQuad(Control,"QFend",20.0,25.0);
 
+  setVariable::OctupoleGenerator OGen;
+  OGen.generateOcto(Control,"OXX",20.0,25.0);
+
+  setVariable::DipoleGenerator DGen;
+  DGen.generateDipole(Control,"M1BlockDIM",0.0,60.0);
+  
   return;
 }
 

@@ -73,6 +73,7 @@
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h" 
 #include "BaseMap.h"
 #include "SurfMap.h"
@@ -81,7 +82,9 @@
 
 #include "PreBendPipe.h"
 #include "EPCombine.h"
+#include "Dipole.h"
 #include "Quadrupole.h"
+#include "Octupole.h"
 #include "MagnetM1.h"
 
 namespace xraySystem
@@ -92,9 +95,16 @@ MagnetM1::MagnetM1(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  buildZone(*this,cellIndex),
   preDipole(new xraySystem::PreBendPipe(keyName+"PreBendPipe")),
   epCombine(new xraySystem::EPCombine(keyName+"EPCombine")),
-  QFend(new xraySystem::Quadrupole(keyName+"QFend"))
+  Oxx(new xraySystem::Octupole(keyName+"OXX")),
+  QFend(new xraySystem::Quadrupole(keyName+"QFend")),
+  Oxy(new xraySystem::Octupole(keyName+"OXY")),
+  QDend(new xraySystem::Quadrupole(keyName+"QDend")),
+  DIPm(new xraySystem::Dipole(keyName+"DIPm")),
+  Oyy(new xraySystem::Octupole(keyName+"OYY"))
+
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -108,7 +118,11 @@ MagnetM1::MagnetM1(const std::string& Key) :
   
   OR.addObject(preDipole);
   OR.addObject(epCombine);
+  OR.addObject(Oxx);
   OR.addObject(QFend);
+  OR.addObject(Oxy);
+  OR.addObject(DIPm);
+  OR.addObject(Oyy);
 }
 
 
@@ -140,8 +154,7 @@ MagnetM1::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
-  
+    
   return;
 }
 
@@ -173,7 +186,6 @@ MagnetM1::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*blockYStep,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+blockYStep),Y);
 
-
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*outerVoid,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*ringVoid,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*baseVoid,Z);
@@ -198,10 +210,19 @@ MagnetM1::createObjects(Simulation& System)
   ELog::RegMethod RegA("MagnetM1","createObjects");
 
   std::string Out;
+  // Construct the inner zone a a innerZone
+  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6  ");
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex,"1 -2 3 -4 5 -6 ");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+  buildZone.setSurround(HeadRule(Out));
+  buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1)));
+  buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+2)));
+  buildZone.setVoidMat(voidMat);
+  buildZone.constructMasterCell(System);
+
+  CellMap::setCell("Void",buildZone.getMaster()->getName());
+  // Out=ModelSupport::getComposite
+  //   (SMap,buildIndex,"1 -2 3 -4 5 -6 ");
+  // makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
@@ -238,8 +259,8 @@ MagnetM1::createLinks()
 
 void
 MagnetM1::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -250,6 +271,7 @@ MagnetM1::createAll(Simulation& System,
   ELog::RegMethod RegA("MagnetM1","createAll");
 
   int outerCell;
+  int testCell;
   
   populate(System.getDataBase());
 
@@ -257,27 +279,123 @@ MagnetM1::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  preDipole->addInsertCell(this->getInsertCells());
+
+
+  MonteCarlo::Object* masterCell=buildZone.getMaster();
+  // puts in 74123 etc.
+  preDipole->addInsertCell("FlangeA",this->getInsertCells());
   epCombine->addInsertCell(this->getInsertCells());
   insertObjects(System);
 
   if (isActive("front"))
     preDipole->copyCutSurf("front",*this,"front");
   
-  preDipole->addInsertCell(getCells("Void"));
+  //  preDipole->addInsertCell(getCells("Void"));
   preDipole->createAll(System,FC,sideIndex);
 
   epCombine->addInsertCell(getCells("Void"));
   epCombine->createAll(System,*preDipole,2);
 
   attachSystem::InnerZone& IZ=preDipole->getBuildZone();
-  MonteCarlo::Object* masterCell=IZ.getMaster();
+  MonteCarlo::Object* pipeCell=IZ.getMaster();
+
+  attachSystem::InnerZone& BZ=preDipole->getBendZone();
+  MonteCarlo::Object* bendCell=BZ.getMaster();
+
+  attachSystem::InnerZone& EZ=preDipole->getExitZone();
+  MonteCarlo::Object* exitCell=EZ.getMaster();
+    
+  Oxx->setCutSurf("Inner",preDipole->getFullRule(5));
+  Oxx->createAll(System,*this,0);
+  IZ.cutVoidUnit(System,pipeCell,Oxx->getMainRule(-1), Oxx->getMainRule(-2));
+  outerCell=buildZone.triVoidUnit(System,masterCell,
+				  Oxx->getMainRule(-1), Oxx->getMainRule(-2));
+  //  Oxx->insertInCell(System,getCell("Void"));
+
+  Oxx->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell-1);
+
+  
   QFend->setInnerTube(preDipole->getFullRule(5));
   QFend->createAll(System,*this,0);
-  outerCell=IZ.cutVoidUnit(System,masterCell,
-			   QFend->getMainRule(-1),
-			   QFend->getMainRule(-2));
-  QFend->insertInCell(System,getCell("Void"));
+  IZ.cutVoidUnit(System,pipeCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
+  outerCell=buildZone.cutVoidUnit
+    (System,masterCell,QFend->getMainRule(-1),QFend->getMainRule(-2));
+  preDipole->insertInCell("Tube",System,outerCell);
+
+
+  Oxy->setCutSurf("Inner",preDipole->getFullRule(5));
+  Oxy->createAll(System,*this,0);
+  IZ.cutVoidUnit(System,pipeCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
+  outerCell=buildZone.triVoidUnit
+    (System,masterCell,Oxy->getMainRule(-1), Oxy->getMainRule(-2));
+
+  Oxy->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell-1);
+
+    
+  QDend->setInnerTube(preDipole->getFullRule(5));
+  QDend->createAll(System,*this,0);
+  IZ.cutVoidUnit(System,pipeCell,QDend->getMainRule(-1),QDend->getMainRule(-2));
+
+    
+  outerCell=buildZone.cutVoidUnit
+    (System,masterCell,QDend->getMainRule(-1),QDend->getMainRule(-2));
+  preDipole->insertInCell("Tube",System,outerCell);
+  // move to next bend object
+  DIPm->setCutSurf("MidSplit",preDipole->getSurf("electronCut"));
+  DIPm->setCutSurf("InnerA",preDipole->getFullRule(6));
+  DIPm->setCutSurf("InnerB",preDipole->getFullRule(7));
+  DIPm->createAll(System,*this,0);
+  outerCell=
+    BZ.cutVoidUnit(System,bendCell,DIPm->getMainRule(-1),
+		   DIPm->getMainRule(-2));
+  // DIPm extends into exit cell:
+  outerCell=
+    EZ.singleVoidUnit(System,exitCell,DIPm->getMainRule(2));
+  System.removeCell(outerCell);
+  outerCell=buildZone.triVoidUnit
+    (System,masterCell,DIPm->getMainRule(-1),DIPm->getMainRule(-2));
+  DIPm->insertInCell(System,outerCell);
+
+  
+  preDipole->insertInCell("Tube",System,outerCell-1);
+
+  
+  // Insert OYY
+  Oyy->setCutSurf("Inner",preDipole->getFullRule(7));
+  Oyy->createAll(System,*this,0);
+  EZ.cutVoidUnit(System,exitCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
+  outerCell=buildZone.triVoidUnit
+    (System,masterCell,Oyy->getMainRule(-1), Oyy->getMainRule(-2));
+
+  Oyy->insertInCell(System,outerCell);
+  preDipole->insertInCell("Tube",System,outerCell-1);
+  // end insert  
+
+
+  outerCell=buildZone.singleVoidUnit(System,masterCell,
+				     preDipole->getSurfRule("endFlange"));
+  preDipole->insertInCell("Tube",System,outerCell);
+  preDipole->insertInCell("Tube",System,masterCell->getName());
+  EZ.singleVoidUnit(System,exitCell,preDipole->getSurfRule("endFlange"));
+  preDipole->insertInCell("Tube",*bendCell);
+
+  // flange of EC:
+
+  outerCell=buildZone.singleVoidUnit
+    (System,masterCell,epCombine->getMainRule(-1));
+  preDipole->insertInCell("Tube",System,outerCell);
+  System.minimizeObject(preDipole->getKeyName());  
+  
+  
+  epCombine->insertInCell(*masterCell);
+  //  EZ.singleVoidUnit(System,exitCell, preDipole->getSurfRule("endFlange"));
+  //  exitZone
+
+  
+
+  
   return;
 }
   

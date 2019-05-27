@@ -119,6 +119,8 @@ class ContainedComp
   virtual void insertInCell(Simulation&,const int) const;
   virtual void insertInCell(Simulation&,const std::vector<int>&) const;
 
+  virtual void insertInCell(MonteCarlo::Object&) const;
+
   void insertExternalObject(Simulation&,const MonteCarlo::Object&) const;
   
   virtual void insertObjects(Simulation&);

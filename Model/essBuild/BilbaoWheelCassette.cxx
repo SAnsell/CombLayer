@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheelCassette.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -65,7 +64,6 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
-#include "ReadFunctions.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -74,11 +72,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
 #include "SurInter.h"
-#include "mergeTemplate.h"
 #include "AttachSupport.h"
 
 #include "BilbaoWheelCassette.h"
@@ -95,7 +89,9 @@ BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
   commonName(baseKey+extraKey)
     /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
+    \param baseKey :: Name for item in search
+    \param extraKey :: individual key name
+    \param Index :: counter of unit
   */
 {}
 

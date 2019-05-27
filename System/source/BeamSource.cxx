@@ -304,9 +304,11 @@ BeamSource::writeFLUKA(std::ostream& OX) const
       (Energy.size(),1,"Energy only single point supported");
 
   std::ostringstream cx;
-  // energy : energy divirgence : angle spread [mrad]
+  // energy : energy divergence : angle spread [mrad]
   // radius : innerRadius : -1 t o means radius
-  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
+  const double scaleValue=
+    (PC.mass(particleType)<Geometry::zeroTol) ? 0.001 : -0.001;
+  cx<<"BEAM "<<scaleValue*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
     <<" "<<radius<<" 0.0 -1.0 ";
   cx<<StrFunc::toUpperString(PC.nameToFLUKA(particleType));
   StrFunc::writeFLUKA(cx.str(),OX);

@@ -90,12 +90,26 @@ class InnerZone
 			      const int,const attachSystem::FixedComp&,
 			      const long int);
 
+  // split leaving middle section
+  int triVoidUnit(Simulation&, MonteCarlo::Object*,
+		  HeadRule&,const HeadRule&,const HeadRule&);
 
+  int triVoidUnit(Simulation&, MonteCarlo::Object*,
+		  const HeadRule&,const HeadRule&);
+
+  // split deleting middle section
   int cutVoidUnit(Simulation&, MonteCarlo::Object*,
 		  HeadRule&,const HeadRule&,const HeadRule&);
 
   int cutVoidUnit(Simulation&, MonteCarlo::Object*,
 		  const HeadRule&,const HeadRule&);
+
+  // chop leaving only first part:
+  int singleVoidUnit(Simulation&, MonteCarlo::Object*,
+		     HeadRule&,const HeadRule&);
+
+  int singleVoidUnit(Simulation&, MonteCarlo::Object*,
+		     const HeadRule&);
 
 
   

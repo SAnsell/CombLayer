@@ -93,7 +93,9 @@
 #include "VacuumPipe.h"
 
 #include "CryoMagnetBase.h"
+#include "Dipole.h"
 #include "Quadrupole.h"
+#include "Octupole.h"
 #include "EPSeparator.h"
 #include "PreDipole.h"
 #include "DipoleChamber.h"
@@ -138,10 +140,21 @@ makeSingleItem::build(Simulation& System,
 
   std::shared_ptr<xraySystem::MagnetM1>
     MagBlock(new xraySystem::MagnetM1("M1Block"));
+
   OR.addObject(MagBlock);
 
   MagBlock->addInsertCell(voidCell);
   MagBlock->createAll(System,World::masterOrigin(),0);
+  
+  return;
+
+  std::shared_ptr<xraySystem::Octupole>
+    OXX(new xraySystem::Octupole("M1BlockOXX","M1BlockOXX"));
+
+  OR.addObject(OXX);
+
+  OXX->addInsertCell(voidCell);
+  OXX->createAll(System,World::masterOrigin(),0);
   
   return;
   
