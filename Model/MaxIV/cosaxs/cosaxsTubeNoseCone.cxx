@@ -112,6 +112,8 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   frontPlateHeight(A.frontPlateHeight),
   frontPlateThick(A.frontPlateThick),
   frontPlateRimThick(A.frontPlateRimThick),
+  flangeRadius(A.flangeRadius),
+  flangeLength(A.flangeLength),
   wallThick(A.wallThick),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -142,6 +144,8 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       frontPlateHeight=A.frontPlateHeight;
       frontPlateThick=A.frontPlateThick;
       frontPlateRimThick=A.frontPlateRimThick;
+      flangeRadius=A.flangeRadius;
+      flangeLength=A.flangeLength;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
     }
@@ -183,6 +187,8 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
   frontPlateRimThick=Control.EvalVar<double>(keyName+"FrontPlateRimThick");
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -296,6 +302,11 @@ cosaxsTubeNoseCone::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+56,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+46),
 				  -wallThick);
+
+  // flange
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+101,-1,Y,flangeLength);
+
   return;
 }
 

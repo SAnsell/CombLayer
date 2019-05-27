@@ -52,6 +52,8 @@ class cosaxsTubeNoseCone :
   double frontPlateHeight; ///< Front plate height
   double frontPlateThick; ///< Front plate thickness
   double frontPlateRimThick; ///< Front plate rim thickness
+  double flangeRadius; ///< flange radius
+  double flangeLength; ///< Flange length
 
   double wallThick;                ///< Thickness of inclined walls
   int wallMat;                  ///< Wall material

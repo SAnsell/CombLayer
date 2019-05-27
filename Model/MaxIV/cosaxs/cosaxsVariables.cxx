@@ -1180,6 +1180,9 @@ exptVariables(FuncDataBase& Control,
 			   "CosaxsExptLineTubeRadius+10");
   Control.addParse<double>(preName+"TubeOuterLength",
 			   "CosaxsExptLineTubeLength+CosaxsExptLineTubeNoseConeLength+100");
+
+  Control.addVariable(preName+"TubeNoseConeFlangeRadius",static_cast<double>(setVariable::CF40::flangeRadius));
+  Control.addVariable(preName+"TubeNoseConeFlangeLength",static_cast<double>(setVariable::CF40::flangeLength));
 }
 
 void
