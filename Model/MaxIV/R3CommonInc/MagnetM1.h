@@ -41,7 +41,7 @@ namespace xraySystem
 
 class MagnetM1 :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
@@ -86,6 +86,7 @@ class MagnetM1 :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  void createEndPieces();
 
  public:
 

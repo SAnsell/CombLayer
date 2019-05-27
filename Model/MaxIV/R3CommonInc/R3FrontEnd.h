@@ -60,6 +60,7 @@ namespace xraySystem
   class BeamMount;
   class PreDipole;
   class DipoleChamber;
+  class MagnetM1;
 
   class PreBendPipe;
   class EPSeparator;
@@ -92,12 +93,9 @@ class R3FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
-  /// dipole connection pipe
-  std::shared_ptr<xraySystem::PreBendPipe> preDipole;
-  /// Electron/photon combined track
-  std::shared_ptr<xraySystem::EPCombine> epCombine;
-  /// Electron/photon separator to choke 1
-  std::shared_ptr<xraySystem::EPSeparator> epSeparator;
+  /// First magnetic block out of undulator
+  std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
+
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 

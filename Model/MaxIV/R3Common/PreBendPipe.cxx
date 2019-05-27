@@ -236,11 +236,14 @@ PreBendPipe::createSurfaces()
   // flange cylinder/planes
   ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,flangeARadius);
   ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*flangeALength,Y);
-  
+  SurfMap::setSurf("frontFlangeTube",-SMap.realSurf(buildIndex+1007));
+  SurfMap::setSurf("frontFlange",SMap.realSurf(buildIndex+1001));
+    
   ModelSupport::buildCylinder
     (SMap,buildIndex+2007,Origin,Y,flangeBRadius);
   ModelSupport::buildPlane
     (SMap,buildIndex+2001,Origin+Y*(length-flangeBLength),Y);
+  SurfMap::setSurf("endFlangeTube",-SMap.realSurf(buildIndex+2007));
   SurfMap::setSurf("endFlange",SMap.realSurf(buildIndex+2001));
 
   return;
@@ -327,14 +330,15 @@ PreBendPipe::createObjects(Simulation& System)
   makeCell("wall",System,cellIndex++,wallMat,0.0,Out);
     
   // front flange
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1001 -1007 17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1001 -1007 17 ");
   makeCell("frontFlange",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -1001 1007 -2007");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1001 1007 -2007");
   makeCell("frontFlangeVoid",System,cellIndex++,0,0.0,Out+frontSurf);
-
+  // creat outer flange unit
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1001 -2007");
+  setCutSurf("frontFlange",Out);
+  
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1001 -101 17 -2007");
   //makeCell("frontOuterVoid",System,cellIndex++,0,0.0,Out);
@@ -343,7 +347,8 @@ PreBendPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite  //(217 210)
     (SMap,buildIndex,"  2001 -2 -2007 (( 17 -10 ) : (217 210) : -115: 116) ");
   makeCell("backFlange",System,cellIndex++,flangeMat,0.0,Out);
-
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2001 -2007");
+  setCutSurf("backFlange",Out);
 
   //  mid outer void
   Out=ModelSupport::getComposite
@@ -357,8 +362,8 @@ PreBendPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -2007 ");
 
   addOuterSurf("Tube",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 -2");
   addOuterSurf("FlangeA",Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -2007 -2");
   addOuterSurf("FlangeB",Out);
       
 
@@ -403,7 +408,6 @@ PreBendPipe::createLinks()
     (SMap,buildIndex," ((17 -10):(217 210):-115:116) ");
   setConnect(6,cylEnd,elecAxis);
   setLinkSurf(6,Out);
-
 
 
   return;

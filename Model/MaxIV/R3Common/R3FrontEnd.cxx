@@ -98,11 +98,16 @@
 #include "BeamMount.h"
 #include "HeatDump.h"
 
-
-#include "PreBendPipe.h"
-#include "EPCombine.h"
+#include "Dipole.h"
+#include "Quadrupole.h"
+#include "Octupole.h"
 #include "EPSeparator.h"
+#include "PreDipole.h"
+#include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
+#include "EPCombine.h"
+#include "PreBendPipe.h"
+#include "MagnetM1.h"
 
 #include "R3FrontEnd.h"
 
@@ -121,10 +126,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
-  
-  preDipole(new xraySystem::PreBendPipe(newName+"PreDipole")),
-  epCombine(new xraySystem::EPCombine(newName+"EPCombine")),
-  epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
+  magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
   
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
@@ -186,9 +188,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(preDipole);
-  OR.addObject(epCombine);
-  OR.addObject(epSeparator);
+  OR.addObject(magBlockM1);
   OR.addObject(chokeChamber);
       
   OR.addObject(dipoleChamber);
@@ -589,30 +589,23 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
-
-  preDipole->setCutSurf("front",undulatorFC,2);
-  preDipole->createAll(System,undulatorFC,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
-  preDipole->insertInCell("Tube",System,outerCell);
+  lastComp=dipolePipe;
 
 
-  epCombine->setCutSurf("front",*preDipole,2);  
-  epCombine->createAll(System,*preDipole,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epCombine,2);
-  epCombine->insertInCell(System,outerCell);
-
-  
-  epSeparator->setEPOriginPair(*epCombine,3,4);
-  epSeparator->setCutSurf("front",*epCombine,2);
-  epSeparator->createAll(System,*epCombine,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epSeparator,2);
-  epSeparator->insertInCell(System,outerCell);
+  magBlockM1->setCutSurf("front",undulatorFC,2);
+  magBlockM1->createAll(System,undulatorFC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
+  magBlockM1->insertAllInCell(System,outerCell);
 
 
-  chokeChamber->setEPOriginPair(*epSeparator,2,4);
+  lastComp=magBlockM1;
+  return;
 
-  chokeChamber->setCutSurf("front",*epSeparator,2);
-  chokeChamber->createAll(System,*epSeparator,2);
+	  
+  chokeChamber->setEPOriginPair(*magBlockM1,2,4);
+
+  chokeChamber->setCutSurf("front",*magBlockM1,2);
+  chokeChamber->createAll(System,*magBlockM1,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
   

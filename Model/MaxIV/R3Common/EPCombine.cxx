@@ -342,7 +342,7 @@ EPCombine::createLinks()
   // photon/electron
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
-
+  ELog::EM<<"Surf == "<<SMap.realSurf(buildIndex+2)<<ELog::endDiag;
   // Photon edge line [exit]
   const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 

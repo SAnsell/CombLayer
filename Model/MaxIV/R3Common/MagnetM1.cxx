@@ -92,7 +92,7 @@ namespace xraySystem
 
 MagnetM1::MagnetM1(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main","FPipe","BPipe"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
@@ -230,7 +230,7 @@ MagnetM1::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex," 1 -2 13 -14 15 -16 ");
-  addOuterSurf(Out);
+  addOuterSurf("Main",Out);
 
   return;
 }
@@ -245,6 +245,7 @@ MagnetM1::createLinks()
 
   // link 0 / 1 from PreDipole / EPCombine
   setLinkSignedCopy(0,*preDipole,1);
+  setLinkSignedCopy(1,*epCombine,epCombine->getSideIndex("Photon"));
   setLinkSignedCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
   setLinkSignedCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
   
@@ -254,6 +255,24 @@ MagnetM1::createLinks()
   setConnect(5,Origin+Y*(length+blockYStep),Y);
   setLinkSurf(5,SMap.realSurf(buildIndex+2));
 
+  return;
+}
+
+void
+MagnetM1::createEndPieces()
+  /*!
+    Create the end piece cutting system for ContainedGroup
+  */
+{
+  ELog::RegMethod RegA("MagnetM1","createEndPieces");
+  
+  std::string Out;
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 ");
+  Out+=preDipole->getSurfString("frontFlangeTube");  
+  addOuterSurf("FPipe",Out);
+
+ 	       
   return;
 }
 
@@ -278,13 +297,12 @@ MagnetM1::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks();
 
 
   MonteCarlo::Object* masterCell=buildZone.getMaster();
   // puts in 74123 etc.
-  preDipole->addInsertCell("FlangeA",this->getInsertCells());
-  epCombine->addInsertCell(this->getInsertCells());
+  //  preDipole->addInsertCell("FlangeA",this->getInsertCells());
+  //  epCombine->addInsertCell(this->getInsertCells());
   insertObjects(System);
 
   if (isActive("front"))
@@ -371,6 +389,8 @@ MagnetM1::createAll(Simulation& System,
 
   Oyy->insertInCell(System,outerCell);
   preDipole->insertInCell("Tube",System,outerCell-1);
+
+  createEndPieces();
   // end insert  
 
 
@@ -394,6 +414,8 @@ MagnetM1::createAll(Simulation& System,
   //  exitZone
 
   
+  // creation of links 
+  createLinks();
 
   
   return;
