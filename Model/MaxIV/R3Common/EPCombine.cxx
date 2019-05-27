@@ -214,6 +214,7 @@ EPCombine::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+103,elecOrg,elecXAxis);
   ModelSupport::buildCylinder
     (SMap,buildIndex+107,elecOrg,elecYAxis,electronRadius);
+  setSurf("voidCyl",-SMap.realSurF(buildIndex+107));
   
   // Electron walls: [All point to center]
   const Geometry::Vec3D XZ((elecXAxis*cos(M_PI/6.0)+Z*0.5).unit());

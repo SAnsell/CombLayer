@@ -272,6 +272,11 @@ MagnetM1::createEndPieces()
   Out+=preDipole->getSurfString("frontFlangeTube");  
   addOuterSurf("FPipe",Out);
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 ");
+  Out+=epCombine->getSurfString("voidCyl");  
+  addOuterSurf("BPipe",Out);
+  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
+
  	       
   return;
 }
@@ -378,7 +383,6 @@ MagnetM1::createAll(Simulation& System,
 
   
   preDipole->insertInCell("Tube",System,outerCell-1);
-
   
   // Insert OYY
   Oyy->setCutSurf("Inner",preDipole->getFullRule(7));
@@ -416,7 +420,7 @@ MagnetM1::createAll(Simulation& System,
   
   // creation of links 
   createLinks();
-
+  ELog::EM<<"build == "<<*(buildZone.getMaster())<<ELog::endDiag;
   
   return;
 }

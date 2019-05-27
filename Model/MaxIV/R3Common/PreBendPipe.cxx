@@ -344,9 +344,10 @@ PreBendPipe::createObjects(Simulation& System)
   //makeCell("frontOuterVoid",System,cellIndex++,0,0.0,Out);
 
   // back flange
-  Out=ModelSupport::getComposite  //(217 210)
+  Out=ModelSupport::getComposite 
     (SMap,buildIndex,"  2001 -2 -2007 (( 17 -10 ) : (217 210) : -115: 116) ");
   makeCell("backFlange",System,cellIndex++,flangeMat,0.0,Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 2001 -2007");
   setCutSurf("backFlange",Out);
 
