@@ -37,7 +37,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class PipeTube;
-  class GateValve;
+  class GateValveCube;
   class JawValveCube;
   class JawFlange;
 
@@ -93,7 +93,7 @@ class formaxOpticsLine :
   /// Filter stick [only one blade type -- fix]
   std::shared_ptr<xraySystem::FlangeMount> filterStick;
   /// First gate valve
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// bellows after gateA ->view
   std::shared_ptr<constructSystem::Bellows> bellowB;
   
@@ -106,13 +106,13 @@ class formaxOpticsLine :
   /// Bellow to gate on mono
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// First gate valve
-  std::shared_ptr<constructSystem::GateValve> gateB;
+  std::shared_ptr<constructSystem::GateValveCube> gateB;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
   /// Mono Xstal 
   std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
   // Gate to isolate mono
-  std::shared_ptr<constructSystem::GateValve> gateC;
+  std::shared_ptr<constructSystem::GateValveCube> gateC;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Diagnostic unit 1:
@@ -120,12 +120,12 @@ class formaxOpticsLine :
   /// Bellow from diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowE;
   // Gate fro first mirror
-  std::shared_ptr<constructSystem::GateValve> gateD;
+  std::shared_ptr<constructSystem::GateValveCube> gateD;
 
   /// Mirror box 
   std::shared_ptr<constructSystem::VacuumBox> mirrorA;
   // Gate fro first mirror
-  std::shared_ptr<constructSystem::GateValve> gateE;
+  std::shared_ptr<constructSystem::GateValveCube> gateE;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Diagnostic unit 2:
@@ -136,11 +136,11 @@ class formaxOpticsLine :
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowG;
   // Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateF;
+  std::shared_ptr<constructSystem::GateValveCube> gateF;
   /// Mirror box B
   std::shared_ptr<constructSystem::VacuumBox> mirrorB;
   // Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateG;
+  std::shared_ptr<constructSystem::GateValveCube> gateG;
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowH;
 

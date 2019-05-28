@@ -84,7 +84,7 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "GateValveCylinder.h"
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTube.h"

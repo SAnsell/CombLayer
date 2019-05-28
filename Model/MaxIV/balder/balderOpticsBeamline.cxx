@@ -91,7 +91,7 @@
 #include "CrossPipe.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveCube.h"
 #include "FlangeMount.h"
@@ -125,10 +125,10 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
         std::make_shared<xraySystem::FlangeMount>(newName+"Filter3")}),
 
   pipeB(new constructSystem::Bellows(newName+"BellowB")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   mirrorBox(new constructSystem::VacuumBox(newName+"MirrorBox")),
   mirror(new xraySystem::Mirror(newName+"Mirror")),
-  gateB(new constructSystem::GateValve(newName+"GateB")),
+  gateB(new constructSystem::GateValveCube(newName+"GateB")),
   pipeC(new constructSystem::Bellows(newName+"BellowC")),
   driftA(new constructSystem::VacuumPipe(newName+"DriftA")),  
   driftB(new constructSystem::VacuumPipe(newName+"DriftB")),
@@ -136,13 +136,13 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
   monoBellowA(new constructSystem::Bellows(newName+"MonoBellowA")),
   monoBellowB(new constructSystem::Bellows(newName+"MonoBellowB")),
-  gateC(new constructSystem::GateValve(newName+"GateC")),
+  gateC(new constructSystem::GateValveCube(newName+"GateC")),
   driftC(new constructSystem::VacuumPipe(newName+"DriftC")),
   beamStop(new insertSystem::insertPlate(newName+"BeamStop")),
   slitsA(new constructSystem::JawValveCube(newName+"SlitsA")),
   shieldPipe(new constructSystem::PortTube(newName+"ShieldPipe")),
   pipeD(new constructSystem::Bellows(newName+"BellowD")),
-  gateD(new constructSystem::GateValve(newName+"GateD")),
+  gateD(new constructSystem::GateValveCube(newName+"GateD")),
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
   mirrorB(new xraySystem::Mirror(newName+"MirrorB")),
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
@@ -155,7 +155,7 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
   
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
-  gateE(new constructSystem::GateValve(newName+"GateE")),
+  gateE(new constructSystem::GateValveCube(newName+"GateE")),
   neutShield({
       std::make_shared<xraySystem::PipeShield>(newName+"NShield0"),
       std::make_shared<xraySystem::PipeShield>(newName+"NShield1"),

@@ -36,7 +36,7 @@ namespace constructSystem
   class VacuumBox;
   class portItem;
   class PortTube;
-  class GateValve;
+  class GateValveCube;
   class JawValveCube;
 }
 
@@ -91,7 +91,7 @@ class speciesOpticsBeamline :
   /// Real Ion pump (KF40) 24.4cm vertical
   std::shared_ptr<constructSystem::CrossPipe> ionPA;
   /// Gate block
-  std::shared_ptr<constructSystem::GateValve> gateRing;
+  std::shared_ptr<constructSystem::GateValveCube> gateRing;
   /// Gate block
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Bellow to first connect line
@@ -111,7 +111,7 @@ class speciesOpticsBeamline :
   /// First screen
   std::shared_ptr<insertSystem::insertPlate> leadBrick;
   /// Gate valve [after screen]
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// Small Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   /// Small Pipe to slit section
@@ -153,11 +153,11 @@ class speciesOpticsBeamline :
   // simple tube + port
   std::shared_ptr<constructSystem::PipeTube> pumpTubeAA;
   /// Gate valve for left
-  std::shared_ptr<constructSystem::GateValve> gateAA;
+  std::shared_ptr<constructSystem::GateValveCube> gateAA;
   // bellowB on left split
   std::shared_ptr<constructSystem::Bellows> bellowAB;
   /// Gate valve for left
-  std::shared_ptr<constructSystem::GateValve> gateAB;
+  std::shared_ptr<constructSystem::GateValveCube> gateAB;
   // bellowA on left split
   std::shared_ptr<constructSystem::Bellows> bellowAC;
 
@@ -167,11 +167,11 @@ class speciesOpticsBeamline :
   // simple tube + port
   std::shared_ptr<constructSystem::PipeTube> pumpTubeBA;
   /// Gate valve for left
-  std::shared_ptr<constructSystem::GateValve> gateBA;
+  std::shared_ptr<constructSystem::GateValveCube> gateBA;
   // bellowB on left split
   std::shared_ptr<constructSystem::Bellows> bellowBB;
   /// Gate valve for left
-  std::shared_ptr<constructSystem::GateValve> gateBB;
+  std::shared_ptr<constructSystem::GateValveCube> gateBB;
   // bellowA on left split
   std::shared_ptr<constructSystem::Bellows> bellowBC;
 

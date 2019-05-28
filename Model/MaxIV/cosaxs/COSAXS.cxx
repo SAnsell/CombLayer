@@ -88,7 +88,7 @@
 #include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "CrossPipe.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveCube.h"
 #include "JawFlange.h"

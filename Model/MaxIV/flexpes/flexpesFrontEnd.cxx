@@ -86,7 +86,7 @@
 #include "insertCylinder.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"

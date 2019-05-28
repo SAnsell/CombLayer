@@ -30,7 +30,7 @@ namespace insertSystem
 namespace constructSystem
 {
   class Bellows;
-  class GateValve;
+  class GateValveCube;
   class JawValveCylinder;
   class VacuumPipe;
   class DiffPumpXIADP03;
@@ -78,7 +78,7 @@ class cosaxsExptLine :
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// Vacuum gate valve A - round
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// Double slits
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitA;
   std::shared_ptr<constructSystem::JawValveCylinder>  doubleSlitB;
@@ -86,7 +86,7 @@ class cosaxsExptLine :
   size_t nFilterHolders; ///< Number of filter holders
   std::vector<std::shared_ptr<xraySystem::FilterHolder> > filterHolder;
   /// Vacuum gate valve B - flat
-  std::shared_ptr<constructSystem::GateValve> gateB;
+  std::shared_ptr<constructSystem::GateValveCube> gateB;
   /// Differential pumping
   std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPump;
   /// Telescopic system - just a pipe with variable length

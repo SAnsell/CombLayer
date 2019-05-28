@@ -32,7 +32,7 @@ namespace constructSystem
 {
   class Bellows;
   class CrossPipe;
-  class GateValve;
+  class GateValveCube;
   class OffsetFlangePipe;
   class portItem;
   class PipeTube;
@@ -152,7 +152,7 @@ class R1FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
   /// Exit of movables
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// florescence screen tube

@@ -93,7 +93,7 @@
 #include "CrossPipe.h"
 #include "BremColl.h"
 
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
@@ -123,21 +123,21 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
   screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),  
-  gateB(new constructSystem::GateValve(newName+"GateB")),
+  gateB(new constructSystem::GateValveCube(newName+"GateB")),
   monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
   monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
-  gateC(new constructSystem::GateValve(newName+"GateC")),
+  gateC(new constructSystem::GateValveCube(newName+"GateC")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  gateD(new constructSystem::GateValve(newName+"GateD")),
+  gateD(new constructSystem::GateValveCube(newName+"GateD")),
   mirrorA(new constructSystem::VacuumBox(newName+"MirrorA")),
-  gateE(new constructSystem::GateValve(newName+"GateE")),
+  gateE(new constructSystem::GateValveCube(newName+"GateE")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
   diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
   jawCompB({
@@ -146,9 +146,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
 	}),
 
   bellowG(new constructSystem::Bellows(newName+"BellowG")),  
-  gateF(new constructSystem::GateValve(newName+"GateF")),
+  gateF(new constructSystem::GateValveCube(newName+"GateF")),
   mirrorB(new constructSystem::VacuumBox(newName+"MirrorB")),
-  gateG(new constructSystem::GateValve(newName+"GateG")),
+  gateG(new constructSystem::GateValveCube(newName+"GateG")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),  
   diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
   jawCompC({

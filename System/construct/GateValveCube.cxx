@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/GateValve.cxx
+ * File:   construct/GateValveCube.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -79,12 +79,12 @@
 #include "SurfMap.h"
 #include "SurInter.h"
 
-#include "GateValve.h" 
+#include "GateValveCube.h" 
 
 namespace constructSystem
 {
 
-GateValve::GateValve(const std::string& Key) : 
+GateValveCube::GateValveCube(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
@@ -95,7 +95,7 @@ GateValve::GateValve(const std::string& Key) :
   */
 {}
 
-GateValve::GateValve(const GateValve& A) : 
+GateValveCube::GateValveCube(const GateValveCube& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),  
@@ -108,15 +108,15 @@ GateValve::GateValve(const GateValve& A) :
   bladeMat(A.bladeMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: GateValve to copy
+    \param A :: GateValveCube to copy
   */
 {}
 
-GateValve&
-GateValve::operator=(const GateValve& A)
+GateValveCube&
+GateValveCube::operator=(const GateValveCube& A)
   /*!
     Assignment operator
-    \param A :: GateValve to copy
+    \param A :: GateValveCube to copy
     \return *this
   */
 {
@@ -147,20 +147,20 @@ GateValve::operator=(const GateValve& A)
 }
 
 
-GateValve::~GateValve() 
+GateValveCube::~GateValveCube() 
   /*!
     Destructor
   */
 {}
 
 void
-GateValve::populate(const FuncDataBase& Control)
+GateValveCube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("GateValve","populate");
+  ELog::RegMethod RegA("GateValveCube","populate");
   
   FixedOffset::populate(Control);
 
@@ -190,7 +190,7 @@ GateValve::populate(const FuncDataBase& Control)
 }
 
 void
-GateValve::createUnitVector(const attachSystem::FixedComp& FC,
+GateValveCube::createUnitVector(const attachSystem::FixedComp& FC,
                              const long int sideIndex)
   /*!
     Create the unit vectors
@@ -200,7 +200,7 @@ GateValve::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("GateValve","createUnitVector");
+  ELog::RegMethod RegA("GateValveCube","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -213,14 +213,14 @@ GateValve::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-GateValve::createSurfaces()
+GateValveCube::createSurfaces()
   /*!
     Create the surfaces
     If front/back given it is at portLen from the wall and 
     length/2+portLen from origin.
   */
 {
-  ELog::RegMethod RegA("GateValve","createSurfaces");
+  ELog::RegMethod RegA("GateValveCube","createSurfaces");
 
   // front planes
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -273,13 +273,13 @@ GateValve::createSurfaces()
 }
 
 void
-GateValve::createObjects(Simulation& System)
+GateValveCube::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("GateValve","createObjects");
+  ELog::RegMethod RegA("GateValveCube","createObjects");
 
   std::string Out;
 
@@ -348,13 +348,13 @@ GateValve::createObjects(Simulation& System)
 }
   
 void
-GateValve::createLinks()
+GateValveCube::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("GateValve","createLinks");
+  ELog::RegMethod RegA("GateValveCube","createLinks");
 
   //stufff for intersection
 
@@ -366,7 +366,7 @@ GateValve::createLinks()
   
   
 void
-GateValve::createAll(Simulation& System,
+GateValveCube::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
  /*!
@@ -376,7 +376,7 @@ GateValve::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("GateValve","createAll(FC)");
+  ELog::RegMethod RegA("GateValveCube","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

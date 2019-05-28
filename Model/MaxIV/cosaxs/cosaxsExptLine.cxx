@@ -87,7 +87,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "GateValveCylinder.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveCylinder.h"
 #include "portItem.h"
@@ -112,11 +112,11 @@ cosaxsExptLine::cosaxsExptLine(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   doubleSlitA(new constructSystem::JawValveCylinder(newName+"DoubleSlitA")),
   doubleSlitB(new constructSystem::JawValveCylinder(newName+"DoubleSlitB")),
   diagUnit(new xraySystem::MonoBox(newName+"DiagnosticUnit")),
-  gateB(new constructSystem::GateValve(newName+"GateB")),
+  gateB(new constructSystem::GateValveCube(newName+"GateB")),
   diffPump(new constructSystem::DiffPumpXIADP03(newName+"DiffPump")),
   telescopicSystem(new constructSystem::VacuumPipe(newName+"TelescopicSystem")),
   sampleArea(new xraySystem::cosaxsSampleArea(newName+"SampleArea")),
