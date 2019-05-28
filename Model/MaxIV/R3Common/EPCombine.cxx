@@ -311,7 +311,7 @@ EPCombine::createObjects(Simulation& System)
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite
-    (SMap,buildIndex,"-11 -4 5 -6 112 116 (-111:-113:-115:-114) ");
+    (SMap,buildIndex,"-7 -11 -4 5 -6 112 116 (-111:-113:-115:-114) ");
   makeCell("ElectronOutFA",System,cellIndex++,flangeMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite

@@ -425,7 +425,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,748.0);  // extend +24
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,724.0);  // extend +4
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();

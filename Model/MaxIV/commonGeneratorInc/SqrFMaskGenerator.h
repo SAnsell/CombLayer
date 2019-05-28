@@ -41,14 +41,14 @@ class SqrFMaskGenerator :
  private:
 
   double width;           ///< Outer width
-  double height;          ///< Outer heigh
+  double height;          ///< Outer height
 
   double aFInRadius;      ///< A flange Inner radius
   double aFOutRadius;     ///< A flange Outer radius
-  double aFLength;        ///< A flange lenght
+  double aFLength;        ///< A flange length
   double bFInRadius;      ///< B flange Inner radius
   double bFOutRadius;     ///< B flange Outer radius
-  double bFLength;        ///< B flange lenght
+  double bFLength;        ///< B flange length
 
   double pipeRadius;      ///< Pipe radius
   double pipeXWidth;      ///< Pipe x-width

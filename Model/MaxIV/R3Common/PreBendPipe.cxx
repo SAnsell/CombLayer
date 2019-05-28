@@ -236,7 +236,7 @@ PreBendPipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*flangeALength,Y);
   SurfMap::setSurf("frontFlangeTube",-SMap.realSurf(buildIndex+1007));
   SurfMap::setSurf("frontFlange",SMap.realSurf(buildIndex+1001));
-    
+
   ModelSupport::buildCylinder
     (SMap,buildIndex+2007,Origin,Y,flangeBRadius);
   ModelSupport::buildPlane
