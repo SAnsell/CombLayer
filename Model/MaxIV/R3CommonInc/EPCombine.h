@@ -45,8 +45,9 @@ class EPCombine : public attachSystem::FixedOffset,
   public attachSystem::SurfMap
 {
  private:
-  
-  double length;                ///< frame length
+
+  bool epPairSet;                ///< Assignment of e-p position
+  double length;                 ///< frame length
 
   double photonXStep;            ///< Initial photon gap
   double electronXStep;          ///< Initial electorn gap  
@@ -74,6 +75,7 @@ class EPCombine : public attachSystem::FixedOffset,
   int wallMat;                    ///< wall material
   int flangeMat;                  ///< Port material
 
+  Geometry::Vec3D photOrg;        ///< Photon origin
   Geometry::Vec3D elecOrg;        ///< Electron origin
   Geometry::Vec3D elecXAxis;       ///< Electron X-axis
   Geometry::Vec3D elecYAxis;       ///< Electron beam axis
@@ -91,6 +93,11 @@ class EPCombine : public attachSystem::FixedOffset,
   EPCombine(const EPCombine&);
   EPCombine& operator=(const EPCombine&);
   virtual ~EPCombine();
+
+  void setEPOriginPair(const attachSystem::FixedComp&,
+		       const long int,const long int);
+  void setEPOriginPair(const attachSystem::FixedComp&,
+		       const std::string&,const std::string&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

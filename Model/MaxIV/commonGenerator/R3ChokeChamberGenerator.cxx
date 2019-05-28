@@ -66,7 +66,7 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   inletThick(0.5),flangeInletRadius(CF63::flangeRadius),
   flangeInletLength(CF63::flangeLength),
 
-  electronXStep(2.0),electronXYAngle(0.0),
+  electronXStep(0.81),electronXYAngle(0.0),
   electronRadius(CF40::innerRadius),electronLength(10.0),
   electronThick(CF40::wallThick),
   flangeElectronRadius(CF40::flangeRadius),

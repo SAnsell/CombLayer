@@ -163,7 +163,7 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
 
 void
 R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
+				 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -176,7 +176,6 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   flangeOrg=Origin;
   
-
   if (!epPairSet)
     {
       const Geometry::Quaternion electronQ=
@@ -469,11 +468,31 @@ R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("R3ChokeChamber","setEPOriginPair");
 
   photOrg=FC.getLinkPt(photonIndex);
-  elecOrg=FC.getLinkPt(electronIndex);
+  elecOrg=FC.getLinkPt(electronIndex)+X*electronXStep;
   
+  Geometry::Vec3D photAxis=FC.getLinkAxis(photonIndex);
   elecYAxis=FC.getLinkAxis(electronIndex);
-
+  
   epPairSet=1;
+  
+  return;
+}
+
+void
+R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
+				const std::string& photonIndex,
+				const std::string& electronIndex)
+/*!
+    SEt the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("R3ChokeChamber","setEPOriginPair(string)");
+
+  setEPOriginPair(FC,FC.getSideIndex(photonIndex),
+		  FC.getSideIndex(electronIndex));
   
   return;
 }

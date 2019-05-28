@@ -99,9 +99,9 @@ PreBendPipe::PreBendPipe(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  FixedComp::nameSideIndex(1,"centreExit");
-  FixedComp::nameSideIndex(2,"photonExit");
-  FixedComp::nameSideIndex(3,"electronExit");
+  FixedComp::nameSideIndex(1,"Flange");
+  FixedComp::nameSideIndex(2,"Photon");
+  FixedComp::nameSideIndex(3,"Electron");
 }
 
 
@@ -177,9 +177,9 @@ PreBendPipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
-  const Geometry::Vec3D StrOrg(Origin+Y*straightLength);
+  strEnd=Origin+Y*straightLength;
   
-  ModelSupport::buildPlane(SMap,buildIndex+101,StrOrg,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,strEnd,Y);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
   
   // mid layer divider
@@ -187,9 +187,7 @@ PreBendPipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*radius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*radius,Z);
 
-
-  // wall
-    
+  // wall    
   ModelSupport::buildPlane
     (SMap,buildIndex+115,Origin-Z*(radius+wallThick),Z);
   ModelSupport::buildPlane
@@ -203,7 +201,7 @@ PreBendPipe::createSurfaces()
   const Geometry::Vec3D XElec=QR.makeRotate(X);
   const Geometry::Vec3D YElec=QR.makeRotate(Y);
   
-  const Geometry::Vec3D cylCentre=StrOrg+X*(radius+electronRadius);
+  const Geometry::Vec3D cylCentre=strEnd+X*(radius+electronRadius);
 
   // divider plane
   ModelSupport::buildPlane
@@ -218,7 +216,7 @@ PreBendPipe::createSurfaces()
   // END plane
   const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
   const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
-  cylEnd=StrOrg+X*xDisp+Y*yDisp;
+  cylEnd=strEnd+X*xDisp+Y*yDisp;
   elecAxis=YElec;
   
   ModelSupport::buildPlane(SMap,buildIndex+102,cylEnd,YElec);
@@ -391,8 +389,10 @@ PreBendPipe::createLinks()
 
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
-  FixedComp::setLineConnect(3,cylEnd,elecAxis);
+  FixedComp::setLineConnect(3,strEnd,elecAxis);
 
+  ELog::EM<<"Centre == "<<this->getLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Centre == "<<this->getLinkPt(4)<<ELog::endDiag;
   // pipe cutters for Magnets etc:
 
   setConnect(4,Origin+Y*(straightLength/2.0),Z);

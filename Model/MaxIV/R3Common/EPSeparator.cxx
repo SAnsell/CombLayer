@@ -95,6 +95,7 @@ EPSeparator::EPSeparator(const std::string& Key) :
     \param Key :: KeyName
   */
 {
+  nameSideIndex(1,"Flange");
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
 }
@@ -269,7 +270,7 @@ EPSeparator::createLinks()
 
   // Photon centre line [exit]
   const Geometry::Vec3D photOrg(Origin+X*photonXStep);
-      
+  
   setConnect(2,photOrg+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
   

@@ -91,7 +91,7 @@ namespace xraySystem
 {
 
 MagnetM1::MagnetM1(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,8),
   attachSystem::ContainedGroup("Main","FPipe","BPipe"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -110,6 +110,7 @@ MagnetM1::MagnetM1(const std::string& Key) :
     \param Key :: KeyName
   */
 {
+  nameSideIndex(1,"Flange");
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
 
@@ -245,7 +246,7 @@ MagnetM1::createLinks()
 
   // link 0 / 1 from PreDipole / EPCombine
   setLinkSignedCopy(0,*preDipole,1);
-  setLinkSignedCopy(1,*epCombine,epCombine->getSideIndex("Photon"));
+  setLinkSignedCopy(1,*epCombine,epCombine->getSideIndex("Flange"));
   setLinkSignedCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
   setLinkSignedCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
   
@@ -253,7 +254,7 @@ MagnetM1::createLinks()
   setLinkSurf(4,-SMap.realSurf(buildIndex+1));
 
   setConnect(5,Origin+Y*(length+blockYStep),Y);
-  setLinkSurf(5,SMap.realSurf(buildIndex+2));
+  setLinkSurf(6,SMap.realSurf(buildIndex+2));
 
   return;
 }
@@ -314,7 +315,8 @@ MagnetM1::createAll(Simulation& System,
   //  preDipole->addInsertCell(getCells("Void"));
   preDipole->createAll(System,FC,sideIndex);
 
-  epCombine->addInsertCell(getCells("Void"));
+  epCombine->addInsertCell(getCells("Void"));  // needed ????
+  epCombine->setEPOriginPair(*preDipole,"Photon","Electron");
   epCombine->createAll(System,*preDipole,2);
 
   attachSystem::InnerZone& IZ=preDipole->getBuildZone();
@@ -409,8 +411,7 @@ MagnetM1::createAll(Simulation& System,
     (System,masterCell,epCombine->getMainRule(-1));
   preDipole->insertInCell("Tube",System,outerCell);
   System.minimizeObject(preDipole->getKeyName());  
-  
-  
+    
   epCombine->insertInCell(*masterCell);
   //  EZ.singleVoidUnit(System,exitCell, preDipole->getSurfRule("endFlange"));
   //  exitZone

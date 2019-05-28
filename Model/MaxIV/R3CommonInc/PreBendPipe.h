@@ -67,6 +67,7 @@ class PreBendPipe : public attachSystem::FixedOffset,
   int wallMat;                    ///< wall material
   int flangeMat;                  ///< Port material
 
+  Geometry::Vec3D strEnd;         ///< End of straight section
   Geometry::Vec3D cylEnd;         ///< End of electron bend
   Geometry::Vec3D elecAxis;       ///< Exit axis of electrons
 

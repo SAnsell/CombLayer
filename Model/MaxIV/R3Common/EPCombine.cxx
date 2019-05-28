@@ -91,9 +91,10 @@ EPCombine::EPCombine(const std::string& Key) :
   attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: KeyName
+    \param Key :: Key Name
   */
 {
+  nameSideIndex(1,"Flange");
   nameSideIndex(2,"Photon");
   nameSideIndex(3,"Electron");
 }
@@ -160,6 +161,23 @@ EPCombine::createUnitVector(const attachSystem::FixedComp& FC,
   
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+
+  if (!epPairSet)
+    {
+      const Geometry::Quaternion electronQ=
+	Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
+      elecXAxis=electronQ.makeRotate(X);
+      elecYAxis=electronQ.makeRotate(Y);
+      elecOrg=Origin+X*electronXStep;
+      photOrg=Origin+X*photonXStep;
+    }
+  else
+    {
+      elecXAxis=elecYAxis*Z;
+      elecOrg+=X*electronXStep;    // Note both P/E the same xstep
+      photOrg+=X*photonXStep;    //
+    }
+
   return;
 }
 
@@ -179,14 +197,6 @@ EPCombine::createSurfaces()
     }
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
 
-  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
-
-  const Geometry::Quaternion electronQ=
-    Geometry::Quaternion::calcQRotDeg(electronXYAngle,Z);
-
-  elecXAxis=electronQ.makeRotate(X);
-  elecYAxis=electronQ.makeRotate(Y);
-  elecOrg=Origin+X*electronXStep;
 
   ModelSupport::buildPlane(SMap,buildIndex+1001,Origin+Y*(wallStartLen),Y);
 
@@ -237,18 +247,18 @@ EPCombine::createSurfaces()
 
   
   // photon inner :
-  ModelSupport::buildCylinder(SMap,buildIndex+207,POrigin,Y,photonRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+203,POrigin,X);
-  ModelSupport::buildPlane(SMap,buildIndex+205,POrigin-Z*photonRadius,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+206,POrigin+Z*photonRadius,Z);
-  
+  ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+203,photOrg,X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,photOrg-Z*photonRadius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,photOrg+Z*photonRadius,Z);
+
   // Photon Wall 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+217,POrigin,Y,photonRadius+skinThick);
+    (SMap,buildIndex+217,photOrg,Y,photonRadius+skinThick);
   ModelSupport::buildPlane
-    (SMap,buildIndex+215,POrigin-Z*(photonRadius+skinThick),Z);
+    (SMap,buildIndex+215,photOrg-Z*(photonRadius+skinThick),Z);
   ModelSupport::buildPlane
-    (SMap,buildIndex+216,POrigin+Z*(photonRadius+skinThick),Z);
+    (SMap,buildIndex+216,photOrg+Z*(photonRadius+skinThick),Z);
 
   return;
 }
@@ -335,28 +345,70 @@ void
 EPCombine::createLinks()
   /*!
     Create the linked units
-   */
+  */
 {
   ELog::RegMethod RegA("EPCombine","createLinks");
-
   
   ExternalCut::createLink("front",*this,0,Origin,Y);
 
   // photon/electron
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  ELog::EM<<"Surf == "<<SMap.realSurf(buildIndex+2)<<ELog::endDiag;
-  // Photon edge line [exit]
-  const Geometry::Vec3D POrigin(Origin+X*photonXStep);
 
-  setConnect(2,POrigin+Y*length,Y);  
+  setConnect(2,photOrg+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
+
   
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,elecOrg,elecYAxis);
 
+  ELog::EM<<"Points == "<<this->getLinkPt(2)<<ELog::endDiag;;
+  ELog::EM<<"Points == "<<this->getLinkPt(3)<<ELog::endDiag;;
+  ELog::EM<<"Points == "<<this->getLinkPt(4)<<ELog::endDiag;;
 
+  return;
+}
+
+void
+EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
+			   const std::string& photonIndex,
+			   const std::string& electronIndex)
+  /*!
+    Set the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("EPSparator","setEPOriginPair(string)");
+
+  setEPOriginPair(FC,FC.getSideIndex(photonIndex),
+		  FC.getSideIndex(electronIndex));
+
+  return;
+}
+
+void
+EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
+			   const long int photonIndex,
+			   const long int electronIndex)
+  /*!
+    Set the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("EPSparator","setEPOriginPair");
+
+  photOrg=FC.getLinkPt(photonIndex);
+  elecOrg=FC.getLinkPt(electronIndex);
+  
+  elecYAxis=FC.getLinkAxis(electronIndex);
+
+  epPairSet=1;
+  
   return;
 }
 

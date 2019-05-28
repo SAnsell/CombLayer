@@ -57,7 +57,7 @@ createXrayInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("blader::","createXrayInputs");
+  ELog::RegMethod RegA("XrayInputs[F]","createXrayInputs");
 
   createInputs(IParam);
   IParam.regMulti("beamlines","beamlines",1000);

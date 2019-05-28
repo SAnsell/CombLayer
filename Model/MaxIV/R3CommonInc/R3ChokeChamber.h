@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/R3ChokeChamber.h
+ * File:   R3CommonInc/R3ChokeChamber.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -107,6 +107,8 @@ class R3ChokeChamber :
 
   void setEPOriginPair(const attachSystem::FixedComp&,
 		       const long int,const long int);
+  void setEPOriginPair(const attachSystem::FixedComp&,
+		       const std::string&,const std::string&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

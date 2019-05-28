@@ -95,7 +95,6 @@ class R3FrontEnd :
 
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
-
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 

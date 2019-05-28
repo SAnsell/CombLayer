@@ -397,7 +397,7 @@ R3FrontEndVariables(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("R3FrontEndVariables[F]","R#FrontEndVariables");
+  ELog::RegMethod RegA("R3FrontEndVariables[F]","R3FrontEndVariables");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -405,9 +405,6 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
 
-  setVariable::PreBendPipeGenerator PBGen;
-  setVariable::EPCombineGenerator EPCGen;
-  setVariable::EPSeparatorGenerator EPSGen;
   setVariable::R3ChokeChamberGenerator CCGen;
     
   Control.addVariable(frontKey+"YStep",310.0);  
