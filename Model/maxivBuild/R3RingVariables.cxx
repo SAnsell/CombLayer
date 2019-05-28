@@ -405,6 +405,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
 
+  setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
     
   Control.addVariable(frontKey+"YStep",310.0);  
@@ -419,10 +420,12 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
+  ESGen.generatePipe(Control,frontKey+"EPSeparator",0.0);
+  
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,724.0);
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,748.0);  // extend +24
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();

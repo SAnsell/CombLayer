@@ -59,7 +59,6 @@ namespace setVariable
 
 EPCombineGenerator::EPCombineGenerator() :
   length(30.0),photonXStep(-0.81),
-  //  electronXStep(1.7270-0.81),
   electronXStep(0.0),
   electronXYAngle(-1.5),
   electronRadius(1.1),photonRadius(0.3),

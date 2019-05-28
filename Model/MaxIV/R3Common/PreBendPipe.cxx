@@ -377,7 +377,7 @@ PreBendPipe::createLinks()
 {
   ELog::RegMethod RegA("PreBendPipe","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("front",*this,0x5,Origin,Y);
 
   // centreline 
   setConnect(1,Origin+Y*length,Y);
@@ -389,10 +389,17 @@ PreBendPipe::createLinks()
 
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
-  FixedComp::setLineConnect(3,strEnd,elecAxis);
+  FixedComp::setLineConnect(3,cylEnd,elecAxis);
+  ELog::EM<<"Line == "<<strEnd<<" "<<cylEnd<<ELog::endDiag;
+  ELog::EM<<"Point -= "<<this->getLinkPt(4)<<ELog::endDiag;
+  ELog::EM<<"Axis -= "<<acos(elecAxis.dotProd(Y))*180/M_PI<<ELog::endDiag;
+  
+  const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
+  const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
 
-  ELog::EM<<"Centre == "<<this->getLinkPt(3)<<ELog::endDiag;
-  ELog::EM<<"Centre == "<<this->getLinkPt(4)<<ELog::endDiag;
+  //  cylEnd=strEnd+X*xDisp+Y*yDisp;
+  //elecAxis=YElec;
+
   // pipe cutters for Magnets etc:
 
   setConnect(4,Origin+Y*(straightLength/2.0),Z);

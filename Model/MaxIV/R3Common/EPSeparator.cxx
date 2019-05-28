@@ -283,6 +283,25 @@ EPSeparator::createLinks()
 
 void
 EPSeparator::setEPOriginPair(const attachSystem::FixedComp& FC,
+			   const std::string& photonIndex,
+			   const std::string& electronIndex)
+  /*!
+    Set the electron/Photon origins exactly
+    \param FC :: FixedPoint
+    \param photonIndex :: link point for photon
+    \param electornIndex :: link point for electron
+   */
+{
+  ELog::RegMethod RegA("EPSeparator","setEPOriginPair(string)");
+
+  setEPOriginPair(FC,FC.getSideIndex(photonIndex),
+		  FC.getSideIndex(electronIndex));
+
+  return;
+}
+
+void
+EPSeparator::setEPOriginPair(const attachSystem::FixedComp& FC,
 			     const long int photonIndex,
 			     const long int electronIndex)
   /*!
@@ -292,7 +311,7 @@ EPSeparator::setEPOriginPair(const attachSystem::FixedComp& FC,
     \param electornIndex :: link point for electron
    */
 {
-  ELog::RegMethod RegA("EPSparator","setEPOriginPair");
+  ELog::RegMethod RegA("EPSeparator","setEPOriginPair");
 
   photOrg=FC.getLinkPt(photonIndex);
   elecOrg=FC.getLinkPt(electronIndex);

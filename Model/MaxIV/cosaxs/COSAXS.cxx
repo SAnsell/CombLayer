@@ -138,8 +138,8 @@ COSAXS::~COSAXS()
 
 void 
 COSAXS::build(Simulation& System,
-		  const attachSystem::FixedComp& FCOrigin,
-		  const long int sideIndex)
+	      const attachSystem::FixedComp& FCOrigin,
+	      const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -163,12 +163,12 @@ COSAXS::build(Simulation& System,
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  return;
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
-
+  ELog::EM<<"Front == "<<FCOrigin.getLinkPt(sideIndex)<<ELog::endDiag;
+  
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));

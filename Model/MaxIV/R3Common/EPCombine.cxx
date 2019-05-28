@@ -355,17 +355,13 @@ EPCombine::createLinks()
   setConnect(1,Origin+Y*length,Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
-  setConnect(2,photOrg+Y*length,Y);  
+  setConnect(2,photOrg-X*photonXStep+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
 
   
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,elecOrg,elecYAxis);
-
-  ELog::EM<<"Points == "<<this->getLinkPt(2)<<ELog::endDiag;;
-  ELog::EM<<"Points == "<<this->getLinkPt(3)<<ELog::endDiag;;
-  ELog::EM<<"Points == "<<this->getLinkPt(4)<<ELog::endDiag;;
 
   return;
 }
@@ -381,7 +377,7 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
     \param electornIndex :: link point for electron
    */
 {
-  ELog::RegMethod RegA("EPSparator","setEPOriginPair(string)");
+  ELog::RegMethod RegA("EPCombine","setEPOriginPair(string)");
 
   setEPOriginPair(FC,FC.getSideIndex(photonIndex),
 		  FC.getSideIndex(electronIndex));
@@ -400,7 +396,7 @@ EPCombine::setEPOriginPair(const attachSystem::FixedComp& FC,
     \param electornIndex :: link point for electron
    */
 {
-  ELog::RegMethod RegA("EPSparator","setEPOriginPair");
+  ELog::RegMethod RegA("EPCombine","setEPOriginPair");
 
   photOrg=FC.getLinkPt(photonIndex);
   elecOrg=FC.getLinkPt(electronIndex);

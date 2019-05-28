@@ -127,6 +127,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   buildZone(*this,cellIndex),
 
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
+  epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
   
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
@@ -597,24 +598,21 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
 
-  chokeChamber->setCutSurf("front",*magBlockM1,2);
-  chokeChamber->setEPOriginPair(*magBlockM1,"Photon","Electron");
-  chokeChamber->createAll(System,*magBlockM1,2);
+  epSeparator->setCutSurf("front",*magBlockM1,2);
+  epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
+  epSeparator->createAll(System,*magBlockM1,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epSeparator,2);
+  epSeparator->insertInCell(System,outerCell);
+
+  chokeChamber->setCutSurf("front",*epSeparator,2);
+  chokeChamber->setEPOriginPair(*epSeparator,"Photon","Electron");
+  chokeChamber->createAll(System,*epSeparator,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
 
 
-  lastComp=chokeChamber;
-  return;
 
-	  
-  chokeChamber->setEPOriginPair(*magBlockM1,2,4);
-
-  chokeChamber->setCutSurf("front",*magBlockM1,2);
-  chokeChamber->createAll(System,*magBlockM1,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
-  chokeChamber->insertAllInCell(System,outerCell);
-  
+	    
   // eCutWallDisk->setNoInsert();
   // eCutWallDisk->addInsertCell(outerCell);
   // eCutWallDisk->createAll(System,*dipoleChamber,
@@ -689,7 +687,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
 
   buildHeatTable(System,masterCell,*collExitPipe,2);
-  buildApertureTable(System,masterCell,*pipeB,2); 
+  buildApertureTable(System,masterCell,*pipeB,2);
   buildShutterTable(System,masterCell,*pipeC,2);
 
   exitPipe->createAll(System,*bellowK,2);

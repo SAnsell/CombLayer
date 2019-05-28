@@ -88,6 +88,8 @@ class EPSeparator : public attachSystem::FixedOffset,
 
   void setEPOriginPair(const attachSystem::FixedComp&,const long int,
 		       const long int);
+  void setEPOriginPair(const attachSystem::FixedComp&,const std::string&,
+		       const std::string&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
