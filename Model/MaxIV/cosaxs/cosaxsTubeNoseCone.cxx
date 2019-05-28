@@ -114,6 +114,9 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   frontPlateRimThick(A.frontPlateRimThick),
   flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),
+  pipeLength(A.pipeLength),
+  pipeRadius(A.pipeRadius),
+  pipeWallThick(A.pipeWallThick),
   wallThick(A.wallThick),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -146,6 +149,9 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       frontPlateRimThick=A.frontPlateRimThick;
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
+      pipeLength=A.pipeLength;
+      pipeRadius=A.pipeRadius;
+      pipeWallThick=A.pipeWallThick;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
     }
@@ -189,6 +195,9 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   frontPlateRimThick=Control.EvalVar<double>(keyName+"FrontPlateRimThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  pipeLength=Control.EvalVar<double>(keyName+"PipeLength");
+  pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
+  pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -229,7 +238,7 @@ cosaxsTubeNoseCone::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(backPlateThick+frontPlateThick+length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(flangeLength+backPlateThick+frontPlateThick+length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
@@ -266,28 +275,24 @@ cosaxsTubeNoseCone::createSurfaces()
   const double th(frontPlateWidth-frontPlateRimThick*2+wallThick*2);
   const double thetaV = std::atan((tv-backPlateHeight)/2.0/length)*180.0/M_PI;
   const double thetaH = std::atan((th-backPlateWidth)/2.0/length)*180.0/M_PI;
+  const double dy(backPlateThick+pipeLength); // y origin for inclined planes
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+41,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				  backPlateThick);
+	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),dy);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+42,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+41),
 				  length);
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+43,
-				  Origin-X*(backPlateWidth/2.0)+Y*(backPlateThick),
-				  X,Z,thetaH);
+				  Origin-X*(backPlateWidth/2.0)+Y*(dy),X,Z,thetaH);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+44,
-				  Origin+X*(backPlateWidth/2.0)+Y*(backPlateThick),
-				  X,Z,-thetaH);
+				  Origin+X*(backPlateWidth/2.0)+Y*(dy),X,Z,-thetaH);
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+45,
-				  Origin-Z*(backPlateHeight/2.0)+Y*(backPlateThick),
-				  Z,X,-thetaV);
+				  Origin-Z*(backPlateHeight/2.0)+Y*(dy),Z,X,-thetaV);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+46,
-				  Origin+Z*(backPlateHeight/2.0)+Y*(backPlateThick),
-				  Z,X,thetaV);
+				  Origin+Z*(backPlateHeight/2.0)+Y*(dy),Z,X,thetaV);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+53,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+43),
@@ -304,8 +309,11 @@ cosaxsTubeNoseCone::createSurfaces()
 				  -wallThick);
 
   // flange
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
-  FrontBackCut::getShiftedBack(SMap,buildIndex+101,-1,Y,flangeLength);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,pipeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+108,Origin,Y,pipeRadius+pipeWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+109,Origin,Y,flangeRadius);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+101,1,Y,flangeLength);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+102,1,Y,pipeLength);
 
   return;
 }
@@ -320,15 +328,15 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   ELog::RegMethod RegA("cosaxsTubeNoseCone","createObjects");
 
   std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  const std::string frontStr(frontRule()); // start
+  const std::string backStr(backRule()); // end
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -41 13 -14 15 -16 ");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -41 13 -14 15 -16 ");
+  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
 
   // void outside back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -41 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(cellIndex++,0,0.0,Out+frontStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -41 23 -24 25 -26 (-13:14:-15:16) ");
+  System.addCell(cellIndex++,0,0.0,Out);
 
   // trapeze area
   Out=ModelSupport::getComposite(SMap,buildIndex,
@@ -348,6 +356,21 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 42 33 -34 35 -36 ");
   makeCell("FrontPlateVoid",System,cellIndex++,0,0.0,Out+backStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 107 -108 ");
+  makeCell("Pipe",System,cellIndex++,wallMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -41 ");
+  makeCell("PipeVoidInside",System,cellIndex++,0,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 108 23 -24 25 -26");
+  makeCell("PipeVoidOutside",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -109 ");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,Out+frontStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 109 23 -24 25 -26");
+  makeCell("FlangeVoidOutside",System,cellIndex++,0,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 23 -24 25 -26 ");
   addOuterSurf(Out+frontStr+backStr);
