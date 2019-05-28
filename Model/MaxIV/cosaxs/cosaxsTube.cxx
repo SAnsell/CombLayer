@@ -84,6 +84,7 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
+#include "GateValve.h"
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTube.h"
 
@@ -97,7 +98,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   buildZone(*this,cellIndex),
-  noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone"))
+  noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
+  gateA(new constructSystem::GateValve(keyName+"GateA"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -107,6 +109,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(noseCone);
+  OR.addObject(gateA);
 }
 
 cosaxsTube::cosaxsTube(const cosaxsTube& A) :
@@ -120,7 +123,8 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
   buildZone(A.buildZone),
-  noseCone(A.noseCone)
+  noseCone(A.noseCone),
+  gateA(A.gateA)
   /*!
     Copy constructor
     \param A :: cosaxsTube to copy
@@ -150,6 +154,7 @@ cosaxsTube::operator=(const cosaxsTube& A)
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       noseCone=A.noseCone;
+      gateA=A.gateA;
     }
   return *this;
 }
@@ -270,6 +275,12 @@ cosaxsTube::createObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,-1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
+
+  gateA->setFront(*noseCone,2);
+  gateA->createAll(System,*noseCone,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  gateA->insertInCell(System,outerCell);
+
 
   return;
 }

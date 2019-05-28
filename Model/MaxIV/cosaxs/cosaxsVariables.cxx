@@ -1189,6 +1189,11 @@ exptVariables(FuncDataBase& Control,
 		      static_cast<double>(setVariable::CF63::flangeRadius));
   Control.addVariable(preName+"TubeNoseConeFlangeLength",2.6); // measured
 
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"TubeGateA",0.0,0);
+
+
   return;
 }
 
