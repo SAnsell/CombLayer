@@ -100,7 +100,7 @@ CylGateValve::CylGateValve(const CylGateValve& A) :
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),  
   length(A.length),
-  width(A.width),height(A.height),depth(A.depth),
+  radius(A.radius),
   wallThick(A.wallThick),portRadius(A.portRadius),
   portThick(A.portThick),portLen(A.portLen),closed(A.closed),
   bladeLift(A.bladeLift),bladeThick(A.bladeThick),
@@ -128,9 +128,7 @@ CylGateValve::operator=(const CylGateValve& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
-      height=A.height;
-      depth=A.depth;
+      radius=A.radius;
       wallThick=A.wallThick;
       portRadius=A.portRadius;
       portThick=A.portThick;
@@ -166,9 +164,7 @@ CylGateValve::populate(const FuncDataBase& Control)
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
+  radius=Control.EvalVar<double>(keyName+"Radius");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -243,15 +239,8 @@ CylGateValve::createSurfaces()
     }
 
   // sides
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
-
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+wallThick),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   // flange
 
@@ -263,11 +252,8 @@ CylGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(bladeThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(bladeThick/2.0),Y);
 
-  if (closed)
-    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,bladeRadius);
-  else
-    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Z*bladeLift,
-				Y,bladeRadius);
+  const double dz(closed ? 0.0 : bladeLift);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Z*dz,Y,bladeRadius);
 
   return;
 }
@@ -291,12 +277,12 @@ CylGateValve::createObjects(Simulation& System)
   const std::string backComp=backComplement();    // 102
   // Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 (207:-201:202) ");
+				 " 1 -2 -7 (207:-201:202) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // Main body
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+				 " 1 -2 7 -17 ");
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
 
   // blade
@@ -304,7 +290,7 @@ CylGateValve::createObjects(Simulation& System)
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
   // front plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
   makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
@@ -320,7 +306,7 @@ CylGateValve::createObjects(Simulation& System)
     }
        
   // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 117 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 107 -117 ");
@@ -335,7 +321,7 @@ CylGateValve::createObjects(Simulation& System)
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
   addOuterSurf(Out);
   if (portExtends)
     {

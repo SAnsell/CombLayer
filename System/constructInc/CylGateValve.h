@@ -45,9 +45,7 @@ class CylGateValve :
  private:
   
   double length;                ///< Void length
-  double width;                 ///< Void width (full)
-  double height;                ///< height 
-  double depth;                 ///< depth
+  double radius;                 ///< Radius
   
   double wallThick;             ///< Wall thickness
   double portRadius;            ///< Port inner radius (opening)
