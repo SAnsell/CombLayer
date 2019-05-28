@@ -106,12 +106,12 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),backPlateWidth(A.backPlateWidth),backPlateHeight(A.backPlateHeight),
-  backPlateThick(A.backPlateThick),
-  frontPlateWidth(A.frontPlateWidth),
-  frontPlateHeight(A.frontPlateHeight),
+  length(A.length),frontPlateWidth(A.frontPlateWidth),frontPlateHeight(A.frontPlateHeight),
   frontPlateThick(A.frontPlateThick),
-  frontPlateRimThick(A.frontPlateRimThick),
+  backPlateWidth(A.backPlateWidth),
+  backPlateHeight(A.backPlateHeight),
+  backPlateThick(A.backPlateThick),
+  backPlateRimThick(A.backPlateRimThick),
   flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),
   pipeLength(A.pipeLength),
@@ -140,13 +140,13 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      backPlateWidth=A.backPlateWidth;
-      backPlateHeight=A.backPlateHeight;
-      backPlateThick=A.backPlateThick;
       frontPlateWidth=A.frontPlateWidth;
       frontPlateHeight=A.frontPlateHeight;
       frontPlateThick=A.frontPlateThick;
-      frontPlateRimThick=A.frontPlateRimThick;
+      backPlateWidth=A.backPlateWidth;
+      backPlateHeight=A.backPlateHeight;
+      backPlateThick=A.backPlateThick;
+      backPlateRimThick=A.backPlateRimThick;
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
       pipeLength=A.pipeLength;
@@ -186,13 +186,13 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
-  backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
-  backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
   frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
   frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
-  frontPlateRimThick=Control.EvalVar<double>(keyName+"FrontPlateRimThick");
+  backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
+  backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
+  backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
+  backPlateRimThick=Control.EvalVar<double>(keyName+"BackPlateRimThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   pipeLength=Control.EvalVar<double>(keyName+"PipeLength");
@@ -238,44 +238,44 @@ cosaxsTubeNoseCone::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(flangeLength+backPlateThick+frontPlateThick+length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(flangeLength+frontPlateThick+backPlateThick+length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
   // back plate
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(backPlateWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(backPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(frontPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(frontPlateWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(backPlateHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(backPlateHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(frontPlateHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(frontPlateHeight/2.0),Z);
 
   // front plate
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(frontPlateWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(frontPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(backPlateWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(backPlateWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(frontPlateHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(frontPlateHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(backPlateHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(backPlateHeight/2.0),Z);
 
   // front plate rim (band)
   ModelSupport::buildShiftedPlane(SMap,buildIndex+33,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+23),
-				  frontPlateRimThick);
+				  backPlateRimThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+34,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+24),
-				  -frontPlateRimThick);
+				  -backPlateRimThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+35,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+25),
-				  frontPlateRimThick);
+				  backPlateRimThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+36,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+26),
-				  -frontPlateRimThick);
+				  -backPlateRimThick);
 
   // inclined walls
-  const double tv(frontPlateHeight-frontPlateRimThick*2+wallThick*2);
-  const double th(frontPlateWidth-frontPlateRimThick*2+wallThick*2);
-  const double thetaV = std::atan((tv-backPlateHeight)/2.0/length)*180.0/M_PI;
-  const double thetaH = std::atan((th-backPlateWidth)/2.0/length)*180.0/M_PI;
-  const double dy(backPlateThick+pipeLength); // y origin for inclined planes
+  const double tv(backPlateHeight-backPlateRimThick*2+wallThick*2);
+  const double th(backPlateWidth-backPlateRimThick*2+wallThick*2);
+  const double thetaV = std::atan((tv-frontPlateHeight)/2.0/length)*180.0/M_PI;
+  const double thetaH = std::atan((th-frontPlateWidth)/2.0/length)*180.0/M_PI;
+  const double dy(frontPlateThick+pipeLength); // y origin for inclined planes
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+41,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),dy);
@@ -285,14 +285,14 @@ cosaxsTubeNoseCone::createSurfaces()
 				  length);
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+43,
-				  Origin-X*(backPlateWidth/2.0)+Y*(dy),X,Z,thetaH);
+				  Origin-X*(frontPlateWidth/2.0)+Y*(dy),X,Z,thetaH);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+44,
-				  Origin+X*(backPlateWidth/2.0)+Y*(dy),X,Z,-thetaH);
+				  Origin+X*(frontPlateWidth/2.0)+Y*(dy),X,Z,-thetaH);
 
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+45,
-				  Origin-Z*(backPlateHeight/2.0)+Y*(dy),Z,X,-thetaV);
+				  Origin-Z*(frontPlateHeight/2.0)+Y*(dy),Z,X,-thetaV);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+46,
-				  Origin+Z*(backPlateHeight/2.0)+Y*(dy),Z,X,thetaV);
+				  Origin+Z*(frontPlateHeight/2.0)+Y*(dy),Z,X,thetaV);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+53,
 				  SMap.realPtr<Geometry::Plane>(buildIndex+43),
@@ -332,7 +332,7 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   const std::string backStr(backRule()); // end
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -41 13 -14 15 -16 ");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
 
   // void outside back plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -41 23 -24 25 -26 (-13:14:-15:16) ");
@@ -352,10 +352,10 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   System.addCell(cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 42 23 -24 25 -26 (-33:34:-35:36)");
-  makeCell("FrontPlateRim",System,cellIndex++,wallMat,0.0,Out+backStr);
+  makeCell("BackPlateRim",System,cellIndex++,wallMat,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 42 33 -34 35 -36 ");
-  makeCell("FrontPlateVoid",System,cellIndex++,0,0.0,Out+backStr);
+  makeCell("BackPlateVoid",System,cellIndex++,0,0.0,Out+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 107 -108 ");
   makeCell("Pipe",System,cellIndex++,wallMat,0.0,Out);
@@ -389,16 +389,16 @@ cosaxsTubeNoseCone::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(backPlateWidth/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(frontPlateWidth/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(backPlateWidth/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(frontPlateWidth/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(backPlateHeight/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(frontPlateHeight/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(backPlateHeight/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(frontPlateHeight/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

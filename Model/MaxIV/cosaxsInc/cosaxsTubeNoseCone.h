@@ -45,13 +45,13 @@ class cosaxsTubeNoseCone :
  private:
 
   double length;                ///< Length of the pyramid-shaped segment
-  double backPlateWidth;        ///< Back plate width
-  double backPlateHeight;       ///< Back plate height
-  double backPlateThick;        ///< Back plate thickness
-  double frontPlateWidth; ///< Front plate width
-  double frontPlateHeight; ///< Front plate height
-  double frontPlateThick; ///< Front plate thickness
-  double frontPlateRimThick; ///< Front plate rim thickness
+  double frontPlateWidth;        ///< Back plate width
+  double frontPlateHeight;       ///< Back plate height
+  double frontPlateThick;        ///< Back plate thickness
+  double backPlateWidth; ///< Front plate width
+  double backPlateHeight; ///< Front plate height
+  double backPlateThick; ///< Front plate thickness
+  double backPlateRimThick; ///< Front plate rim thickness
   double flangeRadius; ///< flange radius
   double flangeLength; ///< Flange length
   double pipeLength; ///< Pipe (+flange) length

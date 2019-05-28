@@ -1167,14 +1167,14 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"TubeNoseConeWallMat","Stainless304"); // ???
   Control.addVariable(preName+"TubeNoseConeWallThick",1.0); // measured
 
-  Control.addVariable(preName+"TubeNoseConeBackPlateWidth",12.0); // measured
-  Control.addVariable(preName+"TubeNoseConeBackPlateHeight",12.0); // measured
-  Control.addVariable(preName+"TubeNoseConeBackPlateThick",1.5); // measured
+  Control.addVariable(preName+"TubeNoseConeFrontPlateWidth",12.0); // measured
+  Control.addVariable(preName+"TubeNoseConeFrontPlateHeight",12.0); // measured
+  Control.addVariable(preName+"TubeNoseConeFrontPlateThick",1.5); // measured
 
-  Control.addVariable(preName+"TubeNoseConeFrontPlateWidth",38.0); // measured
-  Control.addVariable(preName+"TubeNoseConeFrontPlateHeight",38.0); // measured
-  Control.addVariable(preName+"TubeNoseConeFrontPlateThick",2.5); // measured
-  Control.addVariable(preName+"TubeNoseConeFrontPlateRimThick",4.5); // measured
+  Control.addVariable(preName+"TubeNoseConeBackPlateWidth",38.0); // measured
+  Control.addVariable(preName+"TubeNoseConeBackPlateHeight",38.0); // measured
+  Control.addVariable(preName+"TubeNoseConeBackPlateThick",2.5); // measured
+  Control.addVariable(preName+"TubeNoseConeBackPlateRimThick",4.5); // measured
 
   Control.addParse<double>(preName+"TubeOuterRadius",
 			   "CosaxsExptLineTubeRadius+10");
