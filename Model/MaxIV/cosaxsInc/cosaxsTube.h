@@ -57,7 +57,7 @@ class cosaxsTube :
   attachSystem::InnerZone buildZone;
 
   std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
-  std::shared_ptr<constructSystem::CylGateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCylinder> gateA;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

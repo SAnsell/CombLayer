@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/CylGateValve.h
+ * File:   constructInc/GateValveCylinder.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_CylGateValve_h
-#define constructSystem_CylGateValve_h
+#ifndef constructSystem_GateValveCylinder_h
+#define constructSystem_GateValveCylinder_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
   
 /*!
-  \class CylGateValve
+  \class GateValveCylinder
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief CylGateValve unit  
+  \brief GateValveCylinder unit  
 */
 
-class CylGateValve :
+class GateValveCylinder :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -69,10 +69,10 @@ class CylGateValve :
   
  public:
 
-  CylGateValve(const std::string&);
-  CylGateValve(const CylGateValve&);
-  CylGateValve& operator=(const CylGateValve&);
-  virtual ~CylGateValve();
+  GateValveCylinder(const std::string&);
+  GateValveCylinder(const GateValveCylinder&);
+  GateValveCylinder& operator=(const GateValveCylinder&);
+  virtual ~GateValveCylinder();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

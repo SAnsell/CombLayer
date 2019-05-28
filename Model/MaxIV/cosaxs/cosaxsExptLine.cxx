@@ -86,7 +86,7 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "CylGateValve.h"
+#include "GateValveCylinder.h"
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValveCylinder.h"

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/CylGateValve.cxx
+ * File:   construct/GateValveCylinder.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell / Konstantin Batkov
  *
@@ -79,12 +79,12 @@
 #include "SurfMap.h"
 #include "SurInter.h"
 
-#include "CylGateValve.h" 
+#include "GateValveCylinder.h" 
 
 namespace constructSystem
 {
 
-CylGateValve::CylGateValve(const std::string& Key) : 
+GateValveCylinder::GateValveCylinder(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
@@ -95,7 +95,7 @@ CylGateValve::CylGateValve(const std::string& Key) :
   */
 {}
 
-CylGateValve::CylGateValve(const CylGateValve& A) : 
+GateValveCylinder::GateValveCylinder(const GateValveCylinder& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),  
@@ -108,15 +108,15 @@ CylGateValve::CylGateValve(const CylGateValve& A) :
   bladeMat(A.bladeMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: CylGateValve to copy
+    \param A :: GateValveCylinder to copy
   */
 {}
 
-CylGateValve&
-CylGateValve::operator=(const CylGateValve& A)
+GateValveCylinder&
+GateValveCylinder::operator=(const GateValveCylinder& A)
   /*!
     Assignment operator
-    \param A :: CylGateValve to copy
+    \param A :: GateValveCylinder to copy
     \return *this
   */
 {
@@ -145,20 +145,20 @@ CylGateValve::operator=(const CylGateValve& A)
 }
 
 
-CylGateValve::~CylGateValve() 
+GateValveCylinder::~GateValveCylinder() 
   /*!
     Destructor
   */
 {}
 
 void
-CylGateValve::populate(const FuncDataBase& Control)
+GateValveCylinder::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("CylGateValve","populate");
+  ELog::RegMethod RegA("GateValveCylinder","populate");
   
   FixedOffset::populate(Control);
 
@@ -186,7 +186,7 @@ CylGateValve::populate(const FuncDataBase& Control)
 }
 
 void
-CylGateValve::createUnitVector(const attachSystem::FixedComp& FC,
+GateValveCylinder::createUnitVector(const attachSystem::FixedComp& FC,
                              const long int sideIndex)
   /*!
     Create the unit vectors
@@ -196,7 +196,7 @@ CylGateValve::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("CylGateValve","createUnitVector");
+  ELog::RegMethod RegA("GateValveCylinder","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -209,14 +209,14 @@ CylGateValve::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-CylGateValve::createSurfaces()
+GateValveCylinder::createSurfaces()
   /*!
     Create the surfaces
     If front/back given it is at portLen from the wall and 
     length/2+portLen from origin.
   */
 {
-  ELog::RegMethod RegA("CylGateValve","createSurfaces");
+  ELog::RegMethod RegA("GateValveCylinder","createSurfaces");
 
   // front planes
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -259,13 +259,13 @@ CylGateValve::createSurfaces()
 }
 
 void
-CylGateValve::createObjects(Simulation& System)
+GateValveCylinder::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CylGateValve","createObjects");
+  ELog::RegMethod RegA("GateValveCylinder","createObjects");
 
   std::string Out;
 
@@ -334,13 +334,13 @@ CylGateValve::createObjects(Simulation& System)
 }
   
 void
-CylGateValve::createLinks()
+GateValveCylinder::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("CylGateValve","createLinks");
+  ELog::RegMethod RegA("GateValveCylinder","createLinks");
 
   //stufff for intersection
 
@@ -352,7 +352,7 @@ CylGateValve::createLinks()
   
   
 void
-CylGateValve::createAll(Simulation& System,
+GateValveCylinder::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
  /*!
@@ -362,7 +362,7 @@ CylGateValve::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("CylGateValve","createAll(FC)");
+  ELog::RegMethod RegA("GateValveCylinder","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

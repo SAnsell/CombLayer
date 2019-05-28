@@ -85,7 +85,7 @@
 #include "mergeTemplate.h"
 
 #include "GateValve.h"
-#include "CylGateValve.h"
+#include "GateValveCylinder.h"
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTube.h"
 
@@ -100,7 +100,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::FrontBackCut(),
   buildZone(*this,cellIndex),
   noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
-  gateA(new constructSystem::CylGateValve(keyName+"GateA"))
+  gateA(new constructSystem::GateValveCylinder(keyName+"GateA"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
