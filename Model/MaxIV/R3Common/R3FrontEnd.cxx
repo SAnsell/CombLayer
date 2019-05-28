@@ -595,6 +595,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   magBlockM1->setCutSurf("front",undulatorFC,2);
   magBlockM1->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
+  ELog::EM<<"Out cell == "<<outerCell<<ELog::endDiag;
   magBlockM1->insertAllInCell(System,outerCell);
 
 

@@ -87,7 +87,8 @@ EPCombine::EPCombine(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -203,6 +204,8 @@ EPCombine::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+17,Origin+X*flangeBXStep,Y,flangeBRadius);
 
+  SurfMap::setSurf("voidCyl",-SMap.realSurf(buildIndex+17));
+
   
   ModelSupport::buildPlane
     (SMap,buildIndex+11,Origin+Y*flangeALength,Y);
@@ -214,7 +217,6 @@ EPCombine::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+103,elecOrg,elecXAxis);
   ModelSupport::buildCylinder
     (SMap,buildIndex+107,elecOrg,elecYAxis,electronRadius);
-  setSurf("voidCyl",-SMap.realSurF(buildIndex+107));
   
   // Electron walls: [All point to center]
   const Geometry::Vec3D XZ((elecXAxis*cos(M_PI/6.0)+Z*0.5).unit());

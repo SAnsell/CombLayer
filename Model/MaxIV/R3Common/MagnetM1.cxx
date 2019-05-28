@@ -275,8 +275,6 @@ MagnetM1::createEndPieces()
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 ");
   Out+=epCombine->getSurfString("voidCyl");  
   addOuterSurf("BPipe",Out);
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
-
  	       
   return;
 }

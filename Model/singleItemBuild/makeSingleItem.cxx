@@ -143,7 +143,7 @@ makeSingleItem::build(Simulation& System,
 
   OR.addObject(MagBlock);
 
-  MagBlock->addInsertCell(voidCell);
+  MagBlock->addAllInsertCell(voidCell);
   MagBlock->createAll(System,World::masterOrigin(),0);
   
   return;
