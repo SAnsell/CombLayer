@@ -582,7 +582,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
 
   cosaxsVar::diagUnit(Control,preName+"DiagBoxA");
 
@@ -615,7 +615,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
 
   cosaxsVar::diagUnit2(Control,preName+"DiagBoxC");
 
