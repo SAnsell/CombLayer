@@ -1153,59 +1153,63 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"SampleAreaDepth",10.0);
   Control.addVariable(preName+"SampleAreaAirMat","Air");
 
+  const std::string tubeName(preName+"Tube");
+
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
-  Control.addVariable(preName+"TubeYStep", 340); // dummy
-  Control.addVariable(preName+"TubeLength",1676.7+51.65);
-  Control.addVariable(preName+"TubeRadius",50.8); // 50.8 = 101.6/2.0
-  Control.addVariable(preName+"TubeHeight",15.1); // 2del
-  Control.addVariable(preName+"TubeWallThick",3.1); // dummy
-  Control.addVariable(preName+"TubeMainMat","Void");
-  Control.addVariable(preName+"TubeWallMat","Aluminium"); // dummy
-  Control.addVariable(preName+"TubeNSegments",7);
+  Control.addVariable(tubeName+"YStep", 340); // dummy
+  Control.addVariable(tubeName+"Length",1676.7+51.65);
+  Control.addVariable(tubeName+"Radius",50.8); // 50.8 = 101.6/2.0
+  Control.addVariable(tubeName+"Height",15.1); // 2del
+  Control.addVariable(tubeName+"WallThick",3.1); // dummy
+  Control.addVariable(tubeName+"MainMat","Void");
+  Control.addVariable(tubeName+"WallMat","Aluminium"); // dummy
+  Control.addVariable(tubeName+"NSegments",7);
 
-  Control.addVariable(preName+"TubeNoseConeLength",35.0); // measured
-  Control.addVariable(preName+"TubeNoseConeMainMat","Void"); //
-  Control.addVariable(preName+"TubeNoseConeWallMat","Stainless304"); // ???
-  Control.addVariable(preName+"TubeNoseConeWallThick",1.0); // measured
+  const std::string noseName(tubeName+"NoseCone");
+  
+  Control.addVariable(noseName+"Length",35.0); // measured
+  Control.addVariable(noseName+"MainMat","Void"); //
+  Control.addVariable(noseName+"WallMat","Stainless304"); // ???
+  Control.addVariable(noseName+"WallThick",1.0); // measured
 
-  Control.addVariable(preName+"TubeNoseConeFrontPlateWidth",12.0); // measured
-  Control.addVariable(preName+"TubeNoseConeFrontPlateHeight",12.0); // measured
-  Control.addVariable(preName+"TubeNoseConeFrontPlateThick",1.5); // measured
+  Control.addVariable(noseName+"FrontPlateWidth",12.0); // measured
+  Control.addVariable(noseName+"FrontPlateHeight",12.0); // measured
+  Control.addVariable(noseName+"FrontPlateThick",1.5); // measured
 
-  Control.addVariable(preName+"TubeNoseConeBackPlateWidth",38.0); // measured
-  Control.addVariable(preName+"TubeNoseConeBackPlateHeight",38.0); // measured
-  Control.addVariable(preName+"TubeNoseConeBackPlateThick",2.5); // measured
-  Control.addVariable(preName+"TubeNoseConeBackPlateRimThick",4.5); // measured
+  Control.addVariable(noseName+"BackPlateWidth",38.0); // measured
+  Control.addVariable(noseName+"BackPlateHeight",38.0); // measured
+  Control.addVariable(noseName+"BackPlateThick",2.5); // measured
+  Control.addVariable(noseName+"BackPlateRimThick",4.5); // measured
 
-  Control.addParse<double>(preName+"TubeOuterRadius",
+  Control.addParse<double>(tubeName+"OuterRadius",
 			   "CosaxsExptLineTubeRadius+10");
-  Control.addParse<double>(preName+"TubeOuterLength",
+  Control.addParse<double>(tubeName+"OuterLength",
 			   "CosaxsExptLineTubeLength+CosaxsExptLineTubeNoseConeLength+100");
 
-  Control.addVariable(preName+"TubeNoseConePipeRadius",4.0); // ??? guess
-  Control.addVariable(preName+"TubeNoseConePipeLength",4.6); // measured
-  Control.addVariable(preName+"TubeNoseConePipeWallThick",
+  Control.addVariable(noseName+"PipeRadius",4.0); // ??? guess
+  Control.addVariable(noseName+"PipeLength",4.6); // measured
+  Control.addVariable(noseName+"PipeWallThick",
 		      static_cast<double>(setVariable::CF63::wallThick)); // guess ???
-  Control.addVariable(preName+"TubeNoseConeFlangeRadius",
+  Control.addVariable(noseName+"FlangeRadius",
 		      static_cast<double>(setVariable::CF63::flangeRadius));
-  Control.addVariable(preName+"TubeNoseConeFlangeLength",2.6); // measured
+  Control.addVariable(noseName+"FlangeLength",2.6); // measured
 
   GateGen.setLength(10.0);
   GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"TubeGateA",0.0,0);
-  Control.addVariable(preName+"TubeGateARadius",17.0); // measured
+  GateGen.generateValve(Control,tubeName+"GateA",0.0,0);
+  Control.addVariable(tubeName+"GateARadius",17.0); // measured
 
   // [1] = x032_cosaxs_-2019-02-11-_dimensions.pdf
   // [2] = measured in X032_CoSAXS_(2019-04-25).step
-  Control.addVariable(preName+"TubeStartPlateThick", 2.7); // [1]
-  Control.addVariable(preName+"TubeStartPlateRadius", 57.8);  // [1], 1156/2.0 mm
+  Control.addVariable(tubeName+"StartPlateThick", 2.7); // [1]
+  Control.addVariable(tubeName+"StartPlateRadius", 57.8);  // [1], 1156/2.0 mm
   // According to [1], the PortRadius is 50.2/2 = 25.1 cm, but here we set it to
   // 14.27 cm - the port radius of the gasket plate betwen GateA and StartPlate
   // (which we do not build)
-  Control.addVariable(preName+"TubeStartPlatePortRadius", 14.27);
-  Control.addVariable(preName+"TubeStartPlateWallThick", 10); // dummy
-  Control.addVariable(preName+"TubeStartPlateMat", "Stainless304");
-  Control.addVariable(preName+"TubeStartPlateWallMat", "Stainless304"); // dummy
+  Control.addVariable(tubeName+"StartPlatePortRadius", 14.27);
+  Control.addVariable(tubeName+"StartPlateWallThick", 10); // dummy
+  Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
+  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); // dummy
 
 
   return;
