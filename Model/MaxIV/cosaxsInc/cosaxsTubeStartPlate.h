@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsTube.h
+ * File:   Model/MaxIV/cosaxsInc/cosaxsTubeStartPlate.h
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsTube_h
-#define xraySystem_cosaxsTube_h
+#ifndef xraySystem_cosaxsTubeStartPlate_h
+#define xraySystem_cosaxsTubeStartPlate_h
 
 class Simulation;
 
@@ -28,17 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class cosaxsTube
+  \class cosaxsTubeStartPlate
   \version 1.0
   \author Konstantin Batkov
-  \date 6 May 2019
-  \brief CoSAXS Submarine
+  \date 3 Jun 2019
+  \brief Start plate of the Submarine
 */
 
-  class cosaxsTubeNoseCone;
-  class cosaxsTubeStartPlate;
-
-class cosaxsTube :
+class cosaxsTubeStartPlate :
     public attachSystem::ContainedComp,
     public attachSystem::FixedOffset,
     public attachSystem::CellMap,
@@ -46,20 +43,14 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
-  double length;                ///< Total length including void
+
+  double thick;                ///< Total thick
   double radius;                 ///< Radius
-  double outerRadius; ///< Radius of bounding volume
-  double outerLength; ///< Length of bounding volume
+  double portRadius;                ///< PortRadius
   double wallThick;             ///< Wall thickness
 
-  int mainMat;                  ///< Main material
+  int mat;                  ///< Plate material
   int wallMat;                  ///< Wall material
-
-  attachSystem::InnerZone buildZone;
-
-  std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
-  std::shared_ptr<constructSystem::GateValveCylinder> gateA;
-  std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -71,11 +62,11 @@ class cosaxsTube :
 
  public:
 
-  cosaxsTube(const std::string&);
-  cosaxsTube(const cosaxsTube&);
-  cosaxsTube& operator=(const cosaxsTube&);
-  virtual cosaxsTube* clone() const;
-  virtual ~cosaxsTube();
+  cosaxsTubeStartPlate(const std::string&);
+  cosaxsTubeStartPlate(const cosaxsTubeStartPlate&);
+  cosaxsTubeStartPlate& operator=(const cosaxsTubeStartPlate&);
+  virtual cosaxsTubeStartPlate* clone() const;
+  virtual ~cosaxsTubeStartPlate();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 

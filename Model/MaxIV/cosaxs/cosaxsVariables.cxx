@@ -1194,6 +1194,18 @@ exptVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"TubeGateA",0.0,0);
   Control.addVariable(preName+"TubeGateARadius",17.0); // measured
 
+  // [1] = x032_cosaxs_-2019-02-11-_dimensions.pdf
+  // [2] = measured in X032_CoSAXS_(2019-04-25).step
+  Control.addVariable(preName+"TubeStartPlateThick", 2.7); // [1]
+  Control.addVariable(preName+"TubeStartPlateRadius", 57.8);  // [1], 1156/2.0 mm
+  // According to [1], the PortRadius is 50.2/2 = 25.1 cm, but here we set it to
+  // 14.27 cm - the port radius of the gasket plate betwen GateA and StartPlate
+  // (which we do not build)
+  Control.addVariable(preName+"TubeStartPlatePortRadius", 14.27);
+  Control.addVariable(preName+"TubeStartPlateWallThick", 10); // dummy
+  Control.addVariable(preName+"TubeStartPlateMat", "Stainless304");
+  Control.addVariable(preName+"TubeStartPlateWallMat", "Stainless304"); // dummy
+
 
   return;
 }
