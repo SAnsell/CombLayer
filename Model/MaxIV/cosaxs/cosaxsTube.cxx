@@ -125,6 +125,7 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   length(A.length),radius(A.radius),outerLength(A.outerLength),
   outerRadius(A.outerRadius),
   wallThick(A.wallThick),
+  nSegments(A.nSegments),
   mainMat(A.mainMat),wallMat(A.wallMat),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
@@ -156,6 +157,7 @@ cosaxsTube::operator=(const cosaxsTube& A)
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
       wallThick=A.wallThick;
+      nSegments=A.nSegments;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       noseCone=A.noseCone;
@@ -197,6 +199,7 @@ cosaxsTube::populate(const FuncDataBase& Control)
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  nSegments=Control.EvalVar<int>(keyName+"NSegments");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

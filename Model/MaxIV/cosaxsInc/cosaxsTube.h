@@ -51,6 +51,7 @@ class cosaxsTube :
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
   double wallThick;             ///< Wall thickness
+  int nSegments; ///< Number of tube segments
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material

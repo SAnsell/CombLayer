@@ -1161,6 +1161,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"TubeWallThick",3.1); // dummy
   Control.addVariable(preName+"TubeMainMat","Void");
   Control.addVariable(preName+"TubeWallMat","Aluminium"); // dummy
+  Control.addVariable(preName+"TubeNSegments",7);
 
   Control.addVariable(preName+"TubeNoseConeLength",35.0); // measured
   Control.addVariable(preName+"TubeNoseConeMainMat","Void"); //
