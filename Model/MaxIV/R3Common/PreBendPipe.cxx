@@ -390,9 +390,6 @@ PreBendPipe::createLinks()
   // electron surface is intersect from 102 normal into surface 2
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,cylEnd,elecAxis);
-  ELog::EM<<"Line == "<<strEnd<<" "<<cylEnd<<ELog::endDiag;
-  ELog::EM<<"Point -= "<<this->getLinkPt(4)<<ELog::endDiag;
-  ELog::EM<<"Axis -= "<<acos(elecAxis.dotProd(Y))*180/M_PI<<ELog::endDiag;
   
   const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
   const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;

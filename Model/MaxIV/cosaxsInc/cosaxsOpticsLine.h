@@ -39,6 +39,7 @@ namespace constructSystem
   class PipeTube;
   class GateValve;
   class JawValveCube;
+  class DiffPumpXIADP03;
 }
 
 
@@ -92,6 +93,8 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::CrossPipe> gaugeA;
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
+  /// First gate valve
+  std::shared_ptr<constructSystem::GateValve> gateA;
   /// Vacuum pipe for collimator
   std::shared_ptr<xraySystem::BremColl> bremCollA;
   /// Filter tube
@@ -99,26 +102,31 @@ class cosaxsOpticsLine :
   /// Filter stick [only one blade type -- fix]
   std::shared_ptr<xraySystem::FlangeMount> filterStick;
   /// First gate valve
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValve> gateB;
   /// bellows after gateA ->view
   std::shared_ptr<constructSystem::Bellows> bellowB;
   
-  /// diamon screen(?)
+  /// diamond screen(?)
   std::shared_ptr<constructSystem::PipeTube> screenPipeA;
-  /// View/something(?)
+  /// View/something(?)/Ion pump
   std::shared_ptr<constructSystem::PipeTube> screenPipeB;
+  /// Addaptor to connect from pumpint point to diffuser
+  std::shared_ptr<constructSystem::VacuumPipe> adaptorPlateA;
+  /// Diffusion pump
+  std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPumpA;
+  
   /// Primary jaw (Box)
   std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
   /// Bellow to gate on mono
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// First gate valve
-  std::shared_ptr<constructSystem::GateValve> gateB;
+  std::shared_ptr<constructSystem::GateValve> gateC;
   /// Mono box
   std::shared_ptr<xraySystem::MonoBox> monoBox;
   /// Mono Xstal 
   std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
   // Gate to isolate mono
-  std::shared_ptr<constructSystem::GateValve> gateC;
+  std::shared_ptr<constructSystem::GateValve> gateD;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Diagnostic unit 1:
@@ -126,12 +134,12 @@ class cosaxsOpticsLine :
   /// Bellow from diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowE;
   // Gate for first mirror
-  std::shared_ptr<constructSystem::GateValve> gateD;
+  std::shared_ptr<constructSystem::GateValve> gateE;
 
   /// Mirror box 
   std::shared_ptr<constructSystem::VacuumBox> mirrorA;
   // Gate fro first mirror
-  std::shared_ptr<constructSystem::GateValve> gateE;
+  std::shared_ptr<constructSystem::GateValve> gateF;
   /// Bellow to diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Diagnostic unit 2:
@@ -142,11 +150,11 @@ class cosaxsOpticsLine :
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowG;
   // Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateF;
+  std::shared_ptr<constructSystem::GateValve> gateG;
   /// Mirror box B
   std::shared_ptr<constructSystem::VacuumBox> mirrorB;
   // Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateG;
+  std::shared_ptr<constructSystem::GateValve> gateH;
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowH;
 
@@ -158,6 +166,9 @@ class cosaxsOpticsLine :
   /// Bellow to end station
   std::shared_ptr<constructSystem::Bellows> bellowI;
 
+  /// Gate valve before mono shutter
+  std::shared_ptr<constructSystem::GateValve> gateI;
+
   /// Shutter pipe
   std::shared_ptr<xraySystem::MonoShutter> monoShutter;
     
@@ -165,7 +176,7 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
   /// Last gate valve:
-  std::shared_ptr<constructSystem::GateValve> gateH;
+  std::shared_ptr<constructSystem::GateValve> gateJ;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

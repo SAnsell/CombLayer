@@ -368,7 +368,7 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   double L=length;
   if (portATubeLength<0) L+=portATubeLength;
   if (portBTubeLength<0) L+=portBTubeLength;
-  
+
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",L);
   Control.addVariable(keyName+"WallThick",wallThick);

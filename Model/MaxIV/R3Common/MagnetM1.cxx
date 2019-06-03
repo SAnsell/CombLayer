@@ -419,8 +419,6 @@ MagnetM1::createAll(Simulation& System,
   
   // creation of links 
   createLinks();
-  ELog::EM<<"build == "<<*(buildZone.getMaster())<<ELog::endDiag;
-  
   return;
 }
   

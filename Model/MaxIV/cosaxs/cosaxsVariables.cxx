@@ -76,6 +76,7 @@
 #include "DipoleChamberGenerator.h"
 
 #include "R3ChokeChamberGenerator.h"
+#include "DiffPumpGenerator.h"
 
 namespace setVariable
 {
@@ -204,7 +205,7 @@ monoShutterVariables(FuncDataBase& Control,
 
     // joined and open
   GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateH",0.0,0);
+  GateGen.generateValve(Control,preName+"GateJ",0.0,0);
   return;
 }
 
@@ -222,7 +223,7 @@ opticsHutVariables(FuncDataBase& Control,
   const std::string hutName(preName+"OpticsHut");
 
   Control.addVariable(hutName+"Height",250.0);
-  Control.addVariable(hutName+"Length",906.1);
+  Control.addVariable(hutName+"Length",886.1);  // changed from 906
   Control.addVariable(hutName+"OutWidth",200.0);
   Control.addVariable(hutName+"RingWidth",75.0);
   Control.addVariable(hutName+"RingWallLen",80.0);
@@ -276,7 +277,7 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
   VBoxGen.setAPortCF<CF40>();
-  VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  VBoxGen.setPortLength(5.0,5.0); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
@@ -317,7 +318,7 @@ mirrorBox(FuncDataBase& Control,const std::string& Name)
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
-  VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  VBoxGen.setPortLength(5.0,5.0); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
@@ -399,7 +400,7 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
   ELog::RegMethod RegA("cosaxsVariables[F]","diagUnit");
 
 
-  const double DLength(35.0);         // diag length [checked]
+  const double DLength(40.0);         // diag length [checked+5cm]
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   
@@ -479,6 +480,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
+  setVariable::DiffPumpGenerator DiffGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -498,6 +500,10 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
 
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+  
   BremGen.setCF<CF63>();
   BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
 
@@ -535,7 +541,7 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.setLength(2.5);
   GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+  GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
@@ -560,6 +566,15 @@ opticsVariables(FuncDataBase& Control,
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
 
 
+  // Now add addaptor pipe:
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setBFlangeCF<CF150>();
+  PipeGen.generatePipe(Control,preName+"AdaptorPlateA",0.0,6.0);
+
+  // length
+  DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);
+  
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
@@ -574,12 +589,12 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
   
   GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateB",0.0,0);
+  GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   cosaxsVar::monoVariables(Control);
 
   GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateC",0.0,0);
+  GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
@@ -591,12 +606,12 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
   GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateD",0.0,0);
+  GateGen.generateValve(Control,preName+"GateE",0.0,0);
   
   cosaxsVar::mirrorBox(Control,preName+"MirrorA");
 
   GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+  GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
@@ -607,20 +622,23 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
 
   GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateF",0.0,0);
+  GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
   cosaxsVar::mirrorBox(Control,preName+"MirrorB");
 
   GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateG",0.0,0);
+  GateGen.generateValve(Control,preName+"GateH",0.0,0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
 
   cosaxsVar::diagUnit2(Control,preName+"DiagBoxC");
 
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,preName+"GateI",0.0,0);
+  
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,12.0);
+  BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
 
   cosaxsVar::monoShutterVariables(Control,preName);
   

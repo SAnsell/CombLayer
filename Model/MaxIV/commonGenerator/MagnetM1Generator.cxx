@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/MagnetM1Generator.cxx
+ * File:   commonGenerator/MagnetM1Generator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -89,7 +89,6 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MagnetM1Generator","generateBlock");
 
-  ELog::EM<<"C == "<<keyName<<ELog::endDiag;
   Control.addVariable(keyName+"BlockYStep",blockYStep);
   Control.addVariable(keyName+"Length",length);
 
