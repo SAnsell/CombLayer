@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxs/cosaxsTube.cxx
+ * File:   Model/MaxIV/cosaxs/cosaxsTubeSegment.cxx
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -76,7 +76,6 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "InnerZone.h"
 #include "FrontBackCut.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
@@ -84,66 +83,43 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
-#include "GateValveCube.h"
-#include "GateValveCylinder.h"
-#include "cosaxsTubeNoseCone.h"
-#include "cosaxsTubeStartPlate.h"
 #include "cosaxsTubeSegment.h"
-#include "cosaxsTube.h"
 
 namespace xraySystem
 {
 
-cosaxsTube::cosaxsTube(const std::string& Key)  :
+cosaxsTubeSegment::cosaxsTubeSegment(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut(),
-  buildZone(*this,cellIndex),
-  noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
-  gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
-  startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate"))
+  attachSystem::FrontBackCut()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+{}
 
-  OR.addObject(noseCone);
-  OR.addObject(gateA);
-  OR.addObject(startPlate);
-}
-
-cosaxsTube::cosaxsTube(const cosaxsTube& A) :
+cosaxsTubeSegment::cosaxsTubeSegment(const cosaxsTubeSegment& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),radius(A.radius),
-  outerRadius(A.outerRadius),
-  outerLength(A.outerLength),
+  length(A.length),radius(A.radius),doorRadius(A.doorRadius),
   wallThick(A.wallThick),
-  nSegments(A.nSegments),
-  mainMat(A.mainMat),wallMat(A.wallMat),
-  buildZone(A.buildZone),
-  noseCone(A.noseCone),
-  gateA(A.gateA),
-  startPlate(A.startPlate)
+  wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: cosaxsTube to copy
+    \param A :: cosaxsTubeSegment to copy
   */
 {}
 
-cosaxsTube&
-cosaxsTube::operator=(const cosaxsTube& A)
+cosaxsTubeSegment&
+cosaxsTubeSegment::operator=(const cosaxsTubeSegment& A)
   /*!
     Assignment operator
-    \param A :: cosaxsTube to copy
+    \param A :: cosaxsTubeSegment to copy
     \return *this
   */
 {
@@ -156,61 +132,54 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
       radius=A.radius;
-      outerRadius=A.outerRadius;
-      outerLength=A.outerLength;
+      doorRadius=A.doorRadius;
       wallThick=A.wallThick;
-      nSegments=A.nSegments;
-      mainMat=A.mainMat;
       wallMat=A.wallMat;
-      noseCone=A.noseCone;
-      gateA=A.gateA;
-      startPlate=A.startPlate;
     }
   return *this;
 }
 
-cosaxsTube*
-cosaxsTube::clone() const
+cosaxsTubeSegment*
+cosaxsTubeSegment::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new cosaxsTube(*this);
+    return new cosaxsTubeSegment(*this);
 }
 
-cosaxsTube::~cosaxsTube()
+cosaxsTubeSegment::~cosaxsTubeSegment()
   /*!
     Destructor
   */
 {}
 
 void
-cosaxsTube::populate(const FuncDataBase& Control)
+cosaxsTubeSegment::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("cosaxsTube","populate");
+  ELog::RegMethod RegA("cosaxsTubeSegment","populate");
+
+  ELog::EM << "here " << keyName << ELog::endDiag;
 
   FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
-  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
-  outerLength=Control.EvalVar<double>(keyName+"OuterLength");
+  doorRadius=Control.EvalVar<double>(keyName+"DoorRadius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  nSegments=Control.EvalVar<size_t>(keyName+"NSegments");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
 
 void
-cosaxsTube::createUnitVector(const attachSystem::FixedComp& FC,
+cosaxsTubeSegment::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -218,7 +187,7 @@ cosaxsTube::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("cosaxsTube","createUnitVector");
+  ELog::RegMethod RegA("cosaxsTubeSegment","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -227,12 +196,12 @@ cosaxsTube::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-cosaxsTube::createSurfaces()
+cosaxsTubeSegment::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("cosaxsTube","createSurfaces");
+  ELog::RegMethod RegA("cosaxsTubeSegment","createSurfaces");
 
   if (!frontActive())
     {
@@ -242,97 +211,49 @@ cosaxsTube::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(outerLength),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
-
-  const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  const HeadRule HR(Out);
-  buildZone.setSurround(HR);
-  ELog::EM << "use here: -HeadRule(SMap.realSurf(buildIndex+7))" << ELog::endCrit;
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   return;
 }
 
 void
-cosaxsTube::createObjects(Simulation& System)
+cosaxsTubeSegment::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("cosaxsTube","createObjects");
+  ELog::RegMethod RegA("cosaxsTubeSegment","createObjects");
 
   std::string Out;
-  const std::string frontStr(frontRule());
-  const std::string backStr(backRule());
+  const std::string front(frontRule());
+  const std::string back(backRule());
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex,
-  // 				 " -17 (-1:2:7) ");
-  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ")+front+back;
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
-  addOuterSurf(Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 7 -17 ")+front+back;
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,Out);
 
-  int outerCell;
-  buildZone.setFront(getRule("front"));//HeadRule(SMap.realSurf(buildIndex+1)));
-  buildZone.setBack(getRule("back"));//HeadRule(-SMap.realSurf(buildIndex+2)));
-
-  MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
-
-  noseCone->createAll(System, *this, 0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,-1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
-  noseCone->insertInCell(System,outerCell);
-
-  gateA->setFront(*noseCone,2);
-  gateA->createAll(System,*noseCone,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
-
-  startPlate->setFront(*gateA,2);
-  startPlate->createAll(System,*gateA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*startPlate,2);
-  startPlate->insertInCell(System,outerCell);
-
-  // tube segments
-  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
-  for (size_t i=0; i<nSegments; i++)
-    {
-      std::shared_ptr<xraySystem::cosaxsTubeSegment>
-	seg(new xraySystem::cosaxsTubeSegment(keyName+"Segment"+std::to_string(i+1)));
-      segments.push_back(seg);
-
-      OR.addObject(seg);
-      if (i==0)
-	{
-	  seg->setFront(*startPlate,2);
-	  seg->createAll(System,*startPlate,2);
-	}
-      else
-	{
-	  seg->setFront(*segments[i-1],2);
-	  seg->createAll(System,*segments[i-1],2);
-	}
-
-      outerCell=buildZone.createOuterVoidUnit(System,masterCell,*seg,2);
-      seg->insertInCell(System,outerCell);
-    }
-
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 ")+front+back;
+  addOuterSurf(Out);
 
   return;
 }
 
 
 void
-cosaxsTube::createLinks()
+cosaxsTubeSegment::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("cosaxsTube","createLinks");
+  ELog::RegMethod RegA("cosaxsTubeSegment","createLinks");
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
@@ -340,7 +261,7 @@ cosaxsTube::createLinks()
 }
 
 void
-cosaxsTube::createAll(Simulation& System,
+cosaxsTubeSegment::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -350,7 +271,7 @@ cosaxsTube::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("cosaxsTube","createAll");
+  ELog::RegMethod RegA("cosaxsTubeSegment","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

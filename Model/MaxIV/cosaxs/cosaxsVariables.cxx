@@ -1209,7 +1209,13 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"StartPlatePortRadius", 14.27);
   Control.addVariable(tubeName+"StartPlateWallThick", 10); // dummy
   Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
-  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); // dummy
+  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); ELog::EM<<"remove"<<ELog::endDiag;
+
+  Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
+  Control.addVariable(tubeName+"Segment1Radius", 51.8); // dummy - inner void radius
+  Control.addVariable(tubeName+"Segment1DoorRadius", 57.8); // dummy
+  Control.addVariable(tubeName+"Segment1WallThick", 6.0); // dummy
+  Control.addVariable(tubeName+"Segment1WallMat", "Stainless304");
 
 
   return;

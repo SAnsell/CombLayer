@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsTube.h
+ * File:   Model/MaxIV/cosaxsInc/cosaxsTubeSegment.h
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsTube_h
-#define xraySystem_cosaxsTube_h
+#ifndef xraySystem_cosaxsTubeSegment_h
+#define xraySystem_cosaxsTubeSegment_h
 
 class Simulation;
 
@@ -28,18 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class cosaxsTube
+  \class cosaxsTubeSegment
   \version 1.0
   \author Konstantin Batkov
-  \date 6 May 2019
-  \brief CoSAXS Submarine
+  \date 3 Jun 2019
+  \brief Start plate of the Submarine
 */
 
-  class cosaxsTubeNoseCone;
-  class cosaxsTubeStartPlate;
-  class cosaxsTubeSegment;
-
-class cosaxsTube :
+class cosaxsTubeSegment :
     public attachSystem::ContainedComp,
     public attachSystem::FixedOffset,
     public attachSystem::CellMap,
@@ -47,22 +43,13 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
-  double length;                ///< Total length including void
-  double radius;                 ///< Radius
-  double outerRadius; ///< Radius of bounding volume
-  double outerLength; ///< Length of bounding volume
-  double wallThick;             ///< Wall thickness
-  size_t nSegments; ///< Number of tube segments
 
-  int mainMat;                  ///< Main material
+  double length;                ///< Total length
+  double radius;                ///< Inner void radius
+  double doorRadius;            ///< Door Radius
+  double wallThick;             ///< Side wall thickness
+
   int wallMat;                  ///< Wall material
-
-  attachSystem::InnerZone buildZone;
-
-  std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
-  std::shared_ptr<constructSystem::GateValveCylinder> gateA;
-  std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
-  std::vector< std::shared_ptr<xraySystem::cosaxsTubeSegment> > segments;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -74,11 +61,11 @@ class cosaxsTube :
 
  public:
 
-  cosaxsTube(const std::string&);
-  cosaxsTube(const cosaxsTube&);
-  cosaxsTube& operator=(const cosaxsTube&);
-  virtual cosaxsTube* clone() const;
-  virtual ~cosaxsTube();
+  cosaxsTubeSegment(const std::string&);
+  cosaxsTubeSegment(const cosaxsTubeSegment&);
+  cosaxsTubeSegment& operator=(const cosaxsTubeSegment&);
+  virtual cosaxsTubeSegment* clone() const;
+  virtual ~cosaxsTubeSegment();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
