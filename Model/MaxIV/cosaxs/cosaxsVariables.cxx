@@ -656,6 +656,7 @@ exptVariables(FuncDataBase& Control,
 {
   const std::string preName(beamName+"ExptLine");
 
+  Control.addVariable(preName+"OuterLength",1700.0);
   Control.addVariable(preName+"OuterLeft",80.0);
   Control.addVariable(preName+"OuterRight",80.0);
   Control.addVariable(preName+"OuterTop",80.0);
@@ -760,13 +761,6 @@ exptVariables(FuncDataBase& Control,
 
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
   Control.addVariable(tubeName+"YStep", 340); // dummy
-  Control.addVariable(tubeName+"Length",1676.7+51.65);
-  Control.addVariable(tubeName+"Radius",50.8); // 50.8 = 101.6/2.0
-  Control.addVariable(tubeName+"Height",15.1); // 2del
-  Control.addVariable(tubeName+"WallThick",3.1); // dummy
-  Control.addVariable(tubeName+"MainMat","Void");
-  Control.addVariable(tubeName+"WallMat","Aluminium"); // dummy
-  Control.addVariable(tubeName+"NSegments",7);
 
   const std::string noseName(tubeName+"NoseCone");
   
@@ -783,11 +777,6 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(noseName+"BackPlateHeight",38.0); // measured
   Control.addVariable(noseName+"BackPlateThick",2.5); // measured
   Control.addVariable(noseName+"BackPlateRimThick",4.5); // measured
-
-  Control.addParse<double>(tubeName+"OuterRadius",
-			   "CosaxsExptLineTubeRadius+10");
-  Control.addParse<double>(tubeName+"OuterLength",
-			   "CosaxsExptLineTubeLength+CosaxsExptLineTubeNoseConeLength+100");
 
   Control.addVariable(noseName+"PipeRadius",4.0); // ??? guess
   Control.addVariable(noseName+"PipeLength",4.6); // measured
@@ -816,8 +805,6 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
   Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
-  //  Control.addVariable(tubeName+"Segment1FlangeBRadius", 50);//tubeName+"Segment1FlangeARadius");
-  //  Control.addVariable(tubeName+"Segment1FlangeBLength", tubeName+"Segment1FlangeALength");
   Control.addVariable(tubeName+"Segment1NPorts", 0);
 
   Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
@@ -825,9 +812,21 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment1WallThick", 6.0); // dummy
   Control.addVariable(tubeName+"Segment1WallMat", "Stainless304");
 
-  for (size_t i=2;i<=7;i++)
+  for (size_t i=2;i<=8;i++)
       Control.copyVarSet(tubeName+"Segment1",
 			 tubeName+"Segment"+std::to_string(i));
+
+  Control.addVariable(tubeName+"Segment4Length", 40.0); // adjusted so that back surf ~ at the exp hutch
+  Control.addVariable(tubeName+"Segment4FlangeBRadius", 70.0); // [2]
+  Control.addVariable(tubeName+"Segment4FlangeBLength", 1.0); // [2]
+  Control.addParse<double>(tubeName+"Segment5Length",
+			   tubeName+"Segment1Length-"+tubeName+"Segment4Length");
+  Control.addParse<double>(tubeName+"Segment5FlangeARadius", tubeName+"Segment4FlangeBRadius");
+  Control.addParse<double>(tubeName+"Segment5FlangeALength", tubeName+"Segment4FlangeBLength");
+
+  Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment4FlangeBRadius+1");
+  Control.addParse<double>(tubeName+"OuterLength",
+			   "CosaxsExptLineTubeNoseConeLength+CosaxsExptLineTubeSegment1Length*7+100");
 
   return;
 }

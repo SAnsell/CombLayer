@@ -95,6 +95,7 @@ class cosaxsExptLine :
   std::shared_ptr<xraySystem::cosaxsSampleArea> sampleArea;
   std::shared_ptr<xraySystem::cosaxsTube> tube;
 
+  double outerLength; ///< total length (used if the back cut surface is not set)
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle

@@ -157,6 +157,8 @@ cosaxsExptLine::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
+  outerLength=Control.EvalVar<double>(keyName+"OuterLength");
+
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
@@ -204,6 +206,8 @@ cosaxsExptLine::createSurfaces()
       const HeadRule HR(Out+getRuleStr("floor"));
       buildZone.setSurround(HR);
     }
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*outerLength,Y);
+
 
   return;
 }
@@ -219,6 +223,9 @@ cosaxsExptLine::buildObjects(Simulation& System)
   ELog::RegMethod RegA("cosaxsExptLine","buildObjects");
 
   int outerCell;
+
+  if (!isActive("back"))
+    setCutSurf("back", ModelSupport::getComposite(SMap,buildIndex," -2 "));
 
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));

@@ -51,21 +51,15 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
-  double length;                ///< Total length including void
-  double radius;                 ///< Radius
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
-  double wallThick;             ///< Wall thickness
-
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
 
   attachSystem::InnerZone buildZone;
 
   std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;
   std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
-  std::array<std::shared_ptr<constructSystem::PipeTube>, 7> seg;
+  std::array<std::shared_ptr<constructSystem::PipeTube>, 8> seg;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -120,7 +120,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(gateA);
   OR.addObject(startPlate);
 
-  for(size_t i=0;i<7;i++)
+  for(size_t i=0;i<8;i++)
     {
       seg[i] = std::make_shared<constructSystem::PipeTube>(keyName+"Segment"+std::to_string(i+1));
       OR.addObject(seg[i]);
@@ -133,11 +133,8 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),radius(A.radius),
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
   gateA(A.gateA),
@@ -164,13 +161,8 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
-      radius=A.radius;
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
-      wallThick=A.wallThick;
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
@@ -206,14 +198,8 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  radius=Control.EvalVar<double>(keyName+"Radius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
@@ -278,10 +264,6 @@ cosaxsTube::createObjects(Simulation& System)
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
 
-  // Out=ModelSupport::getComposite(SMap,buildIndex,
-  // 				 " -17 (-1:2:7) ");
-  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
-
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   addOuterSurf(Out+frontStr+backStr);
 
@@ -309,7 +291,7 @@ cosaxsTube::createObjects(Simulation& System)
   // tube segments
   attachSystem::FixedComp *last = startPlate.get();
 
-  for (size_t i=0; i<7; i++)
+  for (size_t i=0; i<8; i++)
     {
       seg[i]->setFront(*last,2);
       seg[i]->createAll(System,*last,2);
