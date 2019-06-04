@@ -1211,12 +1211,20 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
   Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); ELog::EM<<"remove"<<ELog::endDiag;
 
+  Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
+  Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
+  //  Control.addVariable(tubeName+"Segment1FlangeBRadius", 50);//tubeName+"Segment1FlangeARadius");
+  //  Control.addVariable(tubeName+"Segment1FlangeBLength", tubeName+"Segment1FlangeALength");
+  Control.addVariable(tubeName+"Segment1NPorts", 0);
+
   Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
-  Control.addVariable(tubeName+"Segment1Radius", 51.8); // dummy - inner void radius
-  Control.addVariable(tubeName+"Segment1DoorRadius", 57.8); // dummy
+  Control.addVariable(tubeName+"Segment1Radius", 51.8-10); // dummy - inner void radius
   Control.addVariable(tubeName+"Segment1WallThick", 6.0); // dummy
   Control.addVariable(tubeName+"Segment1WallMat", "Stainless304");
 
+  for (size_t i=2;i<=7;i++)
+      Control.copyVarSet(tubeName+"Segment1",
+			 tubeName+"Segment"+std::to_string(i));
 
   return;
 }

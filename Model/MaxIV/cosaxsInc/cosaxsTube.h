@@ -24,6 +24,11 @@
 
 class Simulation;
 
+namespace constructSystem
+{
+    class PipeTube;
+}
+
 namespace xraySystem
 {
 
@@ -37,7 +42,6 @@ namespace xraySystem
 
   class cosaxsTubeNoseCone;
   class cosaxsTubeStartPlate;
-  class cosaxsTubeSegment;
 
 class cosaxsTube :
     public attachSystem::ContainedComp,
@@ -52,7 +56,6 @@ class cosaxsTube :
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
   double wallThick;             ///< Wall thickness
-  size_t nSegments; ///< Number of tube segments
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
@@ -62,7 +65,7 @@ class cosaxsTube :
   std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;
   std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
-  std::vector< std::shared_ptr<xraySystem::cosaxsTubeSegment> > segments;
+  std::array<std::shared_ptr<constructSystem::PipeTube>, 7> seg;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

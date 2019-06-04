@@ -88,7 +88,11 @@
 #include "GateValveCylinder.h"
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTubeStartPlate.h"
-#include "cosaxsTubeSegment.h"
+
+#include "ContainedGroup.h"
+#include "portItem.h"
+#include "PipeTube.h"
+
 #include "cosaxsTube.h"
 
 namespace xraySystem
@@ -115,6 +119,12 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(noseCone);
   OR.addObject(gateA);
   OR.addObject(startPlate);
+
+  for(size_t i=0;i<7;i++)
+    {
+      seg[i] = std::make_shared<constructSystem::PipeTube>(keyName+"Segment"+std::to_string(i+1));
+      OR.addObject(seg[i]);
+    }
 }
 
 cosaxsTube::cosaxsTube(const cosaxsTube& A) :
@@ -127,12 +137,12 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
   wallThick(A.wallThick),
-  nSegments(A.nSegments),
   mainMat(A.mainMat),wallMat(A.wallMat),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
   gateA(A.gateA),
-  startPlate(A.startPlate)
+  startPlate(A.startPlate),
+  seg(A.seg)
   /*!
     Copy constructor
     \param A :: cosaxsTube to copy
@@ -159,12 +169,12 @@ cosaxsTube::operator=(const cosaxsTube& A)
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
       wallThick=A.wallThick;
-      nSegments=A.nSegments;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
+      seg=A.seg;
     }
   return *this;
 }
@@ -201,7 +211,6 @@ cosaxsTube::populate(const FuncDataBase& Control)
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  nSegments=Control.EvalVar<size_t>(keyName+"NSegments");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -298,27 +307,17 @@ cosaxsTube::createObjects(Simulation& System)
   startPlate->insertInCell(System,outerCell);
 
   // tube segments
-  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
-  for (size_t i=0; i<nSegments; i++)
+  attachSystem::FixedComp *last = startPlate.get();
+
+  for (size_t i=0; i<7; i++)
     {
-      std::shared_ptr<xraySystem::cosaxsTubeSegment>
-	seg(new xraySystem::cosaxsTubeSegment(keyName+"Segment"+std::to_string(i+1)));
-      segments.push_back(seg);
+      seg[i]->setFront(*last,2);
+      seg[i]->createAll(System,*last,2);
 
-      OR.addObject(seg);
-      if (i==0)
-	{
-	  seg->setFront(*startPlate,2);
-	  seg->createAll(System,*startPlate,2);
-	}
-      else
-	{
-	  seg->setFront(*segments[i-1],2);
-	  seg->createAll(System,*segments[i-1],2);
-	}
+      outerCell=buildZone.createOuterVoidUnit(System,masterCell,*seg[i],2);
+      seg[i]->insertAllInCell(System,outerCell);
 
-      outerCell=buildZone.createOuterVoidUnit(System,masterCell,*seg,2);
-      seg->insertInCell(System,outerCell);
+      last = seg[i].get();
     }
 
 
