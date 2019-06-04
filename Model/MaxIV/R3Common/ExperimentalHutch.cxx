@@ -119,8 +119,6 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   pbThick=Control.EvalVar<double>(keyName+"PbThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
 
-  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
-
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
   holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",0.0);
@@ -130,7 +128,6 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   holeMat=ModelSupport::EvalDefMat<int>(Control,keyName+"HoleMat",voidMat);
-  floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
   return;
 }

@@ -279,10 +279,9 @@ exptHutVariables(FuncDataBase& Control,const std::string& preName)
   Control.addVariable(hutName+"Length",858.4);
   Control.addVariable(hutName+"OutWidth",198.50);
   Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",0.3);
-  Control.addVariable(hutName+"PbThick",0.5);
-  Control.addVariable(hutName+"OuterThick",0.3);
-  Control.addVariable(hutName+"FloorThick",50.0);
+  Control.addVariable(hutName+"InnerThick",0.2);
+  Control.addVariable(hutName+"PbThick",0.4);
+  Control.addVariable(hutName+"OuterThick",0.2);
 
   Control.addVariable(hutName+"VoidMat","Void");
   Control.addVariable(hutName+"SkinMat","Stainless304");
