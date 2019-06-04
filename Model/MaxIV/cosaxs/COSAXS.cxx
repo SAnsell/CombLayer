@@ -227,12 +227,15 @@ COSAXS::build(Simulation& System,
 
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptBeam->setCutSurf("front",opticsHut->getSurf("outerWall"));
-  exptBeam->setCutSurf("back",exptHut->getSurf("innerBack"));
+  //  exptBeam->setCutSurf("back",exptHut->getSurf("innerBack"));
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
+  exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
+  exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
   exptBeam->createAll(System,*joinPipeB,2);
 
-  ELog::EM << "Insert joinPipeB into the 1st cell after everything is built" << ELog::endCrit;
   joinPipeB->insertInCell(System,exptBeam->getCell("OuterVoid",0));
 
   return;
