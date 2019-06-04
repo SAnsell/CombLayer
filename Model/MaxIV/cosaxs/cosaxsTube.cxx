@@ -133,11 +133,8 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),radius(A.radius),
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
   gateA(A.gateA),
@@ -164,13 +161,8 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
-      radius=A.radius;
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
-      wallThick=A.wallThick;
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
@@ -206,14 +198,8 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  radius=Control.EvalVar<double>(keyName+"Radius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
@@ -277,10 +263,6 @@ cosaxsTube::createObjects(Simulation& System)
   std::string Out;
   const std::string frontStr(frontRule());
   const std::string backStr(backRule());
-
-  // Out=ModelSupport::getComposite(SMap,buildIndex,
-  // 				 " -17 (-1:2:7) ");
-  // makeCell("Wall",System,cellIndex++,wallMat,0.0,Out+frontStr+backStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   addOuterSurf(Out+frontStr+backStr);

@@ -51,14 +51,8 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
-  double length;                ///< Total length including void
-  double radius;                 ///< Radius
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
-  double wallThick;             ///< Wall thickness
-
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
 
   attachSystem::InnerZone buildZone;
 

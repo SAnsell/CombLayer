@@ -1157,13 +1157,6 @@ exptVariables(FuncDataBase& Control,
 
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
   Control.addVariable(tubeName+"YStep", 340); // dummy
-  Control.addVariable(tubeName+"Length",1676.7+51.65);
-  Control.addVariable(tubeName+"Radius",50.8); // 50.8 = 101.6/2.0
-  Control.addVariable(tubeName+"Height",15.1); // 2del
-  Control.addVariable(tubeName+"WallThick",3.1); // dummy
-  Control.addVariable(tubeName+"MainMat","Void");
-  Control.addVariable(tubeName+"WallMat","Aluminium"); // dummy
-  Control.addVariable(tubeName+"NSegments",7);
 
   const std::string noseName(tubeName+"NoseCone");
   
@@ -1180,11 +1173,6 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(noseName+"BackPlateHeight",38.0); // measured
   Control.addVariable(noseName+"BackPlateThick",2.5); // measured
   Control.addVariable(noseName+"BackPlateRimThick",4.5); // measured
-
-  Control.addParse<double>(tubeName+"OuterRadius",
-			   "CosaxsExptLineTubeRadius+10");
-  Control.addParse<double>(tubeName+"OuterLength",
-			   "CosaxsExptLineTubeLength+CosaxsExptLineTubeNoseConeLength+100");
 
   Control.addVariable(noseName+"PipeRadius",4.0); // ??? guess
   Control.addVariable(noseName+"PipeLength",4.6); // measured
@@ -1225,6 +1213,10 @@ exptVariables(FuncDataBase& Control,
   for (size_t i=2;i<=7;i++)
       Control.copyVarSet(tubeName+"Segment1",
 			 tubeName+"Segment"+std::to_string(i));
+
+  Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment1FlangeRadius+10");
+  Control.addParse<double>(tubeName+"OuterLength",
+			   "CosaxsExptLineTubeNoseConeLength+CosaxsExptLineTubeSegment1Length*7+1");
 
   return;
 }
