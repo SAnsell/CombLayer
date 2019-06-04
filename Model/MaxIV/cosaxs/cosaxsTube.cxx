@@ -120,7 +120,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(gateA);
   OR.addObject(startPlate);
 
-  for(size_t i=0;i<7;i++)
+  for(size_t i=0;i<8;i++)
     {
       seg[i] = std::make_shared<constructSystem::PipeTube>(keyName+"Segment"+std::to_string(i+1));
       OR.addObject(seg[i]);
@@ -291,7 +291,7 @@ cosaxsTube::createObjects(Simulation& System)
   // tube segments
   attachSystem::FixedComp *last = startPlate.get();
 
-  for (size_t i=0; i<7; i++)
+  for (size_t i=0; i<8; i++)
     {
       seg[i]->setFront(*last,2);
       seg[i]->createAll(System,*last,2);

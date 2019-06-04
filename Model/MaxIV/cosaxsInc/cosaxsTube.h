@@ -59,7 +59,7 @@ class cosaxsTube :
   std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
   std::shared_ptr<constructSystem::GateValveCylinder> gateA;
   std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
-  std::array<std::shared_ptr<constructSystem::PipeTube>, 7> seg;
+  std::array<std::shared_ptr<constructSystem::PipeTube>, 8> seg;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
