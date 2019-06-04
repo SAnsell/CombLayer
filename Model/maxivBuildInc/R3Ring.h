@@ -34,7 +34,7 @@ namespace xraySystem
   \version 1.0
   \author S. Ansell
   \date February 2018
-  \brief Main 1.5GeV ring building and inner void  
+  \brief Main 3 GeV ring building and inner void
 */
 
 class R3Ring :
