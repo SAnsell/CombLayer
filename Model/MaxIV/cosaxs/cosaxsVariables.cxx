@@ -1053,6 +1053,7 @@ exptVariables(FuncDataBase& Control,
 {
   const std::string preName(beamName+"ExptLine");
 
+  Control.addVariable(preName+"OuterLength",1700.0);
   Control.addVariable(preName+"OuterLeft",80.0);
   Control.addVariable(preName+"OuterRight",80.0);
   Control.addVariable(preName+"OuterTop",80.0);
@@ -1216,7 +1217,7 @@ exptVariables(FuncDataBase& Control,
 
   Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment1FlangeRadius+10");
   Control.addParse<double>(tubeName+"OuterLength",
-			   "CosaxsExptLineTubeNoseConeLength+CosaxsExptLineTubeSegment1Length*7+1");
+			   "CosaxsExptLineTubeNoseConeLength+CosaxsExptLineTubeSegment1Length*7+100");
 
   return;
 }
