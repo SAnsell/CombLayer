@@ -36,7 +36,7 @@ namespace constructSystem
   class VacuumBox;
   class portItem;
   class PortTube;
-  class GateValve;
+  class GateValveCube;
   class JawValveCube;
 }
 
@@ -80,7 +80,7 @@ class flexpesOpticsBeamline :
   /// Real Ion pump (KF40) 24.4cm vertical
   std::shared_ptr<constructSystem::CrossPipe> ionPA;
   /// Gate valve for ring
-  std::shared_ptr<constructSystem::GateValve> gateRing;
+  std::shared_ptr<constructSystem::GateValveCube> gateRing;
   /// Gate block
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
   /// Bellow to first connect line
@@ -108,7 +108,7 @@ class flexpesOpticsBeamline :
   /// back port of mirror box
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// Large Pipe to slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   /// Shield between pipes
@@ -122,7 +122,7 @@ class flexpesOpticsBeamline :
   /// Small Pipe to gate-valve
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;
   /// Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateB;
+  std::shared_ptr<constructSystem::GateValveCube> gateB;
   /// Bellow to to super section
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Pipe exiting slit section
@@ -134,7 +134,7 @@ class flexpesOpticsBeamline :
   /// Pipe exiting slit section
   std::shared_ptr<constructSystem::VacuumPipe> pipeG;
   /// Gate valve
-  std::shared_ptr<constructSystem::GateValve> gateC;
+  std::shared_ptr<constructSystem::GateValveCube> gateC;
   /// Bellow to to super section
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Small Pipe to slits on before M3
@@ -160,14 +160,14 @@ class flexpesOpticsBeamline :
   // bellowA on left split
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   /// Gate valve for left
-  std::shared_ptr<constructSystem::GateValve> gateAA;
+  std::shared_ptr<constructSystem::GateValveCube> gateAA;
   /// Pumping tube
   std::shared_ptr<constructSystem::PortTube> pumpTubeAA;
 
   // PIPE B :: RIGHT SIDE
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   /// Gate valve for right
-  std::shared_ptr<constructSystem::GateValve> gateBA;
+  std::shared_ptr<constructSystem::GateValveCube> gateBA;
   /// Pumping tube
   std::shared_ptr<constructSystem::PortTube> pumpTubeBA;
 

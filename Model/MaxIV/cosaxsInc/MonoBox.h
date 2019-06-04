@@ -73,11 +73,11 @@ class MonoBox :
   double flangeBRadius;        ///< Joining Flange radius
   double flangeBLength;        ///< Joining Flange length
 
-  std::set<int> portCells;               ///< Extra cells for the port
-  std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
-  std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
+  // std::set<int> portCells;               ///< Extra cells for the port
+  // std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
+  // std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   /// Vector of ports FixedComp
-  std::vector<constructSystem::portItem> Ports;  
+  //  std::vector<constructSystem::portItem> Ports;
 
   int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer

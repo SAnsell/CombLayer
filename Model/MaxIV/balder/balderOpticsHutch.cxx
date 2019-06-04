@@ -281,6 +281,8 @@ balderOpticsHutch::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+32,
 			   Origin+Y*(length+steelThick+pbBackThick),Y);
+  setSurf("outerWall",SMap.realSurf(buildIndex+32));
+
   ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(outWidth+steelThick+pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+34,

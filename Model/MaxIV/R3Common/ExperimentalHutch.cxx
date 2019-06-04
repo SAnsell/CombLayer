@@ -189,6 +189,8 @@ ExperimentalHutch::createSurfaces()
       HI+=10;
     }
 
+  setSurf("innerBack",-SMap.realSurf(buildIndex+2));
+
   if (holeRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
       (SMap,buildIndex+107,Origin+X*holeXStep+Z*holeZStep,Y,holeRadius);

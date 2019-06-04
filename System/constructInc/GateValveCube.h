@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/GateValve.h
+ * File:   constructInc/GateValveCube.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_GateValve_h
-#define constructSystem_GateValve_h
+#ifndef constructSystem_GateValveCube_h
+#define constructSystem_GateValveCube_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
   
 /*!
-  \class GateValve
+  \class GateValveCube
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief GateValve unit  
+  \brief GateValveCube unit  
 */
 
-class GateValve :
+class GateValveCube :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -71,10 +71,10 @@ class GateValve :
   
  public:
 
-  GateValve(const std::string&);
-  GateValve(const GateValve&);
-  GateValve& operator=(const GateValve&);
-  virtual ~GateValve();
+  GateValveCube(const std::string&);
+  GateValveCube(const GateValveCube&);
+  GateValveCube& operator=(const GateValveCube&);
+  virtual ~GateValveCube();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

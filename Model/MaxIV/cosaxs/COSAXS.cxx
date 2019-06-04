@@ -86,8 +86,9 @@
 #include "PortTube.h"
 
 #include "balderOpticsHutch.h"
+#include "ExperimentalHutch.h"
 #include "CrossPipe.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveCube.h"
 #include "JawFlange.h"
@@ -95,6 +96,7 @@
 #include "R3FrontEnd.h"
 #include "cosaxsFrontEnd.h"
 #include "cosaxsOpticsLine.h"
+#include "cosaxsExptLine.h"
 #include "ConnectZone.h"
 #include "WallLead.h"
 #include "R3Ring.h"
@@ -111,7 +113,9 @@ COSAXS::COSAXS(const std::string& KN) :
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
-  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB"))
+  joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  exptBeam(new cosaxsExptLine(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -127,7 +131,8 @@ COSAXS::COSAXS(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
-  
+  OR.addObject(exptHut);
+  OR.addObject(exptBeam);
 }
 
 COSAXS::~COSAXS()
@@ -208,6 +213,30 @@ COSAXS::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
+
+  joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
+  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
+  joinPipeB->addInsertCell(r3Ring->getCell("OuterSegment", PIndex));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
+  exptHut->setCutSurf("frontWall",opticsHut->getSurf("outerWall"));
+  exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+
+  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptBeam->setCutSurf("front",opticsHut->getSurf("outerWall"));
+  //  exptBeam->setCutSurf("back",exptHut->getSurf("innerBack"));
+
+  exptBeam->addInsertCell(exptHut->getCell("Void"));
+  exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
+  exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
+  exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
+  exptBeam->createAll(System,*joinPipeB,2);
+
+  joinPipeB->insertInCell(System,exptBeam->getCell("OuterVoid",0));
 
   return;
 }

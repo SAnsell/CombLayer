@@ -85,7 +85,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "LCollimator.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "OffsetFlangePipe.h"
 #include "VacuumBox.h"
 #include "portItem.h"
@@ -164,7 +164,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),

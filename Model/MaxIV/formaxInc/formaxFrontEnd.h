@@ -31,7 +31,7 @@ namespace constructSystem
 {
   class Bellows;
   class CrossPipe;
-  class GateValve;
+  class GateValveCube;
   class OffsetFlangePipe;
   class portItem;
   class PipeTube;

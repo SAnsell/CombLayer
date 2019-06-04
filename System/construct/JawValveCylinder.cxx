@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/GateValve.cxx
+ * File:   construct/JawValveCylinder
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,44 +79,43 @@
 #include "SurfMap.h"
 #include "SurInter.h"
 
-#include "GateValve.h" 
+#include "JawUnit.h"
+#include "JawValveCylinder.h" 
 
 namespace constructSystem
 {
 
-GateValve::GateValve(const std::string& Key) : 
+JawValveCylinder::JawValveCylinder(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  closed(0)
+  JItem(Key+"Jaw")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-GateValve::GateValve(const GateValve& A) : 
+JawValveCylinder::JawValveCylinder(const JawValveCylinder& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),  
+  attachSystem::FrontBackCut(A),
   length(A.length),
   width(A.width),height(A.height),depth(A.depth),
   wallThick(A.wallThick),portRadius(A.portRadius),
-  portThick(A.portThick),portLen(A.portLen),closed(A.closed),
-  bladeLift(A.bladeLift),bladeThick(A.bladeThick),
-  bladeRadius(A.bladeRadius),voidMat(A.voidMat),
-  bladeMat(A.bladeMat),wallMat(A.wallMat)
+  portThick(A.portThick),portLen(A.portLen),JItem(A.JItem),
+  voidMat(A.voidMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: GateValve to copy
+    \param A :: JawValveCylinder to copy
   */
 {}
 
-GateValve&
-GateValve::operator=(const GateValve& A)
+JawValveCylinder&
+JawValveCylinder::operator=(const JawValveCylinder& A)
   /*!
     Assignment operator
-    \param A :: GateValve to copy
+    \param A :: JawValveCylinder to copy
     \return *this
   */
 {
@@ -135,32 +134,28 @@ GateValve::operator=(const GateValve& A)
       portRadius=A.portRadius;
       portThick=A.portThick;
       portLen=A.portLen;
-      closed=A.closed;
-      bladeLift=A.bladeLift;
-      bladeThick=A.bladeThick;
-      bladeRadius=A.bladeRadius;
+      JItem=A.JItem;
       voidMat=A.voidMat;
-      bladeMat=A.bladeMat;
       wallMat=A.wallMat;
     }
   return *this;
 }
 
 
-GateValve::~GateValve() 
+JawValveCylinder::~JawValveCylinder() 
   /*!
     Destructor
   */
 {}
 
 void
-GateValve::populate(const FuncDataBase& Control)
+JawValveCylinder::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("GateValve","populate");
+  ELog::RegMethod RegA("JawValveCylinder","populate");
   
   FixedOffset::populate(Control);
 
@@ -176,21 +171,14 @@ GateValve::populate(const FuncDataBase& Control)
   portThick=Control.EvalVar<double>(keyName+"PortThick");
   portLen=Control.EvalVar<double>(keyName+"PortLen");
   
-  closed=Control.EvalDefVar<int>(keyName+"Closed",closed);
-  bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
-  bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
-  bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
-
-
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
 
 void
-GateValve::createUnitVector(const attachSystem::FixedComp& FC,
+JawValveCylinder::createUnitVector(const attachSystem::FixedComp& FC,
                              const long int sideIndex)
   /*!
     Create the unit vectors
@@ -200,7 +188,7 @@ GateValve::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("GateValve","createUnitVector");
+  ELog::RegMethod RegA("JawValveCylinder","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -213,14 +201,14 @@ GateValve::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-GateValve::createSurfaces()
+JawValveCylinder::createSurfaces()
   /*!
     Create the surfaces
     If front/back given it is at portLen from the wall and 
     length/2+portLen from origin.
   */
 {
-  ELog::RegMethod RegA("GateValve","createSurfaces");
+  ELog::RegMethod RegA("JawValveCylinder","createSurfaces");
 
   // front planes
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -258,28 +246,17 @@ GateValve::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,portRadius+portThick);
 
-  
-  // Blade
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(bladeThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(bladeThick/2.0),Y);
-
-  if (closed)
-    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,bladeRadius);
-  else
-    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Z*bladeLift,
-				Y,bladeRadius);
-
   return;
 }
 
 void
-GateValve::createObjects(Simulation& System)
+JawValveCylinder::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("GateValve","createObjects");
+  ELog::RegMethod RegA("JawValveCylinder","createObjects");
 
   std::string Out;
 
@@ -291,17 +268,13 @@ GateValve::createObjects(Simulation& System)
   const std::string backComp=backComplement();    // 102
   // Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 (207:-201:202) ");
+				 " 1 -2 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // Main body
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
-
-  // blade
-  Out=ModelSupport::getComposite(SMap,buildIndex," -207 201 -202 ");
-  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
   // front plate
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 117 ");
@@ -342,19 +315,17 @@ GateValve::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
       addOuterUnionSurf(Out+frontStr+backStr);
     }
-      
-
   return;
 }
   
 void
-GateValve::createLinks()
+JawValveCylinder::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("GateValve","createLinks");
+  ELog::RegMethod RegA("JawValveCylinder","createLinks");
 
   //stufff for intersection
 
@@ -363,10 +334,23 @@ GateValve::createLinks()
 
   return;
 }
-  
+
+void
+JawValveCylinder::createJaws(Simulation& System)
+  /*!
+    Create the jaws
+    \param System :: Simuation to use
+   */
+{
+  ELog::RegMethod RegA("JawValveCylinder","creatJaws");
+
+  JItem.addInsertCell(this->getCells("Void"));
+  JItem.createAll(System,*this,0);
+  return;
+}
   
 void
-GateValve::createAll(Simulation& System,
+JawValveCylinder::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int FIndex)
  /*!
@@ -376,7 +360,7 @@ GateValve::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("GateValve","createAll(FC)");
+  ELog::RegMethod RegA("JawValveCylinder","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
@@ -384,6 +368,7 @@ GateValve::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);   
+  createJaws(System);
   
   return;
 }

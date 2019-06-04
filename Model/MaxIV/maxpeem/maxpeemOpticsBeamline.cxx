@@ -93,7 +93,7 @@
 
 #include "BlockStand.h"
 #include "CrossPipe.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveCube.h"
 #include "BeamMount.h"
@@ -117,7 +117,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   buildZone(*this,cellIndex),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
-  gateRing(new constructSystem::GateValve(newName+"GateRing")),
+  gateRing(new constructSystem::GateValveCube(newName+"GateRing")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
@@ -131,7 +131,7 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -142,13 +142,13 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
       std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
       std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")}),  
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  gateB(new constructSystem::GateValve(newName+"GateB")),
+  gateB(new constructSystem::GateValveCube(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   monoB(new xraySystem::GrateMonoBox(newName+"MonoBox")),
   monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
   pipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
-  gateC(new constructSystem::GateValve(newName+"GateC")),
+  gateC(new constructSystem::GateValveCube(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   slitsB(new constructSystem::JawValveCube(newName+"SlitsB")),
@@ -160,10 +160,10 @@ maxpeemOpticsBeamline::maxpeemOpticsBeamline(const std::string& Key) :
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   screenB(new xraySystem::PipeShield(newName+"ScreenB")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
-  gateAA(new constructSystem::GateValve(newName+"GateAA")),
+  gateAA(new constructSystem::GateValveCube(newName+"GateAA")),
   pumpTubeAA(new constructSystem::PortTube(newName+"PumpTubeAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
-  gateBA(new constructSystem::GateValve(newName+"GateBA")),
+  gateBA(new constructSystem::GateValveCube(newName+"GateBA")),
   pumpTubeBA(new constructSystem::PortTube(newName+"PumpTubeBA")),
   outPipeA(new constructSystem::VacuumPipe(newName+"OutPipeA")),
   outPipeB(new constructSystem::VacuumPipe(newName+"OutPipeB"))

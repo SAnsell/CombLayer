@@ -93,7 +93,7 @@
 #include "PipeShield.h"
 
 #include "CrossPipe.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawValveCube.h"
 #include "BeamMount.h"
@@ -118,7 +118,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   buildZone(*this,cellIndex),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
-  gateRing(new constructSystem::GateValve(newName+"GateRing")),
+  gateRing(new constructSystem::GateValveCube(newName+"GateRing")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
@@ -128,7 +128,7 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   leadBrick(new insertSystem::insertPlate(newName+"LeadBrick")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   slitTube(new constructSystem::PipeTube(newName+"SlitTube")),
   jaws({
@@ -153,16 +153,16 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
 
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   pumpTubeAA(new constructSystem::PipeTube(newName+"PumpTubeAA")),
-  gateAA(new constructSystem::GateValve(newName+"GateAA")),
+  gateAA(new constructSystem::GateValveCube(newName+"GateAA")),
   bellowAB(new constructSystem::Bellows(newName+"BellowAB")),
-  gateAB(new constructSystem::GateValve(newName+"GateAB")),
+  gateAB(new constructSystem::GateValveCube(newName+"GateAB")),
   bellowAC(new constructSystem::Bellows(newName+"BellowAC")),
   
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pumpTubeBA(new constructSystem::PipeTube(newName+"PumpTubeBA")),
-  gateBA(new constructSystem::GateValve(newName+"GateBA")),
+  gateBA(new constructSystem::GateValveCube(newName+"GateBA")),
   bellowBB(new constructSystem::Bellows(newName+"BellowBB")),
-  gateBB(new constructSystem::GateValve(newName+"GateBB")),
+  gateBB(new constructSystem::GateValveCube(newName+"GateBB")),
   bellowBC(new constructSystem::Bellows(newName+"BellowBC")),
 
   screenC(new xraySystem::PipeShield(newName+"ScreenC")),

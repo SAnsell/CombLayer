@@ -36,7 +36,7 @@ namespace constructSystem
   class VacuumBox;
   class portItem;
   class PortTube;
-  class GateValve;
+  class GateValveCube;
   class JawValveCube;
 }
 
@@ -96,7 +96,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeB;
 
   /// CF40 gate valve
-  std::shared_ptr<constructSystem::GateValve> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> gateA;
 
   /// Vertical mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBox;
@@ -105,7 +105,7 @@ class balderOpticsBeamline :
   std::shared_ptr<xraySystem::Mirror> mirror;
 
   /// Straight value cross piece (ion pump)
-  std::shared_ptr<constructSystem::GateValve> gateB;
+  std::shared_ptr<constructSystem::GateValveCube> gateB;
 
   /// Joining Bellows from mirror box
   std::shared_ptr<constructSystem:: Bellows> pipeC;
@@ -127,7 +127,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> monoBellowB;
   
   /// Gate valve after mono [large]
-  std::shared_ptr<constructSystem::GateValve> gateC;
+  std::shared_ptr<constructSystem::GateValveCube> gateC;
 
   /// Large drift chamber post mono
   std::shared_ptr<constructSystem::VacuumPipe> driftC;
@@ -145,7 +145,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeD;
 
   /// Gate valve after mono [small]
-  std::shared_ptr<constructSystem::GateValve> gateD;
+  std::shared_ptr<constructSystem::GateValveCube> gateD;
 
   /// Vertical mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxB;
@@ -175,7 +175,7 @@ class balderOpticsBeamline :
   std::shared_ptr<constructSystem::Bellows> pipeG;
 
   /// Last gate valve:
-  std::shared_ptr<constructSystem::GateValve> gateE;
+  std::shared_ptr<constructSystem::GateValveCube> gateE;
 
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;

@@ -90,7 +90,7 @@
 #include "maxpeemOpticsHut.h"
 #include "maxpeemOpticsBeamline.h"
 #include "ExperimentalHutch.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "FlangeMount.h"
 #include "WallLead.h"
 

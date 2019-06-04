@@ -32,7 +32,7 @@ namespace constructSystem
   class VacuumBox;
   class portItem;
   class PortTube;
-  class GateValve;
+  class GateValveCube;
   class JawValveCube;
     
 }
@@ -53,6 +53,7 @@ namespace xraySystem
   class ExperimentalHutch;
   class cosaxsFrontEnd;
   class cosaxsOpticsLine;
+  class cosaxsExptLine;
   class FrontEndCave;
   class ConnectZone;
   
@@ -84,6 +85,10 @@ class COSAXS : public R3Beamline
 
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+  std::shared_ptr<ExperimentalHutch> exptHut;
+
+  /// Experimental beamline
+  std::shared_ptr<cosaxsExptLine> exptBeam;
 
  public:
   

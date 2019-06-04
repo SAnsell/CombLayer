@@ -646,6 +646,193 @@ opticsVariables(FuncDataBase& Control,
 }
 
 void
+exptVariables(FuncDataBase& Control,
+		      const std::string& beamName)
+  /*
+    Components in the experimental hutch
+    \param Control :: Function data base
+    \param beamName :: Name of beamline
+  */
+{
+  const std::string preName(beamName+"ExptLine");
+
+  Control.addVariable(preName+"OuterLeft",80.0);
+  Control.addVariable(preName+"OuterRight",80.0);
+  Control.addVariable(preName+"OuterTop",80.0);
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::JawValveGenerator JawGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::MonoBoxGenerator VBoxGen;
+
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
+
+  // Gate valve A - round
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+
+   // Double slits A and B
+  JawGen.setCF<setVariable::CF100>();
+  JawGen.setLength(4.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,preName+"DoubleSlitA",0.0,0.8,0.8);
+
+  JawGen.setCF<setVariable::CF100>();
+  JawGen.setLength(4.0);
+  JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
+  JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
+
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0); // measured
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setAPortCF<CF40>();
+  VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
+
+  const std::string duName(preName+"DiagnosticUnit");
+
+  // arguments: ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,duName,
+		      0.0,22.0,8.5,8.5,43.0); // measured
+
+  Control.addVariable(duName+"FilterHolder1YStep",8.2);
+  Control.addVariable(duName+"FilterHolder1Thick",0.8); // measured
+  Control.addVariable(duName+"FilterHolder1Height",1.8);
+  Control.addVariable(duName+"FilterHolder1Depth",1.4);
+  Control.addVariable(duName+"FilterHolder1Width",5.75);
+  Control.addVariable(duName+"FilterHolder1Mat","Stainless304");
+  Control.addVariable(duName+"FilterHolder1LegHeight",1.3);
+  Control.addVariable(duName+"FilterHolder1LegWidth",1.5);
+  Control.addVariable(duName+"FilterHolder1BaseHeight",1.0);
+  Control.addVariable(duName+"FilterHolder1BaseWidth",6.5);
+  Control.addVariable(duName+"FilterHolder1FoilThick",1.0); // arbitrary
+  Control.addVariable(duName+"FilterHolder1FoilMat","Silicon300K"); // arbitrary
+  Control.addVariable(duName+"FilterHolder1NWindows",5); // measured
+  Control.addVariable(duName+"FilterHolder1WindowHeight",0.6); // measured
+  Control.addVariable(duName+"FilterHolder1WindowDepth",0.6); // measured
+  Control.addVariable(duName+"FilterHolder1WindowWidth",0.7); // measured
+
+  Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder2");
+  Control.addVariable(duName+"FilterHolder2YStep",2.0);
+
+  Control.copyVarSet(duName+"FilterHolder1",duName+"FilterHolder3");
+  Control.addVariable(duName+"FilterHolder3YStep",2.0);
+
+  // Gate valve B - flat
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateB",0.0,0);
+
+  // Differential pumping
+  Control.addVariable(preName+"DiffPumpLength",53.24); // measured - total length
+  Control.addVariable(preName+"DiffPumpWidth",15.29); // measured
+  Control.addVariable(preName+"DiffPumpHeight",6.52); // measured
+  Control.addVariable(preName+"DiffPumpApertureHeight",0.7); // Roberto said
+  Control.addVariable(preName+"DiffPumpApertureWidth",0.7); // Roberto said
+  Control.addVariable(preName+"DiffPumpMat","Stainless304#0.01"); // guess
+  Control.addVariable(preName+"DiffPumpFlangeRadius",10.1); // measured
+  Control.addVariable(preName+"DiffPumpFlangeThick",2.1); // measured
+  Control.addVariable(preName+"DiffPumpFlangeMat","Stainless304"); // XIA web site: https://www.xia.com/differential_pump.html
+  Control.addVariable(preName+"DiffPumpFlangeVoidWidth",14.61); // measured
+  Control.addVariable(preName+"DiffPumpFlangeVoidHeight",5.71); // measured
+  Control.addVariable(preName+"DiffPumpFlangeVoidThick",4.44); // measured
+   ELog::EM << "Is Fe2O3 is correct for magnetMat?" << ELog::endDiag;
+  Control.addVariable(preName+"DiffPumpMagnetMat","Fe2O3");
+  Control.addVariable(preName+"DiffPumpMagnetWidth",12.7); // measured
+  Control.addVariable(preName+"DiffPumpMagnetLength",36.83); // measured
+  Control.addVariable(preName+"DiffPumpMagnetThick",2.54); // measured
+  Control.addVariable(preName+"DiffPumpMagnetGapThick",0.17); // measured
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
+
+  // sample area dimensions are arbitrary
+  Control.addVariable(preName+"SampleAreaWidth",100.0);
+  Control.addVariable(preName+"SampleAreaHeight",50.0);
+  Control.addVariable(preName+"SampleAreaDepth",10.0);
+  Control.addVariable(preName+"SampleAreaAirMat","Air");
+
+  const std::string tubeName(preName+"Tube");
+
+  // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
+  Control.addVariable(tubeName+"YStep", 340); // dummy
+  Control.addVariable(tubeName+"Length",1676.7+51.65);
+  Control.addVariable(tubeName+"Radius",50.8); // 50.8 = 101.6/2.0
+  Control.addVariable(tubeName+"Height",15.1); // 2del
+  Control.addVariable(tubeName+"WallThick",3.1); // dummy
+  Control.addVariable(tubeName+"MainMat","Void");
+  Control.addVariable(tubeName+"WallMat","Aluminium"); // dummy
+  Control.addVariable(tubeName+"NSegments",7);
+
+  const std::string noseName(tubeName+"NoseCone");
+  
+  Control.addVariable(noseName+"Length",35.0); // measured
+  Control.addVariable(noseName+"MainMat","Void"); //
+  Control.addVariable(noseName+"WallMat","Stainless304"); // ???
+  Control.addVariable(noseName+"WallThick",1.0); // measured
+
+  Control.addVariable(noseName+"FrontPlateWidth",12.0); // measured
+  Control.addVariable(noseName+"FrontPlateHeight",12.0); // measured
+  Control.addVariable(noseName+"FrontPlateThick",1.5); // measured
+
+  Control.addVariable(noseName+"BackPlateWidth",38.0); // measured
+  Control.addVariable(noseName+"BackPlateHeight",38.0); // measured
+  Control.addVariable(noseName+"BackPlateThick",2.5); // measured
+  Control.addVariable(noseName+"BackPlateRimThick",4.5); // measured
+
+  Control.addParse<double>(tubeName+"OuterRadius",
+			   "CosaxsExptLineTubeRadius+10");
+  Control.addParse<double>(tubeName+"OuterLength",
+			   "CosaxsExptLineTubeLength+CosaxsExptLineTubeNoseConeLength+100");
+
+  Control.addVariable(noseName+"PipeRadius",4.0); // ??? guess
+  Control.addVariable(noseName+"PipeLength",4.6); // measured
+  Control.addVariable(noseName+"PipeWallThick",
+		      static_cast<double>(setVariable::CF63::wallThick)); // guess ???
+  Control.addVariable(noseName+"FlangeRadius",
+		      static_cast<double>(setVariable::CF63::flangeRadius));
+  Control.addVariable(noseName+"FlangeLength",2.6); // measured
+
+  GateGen.setLength(10.0);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,tubeName+"GateA",0.0,0);
+  Control.addVariable(tubeName+"GateARadius",17.0); // measured
+
+  // [1] = x032_cosaxs_-2019-02-11-_dimensions.pdf
+  // [2] = measured in X032_CoSAXS_(2019-04-25).step
+  Control.addVariable(tubeName+"StartPlateThick", 2.7); // [1]
+  Control.addVariable(tubeName+"StartPlateRadius", 57.8);  // [1], 1156/2.0 mm
+  // According to [1], the PortRadius is 50.2/2 = 25.1 cm, but here we set it to
+  // 14.27 cm - the port radius of the gasket plate betwen GateA and StartPlate
+  // (which we do not build)
+  Control.addVariable(tubeName+"StartPlatePortRadius", 14.27);
+  Control.addVariable(tubeName+"StartPlateWallThick", 10); // dummy
+  Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
+  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); ELog::EM<<"remove"<<ELog::endDiag;
+
+  Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
+  Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
+  //  Control.addVariable(tubeName+"Segment1FlangeBRadius", 50);//tubeName+"Segment1FlangeARadius");
+  //  Control.addVariable(tubeName+"Segment1FlangeBLength", tubeName+"Segment1FlangeALength");
+  Control.addVariable(tubeName+"Segment1NPorts", 0);
+
+  Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
+  Control.addVariable(tubeName+"Segment1Radius", 51.8-10); // dummy - inner void radius
+  Control.addVariable(tubeName+"Segment1WallThick", 6.0); // dummy
+  Control.addVariable(tubeName+"Segment1WallMat", "Stainless304");
+
+  for (size_t i=2;i<=7;i++)
+      Control.copyVarSet(tubeName+"Segment1",
+			 tubeName+"Segment"+std::to_string(i));
+
+  return;
+}
+
+void
 connectingVariables(FuncDataBase& Control)
   /*!
     Variables for the connecting region
@@ -693,9 +880,31 @@ COSAXSvariables(FuncDataBase& Control)
 
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
+  cosaxsVar::exptVariables(Control,"Cosaxs");
 
 
-  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,1195.0);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
+
+  Control.addVariable("CosaxsExptHutYStep",1000.0);
+  Control.addVariable("CosaxsExptHutDepth",120.0);
+  Control.addVariable("CosaxsExptHutHeight",200.0);
+  Control.addVariable("CosaxsExptHutLength",858.4);
+  Control.addVariable("CosaxsExptHutOutWidth",198.50);
+  Control.addVariable("CosaxsExptHutRingWidth",248.6);
+  Control.addVariable("CosaxsExptHutInnerThick",0.3);
+  Control.addVariable("CosaxsExptHutPbThick",0.5);
+  Control.addVariable("CosaxsExptHutOuterThick",0.3);
+  Control.addVariable("CosaxsExptHutFloorThick",50.0);
+
+  Control.addVariable("CosaxsExptHutVoidMat","Void");
+  Control.addVariable("CosaxsExptHutSkinMat","Stainless304");
+  Control.addVariable("CosaxsExptHutPbMat","Lead");
+  Control.addVariable("CosaxsExptHutFloorMat","Concrete");
+
+  Control.addVariable("CosaxsExptHutHoleXStep",0.0);
+  Control.addVariable("CosaxsExptHutHoleZStep",5.0);
+  Control.addVariable("CosaxsExptHutHoleRadius",7.0);
+  Control.addVariable("CosaxsExptHutHoleMat","Lead");
 
   return;
 }

@@ -84,7 +84,7 @@
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "LCollimator.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "OffsetFlangePipe.h"
 #include "VacuumBox.h"
 #include "portItem.h"

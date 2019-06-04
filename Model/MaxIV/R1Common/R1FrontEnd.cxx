@@ -86,7 +86,7 @@
 #include "insertPlate.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
@@ -149,7 +149,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
