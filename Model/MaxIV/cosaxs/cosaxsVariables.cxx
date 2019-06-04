@@ -824,7 +824,15 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
   Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
-  Control.addVariable(tubeName+"Segment1NPorts", 0);
+
+  Control.addVariable(tubeName+"Segment1NPorts", 1);
+  Control.addVariable(tubeName+"Segment1Port0Centre", "Vec3D(0,0,0)");
+  Control.addVariable(tubeName+"Segment1Port0Axis", "Vec3D(1,0,0)");
+  Control.addVariable(tubeName+"Segment1Port0Length", 10.0);
+  Control.addVariable(tubeName+"Segment1Port0Radius", 10.0);
+  Control.addVariable(tubeName+"Segment1Port0Wall", 1.0);
+  Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 14.0);
+  Control.addVariable(tubeName+"Segment1Port0FlangeLength", 2.0);
 
   Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
   Control.addVariable(tubeName+"Segment1Radius", 51.8-10); // dummy - inner void radius
