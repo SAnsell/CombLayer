@@ -94,7 +94,7 @@
 #include "BremColl.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
-#include "GateValve.h"
+#include "GateValveCube.h"
 #include "JawUnit.h"
 #include "JawFlange.h"
 #include "FlangeMount.h"
@@ -122,27 +122,27 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  gateA(new constructSystem::GateValve(newName+"GateA")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  gateB(new constructSystem::GateValve(newName+"GateB")),
+  gateB(new constructSystem::GateValveCube(newName+"GateB")),
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
   screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
   adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
   diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),  
-  gateC(new constructSystem::GateValve(newName+"GateC")),
+  gateC(new constructSystem::GateValveCube(newName+"GateC")),
   monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
   monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
-  gateD(new constructSystem::GateValve(newName+"GateD")),
+  gateD(new constructSystem::GateValveCube(newName+"GateD")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  gateE(new constructSystem::GateValve(newName+"GateE")),
+  gateE(new constructSystem::GateValveCube(newName+"GateE")),
   mirrorA(new constructSystem::VacuumBox(newName+"MirrorA")),
-  gateF(new constructSystem::GateValve(newName+"GateF")),
+  gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
   diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
   jawCompB({
@@ -151,9 +151,9 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
 	}),
 
   bellowG(new constructSystem::Bellows(newName+"BellowG")),  
-  gateG(new constructSystem::GateValve(newName+"GateG")),
+  gateG(new constructSystem::GateValveCube(newName+"GateG")),
   mirrorB(new constructSystem::VacuumBox(newName+"MirrorB")),
-  gateH(new constructSystem::GateValve(newName+"GateH")),
+  gateH(new constructSystem::GateValveCube(newName+"GateH")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),  
   diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
   jawCompC({
@@ -161,11 +161,11 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
       std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
 	}),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  gateI(new constructSystem::GateValve(newName+"GateI")),
+  gateI(new constructSystem::GateValveCube(newName+"GateI")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
   
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateJ(new constructSystem::GateValve(newName+"GateJ"))
+  gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -279,9 +279,8 @@ cosaxsOpticsLine::createSurfaces()
 
 int
 cosaxsOpticsLine::constructMonoShutter
-(Simulation& System,
- MonteCarlo::Object** masterCellPtr,
- const attachSystem::FixedComp& FC,const long int linkPt)
+  (Simulation& System,MonteCarlo::Object** masterCellPtr,
+   const attachSystem::FixedComp& FC,const long int linkPt)
 /*!
     Construct a monoshutter system
     \param System :: Simulation for building
@@ -612,6 +611,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
 
   constructMonoShutter(System,&masterCell,*bellowI,2);
 
+  setCell("LastVoid",masterCell->getName());
   lastComp=gateJ;
   return;
 }

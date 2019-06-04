@@ -283,7 +283,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
   gateB->insertInCell(System,outerCell);
 
-  diffPump->setFront(*gateB,2);
+  diffPump->setCutSurf("front",*gateB,2);
   diffPump->createAll(System,*gateB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPump,2);
   diffPump->insertInCell(System,outerCell);

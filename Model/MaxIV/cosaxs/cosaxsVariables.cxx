@@ -260,7 +260,44 @@ opticsHutVariables(FuncDataBase& Control,
 
   return;
 }
+
+void
+exptHutVariables(FuncDataBase& Control,const std::string& preName)
+  /*!
+    Variable for the main expt hutch walls
+    \param Control :: Database
+    \param preName :: Beamline name
+  */
+{
+  ELog::RegMethod RegA("cosaxsVariables[F]","exptHutVariables");
+
+  const std::string hutName(preName+"ExptHut");
   
+  Control.addVariable(hutName+"YStep",1000.0);
+  Control.addVariable(hutName+"Depth",120.0);
+  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"Length",858.4);
+  Control.addVariable(hutName+"OutWidth",198.50);
+  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"InnerThick",0.3);
+  Control.addVariable(hutName+"PbThick",0.5);
+  Control.addVariable(hutName+"OuterThick",0.3);
+  Control.addVariable(hutName+"FloorThick",50.0);
+
+  Control.addVariable(hutName+"VoidMat","Void");
+  Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"FloorMat","Concrete");
+
+  Control.addVariable(hutName+"HoleXStep",0.0);
+  Control.addVariable(hutName+"HoleZStep",5.0);
+  Control.addVariable(hutName+"HoleRadius",7.0);
+  Control.addVariable(hutName+"HoleMat","Lead");
+
+  return;
+}
+
+
 void
 monoVariables(FuncDataBase& Control)
   /*!
@@ -666,6 +703,7 @@ exptVariables(FuncDataBase& Control,
   setVariable::JawValveGenerator JawGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::MonoBoxGenerator VBoxGen;
+  setVariable::DiffPumpGenerator DiffGen;
 
 
   BellowGen.setCF<setVariable::CF40>();
@@ -728,26 +766,7 @@ exptVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
-  // Differential pumping
-  Control.addVariable(preName+"DiffPumpLength",53.24); // measured - total length
-  Control.addVariable(preName+"DiffPumpWidth",15.29); // measured
-  Control.addVariable(preName+"DiffPumpHeight",6.52); // measured
-  Control.addVariable(preName+"DiffPumpApertureHeight",0.7); // Roberto said
-  Control.addVariable(preName+"DiffPumpApertureWidth",0.7); // Roberto said
-  Control.addVariable(preName+"DiffPumpMat","Stainless304#0.01"); // guess
-  Control.addVariable(preName+"DiffPumpFlangeRadius",10.1); // measured
-  Control.addVariable(preName+"DiffPumpFlangeThick",2.1); // measured
-  Control.addVariable(preName+"DiffPumpFlangeMat","Stainless304"); // XIA web site: https://www.xia.com/differential_pump.html
-  Control.addVariable(preName+"DiffPumpFlangeVoidWidth",14.61); // measured
-  Control.addVariable(preName+"DiffPumpFlangeVoidHeight",5.71); // measured
-  Control.addVariable(preName+"DiffPumpFlangeVoidThick",4.44); // measured
-   ELog::EM << "Is Fe2O3 is correct for magnetMat?" << ELog::endDiag;
-  Control.addVariable(preName+"DiffPumpMagnetMat","Fe2O3");
-  Control.addVariable(preName+"DiffPumpMagnetWidth",12.7); // measured
-  Control.addVariable(preName+"DiffPumpMagnetLength",36.83); // measured
-  Control.addVariable(preName+"DiffPumpMagnetThick",2.54); // measured
-  Control.addVariable(preName+"DiffPumpMagnetGapThick",0.17); // measured
-
+  DiffGen.generatePump(Control,preName+"DiffPump",53.24);
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 
@@ -879,31 +898,11 @@ COSAXSvariables(FuncDataBase& Control)
 
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
+  cosaxsVar::exptHutVariables(Control,"Cosaxs");
   cosaxsVar::exptVariables(Control,"Cosaxs");
-
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
-  Control.addVariable("CosaxsExptHutYStep",1000.0);
-  Control.addVariable("CosaxsExptHutDepth",120.0);
-  Control.addVariable("CosaxsExptHutHeight",200.0);
-  Control.addVariable("CosaxsExptHutLength",858.4);
-  Control.addVariable("CosaxsExptHutOutWidth",198.50);
-  Control.addVariable("CosaxsExptHutRingWidth",248.6);
-  Control.addVariable("CosaxsExptHutInnerThick",0.3);
-  Control.addVariable("CosaxsExptHutPbThick",0.5);
-  Control.addVariable("CosaxsExptHutOuterThick",0.3);
-  Control.addVariable("CosaxsExptHutFloorThick",50.0);
-
-  Control.addVariable("CosaxsExptHutVoidMat","Void");
-  Control.addVariable("CosaxsExptHutSkinMat","Stainless304");
-  Control.addVariable("CosaxsExptHutPbMat","Lead");
-  Control.addVariable("CosaxsExptHutFloorMat","Concrete");
-
-  Control.addVariable("CosaxsExptHutHoleXStep",0.0);
-  Control.addVariable("CosaxsExptHutHoleZStep",5.0);
-  Control.addVariable("CosaxsExptHutHoleRadius",7.0);
-  Control.addVariable("CosaxsExptHutHoleMat","Lead");
 
   return;
 }
