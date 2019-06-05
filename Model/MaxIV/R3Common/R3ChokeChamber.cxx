@@ -191,7 +191,7 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
       elecXAxis=elecYAxis*Z;
       Origin=(elecOrg+photOrg)/2.0+Y*inletLength;
     }
-
+  ELog::EM<<"Photon == "<<photOrg<<ELog::endDiag;
   return;
 }
 

@@ -604,6 +604,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*epSeparator,2);
   epSeparator->insertInCell(System,outerCell);
 
+
   chokeChamber->setCutSurf("front",*epSeparator,2);
   chokeChamber->setEPOriginPair(*epSeparator,"Photon","Electron");
   chokeChamber->createAll(System,*epSeparator,2);

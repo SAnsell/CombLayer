@@ -62,7 +62,7 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   length(22.8),flangeRadius(CF100::flangeRadius),
   flangeLength(CF100::flangeLength),
 
-  inletXStep(0.5),inletWidth(6.2),inletHeight(1.0),inletLength(10.0),
+  inletXStep(0.0),inletWidth(6.2),inletHeight(1.0),inletLength(10.0),
   inletThick(0.5),flangeInletRadius(CF63::flangeRadius),
   flangeInletLength(CF63::flangeLength),
 
@@ -144,6 +144,7 @@ R3ChokeChamberGenerator::generateChamber(FuncDataBase& Control,
   Control.addVariable(keyName+"InletHeight",inletHeight);
   Control.addVariable(keyName+"InletLength",inletLength);
   Control.addVariable(keyName+"InletThick",inletThick);
+  
   Control.addVariable(keyName+"FlangeInletRadius",flangeInletRadius);
   Control.addVariable(keyName+"FlangeInletLength",flangeInletLength);
 

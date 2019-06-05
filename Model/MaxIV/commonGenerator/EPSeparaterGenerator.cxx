@@ -58,7 +58,7 @@ namespace setVariable
 {
 
 EPSeparatorGenerator::EPSeparatorGenerator() :
-  length(43.5),photonXStep(-0.72),electronXStep(1.817),
+  length(43.5),photonXStep(-0.36),electronXStep(1.817),
   photonXYAngle(0.0),electronXYAngle(1.5),
   photonRadius(0.3),electronRadius(1.1),
   wallXStep(1.8),wallWidth(6.25),

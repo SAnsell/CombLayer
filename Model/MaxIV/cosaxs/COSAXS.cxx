@@ -173,6 +173,7 @@ COSAXS::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
   ELog::EM<<"Front == "<<FCOrigin.getLinkPt(sideIndex)<<ELog::endDiag;
+  ELog::EM<<"Front == "<<wallLead->getLinkPt(0)<<ELog::endDiag;
   
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 

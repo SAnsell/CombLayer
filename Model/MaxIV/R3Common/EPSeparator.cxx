@@ -162,6 +162,7 @@ EPSeparator::createUnitVector(const attachSystem::FixedComp& FC,
       elecXAxis=electronQ.makeRotate(X);
       elecYAxis=electronQ.makeRotate(Y);
       elecOrg=Origin+X*electronXStep;
+      photOrg=Origin+X*photonXStep;
     }
   else
     elecXAxis=elecYAxis*Z;
@@ -206,8 +207,9 @@ EPSeparator::createSurfaces()
     (SMap,buildIndex+107,elecOrg,elecYAxis,electronRadius);
   
   // photon inner :
-  ModelSupport::buildCylinder(SMap,buildIndex+207,photOrg,Y,photonRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+203,photOrg,X);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+207,photOrg+X*photonXStep,Y,photonRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+203,photOrg+X*photonXStep,X);
   ModelSupport::buildPlane(SMap,buildIndex+205,photOrg-Z*photonRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,photOrg+Z*photonRadius,Z);
   
@@ -269,8 +271,6 @@ EPSeparator::createLinks()
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   // Photon centre line [exit]
-  const Geometry::Vec3D photOrg(Origin+X*photonXStep);
-  
   setConnect(2,photOrg+Y*length,Y);  
   setLinkSurf(2,SMap.realSurf(buildIndex+2));
   
