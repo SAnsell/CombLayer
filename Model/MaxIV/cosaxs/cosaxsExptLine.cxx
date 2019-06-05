@@ -293,6 +293,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*telescopicSystem,2);
   telescopicSystem->insertInCell(System,outerCell);
 
+  tube->delayPorts();
   tube->createAll(System,*this,0);
 
   sampleArea->setFront(*telescopicSystem,2);
@@ -303,6 +304,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
   tube->insertInCell(System,outerCell);
+  tube->createPorts(System);
 
 
   lastComp=tube;

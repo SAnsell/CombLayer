@@ -51,6 +51,8 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
+  
+  bool delayPortFlag; ///< Delay building port
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
 
@@ -77,6 +79,9 @@ class cosaxsTube :
   virtual cosaxsTube* clone() const;
   virtual ~cosaxsTube();
 
+  /// set delay
+  void delayPorts() { delayPortFlag=1; }
+  void createPorts(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

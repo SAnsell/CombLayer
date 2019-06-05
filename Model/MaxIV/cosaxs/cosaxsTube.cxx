@@ -104,6 +104,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
+  delayPortFlag(0),
   buildZone(*this,cellIndex),
   noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
   gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
@@ -122,7 +123,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
 
   for(size_t i=0;i<8;i++)
     {
-      seg[i] = std::make_shared<constructSystem::PipeTube>(keyName+"Segment"+std::to_string(i+1));
+      seg[i] = std::make_shared<constructSystem::PipeTube>
+	(keyName+"Segment"+std::to_string(i+1));
       OR.addObject(seg[i]);
     }
 }
@@ -294,6 +296,7 @@ cosaxsTube::createObjects(Simulation& System)
   for (size_t i=0; i<8; i++)
     {
       seg[i]->setFront(*last,2);
+      if (delayPortFlag) seg[i]->delayPorts();
       seg[i]->createAll(System,*last,2);
 
       outerCell=buildZone.createOuterVoidUnit(System,masterCell,*seg[i],2);
@@ -306,7 +309,6 @@ cosaxsTube::createObjects(Simulation& System)
   return;
 }
 
-
 void
 cosaxsTube::createLinks()
   /*!
@@ -317,6 +319,20 @@ cosaxsTube::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
+  return;
+}
+
+void
+cosaxsTube::createPorts(Simulation& System)
+  /*!
+    Generic function to create the ports
+    \param System :: Simulation item
+  */
+{
+  ELog::RegMethod RegA("cosaxsTube","createPorts");
+  
+  for (size_t i=0; i<8; i++)
+    seg[i]->createPorts(System);
   return;
 }
 
