@@ -819,12 +819,13 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"StartPlatePortRadius", 14.27);
   Control.addVariable(tubeName+"StartPlateWallThick", 10); // dummy
   Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
-  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); ELog::EM<<"remove"<<ELog::endDiag;
+  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); ELog::EM << "delete this var" << ELog::endDiag;
+
 
   Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
   Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
 
-  Control.addVariable(tubeName+"Segment1NPorts", 1);
+  Control.addVariable(tubeName+"Segment1NPorts", 2);
   Control.addVariable(tubeName+"Segment1Port0Centre", "Vec3D(0,0,0)");
   Control.addVariable(tubeName+"Segment1Port0Axis", "Vec3D(1,0,0)");
   Control.addVariable(tubeName+"Segment1Port0Length", 10.0);
@@ -832,6 +833,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment1Port0Wall", 1.0);
   Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 14.0);
   Control.addVariable(tubeName+"Segment1Port0FlangeLength", 2.0);
+
+  Control.copyVarSet(tubeName+"Segment1Port0",tubeName+"Segment1Port1");
+  Control.addVariable(tubeName+"Segment1Port1Centre", "Vec3D(0,0,0)");
+  Control.addVariable(tubeName+"Segment1Port1Axis", "Vec3D(-1,0,0)");
 
   Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
   Control.addVariable(tubeName+"Segment1Radius", 51.8-10); // dummy - inner void radius
@@ -842,6 +847,7 @@ exptVariables(FuncDataBase& Control,
       Control.copyVarSet(tubeName+"Segment1",
 			 tubeName+"Segment"+std::to_string(i));
 
+  Control.addVariable(tubeName+"Segment4NPorts", 0);
   Control.addVariable(tubeName+"Segment4Length", 40.0); // adjusted so that back surf ~ at the exp hutch
   Control.addVariable(tubeName+"Segment4FlangeBRadius", 70.0); // [2]
   Control.addVariable(tubeName+"Segment4FlangeBLength", 1.0); // [2]
