@@ -150,9 +150,7 @@ DBMaterial::readFile(const std::string& FName)
 	}
     }
   return;
-}
-
-  
+} 
 
 void
 DBMaterial::cloneMaterial(const std::string& oldName,
@@ -168,12 +166,12 @@ DBMaterial::cloneMaterial(const std::string& oldName,
   SCTYPE::const_iterator mc=IndexMap.find(oldName);
   if (mc==IndexMap.end())
     throw ColErr::InContainerError<std::string>
-      (oldName,"No material available");
+      (oldName,"OldMaterial not available in database : ");
 
   SCTYPE::const_iterator nx=IndexMap.find(extraName);
   if (nx!=IndexMap.end())
     throw ColErr::InContainerError<std::string>
-      (extraName,"Material already present");
+      (extraName,"New Material already present");
   
   IndexMap.emplace(extraName,mc->second);
   return;
@@ -408,6 +406,20 @@ DBMaterial::createNewDensity(const std::string& Name,
   return matNum;
 }
 
+
+void
+DBMaterial::removeAllThermal()
+  /*!
+    Removes the thermal treatment from all materials
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","removeAllThermal");
+
+  // we don't change the index card:
+  for(MTYPE::value_type& mc : MStore)
+    mc.second.removeSQW();
+  return;
+}
 
 void
 DBMaterial::removeThermal(const std::string& matName)

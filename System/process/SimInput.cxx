@@ -77,7 +77,13 @@
 #include "WeightControl.h"
 #include "WCellControl.h"
 #include "WWGControl.h"
+#include "Element.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "SimInput.h"
+
 
 
 namespace SimProcess
@@ -97,7 +103,16 @@ processExitChecks(Simulation& System,
 
   System.populateCells();
   System.createObjSurfMap();
-  
+
+  if (IParam.flag("noThermal"))
+    {
+      ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+      DB.removeAllThermal();
+    }
+  // avoids the game of renaming H1 to H4 so we have both ortho/para
+  ELog::EM<<"Warning : ALL thermal treatments removed"<<ELog::endWarn;
+
+
   int errFlag(0);
   if (IParam.flag("validCheck"))
     {

@@ -125,6 +125,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
+  IParam.regFlag("noThermal","noThermal");
   IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
