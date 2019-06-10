@@ -211,6 +211,7 @@ COSAXS::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
+    if (stopPoint=="exptHut") return;
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
@@ -218,6 +219,9 @@ COSAXS::build(Simulation& System,
   joinPipeB->addInsertCell(r3Ring->getCell("OuterSegment", PIndex));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
+
+  
+  if (stopPoint=="exptHut") return;
 
   exptHut->setCutSurf("frontWall",opticsHut->getSurf("outerWall"));
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
