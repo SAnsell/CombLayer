@@ -211,7 +211,7 @@ COSAXS::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-    if (stopPoint=="exptHut") return;
+  
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));

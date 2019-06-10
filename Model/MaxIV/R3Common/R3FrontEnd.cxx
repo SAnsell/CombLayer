@@ -580,6 +580,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   int outerCell;
   buildZone.setFront(getFrontRule());
+  ELog::EM<<"Back run == "<<getBackRule()<<ELog::endDiag;
   buildZone.setBack(getBackRule());
   
   MonteCarlo::Object* masterCell=

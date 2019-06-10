@@ -416,7 +416,6 @@ R3FrontEndVariables(FuncDataBase& Control,
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
 
-
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
@@ -499,7 +498,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,40.0);
 
   return;
 }
