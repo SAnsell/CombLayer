@@ -689,7 +689,8 @@ objectGroups::getObjectRange(const std::string& objName) const
 		  (objName,"CellMap:cellName:Index");
 	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
 	    }
-	  // case 2: CellMap : Name 
+	  // case 2: CellMap : Name
+	  ELog::EM<<"cellName["<<itemName<<"] "<<cellName<<ELog::endDiag;
 	  const std::vector<int> Out=CPtr->getCells(cellName);
 	  if (!Out.empty())
 	    return Out;

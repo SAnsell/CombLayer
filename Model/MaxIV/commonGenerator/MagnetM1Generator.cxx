@@ -104,7 +104,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
 
   setVariable::PreBendPipeGenerator PBGen;
-  PBGen.generatePipe(Control,keyName+"PreBendPipe");
+  PBGen.generatePipe(Control,keyName+"PreDipole");
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,keyName+"EPCombine");

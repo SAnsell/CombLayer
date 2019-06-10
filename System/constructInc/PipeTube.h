@@ -66,7 +66,8 @@ class PipeTube :
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
-  std::vector<portItem> Ports;           ///< Vector of ports FixedComp
+  /// Vector of ports FixedComp
+  std::vector<std::shared_ptr<portItem>> Ports;     
 
   virtual void applyPortRotation();
   Geometry::Vec3D calcCylinderDistance(const size_t) const;

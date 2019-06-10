@@ -288,8 +288,7 @@ PreBendPipe::createObjects(Simulation& System)
   exitZone.constructMasterCell(System);
 
   // cylinder half
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -101 -7  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -7  ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
   // photon full
@@ -391,12 +390,6 @@ PreBendPipe::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,cylEnd,elecAxis);
   
-  const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
-  const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
-
-  //  cylEnd=strEnd+X*xDisp+Y*yDisp;
-  //elecAxis=YElec;
-
   // pipe cutters for Magnets etc:
 
   setConnect(4,Origin+Y*(straightLength/2.0),Z);
