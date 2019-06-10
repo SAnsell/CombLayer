@@ -102,8 +102,7 @@ class R3FrontEnd :
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 
-  /// dipole connection pipe
-  //  std::shared_ptr<xraySystem::PreDipole> preDipole;
+
   /// dipole connection pipe
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe
@@ -111,9 +110,7 @@ class R3FrontEnd :
   /// electron cut cell
   std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutMagDisk;
-  /// electron cut cell [with magnetic field]
-  std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
+  std::shared_ptr<insertSystem::insertCylinder> eCutMagDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// box for collimator

@@ -129,12 +129,10 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
-  
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
-  eCutMagDisk(new insertSystem::insertPlate(newName+"ECutMagDisk")),
-  eCutWallDisk(new insertSystem::insertPlate(newName+"ECutWallDisk")),
+  eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   collTubeA(new constructSystem::PipeTube(newName+"CollimatorTubeA")),
   collA(new xraySystem::SqrCollimator(newName+"CollA")),
@@ -206,7 +204,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(collC);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
-  OR.addObject(eCutWallDisk);
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
   OR.addObject(heatDump);    
@@ -611,13 +608,15 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
 
+  eCutDisk->setNoInsert();
+  eCutDisk->addInsertCell(chokeChamber->getCell("PhotonVoid"));
+  eCutDisk->createAll(System,*chokeChamber,
+		      chokeChamber->getSideIndex("-photon"));
 
-
-	    
-  // eCutWallDisk->setNoInsert();
-  // eCutWallDisk->addInsertCell(outerCell);
-  // eCutWallDisk->createAll(System,*dipoleChamber,
-  // 			 dipoleChamber->getSideIndex("dipoleExit"));
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(chokeChamber->getCell("ElectronVoid"));
+  eCutMagDisk->createAll(System,*chokeChamber,
+		      chokeChamber->getSideIndex("-electron"));
 
   dipolePipe->setFront(*chokeChamber,chokeChamber->getSideIndex("photon"));
   dipolePipe->createAll(System,*chokeChamber,
@@ -625,9 +624,9 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-  eCutDisk->setNoInsert();
-  eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
-  eCutDisk->createAll(System,*dipolePipe,-2);
+  // eCutDisk->setNoInsert();
+  // eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
+  // eCutDisk->createAll(System,*dipolePipe,-2);
 
   // eCutMagDisk->setNoInsert();
   // eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
