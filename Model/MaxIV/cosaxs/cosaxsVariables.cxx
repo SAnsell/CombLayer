@@ -693,9 +693,9 @@ exptVariables(FuncDataBase& Control,
   const std::string preName(beamName+"ExptLine");
 
   Control.addVariable(preName+"OuterLength",1700.0);
-  Control.addVariable(preName+"OuterLeft",80.0);
-  Control.addVariable(preName+"OuterRight",80.0);
-  Control.addVariable(preName+"OuterTop",80.0);
+  Control.addVariable(preName+"OuterLeft",85.0);
+  Control.addVariable(preName+"OuterRight",85.0);
+  Control.addVariable(preName+"OuterTop",85.0);
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
@@ -825,38 +825,50 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
   Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
 
-  Control.addVariable(tubeName+"Segment1NPorts", 2);
-  Control.addVariable(tubeName+"Segment1Port0Centre", "Vec3D(0,0,0)");
-  Control.addVariable(tubeName+"Segment1Port0Axis", "Vec3D(1,0,0)");
-  Control.addVariable(tubeName+"Segment1Port0Length", 10.0);
-  Control.addVariable(tubeName+"Segment1Port0Radius", 10.0);
-  Control.addVariable(tubeName+"Segment1Port0Wall", 1.0);
-  Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 14.0);
-  Control.addVariable(tubeName+"Segment1Port0FlangeLength", 2.0);
-
-  Control.copyVarSet(tubeName+"Segment1Port0",tubeName+"Segment1Port1");
-  Control.addVariable(tubeName+"Segment1Port1Centre", "Vec3D(0,0,0)");
-  Control.addVariable(tubeName+"Segment1Port1Axis", "Vec3D(-1,0,0)");
-
   Control.addVariable(tubeName+"Segment1Length", 167.2); // [2]
-  Control.addVariable(tubeName+"Segment1Radius", 51.8-10); // dummy - inner void radius
-  Control.addVariable(tubeName+"Segment1WallThick", 6.0); // dummy
+  Control.addVariable(tubeName+"Segment1Radius", 50.2); // [1] A-A
+  Control.addVariable(tubeName+"Segment1WallThick", 0.6); // [2] A-A
   Control.addVariable(tubeName+"Segment1WallMat", "Stainless304");
 
-  for (size_t i=2;i<=8;i++)
-      Control.copyVarSet(tubeName+"Segment1",
+  Control.addVariable(tubeName+"Segment1NPorts", 1);
+  Control.addVariable(tubeName+"Segment1Port0Centre", "Vec3D(0,0.1,0)"); // [1]
+  Control.addVariable(tubeName+"Segment1Port0Axis", "Vec3D(1,0,0)");
+  Control.addVariable(tubeName+"Segment1Port0Length", 7.0); // dummy
+  Control.addVariable(tubeName+"Segment1Port0Radius", 44.4); // [2]
+  Control.addParse<double>(tubeName+"Segment1Port0Wall", tubeName+"Segment1WallThick");
+  Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 51.2);
+  Control.addVariable(tubeName+"Segment1Port0FlangeLength", 3.8);
+
+  Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment2");
+  Control.addVariable(tubeName+"Segment2Length", 176.0); // [2]
+  Control.addVariable(tubeName+"Segment2Port0Centre", "Vec3D(0,0,0)"); // [1]
+  Control.addVariable(tubeName+"Segment2Port0Axis", "Vec3D(-1,0,0)");
+
+  // segment 3: short without ports before the wall
+  Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment3");
+  Control.addVariable(tubeName+"Segment3NPorts", 0);
+  Control.addVariable(tubeName+"Segment3FlangeLength", 3.7); // [2]
+  Control.addVariable(tubeName+"Segment3FlangeBRadius", 70.0); // [2]
+  Control.addVariable(tubeName+"Segment3FlangeBLength", 1.0); // [2]
+  Control.addVariable(tubeName+"Segment3Length", 32.8+1); // [2] 1 added to have distance 378.7 as in [1]
+
+  // segment 4: longer with 2 ports right after the wall
+  Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment4");
+  Control.addVariable(tubeName+"Segment4NPorts", 2);
+  Control.addParse<double>(tubeName+"Segment4FlangeARadius", tubeName+"Segment3FlangeBRadius");
+  Control.addParse<double>(tubeName+"Segment4FlangeALength", tubeName+"Segment3FlangeBLength");
+  Control.addVariable(tubeName+"Segment4Length",238.2); // [2]
+
+
+  Control.copyVarSet(tubeName+"Segment4Port0",tubeName+"Segment4Port1");
+  Control.addVariable(tubeName+"Segment4Port0Centre", "Vec3D(0,38.2,0)"); //
+  Control.addVariable(tubeName+"Segment4Port1Axis", "Vec3D(-1,0,0)");
+  for (size_t i=5;i<=8;i++)
+      Control.copyVarSet(tubeName+"Segment2",
 			 tubeName+"Segment"+std::to_string(i));
 
-  Control.addVariable(tubeName+"Segment4NPorts", 0);
-  Control.addVariable(tubeName+"Segment4Length", 40.0); // adjusted so that back surf ~ at the exp hutch
-  Control.addVariable(tubeName+"Segment4FlangeBRadius", 70.0); // [2]
-  Control.addVariable(tubeName+"Segment4FlangeBLength", 1.0); // [2]
-  Control.addParse<double>(tubeName+"Segment5Length",
-			   tubeName+"Segment1Length-"+tubeName+"Segment4Length");
-  Control.addParse<double>(tubeName+"Segment5FlangeARadius", tubeName+"Segment4FlangeBRadius");
-  Control.addParse<double>(tubeName+"Segment5FlangeALength", tubeName+"Segment4FlangeBLength");
 
-  Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment4FlangeBRadius+1");
+  Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment3FlangeBRadius+10");
   Control.addParse<double>(tubeName+"OuterLength",
 			   "CosaxsExptLineTubeNoseConeLength+CosaxsExptLineTubeSegment1Length*7+100");
 
