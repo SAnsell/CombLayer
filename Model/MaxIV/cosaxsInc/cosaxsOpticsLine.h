@@ -137,7 +137,9 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateE;
 
   /// Mirror box 
-  std::shared_ptr<constructSystem::VacuumBox> mirrorA;
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
+  /// Mirror 
+  std::shared_ptr<xraySystem::Mirror> mirrorA;
   // Gate fro first mirror
   std::shared_ptr<constructSystem::GateValveCube> gateF;
   /// Bellow to diagnositics
@@ -152,8 +154,10 @@ class cosaxsOpticsLine :
   // Gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateG;
   /// Mirror box B
-  std::shared_ptr<constructSystem::VacuumBox> mirrorB;
-  // Gate valve
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxB;
+  /// Mirror B
+  std::shared_ptr<xraySystem::Mirror> mirrorB;
+  /// Gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateH;
   /// Bellow to mirror B
   std::shared_ptr<constructSystem::Bellows> bellowH;

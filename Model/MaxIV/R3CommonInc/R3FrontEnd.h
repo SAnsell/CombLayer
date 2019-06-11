@@ -59,7 +59,6 @@ namespace xraySystem
   class SquareFMask;
   class BeamMount;
   class PreDipole;
-  class DipoleChamber;
   class MagnetM1;
 
   class PreBendPipe;
@@ -103,8 +102,6 @@ class R3FrontEnd :
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 
 
-  /// dipole connection pipe
-  std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
   /// electron cut cell

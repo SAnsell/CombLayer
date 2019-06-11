@@ -27,6 +27,11 @@ class Simulation;
 
 namespace xraySystem
 {
+  class Octupole;
+  class Quadrupole;
+  class Dipole;
+  class EPCombine;
+  
 /*!
   \class MagnetM1
   \version 1.0

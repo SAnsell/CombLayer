@@ -342,15 +342,20 @@ monoVariables(FuncDataBase& Control)
 }
 
 void
-mirrorBox(FuncDataBase& Control,const std::string& Name)
+mirrorBox(FuncDataBase& Control,const std::string& Name,
+	  const std::string& Index)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
     \param Name :: component name
+    \param Index :: Index designator
   */
 {
+  ELog::RegMethod RegA("cosaxsVariables[F]","mirrorBox");
+  
   setVariable::MonoBoxGenerator VBoxGen;
-
+  setVariable::MirrorGenerator MirrGen;
+  
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
@@ -358,8 +363,13 @@ mirrorBox(FuncDataBase& Control,const std::string& Name)
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,Name,0.0,53.1,23.6,29.5,124.0);
+  VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
+		      0.0,53.1,23.6,29.5,124.0);
 
+  // mirror in mirror box
+  MirrGen.setPlate(28.0,1.0,9.0);  //guess
+  MirrGen.generateMirror(Control,Name+"Mirror"+Index,
+			 0.0, 0.0, 2.0, 0.0,0.0);
   return;
 }
 
@@ -644,7 +654,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
   
-  cosaxsVar::mirrorBox(Control,preName+"MirrorA");
+  cosaxsVar::mirrorBox(Control,preName,"A");
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
@@ -660,7 +670,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
-  cosaxsVar::mirrorBox(Control,preName+"MirrorB");
+  cosaxsVar::mirrorBox(Control,preName,"B");
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateH",0.0,0);

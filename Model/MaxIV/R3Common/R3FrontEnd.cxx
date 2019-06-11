@@ -91,19 +91,11 @@
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
-#include "PreDipole.h"
-#include "DipoleChamber.h"
 #include "CrossPipe.h"
 #include "SqrCollimator.h"
 #include "BeamMount.h"
 #include "HeatDump.h"
-
-#include "Dipole.h"
-#include "Quadrupole.h"
-#include "Octupole.h"
 #include "EPSeparator.h"
-#include "PreDipole.h"
-#include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
 #include "EPCombine.h"
 #include "PreBendPipe.h"
@@ -129,7 +121,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
   epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
   chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
-  dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
@@ -190,7 +181,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(magBlockM1);
   OR.addObject(chokeChamber);
       
-  OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(bellowA);
   OR.addObject(collTubeA);
@@ -625,14 +615,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-  // eCutDisk->setNoInsert();
-  // eCutDisk->addInsertCell(dipolePipe->getCell("Void"));
-  // eCutDisk->createAll(System,*dipolePipe,-2);
-
-  // eCutMagDisk->setNoInsert();
-  // eCutMagDisk->addInsertCell(dipoleChamber->getCell("MagVoid"));
-  // eCutMagDisk->createAll(System,*dipoleChamber,
-  // 			 -dipoleChamber->getSideIndex("dipoleExit"));
 
   if (stopPoint=="Dipole")
     {
