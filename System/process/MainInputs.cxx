@@ -257,6 +257,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("PovRay","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
+  IParam.setDesc("noThermal","No thermal cross-section in materials def");
   IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("ObjAdd","Add a component (cell)");
   IParam.setDesc("photon","Photon Cut energy");

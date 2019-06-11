@@ -108,9 +108,9 @@ processExitChecks(Simulation& System,
     {
       ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
       DB.removeAllThermal();
+      // avoids the game of renaming H1 to H4 so we have both ortho/para
+      ELog::EM<<"Warning : ALL thermal treatments removed"<<ELog::endWarn;  
     }
-  // avoids the game of renaming H1 to H4 so we have both ortho/para
-  ELog::EM<<"Warning : ALL thermal treatments removed"<<ELog::endWarn;
 
 
   int errFlag(0);
