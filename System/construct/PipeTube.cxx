@@ -138,10 +138,10 @@ PipeTube::populate(const FuncDataBase& Control)
   flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
 					 keyName+"FlangeLength");
 
-  flangeACap=Control.EvalDefPair<double>(keyName+"FlangeACap",
-					 keyName+"FlangeCap",0.0);
-  flangeBCap=Control.EvalDefPair<double>(keyName+"FlangeBCap",
-					 keyName+"FlangeCap",0.0);
+  flangeACapThick=Control.EvalDefPair<double>(keyName+"FlangeACapThick",
+					 keyName+"FlangeCapThick",0.0);
+  flangeBCapThick=Control.EvalDefPair<double>(keyName+"FlangeBCapThick",
+					 keyName+"FlangeCapThick",0.0);
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -238,14 +238,14 @@ PipeTube::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,
-			   Origin-Y*(length/2.0-(flangeALength+flangeACap)),Y);
+			   Origin-Y*(length/2.0-(flangeALength+flangeACapThick)),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(length/2.0-(flangeBLength+flangeBCap)),Y);
+			   Origin+Y*(length/2.0-(flangeBLength+flangeBCapThick)),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+201,
-			   Origin-Y*(length/2.0-flangeACap),Y);
+			   Origin-Y*(length/2.0-flangeACapThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(length/2.0-flangeBCap),Y);
+			   Origin+Y*(length/2.0-flangeBCapThick),Y);
 
   // flange:
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
@@ -267,10 +267,10 @@ PipeTube::createObjects(Simulation& System)
   const std::string backSurf(backRule());
 
   const std::string frontVoidSurf=
-    (flangeACap<Geometry::zeroTol) ? frontSurf :
+    (flangeACapThick<Geometry::zeroTol) ? frontSurf :
     ModelSupport::getComposite(SMap,buildIndex," 201 ");
   const std::string backVoidSurf=
-    (flangeBCap<Geometry::zeroTol) ? backSurf :
+    (flangeBCapThick<Geometry::zeroTol) ? backSurf :
     ModelSupport::getComposite(SMap,buildIndex," -202 ");
   
   
@@ -291,13 +291,13 @@ PipeTube::createObjects(Simulation& System)
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,Out+backVoidSurf);
 
 
-  if (flangeACap>Geometry::zeroTol)
+  if (flangeACapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," -201 -107 ");
       makeCell("FrontCap",System,cellIndex++,capMat,0.0,Out+frontSurf);	    
     }
   
-  if (flangeBCap>Geometry::zeroTol)
+  if (flangeBCapThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 202 -207 ");
       makeCell("BackCap",System,cellIndex++,capMat,0.0,Out+backSurf);

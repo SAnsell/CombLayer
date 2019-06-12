@@ -252,8 +252,8 @@ PipeTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLen);
 
-  Control.addVariable(keyName+"FlangeACap",ACap);
-  Control.addVariable(keyName+"FlangeBCap",BCap);
+  Control.addVariable(keyName+"FlangeACapThick",ACap);
+  Control.addVariable(keyName+"FlangeBCapThick",BCap);
   Control.addVariable(keyName+"FlangeCapMat",capMat);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
