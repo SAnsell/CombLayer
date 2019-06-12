@@ -47,10 +47,8 @@ class cosaxsTubeStartPlate :
   double thick;                ///< Total thick
   double radius;                 ///< Radius
   double portRadius;                ///< PortRadius
-  double wallThick;             ///< Wall thickness
 
   int mat;                  ///< Plate material
-  int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

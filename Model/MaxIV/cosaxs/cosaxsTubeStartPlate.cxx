@@ -107,8 +107,7 @@ cosaxsTubeStartPlate::cosaxsTubeStartPlate(const cosaxsTubeStartPlate& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   thick(A.thick),radius(A.radius),portRadius(A.portRadius),
-  wallThick(A.wallThick),
-  mat(A.mat),wallMat(A.wallMat)
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: cosaxsTubeStartPlate to copy
@@ -133,9 +132,7 @@ cosaxsTubeStartPlate::operator=(const cosaxsTubeStartPlate& A)
       thick=A.thick;
       radius=A.radius;
       portRadius=A.portRadius;
-      wallThick=A.wallThick;
       mat=A.mat;
-      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -170,10 +167,8 @@ cosaxsTubeStartPlate::populate(const FuncDataBase& Control)
   thick=Control.EvalVar<double>(keyName+"Thick");
   radius=Control.EvalVar<double>(keyName+"Radius");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
