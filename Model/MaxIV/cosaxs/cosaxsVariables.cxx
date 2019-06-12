@@ -817,10 +817,7 @@ exptVariables(FuncDataBase& Control,
   // 14.27 cm - the port radius of the gasket plate betwen GateA and StartPlate
   // (which we do not build)
   Control.addVariable(tubeName+"StartPlatePortRadius", 14.27);
-  Control.addVariable(tubeName+"StartPlateWallThick", 10); // dummy
   Control.addVariable(tubeName+"StartPlateMat", "Stainless304");
-  Control.addVariable(tubeName+"StartPlateWallMat", "Stainless304"); ELog::EM << "delete this var" << ELog::endDiag;
-
 
   Control.addVariable(tubeName+"Segment1FlangeRadius", 57.8);
   Control.addVariable(tubeName+"Segment1FlangeLength", 4.3);
@@ -889,7 +886,22 @@ exptVariables(FuncDataBase& Control,
 			   "CosaxsExptLineTubeSegment7Length+"
 			   "CosaxsExptLineTubeSegment8Length+"
 			   "100");
+  Control.addVariable(tubeName+"Segment8FlangeBCap", 2.7); // [2]
+  // adjust the tube length by the flange B length
+  Control.addParse<double>(tubeName+"Segment8Length",tubeName+"Segment8Length+"+
+			   tubeName+"Segment8FlangeBCap");
+  Control.addVariable(tubeName+"Segment8NPorts", 4);
+  Control.addVariable(tubeName+"Segment8Port2Length", 6.6); // [2]
+  Control.addVariable(tubeName+"Segment8Port2Radius", 4.0); // [2]
+  Control.addVariable(tubeName+"Segment8Port2Wall", 1.0); // [2] approx
+  Control.addVariable(tubeName+"Segment8Port2FlangeRadius", 8.3); // [2] approx
+  Control.addVariable(tubeName+"Segment8Port2FlangeLength", 2.0);
+  //  Control.addVariable(tubeName+"Segment8Port2FlangeCap", 2.0);
 
+  Control.addVariable(tubeName+"Segment8Port2Centre", "Vec3D(35,0,0)");
+  Control.addVariable(tubeName+"Segment8Port2Axis", "Vec3D(0,1,0)");
+  Control.copyVarSet(tubeName+"Segment8Port2", tubeName+"Segment8Port3");
+  Control.addVariable(tubeName+"Segment8Port3Centre", "Vec3D(-35,0,0)");
   return;
 }
 
