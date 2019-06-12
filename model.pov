@@ -111,6 +111,7 @@ sky_sphere{
     }
     background { color rgb <1, 1, 1> }
   #break
+#break
   #else
  #declare cameraLocation = <-250, -160, 0>;
  #declare cameraLookAt   = <0, -1000, 0>;
