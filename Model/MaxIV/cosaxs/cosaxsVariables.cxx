@@ -129,37 +129,6 @@ undulatorVariables(FuncDataBase& Control,
   return;
 }
 
-void
-ecutVariables(FuncDataBase& Control,
-	      const std::string& frontKey)
-  /*!
-    Set the variables for the electron cut disks
-    in the front-end
-    \param Control :: DataBase to use
-    \param frontKey :: prename
-  */
-{
-  ELog::RegMethod RegA("cosaxsVariables[F]","ecutVariables");
-  
-  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
-  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
-  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
-  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
-  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
-  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
-  return;  
-}
   
 void
 wallVariables(FuncDataBase& Control,
@@ -910,9 +879,10 @@ COSAXSvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
   cosaxsVar::undulatorVariables(Control,"CosaxsFrontBeam");
-  cosaxsVar::ecutVariables(Control,"CosaxsFrontBeam");
 
-  setVariable::R3FrontEndVariables(Control,"CosaxsFrontBeam");  
+  // ystep / dipole pipe / exit pipe
+  setVariable::R3FrontEndVariables
+    (Control,"CosaxsFrontBeam",310.0,724.0,40.0);  
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   
   PipeGen.setMat("Stainless304");

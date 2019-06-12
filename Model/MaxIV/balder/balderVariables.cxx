@@ -46,6 +46,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "variableSetup.h"
+#include "maxivVariables.h"
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
@@ -71,7 +72,7 @@
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "WallLeadGenerator.h"
-#include "PreDipoleGenerator.h"
+#include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
 
 namespace setVariable
@@ -467,106 +468,6 @@ wallVariables(FuncDataBase& Control,
   return;
 }
 
-void
-frontEndVariables(FuncDataBase& Control,
-		  const std::string& frontKey)
-/*!
-    Set the variables for the mono
-    \param Control :: DataBase to use
-    \param frontKey :: name before part names
-  */
-{
-  ELog::RegMethod RegA("balderVariables[F]","frontEndVariables");
-
-  setVariable::BellowGenerator BellowGen;
-  setVariable::PipeGenerator PipeGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::CollGenerator CollGen;
-  setVariable::PortTubeGenerator PTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
-  setVariable::PreDipoleGenerator PGen;
-  setVariable::DipoleChamberGenerator DCGen;
-  
-  Control.addVariable(frontKey+"OuterRadius",60.0);
-  Control.addVariable(frontKey+"FrontOffset",30.0);  
-
-  PipeGen.setWindow(-2.0,0.0);   // no window
-  PipeGen.setMat("Stainless304");
-
-  wigglerVariables(Control,frontKey);
-  ecutVariables(Control,frontKey);
-
-
-  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
-  DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);
-
-  // SHORTENEND From 806 because of dipole chamge
-  PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,596.0);
-
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
-
-  SimpleTubeGen.setMat("Stainless304");
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeA",0.0,36.0);
-  Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
-  // collimator block
-
-  CollGen.setFrontGap(2.62,1.86);  //1033.8
-  CollGen.setBackGap(1.54,1.42);
-  CollGen.setMinSize(29.0,1.2,1.24);
-  CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
-
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowB",0,16.0);
-
-  
-  PipeGen.setCF<CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
-
-
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
-
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
-  Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
-
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
-  CollGen.setMinSize(32.0,0.680,0.358);
-  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.2);
-
-  // linked pipe tube
-  SimpleTubeGen.setCF<CF40>();
-  SimpleTubeGen.setAFlangeCF<CF100>();
-  SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
-  Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
-
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
-  CollGen.setMinSize(12.0,0.730,0.16);
-  CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
-
-  PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);
-
-  // Create HEAT DUMP
-  heatDumpTable(Control,frontKey);
-  moveApertureTable(Control,frontKey);
-  shutterTable(Control,frontKey);
-  
-  PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
-
-  return;
-}
 
 
 
@@ -1109,7 +1010,11 @@ BALDERvariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
-  balderVar::frontEndVariables(Control,"BalderFrontBeam");  
+  balderVar::wigglerVariables(Control,"BalderFrontBeam");
+  // ystep / dipole pipe / exit pipe
+  setVariable::R3FrontEndVariables
+    (Control,"BalderFrontBeam",310,724,40);
+  
   balderVar::wallVariables(Control,"BalderWallLead");
   
   PipeGen.setMat("Stainless304");

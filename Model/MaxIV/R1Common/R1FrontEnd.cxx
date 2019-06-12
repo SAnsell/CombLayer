@@ -100,7 +100,7 @@
 #include "HeatDump.h"
 #include "BremBlock.h"
 #include "Quadrupole.h"
-#include "PreDipole.h"
+#include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "LCollimator.h"
 #include "Quadrupole.h"
@@ -121,7 +121,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 
   buildZone(*this,cellIndex),
 
-  preDipole(new xraySystem::PreDipole(newName+"PreDipole")),
+  quadUnit(new xraySystem::QuadUnit(newName+"QuadUnit")),
   dipoleChamber(new xraySystem::DipoleChamber(newName+"DipoleChamber")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
@@ -171,7 +171,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(preDipole);
+  OR.addObject(quadUnit);
   OR.addObject(dipoleChamber);
   OR.addObject(dipolePipe);
   OR.addObject(eCutDisk);
@@ -567,15 +567,15 @@ R1FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
 
-  preDipole->setCutSurf("front",undulatorFC,2);
-  preDipole->createAll(System,undulatorFC,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*preDipole,2);
-  preDipole->insertInCell(System,outerCell);
+  quadUnit->setCutSurf("front",undulatorFC,2);
+  quadUnit->createAll(System,undulatorFC,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*quadUnit,2);
+  quadUnit->insertInCell(System,outerCell);
 
-  preDipole->createQuads(System,outerCell);
+  quadUnit->createQuads(System,outerCell);
   
-  dipoleChamber->setCutSurf("front",*preDipole,2);
-  dipoleChamber->createAll(System,*preDipole,2);
+  dipoleChamber->setCutSurf("front",*quadUnit,2);
+  dipoleChamber->createAll(System,*quadUnit,2);
   // two splits [main / exit]
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipoleChamber,2);
   dipoleChamber->insertInCell("Main",System,outerCell);

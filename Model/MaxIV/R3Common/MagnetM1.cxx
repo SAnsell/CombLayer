@@ -80,7 +80,7 @@
 #include "CellMap.h"
 #include "InnerZone.h" 
 
-#include "PreBendPipe.h"
+#include "PreDipole.h"
 #include "EPCombine.h"
 #include "Dipole.h"
 #include "Quadrupole.h"
@@ -96,7 +96,7 @@ MagnetM1::MagnetM1(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
-  preDipole(new xraySystem::PreBendPipe(keyName+"PreDipole")),
+  preDipole(new xraySystem::PreDipole(keyName+"PreDipole")),
   epCombine(new xraySystem::EPCombine(keyName+"EPCombine")),
   Oxx(new xraySystem::Octupole(keyName+"OXX")),
   QFend(new xraySystem::Quadrupole(keyName+"QFend")),

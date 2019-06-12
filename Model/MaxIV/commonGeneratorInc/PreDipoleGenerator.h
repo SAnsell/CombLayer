@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/PreDipoleGenerator.h
+ * File:   commonGeneratorInc/PreDipoleGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -24,17 +24,14 @@
 
 class FuncDataBase;
 
-
 namespace setVariable
 {
 
-  class QuadrupoleGenerator;
-  
 /*!
   \class PreDipoleGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2019
+  \date May 2018
   \brief PreDipoleGenerator for variables
 */
 
@@ -42,27 +39,27 @@ class PreDipoleGenerator
 {
  private:
 
-  double length;                ///< frame length
-  double inWidth;               ///< Inner width [flats]
-  double ringWidth;             ///< Inner width [to divide not point]
-  double outPointWidth;         ///< Outer [wall side] half-width
-  double height;                ///< Inner height [straight]
-
-  double endGap;                ///< Inner width
-  double endLength;            ///< Inner height [straight]
-
-  double wallThick;             ///< Wall thickness
-
-  double flangeRadius;          ///< Joining Flange radius 
-  double flangeLength;          ///< Joining Flange length
   
-  std::string voidMat;                   ///< void material
-  std::string wallMat;                   ///< wall material
-  std::string flangeMat;                  ///< Pipe/flange material
+  double length;                 ///< frame length
+  double radius;                 ///< Primary radius
 
-  /// accessable generator
-  std::unique_ptr<QuadrupoleGenerator> QGen;
-  
+  double straightLength;         ///< straight length
+
+  double wallThick;              ///< wall thickness
+
+  double electronRadius;          ///< radius of electron offset
+  double electronAngle;           ///< Angle of electron offset
+
+  double flangeARadius;           ///< flange radius
+  double flangeALength;           ///< flange length
+
+  double flangeBRadius;           ///< back flange radius
+  double flangeBLength;           ///< back flange length
+
+  std::string voidMat;                    ///< void material
+  std::string wallMat;                    ///< wall material
+  std::string flangeMat;                  ///< flange port material
+
  public:
 
   PreDipoleGenerator();
@@ -71,8 +68,7 @@ class PreDipoleGenerator
   virtual ~PreDipoleGenerator();
   
   
-  virtual void generatePipe(FuncDataBase&,const std::string&,
-			    const double) const;
+  virtual void generatePipe(FuncDataBase&,const std::string&) const;
 
 };
 
