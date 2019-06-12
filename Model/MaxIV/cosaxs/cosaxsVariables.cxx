@@ -836,6 +836,7 @@ exptVariables(FuncDataBase& Control,
 			   tubeName+"Segment1WallThick");
   Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 41.15); // [1, section C-C] 41.15 = 82.3/2
   Control.addVariable(tubeName+"Segment1Port0FlangeLength", 2.5); // [1, section C-C]
+  Control.addVariable(tubeName+"Segment1PortPlateThick", 2.5); // [1, section C-C]
 
   Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment2");
   Control.addVariable(tubeName+"Segment2Length", 176.0); // [2]
@@ -886,7 +887,8 @@ exptVariables(FuncDataBase& Control,
 			   "CosaxsExptLineTubeSegment7Length+"
 			   "CosaxsExptLineTubeSegment8Length+"
 			   "100");
-  Control.addVariable(tubeName+"Segment8FlangeBCap", 2.7-0.7); // [2]
+  Control.addVariable(tubeName+"Segment8FlangeLength", 4.0); // measured with ruler
+  Control.addVariable(tubeName+"Segment8FlangeBCap", 2.7); // measured with ruler
   // adjust the tube length by the flange B length
   Control.addParse<double>(tubeName+"Segment8Length",tubeName+"Segment8Length+"+
 			   tubeName+"Segment8FlangeBCap");
@@ -898,10 +900,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment8Port2FlangeLength", 2.0);
   Control.addVariable(tubeName+"Segment8Port2PlateThick", 0.7); // [2] approx
 
-  Control.addVariable(tubeName+"Segment8Port2Centre", "Vec3D(35,0,0)");
+  Control.addVariable(tubeName+"Segment8Port2Centre", "Vec3D(34.8,0,0)"); // measured with ruler
   Control.addVariable(tubeName+"Segment8Port2Axis", "Vec3D(0,1,0)");
   Control.copyVarSet(tubeName+"Segment8Port2", tubeName+"Segment8Port3");
-  Control.addVariable(tubeName+"Segment8Port3Centre", "Vec3D(-35,0,0)");
+  Control.addVariable(tubeName+"Segment8Port3Centre", "Vec3D(-34.8,0,0)"); // measured with ruler
   return;
 }
 
