@@ -834,11 +834,11 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment1Port0Centre", "Vec3D(0,0.1,0)"); // [1]
   Control.addVariable(tubeName+"Segment1Port0Axis", "Vec3D(1,0,0)");
   Control.addVariable(tubeName+"Segment1Port0Length", 7.0); // dummy
-  Control.addVariable(tubeName+"Segment1Port0Radius", 44.4); // [2]
+  Control.addVariable(tubeName+"Segment1Port0Radius", 33.0); // [1, section C-C] 33 = 66.0/2
   Control.addParse<double>(tubeName+"Segment1Port0Wall",
 			   tubeName+"Segment1WallThick");
-  Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 51.2);
-  Control.addVariable(tubeName+"Segment1Port0FlangeLength", 3.8);
+  Control.addVariable(tubeName+"Segment1Port0FlangeRadius", 41.15); // [1, section C-C] 41.15 = 82.3/2
+  Control.addVariable(tubeName+"Segment1Port0FlangeLength", 2.5); // [1, section C-C]
 
   Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment2");
   Control.addVariable(tubeName+"Segment2Length", 176.0); // [2]
