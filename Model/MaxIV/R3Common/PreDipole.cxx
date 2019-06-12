@@ -265,7 +265,7 @@ PreDipole::createObjects(Simulation& System)
   buildZone.setSurround(HeadRule(Out));
   buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1001)));
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
-  buildZone.setVoidMat(voidMat);
+  buildZone.setVoidMat(0);
   buildZone.constructMasterCell(System);
 
     // Construct the second inner zone a
