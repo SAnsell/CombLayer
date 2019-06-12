@@ -863,6 +863,7 @@ exptVariables(FuncDataBase& Control,
   Control.copyVarSet(tubeName+"Segment4Port0",tubeName+"Segment4Port1");
   Control.addVariable(tubeName+"Segment4Port0Centre", "Vec3D(0,38.2,0)"); // [1]
   Control.addVariable(tubeName+"Segment4Port1Axis", "Vec3D(-1,0,0)");
+  Control.addVariable(tubeName+"Segment4Port1Centre", "Vec3D(0,-67.6,0)"); // [1]
 
   // segments 5-9 are the same
   Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment5");
