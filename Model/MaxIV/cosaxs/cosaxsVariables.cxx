@@ -692,7 +692,7 @@ exptVariables(FuncDataBase& Control,
 {
   const std::string preName(beamName+"ExptLine");
 
-  Control.addVariable(preName+"OuterLength",2160.0);
+  Control.addVariable(preName+"OuterLength",2300.0);
   Control.addVariable(preName+"OuterLeft",85.0);
   Control.addVariable(preName+"OuterRight",85.0);
   Control.addVariable(preName+"OuterTop",85.0);
@@ -778,7 +778,7 @@ exptVariables(FuncDataBase& Control,
   const std::string tubeName(preName+"Tube");
 
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
-  Control.addVariable(tubeName+"YStep", 340); // dummy
+  Control.addVariable(tubeName+"YStep", 453.748); // dummy
 
   const std::string noseName(tubeName+"NoseCone");
   
