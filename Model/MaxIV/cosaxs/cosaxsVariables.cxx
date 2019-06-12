@@ -886,7 +886,7 @@ exptVariables(FuncDataBase& Control,
 			   "CosaxsExptLineTubeSegment7Length+"
 			   "CosaxsExptLineTubeSegment8Length+"
 			   "100");
-  Control.addVariable(tubeName+"Segment8FlangeBCap", 2.7); // [2]
+  Control.addVariable(tubeName+"Segment8FlangeBCap", 2.7-0.7); // [2]
   // adjust the tube length by the flange B length
   Control.addParse<double>(tubeName+"Segment8Length",tubeName+"Segment8Length+"+
 			   tubeName+"Segment8FlangeBCap");
@@ -896,7 +896,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment8Port2Wall", 1.0); // [2] approx
   Control.addVariable(tubeName+"Segment8Port2FlangeRadius", 8.3); // [2] approx
   Control.addVariable(tubeName+"Segment8Port2FlangeLength", 2.0);
-  //  Control.addVariable(tubeName+"Segment8Port2FlangeCap", 2.0);
+  Control.addVariable(tubeName+"Segment8Port2PlateThick", 0.7); // [2] approx
 
   Control.addVariable(tubeName+"Segment8Port2Centre", "Vec3D(35,0,0)");
   Control.addVariable(tubeName+"Segment8Port2Axis", "Vec3D(0,1,0)");
