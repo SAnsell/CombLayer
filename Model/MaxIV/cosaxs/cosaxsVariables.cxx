@@ -110,9 +110,9 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable<double>(undKey+"UPipeYStep",20.0);
   Control.addVariable(undKey+"UPipeFeThick",0.2);
 
-  // undulator  
+  // undulator I Vacuum
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
-  Control.addVariable(undKey+"UndulatorLength",203.0);   // unknown
+  Control.addVariable(undKey+"UndulatorLength",203.0); 
   Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
   Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
   Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
