@@ -302,9 +302,17 @@ cosaxsTube::createObjects(Simulation& System)
       outerCell=buildZone.createOuterVoidUnit(System,masterCell,*seg[i],2);
       seg[i]->insertAllInCell(System,outerCell);
 
+      // delete the individual inner void cells in order to create
+      // a common InnerVoid after this loop
+      seg[i]->deleteCell(System,"Void");
+
       last = seg[i].get();
     }
 
+  Out = seg[0]->getFullRule("InnerFront").display() +
+    last->getFullRule("InnerBack").display() +
+    last->getFullRule("InnerSide").display();
+  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
 
   return;
 }

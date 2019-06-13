@@ -338,7 +338,39 @@ PipeTube::createLinks()
   Out=ModelSupport::getComposite(SMap,buildIndex," 102 -207 ");
   FixedComp::setLinkComp(3,Out+backSurf);
 
+  // inner links
+  int innerFrontSurf, innerBackSurf;
+  Geometry::Vec3D innerFrontVec, innerBackVec;
+  if (flangeACapThick<Geometry::zeroTol)
+    {
+      innerFrontSurf = getFrontRule().getPrimarySurface();
+      innerFrontVec = Origin-Y*(length/2.0);
+    } else
+    {
+      innerFrontSurf = buildIndex+201;
+      innerFrontVec = Origin-Y*(length/2.0-flangeACapThick);
+    }
+
+  if (flangeBCapThick<Geometry::zeroTol)
+    {
+      innerBackSurf  = getBackRule().getPrimarySurface();
+      innerBackVec  = Origin+Y*(length/2.0);
+    } else
+    {
+      innerBackSurf  = buildIndex+202;
+      innerBackVec  = Origin+Y*(length/2.0-flangeBCapThick);
+    }
   
+  FixedComp::setConnect(4,innerFrontVec,Y);
+  FixedComp::setLinkSurf(4,innerFrontSurf);
+  nameSideIndex(4,"InnerFront");
+
+  FixedComp::setConnect(5,innerBackVec,Y);
+  FixedComp::setLinkSurf(5,-innerBackSurf);
+  nameSideIndex(5,"InnerBack");
+
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
+  nameSideIndex(6,"InnerSide");
   return;
 }
 
