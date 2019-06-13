@@ -52,8 +52,8 @@ class PipeTube :
   double flangeALength;        ///< Joining Flange length
   double flangeBRadius;        ///< Joining Flange radius
   double flangeBLength;        ///< Joining Flange length
-  double flangeACap;           ///< Thickness of Flange cap if present
-  double flangeBCap;           ///< Thickness of Flange cap if present
+  double flangeACapThick;           ///< Thickness of Flange cap if present
+  double flangeBCapThick;           ///< Thickness of Flange cap if present
   
   int voidMat;                ///< void material
   int wallMat;                ///< Fe material layer

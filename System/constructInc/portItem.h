@@ -64,11 +64,11 @@ class portItem :
   double wall;               ///< wall thick
   double flangeRadius;       ///< flange radius
   double flangeLength;       ///< flange thick(length)
-  double plateThick;         ///< Plate on flange [if thick>0]
+  double capThick;           ///< Plate on flange [if thick>0]
 
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
-  int plateMat;              ///< plate Material
+  int capMat;                ///< plate Material
 
   std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
