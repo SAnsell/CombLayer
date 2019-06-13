@@ -61,9 +61,9 @@ namespace setVariable
 PortItemGenerator::PortItemGenerator() :
   length(12.0),radius(5.0),wallThick(0.5),
   flangeLen(1.0),flangeRadius(1.0),
-  plateThick(0.0),
+  capThick(0.0),
   wallMat("Stainless304"),
-  plateMat("Aluminium"),
+  capMat("Aluminium"),
   outerVoid(1)
   /*!
     Constructor and defaults
@@ -73,8 +73,8 @@ PortItemGenerator::PortItemGenerator() :
 PortItemGenerator::PortItemGenerator(const PortItemGenerator& A) : 
   length(A.length),radius(A.radius),wallThick(A.wallThick),
   flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
-  plateThick(A.plateThick),wallMat(A.wallMat),
-  plateMat(A.plateMat),outerVoid(A.outerVoid)
+  capThick(A.capThick),wallMat(A.wallMat),
+  capMat(A.capMat),outerVoid(A.outerVoid)
   /*!
     Copy constructor
     \param A :: PortItemGenerator to copy
@@ -96,9 +96,9 @@ PortItemGenerator::operator=(const PortItemGenerator& A)
       wallThick=A.wallThick;
       flangeLen=A.flangeLen;
       flangeRadius=A.flangeRadius;
-      plateThick=A.plateThick;
+      capThick=A.capThick;
       wallMat=A.wallMat;
-      plateMat=A.plateMat;
+      capMat=A.capMat;
       outerVoid=A.outerVoid;
     }
   return *this;
@@ -124,7 +124,7 @@ PortItemGenerator::setCF(const double L)
   wallThick=CF::wallThick;
   flangeLen=CF::flangeLength;
   flangeRadius=CF::flangeRadius;
-  plateThick=CF::flangeLength;
+  capThick=CF::flangeLength;
   
   return;
 }
@@ -167,8 +167,8 @@ PortItemGenerator::setPlate(const double T,const std::string& PM)
     \param PM :: material for plate
    */
 {
-  plateThick=T;
-  plateMat=PM;
+  capThick=T;
+  capMat=PM;
   return;
 }
   
@@ -194,14 +194,14 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
-  Control.addVariable(keyName+"PlateThick",plateThick);
+  Control.addVariable(keyName+"CapThick",capThick);
 
   Control.addVariable(keyName+"Centre",C);
   Control.addVariable(keyName+"Axis",A.unit());
 
   Control.addVariable(keyName+"OuterVoid",static_cast<int>(outerVoid));
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"PlateMat",plateMat);
+  Control.addVariable(keyName+"CapMat",capMat);
   
   return;
 

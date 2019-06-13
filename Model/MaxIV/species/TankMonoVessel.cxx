@@ -177,8 +177,8 @@ TankMonoVessel::populate(const FuncDataBase& Control)
   
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
-  double L,R,W,FR,FT,PT;
-  int PMat;
+  double L,R,W,FR,FT,CT;
+  int capMat;
   int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
@@ -194,16 +194,16 @@ TankMonoVessel::populate(const FuncDataBase& Control)
       W=Control.EvalPair<double>(portName,portBase,"Wall");
       FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
       FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
-      PT=Control.EvalDefPair<double>(portName,portBase,"PlateThick",0.0);
-      PMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"PlateMat",portBase+"PlateMat",wallMat);
+      CT=Control.EvalDefPair<double>(portName,portBase,"CapThick",0.0);
+      capMat=ModelSupport::EvalDefMat<int>
+	(Control,portName+"CapMat",portBase+"CapMat",wallMat);
 
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
 
       if (OFlag) windowPort.setWrapVolume();
       windowPort.setMain(L,R,W);
       windowPort.setFlange(FR,FT);
-      windowPort.setCoverPlate(PT,PMat);
+      windowPort.setCoverPlate(CT,capMat);
       windowPort.setMaterial(voidMat,wallMat);
 
       PCentre.push_back(Centre);
