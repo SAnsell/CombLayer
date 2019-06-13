@@ -86,7 +86,7 @@ namespace xraySystem
 {
 
 Dipole::Dipole(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -96,10 +96,12 @@ Dipole::Dipole(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  FixedComp::nameSideIndex(6,"Centre");
+}
 
 Dipole::Dipole(const std::string& Base,
-		       const std::string& Key) : 
+	       const std::string& Key) : 
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -240,6 +242,7 @@ Dipole::createSurfaces()
 
   FixedComp::setConnect(0,coilOrg-YCoil*(coilLength/2.0+coilWidth),YCoil);
   FixedComp::setConnect(1,coilOrg+YCoil*(coilLength/2.0+coilWidth),YCoil);
+  FixedComp::setConnect(6,coilOrg,YCoil);
 
   return;
 }

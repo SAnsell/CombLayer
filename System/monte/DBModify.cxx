@@ -3,7 +3,7 @@
  
  * File:   monte/DBModify.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,10 +81,11 @@ cloneBasicMaterial()
 	  <<"       The results from simualation will be approximate \n"
 	  <<ELog::endCrit;
 
-  // original name to use
+  // original material to use ::  name to use [ie thing missing]
   DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("Aluminium","Aluminium20K");
   DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
+  DB.cloneMaterial("Tungsten","Tungsten_15.3g");
   DB.cloneMaterial("Iron_10H2O","Iron10H2O");
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
@@ -114,12 +115,14 @@ cloneBasicMaterial()
   DB.removeThermal("Silicon80K");
   DB.removeThermal("Silicon300K");
 
-
   // HYDROGENS:
   DB.overwriteMaterial("ParaH2","H2para19K");
   DB.cloneMaterial("H2para19K","ParaOrtho%0.5");
   DB.cloneMaterial("H2para19K","HPARA");
-  
+
+  // avoids the game of renaming H1 to H4 so we have both ortho/para
+  ELog::EM<<"Warning : ALL thermal treatments removed"<<ELog::endWarn;
+  DB.removeAllThermal();
   return;
 }
 

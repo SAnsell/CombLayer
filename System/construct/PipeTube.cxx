@@ -146,6 +146,9 @@ PipeTube::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   capMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FlangeCapMat",wallMat);
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
     
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
@@ -155,7 +158,7 @@ PipeTube::populate(const FuncDataBase& Control)
   for(size_t i=0;i<NPorts;i++)
     {
       const std::string portName=portBase+std::to_string(i);
-      portItem windowPort(portName);
+      std::shared_ptr<portItem> windowPort(new portItem(portName));
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
@@ -172,15 +175,16 @@ PipeTube::populate(const FuncDataBase& Control)
 
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
 
-      if (OFlag) windowPort.setWrapVolume();
-      windowPort.setMain(L,R,W);
-      windowPort.setFlange(FR,FT);
-      windowPort.setCoverPlate(CT,capMat);
-      windowPort.setMaterial(voidMat,wallMat);
+      if (OFlag) windowPort->setWrapVolume();
+      windowPort->setMain(L,R,W);
+      windowPort->setFlange(FR,FT);
+      windowPort->setCoverPlate(CT,capMat);
+      windowPort->setMaterial(voidMat,wallMat);
 
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
+      OR.addObject(windowPort);
     }					    
   return;
 }
@@ -388,13 +392,13 @@ PipeTube::createPorts(Simulation& System)
     {
       const attachSystem::ContainedComp& CC=getCC("Main");
       for(const int CN : CC.getInsertCells())
-	  Ports[i].addOuterCell(CN);
+	  Ports[i]->addOuterCell(CN);
 
       for(const int CN : portCells)
-	Ports[i].addOuterCell(CN);
+	Ports[i]->addOuterCell(CN);
 
-      Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i].constructTrack(System);
+      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
+      Ports[i]->constructTrack(System);
     }
   return;
 }
@@ -412,7 +416,7 @@ PipeTube::getPort(const size_t index) const
   if (index>=Ports.size())
     throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
      
-  return Ports[index];
+  return *(Ports[index]);
 }
 
 
@@ -449,7 +453,7 @@ PipeTube::intersectPorts(Simulation& System,
     throw ColErr::IndexError<size_t>(bIndex,Ports.size(),
 				     "Port does not exist");
 
-  Ports[aIndex].intersectPair(System,Ports[bIndex]);
+  Ports[aIndex]->intersectPair(System,*Ports[bIndex]);
   
   return;
 }
@@ -475,7 +479,7 @@ PipeTube::intersectVoidPorts(Simulation& System,
     throw ColErr::IndexError<size_t>(bIndex,Ports.size(),
 				     "Port does not exist");
 
-  Ports[aIndex].intersectVoidPair(System,Ports[bIndex]);
+  Ports[aIndex]->intersectVoidPair(System,*Ports[bIndex]);
   
   return;
 }
@@ -576,7 +580,7 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
   // calc external impact point:
 
   const double R=radius+wallThick;
-  const double ELen=Ports[pIndex].getExternalLength();
+  const double ELen=Ports[pIndex]->getExternalLength();
   const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
   
   const Geometry::Vec3D RPoint=
@@ -661,7 +665,7 @@ PipeTube::splitVoidPorts(Simulation& System,
   for(size_t i=0;i<PCentre.size();i++)
     {
       // within basis set
-      if (Ports[i].getY().dotProd(Axis)<Geometry::zeroTol)
+      if (Ports[i]->getY().dotProd(Axis)<Geometry::zeroTol)
 	{
 	  if (preFlag)   // test to have two ports
 	    {
@@ -706,7 +710,7 @@ PipeTube::splitVoidPorts(Simulation& System,
   size_t preFlag(0);
   for(size_t i=0;i<PCentre.size();i++)
     {
-      if (Ports[i].getY().dotProd(Y)<Geometry::zeroTol)
+      if (Ports[i]->getY().dotProd(Y)<Geometry::zeroTol)
 	{
 	  if (preFlag)
 	    {
@@ -739,8 +743,8 @@ PipeTube::insertAllInCell(Simulation& System,const int cellN)
   ContainedGroup::insertAllInCell(System,cellN);
   if (!delayPortBuild)
     {
-      for(const portItem& PC : Ports)
-	PC.insertInCell(System,cellN);
+      for(const std::shared_ptr<portItem>& PC : Ports)
+	PC->insertInCell(System,cellN);
     }
   return;
 }

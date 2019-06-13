@@ -46,7 +46,8 @@ namespace setVariable
   void COSAXSvariables(FuncDataBase&);
   void FORMAXvariables(FuncDataBase&);
 
-  void R3FrontEndVariables(FuncDataBase&,const std::string&);
+  void R3FrontEndVariables(FuncDataBase&,const std::string&,
+			   const double,const double,const double);
     
 }
 

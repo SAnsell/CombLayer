@@ -62,7 +62,6 @@
 #include "OctupoleGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "EPCombineGenerator.h"
-#include "PreBendPipeGenerator.h"
 #include "PreDipoleGenerator.h"
 #include "DipoleChamberGenerator.h"
 #include "R3ChokeChamberGenerator.h"
@@ -180,8 +179,8 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,"M1Block");
 
-  setVariable::PreBendPipeGenerator PBGen;
-  PBGen.generatePipe(Control,"PreBendPipe");
+  setVariable::PreDipoleGenerator PBGen;
+  PBGen.generatePipe(Control,"PreDipole");
 
   setVariable::EPCombineGenerator EPCGen;
   EPCGen.generatePipe(Control,"EPCombine");

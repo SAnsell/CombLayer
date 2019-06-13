@@ -3,7 +3,7 @@
  
  * File:   commonBeam/BeamMount.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,15 +181,12 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
     }
   applyOffset();
 
-
   if (upFlag)
     beamFC.applyShift(0,0,-outLift);  // only lift offset
   else
     beamFC.applyShift(0,0,-beamLift);  // only beam offset
 
-
-  setDefault("Main");
-  
+  setDefault("Main","Beam");
 
   return;
 }
@@ -206,11 +203,6 @@ BeamMount::createSurfaces()
   const attachSystem::FixedComp& beamFC=getKey("Beam");
 
   // Not can have a local rotation of the beam component
-  const Geometry::Vec3D& beamOrg=beamFC.getCentre();
-  const Geometry::Vec3D& beamX=beamFC.getX();
-  const Geometry::Vec3D& beamY=beamFC.getY();
-  const Geometry::Vec3D& beamZ=beamFC.getZ();
-
   // construct support
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,supportRadius);
 
@@ -222,32 +214,32 @@ BeamMount::createSurfaces()
 
   if (blockFlag==0)
     {
-      ModelSupport::buildPlane(SMap,buildIndex+5,beamOrg,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+5,bOrigin,Y);
     }
   else             // make centre block
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,
-			       beamOrg-beamY*(length/2.0),beamY);
+			       bOrigin-bY*(length/2.0),bY);
       ModelSupport::buildPlane(SMap,buildIndex+2,
-			       beamOrg+beamY*(length/2.0),beamY);
+			       bOrigin+bY*(length/2.0),bY);
       ModelSupport::buildPlane(SMap,buildIndex+3,
-			       beamOrg-beamX*(width/2.0),beamX);
+			       bOrigin-bX*(width/2.0),bX);
       ModelSupport::buildPlane(SMap,buildIndex+4,
-			       beamOrg+beamX*(width/2.0),beamX);
+			       bOrigin+bX*(width/2.0),bX);
       
       if (blockFlag==1)  // make centre
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+5,
-				   beamOrg-beamZ*(height/2.0),beamZ);
+				   bOrigin-bZ*(height/2.0),bZ);
 
 	  ModelSupport::buildPlane(SMap,buildIndex+6,
-				   beamOrg+beamZ*(height/2.0),beamZ);
+				   bOrigin+bZ*(height/2.0),bZ);
 	}
       else             // make on lower edge
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+5,
-				   beamOrg-beamZ*height,beamZ);
-	  ModelSupport::buildPlane(SMap,buildIndex+6,beamOrg,beamZ);
+				   bOrigin-bZ*height,bZ);
+	  ModelSupport::buildPlane(SMap,buildIndex+6,bOrigin,bZ);
 	}
     }
   return; 

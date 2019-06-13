@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3Common/PreBendPipe.cxx
+ * File:   R3Common/PreDipole.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -80,12 +80,12 @@
 #include "CellMap.h"
 #include "InnerZone.h" 
 
-#include "PreBendPipe.h"
+#include "PreDipole.h"
 
 namespace xraySystem
 {
 
-PreBendPipe::PreBendPipe(const std::string& Key) : 
+PreDipole::PreDipole(const std::string& Key) : 
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedGroup("Tube","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
@@ -105,20 +105,20 @@ PreBendPipe::PreBendPipe(const std::string& Key) :
 }
 
 
-PreBendPipe::~PreBendPipe() 
+PreDipole::~PreDipole() 
   /*!
     Destructor
   */
 {}
 
 void
-PreBendPipe::populate(const FuncDataBase& Control)
+PreDipole::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("PreBendPipe","populate");
+  ELog::RegMethod RegA("PreDipole","populate");
 
   FixedOffset::populate(Control);
 
@@ -144,7 +144,7 @@ PreBendPipe::populate(const FuncDataBase& Control)
 }
 
 void
-PreBendPipe::createUnitVector(const attachSystem::FixedComp& FC,
+PreDipole::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -152,7 +152,7 @@ PreBendPipe::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point
   */
 {
-  ELog::RegMethod RegA("PreBendPipe","createUnitVector");
+  ELog::RegMethod RegA("PreDipole","createUnitVector");
   
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -160,12 +160,12 @@ PreBendPipe::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-PreBendPipe::createSurfaces()
+PreDipole::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("PreBendPipe","createSurface");
+  ELog::RegMethod RegA("PreDipole","createSurface");
 
   // Do outer surfaces (vacuum ports)
 
@@ -248,13 +248,13 @@ PreBendPipe::createSurfaces()
 }
 
 void
-PreBendPipe::createObjects(Simulation& System)
+PreDipole::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("PreBendPipe","createObjects");
+  ELog::RegMethod RegA("PreDipole","createObjects");
 
   std::string Out;
   
@@ -265,7 +265,7 @@ PreBendPipe::createObjects(Simulation& System)
   buildZone.setSurround(HeadRule(Out));
   buildZone.setFront(HeadRule(SMap.realSurf(buildIndex+1001)));
   buildZone.setBack(HeadRule(-SMap.realSurf(buildIndex+101)));
-  buildZone.setVoidMat(voidMat);
+  buildZone.setVoidMat(0);
   buildZone.constructMasterCell(System);
 
     // Construct the second inner zone a
@@ -288,8 +288,7 @@ PreBendPipe::createObjects(Simulation& System)
   exitZone.constructMasterCell(System);
 
   // cylinder half
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -101 -7  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 -7  ");
   makeCell("void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
   // photon full
@@ -370,12 +369,12 @@ PreBendPipe::createObjects(Simulation& System)
 }
 
 void 
-PreBendPipe::createLinks()
+PreDipole::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("PreBendPipe","createLinks");
+  ELog::RegMethod RegA("PreDipole","createLinks");
 
   ExternalCut::createLink("front",*this,0x5,Origin,Y);
 
@@ -391,12 +390,6 @@ PreBendPipe::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
   FixedComp::setLineConnect(3,cylEnd,elecAxis);
   
-  const double xDisp=(1.0-cos(M_PI*electronAngle/180.0))*electronRadius;
-  const double yDisp=sin(M_PI*electronAngle/180.0)*electronRadius;
-
-  //  cylEnd=strEnd+X*xDisp+Y*yDisp;
-  //elecAxis=YElec;
-
   // pipe cutters for Magnets etc:
 
   setConnect(4,Origin+Y*(straightLength/2.0),Z);
@@ -419,7 +412,7 @@ PreBendPipe::createLinks()
 }
   
 void
-PreBendPipe::createAll(Simulation& System,
+PreDipole::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
@@ -429,7 +422,7 @@ PreBendPipe::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("PreBendPipe","createAll");
+  ELog::RegMethod RegA("PreDipole","createAll");
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

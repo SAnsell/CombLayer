@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/PreDipole.cxx
+ * File:   commonBeam/QuadUnit.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -81,12 +81,12 @@
 #include "CellMap.h" 
 
 #include "Quadrupole.h"
-#include "PreDipole.h"
+#include "QuadUnit.h"
 
 namespace xraySystem
 {
 
-PreDipole::PreDipole(const std::string& Key) : 
+QuadUnit::QuadUnit(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -108,20 +108,20 @@ PreDipole::PreDipole(const std::string& Key) :
 }
 
 
-PreDipole::~PreDipole() 
+QuadUnit::~QuadUnit() 
   /*!
     Destructor
   */
 {}
 
 void
-PreDipole::populate(const FuncDataBase& Control)
+QuadUnit::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("PreDipole","populate");
+  ELog::RegMethod RegA("QuadUnit","populate");
 
   FixedOffset::populate(Control);
 
@@ -153,7 +153,7 @@ PreDipole::populate(const FuncDataBase& Control)
 }
 
 void
-PreDipole::createUnitVector(const attachSystem::FixedComp& FC,
+QuadUnit::createUnitVector(const attachSystem::FixedComp& FC,
     	                     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -161,7 +161,7 @@ PreDipole::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point
   */
 {
-  ELog::RegMethod RegA("PreDipole","createUnitVector");
+  ELog::RegMethod RegA("QuadUnit","createUnitVector");
   
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -169,12 +169,12 @@ PreDipole::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-PreDipole::createSurfaces()
+QuadUnit::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("PreDipole","createSurface");
+  ELog::RegMethod RegA("QuadUnit","createSurface");
 
   if (!ExternalCut::isActive("front"))
     {
@@ -231,13 +231,13 @@ PreDipole::createSurfaces()
 }
 
 void
-PreDipole::createObjects(Simulation& System)
+QuadUnit::createObjects(Simulation& System)
   /*!
     Builds all the objects
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("PreDipole","createObjects");
+  ELog::RegMethod RegA("QuadUnit","createObjects");
 
   const std::string frontStr=getRuleStr("front");
   const std::string backStr=getRuleStr("back");
@@ -275,12 +275,12 @@ PreDipole::createObjects(Simulation& System)
 }
 
 void 
-PreDipole::createLinks()
+QuadUnit::createLinks()
   /*!
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("PreDipole","createLinks");
+  ELog::RegMethod RegA("QuadUnit","createLinks");
   ExternalCut::createLink("front",*this,0,Origin,Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
 
@@ -294,7 +294,7 @@ PreDipole::createLinks()
 }
 
 void
-PreDipole::createQuads(Simulation& System,const int cellN)
+QuadUnit::createQuads(Simulation& System,const int cellN)
   /*!
     Separate function [will be joined later as the full 
     shell is completed.
@@ -302,7 +302,7 @@ PreDipole::createQuads(Simulation& System,const int cellN)
     \param cellN :: Cell for insertion
    */
 {
-  ELog::RegMethod RegA("PreDipole","createAll");
+  ELog::RegMethod RegA("QuadUnit","createAll");
   std::string Out;
   
   for(const std::shared_ptr<Quadrupole>& QItem : {quadX,quadZ})
@@ -365,7 +365,7 @@ PreDipole::createQuads(Simulation& System,const int cellN)
 
   
 void
-PreDipole::createAll(Simulation& System,
+QuadUnit::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
   /*!
@@ -375,7 +375,7 @@ PreDipole::createAll(Simulation& System,
     \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("PreDipole","createAll");
+  ELog::RegMethod RegA("QuadUnit","createAll");
   
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

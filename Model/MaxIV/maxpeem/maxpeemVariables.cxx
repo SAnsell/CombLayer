@@ -75,7 +75,7 @@
 #include "TwinPipeGenerator.h"
 #include "VacBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
-#include "PreDipoleGenerator.h"
+#include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
 
 namespace setVariable
@@ -1028,8 +1028,8 @@ frontEndVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutWallDiskHeight",20.0);
   Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
 
-  setVariable::PreDipoleGenerator PGen;
-  PGen.generatePipe(Control,frontKey+"PreDipole",0.0);
+  setVariable::QuadUnitGenerator PGen;
+  PGen.generatePipe(Control,frontKey+"QuadUnit",0.0);
 
   setVariable::DipoleChamberGenerator DCGen;
   DCGen.generatePipe(Control,frontKey+"DipoleChamber",0.0);

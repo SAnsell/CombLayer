@@ -172,8 +172,6 @@ COSAXS::build(Simulation& System,
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
   wallLead->createAll(System,FCOrigin,sideIndex);
-  ELog::EM<<"Front == "<<FCOrigin.getLinkPt(sideIndex)<<ELog::endDiag;
-  ELog::EM<<"Front == "<<wallLead->getLinkPt(0)<<ELog::endDiag;
   
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
@@ -213,6 +211,7 @@ COSAXS::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
+  
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
@@ -221,10 +220,19 @@ COSAXS::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
+  
+
+
   exptHut->setCutSurf("frontWall",opticsHut->getSurf("outerWall"));
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+
+  if (stopPoint=="exptHut")
+    {
+      joinPipeB->insertInCell(System,exptHut->getCell("Void"));
+      return;
+    }
 
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptBeam->setCutSurf("front",opticsHut->getSurf("outerWall"));

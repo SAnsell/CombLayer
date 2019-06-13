@@ -97,11 +97,11 @@
 #include "Quadrupole.h"
 #include "Octupole.h"
 #include "EPSeparator.h"
-#include "PreDipole.h"
+#include "QuadUnit.h"
 #include "DipoleChamber.h"
 #include "R3ChokeChamber.h"
 #include "EPCombine.h"
-#include "PreBendPipe.h"
+#include "PreDipole.h"
 #include "MagnetM1.h"
 
 #include "makeSingleItem.h"
@@ -178,8 +178,8 @@ makeSingleItem::build(Simulation& System,
   
 
   
-  std::shared_ptr<xraySystem::PreDipole>
-    PDipole(new xraySystem::PreDipole("PreDipole"));
+  std::shared_ptr<xraySystem::QuadUnit>
+    PDipole(new xraySystem::QuadUnit("PreDipole"));
   OR.addObject(PDipole);
   PDipole->addInsertCell(voidCell);
   PDipole->createAll(System,World::masterOrigin(),0);

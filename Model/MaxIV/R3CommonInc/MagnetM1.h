@@ -27,6 +27,11 @@ class Simulation;
 
 namespace xraySystem
 {
+  class Octupole;
+  class Quadrupole;
+  class Dipole;
+  class EPCombine;
+  
 /*!
   \class MagnetM1
   \version 1.0
@@ -63,7 +68,7 @@ class MagnetM1 :
 
   attachSystem::InnerZone buildZone;   ///<Main outerVoid
   /// dipole connection pipe
-  std::shared_ptr<xraySystem::PreBendPipe> preDipole;
+  std::shared_ptr<xraySystem::PreDipole> preDipole;
   /// Electron/photon combined track
   std::shared_ptr<xraySystem::EPCombine> epCombine;
 

@@ -689,7 +689,7 @@ objectGroups::getObjectRange(const std::string& objName) const
 		  (objName,"CellMap:cellName:Index");
 	      return std::vector<int>({CPtr->getCell(cellName,cellIndex)});
 	    }
-	  // case 2: CellMap : Name 
+	  // case 2: CellMap : Name
 	  const std::vector<int> Out=CPtr->getCells(cellName);
 	  if (!Out.empty())
 	    return Out;
@@ -736,7 +736,6 @@ objectGroups::getObjectRange(const std::string& objName) const
     return std::vector<int>(activeCells.begin(),activeCells.end());
 
   // FixedComp  -- All
-  ELog::EM<<"ObjName == "<<objName<<ELog::endDiag;
   if (Units.size()==1)
     {
       if (hasObject(objName))

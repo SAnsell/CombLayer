@@ -110,9 +110,9 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable<double>(undKey+"UPipeYStep",20.0);
   Control.addVariable(undKey+"UPipeFeThick",0.2);
 
-  // undulator  
+  // undulator I Vacuum
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
-  Control.addVariable(undKey+"UndulatorLength",203.0);   // unknown
+  Control.addVariable(undKey+"UndulatorLength",203.0); 
   Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
   Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
   Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
@@ -129,37 +129,6 @@ undulatorVariables(FuncDataBase& Control,
   return;
 }
 
-void
-ecutVariables(FuncDataBase& Control,
-	      const std::string& frontKey)
-  /*!
-    Set the variables for the electron cut disks
-    in the front-end
-    \param Control :: DataBase to use
-    \param frontKey :: prename
-  */
-{
-  ELog::RegMethod RegA("cosaxsVariables[F]","ecutVariables");
-  
-  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutDiskLength",0.1);
-  Control.addVariable(frontKey+"ECutDiskRadius",0.50);
-  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
-  Control.addVariable(frontKey+"ECutMagDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutMagDiskWidth",4.6);
-  Control.addVariable(frontKey+"ECutMagDiskHeight",1.8);
-  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
-
-  Control.addVariable(frontKey+"ECutWallDiskxStep",10.0);
-  Control.addVariable(frontKey+"ECutWallDiskYStep",20.0);
-  Control.addVariable(frontKey+"ECutWallDiskDepth",0.1);
-  Control.addVariable(frontKey+"ECutWallDiskWidth",30.0);
-  Control.addVariable(frontKey+"ECutWallDiskHeight",30.0);
-  Control.addVariable(frontKey+"ECutWallDiskDefMat","H2Gas#0.1");
-  return;  
-}
   
 void
 wallVariables(FuncDataBase& Control,
@@ -342,15 +311,20 @@ monoVariables(FuncDataBase& Control)
 }
 
 void
-mirrorBox(FuncDataBase& Control,const std::string& Name)
+mirrorBox(FuncDataBase& Control,const std::string& Name,
+	  const std::string& Index)
   /*!
     Construct variables for the diagnostic units
     \param Control :: Database
     \param Name :: component name
+    \param Index :: Index designator
   */
 {
+  ELog::RegMethod RegA("cosaxsVariables[F]","mirrorBox");
+  
   setVariable::MonoBoxGenerator VBoxGen;
-
+  setVariable::MirrorGenerator MirrGen;
+  
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
@@ -358,8 +332,13 @@ mirrorBox(FuncDataBase& Control,const std::string& Name)
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
   // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,Name,0.0,53.1,23.6,29.5,124.0);
+  VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
+		      0.0,53.1,23.6,29.5,124.0);
 
+  // mirror in mirror box
+  MirrGen.setPlate(28.0,1.0,9.0);  //guess
+  MirrGen.generateMirror(Control,Name+"Mirror"+Index,
+			 0.0, 0.0, 2.0, 0.0,0.0);
   return;
 }
 
@@ -644,7 +623,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateE",0.0,0);
   
-  cosaxsVar::mirrorBox(Control,preName+"MirrorA");
+  cosaxsVar::mirrorBox(Control,preName,"A");
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateF",0.0,0);
@@ -660,7 +639,7 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
-  cosaxsVar::mirrorBox(Control,preName+"MirrorB");
+  cosaxsVar::mirrorBox(Control,preName,"B");
 
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateH",0.0,0);
@@ -944,9 +923,10 @@ COSAXSvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0);   // no window
 
   cosaxsVar::undulatorVariables(Control,"CosaxsFrontBeam");
-  cosaxsVar::ecutVariables(Control,"CosaxsFrontBeam");
 
-  setVariable::R3FrontEndVariables(Control,"CosaxsFrontBeam");  
+  // ystep / dipole pipe / exit pipe
+  setVariable::R3FrontEndVariables
+    (Control,"CosaxsFrontBeam",310.0,724.0,40.0);  
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   
   PipeGen.setMat("Stainless304");

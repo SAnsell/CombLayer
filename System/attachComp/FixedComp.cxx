@@ -1342,14 +1342,15 @@ FixedComp::getSideIndex(const std::string& sideName) const
 
       std::map<std::string,size_t>::const_iterator mc=
         keyMap.find(partName);
-
+					   
       if (mc!=keyMap.end())
         return negScale*static_cast<long int>(mc->second+1);
       
       if (partName=="Origin" || partName=="origin")
         return 0;
     }
-  throw ColErr::InContainerError<std::string>(sideName,"sideName");
+  throw ColErr::InContainerError<std::string>
+    (sideName,"sideName["+keyName+"]");
 }
 
 bool

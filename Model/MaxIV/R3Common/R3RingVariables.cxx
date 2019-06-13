@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxivBuild/R3RingVariables.cxx
+ * File:   R3Common/R3RingVariables.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -68,8 +68,6 @@
 #include "BeamMountGenerator.h"
 
 #include "PreDipoleGenerator.h"
-#include "DipoleChamberGenerator.h"
-#include "PreBendPipeGenerator.h"
 #include "EPCombineGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
@@ -389,12 +387,16 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 }
 
 void
-R3FrontEndVariables(FuncDataBase& Control,
-		    const std::string& frontKey)
+R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
+		    const double yStep,const double dipoleLen,
+		    const double exitLen) 
 /*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
+    \param yStep :: offset step
+    \param dipoleLen :: Length of dipole
+    \param exitLeng :: last exit pipe length
   */
 {
   ELog::RegMethod RegA("R3FrontEndVariables[F]","R3FrontEndVariables");
@@ -408,14 +410,13 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
     
-  Control.addVariable(frontKey+"YStep",310.0);  
+  Control.addVariable(frontKey+"YStep",yStep);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
   
   Control.addVariable(frontKey+"FrontOffset",0.0);  
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   PipeGen.setMat("Stainless304");
-
 
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
@@ -425,7 +426,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,724.0);  // extend +4
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,dipoleLen); 
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -451,10 +452,17 @@ R3FrontEndVariables(FuncDataBase& Control,
   PipeGen.setCF<CF100>();
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,432.0);
 
-  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",1.0);
   Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+  
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
+  // note: CF40::innerRadius is some complex template type 
+  Control.addVariable
+    (frontKey+"ECutMagDiskRadius",static_cast<double>(CF40::innerRadius));
+  Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -492,7 +500,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,50.0);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,exitLen);
 
   return;
 }

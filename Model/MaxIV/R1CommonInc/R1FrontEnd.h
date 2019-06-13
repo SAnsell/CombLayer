@@ -60,7 +60,7 @@ namespace xraySystem
   class FlangeMount;
   class HeatDump;
   class LCollimator;
-  class PreDipole;
+  class QuadUnit;
   class Quadrupole;
   class SquareFMask;
   class UTubePipe;
@@ -93,7 +93,7 @@ class R1FrontEnd :
   std::shared_ptr<attachSystem::FixedComp> lastComp;
   
   /// dipole connection pipe
-  std::shared_ptr<xraySystem::PreDipole> preDipole;
+  std::shared_ptr<xraySystem::QuadUnit> quadUnit;
   /// dipole connection pipe
   std::shared_ptr<xraySystem::DipoleChamber> dipoleChamber;
   /// dipole connection pipe

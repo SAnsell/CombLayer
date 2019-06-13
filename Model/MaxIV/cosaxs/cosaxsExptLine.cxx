@@ -290,7 +290,8 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   telescopicSystem->setFront(*diffPump,2);
   telescopicSystem->createAll(System,*diffPump,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*telescopicSystem,2);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,*telescopicSystem,2);
   telescopicSystem->insertInCell(System,outerCell);
 
   tube->delayPorts();

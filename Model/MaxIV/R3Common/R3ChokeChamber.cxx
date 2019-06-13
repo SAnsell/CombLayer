@@ -445,9 +445,10 @@ R3ChokeChamber::createLinks()
 
   FixedComp::setConnect(1,Origin+Y*photonLength,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
-  // Link 
-  FixedComp::setConnect(2,photOrg+Y*photonLength,Y);
-  FixedComp::setConnect(3,elecOrg+elecYAxis*electronLength,elecYAxis);
+  // Link
+  FixedComp::setConnect(2,photOrg+Y*(photonLength+inletLength),Y);
+  FixedComp::setConnect
+    (3,elecOrg+elecYAxis*(electronLength+inletLength),elecYAxis);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+303));
   
@@ -458,8 +459,8 @@ void
 R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
 				const long int photonIndex,
 				const long int electronIndex)
-/*!
-    SEt the electron/Photon origins exactly
+  /*!
+    Set the electron/Photon origins exactly
     \param FC :: FixedPoint
     \param photonIndex :: link point for photon
     \param electornIndex :: link point for electron
