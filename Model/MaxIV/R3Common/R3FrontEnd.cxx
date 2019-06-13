@@ -98,7 +98,7 @@
 #include "EPSeparator.h"
 #include "R3ChokeChamber.h"
 #include "EPCombine.h"
-#include "PreBendPipe.h"
+#include "PreDipole.h"
 #include "MagnetM1.h"
 
 #include "R3FrontEnd.h"

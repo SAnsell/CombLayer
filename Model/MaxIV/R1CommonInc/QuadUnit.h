@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/PreDipole.h
+ * File:   commonBeamInc/QuadUnit.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_PreDipole_h
-#define xraySystem_PreDipole_h
+#ifndef xraySystem_QuadUnit_h
+#define xraySystem_QuadUnit_h
 
 class Simulation;
 
@@ -30,17 +30,17 @@ namespace xraySystem
   class Quadrupole;
   
 /*!
-  \class PreDipole
+  \class QuadUnit
   \version 1.0
   \author S. Ansell
   \date January 2019
 
-  \brief PreDipole for Max-IV 
+  \brief QuadUnit for Max-IV 
 
   This is built relative to the proton channel
 */
 
-class PreDipole : public attachSystem::FixedOffset,
+class QuadUnit : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap
@@ -81,10 +81,10 @@ class PreDipole : public attachSystem::FixedOffset,
 
  public:
 
-  PreDipole(const std::string&);
-  PreDipole(const PreDipole&);
-  PreDipole& operator=(const PreDipole&);
-  virtual ~PreDipole();
+  QuadUnit(const std::string&);
+  QuadUnit(const QuadUnit&);
+  QuadUnit& operator=(const QuadUnit&);
+  virtual ~QuadUnit();
 
   void createQuads(Simulation&,const int);
   void createAll(Simulation&,const attachSystem::FixedComp&,

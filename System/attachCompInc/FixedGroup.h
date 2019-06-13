@@ -47,7 +47,7 @@ class FixedGroup : public FixedComp
   Geometry::Vec3D bY;          ///< Secondary Y
   Geometry::Vec3D bZ;          ///< Secondary Z
   Geometry::Vec3D bOrigin;     ///< Secondary origin
-  Geometry::Vec3D bExit;     ///< Secondary origin
+  Geometry::Vec3D bExit;       ///< Secondary origin
   
   void registerKey(const std::string&,const size_t);
 

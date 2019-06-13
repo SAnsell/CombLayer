@@ -68,8 +68,6 @@
 #include "BeamMountGenerator.h"
 
 #include "PreDipoleGenerator.h"
-#include "DipoleChamberGenerator.h"
-#include "PreBendPipeGenerator.h"
 #include "EPCombineGenerator.h"
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
@@ -389,12 +387,16 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 }
 
 void
-R3FrontEndVariables(FuncDataBase& Control,
-		    const std::string& frontKey)
+R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
+		    const double yStep,const double dipoleLen,
+		    const double exitLen) 
 /*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
+    \param yStep :: offset step
+    \param dipoleLen :: Length of dipole
+    \param exitLeng :: last exit pipe length
   */
 {
   ELog::RegMethod RegA("R3FrontEndVariables[F]","R3FrontEndVariables");
@@ -408,7 +410,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
     
-  Control.addVariable(frontKey+"YStep",310.0);  
+  Control.addVariable(frontKey+"YStep",yStep);  
   Control.addVariable(frontKey+"OuterRadius",60.0);
   
   Control.addVariable(frontKey+"FrontOffset",0.0);  
@@ -424,7 +426,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,724.0);  // extend +4
+  PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,dipoleLen); 
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
@@ -498,7 +500,7 @@ R3FrontEndVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
   
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,40.0);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",0,exitLen);
 
   return;
 }

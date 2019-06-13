@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   R3CommonInc/PreBendPipe.h
+ * File:   R3CommonInc/PreDipole.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_PreBendPipe_h
-#define xraySystem_PreBendPipe_h
+#ifndef xraySystem_PreDipole_h
+#define xraySystem_PreDipole_h
 
 class Simulation;
 
@@ -28,17 +28,17 @@ class Simulation;
 namespace xraySystem
 {
 /*!
-  \class PreBendPipe
+  \class PreDipole
   \version 1.0
   \author S. Ansell
   \date January 2019
 
-  \brief PreBendPipe for Max-IV 
+  \brief PreDipole for Max-IV 
 
   This is built relative to the proton channel
 */
 
-class PreBendPipe : public attachSystem::FixedOffset,
+class PreDipole : public attachSystem::FixedOffset,
   public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
@@ -87,10 +87,10 @@ class PreBendPipe : public attachSystem::FixedOffset,
 
  public:
 
-  PreBendPipe(const std::string&);
-  PreBendPipe(const PreBendPipe&);
-  PreBendPipe& operator=(const PreBendPipe&);
-  virtual ~PreBendPipe();
+  PreDipole(const std::string&);
+  PreDipole(const PreDipole&);
+  PreDipole& operator=(const PreDipole&);
+  virtual ~PreDipole();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

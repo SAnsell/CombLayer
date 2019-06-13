@@ -228,7 +228,12 @@ COSAXS::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
-  if (stopPoint=="exptHut") return;
+  if (stopPoint=="exptHut")
+    {
+      joinPipeB->insertInCell(System,exptHut->getCell("Void"));
+      return;
+    }
+
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptBeam->setCutSurf("front",opticsHut->getSurf("outerWall"));
   //  exptBeam->setCutSurf("back",exptHut->getSurf("innerBack"));

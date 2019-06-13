@@ -51,7 +51,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "PreBendPipeGenerator.h"
+#include "PreDipoleGenerator.h"
 #include "EPCombineGenerator.h"
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
@@ -103,7 +103,7 @@ MagnetM1Generator::generateBlock(FuncDataBase& Control,
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
-  setVariable::PreBendPipeGenerator PBGen;
+  setVariable::PreDipoleGenerator PBGen;
   PBGen.generatePipe(Control,keyName+"PreDipole");
 
   setVariable::EPCombineGenerator EPCGen;

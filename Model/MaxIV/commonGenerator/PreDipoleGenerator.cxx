@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/PreDipoleGenerator.cxx
+ * File:   commonBeam/PreBendPipeGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -52,22 +52,24 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "QuadrupoleGenerator.h"
 #include "PreDipoleGenerator.h"
 
 namespace setVariable
 {
 
 PreDipoleGenerator::PreDipoleGenerator() :
-  length(73.5),inWidth(0.915),
-  ringWidth(1.89),outPointWidth(2.2),
-  height(1.9),endGap(0.5),endLength(1.75),
-  wallThick(0.3),
-  flangeRadius(CF63::innerRadius),
-  flangeLength(CF63::flangeLength),
+  length(205.5),radius(1.10),
+  straightLength(109.4),
+  wallThick(0.1),
+  electronRadius(1910.0),
+  electronAngle(1.5),
+
+  flangeARadius(CF50::flangeRadius),
+  flangeALength(CF50::flangeLength),
+  flangeBRadius(CF50::flangeRadius),
+  flangeBLength(CF50::flangeLength),
   voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304"),
-  QGen(new QuadrupoleGenerator)
+  flangeMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -81,8 +83,7 @@ PreDipoleGenerator::~PreDipoleGenerator()
 
 void
 PreDipoleGenerator::generatePipe(FuncDataBase& Control,
-				 const std::string& keyName,
-				 const double yStep) const
+				 const std::string& keyName) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -90,31 +91,24 @@ PreDipoleGenerator::generatePipe(FuncDataBase& Control,
     \param yStep :: Step along beam centre
   */
 {
-  ELog::RegMethod RegA("PreDipoleGenerator","generatePipe");
+  ELog::RegMethod RegA("PreDipoleGenerator","generateColl");
 
-  Control.addVariable(keyName+"YStep",yStep);
-  
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"InWidth",inWidth);
-  Control.addVariable(keyName+"RingWidth",ringWidth);
-  Control.addVariable(keyName+"OutPointWidth",outPointWidth);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"EndGap",endGap);
-  Control.addVariable(keyName+"EndLength",endLength);
-
-  
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLength);
-  
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"StraightLength",straightLength);
   Control.addVariable(keyName+"WallThick",wallThick);
-    
+  Control.addVariable(keyName+"ElectronRadius",electronRadius);
+  Control.addVariable(keyName+"ElectronAngle",electronAngle);
+
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALength);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLength);
+
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
-  
 
-  QGen->generateQuad(Control,keyName+"QuadX",-12.0,18.5);
-  QGen->generateQuad(Control,keyName+"QuadZ",12.0,18.5);
   return;
 }
 
