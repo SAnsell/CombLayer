@@ -248,7 +248,6 @@ cosaxsTube::createSurfaces()
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   const HeadRule HR(Out);
   buildZone.setSurround(HR);
-  ELog::EM << "use here: -HeadRule(SMap.realSurf(buildIndex+7))" << ELog::endCrit;
 
   return;
 }
@@ -276,7 +275,6 @@ cosaxsTube::createObjects(Simulation& System)
   MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
 
   noseCone->createAll(System, *this, 0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,-1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
 

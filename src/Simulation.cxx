@@ -1685,7 +1685,7 @@ Simulation::makeObjectsDNForCNF()
 		      AX.expandBracket();
 		  if (NL<=cellCNF)
 		    AX.expandCNFBracket();
-		  
+
 		  if (!CPtr->procString(AX.writeMCNPX()))
 		    {
 		      ELog::EM<<ELog::endDiag;

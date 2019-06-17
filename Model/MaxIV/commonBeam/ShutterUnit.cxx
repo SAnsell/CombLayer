@@ -268,9 +268,11 @@ ShutterUnit::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"127 102 -201 -117");
   makeCell("BellowVoid",System,cellIndex++,0,0.0,Out);
 
-  if (topFlangeRadius+Geometry::zeroTol>outRadius)
+  if (topFlangeRadius+Geometry::zeroTol<outRadius)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"201 -202 -117 207");
+      ELog::EM<<"Top Void == "<<Out<<ELog::endDiag;
+	      
       makeCell("TopVoid",System,cellIndex++,0,0.0,Out);
     }
 

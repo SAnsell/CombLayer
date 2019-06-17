@@ -172,7 +172,6 @@ SimValid::diagnostics(const Simulation& System,
 
   return;
 }
-
   
 int
 SimValid::runPoint(const Simulation& System,

@@ -497,7 +497,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
@@ -743,8 +743,9 @@ exptVariables(FuncDataBase& Control,
   GateGen.setLength(2.5);
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
-
+ 
   DiffGen.generatePump(Control,preName+"DiffPump",53.24);
+  // NOTE: ACTIVE WINDOW
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 
