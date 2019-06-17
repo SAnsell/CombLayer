@@ -164,8 +164,8 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
   
-
-  MShutterGen.generateShutter(Control,preName+"MonoShutter",0,0);  
+  // both shutters up
+  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
   
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
@@ -745,7 +745,7 @@ exptVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
  
   DiffGen.generatePump(Control,preName+"DiffPump",53.24);
-  // NOTE: ACTIVE WINDOW
+  // NOTE: ACTIVE WINDOW:
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 

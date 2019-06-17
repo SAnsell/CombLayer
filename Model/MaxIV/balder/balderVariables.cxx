@@ -548,8 +548,8 @@ monoShutterVariables(FuncDataBase& Control,
   PTubeGen.setAPortOffset(0,-3.0);
   PTubeGen.setBPortOffset(0,-3.0);
 
-
-  MShutterGen.generateShutter(Control,preName+"MonoShutter",0,0);  
+  // up / up (true)
+  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
   
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
@@ -1013,13 +1013,13 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",310,724,40);
+    (Control,"BalderFrontBeam",310,244,40);
   
   balderVar::wallVariables(Control,"BalderWallLead");
   
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); 
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,170.0);
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,125.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

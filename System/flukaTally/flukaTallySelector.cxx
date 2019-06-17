@@ -155,7 +155,7 @@ tallyModification(SimFLUKA& System,
           flukaSystem::setAngle(System,tName,AA,AB,NA,AFlag);
         }
       else
-	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;
+	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endErr;
     }
   return;
 }

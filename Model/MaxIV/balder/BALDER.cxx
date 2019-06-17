@@ -259,7 +259,7 @@ BALDER::build(Simulation& System,
 			 opticsHut->getSideIndex("-exitHole"));
   
   joinPipeC->insertInCell(System,exptHut->getCell("Void"));
-  joinPipeC->insertInCell(System,exptHut->getCell("EnteranceHole"));
+  //  joinPipeC->insertInCell(System,exptHut->getCell("EnteranceHole"));
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
