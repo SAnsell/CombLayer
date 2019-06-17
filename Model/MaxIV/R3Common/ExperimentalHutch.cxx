@@ -105,7 +105,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ExperimentalHutch","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -294,7 +294,7 @@ ExperimentalHutch::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ExperimentalHutch","createAll(FC)");
 
-  populate(System.getDataBase());
+  ExperimentalHutch::populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   
   createSurfaces();    
