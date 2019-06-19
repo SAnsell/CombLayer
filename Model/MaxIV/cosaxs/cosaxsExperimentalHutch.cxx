@@ -134,6 +134,9 @@ cosaxsExperimentalHutch::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("cosaxsExperimentalHutch","createObjects");
 
+  // HeadRule A(SMap.realSurf(buildIndex+7));
+  // for(const std::string& layer : {"Inner","Lead","Outer"})
+  //     CellMap::insertComponent(System,layer+"BackWall",A);
 
   return;
 }
