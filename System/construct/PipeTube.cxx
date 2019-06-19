@@ -236,6 +236,7 @@ PipeTube::createSurfaces()
   SurfMap::addSurf("VoidCyl",-SMap.realSurf(buildIndex+7));
     
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
+  SurfMap::addSurf("OuterCyl",SMap.realSurf(buildIndex+17));
 
   ModelSupport::buildPlane(SMap,buildIndex+101,
 			   Origin-Y*(length/2.0-(flangeALength+flangeACapThick)),Y);
