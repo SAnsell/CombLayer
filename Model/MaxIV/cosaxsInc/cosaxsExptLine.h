@@ -114,8 +114,6 @@ class cosaxsExptLine :
   cosaxsExptLine& operator=(const cosaxsExptLine&);
   ~cosaxsExptLine();
 
-  attachSystem::InnerZone& getBuildZone() { return buildZone; }
-
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
