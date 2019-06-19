@@ -241,11 +241,42 @@ COSAXS::build(Simulation& System,
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
-  exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
-  exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
+  // exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
+  // exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
+  // exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
   exptBeam->createAll(System,*joinPipeB,2);
 
+  const std::string tubeName(exptBeam->getKeyName()+"Tube");
+  const std::string seg3name(tubeName+"Segment3");
+  const attachSystem::SurfMap* seg3Surf =
+    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Component not found");
+  // exptTube =
+  //   System.getObjectThrow<attachSystem::CellMap>(seg3name,"Component not found");
+
+  const attachSystem::CellMap* tube =
+    System.getObjectThrow<attachSystem::CellMap>(tubeName,"Component not found");;
+
+  HeadRule wallCut;
+  wallCut.addUnion(-exptHut->getSurf("innerBack"));
+  wallCut.addUnion(-exptHut->getSurf("outerBack"));
+  wallCut.addUnion(seg3Surf->getSurf("OuterCyl"));
+
+  ELog::EM << "wallCut: " << wallCut << ELog::endDiag;
+
+  //  attachSystem::InnerZone& IZ=exptBeam->getBuildZone();
+  
+  const int cNum=tube->getCell("OuterVoid",6);
+  MonteCarlo::Object* OPtr=System.findObject(cNum);
+  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
+  tube->insertComponent(System,"OuterVoid",6,wallCut);
+  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
+
+  const int cylN=seg3Surf->getSurf("OuterCyl");
+  ELog::EM << "cylN: " << cylN << ELog::endDiag;
+  exptHut->insertComponent(System,"InnerBackWall",HeadRule(cylN));
+  exptHut->insertComponent(System,"LeadBackWall",HeadRule(cylN));
+  exptHut->insertComponent(System,"OuterBackWall",HeadRule(cylN));
+  
   joinPipeB->insertInCell(System,exptBeam->getCell("OuterVoid",0));
 
   return;
