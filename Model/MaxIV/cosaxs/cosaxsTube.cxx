@@ -248,7 +248,6 @@ cosaxsTube::createSurfaces()
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   const HeadRule HR(Out);
   buildZone.setSurround(HR);
-  ELog::EM << "use here: -HeadRule(SMap.realSurf(buildIndex+7))" << ELog::endCrit;
 
   return;
 }

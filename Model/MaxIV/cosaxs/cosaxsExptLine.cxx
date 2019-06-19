@@ -66,7 +66,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -206,8 +205,12 @@ cosaxsExptLine::createSurfaces()
       const HeadRule HR(Out+getRuleStr("floor"));
       buildZone.setSurround(HR);
     }
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*outerLength,Y);
 
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*outerLength,Y);
+      setCutSurf("back",-SMap.realSurf(buildIndex+2));
+    }
 
   return;
 }
@@ -223,9 +226,6 @@ cosaxsExptLine::buildObjects(Simulation& System)
   ELog::RegMethod RegA("cosaxsExptLine","buildObjects");
 
   int outerCell;
-
-  if (!isActive("back"))
-    setCutSurf("back", ModelSupport::getComposite(SMap,buildIndex," -2 "));
 
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
@@ -307,9 +307,9 @@ cosaxsExptLine::buildObjects(Simulation& System)
   tube->insertInCell(System,outerCell);
   tube->createPorts(System);
 
-
+  
+  setCell("SurroundVoid",outerCell);
   lastComp=tube;
-  //  setCell("LastVoid",masterCell->getName());
 
   return;
 }

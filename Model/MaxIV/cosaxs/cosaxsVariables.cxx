@@ -759,7 +759,7 @@ exptVariables(FuncDataBase& Control,
   const std::string tubeName(preName+"Tube");
 
   // X032_CoSAXS_\(2019-02-11\)_dimensions.pdf:
-  Control.addVariable(tubeName+"YStep", 453.748); // dummy
+  Control.addVariable(tubeName+"YStep", 454.748); // dummy
 
   const std::string noseName(tubeName+"NoseCone");
   

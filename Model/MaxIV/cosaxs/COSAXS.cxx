@@ -257,22 +257,16 @@ COSAXS::build(Simulation& System,
     System.getObjectThrow<attachSystem::CellMap>(tubeName,"Component not found");;
 
   HeadRule wallCut;
-  wallCut.addUnion(-exptHut->getSurf("innerBack"));
-  wallCut.addUnion(-exptHut->getSurf("outerBack"));
-  wallCut.addUnion(seg3Surf->getSurf("OuterCyl"));
+  wallCut.addUnion(exptHut->getSurf("innerBack"));
+  wallCut.addUnion(exptHut->getSurf("outerBack"));
 
-  ELog::EM << "wallCut: " << wallCut << ELog::endDiag;
 
-  //  attachSystem::InnerZone& IZ=exptBeam->getBuildZone();
+  const int cNum=exptBeam->getCell("SurroundVoid");
   
-  const int cNum=tube->getCell("OuterVoid",6);
-  MonteCarlo::Object* OPtr=System.findObject(cNum);
-  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
   tube->insertComponent(System,"OuterVoid",6,wallCut);
-  ELog::EM<<"Cell = "<<*OPtr<<ELog::endDiag;
+  exptBeam->insertComponent(System,"SurroundVoid",wallCut);
 
   const int cylN=seg3Surf->getSurf("OuterCyl");
-  ELog::EM << "cylN: " << cylN << ELog::endDiag;
   exptHut->insertComponent(System,"InnerBackWall",HeadRule(cylN));
   exptHut->insertComponent(System,"LeadBackWall",HeadRule(cylN));
   exptHut->insertComponent(System,"OuterBackWall",HeadRule(cylN));
