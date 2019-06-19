@@ -240,28 +240,21 @@ COSAXS::build(Simulation& System,
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  // exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
-  // exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
-  // exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
   exptBeam->createAll(System,*joinPipeB,2);
 
+  // Intersection of the exptHut back wall with tube and exptBeam:
   const std::string tubeName(exptBeam->getKeyName()+"Tube");
   const std::string seg3name(tubeName+"Segment3");
-  const attachSystem::SurfMap* seg3Surf =
-    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Component not found");
-  // exptTube =
-  //   System.getObjectThrow<attachSystem::CellMap>(seg3name,"Component not found");
 
   const attachSystem::CellMap* tube =
     System.getObjectThrow<attachSystem::CellMap>(tubeName,"Component not found");;
+  const attachSystem::SurfMap* seg3Surf =
+    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Component not found");
 
   HeadRule wallCut;
   wallCut.addUnion(exptHut->getSurf("innerBack"));
   wallCut.addUnion(exptHut->getSurf("outerBack"));
 
-
-  const int cNum=exptBeam->getCell("SurroundVoid");
-  
   tube->insertComponent(System,"OuterVoid",6,wallCut);
   exptBeam->insertComponent(System,"SurroundVoid",wallCut);
 
@@ -269,6 +262,7 @@ COSAXS::build(Simulation& System,
   exptHut->insertComponent(System,"InnerBackWall",HeadRule(cylN));
   exptHut->insertComponent(System,"LeadBackWall",HeadRule(cylN));
   exptHut->insertComponent(System,"OuterBackWall",HeadRule(cylN));
+  //
   
   joinPipeB->insertInCell(System,exptBeam->getCell("OuterVoid",0));
 
