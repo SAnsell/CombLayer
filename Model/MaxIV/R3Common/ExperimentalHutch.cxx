@@ -105,7 +105,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ExperimentalHutch","populate");
-  
+
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -186,7 +186,8 @@ ExperimentalHutch::createSurfaces()
       HI+=10;
     }
 
-  setSurf("innerBack",-SMap.realSurf(buildIndex+2));
+  HI-=10;
+  SurfMap::setSurf("outerBack",SMap.realSurf(HI+2));
 
   if (holeRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
@@ -294,7 +295,7 @@ ExperimentalHutch::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ExperimentalHutch","createAll(FC)");
 
-  populate(System.getDataBase());
+  ExperimentalHutch::populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   
   createSurfaces();    

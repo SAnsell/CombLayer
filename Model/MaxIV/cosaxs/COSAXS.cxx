@@ -87,6 +87,7 @@
 
 #include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"
+#include "cosaxsExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
@@ -114,7 +115,7 @@ COSAXS::COSAXS(const std::string& KN) :
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
-  exptHut(new ExperimentalHutch(newName+"ExptHut")),
+  exptHut(new cosaxsExperimentalHutch(newName+"ExptHut")),
   exptBeam(new cosaxsExptLine(newName+"ExptLine"))
   /*!
     Constructor
@@ -240,11 +241,36 @@ COSAXS::build(Simulation& System,
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
-  exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
-  exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
+  // exptBeam->addInsertCell(exptHut->getCell("InnerBackWall"));
+  // exptBeam->addInsertCell(exptHut->getCell("LeadBackWall"));
+  // exptBeam->addInsertCell(exptHut->getCell("OuterBackWall"));
   exptBeam->createAll(System,*joinPipeB,2);
 
+  const std::string tubeName(exptBeam->getKeyName()+"Tube");
+  const std::string seg3name(tubeName+"Segment3");
+  const attachSystem::SurfMap* seg3Surf =
+    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Component not found");
+  // exptTube =
+  //   System.getObjectThrow<attachSystem::CellMap>(seg3name,"Component not found");
+
+  const attachSystem::CellMap* tube =
+    System.getObjectThrow<attachSystem::CellMap>(tubeName,"Component not found");;
+
+  HeadRule wallCut;
+  wallCut.addUnion(exptHut->getSurf("innerBack"));
+  wallCut.addUnion(exptHut->getSurf("outerBack"));
+
+
+  const int cNum=exptBeam->getCell("SurroundVoid");
+  
+  tube->insertComponent(System,"OuterVoid",6,wallCut);
+  exptBeam->insertComponent(System,"SurroundVoid",wallCut);
+
+  const int cylN=seg3Surf->getSurf("OuterCyl");
+  exptHut->insertComponent(System,"InnerBackWall",HeadRule(cylN));
+  exptHut->insertComponent(System,"LeadBackWall",HeadRule(cylN));
+  exptHut->insertComponent(System,"OuterBackWall",HeadRule(cylN));
+  
   joinPipeB->insertInCell(System,exptBeam->getCell("OuterVoid",0));
 
   return;
