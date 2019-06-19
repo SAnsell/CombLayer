@@ -262,8 +262,6 @@ exptHutVariables(FuncDataBase& Control,const std::string& preName)
   Control.addVariable(hutName+"HoleRadius",7.0);
   Control.addVariable(hutName+"HoleMat","Lead");
 
-  Control.addVariable(hutName+"BackHoleRadius",51); // 50.8
-
   return;
 }
 

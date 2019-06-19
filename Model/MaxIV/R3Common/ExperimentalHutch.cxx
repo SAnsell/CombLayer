@@ -295,7 +295,7 @@ ExperimentalHutch::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ExperimentalHutch","createAll(FC)");
 
-  ExperimentalHutch::populate(System.getDataBase());
+  populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   
   createSurfaces();    

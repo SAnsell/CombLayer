@@ -87,7 +87,6 @@
 
 #include "balderOpticsHutch.h"
 #include "ExperimentalHutch.h"
-#include "cosaxsExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
@@ -115,7 +114,7 @@ COSAXS::COSAXS(const std::string& KN) :
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
-  exptHut(new cosaxsExperimentalHutch(newName+"ExptHut")),
+  exptHut(new ExperimentalHutch(newName+"ExptHut")),
   exptBeam(new cosaxsExptLine(newName+"ExptLine"))
   /*!
     Constructor
