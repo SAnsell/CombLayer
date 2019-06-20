@@ -137,6 +137,9 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::FrontBackCut(A),
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
+  cableWidth(A.cableWidth),
+  cableHeight(A.cableHeight),
+  cableMat(A.cableMat),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
   gateA(A.gateA),
@@ -165,6 +168,9 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::FrontBackCut::operator=(A);
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
+      cableWidth=A.cableWidth;
+      cableHeight=A.cableHeight;
+      cableMat=A.cableMat;
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
@@ -202,6 +208,9 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
+  cableWidth=Control.EvalVar<double>(keyName+"CableWidth");
+  cableHeight=Control.EvalVar<double>(keyName+"CableHeight");
+  cableMat=ModelSupport::EvalMat<int>(Control,keyName+"CableMat");
 
   return;
 }
@@ -244,6 +253,11 @@ cosaxsTube::createSurfaces()
     }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cableWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0),Z);
 
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   const HeadRule HR(Out);
@@ -309,9 +323,17 @@ cosaxsTube::createObjects(Simulation& System)
     }
 
   Out = seg[0]->getFullRule("InnerFront").display() +
+    last->getFullRule("InnerBack").display();
+  Out+=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 ");
+  makeCell("Cable",System,cellIndex++,cableMat,0.0,Out);
+
+  Out = seg[0]->getFullRule("InnerFront").display() +
     last->getFullRule("InnerBack").display() +
     last->getFullRule("InnerSide").display();
+  Out+=ModelSupport::getComposite(SMap,buildIndex," (-103:104:-105:106) ");
   makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
+
+
 
   return;
 }
@@ -337,7 +359,7 @@ cosaxsTube::createPorts(Simulation& System)
   */
 {
   ELog::RegMethod RegA("cosaxsTube","createPorts");
-  
+
   for (size_t i=0; i<8; i++)
     seg[i]->createPorts(System);
   return;

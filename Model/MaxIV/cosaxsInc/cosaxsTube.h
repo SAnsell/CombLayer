@@ -51,10 +51,14 @@ class cosaxsTube :
     public attachSystem::FrontBackCut
 {
  private:
-  
+
   bool delayPortFlag; ///< Delay building port
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
+
+  double cableWidth; ///< cable width
+  double cableHeight; ///< cable height
+  int cableMat; ///< cable material
 
   attachSystem::InnerZone buildZone;
 

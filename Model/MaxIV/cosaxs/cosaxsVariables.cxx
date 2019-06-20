@@ -900,6 +900,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment8Port2Axis", "Vec3D(0,1,0)");
   Control.copyVarSet(tubeName+"Segment8Port2", tubeName+"Segment8Port3");
   Control.addVariable(tubeName+"Segment8Port3Centre", "Vec3D(-34.8,0,0)"); // measured with ruler
+
+  Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
+  Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
+  Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
   return;
 }
 
