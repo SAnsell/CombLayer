@@ -854,6 +854,23 @@ exptVariables(FuncDataBase& Control,
       Control.copyVarSet(tubeName+"Segment5",
 			 tubeName+"Segment"+std::to_string(i));
 
+  Control.addVariable(tubeName+"Segment5NPorts", 5);
+  Control.addVariable(tubeName+"Segment5Port2Length", 19);
+  Control.addVariable(tubeName+"Segment5Port2Radius", 17.8);
+  Control.addParse<double>(tubeName+"Segment5Port2Wall", tubeName+"Segment5Port0Wall");
+  Control.addVariable(tubeName+"Segment5Port2FlangeRadius", 20);
+  Control.addVariable(tubeName+"Segment5Port2FlangeLength", 1);
+  Control.addVariable(tubeName+"Segment5Port2Centre", "Vec3D(0,3.3,0)");
+  Control.addVariable(tubeName+"Segment5Port2Axis", "Vec3D(0,-0.5,-0.86602540");
+
+  Control.copyVarSet(tubeName+"Segment5Port2",tubeName+"Segment5Port3");
+  Control.addVariable(tubeName+"Segment5Port3Centre", "Vec3D(0,60.9,0)");
+
+  Control.copyVarSet(tubeName+"Segment5Port0",tubeName+"Segment5Port4");
+  Control.addVariable(tubeName+"Segment5Port4Centre", "Vec3D(0,-20,0)");
+  Control.addVariable(tubeName+"Segment5Port4Radius", 10.0);
+  Control.addVariable(tubeName+"Segment5Port4FlangeRadius", 12);
+
   Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment3FlangeBRadius+10");
   Control.addParse<double>(tubeName+"OuterLength",
 			   "CosaxsExptLineTubeNoseConeLength+"
