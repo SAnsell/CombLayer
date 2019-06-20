@@ -59,7 +59,11 @@ class cosaxsTube :
   double cableWidth; ///< cable width
   double cableHeight; ///< cable height
   double cableZStep; ///< cable offset along vertical axis
-  int cableMat; ///< cable material
+  double cableLength; ///< total length
+  double cableTailRadius; ///< cable tail radius
+  int    cableMat; ///< cable material
+
+  double detYStep; ///< detector offset
 
   attachSystem::InnerZone buildZone;
 

@@ -904,7 +904,12 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
   Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
   Control.addVariable(tubeName+"CableZStep",  -21.7); // [2]
+  Control.addVariable(tubeName+"CableLength", 850.0); // dummy
+  Control.addVariable(tubeName+"CableTailRadius", 17.0);
   Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
+
+  Control.addVariable(tubeName+"DetYStep", 0.0);
+
   return;
 }
 
