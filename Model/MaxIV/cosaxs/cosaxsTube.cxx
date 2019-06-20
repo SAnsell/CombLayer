@@ -139,6 +139,7 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   outerLength(A.outerLength),
   cableWidth(A.cableWidth),
   cableHeight(A.cableHeight),
+  cableZStep(A.cableZStep),
   cableMat(A.cableMat),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
@@ -170,6 +171,7 @@ cosaxsTube::operator=(const cosaxsTube& A)
       outerLength=A.outerLength;
       cableWidth=A.cableWidth;
       cableHeight=A.cableHeight;
+      cableZStep=A.cableZStep;
       cableMat=A.cableMat;
       noseCone=A.noseCone;
       gateA=A.gateA;
@@ -210,6 +212,7 @@ cosaxsTube::populate(const FuncDataBase& Control)
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
   cableWidth=Control.EvalVar<double>(keyName+"CableWidth");
   cableHeight=Control.EvalVar<double>(keyName+"CableHeight");
+  cableZStep=Control.EvalVar<double>(keyName+"CableZStep");
   cableMat=ModelSupport::EvalMat<int>(Control,keyName+"CableMat");
 
   return;
@@ -256,8 +259,8 @@ cosaxsTube::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cableWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0-cableZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0+cableZStep),Z);
 
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   const HeadRule HR(Out);
