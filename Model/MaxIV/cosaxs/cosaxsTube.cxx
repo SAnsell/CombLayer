@@ -330,13 +330,21 @@ cosaxsTube::createObjects(Simulation& System)
   Out+=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 ");
   makeCell("Cable",System,cellIndex++,cableMat,0.0,Out);
 
-  Out = seg[0]->getFullRule("InnerFront").display() +
+  std::string Out1;
+  Out1 = seg[0]->getFullRule("InnerFront").display() +
     last->getFullRule("InnerBack").display() +
     last->getFullRule("InnerSide").display();
-  Out+=ModelSupport::getComposite(SMap,buildIndex," (-103:104:-105:106) ");
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," -103 ");
+  makeCell("InnerVoidLeft",System,cellIndex++,0,0.0,Out);
 
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 104 ");
+  makeCell("InnerVoidRight",System,cellIndex++,0,0.0,Out);
 
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 ");
+  makeCell("InnerVoidLow",System,cellIndex++,0,0.0,Out);
+
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 ");
+  makeCell("InnerVoidUp",System,cellIndex++,0,0.0,Out);
 
   return;
 }
