@@ -271,20 +271,24 @@ cosaxsTube::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0-cableZStep),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0+cableZStep),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
+				  -cableHeight);
 
   const double cableTailLength(3*M_PI/4*cableTailRadius);
-  const double cableBottomLength(detYStep);
-  const double cableUpLength(cableLength-cableTailLength+cableHeight);
+  const double cableBottomLength(detYStep/2.0);
+  const double cableUpLength(cableLength-cableTailLength+cableHeight-cableBottomLength);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(detYStep),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(cableUpLength+cableTailRadius),Y);
+  // centre of cylinders
+  const double yTail(detYStep/2.0+cableUpLength+cableTailRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*yTail,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+Y*(cableUpLength+detYStep-200),Y);
   ModelSupport::buildCylinder(SMap,buildIndex+107,
-			      Origin+Y*(cableUpLength+cableTailRadius)+Z*cableZStep,
-			      X,
+			      Origin+Y*yTail+Z*cableZStep,X,
 			      cableTailRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+117,
-			      Origin+Y*(cableUpLength+cableTailRadius)+Z*cableZStep,
-			      X,
+			      Origin+Y*yTail+Z*cableZStep,X,
 			      cableTailRadius+cableHeight);
 
 
@@ -351,27 +355,26 @@ cosaxsTube::createObjects(Simulation& System)
       last = seg[i].get();
     }
 
+  std::string side(ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 "));
+  Out=seg[0]->getFullRule("InnerFront").display();
   if (detYStep>Geometry::zeroTol)
     {
-      Out=seg[0]->getFullRule("InnerFront").display()+
-	ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 -101 ");
-      makeCell("PreCable",System,cellIndex++,0,0.0,Out);
+      Out+=ModelSupport::getComposite(SMap,buildIndex," -101 ");
+      makeCell("PreCable",System,cellIndex++,0,0.0,Out+side);
       Out = ModelSupport::getComposite(SMap,buildIndex," 101 ");
     }
-  else
-    Out=seg[0]->getFullRule("InnerFront").display();
-  Out+=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 -102 107 ");
-  makeCell("Cable1",System,cellIndex++,cableMat,0.0,Out);
+  Out+=ModelSupport::getComposite(SMap,buildIndex," -102 107 ");
+  makeCell("Cable1",System,cellIndex++,cableMat,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 -107 ");
-  makeCell("CableTailInner",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 ");
+  makeCell("CableTailInner",System,cellIndex++,0,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 102 107 -117 ");
-  makeCell("CableCableTail",System,cellIndex++,cableMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 107 -117 ");
+  makeCell("CableCableTail",System,cellIndex++,cableMat,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 102 117 ")+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 117 ")+
     last->getFullRule("InnerBack").display();
-  makeCell("Cable2",System,cellIndex++,0,0.0,Out);
+  makeCell("Cable2",System,cellIndex++,0,0.0,Out+side);
 
   std::string Out1;
   Out1 = seg[0]->getFullRule("InnerFront").display() +
@@ -382,31 +385,44 @@ cosaxsTube::createObjects(Simulation& System)
 
   Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 104 ");
   makeCell("InnerVoidRight",System,cellIndex++,0,0.0,Out);
-
+  
+  side=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 ");
   Out=seg[0]->getFullRule("InnerFront").display()+
     last->getFullRule("InnerSide").display()+
-    ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 -102 ");
-  makeCell("InnerVoidLow1",System,cellIndex++,0,0.0,Out);
+    ModelSupport::getComposite(SMap,buildIndex," -111 ");
+  makeCell("InnerVoidLow1",System,cellIndex++,0,0.0,Out+side);
 
   Out=last->getFullRule("InnerBack").display()+
     last->getFullRule("InnerSide").display()+
-    ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 102 117 ");
-  makeCell("InnerVoidLow2",System,cellIndex++,0,0.0,Out);
+    ModelSupport::getComposite(SMap,buildIndex," 102 117 ");
+  makeCell("InnerVoidLow2",System,cellIndex++,0,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 107 -117 102 ");
-  makeCell("InnerVoidLowTailCable",System,cellIndex++,cableMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 115 -117 ");
+  makeCell("InnerVoidLowTailCable",System,cellIndex++,cableMat,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 -107 102 ");
-  makeCell("InnerVoidLowTailVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -117 -115 ");
+  makeCell("InnerVoidLowTailVoid",System,cellIndex++,0,0.0,Out+side);
 
-  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 117 ");
-  makeCell("InnerVoidUp",System,cellIndex++,0,0.0,Out);
+  if (detYStep>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," 111 -102 115 -105 ");
+      ELog::EM << Out << ELog::endDiag;
+      makeCell("InnerVoidBottomLength1",System,cellIndex++,cableMat,0.0,Out+side);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 107 -117 ");
-  makeCell("InnerVoidUpTailCable",System,cellIndex++,cableMat,0.0,Out);
+      Out=last->getFullRule("InnerSide").display()+
+	ModelSupport::getComposite(SMap,buildIndex," 111 -102 -115 ");
+      makeCell("InnerVoidBottomLength2",System,cellIndex++,0,0.0,Out+side);
+    }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 -107 ");
-  makeCell("InnerVoidUpTailVoid",System,cellIndex++,0,0.0,Out);
+  side=ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 ");
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 117 ");
+  makeCell("InnerVoidUp",System,cellIndex++,0,0.0,Out+side);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 107 -117 ");
+  makeCell("InnerVoidUpTailCable",System,cellIndex++,cableMat,0.0,Out+side);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 ");
+  makeCell("InnerVoidUpTailVoid",System,cellIndex++,0,0.0,Out+side);
 
   return;
 }
