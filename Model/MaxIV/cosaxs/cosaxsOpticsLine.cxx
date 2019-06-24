@@ -142,7 +142,8 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
-  mirrorA(new xraySystem::Mirror(newName+"MirrorA")),
+  mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
+  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
   gateF(new constructSystem::GateValveCube(newName+"GateF")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),  
   diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
@@ -154,7 +155,8 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   bellowG(new constructSystem::Bellows(newName+"BellowG")),  
   gateG(new constructSystem::GateValveCube(newName+"GateG")),
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
-  mirrorB(new xraySystem::Mirror(newName+"MirrorB")),
+  mirrorFrontB(new xraySystem::Mirror(newName+"MirrorFrontB")),
+  mirrorBackB(new xraySystem::Mirror(newName+"MirrorBackB")),
   gateH(new constructSystem::GateValveCube(newName+"GateH")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),  
   diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
@@ -199,14 +201,16 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   OR.addObject(bellowE);
   OR.addObject(gateE);
   OR.addObject(mirrorBoxA);
-  OR.addObject(mirrorA);
+  OR.addObject(mirrorFrontA);
+  OR.addObject(mirrorBackA);
   OR.addObject(gateF);
   OR.addObject(bellowF);
   OR.addObject(diagBoxB);
   OR.addObject(bellowG);
   OR.addObject(gateG);
   OR.addObject(mirrorBoxB);
-  OR.addObject(mirrorB);
+  OR.addObject(mirrorFrontB);
+  OR.addObject(mirrorBackB);
   OR.addObject(gateH);
   OR.addObject(bellowH);
   OR.addObject(diagBoxC);
@@ -568,8 +572,11 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxA,2);
   mirrorBoxA->insertInCell(System,outerCell);
 
-  mirrorA->addInsertCell(mirrorBoxA->getCell("Void"));
-  mirrorA->createAll(System,*mirrorBoxA,0);
+  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void"));
+  mirrorFrontA->createAll(System,*mirrorBoxA,0);
+
+  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void"));
+  mirrorBackA->createAll(System,*mirrorBoxA,0);
 
   gateF->setFront(*mirrorBoxA,2);  
   gateF->createAll(System,*mirrorBoxA,2);
@@ -598,6 +605,11 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   mirrorBoxB->createAll(System,*gateG,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxB,2);
   mirrorBoxB->insertInCell(System,outerCell);
+
+  mirrorFrontB->addInsertCell(mirrorBoxB->getCell("Void"));
+  mirrorFrontB->createAll(System,*mirrorBoxB,0);
+  mirrorBackB->addInsertCell(mirrorBoxB->getCell("Void"));
+  mirrorBackB->createAll(System,*mirrorBoxB,0);
 
   gateH->setFront(*mirrorBoxB,2);  
   gateH->createAll(System,*mirrorBoxB,2);

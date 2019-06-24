@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/MirrorGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,23 +39,25 @@ class MirrorGenerator
 {
  private:
 
+  double xAngle;         ///< x Angle
+  double yAngle;         ///< y Angle
+  double zAngle;         ///< z Angle
    
-  double radius;           ///< mirror radius
+  double radius;         ///< mirror radius
 
-  double length;           ///< length along beam
-  double thick;            ///< Thickness in normal direction to reflection
-  double width;            ///< width accross beam
+  double length;         ///< length along beam
+  double thick;          ///< Thickness in normal direction to reflection
+  double width;          ///< width accross beam
 
-  double baseTop;        ///< Base thickness
+  double baseTop;          ///< Base thickness
   double baseDepth;        ///< Base thickness
   double baseGap;          ///< Gap
-  double baseOutWidth;        ///< Extra width/lenght of base
+  double baseOutWidth;     ///< Extra width/length of base
 
 
-  std::string mirrMat;         ///< xtalx material
+  std::string mirrMat;         ///< xtal material
   std::string baseMat;         ///< base material
     
-
  public:
 
   MirrorGenerator();
@@ -63,7 +65,7 @@ class MirrorGenerator
   MirrorGenerator& operator=(const MirrorGenerator&);
   ~MirrorGenerator();
 
-
+  void setPrimaryAngle(const double,const double,const double);
   void setRadius(const double);
   // L/T/W
   void setPlate(const double,const double,const double);
@@ -71,6 +73,7 @@ class MirrorGenerator
   void setMaterial(const std::string&,const std::string&);
   void setSupport(const double,const double,
 		  const double,const double);
+  
   
   void generateMirror(FuncDataBase&,const std::string&,
 		      const double,const double,
