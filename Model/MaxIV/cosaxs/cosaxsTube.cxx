@@ -277,13 +277,16 @@ cosaxsTube::createSurfaces()
 
   const double cableTailLength(3*M_PI/4*cableTailRadius);
   const double cableBottomLength(detYStep/2.0);
-  const double cableUpLength(cableLength-cableTailLength+cableHeight-cableBottomLength);
+  const double cableUpLength(cableLength-cableTailLength-cableBottomLength-detYStep);
 
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(detYStep),Y);
   // centre of cylinders
-  const double yTail(detYStep/2.0+cableUpLength+cableTailRadius);
+  const double yTail(detYStep+detYStep+cableUpLength+cableTailRadius);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*yTail,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+111,Origin+Y*(cableUpLength+detYStep-200),Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+111,
+				  SMap.realPtr<Geometry::Plane>(buildIndex+102),
+				  -cableBottomLength);
+
   ModelSupport::buildCylinder(SMap,buildIndex+107,
 			      Origin+Y*yTail+Z*cableZStep,X,
 			      cableTailRadius);
@@ -406,7 +409,6 @@ cosaxsTube::createObjects(Simulation& System)
   if (detYStep>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 111 -102 115 -105 ");
-      ELog::EM << Out << ELog::endDiag;
       makeCell("InnerVoidBottomLength1",System,cellIndex++,cableMat,0.0,Out+side);
 
       Out=last->getFullRule("InnerSide").display()+
