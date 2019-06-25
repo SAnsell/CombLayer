@@ -302,8 +302,8 @@ cosaxsOpticsLine::constructMonoShutter
 
   int outerCell;
   
-  gateI->setFront(FC,2);
-  gateI->createAll(System,FC,2);
+  gateI->setFront(FC,linkPt);
+  gateI->createAll(System,FC,linkPt);
   outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateI,2);
   gateI->insertInCell(System,outerCell);
 
@@ -571,11 +571,14 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   mirrorBoxA->createAll(System,*gateE,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxA,2);
   mirrorBoxA->insertInCell(System,outerCell);
-
-  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void"));
+  
+  mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
+			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  
+  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
   mirrorFrontA->createAll(System,*mirrorBoxA,0);
 
-  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void"));
+  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
   mirrorBackA->createAll(System,*mirrorBoxA,0);
 
   gateF->setFront(*mirrorBoxA,2);  
@@ -606,9 +609,13 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxB,2);
   mirrorBoxB->insertInCell(System,outerCell);
 
-  mirrorFrontB->addInsertCell(mirrorBoxB->getCell("Void"));
+  mirrorBoxB->splitObject(System,3001,mirrorBoxB->getCell("Void"),
+			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  
+  
+  mirrorFrontB->addInsertCell(mirrorBoxB->getCell("Void",0));
   mirrorFrontB->createAll(System,*mirrorBoxB,0);
-  mirrorBackB->addInsertCell(mirrorBoxB->getCell("Void"));
+  mirrorBackB->addInsertCell(mirrorBoxB->getCell("Void",1));
   mirrorBackB->createAll(System,*mirrorBoxB,0);
 
   gateH->setFront(*mirrorBoxB,2);  
