@@ -1243,6 +1243,21 @@ DBMaterial::initMaterial()
   MObj.setDensity(-5.2);
   setMaterial(MObj);
 
+  // Generic cable material
+  // Reference: material StbTCABL in MARS
+  // Mass fractions converted into atomic fractions by table 40
+  MObj.setMaterial(145,"StbTCABL",
+                   " 1001.70c  3.88760701228E-01 "
+                   " 1002.70c  4.47126239451E-05 "
+                   " 6000.70c  2.664664e-01      "
+                   " 17035.70c 1.00520773169E-01 "
+                   " 17037.70c 3.21273836065E-02 "
+                   " 29063.70c 1.46695727581E-01 "
+                   " 29065.70c 6.53842615705E-02 ","",MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-2.0272);
+  setMaterial(MObj);
+
   return;
 }
 

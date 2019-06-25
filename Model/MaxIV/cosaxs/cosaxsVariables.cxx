@@ -262,8 +262,6 @@ exptHutVariables(FuncDataBase& Control,const std::string& preName)
   Control.addVariable(hutName+"HoleRadius",7.0);
   Control.addVariable(hutName+"HoleMat","Lead");
 
-  Control.addVariable(hutName+"BackHoleRadius",51); // 50.8
-
   return;
 }
 
@@ -877,6 +875,23 @@ exptVariables(FuncDataBase& Control,
       Control.copyVarSet(tubeName+"Segment5",
 			 tubeName+"Segment"+std::to_string(i));
 
+  Control.addVariable(tubeName+"Segment5NPorts", 5);
+  Control.addVariable(tubeName+"Segment5Port2Length", 19);
+  Control.addVariable(tubeName+"Segment5Port2Radius", 17.8);
+  Control.addParse<double>(tubeName+"Segment5Port2Wall", tubeName+"Segment5Port0Wall");
+  Control.addVariable(tubeName+"Segment5Port2FlangeRadius", 20);
+  Control.addVariable(tubeName+"Segment5Port2FlangeLength", 1);
+  Control.addVariable(tubeName+"Segment5Port2Centre", "Vec3D(0,3.3,0)");
+  Control.addVariable(tubeName+"Segment5Port2Axis", "Vec3D(0,-0.5,-0.86602540");
+
+  Control.copyVarSet(tubeName+"Segment5Port2",tubeName+"Segment5Port3");
+  Control.addVariable(tubeName+"Segment5Port3Centre", "Vec3D(0,60.9,0)");
+
+  Control.copyVarSet(tubeName+"Segment5Port0",tubeName+"Segment5Port4");
+  Control.addVariable(tubeName+"Segment5Port4Centre", "Vec3D(0,-20,0)");
+  Control.addVariable(tubeName+"Segment5Port4Radius", 10.0);
+  Control.addVariable(tubeName+"Segment5Port4FlangeRadius", 12);
+
   Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment3FlangeBRadius+10");
   Control.addParse<double>(tubeName+"OuterLength",
 			   "CosaxsExptLineTubeNoseConeLength+"
@@ -906,6 +921,16 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment8Port2Axis", "Vec3D(0,1,0)");
   Control.copyVarSet(tubeName+"Segment8Port2", tubeName+"Segment8Port3");
   Control.addVariable(tubeName+"Segment8Port3Centre", "Vec3D(-34.8,0,0)"); // measured with ruler
+
+  Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
+  Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
+  Control.addVariable(tubeName+"CableZStep",  -21.7); // [2]
+  Control.addVariable(tubeName+"CableLength", 850.0); // dummy
+  Control.addVariable(tubeName+"CableTailRadius", 17.0);
+  Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
+
+  Control.addVariable(tubeName+"DetYStep", 0.0);
+
   return;
 }
 

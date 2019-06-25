@@ -137,6 +137,13 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::FrontBackCut(A),
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
+  cableWidth(A.cableWidth),
+  cableHeight(A.cableHeight),
+  cableZStep(A.cableZStep),
+  cableLength(A.cableLength),
+  cableTailRadius(A.cableTailRadius),
+  cableMat(A.cableMat),
+  detYStep(A.detYStep),
   buildZone(A.buildZone),
   noseCone(A.noseCone),
   gateA(A.gateA),
@@ -165,6 +172,13 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::FrontBackCut::operator=(A);
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
+      cableWidth=A.cableWidth;
+      cableHeight=A.cableHeight;
+      cableZStep=A.cableZStep;
+      cableLength=A.cableLength;
+      cableTailRadius=A.cableTailRadius;
+      cableMat=A.cableMat;
+      detYStep=A.detYStep;
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
@@ -202,6 +216,13 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
+  cableWidth=Control.EvalVar<double>(keyName+"CableWidth");
+  cableHeight=Control.EvalVar<double>(keyName+"CableHeight");
+  cableZStep=Control.EvalVar<double>(keyName+"CableZStep");
+  cableLength=Control.EvalVar<double>(keyName+"CableLength");
+  cableTailRadius=Control.EvalVar<double>(keyName+"CableTailRadius");
+  cableMat=ModelSupport::EvalMat<int>(Control,keyName+"CableMat");
+  detYStep=Control.EvalVar<double>(keyName+"DetYStep");
 
   return;
 }
@@ -244,6 +265,28 @@ cosaxsTube::createSurfaces()
     }
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+
+  // cable
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cableWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0-cableZStep),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0+cableZStep),Z);
+
+  const double cableTailLength(3*M_PI/4*cableTailRadius);
+  const double cableBottomLength(detYStep);
+  const double cableUpLength(cableLength-cableTailLength+cableHeight);
+
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(detYStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(cableUpLength+cableTailRadius),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,
+			      Origin+Y*(cableUpLength+cableTailRadius)+Z*cableZStep,
+			      X,
+			      cableTailRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,
+			      Origin+Y*(cableUpLength+cableTailRadius)+Z*cableZStep,
+			      X,
+			      cableTailRadius+cableHeight);
+
 
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   const HeadRule HR(Out);
@@ -307,10 +350,62 @@ cosaxsTube::createObjects(Simulation& System)
       last = seg[i].get();
     }
 
-  Out = seg[0]->getFullRule("InnerFront").display() +
+  if (detYStep>Geometry::zeroTol)
+    {
+      Out=seg[0]->getFullRule("InnerFront").display()+
+	ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 -101 ");
+      makeCell("PreCable",System,cellIndex++,0,0.0,Out);
+      Out = ModelSupport::getComposite(SMap,buildIndex," 101 ");
+    }
+  else
+    Out=seg[0]->getFullRule("InnerFront").display();
+  Out+=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 -102 107 ");
+  makeCell("Cable1",System,cellIndex++,cableMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 -107 ");
+  makeCell("CableTailInner",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 102 107 -117 ");
+  makeCell("CableCableTail",System,cellIndex++,cableMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 102 117 ")+
+    last->getFullRule("InnerBack").display();
+  makeCell("Cable2",System,cellIndex++,0,0.0,Out);
+
+  std::string Out1;
+  Out1 = seg[0]->getFullRule("InnerFront").display() +
     last->getFullRule("InnerBack").display() +
     last->getFullRule("InnerSide").display();
-  makeCell("InnerVoid",System,cellIndex++,0,0.0,Out);
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," -103 ");
+  makeCell("InnerVoidLeft",System,cellIndex++,0,0.0,Out);
+
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 104 ");
+  makeCell("InnerVoidRight",System,cellIndex++,0,0.0,Out);
+
+  Out=seg[0]->getFullRule("InnerFront").display()+
+    last->getFullRule("InnerSide").display()+
+    ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 -102 ");
+  makeCell("InnerVoidLow1",System,cellIndex++,0,0.0,Out);
+
+  Out=last->getFullRule("InnerBack").display()+
+    last->getFullRule("InnerSide").display()+
+    ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 102 117 ");
+  makeCell("InnerVoidLow2",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 107 -117 102 ");
+  makeCell("InnerVoidLowTailCable",System,cellIndex++,cableMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 -107 102 ");
+  makeCell("InnerVoidLowTailVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=Out1+ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 117 ");
+  makeCell("InnerVoidUp",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 107 -117 ");
+  makeCell("InnerVoidUpTailCable",System,cellIndex++,cableMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 106 -107 ");
+  makeCell("InnerVoidUpTailVoid",System,cellIndex++,0,0.0,Out);
 
   return;
 }
@@ -336,7 +431,7 @@ cosaxsTube::createPorts(Simulation& System)
   */
 {
   ELog::RegMethod RegA("cosaxsTube","createPorts");
-  
+
   for (size_t i=0; i<8; i++)
     seg[i]->createPorts(System);
   return;
