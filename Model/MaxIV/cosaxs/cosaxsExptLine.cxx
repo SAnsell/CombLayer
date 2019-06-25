@@ -259,8 +259,6 @@ cosaxsExptLine::buildObjects(Simulation& System)
   diagUnit->createAll(System,*doubleSlitB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagUnit,2);
   diagUnit->insertInCell(System,outerCell);
-  // diagUnit->splitObject(System,2001,outerCell,
-  // 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
   // filter holders
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
@@ -308,16 +306,10 @@ cosaxsExptLine::buildObjects(Simulation& System)
   sampleArea->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
-  
-  // setCell("SurroundVoid",outerCell);
-  // tube->insertInCell(System,outerCell);
-  // lastComp=tube;
-  // return;
-  
-  tube->insertInCell(System,outerCell);
-  tube->createPorts(System);
 
   
+  tube->insertInCell(System,outerCell);
+  tube->createPorts(System);  
   setCell("SurroundVoid",outerCell);
   lastComp=tube;
 

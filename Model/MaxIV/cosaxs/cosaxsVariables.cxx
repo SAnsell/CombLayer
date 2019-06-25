@@ -702,8 +702,8 @@ exptVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::MonoBoxGenerator VBoxGen;
   setVariable::DiffPumpGenerator DiffGen;
-
-
+  setVariable::PortItemGenerator PItemGen;
+  
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
 
@@ -828,6 +828,10 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment1WallMat", "Stainless304");
 
   Control.addVariable(tubeName+"Segment1NPorts", 1);
+
+  PItemGen.setCF<setVariable::CF63>(14.95);
+  
+  
   Control.addVariable(tubeName+"Segment1Port0Centre", "Vec3D(0,0.1,0)"); // [1]
   Control.addVariable(tubeName+"Segment1Port0Axis", "Vec3D(1,0,0)");
   Control.addVariable(tubeName+"Segment1Port0Length", 7.0); // dummy
@@ -867,6 +871,7 @@ exptVariables(FuncDataBase& Control,
   Control.copyVarSet(tubeName+"Segment1",tubeName+"Segment5");
   Control.addVariable(tubeName+"Segment5Length",264.0); // [2]
   Control.addVariable(tubeName+"Segment5NPorts", 2);
+  Control.addVariable(tubeName+"Segment5Port0OuterVoid", 1);
   Control.copyVarSet(tubeName+"Segment5Port0",tubeName+"Segment5Port1");
   Control.addVariable(tubeName+"Segment5Port0Centre", "Vec3D(0,55.1,0)"); // [1]
   Control.addVariable(tubeName+"Segment5Port1Axis", "Vec3D(-1,0,0)");
@@ -875,12 +880,13 @@ exptVariables(FuncDataBase& Control,
       Control.copyVarSet(tubeName+"Segment5",
 			 tubeName+"Segment"+std::to_string(i));
 
-  Control.addVariable(tubeName+"Segment5NPorts", 5);
-  Control.addVariable(tubeName+"Segment5Port2Length", 19);
+  // now make additional ports
+  Control.addVariable(tubeName+"Segment5NPorts", 5);      // CHANGE :: 5
+  Control.addVariable(tubeName+"Segment5Port2Length", 19.0);
   Control.addVariable(tubeName+"Segment5Port2Radius", 17.8);
   Control.addParse<double>(tubeName+"Segment5Port2Wall", tubeName+"Segment5Port0Wall");
-  Control.addVariable(tubeName+"Segment5Port2FlangeRadius", 20);
-  Control.addVariable(tubeName+"Segment5Port2FlangeLength", 1);
+  Control.addVariable(tubeName+"Segment5Port2FlangeRadius", 20.0);
+  Control.addVariable(tubeName+"Segment5Port2FlangeLength", 1.0);
   Control.addVariable(tubeName+"Segment5Port2Centre", "Vec3D(0,3.3,0)");
   Control.addVariable(tubeName+"Segment5Port2Axis", "Vec3D(0,-0.5,-0.86602540");
 
@@ -903,7 +909,7 @@ exptVariables(FuncDataBase& Control,
 			   "CosaxsExptLineTubeSegment6Length+"
 			   "CosaxsExptLineTubeSegment7Length+"
 			   "CosaxsExptLineTubeSegment8Length+"
-			   "100");
+			   "100.0");
   Control.addVariable(tubeName+"Segment8FlangeLength", 4.0); // measured with ruler
   Control.addVariable(tubeName+"Segment8FlangeBCapThick", 2.7); // measured with ruler
   // adjust the tube length by the flange B length
