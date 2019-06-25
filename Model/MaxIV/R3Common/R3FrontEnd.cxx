@@ -179,6 +179,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(magBlockM1);
+  OR.addObject(epSeparator);
   OR.addObject(chokeChamber);
       
   OR.addObject(dipolePipe);
@@ -570,7 +571,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   int outerCell;
   buildZone.setFront(getFrontRule());
-  ELog::EM<<"Back run == "<<getBackRule()<<ELog::endDiag;
   buildZone.setBack(getBackRule());
   
   MonteCarlo::Object* masterCell=
@@ -578,8 +578,6 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
-  lastComp=dipolePipe;
-
 
   magBlockM1->setCutSurf("front",undulatorFC,2);
   magBlockM1->createAll(System,undulatorFC,2);

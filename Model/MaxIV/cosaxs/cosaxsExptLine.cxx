@@ -309,14 +309,10 @@ cosaxsExptLine::buildObjects(Simulation& System)
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
   
-  setCell("SurroundVoid",outerCell);
-  tube->insertInCell(System,outerCell);
-  lastComp=tube;
-  return;
-
-  
-
-
+  // setCell("SurroundVoid",outerCell);
+  // tube->insertInCell(System,outerCell);
+  // lastComp=tube;
+  // return;
   
   tube->insertInCell(System,outerCell);
   tube->createPorts(System);

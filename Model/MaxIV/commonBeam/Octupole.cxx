@@ -136,6 +136,7 @@ Octupole::populate(const FuncDataBase& Control)
   frameRadius=Control.EvalPair<double>(keyName,baseName,"FrameRadius");
   frameThick=Control.EvalPair<double>(keyName,baseName,"FrameThick");
 
+  poleYAngle=Control.EvalPair<double>(keyName,baseName,"PoleYAngle");
   poleGap=Control.EvalPair<double>(keyName,baseName,"PoleGap");
   poleRadius=Control.EvalPair<double>(keyName,baseName,"PoleRadius");
   poleWidth=Control.EvalPair<double>(keyName,baseName,"PoleWidth");

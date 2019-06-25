@@ -101,6 +101,95 @@ R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
   nameSideIndex(4,"side");
 }
 
+
+R3ChokeChamber::R3ChokeChamber(const R3ChokeChamber& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::ExternalCut(A),
+  radius(A.radius),wallThick(A.wallThick),length(A.length),
+  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength),
+  inletXStep(A.inletXStep),inletWidth(A.inletWidth),
+  inletHeight(A.inletHeight),inletLength(A.inletLength),
+  inletThick(A.inletThick),flangeInletRadius(A.flangeInletRadius),
+  flangeInletLength(A.flangeInletLength),electronXStep(A.electronXStep),
+  electronXYAngle(A.electronXYAngle),electronRadius(A.electronRadius),
+  electronLength(A.electronLength),electronThick(A.electronThick),
+  flangeElectronRadius(A.flangeElectronRadius),
+  flangeElectronLength(A.flangeElectronLength),
+  photonXStep(A.photonXStep),photonRadius(A.photonRadius),
+  photonLength(A.photonLength),photonThick(A.photonThick),
+  flangePhotonRadius(A.flangePhotonRadius),
+  flangePhotonLength(A.flangePhotonLength),
+  sideRadius(A.sideRadius),sideLength(A.sideLength),
+  sideThick(A.sideThick),flangeSideRadius(A.flangeSideRadius),
+  flangeSideLength(A.flangeSideLength),voidMat(A.voidMat),
+  wallMat(A.wallMat),flangeMat(A.flangeMat),epPairSet(A.epPairSet),
+  photOrg(A.photOrg),elecOrg(A.elecOrg),elecXAxis(A.elecXAxis),
+  elecYAxis(A.elecYAxis),flangeOrg(A.flangeOrg)
+  /*!
+    Copy constructor
+    \param A :: R3ChokeChamber to copy
+  */
+{}
+
+R3ChokeChamber&
+R3ChokeChamber::operator=(const R3ChokeChamber& A)
+  /*!
+    Assignment operator
+    \param A :: R3ChokeChamber to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      radius=A.radius;
+      wallThick=A.wallThick;
+      length=A.length;
+      flangeRadius=A.flangeRadius;
+      flangeLength=A.flangeLength;
+      inletXStep=A.inletXStep;
+      inletWidth=A.inletWidth;
+      inletHeight=A.inletHeight;
+      inletLength=A.inletLength;
+      inletThick=A.inletThick;
+      flangeInletRadius=A.flangeInletRadius;
+      flangeInletLength=A.flangeInletLength;
+      electronXStep=A.electronXStep;
+      electronXYAngle=A.electronXYAngle;
+      electronRadius=A.electronRadius;
+      electronLength=A.electronLength;
+      electronThick=A.electronThick;
+      flangeElectronRadius=A.flangeElectronRadius;
+      flangeElectronLength=A.flangeElectronLength;
+      photonXStep=A.photonXStep;
+      photonRadius=A.photonRadius;
+      photonLength=A.photonLength;
+      photonThick=A.photonThick;
+      flangePhotonRadius=A.flangePhotonRadius;
+      flangePhotonLength=A.flangePhotonLength;
+      sideRadius=A.sideRadius;
+      sideLength=A.sideLength;
+      sideThick=A.sideThick;
+      flangeSideRadius=A.flangeSideRadius;
+      flangeSideLength=A.flangeSideLength;
+      voidMat=A.voidMat;
+      wallMat=A.wallMat;
+      flangeMat=A.flangeMat;
+      epPairSet=A.epPairSet;
+      photOrg=A.photOrg;
+      elecOrg=A.elecOrg;
+      elecXAxis=A.elecXAxis;
+      elecYAxis=A.elecYAxis;
+      flangeOrg=A.flangeOrg;
+    }
+  return *this;
+}
+
   
 R3ChokeChamber::~R3ChokeChamber() 
   /*!
@@ -188,14 +277,15 @@ R3ChokeChamber::createUnitVector(const attachSystem::FixedComp& FC,
     }
   else
     {
+      // this must be done here because we didnt
+      // know the value of X / electronXStep at setEPOriginPair()
+      elecOrg+=X*electronXStep;   
       elecXAxis=elecYAxis*Z;
       Origin=(elecOrg+photOrg)/2.0+Y*inletLength;
     }
-  ELog::EM<<"Photon == "<<photOrg<<ELog::endDiag;
   return;
 }
-
-
+  
 void
 R3ChokeChamber::createSurfaces()
   /*!
@@ -210,7 +300,6 @@ R3ChokeChamber::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*inletLength,Y);
       setCutSurf("front",SMap.realSurf(buildIndex+101));
     }
-
   // centre dividers
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
@@ -222,8 +311,7 @@ R3ChokeChamber::createSurfaces()
     
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,radius+wallThick);
   SurfMap::addSurf("WallCyl",SMap.realSurf(buildIndex+17));
-
-
+  
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,flangeRadius);
   
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(length/2.0),Z);
@@ -233,6 +321,7 @@ R3ChokeChamber::createSurfaces()
 			   Origin-Z*(length/2.0-flangeLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(length/2.0-flangeLength),Z);
+
 
   // Inlet Pipe (100)
   //-----------------
@@ -299,8 +388,6 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+402,Origin-X*sideLength,X);
   ModelSupport::buildPlane
     (SMap,buildIndex+412,Origin-X*(sideLength-flangeSideLength),X);
-
-  
   
   return;
 }
@@ -469,13 +556,12 @@ R3ChokeChamber::setEPOriginPair(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("R3ChokeChamber","setEPOriginPair");
 
   photOrg=FC.getLinkPt(photonIndex);
-  elecOrg=FC.getLinkPt(electronIndex)+X*electronXStep;
+  elecOrg=FC.getLinkPt(electronIndex);
   
   Geometry::Vec3D photAxis=FC.getLinkAxis(photonIndex);
   elecYAxis=FC.getLinkAxis(electronIndex);
   
   epPairSet=1;
-  
   return;
 }
 

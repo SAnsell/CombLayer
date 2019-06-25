@@ -316,7 +316,6 @@ cosaxsTube::createObjects(Simulation& System)
   buildZone.setBack(getRule("back"));//HeadRule(-SMap.realSurf(buildIndex+2)));
 
   MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
-
   noseCone->createAll(System, *this, 0);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
@@ -392,7 +391,8 @@ cosaxsTube::createObjects(Simulation& System)
     ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 102 117 ");
   makeCell("InnerVoidLow2",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 107 -117 102 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 103 -104 -105 107 -117 102 ");
   makeCell("InnerVoidLowTailCable",System,cellIndex++,cableMat,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 103 -104 -105 -107 102 ");

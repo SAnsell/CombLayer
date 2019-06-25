@@ -36,7 +36,7 @@ namespace xraySystem
   \class cosaxsTube
   \version 1.0
   \author Konstantin Batkov
-  \date 6 May 2019
+  \date May 2019
   \brief CoSAXS Submarine
 */
 
