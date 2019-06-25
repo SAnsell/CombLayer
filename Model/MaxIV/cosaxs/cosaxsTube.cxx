@@ -89,7 +89,7 @@
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTubeStartPlate.h"
 #include "cosaxsTubeBeamDump.h"
-#include "cosaxsWAXSDetector.h"
+#include "cosaxsTubeWAXSDetector.h"
 #include "cosaxsTubeAirBox.h"
 
 #include "ContainedGroup.h"
@@ -114,7 +114,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
   startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate")),
   beamDump(new xraySystem::cosaxsTubeBeamDump(keyName+"BeamDump")),
-  waxs(new xraySystem::cosaxsWAXSDetector(keyName+"WAXS")),
+  waxs(new xraySystem::cosaxsTubeWAXSDetector(keyName+"WAXS")),
   airBox(new xraySystem::cosaxsTubeAirBox(keyName+"AirBox"))
  /*!
     Constructor BUT ALL variable are left unpopulated.

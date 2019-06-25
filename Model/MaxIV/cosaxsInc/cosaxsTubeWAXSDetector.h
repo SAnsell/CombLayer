@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsWAXSDetector.h
+ * File:   Model/MaxIV/cosaxsInc/cosaxsTubeWAXSDetector.h
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsWAXSDetector_h
-#define xraySystem_cosaxsWAXSDetector_h
+#ifndef xraySystem_cosaxsTubeWAXSDetector_h
+#define xraySystem_cosaxsTubeWAXSDetector_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class cosaxsWAXSDetector
+  \class cosaxsTubeWAXSDetector
   \version 1.0
   \author Konstantin Batkov
   \date 25 Jun 2019
   \brief Wide-angle X-ray scattering (WAXS) detector
 */
 
-class cosaxsWAXSDetector :
+class cosaxsTubeWAXSDetector :
     public attachSystem::ContainedComp,
     public attachSystem::FixedOffset,
     public attachSystem::CellMap,
@@ -62,11 +62,11 @@ class cosaxsWAXSDetector :
 
  public:
 
-  cosaxsWAXSDetector(const std::string&);
-  cosaxsWAXSDetector(const cosaxsWAXSDetector&);
-  cosaxsWAXSDetector& operator=(const cosaxsWAXSDetector&);
-  virtual cosaxsWAXSDetector* clone() const;
-  virtual ~cosaxsWAXSDetector();
+  cosaxsTubeWAXSDetector(const std::string&);
+  cosaxsTubeWAXSDetector(const cosaxsTubeWAXSDetector&);
+  cosaxsTubeWAXSDetector& operator=(const cosaxsTubeWAXSDetector&);
+  virtual cosaxsTubeWAXSDetector* clone() const;
+  virtual ~cosaxsTubeWAXSDetector();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 

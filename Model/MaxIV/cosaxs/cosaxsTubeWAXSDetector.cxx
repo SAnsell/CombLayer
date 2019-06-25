@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxs/cosaxsWAXSDetector.cxx
+ * File:   Model/MaxIV/cosaxs/cosaxsTubeWAXSDetector.cxx
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -83,12 +83,12 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
-#include "cosaxsWAXSDetector.h"
+#include "cosaxsTubeWAXSDetector.h"
 
 namespace xraySystem
 {
 
-cosaxsWAXSDetector::cosaxsWAXSDetector(const std::string& Key)  :
+cosaxsTubeWAXSDetector::cosaxsTubeWAXSDetector(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
@@ -100,7 +100,7 @@ cosaxsWAXSDetector::cosaxsWAXSDetector(const std::string& Key)  :
   */
 {}
 
-cosaxsWAXSDetector::cosaxsWAXSDetector(const cosaxsWAXSDetector& A) :
+cosaxsTubeWAXSDetector::cosaxsTubeWAXSDetector(const cosaxsTubeWAXSDetector& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
@@ -111,15 +111,15 @@ cosaxsWAXSDetector::cosaxsWAXSDetector(const cosaxsWAXSDetector& A) :
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: cosaxsWAXSDetector to copy
+    \param A :: cosaxsTubeWAXSDetector to copy
   */
 {}
 
-cosaxsWAXSDetector&
-cosaxsWAXSDetector::operator=(const cosaxsWAXSDetector& A)
+cosaxsTubeWAXSDetector&
+cosaxsTubeWAXSDetector::operator=(const cosaxsTubeWAXSDetector& A)
   /*!
     Assignment operator
-    \param A :: cosaxsWAXSDetector to copy
+    \param A :: cosaxsTubeWAXSDetector to copy
     \return *this
   */
 {
@@ -140,30 +140,30 @@ cosaxsWAXSDetector::operator=(const cosaxsWAXSDetector& A)
   return *this;
 }
 
-cosaxsWAXSDetector*
-cosaxsWAXSDetector::clone() const
+cosaxsTubeWAXSDetector*
+cosaxsTubeWAXSDetector::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new cosaxsWAXSDetector(*this);
+    return new cosaxsTubeWAXSDetector(*this);
 }
 
-cosaxsWAXSDetector::~cosaxsWAXSDetector()
+cosaxsTubeWAXSDetector::~cosaxsTubeWAXSDetector()
   /*!
     Destructor
   */
 {}
 
 void
-cosaxsWAXSDetector::populate(const FuncDataBase& Control)
+cosaxsTubeWAXSDetector::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("cosaxsWAXSDetector","populate");
+  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","populate");
 
   FixedOffset::populate(Control);
 
@@ -179,7 +179,7 @@ cosaxsWAXSDetector::populate(const FuncDataBase& Control)
 }
 
 void
-cosaxsWAXSDetector::createUnitVector(const attachSystem::FixedComp& FC,
+cosaxsTubeWAXSDetector::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -187,7 +187,7 @@ cosaxsWAXSDetector::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("cosaxsWAXSDetector","createUnitVector");
+  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -196,12 +196,12 @@ cosaxsWAXSDetector::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-cosaxsWAXSDetector::createSurfaces()
+cosaxsTubeWAXSDetector::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("cosaxsWAXSDetector","createSurfaces");
+  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createSurfaces");
 
   if (!frontActive())
     {
@@ -245,13 +245,13 @@ cosaxsWAXSDetector::createSurfaces()
 }
 
 void
-cosaxsWAXSDetector::createObjects(Simulation& System)
+cosaxsTubeWAXSDetector::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("cosaxsWAXSDetector","createObjects");
+  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createObjects");
 
   std::string Out;
   const std::string frontStr(frontRule());
@@ -272,12 +272,12 @@ cosaxsWAXSDetector::createObjects(Simulation& System)
 
 
 void
-cosaxsWAXSDetector::createLinks()
+cosaxsTubeWAXSDetector::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("cosaxsWAXSDetector","createLinks");
+  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createLinks");
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
@@ -297,7 +297,7 @@ cosaxsWAXSDetector::createLinks()
 }
 
 void
-cosaxsWAXSDetector::createAll(Simulation& System,
+cosaxsTubeWAXSDetector::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -307,7 +307,7 @@ cosaxsWAXSDetector::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("cosaxsWAXSDetector","createAll");
+  ELog::RegMethod RegA("cosaxsTubeWAXSDetector","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
