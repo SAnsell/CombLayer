@@ -920,6 +920,13 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"WAXSWallThick", 0.3); // [2]
   Control.addVariable(tubeName+"WAXSMainMat", "StbTCABL"); // guess
   Control.addVariable(tubeName+"WAXSWallMat", "Aluminium");
+
+  Control.addVariable(tubeName+"AirBoxLength", 32.0); // [2]
+  Control.addVariable(tubeName+"AirBoxWidth", 30.8); // [2]
+  Control.addVariable(tubeName+"AirBoxHeight", 53.0); // [2]
+  Control.addVariable(tubeName+"AirBoxWallThick", 0.3); // [2]
+  Control.addVariable(tubeName+"AirBoxMainMat", "Air");
+  Control.addVariable(tubeName+"AirBoxWallMat", "Aluminium");
   return;
 }
 
