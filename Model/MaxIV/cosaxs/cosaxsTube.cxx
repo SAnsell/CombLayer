@@ -89,6 +89,7 @@
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTubeStartPlate.h"
 #include "cosaxsTubeBeamDump.h"
+#include "cosaxsWAXSDetector.h"
 
 #include "ContainedGroup.h"
 #include "portItem.h"
@@ -111,7 +112,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   noseCone(new xraySystem::cosaxsTubeNoseCone(keyName+"NoseCone")),
   gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
   startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate")),
-  beamDump(new xraySystem::cosaxsTubeBeamDump(keyName+"BeamDump"))
+  beamDump(new xraySystem::cosaxsTubeBeamDump(keyName+"BeamDump")),
+  waxs(new xraySystem::cosaxsWAXSDetector(keyName+"WAXS"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -123,7 +125,6 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(noseCone);
   OR.addObject(gateA);
   OR.addObject(startPlate);
-  OR.addObject(beamDump);
 
   for(size_t i=0;i<8;i++)
     {
@@ -131,6 +132,9 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
 	(keyName+"Segment"+std::to_string(i+1));
       OR.addObject(seg[i]);
     }
+
+  OR.addObject(beamDump);
+  OR.addObject(waxs);
 }
 
 cosaxsTube::cosaxsTube(const cosaxsTube& A) :
@@ -154,7 +158,8 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   gateA(A.gateA),
   startPlate(A.startPlate),
   seg(A.seg),
-  beamDump(A.beamDump)
+  beamDump(A.beamDump),
+  waxs(A.waxs)
   /*!
     Copy constructor
     \param A :: cosaxsTube to copy
@@ -188,8 +193,9 @@ cosaxsTube::operator=(const cosaxsTube& A)
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
-      beamDump=A.beamDump;
       seg=A.seg;
+      beamDump=A.beamDump;
+      waxs=A.waxs;
     }
   return *this;
 }
@@ -376,6 +382,10 @@ cosaxsTube::createObjects(Simulation& System)
   outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*beamDump,2);
   beamDump->insertInCell(System,outerCell);
 
+  waxs->setFront(*beamDump,2);
+  waxs->createAll(System,*beamDump,2);
+  outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*waxs,2);
+  waxs->insertInCell(System,outerCell);
   
 
   // std::string side(ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 "));

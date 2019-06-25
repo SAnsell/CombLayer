@@ -914,6 +914,12 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"BeamDumpRadius", 0.15); // [2]
   Control.addVariable(tubeName+"BeamDumpMat", "Tantalum");
 
+  Control.addVariable(tubeName+"WAXSLength", 34.5); // [2]
+  Control.addVariable(tubeName+"WAXSWidth", 23.52); // [2]
+  Control.addVariable(tubeName+"WAXSHeight", 22.3); // [2]
+  Control.addVariable(tubeName+"WAXSWallThick", 0.3); // [2]
+  Control.addVariable(tubeName+"WAXSMainMat", "StbTCABL"); // guess
+  Control.addVariable(tubeName+"WAXSWallMat", "Aluminium");
   return;
 }
 
