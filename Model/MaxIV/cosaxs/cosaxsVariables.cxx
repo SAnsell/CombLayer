@@ -910,6 +910,10 @@ exptVariables(FuncDataBase& Control,
 
   Control.addVariable(tubeName+"DetYStep", 0.0);
 
+  Control.addVariable(tubeName+"BeamDumpLength", 0.6); // [2]
+  Control.addVariable(tubeName+"BeamDumpRadius", 0.15); // [2]
+  Control.addVariable(tubeName+"BeamDumpMat", "Tantalum");
+
   return;
 }
 

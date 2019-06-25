@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/cosaxsInc/cosaxsTube.h
+ * File:   Model/MaxIV/cosaxsInc/cosaxsTubeBeamDump.h
  *
  * Copyright (c) 2019 by Konstantin Batkov
  *
@@ -19,32 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_cosaxsTube_h
-#define xraySystem_cosaxsTube_h
+#ifndef xraySystem_cosaxsTubeBeamDump_h
+#define xraySystem_cosaxsTubeBeamDump_h
 
 class Simulation;
-
-namespace constructSystem
-{
-    class PipeTube;
-}
 
 namespace xraySystem
 {
 
 /*!
-  \class cosaxsTube
+  \class cosaxsTubeBeamDump
   \version 1.0
   \author Konstantin Batkov
-  \date 6 May 2019
-  \brief CoSAXS Submarine
+  \date 25 Jun 2019
+  \brief Beam dump
 */
 
-  class cosaxsTubeNoseCone;
-  class cosaxsTubeStartPlate;
-  class cosaxsTubeBeamDump;
-
-class cosaxsTube :
+class cosaxsTubeBeamDump :
     public attachSystem::ContainedComp,
     public attachSystem::FixedOffset,
     public attachSystem::CellMap,
@@ -53,27 +44,9 @@ class cosaxsTube :
 {
  private:
 
-  bool delayPortFlag; ///< Delay building port
-  double outerRadius; ///< Radius of bounding volume
-  double outerLength; ///< Length of bounding volume
-
-  double cableWidth; ///< cable width
-  double cableHeight; ///< cable height
-  double cableZStep; ///< cable offset along vertical axis
-  double cableLength; ///< total length
-  double cableTailRadius; ///< cable tail radius
-  int    cableMat; ///< cable material
-
-  double detYStep; ///< detector offset
-
-  attachSystem::InnerZone buildZone;
-  attachSystem::InnerZone buildZoneTube;
-
-  std::shared_ptr<xraySystem::cosaxsTubeNoseCone> noseCone;
-  std::shared_ptr<constructSystem::GateValveCylinder> gateA;
-  std::shared_ptr<xraySystem::cosaxsTubeStartPlate> startPlate;
-  std::array<std::shared_ptr<constructSystem::PipeTube>, 8> seg;
-  std::shared_ptr<xraySystem::cosaxsTubeBeamDump> beamDump;
+  double length;  ///< Total length
+  double radius;  ///< Radius
+  int    mat;     ///< Material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -85,15 +58,12 @@ class cosaxsTube :
 
  public:
 
-  cosaxsTube(const std::string&);
-  cosaxsTube(const cosaxsTube&);
-  cosaxsTube& operator=(const cosaxsTube&);
-  virtual cosaxsTube* clone() const;
-  virtual ~cosaxsTube();
+  cosaxsTubeBeamDump(const std::string&);
+  cosaxsTubeBeamDump(const cosaxsTubeBeamDump&);
+  cosaxsTubeBeamDump& operator=(const cosaxsTubeBeamDump&);
+  virtual cosaxsTubeBeamDump* clone() const;
+  virtual ~cosaxsTubeBeamDump();
 
-  /// set delay
-  void delayPorts() { delayPortFlag=1; }
-  void createPorts(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
