@@ -231,9 +231,9 @@ COSAXS::build(Simulation& System,
       return;
     }
 
+  exptBeam->setStopPoint(stopPoint);
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptBeam->setCutSurf("front",opticsHut->getSurf("outerWall"));
-  //  exptBeam->setCutSurf("back",exptHut->getSurf("innerBack"));
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -243,10 +243,12 @@ COSAXS::build(Simulation& System,
   const std::string tubeName(exptBeam->getKeyName()+"Tube");
   const std::string seg3name(tubeName+"Segment3");
 
+  return;
+  
   const attachSystem::CellMap* tube =
-    System.getObjectThrow<attachSystem::CellMap>(tubeName,"Component not found");;
+    System.getObjectThrow<attachSystem::CellMap>(tubeName,"Tube CellMap");
   const attachSystem::SurfMap* seg3Surf =
-    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Component not found");
+    System.getObjectThrow<attachSystem::SurfMap>(seg3name,"Surf of Segment3");
 
   HeadRule wallCut;
   wallCut.addUnion(exptHut->getSurf("innerBack"));
