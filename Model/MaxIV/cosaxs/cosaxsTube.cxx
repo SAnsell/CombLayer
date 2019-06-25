@@ -347,25 +347,22 @@ cosaxsTube::createObjects(Simulation& System)
       seg[i]->deleteCell(System,"Void");
       if (i==5)
 	{
-	  ELog::EM<<"Cell "<<getCell("OuterVoid",i+2)<<ELog::endDiag;
-	  ELog::EM<<"Cell "<<getCell("OuterVoid",i+3)<<ELog::endDiag;
-	  seg[i]->splitObject
+	  // paired cellVec:
+	  std::vector<int> CellVec;
+	  CellVec=seg[i]->splitObject
 	    (System,3001,getCell("OuterVoid",i+2),
 	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0.5));
-
-	  ELog::EM<<"Cell "<<getCell("OuterVoid",i+3)<<ELog::endDiag;	  
-	  // seg[i]->splitObject
-	  //   (System,3002,getCell("OuterVoid",i+2),
-	  //    Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
-
-	  ELog::EM<<"Cell "<<getCell("OuterVoid",i+2)<<ELog::endDiag;
-	  ELog::EM<<"Cell "<<getCell("OuterVoid",i+3)<<ELog::endDiag;
-	  ELog::EM<<"Cell="<<*System.findObject(getCell("OuterVoid",i+3))<<ELog::endDiag;
-	  //	  seg[i]->splitObject
-	  //	    (System,3003,getCell("OuterVoid",i+3),
-	  //	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.3));
-	  ELog::EM<<"Cell="<<*System.findObject(getCell("OuterVoid",i+3))<<ELog::endDiag;
-
+	  this->addCell("OuterVoid",CellVec.back());
+	  
+	  CellVec=seg[i]->splitObject
+	    (System,3002,getCell("OuterVoid",i+2),
+	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
+	  this->addCell("OuterVoid",CellVec.back());
+	  
+	  CellVec=seg[i]->splitObject
+	    (System,3003,getCell("OuterVoid",i+4),
+	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
+	  this->addCell("OuterVoid",CellVec.back());
 	  
 	  cellIndex+=4;
 	}

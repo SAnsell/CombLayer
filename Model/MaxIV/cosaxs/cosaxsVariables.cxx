@@ -885,6 +885,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"Segment5Port2Length", 19.0);
   Control.addVariable(tubeName+"Segment5Port2Radius", 17.8);
   Control.addParse<double>(tubeName+"Segment5Port2Wall", tubeName+"Segment5Port0Wall");
+  Control.addVariable(tubeName+"Segment5Port2OuterVoid", 1);
   Control.addVariable(tubeName+"Segment5Port2FlangeRadius", 20.0);
   Control.addVariable(tubeName+"Segment5Port2FlangeLength", 1.0);
   Control.addVariable(tubeName+"Segment5Port2Centre", "Vec3D(0,3.3,0)");
