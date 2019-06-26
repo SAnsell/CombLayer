@@ -155,7 +155,6 @@ balderFrontEnd::buildUndulator(Simulation& System,
   
   CellMap::addCell("WiggerOuter",outerCell);
   wigglerBox->insertInCell(System,outerCell);
-  ELog::EM<<"Point == "<<wigglerBox->getLinkPt(2)<<ELog::endDiag;
   return *wigglerBox;
 
 }

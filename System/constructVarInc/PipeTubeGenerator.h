@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/VacBoxGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@ class PipeTubeGenerator
   double ACap;                ///< Flange Cap A
   double BCap;                ///< Flange Cap B
     
-  std::string voidMat;          ///< Primary default mat
+  std::string voidMat;          ///< inner void mat
   std::string wallMat;          ///< Primary default mat
-  std::string capMat;          ///< Primary default mat
+  std::string capMat;           ///< Cap material
 
  public:
 

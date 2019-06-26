@@ -69,6 +69,10 @@ class cosaxsExptLine :
   public attachSystem::CellMap
 {
  private:
+
+  /// point to stop [normal none]
+  std::string stopPoint;          
+
   /// construction space for main object
   attachSystem::InnerZone buildZone;
 
@@ -114,6 +118,8 @@ class cosaxsExptLine :
   cosaxsExptLine& operator=(const cosaxsExptLine&);
   ~cosaxsExptLine();
 
+  /// set stop point
+  void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

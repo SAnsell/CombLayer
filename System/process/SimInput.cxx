@@ -147,8 +147,8 @@ processExitChecks(Simulation& System,
 	  ELog::EM<<"NEEDS TO BE RE-WRITTEN SO WORKS STARTING"
 	    " ON A SURFACE"<<ELog::endCrit;
 
-	  if (!SValidCheck.runPoint(System,CPoint,
-				    IParam.getValue<size_t>("validCheck")))
+	  if (!SValidCheck.runPoint
+	      (System,CPoint,IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
 	}
       else if (IParam.flag("validAll"))

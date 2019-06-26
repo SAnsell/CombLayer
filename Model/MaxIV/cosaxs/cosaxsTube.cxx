@@ -341,9 +341,7 @@ cosaxsTube::createObjects(Simulation& System)
   buildZone.setBack(getRule("back"));//HeadRule(-SMap.realSurf(buildIndex+2)));
 
   MonteCarlo::Object* masterCell=buildZone.constructMasterCell(System,*this);
-
   noseCone->createAll(System, *this, 0);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,-1);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
 
@@ -372,6 +370,27 @@ cosaxsTube::createObjects(Simulation& System)
       // delete the individual inner void cells in order to create
       // a common InnerVoid after this loop
       seg[i]->deleteCell(System,"Void");
+      if (i==5)
+	{
+	  // paired cellVec:
+	  std::vector<int> CellVec;
+	  CellVec=seg[i]->splitObject
+	    (System,3001,getCell("OuterVoid",i+2),
+	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0.5));
+	  this->addCell("OuterVoid",CellVec.back());
+	  
+	  CellVec=seg[i]->splitObject
+	    (System,3002,getCell("OuterVoid",i+2),
+	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
+	  this->addCell("OuterVoid",CellVec.back());
+	  
+	  CellVec=seg[i]->splitObject
+	    (System,3003,getCell("OuterVoid",i+4),
+	     Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
+	  this->addCell("OuterVoid",CellVec.back());
+	  
+	  cellIndex+=4;
+	}
 
       last = seg[i].get();
     }

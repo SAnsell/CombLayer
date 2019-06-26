@@ -171,7 +171,7 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Pipe",System,undulator->getCell("Void"));
 
-  ELog::EM<<"Undulater - "<<undulatorPipe->getCentre()<<ELog::endDiag;
+  ELog::EM<<"Undulater Centre - "<<undulatorPipe->getCentre()<<ELog::endDiag;
   return *undulatorPipe;
 }
 

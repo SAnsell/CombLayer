@@ -43,7 +43,7 @@ class R3ChokeChamber :
   public attachSystem::ExternalCut
 {
  private:
-
+  
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube
   double length;              ///< Main length
@@ -92,6 +92,8 @@ class R3ChokeChamber :
 
   Geometry::Vec3D flangeOrg;      ///< flange origin
 
+  void special();
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();

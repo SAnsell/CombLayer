@@ -3,7 +3,7 @@
  
  * File:   funcBase/FValue.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -592,6 +592,18 @@ FValue<Geometry::Vec3D>::getValue(std::string& V) const
   V=cx.str();
   const_cast<int&>(active)++;
   return 1;
+}
+
+template<>
+void
+FValue<Geometry::Vec3D>::write(std::ostream& OX) const
+  /*!
+    Write out the variable
+    \param OX :: Output stream
+   */
+{
+  OX<<"Vec3D("<<Value[0]<<","<<Value[1]<<","<<Value[2]<<")";
+  return;
 }
 
 template<typename T>

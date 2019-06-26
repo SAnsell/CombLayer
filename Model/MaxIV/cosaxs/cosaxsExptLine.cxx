@@ -259,8 +259,6 @@ cosaxsExptLine::buildObjects(Simulation& System)
   diagUnit->createAll(System,*doubleSlitB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagUnit,2);
   diagUnit->insertInCell(System,outerCell);
-  // diagUnit->splitObject(System,2001,outerCell,
-  // 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
   // filter holders
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
@@ -283,6 +281,7 @@ cosaxsExptLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
   gateB->insertInCell(System,outerCell);
 
+  
   diffPump->setCutSurf("front",*gateB,2);
   diffPump->createAll(System,*gateB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPump,2);
@@ -294,8 +293,11 @@ cosaxsExptLine::buildObjects(Simulation& System)
     (System,masterCell,*telescopicSystem,2);
   telescopicSystem->insertInCell(System,outerCell);
 
+  // GOOD ABOVE this point:
+  
   tube->delayPorts();
   tube->createAll(System,*this,0);
+
 
   sampleArea->setFront(*telescopicSystem,2);
   sampleArea->setBack(*tube,1);
@@ -304,10 +306,10 @@ cosaxsExptLine::buildObjects(Simulation& System)
   sampleArea->insertInCell(System,outerCell);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*tube,2);
-  tube->insertInCell(System,outerCell);
-  tube->createPorts(System);
 
   
+  tube->insertInCell(System,outerCell);
+  tube->createPorts(System);  
   setCell("SurroundVoid",outerCell);
   lastComp=tube;
 

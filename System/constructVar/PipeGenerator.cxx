@@ -62,7 +62,7 @@ PipeGenerator::PipeGenerator() :
   pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
   claddingThick(0.0),flangeARadius(12.0),flangeALen(1.0),
   flangeBRadius(12.0),flangeBLen(1.0),
-  windowRadius(10.0),windowThick(0.5),
+  windowRadius(-2.0),windowThick(0.1),
   pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
   backWindowMat("Silicon300K"),
   voidMat("Void"),claddingMat("B4C")
@@ -343,8 +343,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   const double realFlangeBRadius=(flangeBRadius<0.0) ?
     minRadius-flangeBRadius : flangeBRadius;
 
-  realWindowRadius=std::min(realWindowRadius,realFlangeARadius);
-  realWindowRadius=std::min(realWindowRadius,realFlangeBRadius);
+  realWindowRadius=std::min(realWindowRadius,realFlangeARadius*0.95);
+  realWindowRadius=std::min(realWindowRadius,realFlangeBRadius*0.95);
   const size_t activeWFlag((windowThick<Geometry::zeroTol) ? 0 : 3);
     
     // VACUUM PIPES:
