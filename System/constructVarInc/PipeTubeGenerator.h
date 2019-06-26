@@ -50,9 +50,9 @@ class PipeTubeGenerator
   double ACap;                ///< Flange Cap A
   double BCap;                ///< Flange Cap B
     
-  std::string voidMat;          ///< Primary default mat
+  std::string voidMat;          ///< inner void mat
   std::string wallMat;          ///< Primary default mat
-  std::string capMat;          ///< Primary default mat
+  std::string capMat;           ///< Cap material
 
  public:
 

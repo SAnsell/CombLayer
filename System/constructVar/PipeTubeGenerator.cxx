@@ -72,8 +72,8 @@ PipeTubeGenerator::PipeTubeGenerator() :
 PipeTubeGenerator::PipeTubeGenerator(const PipeTubeGenerator& A) : 
   radius(A.radius),wallThick(A.wallThick),flangeALen(A.flangeALen),
   flangeARadius(A.flangeARadius),flangeBLen(A.flangeBLen),
-  flangeBRadius(A.flangeBRadius),voidMat(A.voidMat),
-  wallMat(A.wallMat)
+  flangeBRadius(A.flangeBRadius),ACap(A.ACap),BCap(A.BCap),
+  voidMat(A.voidMat),wallMat(A.wallMat),capMat(A.capMat)
   /*!
     Copy constructor
     \param A :: PipeTubeGenerator to copy
@@ -96,8 +96,11 @@ PipeTubeGenerator::operator=(const PipeTubeGenerator& A)
       flangeARadius=A.flangeARadius;
       flangeBLen=A.flangeBLen;
       flangeBRadius=A.flangeBRadius;
+      ACap=A.ACap;
+      BCap=A.BCap;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
+      capMat=A.capMat;
     }
   return *this;
 }
@@ -215,6 +218,8 @@ void
 PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
   /*!
     Set the flange cap values
+    \param AFlag :: First Cap true
+    \param BFlag :: Second Cap true
    */
 {
   ACap= (AFlag) ? flangeALen : 0;

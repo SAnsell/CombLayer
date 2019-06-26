@@ -3,7 +3,7 @@
  
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -813,6 +813,7 @@ exptVariables(FuncDataBase& Control,
   // [2] = measured in X032_CoSAXS_(2019-04-25).step
   Control.addVariable(tubeName+"StartPlateThick", 2.7); // [1]
   Control.addVariable(tubeName+"StartPlateRadius", 57.8);  // [1], 1156/2.0 mm
+
   // According to [1], the PortRadius is 50.2/2 = 25.1 cm, but here we set it to
   // 14.27 cm - the port radius of the gasket plate betwen GateA and StartPlate
   // (which we do not build)
@@ -845,8 +846,7 @@ exptVariables(FuncDataBase& Control,
   // segment 3: short without ports before the wall
   segName=tubeName+"Segment3";
   setVariable::PipeTubeGenerator WallTubeGen(SimpleTubeGen);
-  ELog::EM<<"Check flange thick"<<ELog::endCrit;
-  WallTubeGen.setAFlange(4.3,0.6);
+  WallTubeGen.setAFlange(57.8,3.7);
   WallTubeGen.setBFlange(70.0,1.0);
   // [2] 1 added to have distance 378.7 as in [1]
   WallTubeGen.generateTube(Control,segName,0.0,32.8+1.0);
@@ -855,46 +855,57 @@ exptVariables(FuncDataBase& Control,
 
   // segment 4: longer with 2 ports right after the wall
   segName=tubeName+"Segment4";
+  SimpleTubeGen.setAFlange(70.0,1.0);
   SimpleTubeGen.generateTube(Control,segName,0.0,238.2);
-  Control.addVariable(segName+"NPorts",2);
   
-  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,38.2,0),-PX);
+  Control.addVariable(segName+"NPorts",2);
+  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,38.2,0),PX);
   PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,-67.6,0),-PX);  
-
   // segments 5-9 are the same length [5 has more ports]
   setVariable::PortItemGenerator PItemExtraGen(PItemGen);
   PItemExtraGen.setPort(19.0,17.8,0.6);          // len/rad/wall
   PItemExtraGen.setFlange(20.0,1.0);
   PItemExtraGen.setPlate(2.5,"Stainless304");
 
+  // Segment 5
   segName=tubeName+"Segment5";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.2);
+  SimpleTubeGen.setAFlange(57.8,4.3);   // set back to default
+  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",5);
+  
   PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
   PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);  
-  PItemExtraGen.generatePort(Control,segName+"Port2",Geometry::Vec3D(0,3.3,0),Geometry::Vec3D(0,-0.5,0.8660254));
-  PItemExtraGen.generatePort(Control,segName+"Port3",Geometry::Vec3D(0,60.9,0),Geometry::Vec3D(0,-0.5,0.8660254));
+  PItemExtraGen.generatePort(Control,segName+"Port2",
+			     Geometry::Vec3D(0,3.3,0),
+			     Geometry::Vec3D(0,-0.5,0.8660254));
+  PItemExtraGen.generatePort(Control,segName+"Port3",
+			     Geometry::Vec3D(0,60.9,0),
+			     Geometry::Vec3D(0,-0.5,0.8660254));
+  
   PItemExtraGen.setPort(7.0,10.0,0.6);
   PItemExtraGen.setFlange(12.0,2.5);
-  PItemExtraGen.generatePort(Control,segName+"Port4",Geometry::Vec3D(0,-20.0,0),PX);
+  PItemExtraGen.generatePort(Control,segName+"Port4",
+			     Geometry::Vec3D(0,-20.0,0),PX);
 
-  
   // segments 6
   segName=tubeName+"Segment6";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.2);
+  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",2);
   PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
   PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);  
 
   // segments 7
   segName=tubeName+"Segment7";
-  SimpleTubeGen.generateTube(Control,segName,0.0,264.2);
+  SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",2);
   PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
   PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);  
 
   // segments 8
   segName=tubeName+"Segment8";
+  SimpleTubeGen.setBFlange(57.8,4.0);
+  SimpleTubeGen.setFlangeCap(0.0,2.7);
+    
   SimpleTubeGen.generateTube(Control,segName,0.0,266.7);
   //  SimpleTubeGen.setFlange(4.)
   Control.addVariable(segName+"NPorts",4);
@@ -902,12 +913,16 @@ exptVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);
 
   PItemGen.setPort(6.6,4,1.0);  // len/rad/wall
+  PItemGen.setFlange(8.3,2.0);  // rad/len
   PItemGen.setPlate(0.7,"Stainless304");
-  PItemGen.generatePort(Control,segName+"Port2",Geometry::Vec3D(34.8,0.0,0),Geometry::Vec3D(0,1,0));  
-  PItemGen.generatePort(Control,segName+"Port3",Geometry::Vec3D(-34.8,0.0,0),Geometry::Vec3D(0,1,0));  
+  PItemGen.generatePort(Control,segName+"Port2",
+			Geometry::Vec3D(34.8,0.0,0),Geometry::Vec3D(0,1,0));  
+  PItemGen.generatePort(Control,segName+"Port3",
+			Geometry::Vec3D(-34.8,0.0,0),Geometry::Vec3D(0,1,0));  
 
 
-  Control.addParse<double>(tubeName+"OuterRadius", tubeName+"Segment3FlangeBRadius+10");
+  Control.addParse<double>(tubeName+"OuterRadius",
+			   tubeName+"Segment3FlangeBRadius+10.0");
   Control.addParse<double>(tubeName+"OuterLength",
 			   "CosaxsExptLineTubeNoseConeLength+"
 			   "CosaxsExptLineTubeSegment1Length+"
@@ -919,7 +934,7 @@ exptVariables(FuncDataBase& Control,
 			   "CosaxsExptLineTubeSegment7Length+"
 			   "CosaxsExptLineTubeSegment8Length+"
 			   "100.0");
-
+  
 
 
   Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
