@@ -339,11 +339,11 @@ JawValveCylinder::createObjects(Simulation& System)
     {
       Out="";
       if (!portAExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," -217 ");
+	Out=ModelSupport::getComposite(SMap,buildIndex," 2 -217 ");
       else if (!portBExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
+	Out=ModelSupport::getComposite(SMap,buildIndex," -1 -117 ");
       else 
-	Out=ModelSupport::getComposite(SMap,buildIndex," (-117:-217) ");
+	Out=ModelSupport::getComposite(SMap,buildIndex," (-1 -117): (2 -217) ");
       
       addOuterUnionSurf(Out+frontStr+backStr);
     }
