@@ -767,6 +767,8 @@ exptVariables(FuncDataBase& Control,
   DiffGen.generatePump(Control,preName+"DiffPump",53.24);
   // NOTE: ACTIVE WINDOW:
   PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setWindow(2.7, 0.5);
+  PipeGen.setAFlange(2.7,0.5);
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
 
   // sample area dimensions are arbitrary
@@ -822,7 +824,12 @@ exptVariables(FuncDataBase& Control,
 
 
   const Geometry::Vec3D C(0,0,0);
+  const Geometry::Vec3D C1(0,0.1,0);
+  const Geometry::Vec3D C2(0,55.1,0);
+  const Geometry::Vec3D C3(0,-50.7,0);
+
   const Geometry::Vec3D PX(1,0,0);
+  const Geometry::Vec3D PY(0,1,0);
   const Geometry::Vec3D PZ(0,0,1);
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -835,11 +842,11 @@ exptVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF350>(7.0);
   PItemGen.setPlate(CF350::flangeLength,"Stainless304");
   PItemGen.setOuterVoid(1);
-  PItemGen.generatePort(Control,segName+"Port0",C,PZ);
+  PItemGen.generatePort(Control,segName+"Port0",C1,PX);
 
   // segment 2:
   segName=tubeName+"Segment2";
-  SimpleTubeGen.generateTube(Control,segName,0.0,176.2);
+  SimpleTubeGen.generateTube(Control,segName,0.0,176);
   Control.addVariable(segName+"NPorts",1);
   PItemGen.generatePort(Control,segName+"Port0",C,-PX);  
 
@@ -872,16 +879,17 @@ exptVariables(FuncDataBase& Control,
   SimpleTubeGen.setAFlange(57.8,4.3);   // set back to default
   SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",5);
-  
-  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
-  PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);  
+
+  const double alpha(30*M_PI/180);
+  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
+  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
   PItemExtraGen.generatePort(Control,segName+"Port2",
 			     Geometry::Vec3D(0,3.3,0),
-			     Geometry::Vec3D(0,-0.5,0.8660254));
+			     Geometry::Vec3D(0,-sin(alpha),-cos(alpha)));
   PItemExtraGen.generatePort(Control,segName+"Port3",
 			     Geometry::Vec3D(0,60.9,0),
-			     Geometry::Vec3D(0,-0.5,0.8660254));
-  
+			     Geometry::Vec3D(0,-sin(alpha),-cos(alpha)));
+
   PItemExtraGen.setPort(7.0,10.0,0.6);
   PItemExtraGen.setFlange(12.0,2.5);
   PItemExtraGen.generatePort(Control,segName+"Port4",
@@ -891,34 +899,35 @@ exptVariables(FuncDataBase& Control,
   segName=tubeName+"Segment6";
   SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",2);
-  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
-  PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);  
+  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
+  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
 
   // segments 7
   segName=tubeName+"Segment7";
   SimpleTubeGen.generateTube(Control,segName,0.0,264.0);
   Control.addVariable(segName+"NPorts",2);
-  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
-  PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);  
+  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
+  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
 
   // segments 8
   segName=tubeName+"Segment8";
+  SimpleTubeGen.setAFlange(57.8,4.0);
   SimpleTubeGen.setBFlange(57.8,4.0);
   SimpleTubeGen.setFlangeCap(0.0,2.7);
     
-  SimpleTubeGen.generateTube(Control,segName,0.0,266.7);
+  SimpleTubeGen.generateTube(Control,segName,0.0,264);
   //  SimpleTubeGen.setFlange(4.)
   Control.addVariable(segName+"NPorts",4);
-  PItemGen.generatePort(Control,segName+"Port0",Geometry::Vec3D(0,55.1,0),PX);
-  PItemGen.generatePort(Control,segName+"Port1",Geometry::Vec3D(0,0.1,0),-PX);
+  PItemGen.generatePort(Control,segName+"Port0",C2,PX);
+  PItemGen.generatePort(Control,segName+"Port1",C3,-PX);
 
   PItemGen.setPort(6.6,4,1.0);  // len/rad/wall
   PItemGen.setFlange(8.3,2.0);  // rad/len
   PItemGen.setPlate(0.7,"Stainless304");
   PItemGen.generatePort(Control,segName+"Port2",
-			Geometry::Vec3D(34.8,0.0,0),Geometry::Vec3D(0,1,0));  
+			Geometry::Vec3D(34.8,0.0,0),PY);
   PItemGen.generatePort(Control,segName+"Port3",
-			Geometry::Vec3D(-34.8,0.0,0),Geometry::Vec3D(0,1,0));  
+			Geometry::Vec3D(-34.8,0.0,0),PY);
 
 
   Control.addParse<double>(tubeName+"OuterRadius",
