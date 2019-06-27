@@ -45,9 +45,12 @@ class JawValveGenerator
   double depth;                 ///< depth
   
   double wallThick;             ///< Wall thickness
-  double portRadius;            ///< Port inner radius (opening)
-  double portThick;             ///< Port outer ring
-  double portLen;               ///< Forward step of port
+  double portARadius;            ///< Port inner radius (opening)
+  double portAThick;             ///< Port outer ring
+  double portALen;               ///< Forward step of port
+  double portBRadius;            ///< Port inner radius (opening)
+  double portBThick;             ///< Port outer ring
+  double portBLen;               ///< Forward step of port
     
   std::string voidMat;          ///< Void material
   std::string wallMat;          ///< Pipe material
@@ -68,6 +71,8 @@ class JawValveGenerator
   ~JawValveGenerator();
 
   template<typename CF> void setCF();
+  template<typename CF> void setAPortCF();
+  template<typename CF> void setBPortCF();
 
   void setLength(const double L) { length=L; }
   void setSlits(const double,const double,const double,const std::string&);
@@ -77,6 +82,9 @@ class JawValveGenerator
   void setWallThick(const double T) { wallThick=T; }
 
   void setPort(const double,const double,const double);
+  void setAPort(const double,const double,const double);
+  void setBPort(const double,const double,const double);
+
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }
   /// set wall material

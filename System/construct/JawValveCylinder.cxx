@@ -97,14 +97,15 @@ JawValveCylinder::JawValveCylinder(const std::string& Key) :
 {}
 
 JawValveCylinder::JawValveCylinder(const JawValveCylinder& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),
-  length(A.length),
-  width(A.width),height(A.height),depth(A.depth),
-  wallThick(A.wallThick),portRadius(A.portRadius),
-  portThick(A.portThick),portLen(A.portLen),JItem(A.JItem),
-  voidMat(A.voidMat),wallMat(A.wallMat)
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),
+  
+  length(A.length),width(A.width),height(A.height),
+  depth(A.depth),wallThick(A.wallThick),portARadius(A.portARadius),
+  portAThick(A.portAThick),portALen(A.portALen),
+  portBRadius(A.portBRadius),portBThick(A.portBThick),
+  portBLen(A.portBLen),JItem(A.JItem),voidMat(A.voidMat),
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: JawValveCylinder to copy
@@ -131,9 +132,12 @@ JawValveCylinder::operator=(const JawValveCylinder& A)
       height=A.height;
       depth=A.depth;
       wallThick=A.wallThick;
-      portRadius=A.portRadius;
-      portThick=A.portThick;
-      portLen=A.portLen;
+      portARadius=A.portARadius;
+      portAThick=A.portAThick;
+      portALen=A.portALen;
+      portBRadius=A.portBRadius;
+      portBThick=A.portBThick;
+      portBLen=A.portBLen;
       JItem=A.JItem;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
@@ -167,10 +171,21 @@ JawValveCylinder::populate(const FuncDataBase& Control)
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  portThick=Control.EvalVar<double>(keyName+"PortThick");
-  portLen=Control.EvalVar<double>(keyName+"PortLen");
-  
+  portARadius=Control.EvalPair<double>(keyName+"PortARadius",
+				       keyName+"PortRadius");
+  portAThick=Control.EvalPair<double>(keyName+"PortAThick",
+				      keyName+"PortThick");
+  portALen=Control.EvalPair<double>(keyName+"PortALen",
+				    keyName+"PortLen");
+
+  portBRadius=Control.EvalPair<double>(keyName+"PortBRadius",
+				       keyName+"PortRadius");
+  portBThick=Control.EvalPair<double>(keyName+"PortBThick",
+				      keyName+"PortThick");
+  portBLen=Control.EvalPair<double>(keyName+"PortBLen",
+				    keyName+"PortLen");
+
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
@@ -194,7 +209,7 @@ JawValveCylinder::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
 
   // moved to centre
-  Origin+=Y*(length/2.0+portLen);
+  Origin+=Y*(length/2.0+portALen);
   
   return;
 }
@@ -212,21 +227,25 @@ JawValveCylinder::createSurfaces()
 
   // front planes
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(portLen+length/2.0),Y);
+			       Origin-Y*(portALen+length/2.0),Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+101));
     }
   
   // back planes
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+102,
-			       Origin+Y*(portLen+length/2.0),Y);
+			       Origin+Y*(portBLen+length/2.0),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+102));
     }
 
@@ -243,9 +262,14 @@ JawValveCylinder::createSurfaces()
 
   // flange
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,portRadius+portThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portARadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,Origin,Y,portARadius+portAThick);
 
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portBRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,Origin,Y,portBRadius+portBThick);
+  
   return;
 }
 
@@ -260,7 +284,8 @@ JawValveCylinder::createObjects(Simulation& System)
 
   std::string Out;
 
-  const bool portExtends(wallThick<=portLen);  // port extends
+  const bool portAExtends(wallThick<=portALen);  // port extends
+  const bool portBExtends(wallThick<=portBLen);  // port extends
 
   const std::string frontStr=frontRule();  // 101
   const std::string backStr=backRule();    // -102
@@ -286,33 +311,40 @@ JawValveCylinder::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
-  if (!portExtends)
+  if (!portAExtends)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
       makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
     }
        
   // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 217 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 207 -217 ");
   makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
   makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
   
-  if (!portExtends)
+  if (!portBExtends)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
-  if (portExtends)
+  if (portAExtends || portBExtends)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
+      Out="";
+      if (!portAExtends)
+	Out=ModelSupport::getComposite(SMap,buildIndex," -217 ");
+      else if (!portBExtends)
+	Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
+      else 
+	Out=ModelSupport::getComposite(SMap,buildIndex," (-117:-217) ");
+      
       addOuterUnionSurf(Out+frontStr+backStr);
     }
   return;
