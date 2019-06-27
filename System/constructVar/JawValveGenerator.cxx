@@ -191,15 +191,15 @@ void
 JawValveGenerator::setBPort(const double R,const double L,
 			 const double T)
   /*!
-    Set the first port
+    Set the back port
     \param R :: radius of port tube
     \param L :: lenght of port tube
     \param T :: Thickness of port tube (outer radius extention)
    */
 {
-  portARadius=R;
-  portALen=L;
-  portAThick=T;
+  portBRadius=R;
+  portBLen=L;
+  portBThick=T;
   return;
 }
 
@@ -322,11 +322,9 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
   template void JawValveGenerator::setAPortCF<CF63>();
   template void JawValveGenerator::setAPortCF<CF100>();
 
-
   template void JawValveGenerator::setBPortCF<CF40>();
   template void JawValveGenerator::setBPortCF<CF63>();
   template void JawValveGenerator::setBPortCF<CF100>();
-
 
 ///\endcond TEMPLATE
 

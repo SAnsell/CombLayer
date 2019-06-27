@@ -98,14 +98,14 @@ GateValveCube::GateValveCube(const std::string& Key) :
 GateValveCube::GateValveCube(const GateValveCube& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),  
-  length(A.length),
-  width(A.width),height(A.height),depth(A.depth),
-  wallThick(A.wallThick),portRadius(A.portRadius),
-  portThick(A.portThick),portLen(A.portLen),closed(A.closed),
-  bladeLift(A.bladeLift),bladeThick(A.bladeThick),
-  bladeRadius(A.bladeRadius),voidMat(A.voidMat),
-  bladeMat(A.bladeMat),wallMat(A.wallMat)
+  attachSystem::FrontBackCut(A),
+  length(A.length),width(A.width),height(A.height),
+  depth(A.depth),wallThick(A.wallThick),portARadius(A.portARadius),
+  portAThick(A.portAThick),portALen(A.portALen),
+  portBRadius(A.portBRadius),portBThick(A.portBThick),
+  portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
+  bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
+  voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: GateValveCube to copy
@@ -132,9 +132,12 @@ GateValveCube::operator=(const GateValveCube& A)
       height=A.height;
       depth=A.depth;
       wallThick=A.wallThick;
-      portRadius=A.portRadius;
-      portThick=A.portThick;
-      portLen=A.portLen;
+      portARadius=A.portARadius;
+      portAThick=A.portAThick;
+      portALen=A.portALen;
+      portBRadius=A.portBRadius;
+      portBThick=A.portBThick;
+      portBLen=A.portBLen;
       closed=A.closed;
       bladeLift=A.bladeLift;
       bladeThick=A.bladeThick;
@@ -146,7 +149,7 @@ GateValveCube::operator=(const GateValveCube& A)
   return *this;
 }
 
-
+  
 GateValveCube::~GateValveCube() 
   /*!
     Destructor
@@ -172,9 +175,19 @@ GateValveCube::populate(const FuncDataBase& Control)
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  portThick=Control.EvalVar<double>(keyName+"PortThick");
-  portLen=Control.EvalVar<double>(keyName+"PortLen");
+  portARadius=Control.EvalPair<double>(keyName+"PortARadius",
+				       keyName+"PortRadius");
+  portAThick=Control.EvalPair<double>(keyName+"PortAThick",
+				      keyName+"PortThick");
+  portALen=Control.EvalPair<double>(keyName+"PortALen",
+				    keyName+"PortLen");
+
+  portBRadius=Control.EvalPair<double>(keyName+"PortBRadius",
+				       keyName+"PortRadius");
+  portBThick=Control.EvalPair<double>(keyName+"PortBThick",
+				      keyName+"PortThick");
+  portBLen=Control.EvalPair<double>(keyName+"PortBLen",
+				    keyName+"PortLen");
   
   closed=Control.EvalDefVar<int>(keyName+"Closed",closed);
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
@@ -206,7 +219,7 @@ GateValveCube::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
 
   // moved to centre
-  Origin+=Y*(length/2.0+portLen);
+  Origin+=Y*(length/2.0+portALen);
   
   return;
 }
@@ -228,7 +241,7 @@ GateValveCube::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(portLen+length/2.0),Y);
+			       Origin-Y*(portALen+length/2.0),Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+101));
     }
   
@@ -238,7 +251,7 @@ GateValveCube::createSurfaces()
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+102,
-			       Origin+Y*(portLen+length/2.0),Y);
+			       Origin+Y*(portALen+length/2.0),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+102));
     }
 
@@ -255,18 +268,23 @@ GateValveCube::createSurfaces()
 
   // flange
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,portRadius+portThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portARadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+117,Origin,Y,portARadius+portAThick);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portBRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+217,Origin,Y,portBRadius+portBThick);
 
   
   // Blade
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(bladeThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(bladeThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(bladeThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(bladeThick/2.0),Y);
 
   if (closed)
-    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,bladeRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,bladeRadius);
   else
-    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Z*bladeLift,
+    ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeLift,
 				Y,bladeRadius);
 
   return;
@@ -283,7 +301,8 @@ GateValveCube::createObjects(Simulation& System)
 
   std::string Out;
 
-  const bool portExtends(wallThick<=portLen);  // port extends
+  const bool portAExtends(wallThick<=portALen);  // port extends
+  const bool portBExtends(wallThick<=portBLen);  // port extends
 
   const std::string frontStr=frontRule();  // 101
   const std::string backStr=backRule();    // -102
@@ -291,7 +310,7 @@ GateValveCube::createObjects(Simulation& System)
   const std::string backComp=backComplement();    // 102
   // Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 (207:-201:202) ");
+				 " 1 -2 3 -4 5 -6 (307:-301:302) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // Main body
@@ -300,7 +319,7 @@ GateValveCube::createObjects(Simulation& System)
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
 
   // blade
-  Out=ModelSupport::getComposite(SMap,buildIndex," -207 201 -202 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -307 301 -302 ");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
   // front plate
@@ -313,37 +332,46 @@ GateValveCube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
-  if (!portExtends)
+  if (!portAExtends)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
       makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
     }
        
   // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 217 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 207 -217 ");
   makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
   makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
   
-  if (!portExtends)
+  if (!portBExtends)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
-  if (portExtends)
+
+
+  if (portAExtends || portBExtends)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
+      Out="";
+      if (!portAExtends)
+	Out=ModelSupport::getComposite(SMap,buildIndex," 12 -217 ");
+      else if (!portBExtends)
+	Out=ModelSupport::getComposite(SMap,buildIndex," -11 -117 ");
+      else 
+	Out=ModelSupport::getComposite
+	  (SMap,buildIndex," (-11 -117): (12 -217) ");
+      
       addOuterUnionSurf(Out+frontStr+backStr);
     }
       
-
   return;
 }
   

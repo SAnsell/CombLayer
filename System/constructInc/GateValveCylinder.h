@@ -48,9 +48,13 @@ class GateValveCylinder :
   double radius;                 ///< Radius
   
   double wallThick;             ///< Wall thickness
-  double portRadius;            ///< Port inner radius (opening)
-  double portThick;             ///< Port outer ring
-  double portLen;               ///< Forward step of port
+  double portARadius;            ///< Port inner radius (opening)
+  double portAThick;             ///< Port outer ring
+  double portALen;               ///< Forward step of port
+
+  double portBRadius;            ///< Port inner radius (opening)
+  double portBThick;             ///< Port outer ring
+  double portBLen;               ///< Forward step of port
   
   bool closed;                  ///< Shutter closed
   double bladeLift;             ///< Height of blade up

@@ -45,9 +45,11 @@ class JawValveGenerator
   double depth;                 ///< depth
   
   double wallThick;             ///< Wall thickness
+
   double portARadius;            ///< Port inner radius (opening)
   double portAThick;             ///< Port outer ring
   double portALen;               ///< Forward step of port
+  
   double portBRadius;            ///< Port inner radius (opening)
   double portBThick;             ///< Port outer ring
   double portBLen;               ///< Forward step of port
