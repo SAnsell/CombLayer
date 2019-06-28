@@ -61,7 +61,8 @@ RingDoorGenerator::RingDoorGenerator() :
   innerHeight(180.0),innerWidth(180.0),innerThick(50.0),
   outerHeight(240.0),outerWidth(240.0),
   gapSpace(1.0),innerTopGap(2.5),outerTopGap(5.0),
-  doorMat("Concrete")
+  tubeRadius(2.0),tubeXStep(30.0),tubeZStep(160.0),
+  tubeMat("Void"),doorMat("Concrete")
   /*!
     Constructor and defaults
   */
@@ -72,7 +73,7 @@ RingDoorGenerator::RingDoorGenerator(const RingDoorGenerator& A) :
   innerThick(A.innerThick),outerHeight(A.outerHeight),
   outerWidth(A.outerWidth),gapSpace(A.gapSpace),
   innerTopGap(A.innerTopGap),outerTopGap(A.outerTopGap),
-  doorMat(A.doorMat)
+  tubeMat(A.tubeMat),doorMat(A.doorMat)
   /*!
     Copy constructor
     \param A :: RingDoorGenerator to copy
@@ -98,6 +99,7 @@ RingDoorGenerator::operator=(const RingDoorGenerator& A)
       innerTopGap=A.innerTopGap;
       outerTopGap=A.outerTopGap;
       doorMat=A.doorMat;
+      tubeMat=A.tubeMat;
     }
   return *this;
 }
@@ -170,6 +172,12 @@ RingDoorGenerator::generateDoor(FuncDataBase& Control,
     
   Control.addVariable(keyName+"InnerThick",innerThick);
 
+  Control.addVariable(keyName+"TubeRadius",tubeRadius);
+  Control.addVariable(keyName+"TubeXStep",tubeXStep);
+  Control.addVariable(keyName+"TubeZStep",tubeZStep);
+
+  
+  Control.addVariable(keyName+"TubeMat",tubeMat);
   Control.addVariable(keyName+"DoorMat",doorMat);
        
   return;

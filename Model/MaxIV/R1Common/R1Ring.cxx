@@ -71,7 +71,7 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -581,7 +581,7 @@ R1Ring::createDoor(Simulation& System)
       doorPtr->setCutSurf
 	("outerWall",-SurfMap::getSurf("SideOuter",doorActive-1));
 
-      doorPtr->addInsertCell(getCell("Wall",doorActive % 10));
+      doorPtr->addAllInsertCell(getCell("Wall",doorActive % 10));
       doorPtr->createAll(System,*this,doorActive+2);
     }
   return;

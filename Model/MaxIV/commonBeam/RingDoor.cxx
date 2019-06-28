@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -81,7 +82,7 @@ namespace xraySystem
 {
 
 RingDoor::RingDoor(const std::string& Key) :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Door","Tubes"),
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
@@ -113,6 +114,11 @@ RingDoor::populate(const FuncDataBase& Control)
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
   outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
 
+  tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
+  tubeXStep=Control.EvalVar<double>(keyName+"TubeXStep");
+  tubeZStep=Control.EvalVar<double>(keyName+"TubeZStep");
+
+  tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
   
   return;
@@ -197,6 +203,15 @@ RingDoor::createSurfaces()
     (SMap,"innerWall",buildIndex+200,-1,Y,innerThick);
   ExternalCut::makeShiftedSurf
     (SMap,"innerWall",buildIndex+201,-1,Y,innerThick+gapSpace);
+
+  // Tubes:
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius+10.0);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+517,Origin+Z*tubeZStep,Y,tubeRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+527,Origin+X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
+    
   return;
 }
 
@@ -237,10 +252,23 @@ RingDoor::createObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-200 (-23:24:-25:26) 33 -34 35 -36 ");
   makeCell("OuterGap",System,cellIndex++,0,0.0,Out+outerStr);
+
+  // Tubes
+  Out=ModelSupport::getComposite(SMap,buildIndex," -507 ");
+  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,Out+outerStr+innerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -517 ");
+  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,Out+outerStr+innerStr);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -527 ");
+  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,Out+outerStr+innerStr);
+
   
-  // needs to be group
+  // main door
   Out=ModelSupport::getComposite(SMap,buildIndex," 33 -34 35 -36 ");
-  addOuterSurf(Out);
+  addOuterSurf("Door",Out);
+
+  // extra tubes
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-507 : -517 : -527) ");
+  addOuterSurf("Tubes",Out);
   return;
 }
 
