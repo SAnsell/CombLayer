@@ -972,6 +972,14 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"AirBoxWallThick", 0.3); // [2]
   Control.addVariable(tubeName+"AirBoxMainMat", "Air");
   Control.addVariable(tubeName+"AirBoxWallMat", "Aluminium");
+
+  Control.addVariable(tubeName+"CableLength", 32.0); // [2]
+  Control.addVariable(tubeName+"CableWidth", 30.8); // [2]
+  Control.addVariable(tubeName+"CableHeight", 53.0); // [2]
+  Control.addVariable(tubeName+"CableWallThick", 0.3); // [2]
+  Control.addVariable(tubeName+"CableMainMat", "Air");
+  Control.addVariable(tubeName+"CableWallMat", "Aluminium");
+
   return;
 }
 

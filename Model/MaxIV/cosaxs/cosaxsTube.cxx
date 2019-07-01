@@ -91,6 +91,7 @@
 #include "cosaxsTubeBeamDump.h"
 #include "cosaxsTubeWAXSDetector.h"
 #include "cosaxsTubeAirBox.h"
+#include "cosaxsTubeCable.h"
 
 #include "ContainedGroup.h"
 #include "portItem.h"
@@ -115,7 +116,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate")),
   beamDump(new xraySystem::cosaxsTubeBeamDump(keyName+"BeamDump")),
   waxs(new xraySystem::cosaxsTubeWAXSDetector(keyName+"WAXS")),
-  airBox(new xraySystem::cosaxsTubeAirBox(keyName+"AirBox"))
+  airBox(new xraySystem::cosaxsTubeAirBox(keyName+"AirBox")),
+  cable(new xraySystem::cosaxsTubeCable(keyName+"Cable"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -138,6 +140,7 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   OR.addObject(beamDump);
   OR.addObject(waxs);
   OR.addObject(airBox);
+  OR.addObject(cable);
 }
 
 cosaxsTube::cosaxsTube(const cosaxsTube& A) :
@@ -163,7 +166,8 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   seg(A.seg),
   beamDump(A.beamDump),
   waxs(A.waxs),
-  airBox(A.airBox)
+  airBox(A.airBox),
+  cable(A.cable)
   /*!
     Copy constructor
     \param A :: cosaxsTube to copy
@@ -201,6 +205,7 @@ cosaxsTube::operator=(const cosaxsTube& A)
       beamDump=A.beamDump;
       waxs=A.waxs;
       airBox=A.airBox;
+      cable=A.cable;
     }
   return *this;
 }
@@ -415,6 +420,11 @@ cosaxsTube::createObjects(Simulation& System)
   airBox->createAll(System,*waxs,2);
   outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*airBox,2);
   airBox->insertInCell(System,outerCell);
+
+  cable->setFront(*airBox,2);
+  cable->createAll(System,*airBox,2);
+  outerCell=buildZoneTube.createOuterVoidUnit(System,masterCell,*cable,2);
+  cable->insertInCell(System,outerCell);
 
   // std::string side(ModelSupport::getComposite(SMap,buildIndex," 103 -104 105 -106 "));
   // Out=seg[0]->getFullRule("InnerFront").display();

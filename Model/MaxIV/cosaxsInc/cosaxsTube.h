@@ -45,6 +45,7 @@ namespace xraySystem
   class cosaxsTubeBeamDump;
   class cosaxsTubeWAXSDetector;
   class cosaxsTubeAirBox;
+  class cosaxsTubeCable;
 
 class cosaxsTube :
     public attachSystem::ContainedComp,
@@ -78,6 +79,7 @@ class cosaxsTube :
   std::shared_ptr<xraySystem::cosaxsTubeBeamDump> beamDump;
   std::shared_ptr<xraySystem::cosaxsTubeWAXSDetector> waxs;
   std::shared_ptr<xraySystem::cosaxsTubeAirBox> airBox;
+  std::shared_ptr<xraySystem::cosaxsTubeCable>  cable;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
