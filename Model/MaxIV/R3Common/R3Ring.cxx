@@ -1,3 +1,4 @@
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -407,6 +408,7 @@ R3Ring::createDoor(Simulation& System)
 	("innerWall",-SurfMap::getSurf("FlatInner",doorActive-1));
       doorPtr->setCutSurf
 	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
+      doorPtr->setCutSurf("floor",-SurfMap::getSurf("Floor"));
 
       doorPtr->addAllInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
       doorPtr->createAll(System,*this,doorActive+1);

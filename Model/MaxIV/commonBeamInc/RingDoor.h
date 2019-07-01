@@ -57,6 +57,10 @@ class RingDoor :
   double tubeXStep;                   ///< X of top tubes
   double tubeZStep;                   ///< Z of top tubes
 
+  double underStepHeight;             ///< height of gap
+  double underStepWidth;              ///< Width of under gap
+  double underStepXSep;               ///< X separation of steps
+
   int tubeMat;                        ///< tube material material
   int doorMat;                        ///< wall material
 

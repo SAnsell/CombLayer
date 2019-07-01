@@ -177,7 +177,8 @@ WallLead::createSurfaces()
 				extraLeadDepth+steelThick+frontLength);
 
   if (backLength>Geometry::zeroTol)
-    FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,backLength);
+    ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,-1,Y,backLength);
+
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*extraLeadOutWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*extraLeadRingWidth,X);

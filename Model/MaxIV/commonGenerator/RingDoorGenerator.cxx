@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -62,6 +61,8 @@ RingDoorGenerator::RingDoorGenerator() :
   outerHeight(240.0),outerWidth(240.0),
   gapSpace(1.0),innerTopGap(2.5),outerTopGap(5.0),
   tubeRadius(2.0),tubeXStep(30.0),tubeZStep(160.0),
+  underStepHeight(15.0),underStepWidth(20.0),
+  underStepXSep(80.0),
   tubeMat("Void"),doorMat("Concrete")
   /*!
     Constructor and defaults
@@ -73,6 +74,10 @@ RingDoorGenerator::RingDoorGenerator(const RingDoorGenerator& A) :
   innerThick(A.innerThick),outerHeight(A.outerHeight),
   outerWidth(A.outerWidth),gapSpace(A.gapSpace),
   innerTopGap(A.innerTopGap),outerTopGap(A.outerTopGap),
+  tubeRadius(A.tubeRadius),tubeXStep(A.tubeXStep),tubeZStep(A.tubeZStep),
+  underStepHeight(A.underStepHeight),
+  underStepWidth(A.underStepWidth),
+  underStepXSep(A.underStepXSep),
   tubeMat(A.tubeMat),doorMat(A.doorMat)
   /*!
     Copy constructor
@@ -98,6 +103,12 @@ RingDoorGenerator::operator=(const RingDoorGenerator& A)
       gapSpace=A.gapSpace;
       innerTopGap=A.innerTopGap;
       outerTopGap=A.outerTopGap;
+      tubeRadius=A.tubeRadius;
+      tubeXStep=A.tubeXStep;
+      tubeZStep=A.tubeZStep;
+      underStepHeight=A.underStepHeight;
+      underStepWidth=A.underStepWidth;
+      underStepXSep=A.underStepXSep;
       doorMat=A.doorMat;
       tubeMat=A.tubeMat;
     }
@@ -176,7 +187,10 @@ RingDoorGenerator::generateDoor(FuncDataBase& Control,
   Control.addVariable(keyName+"TubeXStep",tubeXStep);
   Control.addVariable(keyName+"TubeZStep",tubeZStep);
 
-  
+  Control.addVariable(keyName+"UnderStepHeight",underStepHeight);
+  Control.addVariable(keyName+"UnderStepWidth",underStepWidth);
+  Control.addVariable(keyName+"UnderStepXSep",underStepXSep);
+
   Control.addVariable(keyName+"TubeMat",tubeMat);
   Control.addVariable(keyName+"DoorMat",doorMat);
        
