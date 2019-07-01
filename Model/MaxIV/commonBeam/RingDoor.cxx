@@ -205,11 +205,20 @@ RingDoor::createSurfaces()
 
   // lift step
   ExternalCut::makeShiftedSurf
-    (SMap,"floor",buildIndex+1005,-1,Z,underStepHeight);
-
+    (SMap,"floor",buildIndex+1005,1,Z,underStepHeight);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1003,Origin-X*(underStepWidth+underStepXSep/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1004,Origin-X*(underStepXSep/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1013,Origin+X*(underStepXSep/2.0),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1014,Origin+X*(underStepWidth+underStepXSep/2.0),X);
+  
+  
   // Tubes:
   ModelSupport::buildCylinder
-    (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius+10.0);
+    (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+517,Origin+Z*tubeZStep,Y,tubeRadius);
   ModelSupport::buildCylinder
@@ -231,8 +240,9 @@ RingDoor::createObjects(Simulation& System)
   const std::string innerStr=ExternalCut::getRuleStr("innerWall");
   const std::string outerStr=ExternalCut::getRuleStr("outerWall");
   const std::string floorStr=ExternalCut::getRuleStr("floor");
-  
-  Out=ModelSupport::getComposite(SMap,buildIndex,"200 3 -4 -6 ");
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"200 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005)");
   makeCell("InnerDoor",System,cellIndex++,doorMat,0.0,Out+innerStr+floorStr);
 
   Out=ModelSupport::getComposite
@@ -243,14 +253,16 @@ RingDoor::createObjects(Simulation& System)
     (SMap,buildIndex,"200 (-13:14:16) 33 -34 -36 ");
   makeCell("InnerExtra",System,cellIndex++,doorMat,0.0,Out+innerStr+floorStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-200 201 3 -4 -6 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-200 201 3 -4 -6 (-1003:1004:1005) (-1013:1014:1005) ");
   makeCell("OuterStrip",System,cellIndex++,doorMat,0.0,Out+floorStr);
 
   Out=ModelSupport::getComposite
     (SMap,buildIndex,"-200 201 23 -24 -26 (-3:4:6) ");
-  makeCell("MidGap",System,cellIndex++,0,0.0,Out);
+  makeCell("MidGap",System,cellIndex++,0,0.0,Out+floorStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"-201 23 -24 -26 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex,"-201 23 -24 -26 (-1003:1004:1005) (-1013:1014:1005)");
   makeCell("OuterDoor",System,cellIndex++,doorMat,0.0,Out+outerStr+floorStr);
 
   Out=ModelSupport::getComposite
@@ -264,6 +276,14 @@ RingDoor::createObjects(Simulation& System)
   makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,Out+outerStr+innerStr);
   Out=ModelSupport::getComposite(SMap,buildIndex," -527 ");
   makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,Out+outerStr+innerStr);
+
+  // Lift points
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 -1005 ");
+  makeCell("LiftA",System,cellIndex++,0,0.0,Out+outerStr+innerStr+floorStr);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1013 -1014 -1005 ");
+  makeCell("LiftB",System,cellIndex++,0,0.0,Out+outerStr+innerStr+floorStr);
+
 
   
   // main door

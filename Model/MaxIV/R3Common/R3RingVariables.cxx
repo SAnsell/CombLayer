@@ -390,7 +390,7 @@ void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 		    const double yStep,const double dipoleLen,
 		    const double exitLen) 
-/*!
+  /*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
