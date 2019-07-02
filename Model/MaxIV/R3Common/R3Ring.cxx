@@ -416,7 +416,6 @@ R3Ring::createDoor(Simulation& System)
   return;
 }
 
-
 void
 R3Ring::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,

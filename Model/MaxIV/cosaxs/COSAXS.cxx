@@ -98,6 +98,7 @@
 #include "cosaxsOpticsLine.h"
 #include "cosaxsExptLine.h"
 #include "ConnectZone.h"
+#include "PipeShield.h"
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -114,6 +115,7 @@ COSAXS::COSAXS(const std::string& KN) :
   opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
   opticsBeam(new cosaxsOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  screenA(new xraySystem::PipeShield(newName+"ScreenA")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   exptBeam(new cosaxsExptLine(newName+"ExptLine"))
   /*!
@@ -211,7 +213,6 @@ COSAXS::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->createAll(System,*joinPipe,2);
 
-  
   joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   joinPipeB->addInsertCell(opticsBeam->getCell("LastVoid"));
@@ -220,6 +221,12 @@ COSAXS::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
+  
+  screenA->setCutSurf("inner",joinPipeB->getSurfRule("OuterRadius"));
+  screenA->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  screenA->createAll(System,*opticsBeam,2);
+  
+  
   exptHut->setCutSurf("frontWall",opticsHut->getSurf("outerWall"));
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));

@@ -60,6 +60,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "PipeShieldGenerator.h"
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
@@ -1010,6 +1011,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
+  setVariable::PipeShieldGenerator ShieldGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -1023,7 +1025,7 @@ COSAXSvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
   PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,126.0);
-
+  
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
   cosaxsVar::exptHutVariables(Control,"Cosaxs");
@@ -1031,6 +1033,8 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
+  ShieldGen.setPlate(30.0,30.0,5.0);
+  ShieldGen.generateShield(Control,"CosaxsScreenA",9.4,0.0);
 
   return;
 }
