@@ -216,9 +216,9 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
 
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",1.0);
-  Control.addVariable(hutName+"HoleRadius",9.0);
+  Control.addVariable(hutName+"HoleXStep",2.5);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",4.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
@@ -1034,8 +1034,8 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
-  ShieldGen.setPlate(30.0,30.0,5.0);
-  ShieldGen.generateShield(Control,"CosaxsScreenA",9.4,0.0);
+  ShieldGen.setPlate(60.0,60.0,10.0);
+  ShieldGen.generateShield(Control,"CosaxsScreenA",4.4,0.0);
 
   return;
 }
