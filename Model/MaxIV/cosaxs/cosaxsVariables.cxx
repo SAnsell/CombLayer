@@ -979,22 +979,6 @@ exptVariables(FuncDataBase& Control,
   return;
 }
 
-void
-connectingVariables(FuncDataBase& Control)
-  /*!
-    Variables for the connecting region
-    \param Control :: DataBase
-  */
-{
-  ELog::RegMethod RegA("cosaxsVariables[F]","connectingVariables");
-  const std::string baseName="CosaxsConnect";
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-
-
-  return;
-}
-
 }  // NAMESPACE cosaxsVAR
   
 void
