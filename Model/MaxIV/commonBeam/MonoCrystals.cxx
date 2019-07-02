@@ -145,7 +145,8 @@ MonoCrystals::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("MonoCrystals","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();  
+  applyOffset();
+  
   return;
 }
 

@@ -286,14 +286,15 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
+  VBoxGen.setBPortOffset(2.5,0.0);
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
   VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
   Control.addVariable(preName+"MonoXtalYAngle",90.0);
-  Control.addVariable(preName+"MonoXtalZStep",-1.25);
-  Control.addVariable(preName+"MonoXtalGap",4.0);
+  Control.addVariable(preName+"MonoXtalZStep",0.0);
+  Control.addVariable(preName+"MonoXtalGap",2.5);
   Control.addVariable(preName+"MonoXtalTheta",10.0);
   Control.addVariable(preName+"MonoXtalPhiA",0.0);
   Control.addVariable(preName+"MonoXtalPhiA",0.0);

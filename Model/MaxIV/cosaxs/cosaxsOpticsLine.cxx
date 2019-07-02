@@ -523,7 +523,6 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   monoXtal->addInsertCell(monoBox->getCell("Void"));
   monoXtal->createAll(System,*monoBox,0);
 
-  
   gateD->setFront(*monoBox,2);
   gateD->createAll(System,*monoBox,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateD,2);
