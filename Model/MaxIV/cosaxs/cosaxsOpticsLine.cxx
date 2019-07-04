@@ -92,6 +92,7 @@
 
 #include "CrossPipe.h"
 #include "BremColl.h"
+#include "BremMonoColl.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
@@ -139,6 +140,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   gateD(new constructSystem::GateValveCube(newName+"GateD")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
+  bremMonoCollA(new xraySystem::BremMonoColl(newName+"BremMonoCollA")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
@@ -198,6 +200,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   OR.addObject(gateD);
   OR.addObject(bellowD);
   OR.addObject(diagBoxA);
+  OR.addObject(bremMonoCollA);
   OR.addObject(bellowE);
   OR.addObject(gateE);
   OR.addObject(mirrorBoxA);
@@ -534,7 +537,6 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
-
   // fake insert
   diagBoxA->addAllInsertCell(masterCell->getName());
   diagBoxA->setFront(*bellowD,2);
@@ -554,7 +556,20 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   //  diagBoxA->intersectPorts(System,3,6);
   diagBoxA->intersectVoidPorts(System,6,3);
   cellIndex+=4;
-  
+
+  bremMonoCollA->addInsertCell("Flange",diagBoxA->getCell("Void",0));
+  bremMonoCollA->addInsertCell("Main",diagBoxA->getCell("Void",0));
+  bremMonoCollA->addInsertCell("Main",diagBoxA->getCell("Void",1));
+  bremMonoCollA->setCutSurf("front",diagBoxA->getSurf("VoidFront"));
+  bremMonoCollA->setCutSurf("wallRadius",diagBoxA->getSurf("VoidCyl"));
+  bremMonoCollA->setInOrg(monoXtal->getLinkPt(2));
+  bremMonoCollA->createAll(System,*diagBoxA,0);
+
+  // ELog::EM<<"Early return here"<<ELog::endDiag;
+  // setCell("LastVoid",masterCell->getName());
+  // lastComp=gateJ;
+  // return;
+
   
   bellowE->setFront(*diagBoxA,2);  
   bellowE->createAll(System,*diagBoxA,2);

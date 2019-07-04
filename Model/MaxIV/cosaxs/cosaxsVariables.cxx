@@ -53,6 +53,7 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremCollGenerator.h"
+#include "BremMonoCollGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
@@ -516,6 +517,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
+  setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
 
@@ -637,8 +639,8 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
 
   cosaxsVar::diagUnit(Control,preName+"DiagBoxA");
+  BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
 
-  
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
