@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/F5Collimator.h
  *
- * Copyright (c) 2015-2018 Konstantin Batkov
+ * Copyright (c) 2015-2019 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ class F5Collimator : public attachSystem::ContainedComp,
   // Functions:
   
   void populate(FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -67,7 +66,9 @@ class F5Collimator : public attachSystem::ContainedComp,
   
   int getMainCell() const { return buildIndex+1; }
   virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

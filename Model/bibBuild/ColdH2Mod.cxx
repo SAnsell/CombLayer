@@ -3,7 +3,7 @@
  
  * File:   bibBuild/ColdH2Mod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -267,7 +266,9 @@ ColdH2Mod::createSurfaces(const attachSystem::FixedComp& FC,
 			   Origin+Z*(height/2.0+D),Z); 
   
 
-  SMap.addMatch(buildIndex+21,FC.getLinkSurf(sideIndex)); // all links point out
+  // all links point outward facgin
+  SMap.addMatch(buildIndex+21,FC.getLinkSurf(sideIndex));
+
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+
 			   Y*(depth/2.0+wallThick+backGap),Y);  
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-

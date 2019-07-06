@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::FixedOffsetGroup(Key+std::to_string(Index),
                                  "Main",6,"Beam",6),
   attachSystem::CellMap(),baseName(Key),
-  active(1),innerCyl(0),outerCyl(0)
+  active(1),innerCyl(0),outerCyl(0),GPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -110,7 +110,7 @@ GuideItem::GuideItem(const GuideItem& A) :
   beamHeight(A.beamHeight),nSegment(A.nSegment),
   height(A.height),depth(A.depth),width(A.width),length(A.length),
   mat(A.mat),innerCyl(A.innerCyl),outerCyl(A.outerCyl),
-  RInner(A.RInner),ROuter(A.ROuter)
+  RInner(A.RInner),ROuter(A.ROuter),GPtr(A.GPtr)
   /*!
     Copy constructor
     \param A :: GuideItem to copy
@@ -147,6 +147,7 @@ GuideItem::operator=(const GuideItem& A)
       outerCyl=A.outerCyl;
       RInner=A.RInner;
       ROuter=A.ROuter;
+      GPtr=A.GPtr;
     }
   return *this;
 }
@@ -382,16 +383,15 @@ GuideItem::getEdgeStr(const GuideItem* GPtr) const
 }
 
 void
-GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
+GuideItem::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param GPtr :: Near neigbour
   */
 {
   ELog::RegMethod RegA("GuideItem","createObjects");
   if (!active) return;
-  
+
   const std::string edgeStr=getEdgeStr(GPtr);
   std::string Out;  
 
@@ -536,14 +536,13 @@ GuideItem::createLinks()
 void
 GuideItem::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const long int sideIndex,
-		     const GuideItem* GPtr)
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param sideIndex :: side to used
-    \param GPtr :: Previous Guide item for edge intersect
+
   */
 {
   ELog::RegMethod RegA("GuideItem","createAll");
@@ -551,7 +550,7 @@ GuideItem::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,GPtr);
+  createObjects(System);
   createLinks();
   insertObjects(System);              
 

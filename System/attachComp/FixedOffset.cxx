@@ -203,6 +203,22 @@ FixedOffset::populate(const std::string& baseName,
 }
 
 void
+FixedOffset::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed Component
+    \param sideIndex :: signed linkpt			
+  */
+{
+  ELog::RegMethod RegA("FixedOffset","createUnitVector");
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+    
+  return;
+}
+
+void
 FixedOffset::setPreRotation(const double XYA,const double ZA)
   /*!
     Set the Pre-rotation values 

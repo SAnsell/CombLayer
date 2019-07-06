@@ -3,7 +3,7 @@
  
  * File:   geometry/ArbPoly.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -302,9 +302,10 @@ ArbPoly::displace(const Geometry::Vec3D& Sp)
     \param Sp :: point value of displacement
   */
 {
-  std::vector<Vec3D>::iterator vc;
-  for(vc=CVec.begin();vc!=CVec.end();vc++)
-    (*vc)+=Sp;
+
+  for(Vec3D& CP : CVec)
+    CP+=Sp;
+
   makeSides();
   return;
 }
@@ -419,14 +420,15 @@ ArbPoly::inLoop(const Vec3D& Pt,const size_t Index) const
       // Now calculate Angle 
       const double dP=AL.dotProd(BL);
       const double angle=acos(dP);
-      if (fabs(angle)<Geometry::zeroTol || fabs(angle-M_PI)<Geometry::zeroTol)
+      if (std::abs(angle)<Geometry::zeroTol ||
+	  std::abs(angle-M_PI)<Geometry::zeroTol)
 	line++;
       else
 	dotSum+=angle;
     }
   
 
-  if (fabs(dotSum-M_PI)<Geometry::zeroTol*static_cast<double>(nSurface))
+  if (std::abs(dotSum-M_PI)<Geometry::zeroTol*static_cast<double>(nSurface))
     return (line) ? 2 : 1;
 
   // inner point to be discarded
@@ -482,8 +484,7 @@ ArbPoly::side(const Geometry::Vec3D& Pt) const
   */
 {
   Vec3D unitVec(1.0,0,0);
-  std::vector<Plane>::const_iterator vc;
-
+  
   // Note: Because Line Pt + lambda (1,0,0) 
   //       allows a quick line/plane intersect
   // First find if we are in/out of the object:
@@ -560,27 +561,31 @@ ArbPoly::surfaceNormal(const Geometry::Vec3D& Pt) const
     \return normal at point
   */
 {
-  std::vector<Plane>::const_iterator vc;
-  std::vector<Plane>::const_iterator fc;
+  if (Sides.empty())
+    throw ColErr::EmptyContainer("ArbPoly::Sides");
+  
   
   Geometry::Vec3D Out;
   int found(0);
-  double maxDist(0.0);
-  for(vc=Sides.begin();vc!=Sides.end();vc++)
+  double maxDist(1e38);
+  const Plane* nearPlane(&(Sides.front()));
+  for(const Plane& pUnit : Sides)
     {
-      const double D=vc->distance(Pt);
-      if (vc==Sides.begin() || maxDist>D)
-	{
-	  maxDist=D;
-	  fc=vc;
-	}
+      const double D=pUnit.distance(Pt);
       if (D<Geometry::zeroTol)
 	{
 	  found++;
-	  Out+=vc->getNormal();
+	  maxDist=0;
+	  Out+=pUnit.getNormal();
 	}
-    }
-  return (found) ? Out/found : fc->getNormal();
+      else if (maxDist>D)
+	{
+	  maxDist=D;
+	  nearPlane=&pUnit;
+	}
+    }      
+  return (found) ? Out/static_cast<double>(found) :
+    nearPlane->getNormal();
 }
 
 int

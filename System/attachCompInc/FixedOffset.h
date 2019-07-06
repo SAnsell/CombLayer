@@ -58,6 +58,10 @@ class FixedOffset  : public FixedComp
 			std::vector<std::string>>&);
   
   virtual void populate(const std::string&,const FuncDataBase&);
+
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+  
   void setOffset(const double,const double,const double);
   void setPreRotation(const double,const double);
   void setRotation(const double,const double);

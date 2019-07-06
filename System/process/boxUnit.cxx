@@ -3,7 +3,7 @@
  
  * File:   process/boxUnit.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -252,7 +252,8 @@ boxUnit::checkForward()
 }
 
 void
-boxUnit::populate(const size_t AF,const std::vector<boxValues>& CV)
+boxUnit::populate(const size_t AF,
+		  const std::vector<boxValues>& CV)
   /*!
     Popuate everything assuming prev / next have been set
     along with APt and BPt 
