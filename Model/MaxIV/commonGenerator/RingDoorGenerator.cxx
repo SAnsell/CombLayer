@@ -60,7 +60,7 @@ RingDoorGenerator::RingDoorGenerator() :
   innerHeight(180.0),innerWidth(180.0),innerThick(50.0),
   outerHeight(240.0),outerWidth(240.0),
   gapSpace(1.0),innerTopGap(2.5),outerTopGap(5.0),
-  tubeRadius(5.0),tubeXStep(30.0),tubeZStep(160.0),
+  tubeRadius(5.0),tubeXStep(30.0),tubeZStep(140.0),
   underStepHeight(15.0),underStepWidth(20.0),
   underStepXSep(80.0),
   tubeMat("Void"),doorMat("Concrete")

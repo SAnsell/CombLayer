@@ -76,8 +76,6 @@ class ExptBeamline :
   std::shared_ptr<insertSystem::insertCylinder> beamStop;
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void buildObjects(Simulation&);
   void createLinks();
   

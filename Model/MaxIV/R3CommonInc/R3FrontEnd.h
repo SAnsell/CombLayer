@@ -210,8 +210,6 @@ class R3FrontEnd :
 
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);  
   void createSurfaces();
   virtual void createLinks()=0;
 

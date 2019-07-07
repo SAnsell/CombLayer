@@ -382,7 +382,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   
   Control.addVariable(preName+"RingDoorWallID",1);
   
-  RGen.generateDoor(Control,preName+"RingDoor",2300.0);
+  RGen.generateDoor(Control,preName+"RingDoor",2400.0);
   return;
 }
 

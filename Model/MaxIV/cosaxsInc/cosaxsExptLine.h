@@ -105,8 +105,6 @@ class cosaxsExptLine :
   double outerTop;     ///< Top lift for cut rectangle
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();

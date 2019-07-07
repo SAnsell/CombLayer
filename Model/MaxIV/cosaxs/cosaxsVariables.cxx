@@ -144,7 +144,7 @@ wallVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("cosaxsVariables[F]","wallVariables");
 
   WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
+  LGen.setWidth(70,140.0);
   LGen.generateWall(Control,wallKey,2.0);
 
   return;
@@ -157,7 +157,7 @@ monoShutterVariables(FuncDataBase& Control,
   /*!
     Construct Mono Shutter variables
     \param Control :: Database for variables
-    \param preName :: Control ssytem
+    \param preName :: Control system
    */
 {
   ELog::RegMethod RegA("cosaxsVariables","monoShutterVariables");

@@ -140,23 +140,6 @@ WallLead::populate(const FuncDataBase& Control)
 }
 
 void
-WallLead::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("WallLead","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-
-void
 WallLead::createSurfaces()
   /*!
     Create the surfaces

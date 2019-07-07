@@ -232,25 +232,6 @@ R1FrontEnd::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-R1FrontEnd::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    Note that the FC:in and FC:out are tied to Main
-    -- rotate position Main and then Out/In are moved relative
-
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("R1FrontEnd","createUnitVector");
-
-  FixedOffset::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
-  return;
-}
 
 void
 R1FrontEnd::createSurfaces()
