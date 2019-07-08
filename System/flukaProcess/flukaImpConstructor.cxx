@@ -467,7 +467,7 @@ flukaImpConstructor::processEMF(SimFLUKA& System,
 
       { "photonuc",emfTYPE(0,1,"photonuc") },      // none
       { "muphoton",emfTYPE(0,1,"muphoton") },      // none
-      { "emffluo",emfTYPE(0,1,"emffluo") },        // mat
+      { "emffluo",emfTYPE(1,1,"emffluo") },        // mat
       { "mulsopt",emfTYPE(3,1,"mulsopt") },        // mat
       { "lpb",emfTYPE(2,0,"lpb") },        // regions
       { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
@@ -617,7 +617,7 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
     " -- type : Mat/Cell : Values \n\n";
   OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL \n"
       "    prodcut - e+/e-prod  gamma-prod  MAT \n"
-      "    emffluo - [FLAG] turns off x-ray fluorescence MAT \n"
+      "    emffluo - (state) turns off/on x-ray fluorescence MAT \n"
       "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT \n"
       "    photthr - compton photoelec gamma-pair MAT \n"
       "    pho2thr - rayliegh gamma-photonuc MAT \n"
