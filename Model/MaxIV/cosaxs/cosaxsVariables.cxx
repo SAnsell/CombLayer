@@ -971,6 +971,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"WAXSWallThick", 0.3); // [2]
   Control.addVariable(tubeName+"WAXSMainMat", "StbTCABL"); // guess
   Control.addVariable(tubeName+"WAXSWallMat", "Aluminium");
+  Control.addVariable(tubeName+"WAXSYStep", 0.0);
 
   Control.addVariable(tubeName+"AirBoxLength", 32.0); // [2]
   Control.addVariable(tubeName+"AirBoxWidth", 30.8); // [2]
@@ -979,12 +980,13 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"AirBoxMainMat", "Air");
   Control.addVariable(tubeName+"AirBoxWallMat", "Aluminium");
 
-  Control.addVariable(tubeName+"CableLength", 32.0); // [2]
-  Control.addVariable(tubeName+"CableWidth", 30.8); // [2]
-  Control.addVariable(tubeName+"CableHeight", 53.0); // [2]
-  Control.addVariable(tubeName+"CableWallThick", 0.3); // [2]
-  Control.addVariable(tubeName+"CableMainMat", "Air");
-  Control.addVariable(tubeName+"CableWallMat", "Aluminium");
+  Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
+  Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
+  Control.addVariable(tubeName+"CableZStep",  0.1);//-21.7); // [2]
+  Control.addVariable(tubeName+"CableLength", 750.0); // dummy
+  Control.addVariable(tubeName+"CableTailRadius", 17.0);
+  Control.addParse<double>(tubeName+"CableDetYStep", tubeName+"WAXSYStep");
+  Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
 
   return;
 }
