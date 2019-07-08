@@ -68,7 +68,6 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -384,7 +383,6 @@ MIRACLES::buildIsolated(Simulation& System,const int voidCell)
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
       FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
       FStart= &(FocusWall->getKey("Guide0"));
-      startIndex=2;
     }
 
 

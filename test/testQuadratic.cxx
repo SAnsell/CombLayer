@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testQuadratic.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,37 +114,39 @@ testQuadratic::testDistance()
   */
 {
   ELog::RegMethod RegA("testQuadratic","testDistance");
-  std::vector<std::string> CylStr;
-  CylStr.push_back("1 cx 1");                // Cylinder origin
-  CylStr.push_back("2 c/x 0.5 0.5 1.0");     // Cylinder along x axis 
-  Geometry::Vec3D P(1.2,0.6,0.4);
-  
-  ELog::EM.lock();
-  double results[]={ 1-sqrt(0.6*0.6+0.4*0.4),  1.0-sqrt(2*0.1*0.1) };
 
-  std::vector<std::string>::const_iterator vc;
+
+  typedef std::tuple<std::string,Geometry::Vec3D,double> TTYPE;
+  const std::vector<TTYPE> Tests({
+      TTYPE("1 cx 1",Geometry::Vec3D(1.2,0.6,0.4),1-sqrt(0.6*0.6+0.4*0.4)),
+      TTYPE("2 c/x 0.5 0.5 1.0",Geometry::Vec3D(1.2,0.6,0.4),1-sqrt(2*0.1*0.1))
+	});
+
   Cylinder A;
-  int cnt(0);
-  for(vc=CylStr.begin();vc!=CylStr.end();vc++,cnt++)
+  
+
+  ELog::EM.lock();
+  for(const TTYPE& tc : Tests)
     {
-      const int retVal=A.setSurface(*vc);
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<*vc<<" Ecode == "<<retVal<<ELog::endErr;
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
+		  <<" Ecode == "<<retVal<<ELog::endCrit;
 	  ELog::EM.dispatch(1);
 	  return -1;
 	}
       ELog::EM<<"Cylinder == "<<A<<ELog::endDiag;
-
+      const Geometry::Vec3D& P=std::get<1>(tc);
       ELog::EM<<"TestPoint == "<<P<<ELog::endDiag;
-      double R=A.distance(P);
-      ELog::EM<<"Distance [expect]== "<<R<<" [ "<<results[cnt]<<" ]"<<ELog::endDiag;
-      ELog::EM<<"--------------"<<ELog::endDiag;
-      if (fabs(results[cnt]-R)>1e-5)
+      const double R=A.distance(P);
+      if (std::abs(std::get<2>(tc)-R)>1e-5)
         {
+	  ELog::EM<<"Distance [expect]== "
+		  <<R<<" [ "<<std::get<2>(tc)<<" ]"<<ELog::endDiag;
 	  ELog::EM.error();
 	  ELog::EM.dispatch(1);
-	  return -(cnt+2);
+	  return -1;
 	}
       ELog::EM.dispatch(0);
     }

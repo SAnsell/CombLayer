@@ -646,7 +646,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
 
 void
 buildFullSimPOVRay(SimPOVRay* SimPOVRayPtr,
-		   const mainSystem::inputParam& IParam,
+		   const mainSystem::inputParam&,
 		   const std::string& OName)
 /*!
     Carry out the construction of the geometry
