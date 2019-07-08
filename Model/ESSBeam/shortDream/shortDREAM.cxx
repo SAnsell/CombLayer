@@ -3,7 +3,7 @@
  
  * File:   essBuild/shortDREAM.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -429,7 +429,8 @@ shortDREAM::build(Simulation& System,
     // IN WALL
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
-  BInsert->createAll(System,GFC,-1,bunkerObj);
+  BInsert->setBunkerObject(bunkerObj);
+  BInsert->createAll(System,GFC,-1);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCell("Void"));

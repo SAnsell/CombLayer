@@ -390,7 +390,7 @@ void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 		    const double yStep,const double dipoleLen,
 		    const double exitLen) 
-  /*!
+/*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names
@@ -474,6 +474,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 
   CollGen.setFrontGap(2.13,2.146);
   CollGen.setBackGap(0.756,0.432);
+  // approx for 100uRad x 100uRad
   CollGen.setMinSize(32.0,0.680,0.358);
   CollGen.generateColl(Control,frontKey+"CollB",0.0,34.2);
 
@@ -486,9 +487,8 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   CollGen.setMain(1.20,"Copper","Void");
   CollGen.setFrontGap(0.84,0.582);
   CollGen.setBackGap(0.750,0.357);
-  // approx for 100uRad x 100uRad
-  CollGen.setMinSize(12.0,0.15,0.15);
-  
+  // approx for 80uRad x 80uRad
+  CollGen.setMinSize(12.0,0.15,0.15);  
   CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setCF<setVariable::CF40>(); 

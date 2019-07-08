@@ -541,7 +541,8 @@ FREIA::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
-  BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
+  BInsert->setBunkerObject(bunkerObj);
+  BInsert->createAll(System,ChopperE->getKey("Beam"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
     // using 7 : mid point 

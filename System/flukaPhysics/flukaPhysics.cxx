@@ -63,7 +63,6 @@ flukaPhysics::flukaPhysics() :
       { "mupair",cellValueSet<0>("mupair","PHOTONUC","MUMUPAIR") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
       { "elecnucl",cellValueSet<0>("elecnucl","PHOTONUC","ELECTNUC") },
-      { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") },
       { "evaporation",cellValueSet<0>("evaporation","PHYSICS","EVAPORAT") },
       { "coalescence",cellValueSet<0>("coalescence","PHYSICS","COALESCE") },
       { "ionsplit",cellValueSet<0>("ionsplit","PHYSICS","IONSPLIT") }
@@ -76,6 +75,7 @@ flukaPhysics::flukaPhysics() :
       { "all",      cellValueSet<1>("all","BIAS","") },
       { "hadron",   cellValueSet<1>("hadron","BIAS","") },
       { "electron", cellValueSet<1>("electron","BIAS","") },
+      { "emffluo",  cellValueSet<1>("emffluo","EMFFLUO","") },
       { "low",      cellValueSet<1>("low","BIAS","") },
       { "lowbias",  cellValueSet<1>("lowbias","LOW-BIAS","") },
       { "exptrans", cellValueSet<1>("exptrans","EXPTRANS","") },

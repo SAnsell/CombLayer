@@ -115,7 +115,6 @@ VOR::VOR(const std::string& keyName) :
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
-
   
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
@@ -349,7 +348,8 @@ VOR::build(Simulation& System,
   if (stopPoint==2) return;
 
   // Make bunker insert
-  BInsert->createAll(System,FocusD->getKey("Guide0"),-1,bunkerObj);
+  BInsert->setBunkerObject(bunkerObj);
+  BInsert->createAll(System,FocusD->getKey("Guide0"),-1);
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);
 
