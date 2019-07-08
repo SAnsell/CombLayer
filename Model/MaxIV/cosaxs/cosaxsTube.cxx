@@ -151,13 +151,6 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::FrontBackCut(A),
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
-  cableWidth(A.cableWidth),
-  cableHeight(A.cableHeight),
-  cableZStep(A.cableZStep),
-  cableLength(A.cableLength),
-  cableTailRadius(A.cableTailRadius),
-  cableMat(A.cableMat),
-  detYStep(A.detYStep),
   buildZone(A.buildZone),
   buildZoneTube(A.buildZoneTube),
   noseCone(A.noseCone),
@@ -191,13 +184,6 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::FrontBackCut::operator=(A);
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
-      cableWidth=A.cableWidth;
-      cableHeight=A.cableHeight;
-      cableZStep=A.cableZStep;
-      cableLength=A.cableLength;
-      cableTailRadius=A.cableTailRadius;
-      cableMat=A.cableMat;
-      detYStep=A.detYStep;
       noseCone=A.noseCone;
       gateA=A.gateA;
       startPlate=A.startPlate;
@@ -239,13 +225,6 @@ cosaxsTube::populate(const FuncDataBase& Control)
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerLength=Control.EvalVar<double>(keyName+"OuterLength");
-  cableWidth=Control.EvalVar<double>(keyName+"CableWidth");
-  cableHeight=Control.EvalVar<double>(keyName+"CableHeight");
-  cableZStep=Control.EvalVar<double>(keyName+"CableZStep");
-  cableLength=Control.EvalVar<double>(keyName+"CableLength");
-  cableTailRadius=Control.EvalVar<double>(keyName+"CableTailRadius");
-  cableMat=ModelSupport::EvalMat<int>(Control,keyName+"CableMat");
-  detYStep=Control.EvalVar<double>(keyName+"DetYStep");
 
   return;
 }
@@ -289,33 +268,33 @@ cosaxsTube::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
 
-  // cable
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cableWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0-cableZStep),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0+cableZStep),Z);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
-				  -cableHeight);
+  // // cable
+  // ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cableWidth/2.0),X);
+  // ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cableWidth/2.0),X);
+  // ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(cableHeight/2.0-cableZStep),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(cableHeight/2.0+cableZStep),Z);
+  // ModelSupport::buildShiftedPlane(SMap,buildIndex+115,
+  // 				  SMap.realPtr<Geometry::Plane>(buildIndex+105),
+  // 				  -cableHeight);
 
-  const double cableTailLength(3*M_PI/4*cableTailRadius);
-  const double cableBottomLength(detYStep/2.0);
-  const double cableUpLength(cableLength-cableTailLength-cableBottomLength-detYStep);
+  // const double cableTailLength(3*M_PI/4*cableTailRadius);
+  // const double cableBottomLength(detYStep/2.0);
+  // const double cableUpLength(cableLength-cableTailLength-cableBottomLength-detYStep);
 
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(detYStep),Y);
-  // centre of cylinders
-  const double yTail(detYStep+detYStep+cableUpLength+cableTailRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*yTail,Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+111,
-				  SMap.realPtr<Geometry::Plane>(buildIndex+102),
-				  -cableBottomLength);
+  // ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(detYStep),Y);
+  // // centre of cylinders
+  // const double yTail(detYStep+detYStep+cableUpLength+cableTailRadius);
+  // ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*yTail,Y);
+  // ModelSupport::buildShiftedPlane(SMap,buildIndex+111,
+  // 				  SMap.realPtr<Geometry::Plane>(buildIndex+102),
+  // 				  -cableBottomLength);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+107,
-			      Origin+Y*yTail+Z*cableZStep,X,
-			      cableTailRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,
-			      Origin+Y*yTail+Z*cableZStep,X,
-			      cableTailRadius+cableHeight);
+  // ModelSupport::buildCylinder(SMap,buildIndex+107,
+  // 			      Origin+Y*yTail+Z*cableZStep,X,
+  // 			      cableTailRadius);
+  // ModelSupport::buildCylinder(SMap,buildIndex+117,
+  // 			      Origin+Y*yTail+Z*cableZStep,X,
+  // 			      cableTailRadius+cableHeight);
 
 
   const std::string Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
