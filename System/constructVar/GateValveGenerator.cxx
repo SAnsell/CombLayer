@@ -3,7 +3,7 @@
  
  * File:   constructVar/GateValveGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@ namespace setVariable
 
 GateValveGenerator::GateValveGenerator() :
   length(7.0),width(24.0),height(46.0),depth(10.5),
-  wallThick(0.5),portRadius(5.0),portThick(1.0),portLen(1.0),
+  wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.0),
+  portBRadius(5.0),portBThick(1.0),portBLen(1.0),
   bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),voidMat("Void"),
   bladeMat("Aluminium"),wallMat("Stainless304")
   /*!
@@ -68,47 +69,6 @@ GateValveGenerator::GateValveGenerator() :
   */
 {}
 
-GateValveGenerator::GateValveGenerator(const GateValveGenerator& A) : 
-  length(A.length),width(A.width),height(A.height),
-  depth(A.depth),wallThick(A.wallThick),portRadius(A.portRadius),
-  portThick(A.portThick),portLen(A.portLen),closed(A.closed),
-  bladeLift(A.bladeLift),bladeThick(A.bladeThick),
-  bladeRadius(A.bladeRadius),voidMat(A.voidMat),
-  bladeMat(A.bladeMat),wallMat(A.wallMat)
-  /*!
-    Copy constructor
-    \param A :: GateValveGenerator to copy
-  */
-{}
-
-GateValveGenerator&
-GateValveGenerator::operator=(const GateValveGenerator& A)
-  /*!
-    Assignment operator
-    \param A :: GateValveGenerator to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      length=A.length;
-      width=A.width;
-      height=A.height;
-      depth=A.depth;
-      wallThick=A.wallThick;
-      portRadius=A.portRadius;
-      portThick=A.portThick;
-      portLen=A.portLen;
-      closed=A.closed;
-      bladeLift=A.bladeLift;
-      bladeThick=A.bladeThick;
-      bladeRadius=A.bladeRadius;
-      voidMat=A.voidMat;
-      bladeMat=A.bladeMat;
-      wallMat=A.wallMat;
-    }
-  return *this;
-}
 
 GateValveGenerator::~GateValveGenerator() 
  /*!
@@ -123,9 +83,8 @@ GateValveGenerator::setCF()
     Set pipe/flange to CF format
   */
 {
-  portRadius=CF::innerRadius;
-  portThick=CF::flangeRadius-CF::innerRadius;   //  total 2.7cm radius
-  portLen=CF::flangeLength;
+  setAPortCF<CF>();
+  setBPortCF<CF>();
   depth=1.1*CF::flangeRadius;
   height=3.5*CF::flangeRadius;
   width=2.1*CF::flangeRadius;
@@ -163,13 +122,72 @@ GateValveGenerator::setPort(const double R,const double L,
     \param T :: Thickness of port tube (outer radius extention)
    */
 {
-  portRadius=R;
-  portLen=L;
-  portThick=T;
+  setAPort(R,L,T);
+  setBPort(R,L,T);
   return;
 }
 
+void
+GateValveGenerator::setAPort(const double R,const double L,
+			 const double T)
+  /*!
+    Set the first port
+    \param R :: radius of port tube
+    \param L :: lenght of port tube
+    \param T :: Thickness of port tube (outer radius extention)
+   */
+{
+  portARadius=R;
+  portALen=L;
+  portAThick=T;
+  return;
+}
 
+void
+GateValveGenerator::setBPort(const double R,const double L,
+			     const double T)
+  /*!
+    Set the back port
+    \param R :: radius of port tube
+    \param L :: lenght of port tube
+    \param T :: Thickness of port tube (outer radius extention)
+   */
+{
+  portBRadius=R;
+  portBLen=L;
+  portBThick=T;
+  return;
+}
+
+template<typename CF>
+void
+GateValveGenerator::setAPortCF()
+  /*!
+    Setter for port A
+  */
+{
+  // rad/len/thick
+  setAPort(CF::innerRadius,CF::flangeLength,
+	   CF::flangeRadius-CF::innerRadius);
+  
+  return;
+}
+
+template<typename CF>
+void
+GateValveGenerator::setBPortCF()
+  /*!
+    Setter for port A
+  */
+{
+  // rad/len/thick
+  setBPort(CF::innerRadius,CF::flangeLength,
+	   CF::flangeRadius-CF::innerRadius);
+  
+  return;
+}
+
+  
 void
 GateValveGenerator::generateValve(FuncDataBase& Control,
 				  const std::string& keyName,
@@ -194,9 +212,13 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
 
   Control.addVariable(keyName+"WallThick",wallThick);
 
-  Control.addVariable(keyName+"PortRadius",portRadius);	
-  Control.addVariable(keyName+"PortThick",portThick);
-  Control.addVariable(keyName+"PortLen",portLen);
+  Control.addVariable(keyName+"PortARadius",portARadius);	
+  Control.addVariable(keyName+"PortAThick",portAThick);
+  Control.addVariable(keyName+"PortALen",portALen);
+
+  Control.addVariable(keyName+"PortBRadius",portBRadius);	
+  Control.addVariable(keyName+"PortBThick",portBThick);
+  Control.addVariable(keyName+"PortBLen",portBLen);
 
   Control.addVariable(keyName+"Closed",closedFlag);
 
@@ -217,6 +239,14 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
 template void GateValveGenerator::setCF<CF40>();
 template void GateValveGenerator::setCF<CF63>();
 template void GateValveGenerator::setCF<CF100>();
+
+template void GateValveGenerator::setAPortCF<CF40>();
+template void GateValveGenerator::setAPortCF<CF63>();
+template void GateValveGenerator::setAPortCF<CF100>();
+
+template void GateValveGenerator::setBPortCF<CF40>();
+template void GateValveGenerator::setBPortCF<CF63>();
+template void GateValveGenerator::setBPortCF<CF100>();
 
 ///\endcond TEMPLATE
 

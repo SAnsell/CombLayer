@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/BremCollGenerator.cxx
+ * File:   commonGenerator/BremCollGenerator.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *

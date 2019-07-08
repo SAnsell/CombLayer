@@ -35,7 +35,7 @@ namespace xraySystem
   */
   
 class RingDoor :
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::ExternalCut
@@ -53,7 +53,16 @@ class RingDoor :
   double outerHeight;                 ///< height of outer gap
   double outerWidth;                  ///< width of outer gap
 
-  int doorMat;                   ///< wall material
+  double tubeRadius;                  ///< Radius of top tubes
+  double tubeXStep;                   ///< X of top tubes
+  double tubeZStep;                   ///< Z of top tubes
+
+  double underStepHeight;             ///< height of gap
+  double underStepWidth;              ///< Width of under gap
+  double underStepXSep;               ///< X separation of steps
+
+  int tubeMat;                        ///< tube material material
+  int doorMat;                        ///< wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

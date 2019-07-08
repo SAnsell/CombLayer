@@ -155,20 +155,6 @@ OnionCooling::populate(const FuncDataBase& Control)
 }
 
 void
-OnionCooling::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("OnionCooling","createUnitVector");
-  attachSystem::FixedOffset::createUnitVector(FC,0);
-  applyOffset();
-  
-  return;
-}
-
-void
 OnionCooling::createSurfaces()
   /*!
     Create Surfaces for the Be
@@ -216,6 +202,7 @@ OnionCooling::createObjects(Simulation& System,
   /*!
     Create the onion piping
     \param System :: Simulation to add results
+    \param FC :: Fixd unit ot get cell map from
    */
 {
   ELog::RegMethod RegA("OnionCooling","createObjects");
@@ -284,29 +271,33 @@ OnionCooling::createLinks()
     Links/directions going outwards true.
   */
 {
-
   return;
 }
 
 
 void OnionCooling::createAll(Simulation& System,
-			     const attachSystem::FixedComp& FC)
+			     const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
 {
-  /*!
-    Extrenal build everything
+  /*!  Extrenal build everything 
+
+    In our case the reflector has to be built relative to an origin 
+    and an axes set.  If you take a simple
+    fixed object, then the axes is the axes set of this fixed object
+    and the origin is the origin of this fixed object, which does not
+    mean that the reflector and the object have the same origin,
+    that's just the way you start and then you add the next bits.
+
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-
-    In our case the reflector has to be built relative to an origin and an axes set. 
-    If you take a simple fixed object, then the axes is the axes set of this fixed object and the origin is the origin of this fixed object,
-    which does not mean that the reflector and the object have the same origin, that's just the way you start and then you add the next bits.
+    \parma sideIndex :: lin point
    */
 
   ELog::RegMethod RegA("OnionCooling","createAll");
   // the order matters:
 
   populate(System.getDataBase()); // populate variables
-  createUnitVector(FC); // take fixed component, then apply shift and angle rotation (transformation) for this object centre
+  createUnitVector(FC,sideIndex); 
   createSurfaces();
   createObjects(System,FC);
   createLinks();

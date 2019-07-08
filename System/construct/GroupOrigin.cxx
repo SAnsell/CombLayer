@@ -107,38 +107,10 @@ GroupOrigin::~GroupOrigin()
  */
 {}
 
-void
-GroupOrigin::populate(const FuncDataBase& Control)
- /*!
-   Populate all the variables
-   \param Control ::  DataBase of variables
- */
-{
-  ELog::RegMethod RegA("GroupOrigin","populate");
-  FixedOffset::populate(Control);
-
-  return;
-}
   
-void
-GroupOrigin::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("GroupOrigin","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
 
 void
-GroupOrigin::createAll(const Simulation& System,
+GroupOrigin::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
 		      

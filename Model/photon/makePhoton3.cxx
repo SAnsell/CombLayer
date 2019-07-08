@@ -3,7 +3,7 @@
  
  * File:   photon/makePhoton3.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ makePhoton3::~makePhoton3()
 
 void 
 makePhoton3::build(Simulation& System,
-		   const mainSystem::inputParam& IParam)
+		   const mainSystem::inputParam&)
   /*!
     Carry out the full build
     \param System :: Simulation system

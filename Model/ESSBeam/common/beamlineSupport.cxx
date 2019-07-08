@@ -100,7 +100,7 @@ setBeamAxis(attachSystem::FixedOffset& beamAxis,
   ELog::RegMethod RegA("beamlineSupport","setBeamAxis");
   
   beamAxis.populate(Control);
-  beamAxis.createUnitVector(GItem);
+  beamAxis.createUnitVector(GItem,0);
   beamAxis.setLinkSignedCopy(0,GItem.getKey("Main"),1);
   beamAxis.setLinkSignedCopy(1,GItem.getKey("Main"),2);
   beamAxis.setLinkSignedCopy(2,GItem.getKey("Beam"),1);

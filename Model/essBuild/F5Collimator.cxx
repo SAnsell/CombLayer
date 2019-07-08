@@ -86,37 +86,41 @@ F5Collimator::populate(FuncDataBase& Control)
   
   Geometry::Vec3D gC,gB,gB2;
   
-  if (GluePoint>=0) {
-    std::ifstream essdat; // currently used by collimators
-    essdat.open(".ess.dat", std::ios::in);
-    double F[12], L[13];
-    while (!essdat.eof()) {
-      std::string str;
-      std::getline(essdat, str);
-      std::stringstream ss(str);
-      std::string header; // F: or L: point title
-      ss >> header;
-      int i=0;
-      if (header == "F:")
-	while(ss >> F[i]) i++;
-      else if (header == "L:")
-	while(ss >> L[i]) i++;
-      
-      int gpshift = GluePoint*3;
-      if (F[2]>0) { // top moderator;
-	Control.setVariable<double>(keyName+"XB", F[gpshift+0]);
-	Control.setVariable<double>(keyName+"YB", F[gpshift+1]);
-	Control.setVariable<double>(keyName+"ZB", F[gpshift+2]);
-	
-	Control.setVariable<double>(keyName+"XC", L[gpshift+0]);
-	Control.setVariable<double>(keyName+"YC", L[gpshift+1]);
-	Control.setVariable<double>(keyName+"ZC", L[gpshift+2]);
-	
-	Control.setVariable<double>(keyName+"ZG", L[12]);
-      }
-    } 
+  if (GluePoint>=0)
+    {
+      std::ifstream essdat; // currently used by collimators
+      essdat.open(".ess.dat", std::ios::in);
+      double F[12], L[13];
+      while (!essdat.eof())
+	{
+	  std::string str;
+	  std::getline(essdat, str);
+	  std::stringstream ss(str);
+	  std::string header; // F: or L: point title
+	  ss >> header;
+	  int i=0;
+	  if (header == "F:")
+	    while(ss >> F[i]) i++;
+	  else if (header == "L:")
+	    while(ss >> L[i]) i++;
+	  
+	  int gpshift = GluePoint*3;
+	  if (F[2]>0)   // top moderator;
+	    { 
+	      Control.setVariable<double>(keyName+"XB", F[gpshift+0]);
+	      Control.setVariable<double>(keyName+"YB", F[gpshift+1]);
+	      Control.setVariable<double>(keyName+"ZB", F[gpshift+2]);
+	      
+	      Control.setVariable<double>(keyName+"XC", L[gpshift+0]);
+	      Control.setVariable<double>(keyName+"YC", L[gpshift+1]);
+	      Control.setVariable<double>(keyName+"ZC", L[gpshift+2]);
+	      
+	      Control.setVariable<double>(keyName+"ZG", L[12]);
+	    }
+	} 
     essdat.close();
-  } 
+  }
+  
   gB[0]=Control.EvalDefVar<double>(keyName+"XB", 0);
   gB[1]=Control.EvalDefVar<double>(keyName+"YB", 0);
   gB[2]=Control.EvalDefVar<double>(keyName+"ZB", 0);
@@ -141,26 +145,13 @@ F5Collimator::populate(FuncDataBase& Control)
   return;
 }
 
-void
-F5Collimator::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("F5Collimator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,0);
-  applyOffset();
-    
-  return;
-}
 
 void
 F5Collimator::createSurfaces()
-{
   /*!
     Create Surfaces for the F5 collimator
   */
+{
   ELog::RegMethod RegA("F5Collimator","createSurfaces");
   
   ModelSupport::buildPlane(SMap,buildIndex+1, Origin-X*1.0, X);
@@ -205,7 +196,8 @@ F5Collimator::createObjects(Simulation& System)
   
   std::string Out;
   
-  int voidMat = 0;//1001;
+  const int voidMat = 0;
+  
   Out=ModelSupport::getComposite(SMap,buildIndex, " 11 -2 13 -14 15 -16");
   addOuterSurf(Out);
   
@@ -250,17 +242,20 @@ void F5Collimator::createLinks()
   
 
 void
-F5Collimator::createAll(Simulation& System, const attachSystem::FixedComp& FC)
-/*!
-  Extrenal build everything
-  \param System :: Simulation
-  \param FC :: FixedComponent for origin
-*/
+F5Collimator::createAll(Simulation& System,
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
+  /*!
+    Extrenal build everything
+    \param System :: Simulation
+    \param FC :: FixedComponent for origin
+    \param sideIndex :: side point
+  */
 {
   ELog::RegMethod RegA("F5Collimator","createAll");
   populate(System.getDataBase());
   
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

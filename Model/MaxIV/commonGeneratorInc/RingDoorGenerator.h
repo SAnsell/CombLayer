@@ -46,12 +46,20 @@ class RingDoorGenerator
   double outerHeight;           ///< height of outer door 
   double outerWidth;            ///< width of outer door
 
-  double gapSpace;            ///< clearance gaps
-  double innerTopGap;         ///< clearance gap top linal
-  double outerTopGap;         ///< clearance gaps
+  double gapSpace;              ///< clearance gaps
+  double innerTopGap;           ///< clearance gap top linal
+  double outerTopGap;           ///< clearance gaps
 
+  double tubeRadius;            ///< Radius of top tubes
+  double tubeXStep;             ///< X of top tubes
+  double tubeZStep;             ///< Z of top tubes
 
-  std::string doorMat;         ///< base material
+  double underStepHeight;       ///< height of gap
+  double underStepWidth;        ///< Width of under gap
+  double underStepXSep;         ///< X separation of steps
+
+  std::string tubeMat;          ///< base material
+  std::string doorMat;          ///< base material
     
 
  public:

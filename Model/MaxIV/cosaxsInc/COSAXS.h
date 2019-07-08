@@ -56,6 +56,7 @@ namespace xraySystem
   class cosaxsExptLine;
   class FrontEndCave;
   class ConnectZone;
+  class PipeShield;
   
   /*!
     \class COSAXS
@@ -85,6 +86,10 @@ class COSAXS : public R3Beamline
 
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+  /// Screening shield
+  std::shared_ptr<xraySystem::PipeShield> screenA;
+
+  /// Main experimental hutch 
   std::shared_ptr<ExperimentalHutch> exptHut;
 
   /// Experimental beamline

@@ -60,7 +60,7 @@ namespace setVariable
 ShutterUnitGenerator::ShutterUnitGenerator() :
   height(5.0),width(5.0),
   thick(5.0),baseLift(-3.0),
-  lift(6.0),liftScrewRadius(1.0),
+  lift(4.0),liftScrewRadius(1.0),
   threadLength(30.0),
   topInnerRadius(CF100::innerRadius),
   topFlangeRadius(CF100::flangeRadius),

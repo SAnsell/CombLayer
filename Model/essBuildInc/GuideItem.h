@@ -69,17 +69,19 @@ class GuideItem : public attachSystem::ContainedGroup,
   double RInner;       ///< Inner cylinder radius 
   double ROuter;       ///< Outer cylinder radius 
 
+  const GuideItem* GPtr;     ///< Neighbour unit
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const GuideItem*);
+  void createObjects(Simulation&);
   std::string sideExclude(const size_t) const;
   std::string getEdgeStr(const GuideItem*) const;
   const Geometry::Plane* getPlane(const int) const;
-
+  
  public:
 
   GuideItem(const std::string&,const size_t);
@@ -87,15 +89,18 @@ class GuideItem : public attachSystem::ContainedGroup,
   GuideItem& operator=(const GuideItem&);
   virtual ~GuideItem();
 
+  
   /// accessor to active status
   int isActive() const { return active; }
+  /// set active neighbour
+  void setNeighbour(const GuideItem* GP) { GPtr=GP; }
   
   void setCylBoundary(const int,const int,const int);
 
     
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const GuideItem*);
-
+		 const long int);
+  
 };
 
 }

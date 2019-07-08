@@ -53,6 +53,7 @@
 #include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremCollGenerator.h"
+#include "BremMonoCollGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
@@ -60,6 +61,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "PipeShieldGenerator.h"
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
@@ -142,7 +144,7 @@ wallVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("cosaxsVariables[F]","wallVariables");
 
   WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
+  LGen.setWidth(70,140.0);
   LGen.generateWall(Control,wallKey,2.0);
 
   return;
@@ -155,7 +157,7 @@ monoShutterVariables(FuncDataBase& Control,
   /*!
     Construct Mono Shutter variables
     \param Control :: Database for variables
-    \param preName :: Control ssytem
+    \param preName :: Control system
    */
 {
   ELog::RegMethod RegA("cosaxsVariables","monoShutterVariables");
@@ -215,9 +217,9 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingMat","Concrete");
   Control.addVariable(hutName+"PbMat","Lead");
 
-  Control.addVariable(hutName+"HoleXStep",0.0);
-  Control.addVariable(hutName+"HoleZStep",1.0);
-  Control.addVariable(hutName+"HoleRadius",9.0);
+  Control.addVariable(hutName+"HoleXStep",2.5);
+  Control.addVariable(hutName+"HoleZStep",0.0);
+  Control.addVariable(hutName+"HoleRadius",4.5);
 
   Control.addVariable(hutName+"InletXStep",0.0);
   Control.addVariable(hutName+"InletZStep",0.0);
@@ -285,14 +287,15 @@ monoVariables(FuncDataBase& Control)
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
+  VBoxGen.setBPortOffset(2.5,0.0);
   // ystep/width/height/depth/length
   // height+depth == 452mm  -- 110/ 342
   VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
 
     // CRYSTALS:
   Control.addVariable(preName+"MonoXtalYAngle",90.0);
-  Control.addVariable(preName+"MonoXtalZStep",-1.25);
-  Control.addVariable(preName+"MonoXtalGap",4.0);
+  Control.addVariable(preName+"MonoXtalZStep",0.0);
+  Control.addVariable(preName+"MonoXtalGap",2.5);
   Control.addVariable(preName+"MonoXtalTheta",10.0);
   Control.addVariable(preName+"MonoXtalPhiA",0.0);
   Control.addVariable(preName+"MonoXtalPhiA",0.0);
@@ -514,6 +517,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
+  setVariable::BremMonoCollGenerator BremMonoGen;
   setVariable::JawFlangeGenerator JawFlangeGen;
   setVariable::DiffPumpGenerator DiffGen;
 
@@ -635,8 +639,8 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
 
   cosaxsVar::diagUnit(Control,preName+"DiagBoxA");
+  BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
 
-  
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
@@ -714,11 +718,13 @@ exptVariables(FuncDataBase& Control,
 
    // Double slits A and B
   JawGen.setCF<setVariable::CF100>();
+  JawGen.setAPortCF<setVariable::CF40>();
   JawGen.setLength(4.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,preName+"DoubleSlitA",0.0,0.8,0.8);
 
   JawGen.setCF<setVariable::CF100>();
+  JawGen.setBPortCF<setVariable::CF40>();
   JawGen.setLength(4.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tungsten");
   JawGen.generateSlits(Control,preName+"DoubleSlitB",0.0,0.8,0.8);
@@ -983,22 +989,6 @@ exptVariables(FuncDataBase& Control,
   return;
 }
 
-void
-connectingVariables(FuncDataBase& Control)
-  /*!
-    Variables for the connecting region
-    \param Control :: DataBase
-  */
-{
-  ELog::RegMethod RegA("cosaxsVariables[F]","connectingVariables");
-  const std::string baseName="CosaxsConnect";
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-
-
-  return;
-}
-
 }  // NAMESPACE cosaxsVAR
   
 void
@@ -1016,6 +1006,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
+  setVariable::PipeShieldGenerator ShieldGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -1029,7 +1020,7 @@ COSAXSvariables(FuncDataBase& Control)
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
   PipeGen.generatePipe(Control,"CosaxsJoinPipe",0,126.0);
-
+  
   cosaxsVar::opticsHutVariables(Control,"Cosaxs");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
   cosaxsVar::exptHutVariables(Control,"Cosaxs");
@@ -1037,6 +1028,8 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"CosaxsJoinPipeB",0,100.0);
 
+  ShieldGen.setPlate(60.0,60.0,10.0);
+  ShieldGen.generateShield(Control,"CosaxsScreenA",4.4,0.0);
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   processInc/boxUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,9 @@ class boxUnit : public attachSystem::FixedComp,
 {
  private:
 
+  using FixedComp::createAll;
 
+  
   boxUnit* prev;            ///< Previous pipe unit
   boxUnit* next;            ///< Next pipe unit
 
@@ -59,10 +61,10 @@ class boxUnit : public attachSystem::FixedComp,
   HeadRule BSurf;           ///< End point rule if used [inward facing]
   double maxExtent;         ///< longest length
 
-  size_t activeFlag;           ///< Flag for active layers
-  std::vector<boxValues> boxVar;      ///< Cylinder variables
-  size_t nSides;               ///< Number of sides
-  std::set<int> cellCut;        ///< Cells the pipe 
+  size_t activeFlag;                   ///< Flags for active layers
+  std::vector<boxValues> boxVar;       ///< Cylinder variables
+  size_t nSides;                       ///< Number of sides
+  std::set<int> cellCut;               ///< Cells the pipe 
 
 
   void calcNorm(const int,const Geometry::Vec3D&,

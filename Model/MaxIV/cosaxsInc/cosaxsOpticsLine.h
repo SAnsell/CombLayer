@@ -56,6 +56,7 @@ namespace xraySystem
 {
   class OpticsHutch;
   class BremColl;
+  class BremMonoColl;
   class FlangeMount;
   class Mirror;
   class MonoBox;
@@ -131,6 +132,8 @@ class cosaxsOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Diagnostic unit 1:
   std::shared_ptr<constructSystem::PortTube> diagBoxA;
+  /// Mono-Collimator for collimator
+  std::shared_ptr<xraySystem::BremMonoColl> bremMonoCollA;
   /// Bellow from diagnositics
   std::shared_ptr<constructSystem::Bellows> bellowE;
   // Gate for first mirror
@@ -204,8 +207,6 @@ class cosaxsOpticsLine :
      const long int);
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();

@@ -1,3 +1,4 @@
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -72,6 +73,7 @@
 #include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -187,9 +189,9 @@ R3Ring::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+floorThick),Z);
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
 
   // Inner coordinate points are all offset from the inner points
@@ -406,13 +408,13 @@ R3Ring::createDoor(Simulation& System)
 	("innerWall",-SurfMap::getSurf("FlatInner",doorActive-1));
       doorPtr->setCutSurf
 	("outerWall",-SurfMap::getSurf("FlatOuter",doorActive-1));
+      doorPtr->setCutSurf("floor",SurfMap::getSurf("Floor"));
 
-      doorPtr->addInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
+      doorPtr->addAllInsertCell(getCell("OuterFlat",doorActive % NInnerSurf));
       doorPtr->createAll(System,*this,doorActive+1);
     }
   return;
 }
-
 
 void
 R3Ring::createAll(Simulation& System,

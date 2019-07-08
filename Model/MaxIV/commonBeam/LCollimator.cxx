@@ -158,8 +158,8 @@ LCollimator::createSurfaces()
   const Geometry::Vec3D backPt(Origin-X*innerBWidth+Y*(length/2.0)
 			       -Z*innerBHeight);
 
-  const Geometry::Vec3D innerX(Origin-X*innerBWidth+Y*(length/2.0));
-  const Geometry::Vec3D innerZ(Origin-Z*innerBHeight+Y*(length/2.0));
+  const Geometry::Vec3D innerX(frontPt+Z);
+  const Geometry::Vec3D innerZ(frontPt+X);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,frontPt,backPt,innerX,X);
   ModelSupport::buildPlane(SMap,buildIndex+15,frontPt,backPt,innerZ,Z);

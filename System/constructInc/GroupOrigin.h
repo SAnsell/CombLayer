@@ -37,9 +37,6 @@ class GroupOrigin : public attachSystem::FixedOffset
 {
  private:
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
  public:
 
   GroupOrigin(const std::string&);
@@ -48,10 +45,10 @@ class GroupOrigin : public attachSystem::FixedOffset
   virtual ~GroupOrigin();
 //
 
-  void createAll(const Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
-
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
+  
 };
 
 }

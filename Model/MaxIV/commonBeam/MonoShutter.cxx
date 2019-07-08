@@ -137,29 +137,6 @@ MonoShutter::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-MonoShutter::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-
-  /*!
-    Create the unit vectors.
-    The first beamFC is to set the X,Y,Z relative to the beam
-    and the origin at the beam centre position.
-    The origin is corrected so that the flange centre + alpha*Y'
-    where Y' is its primary direction is closeest to 
-    beamCenter + Y'*beta. The flange centre point is taken.
-
-    \param FC :: FixedComp for origin at beam height
-    \param sideIndex :: link point of centre [and axis]
-  */
-{
-  ELog::RegMethod RegA("MonoShutter","createUnitVector");
-
-  FixedOffset::createUnitVector(FC,sideIndex);
-
-  applyOffset();
-  return;
-}
 
 void
 MonoShutter::createSurfaces()

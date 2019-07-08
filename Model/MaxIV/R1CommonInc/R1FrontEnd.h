@@ -190,8 +190,6 @@ class R1FrontEnd :
 			 const attachSystem::FixedComp&,const long int);
 
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   virtual void createSurfaces();
   virtual void buildObjects(Simulation&);
   virtual void createLinks() =0;

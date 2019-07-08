@@ -205,8 +205,6 @@ class flexpesOpticsBeamline :
 		     const attachSystem::FixedComp&,const long int);
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();

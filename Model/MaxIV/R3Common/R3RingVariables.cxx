@@ -382,7 +382,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   
   Control.addVariable(preName+"RingDoorWallID",1);
   
-  RGen.generateDoor(Control,preName+"RingDoor",2300.0);
+  RGen.generateDoor(Control,preName+"RingDoor",2400.0);
   return;
 }
 
@@ -390,7 +390,7 @@ void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
 		    const double yStep,const double dipoleLen,
 		    const double exitLen) 
-/*!
+  /*!
     Set the variables for the front end
     \param Control :: DataBase to use
     \param frontKey :: name before part names

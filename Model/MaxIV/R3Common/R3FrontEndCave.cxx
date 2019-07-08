@@ -409,7 +409,7 @@ R3FrontEndCave::createDoor(Simulation& System)
       doorPtr->setCutSurf("outerWall",SMap.realSurf(buildIndex+13));
 
       doorPtr->setAxisControl(-3,Z);
-      doorPtr->addInsertCell(getCell("OuterWall"));
+      doorPtr->addAllInsertCell(getCell("OuterWall"));
       doorPtr->createAll(System,*this,3);
     }
   return;

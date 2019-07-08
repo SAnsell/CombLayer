@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/MonoVessel.cxx
+ * File:   balder/MonoVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,25 +226,6 @@ MonoVessel::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-MonoVessel::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
-/*!
-    Create the unit vectors
-    Note that the FC:in and FC:out are tied to Main
-    -- rotate position Main and then Out/In are moved relative
-
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("MonoVessel","createUnitVector");
-
-  FixedOffset::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
  
 void
 MonoVessel::createSurfaces()

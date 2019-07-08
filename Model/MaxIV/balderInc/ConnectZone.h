@@ -89,8 +89,6 @@ class ConnectZone :
   double outerRadius;          ///< radius of contained void
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
   void createSurfaces();
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
 		    const long int);
