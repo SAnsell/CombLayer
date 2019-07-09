@@ -773,13 +773,14 @@ exptVariables(FuncDataBase& Control,
   DiffGen.generatePump(Control,preName+"DiffPump",53.24);
   // NOTE: ACTIVE WINDOW:
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setWindow(2.7, 0.5);
+  PipeGen.setWindow(2.7, 0.005);
   PipeGen.setAFlange(2.7,0.5);
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
   // In reality the window is made of 50 um diamond,
   // but void is a reasonable approximation for our needs:
-  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Void");
-  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Void");
+  // Graphite#2 is Diamond (graphite with double density)
+  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Graphite#2");
+  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Graphite#2");
 
   // sample area dimensions are arbitrary
   Control.addVariable(preName+"SampleAreaWidth",100.0);
