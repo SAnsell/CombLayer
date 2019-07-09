@@ -252,7 +252,7 @@ SurfMap::createLink(const std::string& surfName,
 		    const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& YAxis) const
   /*!
-    Generate the front/back links if active
+    Generate the line link from the origin along YAxis
     \param extName :: Cut Unit item
     \param FC :: Fixed component [most likely this]
     \param linkIndex :: link point to build
@@ -263,8 +263,14 @@ SurfMap::createLink(const std::string& surfName,
   ELog::RegMethod RegA("SurfMap","createLinks");
 
   const Geometry::Surface* SPtr=getSurfPtr(surfName);
+  if (!SPtr)
+    throw ColErr::InContainerError<std::string>
+      (surfName,"Surface not found");
+  
+
   FC.setLinkSurf(linkIndex,SPtr->getName());
   FC.setConnect(linkIndex,SurInter::getLinePoint(Org,YAxis,SPtr,Org),YAxis);
+
   return;
 }
 
