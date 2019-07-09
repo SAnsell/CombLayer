@@ -268,7 +268,6 @@ SurfMap::createLink(const std::string& surfName,
   if (!SPtr)
     throw ColErr::InContainerError<std::string>
       (surfName,"Surface not found");
-  
 
   FC.setLinkSurf(linkIndex,getSignedSurf(surfName));
   FC.setConnect(linkIndex,SurInter::getLinePoint(Org,YAxis,SPtr,Org),YAxis);
