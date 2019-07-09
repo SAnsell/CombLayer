@@ -148,7 +148,8 @@ SurfMap::getSurfPtr(const std::string& Key,
 
   if (Key.empty()) return 0;
   const int sn=getItem(Key,Index);
-  return SurI.getSurf(sn);
+  return (sn<0) ?  SurI.getSurf(-sn) : SurI.getSurf(sn);
+
 }
 
 template<typename T>
@@ -171,7 +172,8 @@ SurfMap::realPtr(const std::string& Key,
   if (Key.empty()) return 0;
 
   const int sn=getItem(Key,Index);
-  return SurI.realSurf<T>(sn);
+  
+  return SurI.realSurf<T>(std::abs(sn));
 }
 
 HeadRule
