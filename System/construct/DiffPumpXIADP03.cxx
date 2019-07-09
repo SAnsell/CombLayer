@@ -76,6 +76,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "SurInter.h"
 
 #include "DiffPumpXIADP03.h"
 
@@ -84,7 +85,7 @@ namespace constructSystem
 
 DiffPumpXIADP03::DiffPumpXIADP03(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -199,6 +200,7 @@ DiffPumpXIADP03::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+31,FPtr,flangeVoidThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+32,BPtr,-flangeVoidThick);
+  SurfMap::setSurf("innerBack",-SMap.realSurf(buildIndex+32));
   
   ModelSupport::buildPlane(SMap,buildIndex+33,
 			   Origin-X*(flangeVoidWidth/2.0),X);
@@ -348,6 +350,11 @@ DiffPumpXIADP03::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
+  const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
+  FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,PPtr),-Y);
 
   return;
 }
