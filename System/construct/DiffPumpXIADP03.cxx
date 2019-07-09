@@ -85,7 +85,7 @@ namespace constructSystem
 
 DiffPumpXIADP03::DiffPumpXIADP03(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedOffset(Key,8),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -351,12 +351,12 @@ DiffPumpXIADP03::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
 
-  // FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
-  // const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
-  // FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,PPtr),-Y);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
+  const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
+  FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,PPtr),-Y);
 
-  SurfMap::createLink("innerBack", *this, 6, Origin, -Y);
-
+  SurfMap::createLink("innerBack", *this, 7, Origin, -Y);
+  
   return;
 }
 

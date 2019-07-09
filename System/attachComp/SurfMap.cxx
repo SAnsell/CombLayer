@@ -147,7 +147,7 @@ SurfMap::getSurfPtr(const std::string& Key,
     ModelSupport::surfIndex::Instance();
 
   if (Key.empty()) return 0;
-  const int sn=getItem(Key,Index);
+  const int sn=getSignedSurf(Key,Index);
   return (sn<0) ?  SurI.getSurf(-sn) : SurI.getSurf(sn);
 
 }
@@ -171,8 +171,7 @@ SurfMap::realPtr(const std::string& Key,
 
   if (Key.empty()) return 0;
 
-  const int sn=getItem(Key,Index);
-  
+  const int sn=getSignedSurf(Key,Index);
   return SurI.realSurf<T>(std::abs(sn));
 }
 
@@ -271,7 +270,7 @@ SurfMap::createLink(const std::string& surfName,
       (surfName,"Surface not found");
   
 
-  FC.setLinkSurf(linkIndex,SPtr->getName());
+  FC.setLinkSurf(linkIndex,getSignedSurf(surfName));
   FC.setConnect(linkIndex,SurInter::getLinePoint(Org,YAxis,SPtr,Org),YAxis);
 
   return;
