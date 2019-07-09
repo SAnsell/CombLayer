@@ -351,9 +351,11 @@ DiffPumpXIADP03::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
-  const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
-  FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,PPtr),-Y);
+  // FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
+  // const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
+  // FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,PPtr),-Y);
+
+  SurfMap::createLink("innerBack", *this, 6, Origin, -Y);
 
   return;
 }
