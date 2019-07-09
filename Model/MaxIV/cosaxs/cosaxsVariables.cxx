@@ -776,6 +776,10 @@ exptVariables(FuncDataBase& Control,
   PipeGen.setWindow(2.7, 0.5);
   PipeGen.setAFlange(2.7,0.5);
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
+  // In reality the window is made of 50 um diamond,
+  // but void is a reasonable approximation for our needs:
+  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Void");
+  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Void");
 
   // sample area dimensions are arbitrary
   Control.addVariable(preName+"SampleAreaWidth",100.0);
