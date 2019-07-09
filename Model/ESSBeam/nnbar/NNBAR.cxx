@@ -3,7 +3,7 @@
  
  * File:   nnBar/NNBAR.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -322,7 +322,8 @@ NNBAR::build(Simulation& System,
 
   // IN WALL
   // Make bunker insert
-  BInsert->createAll(System,FocusC->getKey("Guide0"),2,bunkerObj);
+  BInsert->setBunkerObject(bunkerObj);
+  BInsert->createAll(System,FocusC->getKey("Guide0"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
 

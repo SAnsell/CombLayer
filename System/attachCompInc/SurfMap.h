@@ -100,6 +100,11 @@ class SurfMap : public BaseMap
   std::string getSurfString(const std::string&) const;
   std::string getSurfComplement(const std::string&) const;
 
+  void createLink(const std::string&,attachSystem::FixedComp&,
+		  const size_t,const Geometry::Vec3D&,
+		  const Geometry::Vec3D&) const;
+
+  
 };
 
 }

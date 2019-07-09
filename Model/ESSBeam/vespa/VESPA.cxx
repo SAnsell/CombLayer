@@ -740,7 +740,8 @@ VESPA::build(Simulation& System,
 
   // IN WALL
   // Make bunker insert
-  BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
+  BInsert->setBunkerObject(bunkerObj);
+  BInsert->createAll(System,FocusH->getKey("Guide0"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point

@@ -170,7 +170,6 @@ DiffPumpXIADP03::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(length),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+22));
-
     }
 
   // main cell

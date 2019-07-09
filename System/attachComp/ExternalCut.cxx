@@ -393,17 +393,14 @@ ExternalCut::createLink(const std::string& extName,
   const cutUnit* CU=findUnit(extName);
   if (CU)  
     {
-
       FC.setLinkSurf(linkIndex,CU->main.complement());
       FC.setBridgeSurf(linkIndex,CU->divider);
       FC.setConnect(linkIndex,
-	 SurInter::getLinePoint(Org+YAxis*10.0,-YAxis,CU->main,CU->divider),YAxis);
+	 SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider),YAxis);
     }
   return;
 }
   
-
-
 void
 ExternalCut::makeShiftedSurf(ModelSupport::surfRegister& SMap,
 			     const HeadRule& HR,

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/ODIN.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -511,7 +511,8 @@ ODIN::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
 
     // First collimator [In WALL]
-  BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
+  BInsert->setBunkerObject(bunkerObj);
+  BInsert->createAll(System,FocusH->getKey("Guide0"),2);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
       // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));

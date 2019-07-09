@@ -170,6 +170,7 @@ addIntersection(const int SN,const Geometry::Surface* SPtr,
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addIntersection<int,Rule>");
+
   createAddition(1,new SurfPoint(SPtr,SN),outRule);  
   return;
 }
@@ -196,7 +197,7 @@ createAddition(const int InterFlag,Rule* NRptr,
     }
   // This is an intersection and we want to add our rule at the base
   // Find first item that is not an intersection
-  Rule* RPtr(outRule);
+  Rule* RPtr;
   
   std::deque<Rule*> curLevel;
   curLevel.push_back(outRule);
@@ -227,7 +228,10 @@ createAddition(const int InterFlag,Rule* NRptr,
       if ( (LeafPtr=RPtr->leaf(1)) )
 	curLevel.push_back(LeafPtr);
     }
-  ELog::EM<<"Failed on rule structure  "<<ELog::endErr;
+
+  throw ColErr::EmptyContainer
+    ("Failed on rule structure :"+outRule->display());
+
   return;  
 }
 

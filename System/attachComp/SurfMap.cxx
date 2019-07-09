@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +42,18 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
+//#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "Surface.h"
+#include "surfRegister.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "surfIndex.h"
+#include "SurInter.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 
@@ -239,6 +244,36 @@ SurfMap::combine(const std::set<std::string>& KeySet) const
 
   return Out;
 }
+
+void
+SurfMap::createLink(const std::string& surfName,
+		    attachSystem::FixedComp& FC,
+		    const size_t linkIndex,
+		    const Geometry::Vec3D& Org,
+		    const Geometry::Vec3D& YAxis) const
+  /*!
+    Generate the line link from the origin along YAxis
+    \param extName :: Cut Unit item
+    \param FC :: Fixed component [most likely this]
+    \param linkIndex :: link point to build
+    \param Org :: Origin
+    \param YAxis :: YAxis
+   */
+{
+  ELog::RegMethod RegA("SurfMap","createLinks");
+
+  const Geometry::Surface* SPtr=getSurfPtr(surfName);
+  if (!SPtr)
+    throw ColErr::InContainerError<std::string>
+      (surfName,"Surface not found");
+  
+
+  FC.setLinkSurf(linkIndex,SPtr->getName());
+  FC.setConnect(linkIndex,SurInter::getLinePoint(Org,YAxis,SPtr,Org),YAxis);
+
+  return;
+}
+
 
 ///\cond template
 template Geometry::Plane*
