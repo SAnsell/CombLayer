@@ -261,18 +261,19 @@ cosaxsExptLine::buildObjects(Simulation& System)
   gateB->createAll(System,*diagUnit,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
   gateB->insertInCell(System,outerCell);
-
   
-  diffPump->setCutSurf("front",*gateB,2);
+  //diffPump->setCutSurf("front",*gateB,2);
   diffPump->createAll(System,*gateB,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diffPump,2);
   diffPump->insertInCell(System,outerCell);
 
-  telescopicSystem->setFront(*diffPump,2);
-  telescopicSystem->createAll(System,*diffPump,2);
+  telescopicSystem->setFront(*diffPump,-7);
+  telescopicSystem->createAll(System,*diffPump,-7);
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,*telescopicSystem,2);
   telescopicSystem->insertInCell(System,outerCell);
+  telescopicSystem->insertInCell(System,diffPump->getCell("FlangeFrontVoid"));
+
 
   // GOOD ABOVE this point:
   
