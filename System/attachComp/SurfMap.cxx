@@ -263,6 +263,7 @@ SurfMap::createLink(const std::string& surfName,
   ELog::RegMethod RegA("SurfMap","createLinks");
 
   const Geometry::Surface* SPtr=getSurfPtr(surfName);
+
   if (!SPtr)
     throw ColErr::InContainerError<std::string>
       (surfName,"Surface not found");
