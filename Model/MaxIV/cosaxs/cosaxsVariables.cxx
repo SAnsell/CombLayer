@@ -773,9 +773,14 @@ exptVariables(FuncDataBase& Control,
   DiffGen.generatePump(Control,preName+"DiffPump",53.24);
   // NOTE: ACTIVE WINDOW:
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setWindow(2.7, 0.5);
+  PipeGen.setWindow(2.7, 0.005);
   PipeGen.setAFlange(2.7,0.5);
   PipeGen.generatePipe(Control,preName+"TelescopicSystem",0,100.0);
+  // In reality the window is made of 50 um diamond,
+  // but void is a reasonable approximation for our needs:
+  // Graphite#2 is Diamond (graphite with double density)
+  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Graphite#2");
+  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Graphite#2");
 
   // sample area dimensions are arbitrary
   Control.addVariable(preName+"SampleAreaWidth",100.0);
@@ -971,6 +976,7 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"WAXSWallThick", 0.3); // [2]
   Control.addVariable(tubeName+"WAXSMainMat", "StbTCABL"); // guess
   Control.addVariable(tubeName+"WAXSWallMat", "Aluminium");
+  Control.addVariable(tubeName+"WAXSYStep", 0.0);
 
   Control.addVariable(tubeName+"AirBoxLength", 32.0); // [2]
   Control.addVariable(tubeName+"AirBoxWidth", 30.8); // [2]
@@ -978,6 +984,15 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(tubeName+"AirBoxWallThick", 0.3); // [2]
   Control.addVariable(tubeName+"AirBoxMainMat", "Air");
   Control.addVariable(tubeName+"AirBoxWallMat", "Aluminium");
+
+  Control.addVariable(tubeName+"CableWidth",  20.0); // [2]
+  Control.addVariable(tubeName+"CableHeight", 10.0); // [2]
+  Control.addVariable(tubeName+"CableZStep",  0.1);//-21.7); // [2]
+  Control.addVariable(tubeName+"CableLength", 750.0); // dummy
+  Control.addVariable(tubeName+"CableTailRadius", 17.0);
+  Control.addParse<double>(tubeName+"CableDetYStep", tubeName+"WAXSYStep");
+  Control.addVariable(tubeName+"CableMat", "StbTCABL"); // some generic cable material
+
   return;
 }
 
