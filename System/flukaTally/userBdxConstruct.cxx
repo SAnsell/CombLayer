@@ -112,10 +112,10 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
     Construct a link region exiting the FixedComp link unit
     \param System :: Simulation to use	
     \param FCname :: name of fixed comp
-    \param FCiindex :: name of link point
+    \param FCindex :: name of link point
     \param cellA :: Cell from the -ve side
     \param cellB :: Cell from the +ve side
-
+    \return true if constructed correctly
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","constructLinkRegion");
@@ -279,7 +279,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 	  (FCname+":"+FCindex,"No connecting surface on regions");
     }
   
-  ELog::EM<<"Regions connected from "<<cellA<<" "<<cellB<<ELog::endDiag;  
+  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
