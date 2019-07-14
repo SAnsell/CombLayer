@@ -77,18 +77,23 @@ getActiveTally(const SimFLUKA& Sim,const std::string& tName)
   std::set<flukaTally*> Out;
   const SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
 
+	  
   for(const SimFLUKA::FTallyTYPE::value_type& mc : tmap)
     {
       std::string KN=mc.second->getKeyName();
-      if (tName.back()=='*')
+      const size_t knSize(KN.size());
+      if (!tName.empty() && tName.size()<knSize &&
+	  tName.back()=='*')
 	{
-	  // method to make KN ==> stuff*
 	  KN.erase(tName.size(),std::string::npos);
 	  KN.back()='*';
 	}
       if (KN==tName)
 	Out.insert(mc.second);
     }
+  if (Out.empty())
+    throw ColErr::InContainerError<std::string>
+      (tName,"Tally modification type not present:");
   return Out;
 }
 

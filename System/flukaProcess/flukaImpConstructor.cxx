@@ -441,7 +441,7 @@ void
 flukaImpConstructor::processEMF(SimFLUKA& System,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
-/*!
+  /*!
     Set individual EMFCUT based on IParam
     \param System :: Simulation for fluka
     \param IParam :: input stream
