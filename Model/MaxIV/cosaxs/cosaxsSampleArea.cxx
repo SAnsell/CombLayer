@@ -77,11 +77,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "cosaxsSampleArea.h"
 
@@ -107,8 +102,8 @@ cosaxsSampleArea::cosaxsSampleArea(const cosaxsSampleArea& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  depth(A.depth),
-  airMat(A.airMat)
+  depth(A.depth),sampleRadius(A.sampleRadius),
+  airMat(A.airMat),sampleMat(A.sampleMat)
   /*!
     Copy constructor
     \param A :: cosaxsSampleArea to copy
@@ -141,12 +136,12 @@ cosaxsSampleArea::operator=(const cosaxsSampleArea& A)
 
 cosaxsSampleArea*
 cosaxsSampleArea::clone() const
-/*!
+ /*!
   Clone self
   \return new (this)
  */
 {
-    return new cosaxsSampleArea(*this);
+  return new cosaxsSampleArea(*this);
 }
 
 cosaxsSampleArea::~cosaxsSampleArea()
@@ -170,8 +165,11 @@ cosaxsSampleArea::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
+  sampleRadius=Control.EvalDefVar<double>(keyName+"SampleRadius",0.0);
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  sampleMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"SampleMat",airMat);
 
   return;
 }
@@ -219,6 +217,10 @@ cosaxsSampleArea::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height),Z);
 
+  if (sampleRadius>Geometry::zeroTol)
+    ModelSupport::buildSphere(SMap,buildIndex+7,
+			      Origin+Y*(length/2.0),sampleRadius);
+
   return;
 }
 
@@ -232,13 +234,21 @@ cosaxsSampleArea::createObjects(Simulation& System)
   ELog::RegMethod RegA("cosaxsSampleArea","createObjects");
 
   std::string Out;
-  const std::string front(frontRule());
-  const std::string back(backRule());
+  const std::string frontStr(frontRule());
+  const std::string backStr(backRule());
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ")+front+back;
-  makeCell("MainCell",System,cellIndex++,airMat,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 7 ");
+  makeCell("MainCell",System,cellIndex++,airMat,0.0,Out+frontStr+backStr);
 
-  addOuterSurf(Out);
+  if (sampleRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 ");
+      makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
+    }
+  
+
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 3 -4 5 -6 ");
+  addOuterSurf(Out+frontStr+backStr);
 
   return;
 }

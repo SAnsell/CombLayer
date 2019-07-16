@@ -49,8 +49,11 @@ class cosaxsSampleArea :
   double height;                ///< Height
   double depth;                 ///< Depth
 
-  int airMat;                   ///< Air material
+  double sampleRadius;          ///< Radius of sample
 
+  int airMat;                   ///< Air material
+  int sampleMat;                ///< Sample material
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

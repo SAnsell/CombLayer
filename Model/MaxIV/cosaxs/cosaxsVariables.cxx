@@ -786,7 +786,9 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(preName+"SampleAreaWidth",100.0);
   Control.addVariable(preName+"SampleAreaHeight",50.0);
   Control.addVariable(preName+"SampleAreaDepth",10.0);
+  Control.addVariable(preName+"SampleAreaSampleRadius",0.0);  // sample not made
   Control.addVariable(preName+"SampleAreaAirMat","Air");
+  Control.addVariable(preName+"SampleAreaSampleMat","Stainless304");
 
   const std::string tubeName(preName+"Tube");
 
