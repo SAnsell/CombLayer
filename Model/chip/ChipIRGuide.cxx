@@ -390,46 +390,46 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   // Gravity axis [up]
-  const Geometry::Vec3D tmpbZ= Geometry::Vec3D(-1,0,0); 
-  const Geometry::Vec3D tmpbY=GS.getXYAxis();
-  const Geometry::Vec3D tmpbX=Z*GS.getXYAxis();
-
-  ELog::EM<<"GS - "<<GS.getXYAxis()<<ELog::endDiag;
-
+  Geometry::Vec3D tmpbZ= Geometry::Vec3D(-1,0,0); 
+  Geometry::Vec3D tmpbY= GS.getXYAxis().unit();
+  Geometry::Vec3D tmpbX= tmpbZ * tmpbY;
   // Change so that not dependent on the angle of the shutter:
-
 
   mainFC.createUnitVector(GS.getKey("Main"));
   setDefault("Main");
-  
-  ELog::EM<<"ORG == "<<Origin<<" :"<<X<<": "<<Y<<" :"<<Z<<ELog::endDiag;
-  ELog::EM<<"ORG == "<<Origin<<" :"<<tmpbX<<": "<<tmpbZ<<ELog::endDiag;
   mainFC.createUnitVector(Origin,-X,Y,Z);
   setDefault("Main");
-  ELog::EM<<"ORG == "<<Origin<<" :"<<X<<": "<<Y<<" :"<<Z<<ELog::endDiag;
-  //  Origin=GS.getOrigin()+Y*BS.getORadius();
-
+  const Geometry::Vec3D OXX=GS.getOrigin()+Y*BS.getORadius()
+    +X*xBeamShift+Z*(zBeamShift+zShift);
+  
   mainFC.applyShift(xShift,BS.getORadius(),zShift);
+  beamFC.createUnitVector(OXX,tmpbX,tmpbY,tmpbZ);  
   
   //  mainFC.setCentre(Origin);
   //  bEnter+=Z*zBeamShift+X*xBeamShift;
-  beamFC.createUnitVector(mainFC.getCentre(),tmpbX,tmpbY,tmpbZ);
-  beamFC.applyShift(xBeamShift,0.0,zBeamShift);
-  beamFC.applyAngleRotate(sideBeamAngle,beamAngle);
 
+  // Rotate beamAxis to the final angle
+
+  //  beamFC.applyShift(-xBeamShift,0.0,-zBeamShift);
+
+
+  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(tmpbX);
+  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(tmpbZ);
+  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(tmpbZ);
+  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(tmpbY);
+  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(tmpbX);
+  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(tmpbY);
+
+  
+  beamFC.createUnitVector(OXX,tmpbX,tmpbY,tmpbZ);
+  ELog::EM<<"BXYZ == "<<beamFC.getX()<<":"<<bY<<":"<<bZ<<ELog::endDiag;
+  
   // Now calculate Cent
   setDefault("Main","Beam");
   gLen=hYStart-BS.getORadius();
   beamFC.setExit(bOrigin+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
-  // Output Datum [beam centre]
-  // Distance to Y Plane [ gLen / (beamAxis . Y )
-  //  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
-  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  //  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
-  //  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
 
   setDefault("Main","Beam");
-  ELog::EM<<"Beam Enter == "<<bOrigin<<" :"<<X<<": "<<bZ<<ELog::endDiag;
   return;
 }
 
@@ -554,9 +554,6 @@ ChipIRGuide::createSurfacesCommon()
   for(size_t i=0;i<LThick.size();i++)
     createLiner(static_cast<int>(i+1)*20,LThick[i]);
 
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"X == "<<X<<" :: "<<Y<<" :: "<<Z<<ELog::endDiag;
-  ELog::EM<<"X == "<<bX<<" :: "<<bY<<" :: "<<bZ<<ELog::endDiag;
   // Steel Work:
   //  [sides]
   Geometry::Vec3D rX(X);
@@ -634,13 +631,13 @@ ChipIRGuide::createSurfacesCommon()
 
 
   // Wedge shielding piece on TSA side
-//  rX=X;
-//  Geometry::Quaternion::calcQRotDeg(leftWedgeAngle,Z).rotate(rX);  
-//  ModelSupport::buildPlane(SMap,buildIndex+603,
-//			   Origin-X*(leftConcInner+blockWallThick+
-//				     extraWallThick+leftWedgeThick),rX);
-//ModelSupport::buildPlane(SMap,buildIndex+606,
-//                          Origin+Z*(leftWedgeHeight-floorConc),Z);
+  //  rX=X;
+  //  Geometry::Quaternion::calcQRotDeg(leftWedgeAngle,Z).rotate(rX);  
+  //  ModelSupport::buildPlane(SMap,buildIndex+603,
+  //			   Origin-X*(leftConcInner+blockWallThick+
+  //				     extraWallThick+leftWedgeThick),rX);
+  //ModelSupport::buildPlane(SMap,buildIndex+606,
+  //                          Origin+Z*(leftWedgeHeight-floorConc),Z);
 
   return;
 }
@@ -1016,7 +1013,7 @@ ChipIRGuide::createLinks()
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setConnect(1,Origin+Y*gLen,Y);
   mainFC.setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
-  
+
   mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));  
   mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));  
   mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));  

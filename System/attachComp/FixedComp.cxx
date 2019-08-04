@@ -319,7 +319,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   X=XAxis.unit();
   Y=YAxis.unit();
   Z=ZAxis.unit();
-  
+
   makeOrthogonal();
   Origin=OG;
   if (primeAxis>0) reOrientate();

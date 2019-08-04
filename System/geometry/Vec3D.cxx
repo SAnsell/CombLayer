@@ -263,9 +263,9 @@ Vec3D::operator*(const Vec3D& A) const
   */  
 {
   Vec3D X;
-  X.x=y*A.z-z*A.y;
-  X.y=z*A.x-x*A.z;
-  X.z=x*A.y-y*A.x;
+  X.x= y*A.z - z*A.y;
+  X.y= z*A.x - x*A.z;
+  X.z= x*A.y - y*A.x;
   return X;
 }
 

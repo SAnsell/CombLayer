@@ -3,7 +3,7 @@
  
  * File:   chip/makeChipIR.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ namespace hutchSystem
 
 makeChipIR::makeChipIR() :
   GObj(new ChipIRGuide("chipGuide")),
-  HObj(new ChipIRHutch("chipHut")),
+  hutchObj(new ChipIRHutch("chipHut")),
   FB("chipHutFB")
   /*!
     Constructor
@@ -110,12 +110,12 @@ makeChipIR::makeChipIR() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(GObj);
-  OR.addObject(HObj);
+  OR.addObject(hutchObj);
 }
 
 makeChipIR::makeChipIR(const makeChipIR& A) : 
   GObj(new ChipIRGuide(*A.GObj)),
-  HObj(new ChipIRHutch(*A.HObj)),
+  hutchObj(new ChipIRHutch(*A.hutchObj)),
   FeedVec(A.FeedVec),FB(A.FB)
   /*!
     Copy constructor
@@ -134,7 +134,7 @@ makeChipIR::operator=(const makeChipIR& A)
   if (this!=&A)
     {
       *GObj = *A.GObj;
-      *HObj = *A.HObj;
+      *hutchObj = *A.hutchObj;
       FeedVec=A.FeedVec;
       FB=A.FB;
     }
@@ -159,26 +159,28 @@ makeChipIR::buildIsolated(Simulation& System,
 {
   ELog::RegMethod RegA("makeChipIR","buildIsolated");
 
-  HObj->setCollFlag(IParam.getValue<int>("collFlag"));
+  const int voidCell(74123);
+
+  hutchObj->setCollFlag(IParam.getValue<int>("collFlag"));
   // chipguide/chiphutch
-  GObj->addInsertCell("outer",74123);
-  GObj->addInsertCell("rightwall",74123);
-  GObj->addInsertCell("leftwall",74123);
+  GObj->addInsertCell("outer",voidCell);
+  GObj->addInsertCell("rightwall",voidCell);
+  GObj->addInsertCell("leftwall",voidCell);
   GObj->createAll(System,World::masterOrigin());
-  HObj->addInsertCell(74123);
 
-  HObj->createAll(System,World::masterTS2Origin(),*GObj,
+  hutchObj->addInsertCell(voidCell);
+  hutchObj->createAll(System,World::masterTS2Origin(),*GObj,
   		  GObj->getCC("inner"));
-  //  FB.createAll(System,*HObj);
+  //  FB.createAll(System,*hutchObj);
 
-  FB.createAll(System,*HObj);
+  FB.createAll(System,*hutchObj);
   const FuncDataBase& Control=System.getDataBase();  
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
       FeedVec.push_back
       (std::make_shared<FeedThrough>("chipWiresColl",i+1));
-      FeedVec.back()->createAll(System,*HObj);
+      FeedVec.back()->createAll(System,*hutchObj);
     }  
   
   return;
@@ -196,36 +198,34 @@ makeChipIR::build(Simulation* SimPtr,
    */
 {
   ELog::RegMethod RegA("makeChipIR","build");
-  ELog::debugMethod DegA;
+  const int voidCell(74123);
   const FuncDataBase& Control=SimPtr->getDataBase();  
 
   // Exit if no work to do:
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("chipIR")))
     return;
-
-  HObj->setCollFlag(IParam.getValue<int>("collFlag"));
+  
+  hutchObj->setCollFlag(IParam.getValue<int>("collFlag"));
   // chipguide/chiphutch
   GObj->setMonoSurface(BulkObj.getMonoSurf());
-  GObj->addInsertCell("outer",74123);
-  GObj->addInsertCell("rightwall",74123);
-  GObj->addInsertCell("leftwall",74123);
+  GObj->addInsertCell("outer",voidCell);
+  GObj->addInsertCell("rightwall",voidCell);
+  GObj->addInsertCell("leftwall",voidCell);
   
   GObj->createAll(*SimPtr,BulkObj,0);
-  ELog::EM<<"Bulk == "<<BulkObj.getLinkPt(0)<<ELog::endDiag;
-  return;
     
-  HObj->addInsertCell(74123);
-  HObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
-		  GObj->getCC("inner"));
+  hutchObj->addInsertCell(74123);
+  hutchObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
+		      GObj->getCC("inner"));
   
-  FB.createAll(*SimPtr,*HObj);
+  FB.createAll(*SimPtr,*hutchObj);
 
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
       FeedVec.push_back
 	(std::make_shared<FeedThrough>("chipWiresColl",i+1));
-      FeedVec.back()->createAll(*SimPtr,*HObj);
+      FeedVec.back()->createAll(*SimPtr,*hutchObj);
     }  
 
 

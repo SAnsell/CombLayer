@@ -361,6 +361,7 @@ GeneralShutter::applyRotations(const double ZOffset)
 			
   BeamAxis=mainFC.getY();
   XYAxis=BeamAxis;
+  if (XYAxis.abs()<0.999) ELog::EM<<"ERRROR "<<BeamAxis<<ELog::endErr;
   
   zSlope=Z;
   Geometry::Quaternion::calcQRotDeg(zAngle,X).rotate(BeamAxis);

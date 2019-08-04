@@ -3,7 +3,7 @@
  
  * File:   chipInc/makeChipIR.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class makeChipIR
  private:
 
   std::shared_ptr<ChipIRGuide> GObj;   ///< Guide 
-  std::shared_ptr<ChipIRHutch> HObj;   ///< Hutch object
+  std::shared_ptr<ChipIRHutch> hutchObj;   ///< Hutch object
   std::vector<std::shared_ptr<FeedThrough>> FeedVec;   
   FBBlock FB;                         ///< FeedBlock
 
@@ -65,7 +65,7 @@ class makeChipIR
   /// Guide object accessor
   const ChipIRGuide& getGuide() const { return *GObj; }
   /// Hutch object accessor
-  const ChipIRHutch& getHutch() const { return *HObj; }
+  const ChipIRHutch& getHutch() const { return *hutchObj; }
 
 };
 

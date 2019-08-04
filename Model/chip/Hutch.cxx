@@ -3,7 +3,7 @@
  
  * File:   chip/Hutch.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -411,7 +411,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
     Create the unit vectors
     \param shutterFC :: shutter direction 
     \param xyAxis :: xyAngle
-    \param LC :: connectin linear component [ChipIRGuide]
+    \param LC :: connecting linear component [ChipIRGuide]
   */
 {
   ELog::RegMethod RegA("Hutch","createUnitVector");
@@ -424,7 +424,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   mainFC.setCentre(LC.getLinkPt(7));
   beamFC.createUnitVector(LC);
   beamFC.setCentre(LC.getLinkPt(7));
-  FixedGroup::setDefault("Main");
+  FixedGroup::setDefault("Main","Beam");
       
   // remove old Z component and replace:
 
@@ -434,7 +434,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   beamFC.applyAngleRotate(0,beamAngle);
 
 
-  FixedGroup::setDefault("Main");
+  FixedGroup::setDefault("Main","Beam");
   
   const Geometry::Vec3D ImpactPoint= (shutterFC.NConnect()) ?
     shutterFC.getLinkPt(1) : shutterFC.getCentre(); 
@@ -642,6 +642,9 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   // ---------------------------------------------------
   SMap.addMatch(buildIndex+1,Guide.getLinkSurf(2));
 
+  ELog::EM<<"MAIN == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"MXYZ == "<<X<<" : "<<Y<<" : "<<Z<<ELog::endDiag;
+    
   // CENTRE LINE [normal on x axis]:
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X); 
   
@@ -941,6 +944,8 @@ ChipIRHutch::layerProcess(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Hutch","LayerProcess");
+
+  return;
   
   if (nRoofDivide>1)
     {
@@ -1173,7 +1178,8 @@ ChipIRHutch::calcCentroid(const int pA,const int pB,const int pC,
 }
 
 Geometry::Vec3D
-ChipIRHutch::calcSideIntercept(const int sideIndex,const Geometry::Vec3D& Pt,
+ChipIRHutch::calcSideIntercept(const int sideIndex,
+			       const Geometry::Vec3D& Pt,
 			       const Geometry::Vec3D& Norm) const
   /*!
     Given a side: Calculate the intercept point on that surface
@@ -1267,49 +1273,6 @@ ChipIRHutch::createLinks()
 }
 
 void
-ChipIRHutch::createAll(Simulation& System,
-		       const shutterSystem::GeneralShutter& ShutterPort,
-		       const attachSystem::FixedGroup& Guide,
-		       const attachSystem::ContainedComp& IC)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param ShutterPort :: Shutter to build beam along
-    \param Guide :: Linear Comp to beam from [chipGuide]
-    \param IC :: Internal Component that contains is own external perimeter
-  */
-{
-  ELog::RegMethod RegA("ChipIRHutch","createAll(ShutterPort)");
-
-  populate(System.getDataBase());
-  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide.getKey("Main"));
-  createCommonAll(System,Guide,IC);
-  return;
-}
-
-void
-ChipIRHutch::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const attachSystem::FixedGroup& Guide,
-		       const attachSystem::ContainedComp& IC)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param Guide :: Linear Comp to beam from [chipGuide]
-    \param IC :: Internal Component that contains is own external perimeter
-  */
-{
-  ELog::RegMethod RegA("Hutch","createAll(Fixed)");
-
-  populate(System.getDataBase());
-  createUnitVector(FC,FC.getY(),Guide.getKey("Main"));
-  createCommonAll(System,Guide,IC);
-  return;
-}
-
-
-void
 ChipIRHutch::createCommonAll(Simulation& System,
 			     const attachSystem::FixedGroup& Guide,
 			     const attachSystem::ContainedComp& IC)
@@ -1357,6 +1320,47 @@ ChipIRHutch::createCommonAll(Simulation& System,
 }
 
 
-  
-}  // NAMESPACE shutterSystem
+void
+ChipIRHutch::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const attachSystem::FixedGroup& Guide,
+		       const attachSystem::ContainedComp& IC)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param Guide :: Linear Comp to beam from [chipGuide]
+    \param IC :: Internal Component that contains is own external perimeter
+  */
+{
+  ELog::RegMethod RegA("Hutch","createAll(Fixed)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FC.getY(),Guide.getKey("Main"));
+  createCommonAll(System,Guide,IC);
+  return;
+}
+
+void
+ChipIRHutch::createAll(Simulation& System,
+		       const shutterSystem::GeneralShutter& ShutterPort,
+		       const attachSystem::FixedGroup& Guide,
+		       const attachSystem::ContainedComp& IC)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param ShutterPort :: Shutter to build beam along
+    \param Guide :: Linear Comp to beam from [chipGuide]
+    \param IC :: Internal Component that contains is own external perimeter
+  */
+{
+  ELog::RegMethod RegA("ChipIRHutch","createAll(ShutterPort)");
+
+  populate(System.getDataBase());
+  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide.getKey("Main"));
+  createCommonAll(System,Guide,IC);
+  return;
+}
+
+}  // NAMESPACE chipSystem
 

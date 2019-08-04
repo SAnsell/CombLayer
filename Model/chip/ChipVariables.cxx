@@ -183,10 +183,10 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideSideAngle",0.65); // Side Angle of guide
 
   Control.addVariable("chipGuideXShift",-10.0);     // General X Shift
-  Control.addVariable("chipGuideZShift",28.0);      // General Z Shift;
+  Control.addVariable("chipGuideZShift",28.0);      // General Z Shift (28.9)
 
   Control.addVariable("chipGuideXBeamShift",-7.0);     // Guide X Shift
-  Control.addVariable("chipGuideZBeamShift",28.0);     // Guide Z Shift;
+  Control.addVariable("chipGuideZBeamShift",0.0);     // Guide Z Shift;
 
   Control.addVariable("chipGuideInnerARoofZ",13.0);      // Near
   Control.addVariable("chipGuideInnerBRoofZ",24.0);
