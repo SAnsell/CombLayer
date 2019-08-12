@@ -247,9 +247,6 @@ class ChipIRHutch : public attachSystem::FixedGroup,
   int exitWindow(const double,std::vector<int>&,Geometry::Vec3D&) const;
   void writeMasterPoints() const;
 
-  void createAll(Simulation&,const shutterSystem::GeneralShutter&,
-		 const attachSystem::FixedGroup&,		 
-		 const attachSystem::ContainedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedGroup&,		 
@@ -258,6 +255,9 @@ class ChipIRHutch : public attachSystem::FixedGroup,
   void createCommonAll(Simulation&,
 		 const attachSystem::FixedGroup&,		 
 		 const attachSystem::ContainedComp&);
+
+  void createAll(Simulation&,const attachSystem::FixedGroup&,
+		 const long int);
 
 };
 

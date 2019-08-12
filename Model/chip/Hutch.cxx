@@ -1343,22 +1343,22 @@ ChipIRHutch::createAll(Simulation& System,
 
 void
 ChipIRHutch::createAll(Simulation& System,
-		       const shutterSystem::GeneralShutter& ShutterPort,
-		       const attachSystem::FixedGroup& Guide,
-		       const attachSystem::ContainedComp& IC)
+		       const attachSystem::FixedGroup& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param ShutterPort :: Shutter to build beam along
-    \param Guide :: Linear Comp to beam from [chipGuide]
-    \param IC :: Internal Component that contains is own external perimeter
+    \param FC :: Guide unit
+    \param sideIndex :: lin point
   */
 {
   ELog::RegMethod RegA("ChipIRHutch","createAll(ShutterPort)");
 
   populate(System.getDataBase());
-  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide.getKey("Main"));
-  createCommonAll(System,Guide,IC);
+  //  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide.getKey("Main"));
+  //  createUnitVector(FC,sideIndex);
+  ELog::EM<<"Y == "<<Origin<<" "<<Y<<" "<<Z<<ELog::endDiag;
+  //  createCommonAll(System,Guide,IC);
   return;
 }
 
