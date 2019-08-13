@@ -122,6 +122,8 @@ RingDoor::populate(const FuncDataBase& Control)
   underStepWidth=Control.EvalVar<double>(keyName+"UnderStepWidth");
   underStepXSep=Control.EvalVar<double>(keyName+"UnderStepXSep");
 
+  underAMat=ModelSupport::EvalDefMat<int>(Control,keyName+"UnderAMat",0);
+  underBMat=ModelSupport::EvalDefMat<int>(Control,keyName+"UnderBMat",0);
   tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
   
@@ -279,10 +281,12 @@ RingDoor::createObjects(Simulation& System)
 
   // Lift points
   Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 -1005 ");
-  makeCell("LiftA",System,cellIndex++,0,0.0,Out+outerStr+innerStr+floorStr);
+  makeCell("LiftA",System,cellIndex++,underAMat,
+	   0.0,Out+outerStr+innerStr+floorStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1013 -1014 -1005 ");
-  makeCell("LiftB",System,cellIndex++,0,0.0,Out+outerStr+innerStr+floorStr);
+  makeCell("LiftB",System,cellIndex++,underBMat,
+	   0.0,Out+outerStr+innerStr+floorStr);
 
 
   

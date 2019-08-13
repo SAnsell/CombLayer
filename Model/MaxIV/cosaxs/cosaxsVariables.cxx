@@ -203,9 +203,9 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"InnerThick",0.3);
     
-  Control.addVariable(hutName+"PbWallThick",2.0);
-  Control.addVariable(hutName+"PbRoofThick",2.0);
-  Control.addVariable(hutName+"PbBackThick",10.0);
+  Control.addVariable(hutName+"PbWallThick",1.2);
+  Control.addVariable(hutName+"PbRoofThick",1.2);
+  Control.addVariable(hutName+"PbBackThick",2.0);
   Control.addVariable(hutName+"PbFrontThick",2.0);
 
   Control.addVariable(hutName+"OuterThick",0.3);

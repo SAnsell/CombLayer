@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/RingDoorGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class RingDoorGenerator
 
   double innerHeight;           ///< height of inner door
   double innerWidth;            ///< width of inner door
-  double innerThick;            ///< thikness of first door
+  double innerThick;            ///< thickness of first door
   
   double outerHeight;           ///< height of outer door 
   double outerWidth;            ///< width of outer door
@@ -58,8 +58,11 @@ class RingDoorGenerator
   double underStepWidth;        ///< Width of under gap
   double underStepXSep;         ///< X separation of steps
 
+  
+  std::string underAMat;        ///< material for lift point (left)
+  std::string underBMat;        ///< material for lift point (right)
   std::string tubeMat;          ///< base material
-  std::string doorMat;          ///< base material
+  std::string doorMat;          ///< door material
     
 
  public:

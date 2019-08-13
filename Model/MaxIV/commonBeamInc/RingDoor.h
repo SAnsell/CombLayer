@@ -61,6 +61,8 @@ class RingDoor :
   double underStepWidth;              ///< Width of under gap
   double underStepXSep;               ///< X separation of steps
 
+  int underAMat;                      ///< Filling of under material
+  int underBMat;                      ///< Filling of under material
   int tubeMat;                        ///< tube material material
   int doorMat;                        ///< wall material
 
