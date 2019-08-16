@@ -93,6 +93,7 @@
 #include "MonoCrystals.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
+#include "JawValveBase.h"
 #include "JawValveCube.h"
 #include "FlangeMount.h"
 #include "ShutterUnit.h"

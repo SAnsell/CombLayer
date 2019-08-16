@@ -88,6 +88,7 @@
 #include "GateValveCylinder.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
+#include "JawValveBase.h"
 #include "JawValveCylinder.h"
 #include "portItem.h"
 #include "MonoBox.h"

@@ -80,32 +80,23 @@
 #include "SurInter.h"
 
 #include "JawUnit.h"
+#include "JawValveBase.h"
 #include "JawValveCylinder.h" 
 
 namespace constructSystem
 {
 
-JawValveCylinder::JawValveCylinder(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  JItem(Key+"Jaw")
+JawValveCylinder::JawValveCylinder(const std::string& Key) :
+  JawValveBase(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-JawValveCylinder::JawValveCylinder(const JawValveCylinder& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),attachSystem::CellMap(A),
-  attachSystem::SurfMap(A),attachSystem::FrontBackCut(A),
-  
-  length(A.length),width(A.width),height(A.height),
-  depth(A.depth),wallThick(A.wallThick),portARadius(A.portARadius),
-  portAThick(A.portAThick),portALen(A.portALen),
-  portBRadius(A.portBRadius),portBThick(A.portBThick),
-  portBLen(A.portBLen),JItem(A.JItem),voidMat(A.voidMat),
-  wallMat(A.wallMat)
+JawValveCylinder::JawValveCylinder(const JawValveCylinder& A) :
+  JawValveBase(A),
+  innerRadius(A.innerRadius)
   /*!
     Copy constructor
     \param A :: JawValveCylinder to copy
@@ -122,25 +113,8 @@ JawValveCylinder::operator=(const JawValveCylinder& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
-      width=A.width;
-      height=A.height;
-      depth=A.depth;
-      wallThick=A.wallThick;
-      portARadius=A.portARadius;
-      portAThick=A.portAThick;
-      portALen=A.portALen;
-      portBRadius=A.portBRadius;
-      portBThick=A.portBThick;
-      portBLen=A.portBLen;
-      JItem=A.JItem;
-      voidMat=A.voidMat;
-      wallMat=A.wallMat;
+      JawValveBase::operator=(A);
+      innerRadius=A.innerRadius;
     }
   return *this;
 }
@@ -160,59 +134,13 @@ JawValveCylinder::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("JawValveCylinder","populate");
-  
-  FixedOffset::populate(Control);
 
-  // Void + Fe special:
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
-
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  portARadius=Control.EvalPair<double>(keyName+"PortARadius",
-				       keyName+"PortRadius");
-  portAThick=Control.EvalPair<double>(keyName+"PortAThick",
-				      keyName+"PortThick");
-  portALen=Control.EvalPair<double>(keyName+"PortALen",
-				    keyName+"PortLen");
-
-  portBRadius=Control.EvalPair<double>(keyName+"PortBRadius",
-				       keyName+"PortRadius");
-  portBThick=Control.EvalPair<double>(keyName+"PortBThick",
-				      keyName+"PortThick");
-  portBLen=Control.EvalPair<double>(keyName+"PortBLen",
-				    keyName+"PortLen");
-
-
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  JawValveBase::populate(Control);
+  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
 
   return;
 }
 
-void
-JawValveCylinder::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    We set the origin external to the front face of the sealing ring.
-    and adjust the origin to the middle.
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("JawValveCylinder","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  // moved to centre
-  Origin+=Y*(length/2.0+portALen);
-  
-  return;
-}
 
 
 void
@@ -225,50 +153,14 @@ JawValveCylinder::createSurfaces()
 {
   ELog::RegMethod RegA("JawValveCylinder","createSurfaces");
 
-  // front planes
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  JawValveBase::createSurfaces();
   
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(portALen+length/2.0),Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+101));
-    }
-  
-  // back planes
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
-  
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+102,
-			       Origin+Y*(portBLen+length/2.0),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+102));
-    }
 
-  // sides
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
-
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+wallThick),Z);
-
-  // flange
-
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portARadius);
   ModelSupport::buildCylinder
-    (SMap,buildIndex+117,Origin,Y,portARadius+portAThick);
-
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portBRadius);
+    (SMap,buildIndex+7,Origin,Y,innerRadius);
+  
   ModelSupport::buildCylinder
-    (SMap,buildIndex+217,Origin,Y,portBRadius+portBThick);
+    (SMap,buildIndex+17,Origin,Y,innerRadius+wallThick);
   
   return;
 }
@@ -284,69 +176,27 @@ JawValveCylinder::createObjects(Simulation& System)
 
   std::string Out;
 
-  const bool portAExtends(wallThick<=portALen);  // port extends
-  const bool portBExtends(wallThick<=portBLen);  // port extends
-
-  const std::string frontStr=frontRule();  // 101
-  const std::string backStr=backRule();    // -102
-  const std::string frontComp=frontComplement();  // -101
-  const std::string backComp=backComplement();    // 102
   // Void 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // Main body
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -17 7 ");
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
 
   // front plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
   makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
-  // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
-  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
-  
-  if (!portAExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
-    }
-       
   // back plate
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 217 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17  217 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
-  // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 207 -217 ");
-  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-  
-  if (!portBExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -217 ");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
-    }
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
   addOuterSurf(Out);
-  if (portAExtends || portBExtends)
-    {
-      Out="";
-      if (!portAExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," 2 -217 ");
-      else if (!portBExtends)
-	Out=ModelSupport::getComposite(SMap,buildIndex," -1 -117 ");
-      else 
-	Out=ModelSupport::getComposite(SMap,buildIndex," (-1 -117): (2 -217) ");
-      
-      addOuterUnionSurf(Out+frontStr+backStr);
-    }
+
+  JawValveBase::createOuterObjects(System);
+  
   return;
 }
   
@@ -359,27 +209,11 @@ JawValveCylinder::createLinks()
 {
   ELog::RegMethod RegA("JawValveCylinder","createLinks");
 
-  //stufff for intersection
-
-
-  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  JawValveBase::createLinks();
 
   return;
 }
 
-void
-JawValveCylinder::createJaws(Simulation& System)
-  /*!
-    Create the jaws
-    \param System :: Simuation to use
-   */
-{
-  ELog::RegMethod RegA("JawValveCylinder","creatJaws");
-
-  JItem.addInsertCell(this->getCells("Void"));
-  JItem.createAll(System,*this,0);
-  return;
-}
   
 void
 JawValveCylinder::createAll(Simulation& System,

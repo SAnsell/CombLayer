@@ -50,7 +50,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Line.h"
@@ -78,10 +77,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
 #include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "cosaxsTubeNoseCone.h"
 
@@ -106,7 +102,8 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),frontPlateWidth(A.frontPlateWidth),frontPlateHeight(A.frontPlateHeight),
+  length(A.length),frontPlateWidth(A.frontPlateWidth),
+  frontPlateHeight(A.frontPlateHeight),
   frontPlateThick(A.frontPlateThick),
   backPlateWidth(A.backPlateWidth),
   backPlateHeight(A.backPlateHeight),
@@ -117,7 +114,9 @@ cosaxsTubeNoseCone::cosaxsTubeNoseCone(const cosaxsTubeNoseCone& A) :
   pipeLength(A.pipeLength),
   pipeRadius(A.pipeRadius),
   pipeWallThick(A.pipeWallThick),
-  wallThick(A.wallThick),wallMat(A.wallMat)
+  wallThick(A.wallThick),
+  windowRadius(A.windowRadius),windowThick(A.windowThick),
+  wallMat(A.wallMat),windowMat(A.windowMat)
   /*!
     Copy constructor
     \param A :: cosaxsTubeNoseCone to copy
@@ -153,7 +152,10 @@ cosaxsTubeNoseCone::operator=(const cosaxsTubeNoseCone& A)
       pipeRadius=A.pipeRadius;
       pipeWallThick=A.pipeWallThick;
       wallThick=A.wallThick;
+      windowRadius=A.windowRadius;
+      windowThick=A.windowThick;
       wallMat=A.wallMat;
+      windowMat=A.windowMat;
     }
   return *this;
 }
@@ -199,25 +201,12 @@ cosaxsTubeNoseCone::populate(const FuncDataBase& Control)
   pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
   pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
 
+  windowRadius=Control.EvalVar<double>(keyName+"WindowRadius");
+  windowThick=Control.EvalVar<double>(keyName+"WindowThick");
+  windowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
+
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
-  return;
-}
-
-void
-cosaxsTubeNoseCone::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-    \param sideIndex :: link point for origin
-  */
-{
-  ELog::RegMethod RegA("cosaxsTubeNoseCone","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -238,7 +227,8 @@ cosaxsTubeNoseCone::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(flangeLength+frontPlateThick+backPlateThick+length),Y);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+2,Origin+Y*(flangeLength+frontPlateThick+backPlateThick+length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
@@ -312,8 +302,14 @@ cosaxsTubeNoseCone::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,pipeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+108,Origin,Y,pipeRadius+pipeWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+109,Origin,Y,flangeRadius);
+
   FrontBackCut::getShiftedFront(SMap,buildIndex+101,1,Y,flangeLength);
   FrontBackCut::getShiftedFront(SMap,buildIndex+102,1,Y,pipeLength);
+
+  // Window
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,pipeRadius+windowRadius);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+1001,1,Y,(flangeLength-windowThick)/2.0);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+1002,1,Y,(flangeLength+windowThick)/2.0);
 
   return;
 }
@@ -348,7 +344,7 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   System.addCell(cellIndex++,0,0.0,Out);
 
   // void inside trapeze
-  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 53 -54 55 -56 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 41 -42 53 -54 55 -56  ");
   System.addCell(cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 42 23 -24 25 -26 (-33:34:-35:36)");
@@ -360,13 +356,17 @@ cosaxsTubeNoseCone::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 107 -108 ");
   makeCell("Pipe",System,cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -41 ");
+  // Window
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 -1007 ");
+  makeCell("Window",System,cellIndex++,windowMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -107 -41 (-1001 : 1002) ");
   makeCell("PipeVoidInside",System,cellIndex++,0,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 108 23 -24 25 -26");
   makeCell("PipeVoidOutside",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -109 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -101 107 -109 (-1001 : 1002 : 1007) ");
   makeCell("Flange",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -101 109 23 -24 25 -26");
@@ -418,7 +418,7 @@ cosaxsTubeNoseCone::createAll(Simulation& System,
   ELog::RegMethod RegA("cosaxsTubeNoseCone","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  FixedOffset::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -36,36 +36,17 @@ namespace constructSystem
 */
 
 class JawValveCube :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+  public JawValveBase
 {
  private:
-  
-  double length;                ///< Void length
-  double width;                 ///< Void width (full)
-  double height;                ///< height 
-  double depth;                 ///< depth
-  
-  double wallThick;             ///< Wall thickness
-  double portRadius;            ///< Port inner radius (opening)
-  double portThick;             ///< Port outer ring
-  double portLen;               ///< Forward step of port
 
-  JawUnit JItem;                ///< Paired Jaw [contolled by this]
+  double width;          ///< width of innt void [full]
+  double height;         ///< height of inner void [full]
   
-  int voidMat;                  ///< Void material
-  int wallMat;                  ///< Pipe material
-  
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-
-  void createJaws(Simulation&);
+  virtual void populate(const FuncDataBase&);
+  virtual void createSurfaces();
+  virtual void createObjects(Simulation&);
+  virtual void createLinks();
   
  public:
 

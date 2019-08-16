@@ -513,7 +513,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
-  setVariable::JawValveGenerator JawGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
@@ -799,7 +798,7 @@ exptVariables(FuncDataBase& Control,
   
   Control.addVariable(noseName+"Length",35.0); // measured
   Control.addVariable(noseName+"MainMat","Void"); //
-  Control.addVariable(noseName+"WallMat","Stainless304"); // ???
+  Control.addVariable(noseName+"WallMat","Stainless304"); 
   Control.addVariable(noseName+"WallThick",1.0); // measured
 
   Control.addVariable(noseName+"FrontPlateWidth",12.0); // measured
@@ -818,6 +817,11 @@ exptVariables(FuncDataBase& Control,
   Control.addVariable(noseName+"FlangeRadius",
 		      static_cast<double>(setVariable::CF63::flangeRadius));
   Control.addVariable(noseName+"FlangeLength",2.6); // measured
+
+  // front window
+  Control.addVariable(noseName+"WindowRadius",setVariable::CF63::wallThick/2.0);
+  Control.addVariable(noseName+"WindowThick",0.05);
+  Control.addVariable(noseName+"WindowMat","Graphite");
 
   GateGen.setLength(10.0);
   GateGen.setCF<setVariable::CF40>();

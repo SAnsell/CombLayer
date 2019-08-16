@@ -44,26 +44,32 @@ class cosaxsTubeNoseCone :
 {
  private:
 
-  double length;                ///< Length of the pyramid-shaped segment
+  double length;                 ///< Length of the pyramid-shaped segment
+
   double frontPlateWidth;        ///< Back plate width
   double frontPlateHeight;       ///< Back plate height
   double frontPlateThick;        ///< Back plate thickness
-  double backPlateWidth; ///< Front plate width
-  double backPlateHeight; ///< Front plate height
-  double backPlateThick; ///< Front plate thickness
-  double backPlateRimThick; ///< Front plate rim thickness
+  
+  double backPlateWidth;         ///< Front plate width
+  double backPlateHeight;        ///< Front plate height
+  double backPlateThick;         ///< Front plate thickness
+  double backPlateRimThick;      ///< Front plate rim thickness
+  
   double flangeRadius; ///< flange radius
   double flangeLength; ///< Flange length
+
   double pipeLength; ///< Pipe (+flange) length
   double pipeRadius; ///< Pipe inner radius
   double pipeWallThick; ///< Pipe wall thickness
 
   double wallThick;                ///< Thickness of inclined walls
+  double windowRadius;             ///< Extra window radius 
+  double windowThick;              ///< Thickness of nosecone window
+  
   int wallMat;                  ///< Wall material
+  int windowMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

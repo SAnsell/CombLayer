@@ -80,31 +80,23 @@
 #include "SurInter.h"
 
 #include "JawUnit.h"
+#include "JawValveBase.h"
 #include "JawValveCube.h" 
 
 namespace constructSystem
 {
 
 JawValveCube::JawValveCube(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  JItem(Key+"Jaw")
+  JawValveBase(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-JawValveCube::JawValveCube(const JawValveCube& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  attachSystem::FrontBackCut(A),
-  length(A.length),
-  width(A.width),height(A.height),depth(A.depth),
-  wallThick(A.wallThick),portRadius(A.portRadius),
-  portThick(A.portThick),portLen(A.portLen),JItem(A.JItem),
-  voidMat(A.voidMat),wallMat(A.wallMat)
+JawValveCube::JawValveCube(const JawValveCube& A) :
+  JawValveBase(A),
+  width(A.width),height(A.height)
   /*!
     Copy constructor
     \param A :: JawValveCube to copy
@@ -121,22 +113,9 @@ JawValveCube::operator=(const JawValveCube& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
+      JawValveBase::operator=(A);
       width=A.width;
       height=A.height;
-      depth=A.depth;
-      wallThick=A.wallThick;
-      portRadius=A.portRadius;
-      portThick=A.portThick;
-      portLen=A.portLen;
-      JItem=A.JItem;
-      voidMat=A.voidMat;
-      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -157,48 +136,15 @@ JawValveCube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("JawValveCube","populate");
   
-  FixedOffset::populate(Control);
+  JawValveBase::populate(Control);
 
   // Void + Fe special:
-  length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
 
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  portThick=Control.EvalVar<double>(keyName+"PortThick");
-  portLen=Control.EvalVar<double>(keyName+"PortLen");
-  
-  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
-
-void
-JawValveCube::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    We set the origin external to the front face of the sealing ring.
-    and adjust the origin to the middle.
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("JawValveCube","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  // moved to centre
-  Origin+=Y*(length/2.0+portLen);
-  
-  return;
-}
-
 
 void
 JawValveCube::createSurfaces()
@@ -210,25 +156,7 @@ JawValveCube::createSurfaces()
 {
   ELog::RegMethod RegA("JawValveCube","createSurfaces");
 
-  // front planes
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+101,
-			       Origin-Y*(portLen+length/2.0),Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+101));
-    }
-  
-  // back planes
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+102,
-			       Origin+Y*(portLen+length/2.0),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+102));
-    }
+  JawValveBase::createSurfaces();
 
   // sides
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -240,11 +168,6 @@ JawValveCube::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wallThick+width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+wallThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+wallThick),Z);
-
-  // flange
-
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,portRadius+portThick);
 
   return;
 }
@@ -260,12 +183,6 @@ JawValveCube::createObjects(Simulation& System)
 
   std::string Out;
 
-  const bool portExtends(wallThick<=portLen);  // port extends
-
-  const std::string frontStr=frontRule();  // 101
-  const std::string backStr=backRule();    // -102
-  const std::string frontComp=frontComplement();  // -101
-  const std::string backComp=backComplement();    // 102
   // Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 ");
@@ -279,42 +196,17 @@ JawValveCube::createObjects(Simulation& System)
   // front plate
   Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 117 ");
   makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
-  // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
-  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
-  
-  if (!portExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
-    }
        
   // back plate
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 117 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
-  // seal ring
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 107 -117 ");
-  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
-
-  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -107 ");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
-  
-  if (!portExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -117 ");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
-    }
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
-  if (portExtends)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
-      addOuterUnionSurf(Out+frontStr+backStr);
-    }
+
+  JawValveBase::createOuterObjects(System);
+  
   return;
 }
   
@@ -327,25 +219,8 @@ JawValveCube::createLinks()
 {
   ELog::RegMethod RegA("JawValveCube","createLinks");
 
-  //stufff for intersection
+  JawValveBase::createLinks();
 
-
-  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-
-  return;
-}
-
-void
-JawValveCube::createJaws(Simulation& System)
-  /*!
-    Create the jaws
-    \param System :: Simuation to use
-   */
-{
-  ELog::RegMethod RegA("JawValveCube","creatJaws");
-
-  JItem.addInsertCell(this->getCells("Void"));
-  JItem.createAll(System,*this,0);
   return;
 }
   

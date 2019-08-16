@@ -95,6 +95,7 @@
 #include "CrossPipe.h"
 #include "GateValveCube.h"
 #include "JawUnit.h"
+#include "JawValveBase.h"
 #include "JawValveCube.h"
 #include "BeamMount.h"
 #include "GrateMonoBox.h"
