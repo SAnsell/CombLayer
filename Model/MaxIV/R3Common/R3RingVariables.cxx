@@ -373,7 +373,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   /*!
     Construct variables for R3RingDoors 
     \param Control :: Control value
-    \param preName :: Prename (r3ring typcially)
+    \param preName :: Prename (r3ring typically)
   */
 {
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingDoors");
@@ -385,6 +385,8 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   RGen.generateDoor(Control,preName+"RingDoor",2400.0);
   return;
 }
+
+
 
 void
 R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
@@ -405,7 +407,6 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
-  setVariable::CollGenerator CollGen;
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
@@ -438,11 +439,6 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   Control.addVariable(frontKey+"CollimatorTubeANPorts",0);
   // collimator block
 
-  CollGen.setFrontGap(2.62,1.86);  //1033.8
-  CollGen.setBackGap(1.54,1.42);
-  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
-
-  CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
@@ -473,11 +469,6 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",0.0,36.0);
   Control.addVariable(frontKey+"CollimatorTubeBNPorts",0);
 
-  CollGen.setFrontGap(2.13,2.146);
-  CollGen.setBackGap(0.756,0.432);
-  // approx for 100uRad x 100uRad
-  CollGen.setMinSize(32.0,0.680,0.358);
-  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.2);
 
   // linked pipe tube
   SimpleTubeGen.setCF<CF40>();
@@ -485,12 +476,6 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   SimpleTubeGen.generateTube(Control,frontKey+"CollimatorTubeC",0.0,22.0);
   Control.addVariable(frontKey+"CollimatorTubeCNPorts",0);
 
-  CollGen.setMain(1.20,"Copper","Void");
-  CollGen.setFrontGap(0.84,0.582);
-  CollGen.setBackGap(0.750,0.357);
-  // approx for 80uRad x 80uRad
-  CollGen.setMinSize(12.0,0.15,0.15);  
-  CollGen.generateColl(Control,frontKey+"CollC",0.0,17.0);
 
   PipeGen.setCF<setVariable::CF40>(); 
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",0,95.0);

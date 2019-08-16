@@ -86,6 +86,7 @@ namespace setVariable
 namespace cosaxsVar
 {
   void undulatorVariables(FuncDataBase&,const std::string&);
+  void frontMaskVariables(FuncDataBase&,const std::string&);
   void wallVariables(FuncDataBase&,const std::string&);
   void monoShutterVariables(FuncDataBase&,const std::string&);
 
@@ -146,6 +147,46 @@ wallVariables(FuncDataBase& Control,
   WallLeadGenerator LGen;
   LGen.setWidth(70,140.0);
   LGen.generateWall(Control,wallKey,2.0);
+
+  return;
+}
+
+void
+frontMaskVariables(FuncDataBase& Control,
+		   const std::string& preName)
+  /*!
+    Variable for the front maste
+    \param Control :: Database
+    \param preName :: Beamline name
+  */
+{
+  ELog::RegMethod RegA("cosaxsVariables[F]","frontMaskVariables");
+
+  setVariable::CollGenerator CollGen;
+    
+  CollGen.setFrontGap(2.62,1.86);       //1033.8
+  CollGen.setBackGap(1.54,1.42);
+  //  CollGen.setMinSize(29.0,0.55,0.55);  // Approximated to get 1mrad x 1mrad
+  CollGen.setMinAngleSize(29.0,1033.0,1000.0,1000.0);  // Approximated to get 1mrad x 1mrad
+  CollGen.generateColl(Control,preName+"CollA",0.0,34.0);
+
+  CollGen.setFrontGap(2.13,2.146);
+  CollGen.setBackGap(0.756,0.432);
+
+  // approx for 100uRad x 100uRad
+  //  CollGen.setMinSize(32.0,0.680,0.358);
+  
+  CollGen.setMinAngleSize(32.0,1600.0,100.0,100.0);
+  CollGen.generateColl(Control,preName+"CollB",0.0,34.2);
+
+  // FM 3:
+  CollGen.setMain(1.20,"Copper","Void");
+  CollGen.setFrontGap(0.84,0.582);
+  CollGen.setBackGap(0.750,0.357);
+
+  // approx for 40uRad x 40uRad
+  CollGen.setMinAngleSize(12.0,1600.0,40.0,40.0);
+  CollGen.generateColl(Control,preName+"CollC",0.0,17.0);
 
   return;
 }
@@ -1027,7 +1068,9 @@ COSAXSvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"CosaxsFrontBeam",310.0,724.0,40.0);  
+    (Control,"CosaxsFrontBeam",310.0,724.0,40.0);
+  cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
+    
   cosaxsVar::wallVariables(Control,"CosaxsWallLead");
   
   PipeGen.setMat("Stainless304");

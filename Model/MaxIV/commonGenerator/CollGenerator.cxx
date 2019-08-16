@@ -127,6 +127,27 @@ CollGenerator::setMinSize(const double L,
   minHeight=H;
   return;
 }
+
+void
+CollGenerator::setMinAngleSize(const double L,
+			       const double Dist,
+			       const double angX,
+			       const double angZ)
+  
+  /*!
+    Set min length/width/height
+    \param L :: Length 
+    \param Dist :: distance from undulator centre 
+    \param angX :: angle full opening [urad]
+    \param angZ :: angle full opening [urad]
+   */
+{
+  minLength=L;
+  minWidth= 2.0*Dist*tan(1e-6*angX/2.0);
+  minHeight= 2.0*Dist*tan(1e-6*angZ/2.0);
+  ELog::EM<<"Collimator size == "<<minWidth<<" "<<minHeight<<ELog::endDiag;
+  return;
+}
   
 void
 CollGenerator::setMain(const double R,const std::string& M,
