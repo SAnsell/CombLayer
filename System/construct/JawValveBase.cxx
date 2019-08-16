@@ -282,7 +282,7 @@ JawValveBase::createOuterObjects(Simulation& System)
     Adds outer objects  of the JawValve
     \param System :: Simulation to create objects in
   */
-{g
+{
   ELog::RegMethod RegA("JawValveCylinder","createObjects");
 
   std::string Out;

@@ -428,7 +428,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"DipolePipe",0,dipoleLen); 
 
-  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",0,16.0);
 
@@ -465,6 +465,7 @@ R3FrontEndVariables(FuncDataBase& Control,const std::string& frontKey,
   Control.addVariable(frontKey+"ECutMagDiskDefMat","H2Gas#0.1");
 
   BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",0,16.0);
 
