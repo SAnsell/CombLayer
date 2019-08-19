@@ -3,7 +3,7 @@
  
  * File:   process/DefPhysics.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -302,7 +302,7 @@ procOffset(const objectGroups& OGrp,
       const std::string CItem=
         IParam.getDefValue<std::string>("0",keyID,index,2);
       const long int sideIndex=GIPtr->getSideIndex(CItem);
-      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(sideIndex)
+      ELog::EM<<"Main Offset at "<<GIPtr->getLinkPt(sideIndex)
               <<ELog::endDiag;
       MR.addDisplace(-GIPtr->getLinkPt(sideIndex));
     }

@@ -153,7 +153,7 @@ frontMaskVariables(FuncDataBase& Control,
     \param preName :: Beamline name
   */
 {
-  ELog::RegMethod RegA("cosaxsVariables[F]","frontMaskVariables");
+  ELog::RegMethod RegA("balderVariables[F]","frontMaskVariables");
 
   setVariable::CollGenerator CollGen;
     
