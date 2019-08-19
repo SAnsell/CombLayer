@@ -58,7 +58,8 @@ namespace setVariable
 {
 
 JawValveGenerator::JawValveGenerator() :
-  length(7.0),width(24.0),height(46.0),depth(10.5),
+  length(7.0),innerRadius(-1.0),
+  width(24.0),height(46.0),depth(10.5),
   wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.0),
   portBRadius(5.0),portBThick(1.0),portBLen(1.0),
   voidMat("Void"),wallMat("Stainless304"),jawWidth(2.0),
@@ -69,7 +70,7 @@ JawValveGenerator::JawValveGenerator() :
 {}
 
 JawValveGenerator::JawValveGenerator(const JawValveGenerator& A) : 
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),innerRadius(A.innerRadius),width(A.width),height(A.height),
   depth(A.depth),wallThick(A.wallThick),portARadius(A.portARadius),
   portAThick(A.portAThick),portALen(A.portALen),
   portBRadius(A.portBRadius),portBThick(A.portBThick),
@@ -93,6 +94,7 @@ JawValveGenerator::operator=(const JawValveGenerator& A)
   if (this!=&A)
     {
       length=A.length;
+      innerRadius=A.innerRadius;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -119,6 +121,18 @@ JawValveGenerator::~JawValveGenerator()
    Destructor
  */
 {}
+
+void
+JawValveGenerator::setRadius(const double R)
+  /*!
+    Set the radius of the cylinder
+    If the radius positive then the cylinder form 
+    is activated.
+    \param R :: Radius
+   */
+{
+  innerRadius=R;
+}
 
 
 void
@@ -272,8 +286,14 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  if (innerRadius<Geometry::zeroTol)
+    {
+      Control.addVariable(keyName+"Width",width);
+      Control.addVariable(keyName+"Height",height);
+    }
+  else
+    Control.addVariable(keyName+"InnerRadius",innerRadius);
+  
   Control.addVariable(keyName+"Depth",depth);
 
   Control.addVariable(keyName+"WallThick",wallThick);
