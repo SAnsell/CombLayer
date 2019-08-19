@@ -106,7 +106,7 @@ wigglerVariables(FuncDataBase& Control,
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length 
   VBoxGen.generateBox(Control,frontKey+"WigglerBox",
-		      598.0,30.0,15.0,15.0,210.0);
+		      498.0,30.0,15.0,15.0,210.0);
 
   // Wiggler
   Control.addVariable(frontKey+"WigglerLength",200.0);
@@ -725,7 +725,7 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"BalderFrontBeam",0.0,310+244,40);
+    (Control,"BalderFrontBeam",30.0,624,40);
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");
     
   balderVar::wallVariables(Control,"BalderWallLead");
