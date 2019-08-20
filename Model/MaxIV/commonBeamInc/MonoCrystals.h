@@ -57,6 +57,8 @@ class MonoCrystals :
   double thickB;            ///< Radius of detector
   double lengthB;           ///< Outer wall thickness
 
+  double baseGap;          ///< Base thickness
+  double baseLength;       ///< Base length
   double baseThick;        ///< Base thickness
   double baseExtra;        ///< Extra width/lenght of base
 

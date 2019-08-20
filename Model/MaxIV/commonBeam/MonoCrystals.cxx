@@ -176,6 +176,15 @@ MonoCrystals::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*thickA,PZ);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin,PZ);
 
+  // support:
+  ModelSupport::buildPlane(SMap,buildIndex+1001,Origin-PY*(baseLength/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+1002,Origin+PY*(baseLength/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-PX*(baseExtra+widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+PX*(baseExtra+widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-PZ*(thickA+baseGap+baseThick),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin-PZ*(thickA+baseGap),PZ);
+
+
   const Geometry::Vec3D BOrg=
     Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
   
@@ -203,7 +212,48 @@ MonoCrystals::createObjects(Simulation& System)
   // xstal A
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
-  addOuterSurf(Out);
+
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 1001 -1002 1003 -1004 1005 -106 (-1006:-103:104)");
+  makeCell("ABase",System,cellIndex++,baseMat,0.0,Out);
+
+  std::string frontBack;
+  if (baseLength-lengthA > Geometry::zeroTol)
+    {
+      // extra parts of void crystal:
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 1001 -101  103 -104 105 -106 ");
+      makeCell("AFrontVoid",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 102 -1002 103 -104 105 -106  ");
+      makeCell("ABackVoid",System,cellIndex++,0,0.0,Out);
+
+      frontBack=ModelSupport::getComposite(SMap,buildIndex," 1001 -1002 ");
+    }
+  else if (baseLength-lengthA < -Geometry::zeroTol)
+    {
+      // extra void parts of base crystal:
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," 101 -1001  1003 -1004 -106 1005 (-1006:-103:104)");
+      makeCell("AFrontVoid",System,cellIndex++,0,0.0,Out);
+
+      Out=ModelSupport::getComposite
+	(SMap,buildIndex," -102 1002  1003 -1004 -106 1005 (-1006:-103:104)");
+      makeCell("ABackVoid",System,cellIndex++,0,0.0,Out);
+      frontBack=ModelSupport::getComposite(SMap,buildIndex," 101 -102 ");
+    }
+  
+  // air gap:
+  
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 103 -104 -106 1005 ");
+  makeCell("ABaseVoid",System,cellIndex++,0,0.0,Out+frontBack);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 -106 1005 ");
+  addOuterSurf(Out+frontBack);
+
+
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
   makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);
   addOuterUnionSurf(Out);
