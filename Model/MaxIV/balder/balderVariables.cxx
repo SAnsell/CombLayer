@@ -444,7 +444,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");  
   FlangeGen.setCF<setVariable::CF50>();
   // width 
-  FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
+  FlangeGen.setBlade(0.3,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);
