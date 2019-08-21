@@ -172,8 +172,11 @@ LineTrack::calculate(const Simulation& ASim)
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
 					 (EndPt-InitPt).unit()*1e-5,0);
+
   if (!OPtr)
-    ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+    ColErr::InContainerError<Geometry::Vec3D>
+      (InitPt,"Initial point not in model");
+
   int SN=OPtr->isOnSide(InitPt);
   while(OPtr)
     {
@@ -221,7 +224,9 @@ LineTrack::calculateError(const Simulation& ASim)
 					 (EndPt-InitPt).unit()*1e-5,0);
 
   if (!OPtr)
-    ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+    ColErr::InContainerError<Geometry::Vec3D>
+      (InitPt,"Initial point not in model");
+
   const MonteCarlo::Object* prevOPtr(0);
   int SN=OPtr->isOnSide(InitPt);
   
@@ -270,8 +275,8 @@ LineTrack::calculateError(const Simulation& ASim)
 		    if (SV[i]->onSurface(nOut.Pos))
 		      ELog::EM<<"Surf == "<<*SV[i]<<ELog::endDiag;
 		}
-	      if (prevOPtr)
-		ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDiag;
+	      
+	      ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDiag;
               
 	      ELog::EM<<"Point = "<<nOut.Pos<<ELog::endDiag;
 	      ELog::EM<<"DIR = "<<nOut.uVec<<ELog::endDiag;
@@ -337,7 +342,7 @@ LineTrack::getSurfPtr(const size_t Index) const
 {
   ELog::RegMethod RegA("LineTrack","getPoint");
 
-  if (Index>SurfVec.size())
+  if (Index>=SurfVec.size())
     throw ColErr::IndexError<size_t>(Index,SurfVec.size(),
 				     "Index in SurfVec");
   return SurfVec[Index];
@@ -353,7 +358,7 @@ LineTrack::getSurfIndex(const size_t Index) const
 {
   ELog::RegMethod RegA("LineTrack","getPoint");
 
-  if (Index>SurfIndex.size())
+  if (Index>=SurfIndex.size())
     throw ColErr::IndexError<size_t>(Index,SurfIndex.size(),
 				     "Index in SurfIndex");
   return SurfIndex[Index];

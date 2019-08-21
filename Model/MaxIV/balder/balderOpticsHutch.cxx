@@ -531,6 +531,7 @@ balderOpticsHutch::createLinks()
   setConnect(17,Origin,-Y);  
   setLinkSurf(17,SMap.realSurf(buildIndex+34));
   addLinkSurf(17,SMap.realSurf(buildIndex+134));
+  addLinkComp(17,SMap.realSurf(buildIndex+36));
   addLinkComp(17,SMap.realSurf(buildIndex+32));
 
   return;

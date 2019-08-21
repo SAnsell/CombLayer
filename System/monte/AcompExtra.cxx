@@ -436,12 +436,8 @@ Acomp::unionCombine(const Acomp& A,const Acomp& B)
       
   if (A.Intersect)
     return A.expandUUU(B);
-  else
-    return A.expandUUI(B);
-  
-  ELog::EM<<"Failure "<<ELog::endErr;
-  
-  return Acomp(0);
+
+  return A.expandUUI(B);  
 } 
   
  
@@ -597,7 +593,7 @@ Acomp::removeLiteral(const int SN)
 {
   bool outFlag(0);
   
-  if (Units.erase(SN)+Units.erase(-SN))
+  if (Units.erase(SN)+Units.erase(-SN) != 0)
     {
       if (Units.empty())
 	{

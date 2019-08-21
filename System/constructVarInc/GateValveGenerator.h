@@ -54,7 +54,6 @@ class GateValveGenerator
   double portBThick;             ///< Port outer ring
   double portBLen;               ///< Forward step of port
   
-  bool closed;                  ///< Shutter closed
   double bladeLift;             ///< Height of blade up
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius

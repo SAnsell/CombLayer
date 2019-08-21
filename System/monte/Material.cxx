@@ -183,11 +183,11 @@ Material::operator+=(const Material& A)
 	}
     }
   // Now add All cards in A, that don't exist in *this.
-  for(const MXTYPE::value_type MX : A.mxCards)
+  for(const MXTYPE::value_type AMX : A.mxCards)
     {
-      MXTYPE::const_iterator mc=mxCards.find(MX.first);
+      MXTYPE::const_iterator mc=mxCards.find(AMX.first);
       if (mc==mxCards.end())
-	mxCards.emplace(mc->first,mc->second);
+	mxCards.emplace(AMX.first,AMX.second);
     }
 
   // SQW

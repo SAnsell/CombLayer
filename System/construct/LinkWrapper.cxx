@@ -3,7 +3,7 @@
  
  * File:   construct/LinkWrapper.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -156,29 +155,15 @@ LinkWrapper::populate(const FuncDataBase& Control)
       std::string kItem=keyName+"LayThick";
       std::string kMat=keyName+"LayMat";
       layerThick.push_back(Control.EvalVar<double>
-			   (StrFunc::makeString(kItem,i+1)));
+			   (kItem+std::to_string(i+1)));
       layerMat.push_back(ModelSupport::EvalMat<int>
-			 (Control,StrFunc::makeString(kMat,i+1)));
+			 (Control,kMat+std::to_string(i+1)));
     }
   // Material
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
   return;
 }
   
-void
-LinkWrapper::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("LinkWrapper","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  return;
-}
-
 void
 LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
 			std::string LList)
@@ -368,7 +353,8 @@ LinkWrapper::maskSection(std::string sectList)
 
 void
 LinkWrapper::createAll(Simulation& System,
-		  const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -380,7 +366,7 @@ LinkWrapper::createAll(Simulation& System,
   populate(System.getDataBase());
   processMask();
 
-  createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   insertObjects(System);       

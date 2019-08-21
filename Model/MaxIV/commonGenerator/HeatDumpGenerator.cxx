@@ -3,7 +3,7 @@
  
  * File:   commonBeam/HeatDumpGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,6 +160,7 @@ HeatDumpGenerator::setCF()
 {
   topInnerRadius=CF::innerRadius;
   bellowThick=CF::bellowThick;
+  
   setMat(flangeMat,20.0*CF::wallThick/CF::bellowThick);
   
   setTopCF<CF>();

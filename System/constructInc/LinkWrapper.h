@@ -3,7 +3,7 @@
  
  * File:   constructInc/LinkWrapper.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@ class LinkWrapper : public attachSystem::ContainedComp,
   std::map<size_t,size_t> mask;       ///< Mask to be applied 
   
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&);
 
   ///\cond ABSTRACT
   virtual void createSurfaces() =0;
@@ -91,7 +90,8 @@ class LinkWrapper : public attachSystem::ContainedComp,
   void maskSection(const size_t);
   void maskSection(std::string);
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   process/ObjectAddition.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -220,7 +220,7 @@ const size_t nP=IParam.setCnt("OAdd");
 	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
 	  
 	}
-      else if (key=="Grid" || key=="Grid")
+      else if (key=="Grid" || key=="grid")
 	{
 	  size_t ptI;
 	  const std::string PName="insertGrid"+std::to_string(index);

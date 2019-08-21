@@ -60,7 +60,8 @@ namespace flukaSystem
 userTrack::userTrack(const int outID) :
   flukaTally("cell"+std::to_string(outID),outID),
   particle("energy"),eLogFlag(0),fluenceFlag(0),
-  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
+  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),
+  cellA(0)
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]
@@ -70,7 +71,8 @@ userTrack::userTrack(const int outID) :
 userTrack::userTrack(const std::string& KN,const int outID) :
   flukaTally(KN,outID),
   particle("energy"),eLogFlag(0),fluenceFlag(0),
-  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0)
+  oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),
+  cellA(0)
   /*!
     Constructor
     \param KN :: KeyName

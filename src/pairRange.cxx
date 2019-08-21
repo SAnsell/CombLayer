@@ -3,7 +3,7 @@
  
  * File:   src/pairRange.cxx
 *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ pairRange::condense(const double Tol)
   */
 {
   size_t i=1;
-  while(i<=Items.size())
+  while(i<Items.size())
     {
       if (NRange::identVal(Tol,Items[i-1].first,Items[i].first))
 	Items.erase(Items.begin()+static_cast<ssize_t>(i));

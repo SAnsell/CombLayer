@@ -55,7 +55,6 @@
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
-#include "HeatDumpGenerator.h"
 #include "JawValveGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
@@ -202,7 +201,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingWallAngle",18.50);
   Control.addVariable(hutName+"RingConcThick",100.0);
   
-  Control.addVariable(hutName+"InnerThick",0.3);
+  Control.addVariable(hutName+"InnerThick",0.2);
   
   Control.addVariable(hutName+"PbWallThick",2.0);
   Control.addVariable(hutName+"PbRoofThick",2.0);

@@ -3,7 +3,7 @@
  
  * File:   log/OutputLog.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ OutputLog<RepClass>::isActive(const int Flag) const
   const int debugFlag=debugStatus::Instance().getFlag();
 
   const size_t part=
-    (Flag<=0) ? 1 : static_cast<size_t>(2*Flag);
+    (Flag<=0) ? 1 : 2*static_cast<size_t>(Flag);
   
   return ((part & activeBits) && 
 	  (debugFlag || !(part & debugBits))) ? 1 : 0;
@@ -201,8 +201,9 @@ OutputLog<RepClass>::makeAction(const int Flag)
   */
 {
   const size_t part=(Flag<0) ? 
-    static_cast<size_t>(-Flag*2+1) : 
-    static_cast<size_t>(Flag*2+1);
+    static_cast<size_t>(-Flag)*2+1 : 
+    static_cast<size_t>(Flag)*2+1;
+  
   if (part & actionBits) 
     {
       locFlag=2;

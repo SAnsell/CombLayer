@@ -50,7 +50,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Line.h"
@@ -78,11 +77,6 @@
 #include "ExternalCut.h"
 #include "InnerZone.h"
 #include "FrontBackCut.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "GateValveCube.h"
 #include "GateValveCylinder.h"
@@ -149,6 +143,7 @@ cosaxsTube::cosaxsTube(const cosaxsTube& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
+  delayPortFlag(A.delayPortFlag),
   outerRadius(A.outerRadius),
   outerLength(A.outerLength),
   buildZone(A.buildZone),
@@ -182,6 +177,7 @@ cosaxsTube::operator=(const cosaxsTube& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
+      delayPortFlag=A.delayPortFlag;
       outerRadius=A.outerRadius;
       outerLength=A.outerLength;
       noseCone=A.noseCone;

@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertShell.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -236,39 +236,35 @@ insertShell::findObjects(Simulation& System)
       // normal directions
       const std::array<Geometry::Vec3D,6> XYZ=
 	{ { -X,-Y,-Z,X,Y,Z } };
-      Geometry::Vec3D TP(Origin);
-      for(size_t i=0;i<6;i++)
-        {          
-	  TP=Origin+XYZ[i]*innerRadius;
-          OPtr=System.findCell(TP,OPtr);
-          if (OPtr)
-            ICells.insert(OPtr->getName());
-	  TP=Origin+XYZ[i]*outerRadius;
-          OPtr=System.findCell(TP,OPtr);
-          if (OPtr)
-            ICells.insert(OPtr->getName());
-        }
       
       // sqrt directions // and normal directions
       const double innerRR=innerRadius/sqrt(2);
       const double outerRR=outerRadius/sqrt(2);
+      Geometry::Vec3D TP;
       for(size_t i=0;i<6;i++)
-	for(size_t j=i;j<6;j++)
-	  {
-	    if (i!=((j+3) % 6))
-	      {
-		Geometry::Vec3D TP(Origin);
-		TP=Origin+(XYZ[i]+XYZ[j])*innerRR;
-		OPtr=System.findCell(TP,OPtr);
-		if (OPtr)
-		  ICells.insert(OPtr->getName());
+	{
+	  for(size_t j=i;j<6;j++)
+	    {	      
+	      if (i!=((j+3) % 6))
+		{
+		  TP = (i!=j) ? 
+		    Origin+(XYZ[i]+XYZ[j])*innerRR :
+		    Origin+XYZ[i]*innerRadius;
+		    
+		  OPtr=System.findCell(TP,OPtr);
+		  if (OPtr)
+		    ICells.insert(OPtr->getName());
+		  
+		  TP = (i!=j) ? 
+		    Origin+(XYZ[i]+XYZ[j])*outerRR :
+		    Origin+XYZ[i]*outerRadius;
 
-		TP=Origin+(XYZ[i]+XYZ[j])*outerRR;
-		OPtr=System.findCell(TP,OPtr);
-		if (OPtr)
-		  ICells.insert(OPtr->getName());
-	      }
-	  }
+		  OPtr=System.findCell(TP,OPtr);
+		  if (OPtr)
+		    ICells.insert(OPtr->getName());
+		}
+	    }
+	}
       for(const int IC : ICells)
         attachSystem::ContainedComp::addInsertCell(IC);
     }

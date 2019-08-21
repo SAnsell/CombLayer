@@ -88,7 +88,8 @@ portItem::portItem(const std::string& baseKey,
   attachSystem::FixedComp(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(baseKey),
-  statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
+  statusFlag(0),outerFlag(0),
+  externalLength(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
   voidMat(0),wallMat(0),capMat(0)
   /*!
@@ -101,7 +102,8 @@ portItem::portItem(const std::string& Key) :
   attachSystem::FixedComp(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   portBase(keyName),
-  statusFlag(0),outerFlag(0),radius(0.0),wall(0.0),
+  statusFlag(0),outerFlag(0),
+  externalLength(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
   voidMat(0),wallMat(0),capMat(0)
   /*!

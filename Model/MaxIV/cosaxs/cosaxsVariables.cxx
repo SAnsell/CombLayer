@@ -366,8 +366,8 @@ mirrorBox(FuncDataBase& Control,const std::string& Name,
     \param Control :: Database
     \param Name :: component name
     \param Index :: Index designator
-    \param theta :: theta angle [beam angle]
-    \param phi :: phi angle [rotation angle]
+    \param theta :: theta angle [beam angle in deg]
+    \param phi :: phi angle [rotation angle in deg]
   */
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","mirrorBox");

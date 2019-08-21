@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/TriUnit.cxx 
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -165,19 +164,21 @@ TriUnit::addCell(const int C)
 
 size_t
 TriUnit::findFirstPoint(const Geometry::Vec3D& AVec,
-			  const std::vector<Geometry::Vec3D>& BPts) 
+			const std::vector<Geometry::Vec3D>& BPts) 
 /*!
     Find the first point in BPts that equals BPts
     \param AVec :: First point
     \param BPts :: Vector of look up
-    \return 
+    \return Index of point or BPts.size if nothing found
   */
 {
   ELog::RegMethod RegA("TriUnit","findFirstPt");
-  
+
+
   std::vector<Geometry::Vec3D>::const_iterator vc=
-    find_if(BPts.begin(),BPts.end(),
-	    boost::bind(std::equal_to<Geometry::Vec3D>(),_1,AVec));
+    std::find_if(BPts.begin(),BPts.end(),
+		 [&AVec](const Geometry::Vec3D& B) -> bool
+		 { return AVec==B; } );
 
   return (vc!=BPts.end()) ? 
     static_cast<size_t>(vc-BPts.begin()) :  BPts.size();
@@ -212,10 +213,10 @@ TriUnit::constructConvex(const Geometry::Vec3D& Z)
       i--;
       if (APt==OutPt.size())
 	throw ColErr::InContainerError<Geometry::Vec3D>
-	  (OutPt[APt],"Two outside points not found (A)");
+	  (Pts[i],"Two outside points not found (A)");
       if (BPt==OutPt.size())
 	throw ColErr::InContainerError<Geometry::Vec3D>
-	  (OutPt[BPt],"Two outside points not found (B)");
+	  (Pts[i],"Two outside points not found (B)");
 
       const Geometry::Vec3D AX=(OutPt[BPt]-OutPt[APt]).unit();  
       Geometry::Vec3D Cent=(OutPt[BPt]+OutPt[APt])/2.0;

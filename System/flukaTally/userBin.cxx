@@ -57,7 +57,9 @@ namespace flukaSystem
 
 userBin::userBin(const int outID) :
   flukaTally("mesh"+std::to_string(outID),outID),
-  meshType(10),particle("208")
+  binaryOut(1),
+  meshType(10),particle("208"),
+  Pts({0,0,0})
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]
@@ -65,7 +67,7 @@ userBin::userBin(const int outID) :
 {}
 
 userBin::userBin(const userBin& A) : 
-  flukaTally(A),
+  flukaTally(A),binaryOut(A.binaryOut),
   meshType(A.meshType),particle(A.particle),
   Pts(A.Pts),minCoord(A.minCoord),
   maxCoord(A.maxCoord)

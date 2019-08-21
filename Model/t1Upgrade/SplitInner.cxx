@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/SplitInner.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,8 @@ namespace ts1System
 {
 
 SplitInner::SplitInner(const std::string& Key,const std::string& LKey) :
-  ts1System::CH4Layer(LKey),IKeyName(Key)
+  ts1System::CH4Layer(LKey),IKeyName(Key),
+  innerNLayer(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

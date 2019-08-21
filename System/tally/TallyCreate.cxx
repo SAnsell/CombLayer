@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -950,7 +950,7 @@ void
 mergeTally(SimMCNP& Sim,const int aNumber,
            const int bNumber)
   /*!
-    Merge the tallys together into one [if makes sence]
+    Merge the tallys together into one [if makes sense]
     \param Sim :: SimMCNP
     \param aNumber :: tally nubmer 
     \param bNumber :: tally nubmer [-ve for type / 0 for all]
@@ -974,7 +974,7 @@ mergeTally(SimMCNP& Sim,const int aNumber,
       const int tNum(bc->first);
       if ( tType==(tNum % 10) &&
            tNum!=bNumber &&
-           (bNumber==0 || tNum==bNumber ||
+           (bNumber==0  ||
             (bNumber<0 && (tNum % 10)== -bNumber)) )
         {
           if (bc->second->mergeTally(*ac->second))
