@@ -345,7 +345,10 @@ monoVariables(FuncDataBase& Control)
   Control.addVariable(preName+"MonoXtalLengthB",12.0);
   Control.addVariable(preName+"MonoXtalThickA",4.0);
   Control.addVariable(preName+"MonoXtalThickB",3.0);
-  Control.addVariable(preName+"MonoXtalBaseThick",5.0);
+  Control.addVariable(preName+"MonoXtalBaseALength",10.0);
+  Control.addVariable(preName+"MonoXtalBaseBLength",14.0);
+  Control.addVariable(preName+"MonoXtalBaseGap",0.3);
+  Control.addVariable(preName+"MonoXtalBaseThick",1.0);
   Control.addVariable(preName+"MonoXtalBaseExtra",2.0);
   
   Control.addVariable(preName+"MonoXtalMat","Silicon80K");

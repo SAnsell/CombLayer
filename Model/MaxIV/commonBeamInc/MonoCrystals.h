@@ -57,10 +57,15 @@ class MonoCrystals :
   double thickB;            ///< Radius of detector
   double lengthB;           ///< Outer wall thickness
 
-  double baseGap;          ///< Base thickness
-  double baseLength;       ///< Base length
-  double baseThick;        ///< Base thickness
-  double baseExtra;        ///< Extra width/lenght of base
+  double baseAGap;          ///< Base thickness
+  double baseALength;       ///< Base length
+  double baseAThick;        ///< Base thickness
+  double baseAExtra;        ///< Extra width/lenght of base
+
+  double baseBGap;          ///< Base thickness
+  double baseBLength;       ///< Base length
+  double baseBThick;        ///< Base thickness
+  double baseBExtra;        ///< Extra width/lenght of base
 
   int xtalMat;             ///< XStal material
   int baseMat;             ///< Base material
