@@ -193,7 +193,7 @@ DecouplePipe::populate(const FuncDataBase& Control)
       index++;
     }
   if (!index)
-    ColErr::EmptyContainer(keyName+" HeTrack::TrackPts");
+    throw ColErr::EmptyContainer(keyName+" HeTrack::TrackPts");
 
   outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat"); 
   outAlMat=ModelSupport::EvalMat<int>(Control,keyName+"OutAlMat"); 

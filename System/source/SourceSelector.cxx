@@ -257,10 +257,6 @@ sourceSelection(Simulation& System,
       // NOTE THIS IS the old stupid TS2 origin system
       sName=SDef::createTS2Source(inputMap,World::masterTS2Origin(),0);
     }
-  else if (sdefType=="kcode")
-    {
-      ELog::EM<<"kcode sdef selected"<<ELog::endDiag;
-    }
   else
     {
       ELog::EM<<"sdefType :\n"
@@ -281,6 +277,7 @@ sourceSelection(Simulation& System,
 	
 	"FlukaSource :: Source [external] fluka output \n"
 
+	"kcode :: fission kcode \n"
 	      <<ELog::endBasic;
       
     }

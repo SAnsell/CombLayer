@@ -3,7 +3,7 @@
  
  * File:   src/NTree.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,18 +125,11 @@ NTree::getInterval(const size_t index) const
   if (index<1 || index+1>=itemType.size())
     throw ColErr::IndexError<size_t>(index,itemType.size(),"index");
 
-  if (itemType[index-1]!=IType::dble || itemType[index-1]!=IType::integer)
-    throw ColErr::TypeMatch
-      (StrFunc::makeString(static_cast<size_t>(itemType[index-1])),
-       StrFunc::makeString(index-1),"Not Double/Int");
-  if (itemType[index-1]!=IType::dble || itemType[index-1]!=IType::integer)
-    throw ColErr::TypeMatch
-      (StrFunc::makeString(static_cast<size_t>(itemType[index-1])),
-       StrFunc::makeString(index-1),"Not Double/Int");
-  if (itemType[index+1]!=IType::dble || itemType[index+1]!=IType::integer)
-    throw ColErr::TypeMatch
-      (StrFunc::makeString(static_cast<size_t>(itemType[index+1])),
-       StrFunc::makeString(index+1),"Not Double/Int");
+  for(size_t i=index-1;i<=index+1;i++)
+    if (itemType[i]!=IType::dble && itemType[i]!=IType::integer)
+      throw ColErr::TypeMatch
+	(std::to_string(itemType[i])
+	 std::to_string(i),"Not Double/Int");
 
   const double DA= (itemType[index-1]==IType::dble) ?
     numDbl.find(index-1)->second :

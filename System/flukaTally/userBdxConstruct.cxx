@@ -85,16 +85,18 @@ userBdxConstruct::checkLinkCells(const Simulation& System,
     \param System :: Simulation for objects
     \param cellA :: Cell A 
     \param cellB :: Cell B
+    \return true if cellA-cellB share common surf
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","checkLinkCells");
+  
   const MonteCarlo::Object* APtr=System.findObject(cellA);
   const MonteCarlo::Object* BPtr=System.findObject(cellB);
   if (!APtr || !BPtr)
     return 0;
 
   const std::set<int>& ASurf=APtr->getSurfSet();
-  const std::set<int>& BSurf=APtr->getSurfSet();
+  const std::set<int>& BSurf=BPtr->getSurfSet();
 
   for(const int CN : ASurf)
     if (BSurf.find(-CN)!=BSurf.end())

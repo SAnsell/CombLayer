@@ -153,7 +153,7 @@ PipeTube::populate(const FuncDataBase& Control)
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
   double L,R,W,FR,FT,CT;
-  int capMat;
+  int CMat;
   int OFlag;
   for(size_t i=0;i<NPorts;i++)
     {
@@ -170,8 +170,8 @@ PipeTube::populate(const FuncDataBase& Control)
       FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
       FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
       CT=Control.EvalDefPair<double>(portName,portBase,"CapThick",0.0);
-      capMat=ModelSupport::EvalDefMat<int>
-	(Control,portName+"CapMat",portBase+"CapMat",wallMat);
+      CMat=ModelSupport::EvalDefMat<int>
+	(Control,portName+"CapMat",portBase+"CapMat",capMat);
 
       OFlag=Control.EvalDefVar<int>(portName+"OuterVoid",0);
 

@@ -3,7 +3,7 @@
  
  * File:   test/testSurIntersect.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -428,7 +428,7 @@ testSurIntersect::testCylPlaneIntersect()
   IPtr.reset(SurInter::calcIntersect(CA,TB));
   if (!IPtr)
     {
-      ELog::EM<<"Intersect zero [SngLine]"<<*IPtr<<ELog::endCrit;
+      ELog::EM<<"Intersect zero [SngLine]"<<ELog::endCrit;
       return -2;
     }
   std::shared_ptr<Geometry::SglLine> SPtr=

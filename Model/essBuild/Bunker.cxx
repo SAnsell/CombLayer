@@ -676,9 +676,10 @@ Bunker::createAll(Simulation& System,
   ELog::RegMethod RegA("Bunker","createAll");
 
   populate(System.getDataBase());
+
   createUnitVector(FC,linkIndex,reverseX);
-    
   createSurfaces(reverseX);
+  
   createLinks(FC,linkIndex);
   createObjects(System,FC,linkIndex);
   //  layerProcess(System);

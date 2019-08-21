@@ -3,7 +3,7 @@
  
  * File:   physics/ExtConstructor.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,7 +125,7 @@ ExtConstructor::procType(const objectGroups& OGrp,
   Geometry::Vec3D Pt;
   double scalar;
 
-  if (NS>=1 && (StrItem[0]=="simple"))
+  if (StrItem[0]=="simple")
     {
       for(const MapSupport::Range<int>& RUnit : ZUnits.Zones)
 	EX.addUnit(RUnit,minus+"S");
