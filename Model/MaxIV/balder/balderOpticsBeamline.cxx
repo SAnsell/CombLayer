@@ -114,6 +114,7 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(*this,cellIndex),
+  
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
@@ -295,15 +296,29 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   ionPA->createAll(System,*pipeInit,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*ionPA,2);
   ionPA->insertInCell(System,outerCell);
-  
-  
-  triggerPipe->setFront(*ionPA,2);
-  triggerPipe->createAll(System,*ionPA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
-  triggerPipe->insertInCell(System,outerCell);
 
-  pipeA->setFront(*triggerPipe,2);
-  pipeA->createAll(System,*triggerPipe,2);
+    // FAKE insertcell: required
+  gateTubeA->addAllInsertCell(masterCell->getName());
+  gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  gateTubeA->createAll(System,*ionPA,2);  
+  
+  const constructSystem::portItem& GPI=gateTubeA->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCellA,GPI,GPI.getSideIndex("OuterPlate"));
+  gateTubeA->insertAllInCell(System,outerCell);
+
+  //  triggerPipe->setFront(*ionPA,2);
+  //  triggerPipe->createAll(System,*ionPA,2);
+  //  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
+  //  triggerPipe->insertInCell(System,outerCell);
+
+  // pipeA->setFront(*triggerPipe,2);
+  // pipeA->createAll(System,*triggerPipe,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  // pipeA->insertInCell(System,outerCell);
+
+  pipeA->setFront(GPI,GPI.getSideIndex("OuterPlate"));
+  pipeA->createAll(System,GPI,GPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
   pipeA->insertInCell(System,outerCell);
 

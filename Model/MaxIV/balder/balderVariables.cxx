@@ -400,6 +400,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
@@ -429,6 +430,19 @@ opticsVariables(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
     (Control,opticsName+"TriggerPipe",0.0,15.0,10.0);  // ystep/height/depth
 
+  // will be rotated vertical
+  const std::string gateName=opticKey+"GateTubeA";
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
+  Control.addVariable(gateName+"NPorts",2);   // beam ports
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,opticsName+"BellowA",0,16.0);

@@ -824,8 +824,8 @@ exptVariables(FuncDataBase& Control,
   // In reality the window is made of 50 um diamond,
   // but void is a reasonable approximation for our needs:
   // Graphite#2 is Diamond (graphite with double density)
-  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Graphite#2");
-  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Graphite#2");
+  Control.addVariable(preName+"TelescopicSystemWindowBackMat", "Void");
+  Control.addVariable(preName+"TelescopicSystemWindowFrontMat", "Void");
 
   // sample area dimensions are arbitrary
   Control.addVariable(preName+"SampleAreaWidth",100.0);
