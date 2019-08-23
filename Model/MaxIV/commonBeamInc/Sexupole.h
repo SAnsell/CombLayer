@@ -65,9 +65,7 @@ class Sexupole : public attachSystem::FixedRotate,
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  
+  void populate(const FuncDataBase&);  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

@@ -118,6 +118,7 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
+  gateAItem(new xraySystem::FlangeMount(newName+"GateAItem")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   pipeA(new constructSystem::Bellows(newName+"BellowA")),
   filterBox(new constructSystem::PortTube(newName+"FilterBox")),
@@ -185,6 +186,7 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   OR.addObject(pipeInit);
   OR.addObject(ionPA);
   OR.addObject(gateTubeA);
+  OR.addObject(gateAItem);
   OR.addObject(triggerPipe);
   OR.addObject(pipeA);
   OR.addObject(filterBox);
@@ -308,6 +310,12 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeA->insertAllInCell(System,outerCell);
+
+  gateAItem->addInsertCell("Body",gateTubeA->getCell("Void"));
+  //  filters[i]->addInsertCell("Body",filterBox->getCell("SplitVoid",i));
+  gateAItem->setBladeCentre(*gateTubeA,0);
+  gateAItem->createNamedAll(System,*gateTubeA,std::string("InnerBack"));
+
 
   //  triggerPipe->setFront(*ionPA,2);
   //  triggerPipe->createAll(System,*ionPA,2);

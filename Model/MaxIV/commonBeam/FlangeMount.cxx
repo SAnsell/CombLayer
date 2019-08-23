@@ -196,24 +196,6 @@ FlangeMount::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-FlangeMount::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    We set the origin external to the front face of the sealing ring.
-    and adjust the origin to the middle.
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("FlangeMount","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
-  return;
-}
 
 void
 FlangeMount::calcThreadLength()

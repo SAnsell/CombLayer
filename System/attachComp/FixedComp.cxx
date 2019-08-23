@@ -2033,4 +2033,20 @@ FixedComp::getExitWindow(const long int sideIndex,
   return std::abs(SMap.realSurf(getUSLinkSurf(outIndex)));
 }
 
+void
+FixedComp::createNamedAll(Simulation& System,const FixedComp& FC,
+			   const std::string& linkName)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param System :: Simulation to build component in
+    \param FC :: FixedComp to use as origin/basis set
+    \param linkName :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createNamedAll");
+  
+  this->createAll(System,FC,FC.getSideIndex(linkName));
+  return;
+}
+
 }  // NAMESPACE attachSystem

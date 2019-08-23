@@ -436,11 +436,14 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
   Control.addVariable(gateName+"NPorts",2);   // beam ports
   const Geometry::Vec3D ZVec(0,0,1);
-  PItemGen.setCF<setVariable::CF40>(0.45);
+  PItemGen.setCF<setVariable::CF40>(3.45);
   PItemGen.setPlate(0.0,"Void");  
   PItemGen.generatePort(Control,gateName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,gateName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(4.0,5.0,0.3,0.0,"Stainless304",1);  // 22 rotation
+  FlangeGen.generateMount(Control,opticsName+"GateAItem",0);  // in beam
   
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();

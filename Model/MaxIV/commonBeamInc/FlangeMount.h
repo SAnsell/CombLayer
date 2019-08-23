@@ -70,7 +70,6 @@ class FlangeMount :
   void calcThreadLength();
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,8 +84,8 @@ class FlangeMount :
   void setBladeCentre(const attachSystem::FixedComp&,const long int);
   void setBladeCentre(const Geometry::Vec3D&);
   
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

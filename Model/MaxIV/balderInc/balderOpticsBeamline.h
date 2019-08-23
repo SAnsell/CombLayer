@@ -81,6 +81,8 @@ class balderOpticsBeamline :
 
   /// Gate block
   std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+  /// Gate block [item]
+  std::shared_ptr<xraySystem::FlangeMount> gateAItem;
 
   /// Trigger Unit (pipe):
   std::shared_ptr<constructSystem::CrossPipe> triggerPipe;

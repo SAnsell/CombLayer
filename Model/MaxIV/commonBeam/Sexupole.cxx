@@ -155,21 +155,6 @@ Sexupole::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-Sexupole::createUnitVector(const attachSystem::FixedComp& FC,
-    	                     const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("Sexupole","createUnitVector");
-  
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
 
 void
 Sexupole::createSurfaces()
@@ -255,7 +240,8 @@ Sexupole::createObjects(Simulation& System)
 
   
   std::string unitStr=" 1M -2M ";
-  unitStr+=ModelSupport::getSeqIntersection(-51,-(51+2*NPole),1);
+  unitStr+=ModelSupport::getSeqIntersection
+    (-51,  -(51+2*static_cast<int>(NPole)),1);
   Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,unitStr);
   addOuterSurf(Out);
 

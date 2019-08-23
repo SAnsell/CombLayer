@@ -183,7 +183,7 @@ FlangeMountGenerator::setBlade(const double W,const double H,
 			       const int BF)
   /*!
     Set the blade
-    \param H :: heigh of bea
+    \param H :: heigh of blade
     \param W :: Width of blade (across beam)
     \param T :: Thickness of blade
     \param Ang :: Angle of blade
