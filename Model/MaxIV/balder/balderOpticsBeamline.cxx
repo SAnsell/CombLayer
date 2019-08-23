@@ -117,6 +117,7 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
+  gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   pipeA(new constructSystem::Bellows(newName+"BellowA")),
   filterBox(new constructSystem::PortTube(newName+"FilterBox")),
@@ -183,6 +184,7 @@ balderOpticsBeamline::balderOpticsBeamline(const std::string& Key) :
   
   OR.addObject(pipeInit);
   OR.addObject(ionPA);
+  OR.addObject(gateTubeA);
   OR.addObject(triggerPipe);
   OR.addObject(pipeA);
   OR.addObject(filterBox);
@@ -304,7 +306,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   
   const constructSystem::portItem& GPI=gateTubeA->getPort(1);
   outerCell=buildZone.createOuterVoidUnit
-    (System,masterCellA,GPI,GPI.getSideIndex("OuterPlate"));
+    (System,masterCell,GPI,GPI.getSideIndex("OuterPlate"));
   gateTubeA->insertAllInCell(System,outerCell);
 
   //  triggerPipe->setFront(*ionPA,2);

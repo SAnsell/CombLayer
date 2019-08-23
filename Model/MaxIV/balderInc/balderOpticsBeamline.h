@@ -79,6 +79,9 @@ class balderOpticsBeamline :
   /// Real Ion pump (KF40) 10cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPA;
 
+  /// Gate block
+  std::shared_ptr<constructSystem::PipeTube> gateTubeA;
+
   /// Trigger Unit (pipe):
   std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
 

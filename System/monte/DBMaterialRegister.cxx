@@ -734,7 +734,7 @@ DBMaterial::initMaterial()
   // Material #96 Carbon, Graphite (Reactor Grade): 
   // density 0.085238 
   MObj.setMaterial(96,"Graphite",  
-		   "6000.70c 8.523759e-02 5010.70c "
+		   "6012.70c 8.523759e-02 5010.70c "
 		   "1.894100e-08 5011.70c 7.576401e-08",
 		   "",MLib);
   setMaterial(MObj);
@@ -1256,6 +1256,12 @@ DBMaterial::initMaterial()
                    " 29065.70c 6.53842615705E-02 ","",MLib);
   MObj.setMXitem(6000, 70, 'c', "h", "06012");
   MObj.setDensity(-2.0272);
+  setMaterial(MObj);
+
+  // Material #146 Diamond 
+  // density 3.51g/cc 0.176
+  MObj.setMaterial(146,"Diamond", "6012.70c 0.17615 ","",MLib);
+  MObj.setDensity(-3.51);
   setMaterial(MObj);
 
   return;

@@ -309,11 +309,10 @@ setXrayPhysics(SimFLUKA& System,
       PC.setEMF("pairbrem",MN,"0.0","0.1");
     }
   //  const std::set<int> activeMat=getActiveUnit(1,"all");
-  
+
   for(const int CN : activeCell)
-    {
-      // Electrons are stopped in the EMFCut disk
-      PC.setEMF("emfcut",CN,"0.035","0.015");
+    { 
+      PC.setEMF("emfcut",CN,"0.035","0.005");
     }
   // SPECIAL:
   PC.setIMP("partthr","neutron","1e-9");

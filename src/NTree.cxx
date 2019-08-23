@@ -39,9 +39,7 @@
 #include "OutputLog.h"
 #include "Triple.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "NTree.h"
-
 
 /*
 std::ostream&
@@ -128,9 +126,9 @@ NTree::getInterval(const size_t index) const
   for(size_t i=index-1;i<=index+1;i++)
     if (itemType[i]!=IType::dble && itemType[i]!=IType::integer)
       throw ColErr::TypeMatch
-	(std::to_string(itemType[i])
+	(std::to_string(static_cast<size_t>(itemType[i])),
 	 std::to_string(i),"Not Double/Int");
-
+  
   const double DA= (itemType[index-1]==IType::dble) ?
     numDbl.find(index-1)->second :
     static_cast<double>(numInt.find(index-1)->second); 

@@ -400,7 +400,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
@@ -431,7 +430,7 @@ opticsVariables(FuncDataBase& Control,
     (Control,opticsName+"TriggerPipe",0.0,15.0,10.0);  // ystep/height/depth
 
   // will be rotated vertical
-  const std::string gateName=opticKey+"GateTubeA";
+  const std::string gateName=opticsName+"GateTubeA";
   SimpleTubeGen.setCF<CF63>();
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,gateName,0.0,30.0);
@@ -464,7 +463,6 @@ opticsVariables(FuncDataBase& Control,
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);
-  const Geometry::Vec3D ZVec(0,0,1);
   for(size_t i=0;i<4;i++)
     {
       const std::string name=opticsName+"FilterBoxPort"+std::to_string(i);
