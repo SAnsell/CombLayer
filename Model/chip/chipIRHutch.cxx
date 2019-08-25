@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   chip/Hutch.cxx
+ * File:   chip/chipIRHutch.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -97,7 +97,7 @@
 #include "BeamStop.h"
 #include "ChipSample.h"
 
-#include "Hutch.h"
+#include "chipIRHutch.h"
 
 #include "surfDBase.h"
 #include "mergeTemplate.h"
@@ -105,7 +105,7 @@
 namespace hutchSystem
 {
 
-ChipIRHutch::ChipIRHutch(const std::string& Key)  : 
+chipIRHutch::chipIRHutch(const std::string& Key)  : 
   attachSystem::FixedGroup(Key,"Main",4,"Beam",2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   PreColObj(new PreCollimator("chipPre")),
@@ -132,7 +132,7 @@ ChipIRHutch::ChipIRHutch(const std::string& Key)  :
   OR.addObject(BStop);
 }
 
-ChipIRHutch::ChipIRHutch(const ChipIRHutch& A) : 
+chipIRHutch::chipIRHutch(const chipIRHutch& A) : 
   attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   PreColObj(new PreCollimator(*A.PreColObj)),
@@ -178,15 +178,15 @@ ChipIRHutch::ChipIRHutch(const ChipIRHutch& A) :
   collActiveFlag(A.collActiveFlag)
   /*!
     Copy constructor
-    \param A :: ChipIRHutch to copy
+    \param A :: chipIRHutch to copy
   */
 {}
 
-ChipIRHutch&
-ChipIRHutch::operator=(const ChipIRHutch& A)
+chipIRHutch&
+chipIRHutch::operator=(const chipIRHutch& A)
   /*!
     Assignment operator
-    \param A :: ChipIRHutch to copy
+    \param A :: chipIRHutch to copy
     \return *this
   */
 {
@@ -277,14 +277,14 @@ ChipIRHutch::operator=(const ChipIRHutch& A)
   return *this;
 }
 
-ChipIRHutch::~ChipIRHutch() 
+chipIRHutch::~chipIRHutch() 
   /*!
     Destructor
   */
 {}
 
 void
-ChipIRHutch::populate(const FuncDataBase& Control)
+chipIRHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Database
@@ -404,9 +404,8 @@ ChipIRHutch::populate(const FuncDataBase& Control)
 }
 
 void
-ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
-			      const Geometry::Vec3D& xyAxis,
-			      const attachSystem::FixedComp& LC)
+chipIRHutch::createUnitVector(const attachSystem::FixedGroup& FG,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param shutterFC :: shutter direction 
@@ -420,10 +419,11 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  mainFC.createUnitVector(LC);
-  mainFC.setCentre(LC.getLinkPt(7));
-  beamFC.createUnitVector(LC);
-  beamFC.setCentre(LC.getLinkPt(7));
+  mainFC.createUnitVector(FG.getKey("Main"),sideIndex);
+  mainFC.setCentre(FG.getKey("Main").getLinkPt(7));
+  beamFC.createUnitVector(FG.getKey("Beam"),sideIndex);
+  beamFC.setCentre(FG.getKey("Main").getLinkPt(7));
+
   FixedGroup::setDefault("Main","Beam");
       
   // remove old Z component and replace:
@@ -436,25 +436,12 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
 
   FixedGroup::setDefault("Main","Beam");
   
-  const Geometry::Vec3D ImpactPoint= (shutterFC.NConnect()) ?
-    shutterFC.getLinkPt(1) : shutterFC.getCentre(); 
-  //  setExit(Origin+Y*hMainLen,Y);
-  //  SecondTrack::setBeamExit(LC.getLinkPoint(1),bY);
-
-  const Geometry::Vec3D Saxis=MR.calcAxisRotate(xyAxis);
-
-  chipIRDatum::chipDataStore::Instance().
-    setCNum(chipIRDatum::shutterAxis,Saxis);
-
-  chipIRDatum::chipDataStore::Instance().
-    setCNum(chipIRDatum::secScatImpact,
-	    MR.calcRotate(ImpactPoint));
 	    
   return;
 }
 
 void 
-ChipIRHutch::createWallObjects(Simulation& System,
+chipIRHutch::createWallObjects(Simulation& System,
 			       const attachSystem::ContainedComp& IC)
 /*!
     Create the walls for the chipIR hutch
@@ -612,12 +599,12 @@ ChipIRHutch::createWallObjects(Simulation& System,
 }
 
 void
-ChipIRHutch::addOuterVoid()
+chipIRHutch::addOuterVoid()
   /*!\
     Create outer virtual space that includes the beamstop etc
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","addOuterVoid");
+  ELog::RegMethod RegA("chipIRHutch","addOuterVoid");
   // 73 : replaced 3 13
   const std::string Out=
     ModelSupport::getComposite(SMap,buildIndex,
@@ -628,13 +615,13 @@ ChipIRHutch::addOuterVoid()
 
   
 void 
-ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
+chipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   /*!
     Create the walls for the hutch
     \param Guide :: Object this is joined to
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","createWallSurface");
+  ELog::RegMethod RegA("chipIRHutch","createWallSurface");
 
   Geometry::Plane* PX;
   // ---------------------------------------------------
@@ -832,12 +819,12 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
 }
 
 void
-ChipIRHutch::writeMasterPoints() const
+chipIRHutch::writeMasterPoints() const
   /*!
     Write out the master points
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","writeMasterPoints");
+  ELog::RegMethod RegA("chipIRHutch","writeMasterPoints");
 
   const masterRotate& MR=masterRotate::Instance();
   //  const attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
@@ -902,7 +889,7 @@ ChipIRHutch::writeMasterPoints() const
 }
 
 Geometry::Vec3D
-ChipIRHutch::calcIndexPosition(const int Index) const
+chipIRHutch::calcIndexPosition(const int Index) const
   /*!
     Caclulate the position based on a number
      - 1 :: Table 1
@@ -916,7 +903,7 @@ ChipIRHutch::calcIndexPosition(const int Index) const
     \return Point of the table
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","calcIndexPosition");
+  ELog::RegMethod RegA("chipIRHutch","calcIndexPosition");
 
   switch (Index) 
     {
@@ -933,7 +920,7 @@ ChipIRHutch::calcIndexPosition(const int Index) const
 } 
 
 void 
-ChipIRHutch::layerProcess(Simulation& System)
+chipIRHutch::layerProcess(Simulation& System)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     Currently three:
@@ -1069,7 +1056,7 @@ ChipIRHutch::layerProcess(Simulation& System)
 
  
 int
-ChipIRHutch::exitWindow(const double,std::vector<int>&,
+chipIRHutch::exitWindow(const double,std::vector<int>&,
 			Geometry::Vec3D&) const
   /*!
     Determine the exit window from the object :
@@ -1077,11 +1064,11 @@ ChipIRHutch::exitWindow(const double,std::vector<int>&,
     \return Nothing [throws]
   */
 {
-  throw ColErr::AbsObjMethod("ChipIRHutch::exitWindow");
+  throw ColErr::AbsObjMethod("chipIRHutch::exitWindow");
 }
 
 void
-ChipIRHutch::addExtraWalls(Simulation& System,
+chipIRHutch::addExtraWalls(Simulation& System,
 			   const attachSystem::FixedComp& Guide)
   /*!
     Build the annoying extra walls
@@ -1089,7 +1076,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
     \param Guide :: for fixed unit
    */
 {
-  ELog::RegMethod RegA("ChipIRHutch","addExtraWalls");
+  ELog::RegMethod RegA("chipIRHutch","addExtraWalls");
 
   if (westExtraThick>Geometry::zeroTol)
     {
@@ -1114,7 +1101,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
 }
     
 void
-ChipIRHutch::addCollimators(Simulation& System,
+chipIRHutch::addCollimators(Simulation& System,
 			    const attachSystem::FixedGroup& GI)
   /*!
     Add collimator objects if defined
@@ -1122,7 +1109,7 @@ ChipIRHutch::addCollimators(Simulation& System,
     \param GI :: Guide Item. To use for positioning
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","addCollimators");
+  ELog::RegMethod RegA("chipIRHutch","addCollimators");
 
   PreColObj->addInsertCell(collimatorVoid);
   PreColObj->addBoundarySurf(SMap.realSurf(buildIndex+33));
@@ -1154,7 +1141,7 @@ ChipIRHutch::addCollimators(Simulation& System,
 }
   
 Geometry::Vec3D
-ChipIRHutch::calcCentroid(const int pA,const int pB,const int pC,
+chipIRHutch::calcCentroid(const int pA,const int pB,const int pC,
 			  const int pX,const int pY,const int pZ) const
   /*!
     Calculate the centroid between the two intersecting corners
@@ -1167,7 +1154,7 @@ ChipIRHutch::calcCentroid(const int pA,const int pB,const int pC,
     \return Centroid
    */
 {
-  ELog::RegMethod RegA("ChipIRHutch","calcCentroid");
+  ELog::RegMethod RegA("chipIRHutch","calcCentroid");
 
   return SurInter::calcCentroid(SMap.realSurfPtr(buildIndex+pA),
 				SMap.realSurfPtr(buildIndex+pB),
@@ -1178,7 +1165,7 @@ ChipIRHutch::calcCentroid(const int pA,const int pB,const int pC,
 }
 
 Geometry::Vec3D
-ChipIRHutch::calcSideIntercept(const int sideIndex,
+chipIRHutch::calcSideIntercept(const int sideIndex,
 			       const Geometry::Vec3D& Pt,
 			       const Geometry::Vec3D& Norm) const
   /*!
@@ -1189,7 +1176,7 @@ ChipIRHutch::calcSideIntercept(const int sideIndex,
     \return The point that the vector impacts the outside
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","calcSideIntercept");
+  ELog::RegMethod RegA("chipIRHutch","calcSideIntercept");
   
   const Geometry::Plane* PX=
     SMap.realPtr<Geometry::Plane>(buildIndex+sideIndex);
@@ -1209,14 +1196,14 @@ ChipIRHutch::calcSideIntercept(const int sideIndex,
 }
 
 Geometry::Vec3D
-ChipIRHutch::calcSurfNormal(const int surfIndex) const
+chipIRHutch::calcSurfNormal(const int surfIndex) const
   /*!
     Nasty function to get the outer surface normal
     \param surfIndex :: Side to use
     \return The Normal from the surface
    */
 {
-  ELog::RegMethod RegA("ChipIRHutch","getSurfNormal");
+  ELog::RegMethod RegA("chipIRHutch","getSurfNormal");
 
   const Geometry::Plane* PX=
     SMap.realPtr<Geometry::Plane>(buildIndex+surfIndex);
@@ -1228,13 +1215,13 @@ ChipIRHutch::calcSurfNormal(const int surfIndex) const
 }
 
 Geometry::Vec3D
-ChipIRHutch::calcDoorPoint() const
+chipIRHutch::calcDoorPoint() const
   /*!
     Calculate the point at the back of the door
     \return Back Plane point
    */
 {
-  ELog::RegMethod RegA("ChipIRHutch","calcBackPlane");
+  ELog::RegMethod RegA("chipIRHutch","calcBackPlane");
   
   // Combination of surf: 22/44/25
   Geometry::Vec3D Offset=Origin+
@@ -1245,12 +1232,12 @@ ChipIRHutch::calcDoorPoint() const
 }
 
 void
-ChipIRHutch::createLinks()
+chipIRHutch::createLinks()
   /*!
     Create all the link points
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","createLinks");
+  ELog::RegMethod RegA("chipIRHutch","createLinks");
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
@@ -1273,7 +1260,7 @@ ChipIRHutch::createLinks()
 }
 
 void
-ChipIRHutch::createCommonAll(Simulation& System,
+chipIRHutch::createCommonAll(Simulation& System,
 			     const attachSystem::FixedGroup& Guide,
 			     const attachSystem::ContainedComp& IC)
   /*!
@@ -1321,7 +1308,7 @@ ChipIRHutch::createCommonAll(Simulation& System,
 
 
 void
-ChipIRHutch::createAll(Simulation& System,
+chipIRHutch::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const attachSystem::FixedGroup& Guide,
 		       const attachSystem::ContainedComp& IC)
@@ -1336,13 +1323,14 @@ ChipIRHutch::createAll(Simulation& System,
   ELog::RegMethod RegA("Hutch","createAll(Fixed)");
 
   populate(System.getDataBase());
-  createUnitVector(FC,FC.getY(),Guide.getKey("Main"));
+  //  createUnitVector(FC,FC.getY(),Guide.getKey("Main"));
+  createUnitVector(Guide,2);
   createCommonAll(System,Guide,IC);
   return;
 }
 
 void
-ChipIRHutch::createAll(Simulation& System,
+chipIRHutch::createAll(Simulation& System,
 		       const attachSystem::FixedGroup& FC,
 		       const long int sideIndex)
   /*!
@@ -1352,10 +1340,14 @@ ChipIRHutch::createAll(Simulation& System,
     \param sideIndex :: lin point
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","createAll(ShutterPort)");
+  ELog::RegMethod RegA("chipIRHutch","createAll(ShutterPort)");
 
   populate(System.getDataBase());
-  //  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide.getKey("Main"));
+  //  ELog::EM<<"Shutter Port == "<<ShutterPort.getXYAxis()<<ELog::endDiag;
+  ELog::EM<<"FC == "<<FC.getKey("Main").getLinkPt(sideIndex)<<ELog::endDiag;
+  ELog::EM<<"FC == "<<FC.getKey("Main").getLinkAxis(sideIndex)<<ELog::endDiag;
+
+  createUnitVector(FC,sideIndex);
   //  createUnitVector(FC,sideIndex);
   ELog::EM<<"Y == "<<Origin<<" "<<Y<<" "<<Z<<ELog::endDiag;
   //  createCommonAll(System,Guide,IC);

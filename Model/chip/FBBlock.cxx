@@ -86,7 +86,7 @@
 #include "Table.h"
 #include "beamBlock.h"
 #include "BeamStop.h"
-#include "Hutch.h"
+#include "chipIRHutch.h"
 #include "FBBlock.h"
 
 #include "Debug.h"
@@ -184,7 +184,7 @@ FBBlock::createUnitVector(const attachSystem::FixedComp& CUnit)
 
 void 
 FBBlock::insertBlock(Simulation& System,
-		     const ChipIRHutch& Hut)
+		     const chipIRHutch& Hut)
   /*!
     Add a feed pipe to the collimator area
     \param System :: Simulation to add pipe to
@@ -215,7 +215,7 @@ FBBlock::insertBlock(Simulation& System,
   
 void
 FBBlock::createAll(Simulation& System,
-		       const ChipIRHutch& HutUnit)
+		       const chipIRHutch& HutUnit)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -233,4 +233,4 @@ FBBlock::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE hutchSystem

@@ -33,7 +33,7 @@ namespace hutchSystem
   class FeedThrough;
   class FBBlock;
   class ChipIRGuide;
-  class ChipIRHutch;
+  class chipIRHutch;
 
   /*!
     \class makeChipIR 
@@ -47,7 +47,7 @@ class makeChipIR
  private:
 
   std::shared_ptr<ChipIRGuide> GObj;   ///< Guide 
-  std::shared_ptr<ChipIRHutch> hutchObj;   ///< Hutch object
+  std::shared_ptr<chipIRHutch> hutchObj;   ///< Hutch object
   std::vector<std::shared_ptr<FeedThrough>> FeedVec;   
   FBBlock FB;                         ///< FeedBlock
 
@@ -65,7 +65,7 @@ class makeChipIR
   /// Guide object accessor
   const ChipIRGuide& getGuide() const { return *GObj; }
   /// Hutch object accessor
-  const ChipIRHutch& getHutch() const { return *hutchObj; }
+  const chipIRHutch& getHutch() const { return *hutchObj; }
 
 };
 

@@ -82,7 +82,7 @@
 #include "boxUnit.h"
 #include "BoxLine.h"
 #include "HoleUnit.h"
-#include "Hutch.h"
+#include "chipIRHutch.h"
 #include "FeedThrough.h"
 
 #include "debugMethod.h"
@@ -194,7 +194,7 @@ FeedThrough::createUnitVector(const attachSystem::FixedComp& CUnit)
 
 void 
 FeedThrough::insertColl(Simulation& System,
-			const ChipIRHutch& Hut)
+			const chipIRHutch& Hut)
   /*!
     Add a feed pipe to the collimator area
     \param System :: Simulation to add pipe to
@@ -234,7 +234,7 @@ FeedThrough::insertColl(Simulation& System,
   
 void
 FeedThrough::createAll(Simulation& System,
-		       const ChipIRHutch& HutUnit)
+		       const chipIRHutch& HutUnit)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in

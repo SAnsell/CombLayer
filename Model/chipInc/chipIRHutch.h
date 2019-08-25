@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   chipInc/Hutch.h
+ * File:   chipInc/chipIRHutch.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -67,7 +67,7 @@ namespace hutchSystem
   \brief Adds the ChipIR Hutch
 */
 
-class ChipIRHutch : public attachSystem::FixedGroup,
+class chipIRHutch : public attachSystem::FixedGroup,
    public attachSystem::ContainedComp,public attachSystem::CellMap
 {
  private:
@@ -194,9 +194,9 @@ class ChipIRHutch : public attachSystem::FixedGroup,
   // ----------------------------------------------------------
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const Geometry::Vec3D&,
-			const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedGroup&,
+			const long int);
+
 
   void createWallSurfaces(const attachSystem::FixedComp&);
 
@@ -213,17 +213,15 @@ class ChipIRHutch : public attachSystem::FixedGroup,
 
  public:
 
-  ChipIRHutch(const std::string&);
-  ChipIRHutch(const ChipIRHutch&);
-  ChipIRHutch& operator=(const ChipIRHutch&);
-  ~ChipIRHutch();
+  chipIRHutch(const std::string&);
+  chipIRHutch(const chipIRHutch&);
+  chipIRHutch& operator=(const chipIRHutch&);
+  ~chipIRHutch();
 
   /// Set the collimator build flag [Bits ==> Pre:V:H ]
   void setCollFlag(const int F) { collActiveFlag=F; }
   
   Geometry::Vec3D calcIndexPosition(const int) const;
-  /// Access central point:
-  //  const Geometry::Vec3D& getCentPoint() const { return CentPoint; }
   /// Access central point:
   const Geometry::Vec3D& getImpactPoint() const { return ImpactPoint; }
   /// Access beam angle

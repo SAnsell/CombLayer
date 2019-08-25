@@ -80,13 +80,14 @@
 #include "beamBlock.h"
 #include "BeamStop.h"
 #include "Table.h"
-#include "Hutch.h"
 #include "BulkShield.h"
 #include "boxValues.h"
 #include "boxUnit.h"
 #include "BoxLine.h"
 #include "FeedThrough.h"
 #include "FBBlock.h"
+#include "chipIRHutch.h"
+
 #include "makeChipIR.h"
 
 #include "shutterBlock.h"
@@ -98,7 +99,7 @@ namespace hutchSystem
 
 makeChipIR::makeChipIR() :
   GObj(new ChipIRGuide("chipGuide")),
-  hutchObj(new ChipIRHutch("chipHut")),
+  hutchObj(new chipIRHutch("chipHut")),
   FB("chipHutFB")
   /*!
     Constructor
@@ -115,7 +116,7 @@ makeChipIR::makeChipIR() :
 
 makeChipIR::makeChipIR(const makeChipIR& A) : 
   GObj(new ChipIRGuide(*A.GObj)),
-  hutchObj(new ChipIRHutch(*A.hutchObj)),
+  hutchObj(new chipIRHutch(*A.hutchObj)),
   FeedVec(A.FeedVec),FB(A.FB)
   /*!
     Copy constructor
@@ -215,8 +216,9 @@ makeChipIR::build(Simulation* SimPtr,
   GObj->createAll(*SimPtr,BulkObj,0);
     
   hutchObj->addInsertCell(74123);
-  hutchObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
-		      GObj->getCC("inner"));
+  hutchObj->createAll(*SimPtr,*GObj,2);
+  //  hutchObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
+  //		      GObj->getCC("inner"));
   
   FB.createAll(*SimPtr,*hutchObj);
 
