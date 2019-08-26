@@ -75,8 +75,6 @@ class FlangeMount :
   
  public:
 
-  using FixedComp::createAll;
-
   FlangeMount(const std::string&);
   FlangeMount(const FlangeMount&);
   FlangeMount& operator=(const FlangeMount&);
