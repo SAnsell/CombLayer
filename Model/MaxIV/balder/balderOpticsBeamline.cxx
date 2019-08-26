@@ -314,7 +314,7 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   gateAItem->addInsertCell("Body",gateTubeA->getCell("Void"));
   //  filters[i]->addInsertCell("Body",filterBox->getCell("SplitVoid",i));
   gateAItem->setBladeCentre(*gateTubeA,0);
-  gateAItem->createNamedAll(System,*gateTubeA,std::string("InnerBack"));
+  gateAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
 
   //  triggerPipe->setFront(*ionPA,2);

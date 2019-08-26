@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/FlangeMount.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ class FlangeMount :
 {
  private:
 
-
   double plateThick;            ///< Top plate thickness
   double plateRadius;           ///< plate radius
 
@@ -76,6 +75,8 @@ class FlangeMount :
   
  public:
 
+  using FixedComp::createAll;
+
   FlangeMount(const std::string&);
   FlangeMount(const FlangeMount&);
   FlangeMount& operator=(const FlangeMount&);
@@ -83,7 +84,8 @@ class FlangeMount :
 
   void setBladeCentre(const attachSystem::FixedComp&,const long int);
   void setBladeCentre(const Geometry::Vec3D&);
-  
+
+  using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int);
 

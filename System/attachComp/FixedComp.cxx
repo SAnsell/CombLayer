@@ -2034,8 +2034,8 @@ FixedComp::getExitWindow(const long int sideIndex,
 }
 
 void
-FixedComp::createNamedAll(Simulation& System,const FixedComp& FC,
-			   const std::string& linkName)
+FixedComp::createAll(Simulation& System,const FixedComp& FC,
+		     const std::string& linkName)
   /*!
     Modification accessor to get createAll based on a name
     \param System :: Simulation to build component in

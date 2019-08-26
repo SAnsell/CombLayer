@@ -67,7 +67,7 @@ class balderOpticsBeamline :
   public attachSystem::CellMap
 {
  private:
-
+  
   attachSystem::InnerZone buildZone;  
   
   /// Shared point to use for last component:
@@ -185,9 +185,9 @@ class balderOpticsBeamline :
   /// Last gate valve:
   std::array<std::shared_ptr<xraySystem::PipeShield>,4> neutShield;
 
-  double outerLeft;    /// Radius for cut rectangle
-  double outerRight;   /// Radius for cut rectangle
-  double outerTop;     /// Radius for cut rectangle
+  double outerLeft;    /// Left  for cut rectangle
+  double outerRight;   /// Right for cut rectangle
+  double outerTop;     /// Top for cut rectangle
   
 
   void populate(const FuncDataBase&);
@@ -196,12 +196,14 @@ class balderOpticsBeamline :
   void createLinks();
   
  public:
-  
+
+
   balderOpticsBeamline(const std::string&);
   balderOpticsBeamline(const balderOpticsBeamline&);
   balderOpticsBeamline& operator=(const balderOpticsBeamline&);
   ~balderOpticsBeamline();
-  
+
+  using FixedComp::createAll;  // for (Sim,FixedComp,string)
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

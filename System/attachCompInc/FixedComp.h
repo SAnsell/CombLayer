@@ -253,7 +253,7 @@ class FixedComp
      const std::vector<Geometry::Vec3D>&);
 
   virtual void createAll(Simulation&,const FixedComp&,const long int) {}
-  void createNamedAll(Simulation&,const FixedComp&,const std::string&);
+  virtual void createAll(Simulation&,const FixedComp&,const std::string&);
 
 };
 
