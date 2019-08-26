@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/FBBlock.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ class Simulation;
 namespace hutchSystem
 {
 
-  class ChipIRHutch;
+  class chipIRHutch;
 
 /*!
   \class FBBlock
@@ -52,7 +52,7 @@ class FBBlock : public attachSystem::FixedComp
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void insertBlock(Simulation&,const ChipIRHutch&);
+  void insertBlock(Simulation&,const chipIRHutch&);
 
  public:
 
@@ -61,7 +61,7 @@ class FBBlock : public attachSystem::FixedComp
   FBBlock& operator=(const FBBlock&);
   ~FBBlock();
   
-  void createAll(Simulation&,const ChipIRHutch&);
+  void createAll(Simulation&,const chipIRHutch&);
 
 };
 
