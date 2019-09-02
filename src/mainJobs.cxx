@@ -170,10 +170,12 @@ createVTK(const mainSystem::inputParam& IParam,
 
       const std::string vType=
 	IParam.getDefValue<std::string>("","vtkType",0);
-      if (vType=="cell")
+      if (vType=="cell" || vType=="Cell")
 	VTK.setType(Visit::VISITenum::cellID);
-      else
+      else if (vType.empty())
 	VTK.setType(Visit::VISITenum::material);
+      else 
+	throw ColErr::InContainerError<std::string>(vType,"vtkType unknown");
 
       if (vForm=="line")
 	VTK.setLineForm();
@@ -192,7 +194,7 @@ createVTK(const mainSystem::inputParam& IParam,
       VTK.populate(*SimPtr,Active);
 
       ELog::EM<<"VTK Type == "<<vType<<ELog::endDiag;
-      if (vType=="cell")
+      if (vType=="cell" || vType=="Cell")
 	VTK.writeIntegerVTK(Oname);
       else
 	VTK.writeVTK(Oname);

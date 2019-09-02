@@ -387,7 +387,6 @@ Visit::populate(const Simulation& System,
   return;
 }
 
-
 void
 Visit::writeVTK(const std::string& FName) const
   /*!
