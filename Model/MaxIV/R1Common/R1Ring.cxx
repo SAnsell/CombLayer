@@ -565,7 +565,7 @@ R1Ring::createDoor(Simulation& System)
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R1Ring","createMaze");
+  ELog::RegMethod RegA("R1Ring","createDoor");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -580,6 +580,8 @@ R1Ring::createDoor(Simulation& System)
 	("innerWall",SurfMap::getSurf("SideInner",doorActive-1));
       doorPtr->setCutSurf
 	("outerWall",-SurfMap::getSurf("SideOuter",doorActive-1));
+      doorPtr->setCutSurf
+	("floor",SurfMap::getSurf("Floor"));
 
       doorPtr->addAllInsertCell(getCell("Wall",doorActive % 10));
       doorPtr->createAll(System,*this,doorActive+2);

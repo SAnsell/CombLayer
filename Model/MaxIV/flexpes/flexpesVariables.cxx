@@ -95,6 +95,8 @@ namespace flexpesVar
   void m1MirrorVariables(FuncDataBase&,const std::string&);
   void splitterVariables(FuncDataBase&,const std::string&);
   void slitPackageVariables(FuncDataBase&,const std::string&);
+  void shieldVariables(FuncDataBase&,const std::string&);
+  void wallVariables(FuncDataBase&,const std::string&);
 
   
 void
@@ -977,7 +979,7 @@ wallVariables(FuncDataBase& Control,
 /*!
     Set the variables for the frontend wall
     \param Control :: DataBase to use
-    \param frontKey :: name before part names
+    \param wallKey :: name before part names
   */
 {
   ELog::RegMethod RegA("flexpesVariables[F]","wallVariables");
@@ -985,6 +987,36 @@ wallVariables(FuncDataBase& Control,
   WallLeadGenerator LGen;
 
   LGen.generateWall(Control,wallKey,3.0);
+  return;
+}
+
+void
+shieldVariables(FuncDataBase& Control,
+		const std::string& shieldKey)
+  /*!
+    Set the variables for the front end extra shield
+    \param Control :: DataBase to use
+    \param shieldKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("flexpesVariables[F]","shieldVariables");
+
+  const std::string AKey=shieldKey+"Shield";
+  Control.addVariable(AKey+"YStep",600.0);
+  Control.addVariable(AKey+"XStep",-70.0);
+  Control.addVariable(AKey+"Width",2.0);
+  Control.addVariable(AKey+"Depth",500.0);
+  Control.addVariable(AKey+"Height",16.0);
+  Control.addVariable(AKey+"DefMat","Stainless304");
+
+  const std::string BKey=shieldKey+"ShieldB";
+  Control.addVariable(BKey+"YStep",600.0);
+  Control.addVariable(BKey+"XStep",-40.0);
+  Control.addVariable(BKey+"Width",2.0);
+  Control.addVariable(BKey+"Depth",500.0);
+  Control.addVariable(BKey+"Height",16.0);
+  Control.addVariable(BKey+"DefMat","Stainless304");
+
   return;
 }
   
@@ -1007,7 +1039,7 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
-  Control.addVariable(frontKey+"OuterRadius",50.0);
+  Control.addVariable(frontKey+"OuterRadius",35.0);
   
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
@@ -1098,6 +1130,7 @@ FLEXPESvariables(FuncDataBase& Control)
   
   flexpesVar::frontEndVariables(Control,"FlexPesFrontBeam");  
   flexpesVar::wallVariables(Control,"FlexPesWallLead");
+  flexpesVar::shieldVariables(Control,"FlexPes");
   flexpesVar::transferVariables(Control,"FlexPes");
   flexpesVar::opticsHutVariables(Control,"FlexPesOpticsHut");
   flexpesVar::opticsBeamVariables(Control,"FlexPesOpticsBeam");

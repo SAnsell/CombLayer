@@ -92,6 +92,8 @@
 #include "GateValveCube.h"
 #include "FlangeMount.h"
 #include "WallLead.h"
+#include "insertObject.h"
+#include "insertPlate.h"
 
 
 #include "R1Beamline.h"
@@ -103,6 +105,8 @@ namespace xraySystem
 FLEXPES::FLEXPES(const std::string& KN) :
   R1Beamline("Flexpes",KN),
   frontBeam(new flexpesFrontEnd(newName+"FrontBeam")),
+  shield(new insertSystem::insertPlate(newName+"Shield")),
+  shieldB(new insertSystem::insertPlate(newName+"ShieldB")),
   wallLead(new WallLead(newName+"WallLead")),
   opticsHut(new flexpesOpticsHut(newName+"OpticsHut")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
@@ -116,6 +120,7 @@ FLEXPES::FLEXPES(const std::string& KN) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(frontBeam);
+  OR.addObject(shield);
   OR.addObject(wallLead);
   OR.addObject(opticsHut);
   OR.addObject(joinPipe);
@@ -153,6 +158,9 @@ FLEXPES::build(Simulation& System,
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   frontBeam->setBack(r1Ring->getSurf("BeamInner",SIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
+
+  shield->createAll(System,FCOrigin,sideIndex);
+  shieldB->createAll(System,FCOrigin,sideIndex);
   
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));

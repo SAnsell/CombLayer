@@ -24,7 +24,7 @@
 
 namespace insertSystem
 {
-  class insertCylinder;
+  class insertPlate;
 }
 
 namespace constructSystem
@@ -69,6 +69,9 @@ class flexpesFrontEnd :  public R1FrontEnd
   std::shared_ptr<xraySystem::UTubePipe> undulatorPipe;
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
+
+  /// Steel beam stop
+  std::shared_ptr<insertSystem::insertPlate> shield;
 
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,MonteCarlo::Object*,

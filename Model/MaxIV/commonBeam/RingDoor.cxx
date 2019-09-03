@@ -173,7 +173,7 @@ RingDoor::createSurfaces()
       !ExternalCut::isActive("outerWall") ||
       !ExternalCut::isActive("floor"))
     throw ColErr::InContainerError<std::string>
-      ("InnerWall/OuterWall","Door:"+keyName);
+      ("InnerWall/OuterWall/floor","Door:"+keyName);
 
   // origin in on outer wall:
   
