@@ -372,7 +372,7 @@ monoVariables(FuncDataBase& Control,const double YStep)
   // 20cm above port tube
   const Geometry::Vec3D XVecMinus(-1,0,0);
   PItemGen.setCF<setVariable::CF50>(10.0);
-  PItemGen.setPlate(1.0,"Glass");
+  PItemGen.setPlate(1.0,"LeadGlass");
 
   PItemGen.generatePort(Control,preName+"MonoVacPort0",
 			Geometry::Vec3D(0,0,0),XVecMinus);
