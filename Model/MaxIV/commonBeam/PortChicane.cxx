@@ -124,6 +124,8 @@ PortChicane::populate(const FuncDataBase& Control)
   baseThick=Control.EvalVar<double>(keyName+"BaseThick");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
+  frontRemove=Control.EvalDefVar<int>(keyName+"FrontRemove",0);
+  backRemove=Control.EvalDefVar<int>(keyName+"BackRemove",0);
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   skinMat=ModelSupport::EvalDefMat<int>
@@ -222,34 +224,39 @@ PortChicane::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 3 -4 5 -106 ");
   makeCell("Void",System,cellIndex++,0,0.0,Out);
 
+  const int FSkinMat((frontRemove) ? 0 : skinMat);
+  const int BSkinMat((backRemove) ? 0 : skinMat);
+  const int FPMat((frontRemove) ? 0 : plateMat);
+  const int BPMat((backRemove) ? 0 : plateMat);
+
   
   if (wallMat!=plateMat)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
-      makeCell("InnerSkinA",System,cellIndex++,skinMat,0.0,Out);
+      makeCell("InnerSkinA",System,cellIndex++,FSkinMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 23 -24 25 -6 ");
-      makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
+      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
-      makeCell("InnerSkinB",System,cellIndex++,skinMat,0.0,Out);
+      makeCell("InnerSkinB",System,cellIndex++,FSkinMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
-      makeCell("OuterSkinA",System,cellIndex++,skinMat,0.0,Out);
+      makeCell("OuterSkinA",System,cellIndex++,BSkinMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
-      makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
+      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
-      makeCell("OuterSkinB",System,cellIndex++,skinMat,0.0,Out);
+      makeCell("OuterSkinB",System,cellIndex++,BSkinMat,0.0,Out);
     }
   else
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"-11 41 23 -24 25 -6 ");
-      makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
+      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,Out);
 
       Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
-      makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
+      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,Out);
     }
   
   Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -3 5 -106 ");

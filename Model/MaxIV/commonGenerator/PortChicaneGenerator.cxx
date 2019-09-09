@@ -191,6 +191,9 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"BaseThick",wallThick);
 
+  Control.addVariable(keyName+"FrontRemove",0);
+  Control.addVariable(keyName+"BackRemove",0);
+
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"PlateMat",plateMat);

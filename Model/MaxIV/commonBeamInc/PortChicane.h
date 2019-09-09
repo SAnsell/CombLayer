@@ -57,6 +57,9 @@ class PortChicane : public attachSystem::ContainedGroup,
   double baseThick;              ///< thickness of base
   double wallThick;              ///< thickness of base
 
+  bool frontRemove;              ///< Removed front plate
+  bool backRemove;               ///< Removed back plate
+  
   int plateMat;                   ///< plate material
   int skinMat;                    ///< plate skin material
   int wallMat;                    ///< wall material
