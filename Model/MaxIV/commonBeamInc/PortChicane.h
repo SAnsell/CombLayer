@@ -58,6 +58,7 @@ class PortChicane : public attachSystem::ContainedGroup,
   double wallThick;              ///< thickness of base
 
   int plateMat;                   ///< plate material
+  int skinMat;                    ///< plate skin material
   int wallMat;                    ///< wall material
 
   void populate(const FuncDataBase&);

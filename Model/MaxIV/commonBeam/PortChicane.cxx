@@ -3,7 +3,7 @@
  
  * File:   commonBeam/PortChicane.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,11 +126,10 @@ PortChicane::populate(const FuncDataBase& Control)
 
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  skinMat=ModelSupport::EvalDefMat<int>
+    (Control,keyName+"SkinMat",wallMat);
   plateMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"PlateMat",wallMat);
-
-  if (innerPlate<Geometry::zeroTol && outerPlate<Geometry::zeroTol)
-    plateMat=wallMat;
   
   return;
 }
@@ -227,22 +226,22 @@ PortChicane::createObjects(Simulation& System)
   if (wallMat!=plateMat)
     {
       Out=ModelSupport::getComposite(SMap,buildIndex,"-11 21 23 -24 25 -6 ");
-      makeCell("InnerSkinA",System,cellIndex++,wallMat,0.0,Out);
+      makeCell("InnerSkinA",System,cellIndex++,skinMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"-21 31 23 -24 25 -6 ");
       makeCell("InnerPlate",System,cellIndex++,plateMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"-31 41 23 -24 25 -6 ");
-      makeCell("InnerSkinB",System,cellIndex++,wallMat,0.0,Out);
+      makeCell("InnerSkinB",System,cellIndex++,skinMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"12 -22 23 -24 25 -6 ");
-      makeCell("OuterSkinA",System,cellIndex++,wallMat,0.0,Out);
+      makeCell("OuterSkinA",System,cellIndex++,skinMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"22 -32 23 -24 25 -6 ");
       makeCell("OuterPlate",System,cellIndex++,plateMat,0.0,Out);
       
       Out=ModelSupport::getComposite(SMap,buildIndex,"32 -42 23 -24 25 -6 ");
-      makeCell("OuterSkinB",System,cellIndex++,wallMat,0.0,Out);
+      makeCell("OuterSkinB",System,cellIndex++,skinMat,0.0,Out);
     }
   else
     {

@@ -3,7 +3,7 @@
  
  * File:   commonBeamVar/PortChicaneGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ PortChicaneGenerator::PortChicaneGenerator() :
   width(60.0),height(45.0),clearGap(8.0),downStep(12.0),
   overHang(4.0),skinThick(0.3),plateThick(1.2),
   wallThick(0.8),plateMat("Lead"),
-  wallMat("Stainless304")
+  skinMat("Stainless304"),wallMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -72,7 +72,8 @@ PortChicaneGenerator::PortChicaneGenerator() :
 PortChicaneGenerator::PortChicaneGenerator(const PortChicaneGenerator& A) : 
   width(A.width),height(A.height),clearGap(A.clearGap),
   skinThick(A.skinThick),plateThick(A.plateThick),
-  wallThick(A.wallThick),plateMat(A.plateMat),wallMat(A.wallMat)
+  wallThick(A.wallThick),plateMat(A.plateMat),
+  skinMat(A.skinMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: PortChicaneGenerator to copy
@@ -96,6 +97,7 @@ PortChicaneGenerator::operator=(const PortChicaneGenerator& A)
       plateThick=A.plateThick;
       wallThick=A.wallThick;
       plateMat=A.plateMat;
+      skinMat=A.skinMat;
       wallMat=A.wallMat;
     }
   return *this;
@@ -190,6 +192,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"BaseThick",wallThick);
 
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"PlateMat",plateMat);
 
        
