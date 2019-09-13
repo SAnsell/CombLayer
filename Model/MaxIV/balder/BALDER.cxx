@@ -238,7 +238,6 @@ BALDER::build(Simulation& System,
 
   joinPipeB->insertInCell(System,connectZone->getCell("OuterVoid",0));
 
-
   // pipe shield goes around joinPipeB:
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
@@ -259,7 +258,7 @@ BALDER::build(Simulation& System,
 			 opticsHut->getSideIndex("-exitHole"));
   
   joinPipeC->insertInCell(System,exptHut->getCell("Void"));
-  //  joinPipeC->insertInCell(System,exptHut->getCell("EnteranceHole"));
+  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
