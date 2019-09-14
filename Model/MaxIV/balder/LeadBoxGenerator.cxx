@@ -3,7 +3,7 @@
  
  * File:   balder/LeadBoxGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,8 @@ LeadBoxGenerator::LeadBoxGenerator() :
   height(8.0),depth(8.0),
   width(16.0),length(8.0),
   wallThick(0.5),portGap(0.2),
-  wallMat("Lead")
+  plateWidth(0.0),plateHeight(0.0),plateThick(0.0),
+  voidMat("Void"),wallMat("Lead")
   /*!
     Constructor and defaults
   */
@@ -86,6 +87,21 @@ LeadBoxGenerator::setMain(const double W,const double H)
   width=W;
   height=H/2.0;
   depth=H/2.0;
+  return;
+}
+
+void
+LeadBoxGenerator::setPlate(const double W,const double H,const double T)
+  /*!
+    Set extra plates [if needed]
+    \param W :: Width
+    \param H :: height+depth 
+    \param T :: plate thick
+   */
+{
+  plateWidth=W;
+  plateHeight=H;
+  plateThick=T;
   return;
 }
 				  
@@ -113,8 +129,14 @@ LeadBoxGenerator::generateBox(FuncDataBase& Control,
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"PortGap",portGap);
 
+  Control.addVariable(keyName+"PlateWidth",plateWidth);
+  Control.addVariable(keyName+"PlateHeight",plateHeight);
+  Control.addVariable(keyName+"PlateThick",plateThick);
+  
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"VoidMat","Void");
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  
        
   return;
 

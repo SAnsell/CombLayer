@@ -215,6 +215,9 @@ ConnectZone::buildObjects(Simulation& System,
   boxA->addInsertCell("BackWall",pipeA->getCell("FrontSpaceVoid"));
   boxA->setCutSurf("portCutA",FC,"pipeWall");
   boxA->setCutSurf("portCutB",*pipeA,"pipeWall");
+  boxA->setCutSurf("leadRadiusA",FC,"outerPipe");
+  boxA->setCutSurf("leadRadiusB",*pipeA,"outerPipe");
+
   boxA->createAll(System,FC,sideIndex);
 
   boxA->splitObjectAbsolute
@@ -245,8 +248,10 @@ ConnectZone::buildObjects(Simulation& System,
   pumpBoxA->addInsertCell("FrontWall",pipeA->getCell("BackSpaceVoid"));
   pumpBoxA->addInsertCell("BackWall",pipeB->getCell("FrontSpaceVoid"));
 
-  pumpBoxA->setCutSurf("portCutA",*pipeA,"pipeWall");
+  pumpBoxA->setCutSurf("portCutA",*pipeA,"pipeWall");  // lead line
   pumpBoxA->setCutSurf("portCutB",*pipeB,"pipeWall");
+  pumpBoxA->setCutSurf("leadRadiusA",*pipeA,"outerPipe");
+  pumpBoxA->setCutSurf("leadRadiusB",*pipeB,"outerPipe");
   pumpBoxA->createAll(System,*pipeA,2);    
   pumpBoxA->splitObjectAbsolute
     (System,1001,
@@ -255,9 +260,6 @@ ConnectZone::buildObjects(Simulation& System,
      {{pipeA->getLinkAxis(2),pipeB->getLinkAxis(-1)}});
 
 
-  //  pipeCell=createOuterVoidUnit(System,*pumpBoxA,-1);
-  //  pipeA->insertInCell(System,pipeCell);
-  //  int boxCell=createOuterVoidUnit(System,*pumpBoxA,2);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pumpBoxA,-1);
   pipeA->insertInCell(System,outerCell);
@@ -285,6 +287,9 @@ ConnectZone::buildObjects(Simulation& System,
   boxB->addInsertCell("BackWall",pipeC->getCell("FrontSpaceVoid"));
   boxB->setCutSurf("portCutA",*pipeB,"pipeWall");
   boxB->setCutSurf("portCutB",*pipeC,"pipeWall");
+  boxB->setCutSurf("leadRadiusA",*pipeB,"outerPipe");
+  boxB->setCutSurf("leadRadiusB",*pipeC,"outerPipe");
+  
   boxB->createAll(System,*pipeB,2);
   boxB->splitObjectAbsolute(System,1001,
 		    boxB->getCell("Void"),
@@ -313,8 +318,11 @@ ConnectZone::buildObjects(Simulation& System,
 
   pumpBoxB->addInsertCell("FrontWall",pipeC->getCell("BackSpaceVoid"));
   pumpBoxB->addInsertCell("BackWall",pipeD->getCell("FrontSpaceVoid"));
+  
   pumpBoxB->setCutSurf("portCutA",*pipeC,"pipeWall");
   pumpBoxB->setCutSurf("portCutB",*pipeD,"pipeWall");
+  pumpBoxB->setCutSurf("leadRadiusA",*pipeC,"outerPipe");
+  pumpBoxB->setCutSurf("leadRadiusB",*pipeD,"outerPipe");
   pumpBoxB->createAll(System,*pipeC,2);  
   pumpBoxB->splitObjectAbsolute
     (System,1001,
@@ -332,8 +340,14 @@ ConnectZone::buildObjects(Simulation& System,
 
   ionPumpB->delayPorts();
   ionPumpB->addAllInsertCell(pumpBoxB->getCell("Void",1));
-  ionPumpB->setFront(*pipeC,2);
-  ionPumpB->setBack(*pipeD,1);
+  // ionPumpB->setFront(*pipeC,2);
+  // ionPumpB->setBack(*pipeD,1);
+  pumpBoxB->setCutSurf("portCutA",*pipeC,"pipeWall");  // lead line
+  pumpBoxB->setCutSurf("portCutB",*pipeD,"pipeWall");
+  pumpBoxB->setCutSurf("leadRadiusA",*pipeC,"outerPipe");
+  pumpBoxB->setCutSurf("leadRadiusB",*pipeD,"outerPipe");
+
+
   ionPumpB->createAll(System,*pipeC,2);
   // ionPumpB->createPorts(System);
 
@@ -345,6 +359,9 @@ ConnectZone::buildObjects(Simulation& System,
   boxC->addInsertCell("BackWall",JPipe->getCell("FrontSpaceVoid"));
   boxC->setCutSurf("portCutA",*pipeD,"pipeWall");
   boxC->setCutSurf("portCutB",*JPipe,"pipeWall");
+  boxC->setCutSurf("leadRadiusA",*pipeD,"outerPipe");
+  boxC->setCutSurf("leadRadiusB",*JPipe,"outerPipe");
+
   boxC->createAll(System,*pipeD,2);
   boxC->splitObjectAbsolute(System,1001,
 		    boxC->getCell("Void"),

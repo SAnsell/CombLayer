@@ -59,6 +59,8 @@ class PipeShieldGenerator
   ~PipeShieldGenerator();
 
   void setPlate(const double,const double,const double);
+  void setWall(const double W,const double WT)
+     { wallThick=W; wingThick=WT; }
   void setMaterial(const std::string&,const std::string&,
 		   const std::string&);
 

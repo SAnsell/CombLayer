@@ -3,7 +3,7 @@
  
  * File:   balder/LeadBox.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -87,7 +86,7 @@ LeadBox::LeadBox(const std::string& Key) :
 			       "FrontWall","BackWall"),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
-  voidActive(1)
+  voidActive(1),plateFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -121,6 +120,10 @@ LeadBox::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portGap=Control.EvalVar<double>(keyName+"PortGap");
 
+  plateWidth=Control.EvalDefVar<double>(keyName+"PlateWidth",0.0);
+  plateHeight=Control.EvalDefVar<double>(keyName+"PlateHeight",0.0);
+  plateThick=Control.EvalDefVar<double>(keyName+"PlateThick",0.0);
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
@@ -129,7 +132,7 @@ LeadBox::populate(const FuncDataBase& Control)
 
 void
 LeadBox::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -188,6 +191,22 @@ LeadBox::createSurfaces()
 	  ELog::EM<<"Niether portCut or portCutA/portCutB set"<<ELog::endDiag;
 	}
     }
+
+  plateFlag=(plateThick>Geometry::zeroTol &&
+	     isActive("leadRadiusA") &&  isActive("leadRadiusB"));
+
+  if (plateFlag)
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+21,
+			       Origin-Y*(plateThick+wallThick+length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+22,
+			       Origin+Y*(plateThick+wallThick+length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(plateWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(plateWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*(plateHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(plateHeight/2.0),Z);
+    }
+
   return;
 }
 
@@ -203,6 +222,8 @@ LeadBox::createObjects(Simulation& System)
   const std::string excludeObj=getContainer("Main");
   const std::string portSurfA=getRuleStr("portCut")+getRuleStr("portCutA");
   const std::string portSurfB=getRuleStr("portCut")+getRuleStr("portCutB");;
+  const std::string leadRadiusA=getRuleStr("leadRadiusA");
+  const std::string leadRadiusB=getRuleStr("leadRadiusB");
 
   std::string Out;
   // Main Void
@@ -232,6 +253,28 @@ LeadBox::createObjects(Simulation& System)
 				 "11 -1  13 -14 15 -16 17 117 " );
   CellMap::makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
 
+  if (plateFlag)
+    {
+      // front plate
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,
+					"21 -11  23 -24 25 -26 " );
+      CellMap::makeCell("FrontPlate",System,cellIndex++,
+			wallMat,0.0,Out+leadRadiusA);
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex," -11 21  (-23:24:-25:26) 13 -14 15 -16 " );
+      CellMap::makeCell("FrontVoid",System,cellIndex++,0,0.0,Out);
+      // back plate
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,
+					"12 -22  23 -24 25 -26 " );
+
+      CellMap::makeCell("BackPlate",System,cellIndex++,
+			wallMat,0.0,Out+leadRadiusB);
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex," 12 -22  (-23:24:-25:26) 13 -14 15 -16 " );
+      CellMap::makeCell("BackVoid",System,cellIndex++,0,0.0,Out);
+    }
+      
+
   Out=ModelSupport::getSetComposite(SMap,buildIndex,
 				 "2 -12  13 -14 15 -16 17 217 " );
   CellMap::makeCell("BackWall",System,cellIndex++,wallMat,0.0,Out);
@@ -250,7 +293,10 @@ LeadBox::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 ");
   addOuterSurf("BackWall",Out);      
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  if (!plateFlag)
+    Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  else
+    Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 13 -14 15 -16 ");
   addOuterSurf("Main",Out);      
   return;
 }
@@ -266,10 +312,14 @@ LeadBox::createLinks()
 {
   ELog::RegMethod RegA("LeadBox","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(wallThick+length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(wallThick+length/2.0),Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  const double PT((plateFlag) ? plateThick : 0.0);
+  const int surfPlus((plateFlag) ? buildIndex+10 : buildIndex);
+
+  FixedComp::setConnect(0,Origin-Y*(PT+wallThick+length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(PT+wallThick+length/2.0),Y);
+  
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfPlus+11));
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfPlus+12));
   
 
   return;

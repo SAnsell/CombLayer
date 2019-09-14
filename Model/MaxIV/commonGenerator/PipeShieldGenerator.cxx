@@ -3,7 +3,7 @@
  
  * File:   commonBeam/PipeShieldGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,9 +143,9 @@ PipeShieldGenerator::setMaterial(const std::string& MainM,
 				  
 void
 PipeShieldGenerator::generateShield(FuncDataBase& Control,
-				const std::string& keyName,
-				const double yStep,
-				const double wingLength) const
+				    const std::string& keyName,
+				    const double yStep,
+				    const double wingLength) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 

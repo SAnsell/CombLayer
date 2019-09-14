@@ -52,11 +52,16 @@ class LeadBox :
   double width;             ///< void width [total]
   double length;            ///< void length [total]
 
-  double wallThick;
-  double portGap;          ///< Clearance to port
+  double wallThick;         ///< Wall thickness
+  double portGap;           ///< Clearance to port
+
+  bool plateFlag;           ///< True if active plate
+  double plateWidth;        ///< extra plate width on front/back
+  double plateHeight;       ///< extra plates height on front/back
+  double plateThick;        ///< extra plates on front/back
   
-  int voidMat;                ///< void material
-  int wallMat;                  ///< Fe material layer
+  int voidMat;              ///< void material
+  int wallMat;              ///< Fe material layer
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
