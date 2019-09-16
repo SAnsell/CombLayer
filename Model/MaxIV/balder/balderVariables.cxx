@@ -69,6 +69,7 @@
 #include "PortChicaneGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
+#include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
@@ -671,6 +672,7 @@ connectingVariables(FuncDataBase& Control)
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::LeadBoxGenerator LBGen;
+  setVariable::PipeShieldGenerator PSGen;
   
   PItemGen.setCF<setVariable::CF40>(3.0);
   PItemGen.setPlate(0.0,"Void");  
@@ -678,6 +680,7 @@ connectingVariables(FuncDataBase& Control)
   BellowGen.setCF<CF40>();  
   BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
 
+  LBGen.setPlate(15.0,15.0,0.6);
   LBGen.generateBox(Control,baseName+"LeadA",5.0,12.0);
     
   LeadPipeGen.setCF<CF40>();
@@ -694,7 +697,9 @@ connectingVariables(FuncDataBase& Control)
 
 
   // temp offset
+  LBGen.setPlate(15.0,15.0,0.6);
   LBGen.generateBox(Control,baseName+"PumpBoxA",5.50,12.0);
+  //  PSGen.generateShield(Control,baseName+"PumpBoxAFShield",0.0,0.0);
 
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",
 			       PTubeGen.getTotalLength(4.0),188.0);

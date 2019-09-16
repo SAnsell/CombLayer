@@ -46,8 +46,13 @@ class LeadBoxGenerator
 
   double wallThick;         ///< wall thickness
   double portGap;           ///< Clearance to port
+
+  double plateWidth; 
+  double plateHeight;
+  double plateThick; 
   
   std::string wallMat;      ///< Wall material layer
+  std::string voidMat;      ///< void material 
     
 
  public:
@@ -58,7 +63,8 @@ class LeadBoxGenerator
   ~LeadBoxGenerator();
 
   void setMain(const double,const double);
-
+  void setPlate(const double,const double,const double);
+  
   void generateBox(FuncDataBase&,const std::string&,
 		   const double,const double) const;
 

@@ -55,7 +55,6 @@ class PipeShield : public attachSystem::ContainedGroup,
   int wallMat;                   ///< wall material
   int wingMat;                   ///< Wing material
 
-
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();

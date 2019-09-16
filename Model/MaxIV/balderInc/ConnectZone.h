@@ -40,6 +40,7 @@ namespace xraySystem
 {
   class FlangeMount;
   class LeadBox;
+  class PipeShield;
   class Mirror;
   class OpticsHutch;
 
@@ -71,6 +72,8 @@ class ConnectZone :
   std::shared_ptr<constructSystem::PortTube> ionPumpA; ///< Ion pump port
   std::shared_ptr<xraySystem::LeadBox> pumpBoxA;       ///< Ion pump lead box
 
+  std::shared_ptr<xraySystem::PipeShield> pumpBoxAFShield;  ///< shield 
+  
   std::shared_ptr<constructSystem::LeadPipe> pipeB;     ///< Pipe from ion pump
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< Second bellow
   std::shared_ptr<xraySystem::LeadBox> boxB;            ///<  box protecting bellow
