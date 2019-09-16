@@ -95,7 +95,7 @@
 #include "balderOpticsBeamline.h"
 #include "ConnectZone.h"
 #include "PipeShield.h"
-#include "ExptBeamline.h"
+#include "balderExptBeamline.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -118,7 +118,7 @@ BALDER::BALDER(const std::string& KN) :
   connectZone(new ConnectZone(newName+"Connect")),
   joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
   exptHut(new ExperimentalHutch(newName+"Expt")),
-  exptBeam(new ExptBeamline(newName+"ExptLine"))
+  exptBeam(new balderExptBeamline(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname

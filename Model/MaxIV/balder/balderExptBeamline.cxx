@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/ExptBeamline.cxx
+ * File: balder/balderExptBeamline.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -63,7 +63,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -73,82 +72,114 @@
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
 
 #include "insertObject.h"
 #include "insertCylinder.h"
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "VacuumBox.h"
-#include "portItem.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-#include "PipeShield.h"
 
-#include "ExptBeamline.h"
+#include "balderExptBeamline.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-ExptBeamline::ExptBeamline(const std::string& Key) :
+balderExptBeamline::balderExptBeamline(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
-  beamStop(new insertSystem::insertCylinder(newName+"BeamStop"))
-  
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
     \param Index :: Index number
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  OR.addObject(beamStop);
-}
+{}
   
-ExptBeamline::~ExptBeamline()
+balderExptBeamline::~balderExptBeamline()
   /*!
     Destructor
    */
 {}
 
 void
-ExptBeamline::populate(const FuncDataBase& Control)
+balderExptBeamline::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: Database of variables
   */
 {
-  ELog::RegMethod RegA("ExptBeamline","populate");
+  ELog::RegMethod RegA("balderExptBeamline","populate");
   FixedOffset::populate(Control);
+
+  sampleRadius=Control.EvalDefVar<double>(keyName+"SampleRadius",0.0);
+  sampleYStep=Control.EvalDefVar<double>(keyName+"SampleYStep",0.0);
+
+  beamStopYStep=Control.EvalDefVar<double>(keyName+"BeamStopYStep",0.0);
+  beamStopThick=Control.EvalVar<double>(keyName+"BeamStopThick");
+  beamStopRadius=Control.EvalVar<double>(keyName+"BeamStopRadius");
+
+  sampleMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SampleMat",0);
+  beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
+  
+  return;
+}
+
+void
+balderExptBeamline::createSurfaces()
+  /*!
+    Build all the surfaces
+  */
+{
+  ELog::RegMethod RegA("balderExptBeamline","createSurfaces");
+
+  if (sampleRadius>Geometry::zeroTol)
+    ModelSupport::buildSphere
+      (SMap,buildIndex+7,Origin+Y*sampleYStep,sampleRadius);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+107,Origin+Y*beamStopYStep,Y,beamStopRadius);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+101,Origin+Y*(beamStopYStep-beamStopThick/2.0),Y);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+102,Origin+Y*(beamStopYStep+beamStopThick/2.0),Y);
+
   return;
 }
 
 
-
 void
-ExptBeamline::buildObjects(Simulation& System)
+balderExptBeamline::buildObjects(Simulation& System)
   /*!
-    Build all the objects relative to the main FC
-    point.
+    Build all the objects
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("ExptBeamline","buildObjects");
+  ELog::RegMethod RegA("balderExptBeamline","buildObjects");
 
-  beamStop->addInsertCell(ContainedComp::getInsertCells());
-  beamStop->createAll(System,*this,0);
+  std::string Out;
+
+  if (sampleRadius>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+      CellMap::makeCell("Sample",System,cellIndex++,sampleMat,0.0,Out);
+      addOuterSurf(Out);
+    }
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -107 ");
+  CellMap::makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,Out);
+  addOuterUnionSurf(Out);
 
 
   return;
 }
 
 void
-ExptBeamline::createLinks()
+balderExptBeamline::createLinks()
   /*!
     Create a front/back link
    */
@@ -157,7 +188,7 @@ ExptBeamline::createLinks()
 } 
   
 void 
-ExptBeamline::createAll(Simulation& System,
+balderExptBeamline::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
   /*!
@@ -168,13 +199,15 @@ ExptBeamline::createAll(Simulation& System,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("ExptBeamline","build");
+  ELog::RegMethod RControl("balderExptBeamline","build");
 
   populate(System.getDataBase());
   
   createUnitVector(FC,sideIndex);
+  createSurfaces();
   buildObjects(System);
   createLinks();
+  insertObjects(System);   
   return;
 }
 

@@ -41,7 +41,7 @@ namespace xraySystem
   class BeamMount;
   class OpticsHutch;
   class ExperimentalHutch;
-  class ExptBeamline;
+  class balderExptBeamline;
   class R3FrontEndCave;
   class R3FrontEnd;
   class ConnectZone;
@@ -102,7 +102,7 @@ class BALDER : public R3Beamline
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
 
   /// Beamline for experimental hutch
-  std::shared_ptr<ExptBeamline> exptBeam;
+  std::shared_ptr<balderExptBeamline> exptBeam;
 
   
  public:

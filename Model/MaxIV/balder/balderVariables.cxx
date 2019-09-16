@@ -796,8 +796,12 @@ BALDERvariables(FuncDataBase& Control)
   
   Control.addVariable(exptName+"BeamStopYStep",806.0);
   Control.addVariable(exptName+"BeamStopRadius",10.0);
-  Control.addVariable(exptName+"BeamStopLength",5.0);
-  Control.addVariable(exptName+"BeamStopDefMat","Stainless304");
+  Control.addVariable(exptName+"BeamStopThick",5.0);
+  Control.addVariable(exptName+"BeamStopMat","Stainless304");
+  
+  Control.addVariable(exptName+"SampleYStep",406.0);
+  Control.addVariable(exptName+"SampleRadius",10.0);
+  Control.addVariable(exptName+"SampleMat","Copper");
 
   return;
 }
