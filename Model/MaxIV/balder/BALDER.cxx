@@ -263,8 +263,6 @@ BALDER::build(Simulation& System,
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
 
-
-
   return;
 }
 

@@ -67,7 +67,6 @@
 #include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
 #include "PortChicaneGenerator.h"
-#include "MazeGenerator.h"
 #include "RingDoorGenerator.h"
 #include "LeadBoxGenerator.h"
 #include "WallLeadGenerator.h"
@@ -778,7 +777,7 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderExptOuterThick",0.3);
   Control.addVariable("BalderExptFloorThick",50.0);
 
-  Control.addVariable("BalderExptVoidMat","Void");
+  Control.addVariable("BalderExptVoidMat","Air");
   Control.addVariable("BalderExptSkinMat","Stainless304");
   Control.addVariable("BalderExptPbMat","Lead");
   Control.addVariable("BalderExptFloorMat","Concrete");
@@ -789,10 +788,11 @@ BALDERvariables(FuncDataBase& Control)
   Control.addVariable("BalderExptHoleMat","Lead");
 
   const std::string exptName="BalderExptLine";
-  Control.addVariable(exptName+"BeamStopYStep",800.0);
-  Control.addVariable(exptName+"BeamStopRadius",4.0);
-  Control.addVariable(exptName+"BeamStopLength",2.0);
-  Control.addVariable(exptName+"BeamStopDefMat","Copper");
+  
+  Control.addVariable(exptName+"BeamStopYStep",806.0);
+  Control.addVariable(exptName+"BeamStopRadius",10.0);
+  Control.addVariable(exptName+"BeamStopLength",5.0);
+  Control.addVariable(exptName+"BeamStopDefMat","Stainless304");
 
   return;
 }
