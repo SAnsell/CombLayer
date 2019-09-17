@@ -22,23 +22,6 @@
 #ifndef xraySystem_SOFTIMAX_h
 #define xraySystem_SOFTIMAX_h
 
-namespace constructSystem
-{
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
-  class Bellows;
-  class LeadPipe;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
-  class GateValveCube;
-  class JawValveCube;
-  class JawFlange;
-}
-
-
-
 /*!
   \namespace xraySystem
   \brief General xray optics system
@@ -49,12 +32,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class balderOpticsHutch;
-  class ExperimentalHutch;
   class softimaxFrontEnd;
-  class FrontEndCave;
-  class ConnectZone;
-  class PipeShield;
   
   /*!
     \class SOFTIMAX
@@ -67,8 +45,8 @@ namespace xraySystem
   class SOFTIMAX : public R3Beamline
   {
   private:
-  /// the components in the front end
-  std::shared_ptr<softimaxFrontEnd> frontBeam;
+    /// the components in the front end
+    std::shared_ptr<xraySystem::softimaxFrontEnd> frontBeam;
 
   public:
   
