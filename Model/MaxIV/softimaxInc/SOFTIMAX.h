@@ -53,6 +53,8 @@ namespace xraySystem
   private:
     /// the components in the front end
     std::shared_ptr<xraySystem::softimaxFrontEnd> frontBeam;
+    /// lead in beam wall
+    std::shared_ptr<WallLead> wallLead;
     /// Optics hutch
     std::shared_ptr<balderOpticsHutch> opticsHut;
     /// Pipe joining frontend to optics hut

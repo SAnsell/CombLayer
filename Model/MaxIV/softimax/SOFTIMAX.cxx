@@ -101,6 +101,7 @@ namespace xraySystem
   SOFTIMAX::SOFTIMAX(const std::string& KN) :
     R3Beamline("Balder",KN),
     frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
+    wallLead(new WallLead(newName+"WallLead")),
     opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
     joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe"))
     /*!
@@ -112,6 +113,7 @@ namespace xraySystem
       ModelSupport::objectRegister::Instance();
 
     OR.addObject(frontBeam);
+    OR.addObject(wallLead);
     OR.addObject(opticsHut);
     OR.addObject(joinPipe);
 
@@ -150,6 +152,11 @@ namespace xraySystem
     frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
     frontBeam->createAll(System,FCOrigin,sideIndex);
 
+    wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
+    wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
+    wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
+    wallLead->createAll(System,FCOrigin,sideIndex);
+
     if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
     opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
@@ -172,7 +179,7 @@ namespace xraySystem
   if (stopPoint=="opticsHut") return;
 
   joinPipe->addInsertCell(frontBeam->getCell("MasterVoid"));
-  //  joinPipe->addInsertCell(wallLead->getCell("Void"));
+  joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
 
