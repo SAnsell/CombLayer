@@ -22,6 +22,11 @@
 #ifndef xraySystem_SOFTIMAX_h
 #define xraySystem_SOFTIMAX_h
 
+namespace constructSystem
+{
+  class VacuumPipe;
+}
+
 /*!
   \namespace xraySystem
   \brief General xray optics system
@@ -33,13 +38,14 @@
 namespace xraySystem
 {
   class softimaxFrontEnd;
+  class balderOpticsHutch;
   
   /*!
     \class SOFTIMAX
     \version 1.0
-    \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
+    \author K. Batkov
+    \date September 2019
+    \brief SoftiMAX beam line
   */
 
   class SOFTIMAX : public R3Beamline
@@ -47,6 +53,10 @@ namespace xraySystem
   private:
     /// the components in the front end
     std::shared_ptr<xraySystem::softimaxFrontEnd> frontBeam;
+    /// Optics hutch
+    std::shared_ptr<balderOpticsHutch> opticsHut;
+    /// Pipe joining frontend to optics hut
+    std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   public:
   
