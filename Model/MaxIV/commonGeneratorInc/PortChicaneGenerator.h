@@ -68,6 +68,9 @@ class PortChicaneGenerator
 
   void generatePortChicane(FuncDataBase&,const std::string&,
 			   const double,const double) const;
+  void generatePortChicane(FuncDataBase&,const std::string&,
+			   const std::string&,const double,
+			   const double) const;
 
 };
 

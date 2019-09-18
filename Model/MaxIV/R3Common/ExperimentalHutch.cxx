@@ -172,9 +172,12 @@ ExperimentalHutch::createSurfaces()
   SurfMap::setSurf("innerBack",-SMap.realSurf(buildIndex+2));
 
   if (innerOutVoid>Geometry::zeroTol)
-    ModelSupport::buildPlane
-      (SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
-
+    {
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid),X);  
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1004,Origin+X*(ringWidth-innerOutVoid),X);  
+    }
 
   // Walls
   double extraThick(0.0);
@@ -198,10 +201,14 @@ ExperimentalHutch::createSurfaces()
   HI-=10;
   SurfMap::setSurf("outerBack",SMap.realSurf(HI+2));
   if (outerOutVoid>Geometry::zeroTol)
-    ModelSupport::buildPlane
-      (SMap,buildIndex+1033,
-       Origin-X*(outWidth+extraThick+outerOutVoid),X);  
-
+    {
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1033,
+	 Origin-X*(outWidth+extraThick+outerOutVoid),X);
+      ModelSupport::buildPlane
+	(SMap,buildIndex+1034,
+	 Origin+X*(ringWidth+extraThick+outerOutVoid),X);
+    }      
   
   if (holeRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
@@ -229,8 +236,14 @@ ExperimentalHutch::createObjects(Simulation& System)
   if (innerOutVoid>Geometry::zeroTol)
     {
       Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 3 -1003 -6 ");
-      makeCell("WallVoid",System,cellIndex++,voidMat,0.0,Out+floor+frontWall);
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -4 -6 ");
+      makeCell("LeftWallVoid",System,cellIndex++,voidMat,0.0,
+	       Out+floor+frontWall);
+
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1004 -4 -6 ");
+      makeCell("RightWallVoid",System,cellIndex++,voidMat,0.0,
+	       Out+floor+frontWall);
+
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 1003 -1004 -6 ");
       makeCell("Void",System,cellIndex++,voidMat,0.0,Out+floor+frontWall);
     }
   else
@@ -248,12 +261,12 @@ ExperimentalHutch::createObjects(Simulation& System)
       const int mat=matList.front();
       matList.pop_front();
       Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2 -3M 13M -6 ");
-      makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor+frontWall);
-
-      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,
-					"1 -2  4M -14M -6 ");
-      makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out+floor+frontWall);
+      makeCell(layer+"LeftWall",System,cellIndex++,mat,0.0,
+	       Out+floor+frontWall);
       
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,HI,"1 -2  4M -14M -6 ");
+      makeCell(layer+"RightWall",System,cellIndex++,mat,0.0
+	       ,Out+floor+frontWall);
       //back wall
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI,"2M -12M 33 -34 -6 ");
@@ -286,9 +299,12 @@ ExperimentalHutch::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite
 	(SMap,buildIndex,HI," 1M -2M 1033 -3M -6M ");
       makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,Out+floor+frontWall);
+      Out=ModelSupport::getSetComposite
+	(SMap,buildIndex,HI," 1M -2M 4M -1034 -6M ");
+      makeCell("OuterRightVoid",System,cellIndex++,0,0.0,Out+floor+frontWall);
 
       Out=ModelSupport::getSetComposite
-	(SMap,buildIndex,HI," 1M -2M 1033 -4M -6M ");
+	(SMap,buildIndex,HI," 1M -2M 1033 -1034 -6M ");
     }
   else
     {
@@ -323,7 +339,7 @@ ExperimentalHutch::createLinks()
   setLinkSurf(3,-SMap.realSurf(buildIndex+33));
   nameSideIndex(3,"leftWall");
   // outer surf
-  setConnect(4,Origin-X*(extraWall+ringWidth)+Y*(length/2.0),X);
+  setConnect(4,Origin+X*(extraWall+ringWidth)+Y*(length/2.0),X);
   setLinkSurf(4,SMap.realSurf(buildIndex+34));
   nameSideIndex(4,"rightWall");
 
@@ -344,7 +360,7 @@ ExperimentalHutch::createLinks()
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
   nameSideIndex(13,"innerLeftWall");
 
-  setConnect(14,Origin-X*ringWidth+Y*(length/2.0),-X);
+  setConnect(14,Origin+X*ringWidth+Y*(length/2.0),-X);
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
   nameSideIndex(14,"innerRightWall");
 
@@ -372,20 +388,40 @@ ExperimentalHutch::createChicane(Simulation& System)
   for(size_t i=0;i<NChicane;i++)
     {
       const std::string NStr(std::to_string(i));
+      const std::string unitName(keyName+"Chicane"+NStr);
       std::shared_ptr<PortChicane> PItem=
-	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
-
+	std::make_shared<PortChicane>(unitName);
+      
       OR.addObject(PItem);
-      PItem->addInsertCell("Main",getCell("WallVoid"));
-      PItem->addInsertCell("Inner",getCell("InnerWall",0));
-      PItem->addInsertCell("Inner",getCell("LeadWall",0));
-      PItem->addInsertCell("Inner",getCell("OuterWall",0));
+      const std::string wallName=
+	Control.EvalDefVar<std::string>(unitName+"Wall","Left");
+      if (wallName!="Left" && wallName!="Right")
+	throw ColErr::InContainerError<std::string>(wallName,"Side not valid");
+      
       // set surfaces:
+      if (wallName=="Left")
+	{
+	  PItem->addInsertCell("Inner",getCell("InnerLeftWall"));
+	  PItem->addInsertCell("Inner",getCell("LeadLeftWall"));
+	  PItem->addInsertCell("Inner",getCell("OuterLeftWall"));
+	  PItem->addInsertCell("Main",getCell("LeftWallVoid"));
+	  PItem->setCutSurf("innerWall",*this,"innerLeftWall");
+	  PItem->setCutSurf("outerWall",*this,"leftWall");      
+	  PItem->createAll(System,*this,getSideIndex("leftWall"));
+	  PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
+	}
+      else if (wallName=="Right")
+	{
+	  PItem->addInsertCell("Inner",getCell("InnerRightWall"));
+	  PItem->addInsertCell("Inner",getCell("LeadRightWall"));
+	  PItem->addInsertCell("Inner",getCell("OuterRightWall"));
+	  PItem->addInsertCell("Main",getCell("RightWallVoid"));
+	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
+	  PItem->setCutSurf("outerWall",*this,"rightWall");      
+	  PItem->createAll(System,*this,getSideIndex("rightWall"));
+	  PItem->addInsertCell("Main",getCell("OuterRightVoid",0));
+	}
 
-      PItem->setCutSurf("innerWall",*this,"innerLeftWall");
-      PItem->setCutSurf("outerWall",*this,"leftWall");      
-      PItem->createAll(System,*this,getSideIndex("leftWall"));
-      PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
 
       PItem->insertObjects(System);
       PChicane.push_back(PItem);

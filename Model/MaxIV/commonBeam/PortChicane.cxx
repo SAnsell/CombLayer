@@ -161,6 +161,7 @@ PortChicane::createSurfaces()
 {
   ELog::RegMethod RegA("PortChicane","createSurface");
 
+  ELog::EM<<"Key == "<<keyName<<" "<<X<<ELog::endDiag;
   ExternalCut::makeShiftedSurf
     (SMap,"innerWall",buildIndex+11,-1,X,clearGap);
   ExternalCut::makeShiftedSurf

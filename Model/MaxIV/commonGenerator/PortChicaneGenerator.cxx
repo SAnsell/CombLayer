@@ -170,8 +170,30 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
     \param zStep :: Step up/down fixed centre point
   */
 {
+  ELog::RegMethod RegA("PortChicaneGenerator","generatePortChicane(defWall)");
+
+  generatePortChicane(Control,keyName,"Left",xStep,zStep);
+  return;
+}
+
+void
+PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
+					  const std::string& keyName,
+					  const std::string& wallName,
+					  const double xStep,
+					  const double zStep) const
+/*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+    \param wallName :: Wall name Left/Right/Roof etc
+    \param xStep :: Step left/right fixed centre point
+    \param zStep :: Step up/down fixed centre point
+  */
+{
   ELog::RegMethod RegA("PortChicaneGenerator","generatePortChicane");
-  
+
+  Control.addVariable(keyName+"Wall",wallName);
   Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"YStep",0.0);
   Control.addVariable(keyName+"ZStep",zStep);

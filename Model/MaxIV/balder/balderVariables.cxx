@@ -274,9 +274,14 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"HoleMat","Lead");
 
 
-  Control.addVariable(hutName+"NChicane",1);
+  Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
-  PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",270.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",170.0,-25.0);
+  PGen.setSize(4.0,40.0,30.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-70.0,-25.0);
+  PGen.setSize(4.0,30.0,90.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3","Right",70.0,15.0);
   /*
   PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
