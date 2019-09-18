@@ -19,77 +19,77 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
   *
   ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
-#include <list>
+// #include <fstream>
+// #include <iomanip>
+// #include <iostream>
+// #include <sstream>
+// #include <cmath>
+// #include <complex>
+// #include <list>
 #include <vector>
 #include <set>
 #include <map>
-#include <string>
-#include <algorithm>
-#include <iterator>
+// #include <string>
+// #include <algorithm>
+// #include <iterator>
 #include <memory>
 
-#include "Exception.h"
-#include "FileReport.h"
+// #include "Exception.h"
+// #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
-#include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+// #include "GTKreport.h"
+// #include "OutputLog.h"
+// #include "BaseVisit.h"
+// #include "BaseModVisit.h"
+// #include "MatrixBase.h"
+// #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
+// #include "inputParam.h"
+// #include "Surface.h"
+// #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
+// #include "Rules.h"
+// #include "Code.h"
+// #include "varList.h"
+// #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
+// #include "Object.h"
+// #include "groupRange.h"
+// #include "objectGroups.h"
+// #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedGroup.h"
-#include "FixedOffsetGroup.h"
+// #include "FixedGroup.h"
+// #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
+// #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "World.h"
-#include "AttachSupport.h"
+// #include "World.h"
+// #include "AttachSupport.h"
 #include "InnerZone.h"
 
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "LeadPipe.h"
+// #include "SplitFlangePipe.h"
+// #include "Bellows.h"
+// #include "LeadPipe.h"
 
 #include "balderOpticsHutch.h"
-#include "ExperimentalHutch.h"
-#include "JawFlange.h"
-#include "FlangeMount.h"
+// #include "ExperimentalHutch.h"
+// #include "JawFlange.h"
+// #include "FlangeMount.h"
 #include "R3FrontEnd.h"
 #include "softimaxFrontEnd.h"
 
-#include "ConnectZone.h"
-#include "PipeShield.h"
+// #include "ConnectZone.h"
+// #include "PipeShield.h"
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3Beamline.h"

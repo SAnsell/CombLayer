@@ -19,33 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
+// #include <fstream>
 #include <iomanip>
-#include <iostream>
-#include <sstream>
+// #include <iostream>
+// #include <sstream>
 #include <cmath>
-#include <complex>
-#include <list>
+// #include <complex>
+// #include <list>
 #include <vector>
 #include <set>
 #include <map>
-#include <string>
-#include <algorithm>
+// #include <string>
+// #include <algorithm>
 
-#include "Exception.h"
-#include "FileReport.h"
+// #include "Exception.h"
+// #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
-#include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+// #include "GTKreport.h"
+// #include "OutputLog.h"
+// #include "support.h"
+// #include "MatrixBase.h"
+// #include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
+// #include "variableSetup.h"
 #include "maxivVariables.h"
 
 #include "CFFlanges.h"
@@ -68,16 +68,16 @@
 #include "MirrorGenerator.h"
 #include "CollGenerator.h"
 #include "JawFlangeGenerator.h"
-#include "MazeGenerator.h"
-#include "RingDoorGenerator.h"
+// #include "MazeGenerator.h"
+// #include "RingDoorGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
 
-#include "PreDipoleGenerator.h"
-#include "DipoleChamberGenerator.h"
+// #include "PreDipoleGenerator.h"
+// #include "DipoleChamberGenerator.h"
 
-#include "R3ChokeChamberGenerator.h"
+// #include "R3ChokeChamberGenerator.h"
 #include "DiffPumpGenerator.h"
 
 namespace setVariable
