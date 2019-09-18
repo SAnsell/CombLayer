@@ -227,7 +227,10 @@ BALDER::build(Simulation& System,
   //  exptHut->addInsertCell(voidCell);
 
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+
+  exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
   
   connectZone->registerJoinPipe(joinPipeC);

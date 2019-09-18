@@ -237,7 +237,6 @@ Sexupole::createObjects(Simulation& System)
   ELog::RegMethod RegA("Sexupole","createObjects");
 
   std::string Out;
-
   
   std::string unitStr=" 1M -2M ";
   unitStr+=ModelSupport::getSeqIntersection
@@ -245,7 +244,7 @@ Sexupole::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,unitStr);
   addOuterSurf(Out);
 
-  unitStr=ModelSupport::getSeqUnion(1,2*NPole,1);
+  unitStr=ModelSupport::getSeqUnion(1,static_cast<int>(2*NPole),1);
   Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
 
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);

@@ -26,6 +26,7 @@ class Simulation;
 
 namespace xraySystem
 {
+  class PortChicane;
   
 /*!
   \class ExperimentalHutch
@@ -57,6 +58,9 @@ class ExperimentalHutch :
   double outerThick;            ///< Outer wall/roof skin
   double floorThick;            ///< Floor thickness
 
+  double innerOutVoid;          ///< Extension for inner void space
+  double outerOutVoid;          ///< Extension for outer void space 
+
   double holeXStep;            ///< Hole XStep [front wall]
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
@@ -67,12 +71,17 @@ class ExperimentalHutch :
   int pbMat;                  ///< pb layer material for walls
   int holeMat;                ///< Hole material [void/lead]
   int floorMat;               ///< Floor layer
+
+  /// Chicanes 
+  std::vector<std::shared_ptr<PortChicane>> PChicane;  
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
+  void createChicane(Simulation&);
 
  public:
 

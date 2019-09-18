@@ -84,6 +84,7 @@ void wigglerVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
+void exptHutVariables(FuncDataBase&,const std::string&);
   
 
 void
@@ -237,6 +238,54 @@ opticsHutVariables(FuncDataBase& Control,
   return;
 }
 
+void
+exptHutVariables(FuncDataBase& Control,
+		 const std::string& hutName)
+/*!
+    Optics hut variables
+    \param Control :: DataBase to add
+    \param hutName :: Expt hut name
+  */
+{
+  ELog::RegMethod RegA("balderVariables","opticsHutVariables");
+
+  Control.addVariable(hutName+"YStep",1850.0);
+  Control.addVariable(hutName+"Depth",120.0);
+  Control.addVariable(hutName+"Height",200.0);
+  Control.addVariable(hutName+"Length",858.4);
+  Control.addVariable(hutName+"OutWidth",198.50);
+  Control.addVariable(hutName+"RingWidth",248.6);
+  Control.addVariable(hutName+"InnerThick",0.3);
+  Control.addVariable(hutName+"PbThick",0.5);
+  Control.addVariable(hutName+"OuterThick",0.3);
+  Control.addVariable(hutName+"FloorThick",50.0);
+
+  Control.addVariable(hutName+"InnerOutVoid",10.0);
+  Control.addVariable(hutName+"OuterOutVoid",10.0);
+
+  Control.addVariable(hutName+"VoidMat","Air");
+  Control.addVariable(hutName+"SkinMat","Stainless304");
+  Control.addVariable(hutName+"PbMat","Lead");
+  Control.addVariable(hutName+"FloorMat","Concrete");
+
+  Control.addVariable(hutName+"HoleXStep",0.0);
+  Control.addVariable(hutName+"HoleZStep",5.0);
+  Control.addVariable(hutName+"HoleRadius",7.0);
+  Control.addVariable(hutName+"HoleMat","Lead");
+
+
+  Control.addVariable(hutName+"NChicane",1);
+  PortChicaneGenerator PGen;
+  PGen.generatePortChicane(Control,hutName+"Chicane0",270.0,-25.0);
+  /*
+  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
+  */
+
+  return;
+}
+  
 void
 monoShutterVariables(FuncDataBase& Control,
 		     const std::string& preName)
@@ -770,27 +819,8 @@ BALDERvariables(FuncDataBase& Control)
   // note bellow skip
   LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",10.0,80.0);
 
-  
-  Control.addVariable("BalderExptYStep",1850.0);
-  Control.addVariable("BalderExptDepth",120.0);
-  Control.addVariable("BalderExptHeight",200.0);
-  Control.addVariable("BalderExptLength",858.4);
-  Control.addVariable("BalderExptOutWidth",198.50);
-  Control.addVariable("BalderExptRingWidth",248.6);
-  Control.addVariable("BalderExptInnerThick",0.3);
-  Control.addVariable("BalderExptPbThick",0.5);
-  Control.addVariable("BalderExptOuterThick",0.3);
-  Control.addVariable("BalderExptFloorThick",50.0);
 
-  Control.addVariable("BalderExptVoidMat","Air");
-  Control.addVariable("BalderExptSkinMat","Stainless304");
-  Control.addVariable("BalderExptPbMat","Lead");
-  Control.addVariable("BalderExptFloorMat","Concrete");
-
-  Control.addVariable("BalderExptHoleXStep",0.0);
-  Control.addVariable("BalderExptHoleZStep",5.0);
-  Control.addVariable("BalderExptHoleRadius",7.0);
-  Control.addVariable("BalderExptHoleMat","Lead");
+  balderVar::exptHutVariables(Control,"BalderExpt");
 
   const std::string exptName="BalderExptLine";
   

@@ -218,8 +218,7 @@ balderOpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("balderOpticsHutch","createUnitVector");
 
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
+  FixedOffset::createUnitVector(FC,sideIndex);
 
   // shift forward for back wall
   Origin+=Y*(outerThick+innerThick+pbFrontThick);
@@ -344,9 +343,10 @@ balderOpticsHutch::createObjects(Simulation& System)
   ELog::RegMethod RegA("balderOpticsHutch","createObjects");
 
   // ring wall
-  const std::string sideWall=ExternalCut::getRuleStr("SideWall");
+  const std::string sideWall=ExternalCut::getRuleStr("SideWall"); 
   const std::string innerSideWall=
     ExternalCut::getComplementStr("InnerSideWall");
+ 
   const std::string floor=ExternalCut::getRuleStr("Floor");
   const std::string frontWall=ExternalCut::getRuleStr("RingWall");
   
@@ -440,7 +440,7 @@ balderOpticsHutch::createObjects(Simulation& System)
       (SMap,buildIndex,HI," -2M 3M (-4M:-104M) -6M ");
       
 
-  
+  // dont need floor ??
   addOuterSurf(Out+floor+frontWall);      
 
   return;
