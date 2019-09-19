@@ -569,8 +569,11 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"InitBellow",0,6.0);
 
+  // TODO:
+  // use PortTubeGenerator instead
+  // and set FlangeLength to 1.27 cm (instead of 0.5)
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setPorts(-9.0,-9.0);     // len of ports (after main)
+  CrossGen.setPorts(-9.7,-9.7);     // len of ports - measured in the STEP file
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,preName+"TriggerPipe",0.0,15.0,15.0);  // ystep/height/depth
   
