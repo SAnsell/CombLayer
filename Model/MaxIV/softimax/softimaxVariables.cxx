@@ -582,147 +582,147 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
 
-  GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+  // GateGen.setLength(2.5);
+  // GateGen.setCF<setVariable::CF40>();
+  // GateGen.generateValve(Control,preName+"GateA",0.0,0);
   
-  BremGen.setCF<CF63>();
-  BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
+  // BremGen.setCF<CF63>();
+  // BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
 
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF63>();
-  PTubeGen.setBPortCF<CF40>();
-  PTubeGen.setPortLength(-6.0,-5.0);
-  // ystep/radius length
-  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
-  Control.addVariable(preName+"FilterBoxANPorts",4);
+  // PTubeGen.setMat("Stainless304");
+  // PTubeGen.setCF<CF63>();
+  // PTubeGen.setBPortCF<CF40>();
+  // PTubeGen.setPortLength(-6.0,-5.0);
+  // // ystep/radius length
+  // PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
+  // Control.addVariable(preName+"FilterBoxANPorts",4);
   
-  PItemGen.setCF<setVariable::CF40>(4.0);
-  // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
-  Geometry::Vec3D PPos(0,3.5,0);
-  const Geometry::Vec3D XVec(-1,0,0);
-  const std::string portName=preName+"FilterBoxAPort";
-  PItemGen.generatePort(Control,portName+"0",PPos,XVec);
-  PItemGen.generatePort(Control,portName+"1",-PPos,XVec);
+  // PItemGen.setCF<setVariable::CF40>(4.0);
+  // // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
+  // Geometry::Vec3D PPos(0,3.5,0);
+  // const Geometry::Vec3D XVec(-1,0,0);
+  // const std::string portName=preName+"FilterBoxAPort";
+  // PItemGen.generatePort(Control,portName+"0",PPos,XVec);
+  // PItemGen.generatePort(Control,portName+"1",-PPos,XVec);
 
-  // ion pump port
-  PItemGen.setCF<setVariable::CF100>(7.5);
-  PItemGen.generatePort(Control,portName+"2",
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(0,0,-1));
-  // Main flange for diamond filter
-  PItemGen.setCF<setVariable::CF63>(5.0);
-  PItemGen.generatePort(Control,portName+"3",
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(0,0,1));
+  // // ion pump port
+  // PItemGen.setCF<setVariable::CF100>(7.5);
+  // PItemGen.generatePort(Control,portName+"2",
+  // 			Geometry::Vec3D(0,0,0),
+  // 			Geometry::Vec3D(0,0,-1));
+  // // Main flange for diamond filter
+  // PItemGen.setCF<setVariable::CF63>(5.0);
+  // PItemGen.generatePort(Control,portName+"3",
+  // 			Geometry::Vec3D(0,0,0),
+  // 			Geometry::Vec3D(0,0,1));
 
-  FlangeGen.setCF<setVariable::CF63>();
-  FlangeGen.setPlate(0.0,0.0,"Void");
-  FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite",1);
-  FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
+  // FlangeGen.setCF<setVariable::CF63>();
+  // FlangeGen.setPlate(0.0,0.0,"Void");
+  // FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite",1);
+  // FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
 
-  GateGen.setLength(2.5);
-  GateGen.setCF<setVariable::CF40>();
-  GateGen.generateValve(Control,preName+"GateB",0.0,0);
+  // GateGen.setLength(2.5);
+  // GateGen.setCF<setVariable::CF40>();
+  // GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
+  // BellowGen.setCF<setVariable::CF40>();
+  // BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
 
-  SimpleTubeGen.setCF<CF40>();
-  SimpleTubeGen.setBFlangeCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
-  Control.addVariable(preName+"ScreenPipeANPorts",1);
-  PItemGen.setCF<setVariable::CF40>(4.0);
-  PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+  // SimpleTubeGen.setCF<CF40>();
+  // SimpleTubeGen.setBFlangeCF<CF63>();
+  // SimpleTubeGen.generateTube(Control,preName+"ScreenPipeA",0.0,12.5);
+  // Control.addVariable(preName+"ScreenPipeANPorts",1);
+  // PItemGen.setCF<setVariable::CF40>(4.0);
+  // PItemGen.generatePort(Control,preName+"ScreenPipeAPort0",
+  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
 
   
-  SimpleTubeGen.setCF<CF63>();
-  SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
-  Control.addVariable(preName+"ScreenPipeBNPorts",2);
-  PItemGen.setCF<setVariable::CF63>(4.0);
-  PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,preName+"ScreenPipeBPort0",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0));
-  PItemGen.generatePort(Control,preName+"ScreenPipeBPort1",
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+  // SimpleTubeGen.setCF<CF63>();
+  // SimpleTubeGen.generateTube(Control,preName+"ScreenPipeB",0.0,14.0);
+  // Control.addVariable(preName+"ScreenPipeBNPorts",2);
+  // PItemGen.setCF<setVariable::CF63>(4.0);
+  // PItemGen.setOuterVoid(0);
+  // PItemGen.generatePort(Control,preName+"ScreenPipeBPort0",
+  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0));
+  // PItemGen.generatePort(Control,preName+"ScreenPipeBPort1",
+  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
 
 
-  // Now add addaptor pipe:
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,preName+"AdaptorPlateA",0.0,6.0);
+  // // Now add addaptor pipe:
+  // PipeGen.setMat("Stainless304");
+  // PipeGen.setCF<CF63>();
+  // PipeGen.setBFlangeCF<CF150>();
+  // PipeGen.generatePipe(Control,preName+"AdaptorPlateA",0.0,6.0);
 
-  // length
-  DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);
+  // // length
+  // DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);
   
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF63>();
-  VBoxGen.setPortLength(2.5,2.5); // La/Lb
-  // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,preName+"PrimeJawBox",
-		      0.0,30.0,15.0,15.0,53.15);
+  // VBoxGen.setMat("Stainless304");
+  // VBoxGen.setWallThick(1.0);
+  // VBoxGen.setCF<CF63>();
+  // VBoxGen.setPortLength(2.5,2.5); // La/Lb
+  // // ystep/width/height/depth/length
+  // VBoxGen.generateBox(Control,preName+"PrimeJawBox",
+  // 		      0.0,30.0,15.0,15.0,53.15);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.setBFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
+  // BellowGen.setCF<setVariable::CF40>();
+  // BellowGen.setAFlangeCF<setVariable::CF63>();
+  // BellowGen.setBFlangeCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowC",0,12.0);
   
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateC",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
-  softimaxVar::monoVariables(Control);
+  // softimaxVar::monoVariables(Control);
 
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateD",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
+  // BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowD",0,18.0);
 
-  softimaxVar::diagUnit(Control,preName+"DiagBoxA");
-  BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
+  // softimaxVar::diagUnit(Control,preName+"DiagBoxA");
+  // BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
+  // BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateE",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateE",0.0,0);
 
-  softimaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
+  // softimaxVar::mirrorBox(Control,preName,"A","Horrizontal",-0.2,0.0);
 
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateF",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateF",0.0,0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+  // BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
 
-  softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
+  // softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
+  // BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowG",0,12.0);
 
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateG",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateG",0.0,0);
 
-  softimaxVar::mirrorBox(Control,preName,"B","Vertial",-0.2,0);
+  // softimaxVar::mirrorBox(Control,preName,"B","Vertial",-0.2,0);
 
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateH",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateH",0.0,0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
+  // BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowH",0,18.0);
 
-  softimaxVar::diagUnit2(Control,preName+"DiagBoxC");
+  // softimaxVar::diagUnit2(Control,preName+"DiagBoxC");
 
-  GateGen.setCF<setVariable::CF63>();
-  GateGen.generateValve(Control,preName+"GateI",0.0,0);
+  // GateGen.setCF<setVariable::CF63>();
+  // GateGen.generateValve(Control,preName+"GateI",0.0,0);
   
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
+  // BellowGen.setCF<setVariable::CF63>();
+  // BellowGen.generateBellow(Control,preName+"BellowI",0,18.0);
 
-  softimaxVar::monoShutterVariables(Control,preName);
+  // softimaxVar::monoShutterVariables(Control,preName);
   
   return;
 }
