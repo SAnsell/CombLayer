@@ -39,6 +39,7 @@ namespace xraySystem
 {
   class softimaxFrontEnd;
   class balderOpticsHutch;
+  class softimaxOpticsLine;
   
   /*!
     \class SOFTIMAX
@@ -59,6 +60,8 @@ namespace xraySystem
     std::shared_ptr<balderOpticsHutch> opticsHut;
     /// Pipe joining frontend to optics hut
     std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
+    /// Optics beamlines
+    std::shared_ptr<softimaxOpticsLine> opticsBeam;
 
   public:
   

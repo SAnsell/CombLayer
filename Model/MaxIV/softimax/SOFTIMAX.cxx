@@ -62,8 +62,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-// #include "FixedGroup.h"
-// #include "FixedOffsetGroup.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 // #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -83,10 +83,11 @@
 
 #include "balderOpticsHutch.h"
 // #include "ExperimentalHutch.h"
-// #include "JawFlange.h"
+#include "JawFlange.h"
 // #include "FlangeMount.h"
 #include "R3FrontEnd.h"
 #include "softimaxFrontEnd.h"
+#include "softimaxOpticsLine.h"
 
 // #include "ConnectZone.h"
 // #include "PipeShield.h"
@@ -103,7 +104,8 @@ namespace xraySystem
     frontBeam(new softimaxFrontEnd(newName+"FrontBeam")),
     wallLead(new WallLead(newName+"WallLead")),
     opticsHut(new balderOpticsHutch(newName+"OpticsHut")),
-    joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe"))
+    joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
+    opticsBeam(new softimaxOpticsLine(newName+"OpticsLine"))
     /*!
       Constructor
       \param KN :: Keyname
@@ -116,6 +118,7 @@ namespace xraySystem
     OR.addObject(wallLead);
     OR.addObject(opticsHut);
     OR.addObject(joinPipe);
+    OR.addObject(opticsBeam);
 
   }
 
@@ -182,6 +185,17 @@ namespace xraySystem
   joinPipe->addInsertCell(wallLead->getCell("Void"));
   joinPipe->addInsertCell(opticsHut->getCell("Inlet"));
   joinPipe->createAll(System,*frontBeam,2);
+
+  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->setCutSurf("front",*opticsHut,
+			 opticsHut->getSideIndex("innerFront"));
+
+  opticsBeam->setCutSurf("back",*opticsHut,
+			 opticsHut->getSideIndex("innerBack"));
+  opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->createAll(System,*joinPipe,2);
+
+  joinPipe->insertInCell(System,opticsBeam->getCell("OuterVoid",0));
 
   return;
   }
