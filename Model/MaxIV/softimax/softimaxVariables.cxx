@@ -102,7 +102,7 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double L(210.0+97);
+  const double L(210.0+97+100);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
@@ -115,7 +115,7 @@ undulatorVariables(FuncDataBase& Control,
 
   // undulator I Vacuum
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
-  Control.addVariable(undKey+"UndulatorLength",203.0+97);  // 300 SA - check
+  Control.addVariable(undKey+"UndulatorLength",203.0+97+100);  // 300 SA - check
   Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
   Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
   Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
@@ -235,7 +235,7 @@ opticsHutVariables(FuncDataBase& Control,
   const std::string hutName(preName+"OpticsHut");
 
   Control.addVariable(hutName+"Height",250.0);
-  Control.addVariable(hutName+"Length",886.1);  // changed from 906
+  Control.addVariable(hutName+"Length",1070); // outer length, measured by KB - check
   Control.addVariable(hutName+"OutWidth",200.0);
   Control.addVariable(hutName+"RingWidth",75.0);
   Control.addVariable(hutName+"RingWallLen",80.0);
@@ -1072,7 +1072,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",310.0-97,724.0,40.0);
+    (Control,"SoftiMAXFrontBeam",310.0-97-100,724.0,40.0);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
     
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
