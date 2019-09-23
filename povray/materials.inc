@@ -21,5 +21,37 @@
     finish { ambient 0.2 diffuse 0.3 crand 0.003 reflection 0 } normal {
     dents .5 scale .5 }}
 
-#declare matLead         = texture { pigment{color rgb <0.61, 0.59, 0.54> }};
 #declare matStainless304 = texture { Silver_Metal };
+
+////////////////////// LEAD
+// http://www.oyonale.com/modeles.php?lang=en&page=45
+
+#declare N_Lead=normal{
+    bump_map{jpeg "povray/stone09.jpg"}
+    bump_size -5
+    rotate x*90
+//    scale 200
+}
+
+#declare matLead=texture{
+    pigment{
+        gradient x
+        pigment_map{
+            [0.9 wrinkles turbulence 1 lambda 3
+	      color_map{
+		[0 rgb <0.9,0.93,0.91>*0.7][1 rgb <0.64,0.62,0.59>*0.5]
+	      }
+	    ]
+//	  [0.9 color rgb <0.85,0.7,0.1>] // vertical yellow line
+	}
+        scale 100
+    }
+    normal{N_Lead}
+    finish{
+        ambient 0
+        diffuse 1
+    }
+//    rotate -y*20
+}
+
+//////////////////////
