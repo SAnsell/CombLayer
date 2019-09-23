@@ -102,11 +102,11 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","undulatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double L(210.0+97+100);
+  const double L(372.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",0,L);
+  PipeGen.generatePipe(Control,undKey+"UPipe",0,L+7.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
@@ -115,7 +115,7 @@ undulatorVariables(FuncDataBase& Control,
 
   // undulator I Vacuum
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
-  Control.addVariable(undKey+"UndulatorLength",203.0+97+100);  // 300 SA - check
+  Control.addVariable(undKey+"UndulatorLength",L);
   Control.addVariable(undKey+"UndulatorMagnetWidth",6.0);
   Control.addVariable(undKey+"UndulatorMagnetDepth",3.0);
   Control.addVariable(undKey+"UndulatorSupportWidth",12.0);
@@ -545,6 +545,7 @@ opticsVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","opticsVariables");
 
   const std::string preName(beamName+"OpticsLine");
+  std::string Name;
 
   Control.addVariable(preName+"OuterLeft",70.0);
   Control.addVariable(preName+"OuterRight",50.0);
@@ -572,10 +573,11 @@ opticsVariables(FuncDataBase& Control,
   // TODO:
   // use PortTubeGenerator instead
   // and set FlangeLength to 1.27 cm (instead of 0.5)
+  Name=preName+"TriggerPipe";
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(-9.7,-9.7);     // len of ports - measured in the STEP file
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,preName+"TriggerPipe",0.0,15.0,15.0);  // ystep/height/depth
+    (Control,Name,0.0,15.0,15.0);  // ystep/height/depth
   
   CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
@@ -1075,7 +1077,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   // ystep / dipole pipe / exit pipe
   setVariable::R3FrontEndVariables
-    (Control,"SoftiMAXFrontBeam",310.0-97-100,724.0,40.0);
+    (Control,"SoftiMAXFrontBeam",141.0,724.0,40.0);
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
     
   softimaxVar::wallVariables(Control,"SoftiMAXWallLead");
