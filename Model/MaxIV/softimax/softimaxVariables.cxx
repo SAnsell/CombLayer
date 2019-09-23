@@ -573,14 +573,14 @@ opticsVariables(FuncDataBase& Control,
   // use PortTubeGenerator instead
   // and set FlangeLength to 1.27 cm (instead of 0.5)
   Name=preName+"TriggerPipe";
-  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
+  CrossGen.setPlates(0.3,2.0,2.0);  // wall/Top/base ???
   CrossGen.setPorts(-9.7,-9.7);     // len of ports - measured in the STEP file
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,Name,0.0,15.0,15.0);  // ystep/height/depth
+    (Control,Name,0.0,15.5,22.0);  // ystep/height/depth - measured
   
   CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,preName+"GaugeA",0.0,11.0,11.0);  // ystep/height/depth
+    (Control,preName+"GaugeA",0.0,10.6,8.0);  // ystep/height/depth
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
