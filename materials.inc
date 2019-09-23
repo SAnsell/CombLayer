@@ -1,5 +1,5 @@
-#declare matStainless304 = texture { pigment{color rgb<0.0,0.802342191,0.596864313> filter 0.999 }};
-#declare matStainless304 = texture { Silver_Metal };
+//#declare matStainless304 = texture { pigment{color rgb<0.0,0.802342191,0.596864313> filter 0.999 }};
+//#declare matStainless304 = texture { Silver_Metal };
 
 #declare matAluminium    = texture { pigment{color rgb <0.89, 0.91, 0.91> }};
 //#declare matConcrete     = texture {T_Stone28};

@@ -21,8 +21,6 @@
     finish { ambient 0.2 diffuse 0.3 crand 0.003 reflection 0 } normal {
     dents .5 scale .5 }}
 
-#declare matStainless304 = texture { Silver_Metal };
-
 ////////////////////// LEAD
 // http://www.oyonale.com/modeles.php?lang=en&page=45
 
@@ -54,4 +52,27 @@
 //    rotate -y*20
 }
 
-//////////////////////
+///////////////////// RUSTY METAL
+// http://www.oyonale.com/modeles.php?lang=en&page=45
+
+#declare T_Shiny=texture{
+    pigment {color rgb 0.1}
+    finish{ambient 0 diffuse 1 metallic brilliance 4 specular 1 roughness 0.02 reflection {0.8,1}}
+}
+#declare T_Rusty=texture{
+    pigment {bozo turbulence 1 color_map{[0.3 DarkWood*0.5][0.5 DarkBrown*0.5]}}
+    normal{bozo turbulence 1 lambda 4 bump_size 1 scale 1/50}
+    finish{ambient 0 diffuse 1 specular 0.01 roughness 0.1}
+}
+
+#declare matStainless304=texture{
+    bozo turbulence 1 lambda 4
+    texture_map{
+        [0.3 T_Shiny]
+        [0.7 T_Rusty]
+//        [0.5 pigment{Red}]
+//        [0.5 pigment{Blue}]
+    }
+    scale 50
+}
+////////////////////////
