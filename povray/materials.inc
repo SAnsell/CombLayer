@@ -4,7 +4,7 @@
 
 #declare matAluminium    = texture { pigment{color rgb <0.89, 0.91, 0.91> }};
 #declare matB4C          = texture { pigment{color rgb <0.1, 0.1, 0.1> }};
-#declare matConcrete     = texture {T_Wood8};
+//#declare matConcrete     = texture {T_Wood8};
 
 // http://news.povray.org/povray.general/thread/%3C35D92C3C.AD869B36%40pacbell.net%3E/
 #declare matHDConcrete =
@@ -25,13 +25,14 @@
 // http://www.oyonale.com/modeles.php?lang=en&page=45
 
 #declare N_Lead=normal{
-    bump_map{jpeg "povray/stone09.jpg"}
-    bump_size -5
-    rotate x*90
+//    bump_map{jpeg "povray/stone09.jpg"}
+    bump_map{jpeg "povray/optics-hutch-ratchet-wall.jpg"}
+//    bump_size -5
+//    rotate x*90
 //    scale 200
 }
 
-#declare matLead=texture{
+#declare matLead1=texture{
     pigment{
         gradient x
         pigment_map{
@@ -50,6 +51,24 @@
         diffuse 1
     }
 //    rotate -y*20
+}
+
+#declare matLead=texture{
+  pigment
+  { image_map
+    { png "povray/optics-hutch-ratchet-wall-small.png"
+      map_type 1 interpolate 2 once
+    }
+  }
+}
+
+#declare matConcrete=texture{
+  pigment
+  { image_map
+    { png "povray/optics-hutch-floor-small.png"
+      map_type 1 interpolate 2 once
+    }
+  }
 }
 
 ///////////////////// RUSTY METAL

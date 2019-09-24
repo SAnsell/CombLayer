@@ -3,7 +3,7 @@
 
 #declare matAluminium    = texture { pigment{color rgb <0.89, 0.91, 0.91> }};
 //#declare matConcrete     = texture {T_Stone28};
-#declare matConcrete     = texture {T_Wood8};
+//#declare matConcrete     = texture {T_Wood8};
 #declare matB4C          = texture { pigment{color rgb <0.1, 0.1, 0.1> }};
 
 
