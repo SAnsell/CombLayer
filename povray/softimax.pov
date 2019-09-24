@@ -10,7 +10,7 @@ global_settings {
   assumed_gamma 1.0
 }
 
-#declare view = 0;
+#declare view = 10;
 
 #switch ( view )
   #case(0) // Optics line towards the ratchet wall
@@ -28,10 +28,10 @@ global_settings {
     #declare cameraLookAt   = <2320, 8400, 0>;
     #declare cameraAngle = 90;
   #break
-  #else
-    #declare cameraLocation = <2400, 8400, 100>;
-    #declare cameraLookAt   = <2260, 8408, 0>;
-    #declare cameraAngle = 45;
+  #else // whole optics line top view
+    #declare cameraLocation = <2300, 8450, 60>;
+    #declare cameraLookAt   = <2300, 8408, 0>;
+    #declare cameraAngle = 90;
 #break
 #end
 
