@@ -86,6 +86,7 @@ class softimaxOpticsLine :
   
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
+  std::shared_ptr<constructSystem::PipeTube> pumpM1;
 
   
   // /// First gate valve

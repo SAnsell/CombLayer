@@ -586,6 +586,29 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowA",0,17.6);
 
+  // will be rotated vertical
+  const std::string pumpName=preName+"PumpM1";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,pumpName,0.0,40.0);
+  Control.addVariable(pumpName+"NPorts",3);   // beam ports
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  PItemGen.setCF<setVariable::CF63>(5.4);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF63>(5.4);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+
+  const Geometry::Vec3D pAngVec(0,sin(M_PI*37.0/180.0),-cos(M_PI*37.0/180.0));
+  const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
+  PItemGen.setCF<setVariable::CF40>(PLen);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,pumpName+"Port2",
+			Geometry::Vec3D(0,0,0),-pAngVec);
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);

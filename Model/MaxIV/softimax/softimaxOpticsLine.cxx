@@ -122,7 +122,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
-  bellowA(new constructSystem::Bellows(newName+"BellowA"))
+  bellowA(new constructSystem::Bellows(newName+"BellowA")),
+  pumpM1(new constructSystem::PipeTube(newName+"PumpM1"))
   // gateA(new constructSystem::GateValveCube(newName+"GateA")),
   // bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -184,6 +185,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(triggerPipe);
   OR.addObject(gaugeA);
   OR.addObject(bellowA);
+  OR.addObject(pumpM1);
   // OR.addObject(gateA);
   // OR.addObject(bremCollA);
   // OR.addObject(filterBoxA);
@@ -412,11 +414,24 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeA,2);
   gaugeA->insertInCell(System,outerCell);
 
-
   bellowA->setFront(*gaugeA,2);
   bellowA->createAll(System,*gaugeA,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
+
+  // FAKE insertcell: required
+  pumpM1->addAllInsertCell(masterCell->getName());
+  pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpM1->createAll(System,*bellowA,2);
+
+
+  const constructSystem::portItem& CPI=pumpM1->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
+				CPI,CPI.getSideIndex("OuterPlate"));
+  pumpM1->insertAllInCell(System,outerCell);
+  pumpM1->splitObjectAbsolute(System,1501,outerCell,
+				 pumpM1->getLinkPt(0),
+				 Geometry::Vec3D(0,0,1));
 
   // gateA->setFront(*bellowA,2);
   // gateA->createAll(System,*bellowA,2);
