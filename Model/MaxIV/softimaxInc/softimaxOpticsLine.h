@@ -89,6 +89,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> pumpM1;
   /// First gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateA;
+  std::shared_ptr<constructSystem::Bellows> bellowB;
   /// M1 - Mirror box
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   
@@ -100,8 +101,6 @@ class softimaxOpticsLine :
   // std::shared_ptr<xraySystem::FlangeMount> filterStick;
   // /// First gate valve
   // std::shared_ptr<constructSystem::GateValveCube> gateB;
-  // /// bellows after gateA ->view
-  // std::shared_ptr<constructSystem::Bellows> bellowB;
   
   // /// diamond screen(?)
   // std::shared_ptr<constructSystem::PipeTube> screenPipeA;

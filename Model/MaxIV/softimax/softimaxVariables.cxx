@@ -691,6 +691,10 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateA",0.0,0);
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowB",0,17.6);
+
   m1MirrorVariables(Control,preName);
 
   // GateGen.setLength(2.5);
@@ -735,9 +739,6 @@ opticsVariables(FuncDataBase& Control,
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateB",0.0,0);
-
-  // BellowGen.setCF<setVariable::CF40>();
-  // BellowGen.generateBellow(Control,preName+"BellowB",0,12.0);
 
   // SimpleTubeGen.setCF<CF40>();
   // SimpleTubeGen.setBFlangeCF<CF63>();
