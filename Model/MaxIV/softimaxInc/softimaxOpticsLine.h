@@ -87,7 +87,8 @@ class softimaxOpticsLine :
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
   std::shared_ptr<constructSystem::PipeTube> pumpM1;
-
+  /// M1 - Mirror box
+  std::shared_ptr<constructSystem::PipeTube> M1Tube;
   
   // /// First gate valve
   // std::shared_ptr<constructSystem::GateValveCube> gateA;
@@ -200,6 +201,9 @@ class softimaxOpticsLine :
      std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
      const attachSystem::FixedComp&,
      const long int);
+
+  void buildM1Mirror(Simulation&,MonteCarlo::Object*,
+		     const attachSystem::FixedComp&,const long int);
 
   void populate(const FuncDataBase&);
   void createSurfaces();

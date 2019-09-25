@@ -123,7 +123,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  pumpM1(new constructSystem::PipeTube(newName+"PumpM1"))
+  pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
+  M1Tube(new constructSystem::PipeTube(newName+"M1Tube"))
   // gateA(new constructSystem::GateValveCube(newName+"GateA")),
   // bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
@@ -186,6 +187,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gaugeA);
   OR.addObject(bellowA);
   OR.addObject(pumpM1);
+  OR.addObject(M1Tube);
   // OR.addObject(gateA);
   // OR.addObject(bremCollA);
   // OR.addObject(filterBoxA);
@@ -373,7 +375,61 @@ softimaxOpticsLine::constructDiag
     
   return outerCell;
 }
-  
+
+void
+softimaxOpticsLine::buildM1Mirror(Simulation& System,
+				     MonteCarlo::Object* masterCell,
+				     const attachSystem::FixedComp& initFC,
+				     const long int sideIndex)
+  /*!
+    Sub build of the m1-mirror package
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("softimaxOpticsBeamline","buildM1Mirror");
+
+  int outerCell;
+
+  M1Tube->setFront(initFC,sideIndex);
+  M1Tube->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*M1Tube,2);
+  M1Tube->insertAllInCell(System,outerCell);
+
+  // M1Mirror->addInsertCell(M1Tube->getCell("Void"));
+  // M1Mirror->createAll(System,*M1Tube,0);
+
+  // M1Stand->setCutSurf("floor",this->getRule("floor"));
+  // M1Stand->setCutSurf("front",*M1Tube,-1);
+  // M1Stand->setCutSurf("back",*M1Tube,-2);
+  // M1Stand->addInsertCell(outerCell);
+  // M1Stand->createAll(System,*M1Tube,0);
+
+  // offPipeB->createAll(System,*M1Tube,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
+  // offPipeB->insertInCell(System,outerCell);
+  // offPipeB->setCell("OuterVoid",outerCell);
+
+  // gateA->createAll(System,*offPipeB,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  // gateA->insertInCell(System,outerCell);
+  // gateA->setCell("OuterVoid",outerCell);
+
+  // pipeC->createAll(System,*gateA,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeC,2);
+  // pipeC->insertInCell(System,outerCell);
+
+  // screenA->addAllInsertCell(outerCell);
+  // screenA->setCutSurf("inner",*pipeC,"pipeOuterTop");
+  // screenA->createAll(System,*pipeC,0);
+  // screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
+  // screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
+
+  return;
+}
+
 
 void
 softimaxOpticsLine::buildObjects(Simulation& System)
@@ -432,6 +488,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpM1->splitObjectAbsolute(System,1501,outerCell,
 				 pumpM1->getLinkPt(0),
 				 Geometry::Vec3D(0,0,1));
+  cellIndex++;
+
+  buildM1Mirror(System,masterCell,CPI,CPI.getSideIndex("OuterPlate"));
 
   // gateA->setFront(*bellowA,2);
   // gateA->createAll(System,*bellowA,2);

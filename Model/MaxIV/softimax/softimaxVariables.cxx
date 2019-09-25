@@ -356,57 +356,57 @@ monoVariables(FuncDataBase& Control)
   return;
 }
 
-void
-mirrorBox(FuncDataBase& Control,const std::string& Name,
-	  const std::string& Index,const std::string& vertFlag,
-	  const double theta,const double phi)
-  /*!
-    Construct variables for the diagnostic units
-    \param Control :: Database
-    \param Name :: component name
-    \param Index :: Index designator
-    \param theta :: theta angle [beam angle in deg]
-    \param phi :: phi angle [rotation angle in deg]
-  */
-{
-  ELog::RegMethod RegA("softimaxVariables[F]","mirrorBox");
+// void
+// mirrorBox(FuncDataBase& Control,const std::string& Name,
+// 	  const std::string& Index,const std::string& vertFlag,
+// 	  const double theta,const double phi)
+//   /*!
+//     Construct variables for the diagnostic units
+//     \param Control :: Database
+//     \param Name :: component name
+//     \param Index :: Index designator
+//     \param theta :: theta angle [beam angle in deg]
+//     \param phi :: phi angle [rotation angle in deg]
+//   */
+// {
+//   ELog::RegMethod RegA("softimaxVariables[F]","mirrorBox");
   
-  setVariable::MonoBoxGenerator VBoxGen;
-  setVariable::MirrorGenerator MirrGen;
+//   setVariable::MonoBoxGenerator VBoxGen;
+//   setVariable::MirrorGenerator MirrGen;
 
-  const double normialAngle=0.2; 
-  const double vAngle=(vertFlag[0]=='H') ? 90 : 0.0;
-  const double centreDist(55.0);
-  const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
-  const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
+//   const double normialAngle=0.2; 
+//   const double vAngle=(vertFlag[0]=='H') ? 90 : 0.0;
+//   const double centreDist(55.0);
+//   const double heightNormDelta=sin(2.0*normialAngle*M_PI/180.0)*centreDist;
+//   const double heightDelta=sin(2.0*theta*M_PI/180.0)*centreDist;
 
-  if (vAngle>45)
-    VBoxGen.setBPortOffset(heightNormDelta,0.0);
-  else
-    VBoxGen.setBPortOffset(0.0,heightNormDelta);
+//   if (vAngle>45)
+//     VBoxGen.setBPortOffset(heightNormDelta,0.0);
+//   else
+//     VBoxGen.setBPortOffset(0.0,heightNormDelta);
   
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF63>();
-  VBoxGen.setPortLength(5.0,5.0); // La/Lb
-  VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
+//   VBoxGen.setMat("Stainless304");
+//   VBoxGen.setWallThick(1.0);
+//   VBoxGen.setCF<CF63>();
+//   VBoxGen.setPortLength(5.0,5.0); // La/Lb
+//   VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
 
-  // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
-		      0.0,53.1,23.6,29.5,124.0);
+//   // ystep/width/height/depth/length
+//   VBoxGen.generateBox(Control,Name+"MirrorBox"+Index,
+// 		      0.0,53.1,23.6,29.5,124.0);
 
 
-  // length thick width
-  MirrGen.setPlate(50.0,1.0,9.0);  //guess  
-  MirrGen.setPrimaryAngle(0,vAngle,0);  
-  // ystep : zstep : theta : phi : radius
-  MirrGen.generateMirror(Control,Name+"MirrorFront"+Index,
-			 -centreDist/2.0,0.0,theta,phi,0.0);         // hits beam center
-  MirrGen.setPrimaryAngle(0,vAngle+180.0,0.0);
-  MirrGen.generateMirror(Control,Name+"MirrorBack"+Index,
-			 centreDist/2.0,heightDelta,theta,phi,0.0);
-  return;
-}
+//   // length thick width
+//   MirrGen.setPlate(50.0,1.0,9.0);  //guess  
+//   MirrGen.setPrimaryAngle(0,vAngle,0);  
+//   // ystep : zstep : theta : phi : radius
+//   MirrGen.generateMirror(Control,Name+"MirrorFront"+Index,
+// 			 -centreDist/2.0,0.0,theta,phi,0.0);         // hits beam center
+//   MirrGen.setPrimaryAngle(0,vAngle+180.0,0.0);
+//   MirrGen.generateMirror(Control,Name+"MirrorBack"+Index,
+// 			 centreDist/2.0,heightDelta,theta,phi,0.0);
+//   return;
+// }
 
 // void
 // diagUnit(FuncDataBase& Control,const std::string& Name)
@@ -531,6 +531,64 @@ mirrorBox(FuncDataBase& Control,const std::string& Name,
 //   return;
 // }
 
+void
+m1MirrorVariables(FuncDataBase& Control,
+		  const std::string& mirrorKey)
+/*!
+  Builds the variables for the M1 Mirror
+  \param Control :: Database
+  \param mirrorKey :: prename
+*/
+{
+  ELog::RegMethod RegA("softimaxVariables[F]","m1MirrorVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::MirrorGenerator MirrGen;
+  
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setBFlangeCF<CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeA",0,6.8);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXYAngle",-4.0);
+  Control.addVariable(mirrorKey+"OffPipeAFlangeBackXStep",-2.0);
+
+  const std::string mName=mirrorKey+"M1Tube";
+  const double centreOffset(sin(M_PI*4.0/180.0)*6.8/2);  // half 6.8
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,0.0,36.0);  // centre 13.5cm
+  Control.addVariable(mName+"XStep",centreOffset);   
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,mirrorKey+"OffPipeB",0,13.8);
+  Control.addVariable(mirrorKey+"OffPipeBFlangeFrontXStep",-2.0);
+  Control.addVariable(mirrorKey+"OffPipeBXStep",2.0);
+
+
+
+  // mirror in M1Tube 
+  MirrGen.setPlate(28.0,1.0,9.0);  //guess
+  // y/z/theta/phi/radius
+  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",0.0, 0.0, 2.0, 0.0,0.0);
+  Control.addVariable(mirrorKey+"M1MirrorYAngle",90.0);
+
+  Control.addVariable(mirrorKey+"M1StandHeight",110.0);
+  Control.addVariable(mirrorKey+"M1StandWidth",30.0);
+  Control.addVariable(mirrorKey+"M1StandLength",30.0);
+  Control.addVariable(mirrorKey+"M1StandMat","SiO2");
+  
+  // joined and open
+  GateGen.setLength(7.5);
+  GateGen.setCF<setVariable::CF63>();
+  GateGen.generateValve(Control,mirrorKey+"GateA",0.0,0);
+
+  return;
+}
+
   
 void
 opticsVariables(FuncDataBase& Control,
@@ -627,6 +685,8 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pumpName+"Port6",
 			Geometry::Vec3D(0,0,0),-pAngVec6);
+
+  m1MirrorVariables(Control,preName);
 
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
