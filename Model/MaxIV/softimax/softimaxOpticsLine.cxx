@@ -124,8 +124,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube"))
-  // gateA(new constructSystem::GateValveCube(newName+"GateA")),
   // bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -187,8 +187,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gaugeA);
   OR.addObject(bellowA);
   OR.addObject(pumpM1);
+  OR.addObject(gateA);
   OR.addObject(M1Tube);
-  // OR.addObject(gateA);
   // OR.addObject(bremCollA);
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -490,12 +490,13 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 				 Geometry::Vec3D(0,0,1));
   cellIndex++;
 
-  buildM1Mirror(System,masterCell,CPI,CPI.getSideIndex("OuterPlate"));
+  gateA->setFront(CPI,CPI.getSideIndex("OuterPlate"));
+  gateA->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
+  gateA->insertInCell(System,outerCell);
 
-  // gateA->setFront(*bellowA,2);
-  // gateA->createAll(System,*bellowA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  // gateA->insertInCell(System,outerCell);
+  buildM1Mirror(System,masterCell,*gateA,2);
+
 
 
   // bremCollA->setCutSurf("front",*gateA,2);

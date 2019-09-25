@@ -686,6 +686,11 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pumpName+"Port6",
 			Geometry::Vec3D(0,0,0),-pAngVec6);
 
+  // Gate valve A
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateA",0.0,0);
+
   m1MirrorVariables(Control,preName);
 
   // GateGen.setLength(2.5);
