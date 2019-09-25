@@ -10,7 +10,7 @@ global_settings {
   assumed_gamma 1.0
 }
 
-#declare view = 10;
+#declare view = 3;
 
 #switch ( view )
   #case(0) // Optics line towards the ratchet wall
@@ -26,6 +26,11 @@ global_settings {
   #case(2) // pump unit M1
     #declare cameraLocation = <2320, 8450, 10>;
     #declare cameraLookAt   = <2320, 8400, 0>;
+    #declare cameraAngle = 90;
+  #break
+  #case(3) // Mirror system M1
+    #declare cameraLocation = <2380, 8450, 10>;
+    #declare cameraLookAt   = <2380, 8400, 0>;
     #declare cameraAngle = 90;
   #break
   #else // whole optics line top view
