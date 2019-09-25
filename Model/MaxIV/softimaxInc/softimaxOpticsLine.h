@@ -44,6 +44,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class BlockStand;
   class OpticsHutch;
   class BremColl;
   class BremMonoColl;
@@ -94,6 +95,8 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
   /// M1 - Mirror
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
+  /// Pipe exiting slit section
+  std::shared_ptr<xraySystem::BlockStand> M1Stand;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;
