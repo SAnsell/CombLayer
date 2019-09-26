@@ -129,7 +129,10 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
-  M1Stand(new xraySystem::BlockStand(newName+"M1Stand"))
+  M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA"))
+
   // bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -139,7 +142,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
   // diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   // primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
-  // bellowC(new constructSystem::Bellows(newName+"BellowC")),  
   // gateC(new constructSystem::GateValveCube(newName+"GateC")),
   // monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
   // monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
@@ -196,6 +198,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M1Tube);
   OR.addObject(M1Mirror);
   OR.addObject(M1Stand);
+  OR.addObject(bellowC);
+  OR.addObject(pumpTubeA);
+
   // OR.addObject(bremCollA);
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -205,7 +210,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // OR.addObject(adaptorPlateA);
   // OR.addObject(diffPumpA);
   // OR.addObject(primeJawBox);
-  // OR.addObject(bellowC);
   // OR.addObject(gateC);
   // OR.addObject(monoBox);
   // OR.addObject(gateD);
@@ -509,7 +513,21 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM1Mirror(System,masterCell,*bellowB,2);
 
+  bellowC->setFront(*M1Tube,2);
+  bellowC->createAll(System,*M1Tube,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
+  bellowC->insertInCell(System,outerCell);
 
+  // FAKE insertcell: required
+  pumpTubeA->addAllInsertCell(masterCell->getName());
+  pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpTubeA->createAll(System,*bellowC,2);
+
+  const constructSystem::portItem& CPI1=pumpTubeA->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,CPI1,CPI1.getSideIndex("OuterPlate"));
+  pumpTubeA->insertAllInCell(System,outerCell);
+  //  pumpTubeA->intersectPorts(System,1,2);
 
   // bremCollA->setCutSurf("front",*gateA,2);
   // bremCollA->createAll(System,*gateA,2);
@@ -571,10 +589,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*primeJawBox,2);
   // // primeJawBox->insertInCell(System,outerCell);
 
-  // bellowC->setFront(*diffPumpA,2);
-  // bellowC->createAll(System,*diffPumpA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
-  // bellowC->insertInCell(System,outerCell);
 
   // gateC->setFront(*bellowC,2);
   // gateC->createAll(System,*bellowC,2);

@@ -97,6 +97,10 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::Mirror> M1Mirror;
   /// Pipe exiting slit section
   std::shared_ptr<xraySystem::BlockStand> M1Stand;
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+  // Pumping tube for the ion pump
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
+
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;
