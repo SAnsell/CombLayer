@@ -717,13 +717,20 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
+  // Absolutely dummy Tungsten collimator.
+  // TODO: ask about geometry
+  BremGen.setCF<CF63>();
+  BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
+  Control.addVariable(preName+"BremCollAExtLength", 0.8); // !!! UGLY
+
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateB",0.0,0);
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
   
-  // BremGen.setCF<CF63>();
-  // BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
-
   // PTubeGen.setMat("Stainless304");
   // PTubeGen.setCF<CF63>();
   // PTubeGen.setBPortCF<CF40>();
@@ -756,9 +763,6 @@ opticsVariables(FuncDataBase& Control,
   // FlangeGen.setBlade(3.0,5.0,0.5,0.0,"Graphite",1);
   // FlangeGen.generateMount(Control,preName+"FilterStick",1);  // in beam
 
-  // GateGen.setLength(2.5);
-  // GateGen.setCF<setVariable::CF40>();
-  // GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
   // SimpleTubeGen.setCF<CF40>();
   // SimpleTubeGen.setBFlangeCF<CF63>();

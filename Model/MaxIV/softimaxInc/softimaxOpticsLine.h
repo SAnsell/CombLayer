@@ -100,7 +100,10 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   // Pumping tube for the ion pump
   std::shared_ptr<constructSystem::PipeTube> pumpTubeA;
-
+  /// Tungsten bremsstrahlung collimator
+  std::shared_ptr<xraySystem::BremColl> bremCollA;
+  /// gate valve
+  std::shared_ptr<constructSystem::GateValveCube> gateB;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;
@@ -108,9 +111,6 @@ class softimaxOpticsLine :
   // std::shared_ptr<constructSystem::PortTube> filterBoxA;
   // /// Filter stick [only one blade type -- fix]
   // std::shared_ptr<xraySystem::FlangeMount> filterStick;
-  // /// First gate valve
-  // std::shared_ptr<constructSystem::GateValveCube> gateB;
-  
   // /// diamond screen(?)
   // std::shared_ptr<constructSystem::PipeTube> screenPipeA;
   // /// View/something(?)/Ion pump

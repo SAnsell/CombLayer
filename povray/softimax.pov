@@ -10,7 +10,7 @@ global_settings {
   assumed_gamma 1.0
 }
 
-#declare view = 0;
+#declare view = 4;
 #declare cameraAngle = 90;
 
 #switch ( view )
@@ -30,6 +30,10 @@ global_settings {
   #case(3) // Mirror system M1
     #declare cameraLocation = <2380, 8450, 10>;
     #declare cameraLookAt   = <2380, 8400, 0>;
+  #break
+  #case(4) // Tungsten collimator
+    #declare cameraLocation = <2432, 8450, 10>;
+    #declare cameraLookAt   = <2432, 8400, 0>;
   #break
   #else // whole optics line top view
     #declare cameraLocation = <2300, 8450, 60>;

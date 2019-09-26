@@ -131,12 +131,12 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA"))
+  pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
+  bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
+  gateB(new constructSystem::GateValveCube(newName+"GateB"))
 
-  // bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  // gateB(new constructSystem::GateValveCube(newName+"GateB")),
   // screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
   // screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
   // adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
@@ -200,11 +200,11 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M1Stand);
   OR.addObject(bellowC);
   OR.addObject(pumpTubeA);
+  OR.addObject(bremCollA);
+  OR.addObject(gateB);
 
-  // OR.addObject(bremCollA);
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
-  // OR.addObject(gateB);
   // OR.addObject(screenPipeA);
   // OR.addObject(screenPipeB);
   // OR.addObject(adaptorPlateA);
@@ -529,10 +529,17 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpTubeA->insertAllInCell(System,outerCell);
   //  pumpTubeA->intersectPorts(System,1,2);
 
-  // bremCollA->setCutSurf("front",*gateA,2);
-  // bremCollA->createAll(System,*gateA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
-  // bremCollA->insertInCell("Main",System,outerCell);
+  bremCollA->setCutSurf("front",CPI1,CPI1.getSideIndex("OuterPlate"));
+  bremCollA->createAll(System,CPI1,CPI1.getSideIndex("OuterPlate"));
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bremCollA,2);
+  bremCollA->insertInCell("Main",System,outerCell);
+
+  gateB->setFront(*bremCollA,2);
+  gateB->createAll(System,*bremCollA,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
+  gateB->insertInCell(System,outerCell);
+
+  bremCollA->createExtension(System,gateB->getCell("Void")); // !!! UGLY - it does not actually intersect gateB
 
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
@@ -552,10 +559,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // filterStick->createAll(System,PI,PI.getSideIndex("-InnerPlate"));
 
 
-  // gateB->setFront(*filterBoxA,2);
-  // gateB->createAll(System,*filterBoxA,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
-  // gateB->insertInCell(System,outerCell);
 
   // // fake insert
   // screenPipeA->addAllInsertCell(masterCell->getName());
