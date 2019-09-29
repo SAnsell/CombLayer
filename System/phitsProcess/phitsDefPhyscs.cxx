@@ -101,6 +101,7 @@ setModelPhysics(SimPHITS& System,
   phitsSystem::phitsPhysics* PC=System.getPhysics();
   if (!PC) return;
 
+  // This forces icntl : Should not be needed. 
   if (IParam.flag("icntl"))
     {
       ELog::EM<<"VAL "<<IParam.getValue<std::string>("icntl")<<ELog::endDiag;

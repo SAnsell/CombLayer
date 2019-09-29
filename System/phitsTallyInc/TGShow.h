@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/TGShow.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,22 @@ class TGShow : public phitsTally
 {
  private:
 
-  MeshXYZ mesh;                     ///< Mesh volume
+  std::array<size_t,3> Pts;      ///< N-Points [ one must be 1 ]
+  Geometry::Vec3D minCoord;      ///< Min coordinate
+  Geometry::Vec3D maxCoord;      ///< Max coordinate
+
   int axisDirection;                ///< Axis direction xy,yz,xz
+  int lineWidth;                    ///< Width scale [default =0.5]
+    
   int trcl;                         ///< transform number
+
+  std::string title;               ///< title
+  std::string x-txt;               ///< x-text
+  std::string y-txt;               ///< y-Text
+
+  bool epsOut;                     ///< Write eps
+  bool bmpOut;                     ///< Write bmp
+  bool vktOut;                     ///< Write vtk
   
  public:
 
