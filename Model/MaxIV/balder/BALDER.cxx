@@ -192,7 +192,6 @@ BALDER::build(Simulation& System,
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
   // Ugly HACK to get the two objects to merge
-  ELog::EM<<"Side index -= "<<opticsHut->getLinkSurf("frontCut")<<ELog::endDiag;
   r3Ring->insertComponent
     (System,"OuterFlat",SIndex,
      *opticsHut,opticsHut->getSideIndex("frontCut"));
