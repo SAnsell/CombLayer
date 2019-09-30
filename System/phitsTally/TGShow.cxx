@@ -55,16 +55,19 @@ namespace phitsSystem
 {
 
 TGShow::TGShow(const int ID) :
-  phitsTally(ID),
+  phitsTally(ID),output(6),
   axisDirection(1),lineWidth(0.5)
   /*!
     Constructor
     \param ID :: Identity number of tally 
   */
-{}
+{
+  epsFlag=1;
+}
 
 TGShow::TGShow(const TGShow& A) : 
   phitsTally(A),grid(A.grid),
+  output(A.output),
   axisDirection(A.axisDirection),lineWidth(A.lineWidth),
   title(A.title),xTxt(A.xTxt),yTxt(A.yTxt)
   /*!
@@ -85,6 +88,7 @@ TGShow::operator=(const TGShow& A)
     {
       phitsTally::operator=(A);
       grid=A.grid;
+      output=A.output;
       axisDirection=A.axisDirection;
       lineWidth=A.lineWidth;
       title=A.title;
@@ -155,7 +159,15 @@ TGShow::write(std::ostream& OX) const
     OX<<"  title = "<<title<<"\n";
   if (!xTxt.empty())  OX<<"  x-txt = "<<xTxt<<"\n";
   if (!yTxt.empty())  OX<<"  y-txt = "<<yTxt<<"\n";
-
+  OX<<"  output = "<<output<<"\n";
+  OX<<"  epsout = "<<epsFlag<<"\n";
+  OX<<"  vtkout = "<<vtkFlag<<"\n";
+  OX<<"  vtkfmt = "<<vtkFormat<<"\n";
+  if (epsFlag)
+    OX<<"  file = "<<keyName<<".ps \n";
+  else if (vtkFlag)
+    OX<<"  file = "<<keyName<<".vtk \n";
+  OX.flush();
   return;
 }
 

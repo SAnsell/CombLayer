@@ -96,8 +96,7 @@ MeshXYZ::getZeroIndex() const
    /*!
      Determine if one bin in singular
      \throw if no none zero/unit bin or two such bins
-     \return Index +1 [1-3] 
-
+     \return Index  [0-2] 
     */
 {
   ELog::RegMethod RegA("MeshXYZ","getZeroIndex");
@@ -112,7 +111,7 @@ MeshXYZ::getZeroIndex() const
 
   if (zUnit<1)
     throw ColErr::DimensionError<3,size_t>
-      ({nBins[0],nBins[1],nBins[2]},{0,2,2},"Array need only one zero/one");
+      ({nBins[0],nBins[1],nBins[2]},{2,2,2},"Array need only one zero/one");
 
   return zUnit-1;
 }  
@@ -197,21 +196,30 @@ MeshXYZ::write2D(std::ostream& OX) const
   ELog::RegMethod RegA("MeshXYZ","write2D");
 
   const std::string txyz[]={"x","y","z"};
-  const std::string axyz[]={"xy","xz","yz"};
+  const std::string axyz[]={"yz","xz","xy"};
   OX<<"  mesh = xyz \n";
   const size_t nullIndex=getZeroIndex();
-  const std::string axis=axyz[nullIndex];
+    
   for(size_t index=0;index<3;index++)
     {
+      const std::string tx=txyz[index];
       if (nullIndex!=index)
 	{
-	  const std::string tx=txyz[index];
 	  OX<<"  "<<tx<<"-type = 2 \n";
 	  OX<<"    n"<<tx<<" = "<<nBins[index]<<"\n";
 	  OX<<"  "<<tx<<"min = "<<minPoint[index]<<"\n";
 	  OX<<"  "<<tx<<"max = "<<maxPoint[index]<<"\n";
 	}
+      else
+	{
+	  OX<<"  "<<tx<<"-type = 1 \n";
+	  OX<<"    n"<<tx<<" = "<<1<<"\n";
+	  OX<<"        "<<minPoint[index]<<" "<<maxPoint[index]<<"\n";
+	}
     }
+  // this must be after mesh:
+  OX<<"  axis = "<<axyz[nullIndex]<<"\n";
+
   return;
 }
   

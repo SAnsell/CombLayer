@@ -38,6 +38,7 @@ class TGShow : public phitsTally
 
   MeshXYZ grid;                     ///< Axis grid
   
+  int output;                      ///< output type
   int axisDirection;                ///< Axis direction xy,yz,xz (+/- rev)
   double lineWidth;                 ///< Width scale [default =0.5]
     
