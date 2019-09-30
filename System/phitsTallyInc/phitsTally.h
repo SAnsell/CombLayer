@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/phitsTally.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,11 +40,11 @@ class phitsTally
  protected:
 
   const std::string keyName;        ///< Master name
-  const int idNumber;               ///< In number
+  const int idNumber;               ///< iD number
   std::string comments;             ///< comment line
 
-  bool epsFlag;                     //< Write an eps file
-  bool vtkFlag;                     //< Write a vtk file
+  bool epsFlag;                     ///< Write an eps file
+  bool vtkFlag;                     ///< Write a vtk file
   bool vtkFormat;                   ///< Write VTK in binary
   std::string fileName;             ///< file name
 
@@ -64,7 +64,7 @@ class phitsTally
   virtual void setAngle(const bool,const double,const double,const size_t);
 
   /// accessor to keyname
-  const std::string& getKeyName() const { return keyName; }
+  const std::string& getKey() const { return keyName; }
   
   virtual void write(std::ostream&) const;
 

@@ -36,22 +36,16 @@ class TGShow : public phitsTally
 {
  private:
 
-  std::array<size_t,3> Pts;      ///< N-Points [ one must be 1 ]
-  Geometry::Vec3D minCoord;      ///< Min coordinate
-  Geometry::Vec3D maxCoord;      ///< Max coordinate
-
-  int axisDirection;                ///< Axis direction xy,yz,xz
-  int lineWidth;                    ///< Width scale [default =0.5]
+  MeshXYZ grid;                     ///< Axis grid
+  
+  int axisDirection;                ///< Axis direction xy,yz,xz (+/- rev)
+  double lineWidth;                 ///< Width scale [default =0.5]
     
-  int trcl;                         ///< transform number
-
   std::string title;               ///< title
-  std::string x-txt;               ///< x-text
-  std::string y-txt;               ///< y-Text
+  std::string xTxt;               ///< x-text
+  std::string yTxt;               ///< y-Text
 
-  bool epsOut;                     ///< Write eps
-  bool bmpOut;                     ///< Write bmp
-  bool vktOut;                     ///< Write vtk
+  size_t getZeroIndex() const;
   
  public:
 

@@ -173,6 +173,26 @@ SimPHITS::setICNTL(const std::string& ICName)
 }
 
 void
+SimPHITS::addTally(const phitsSystem::phitsTally& TRef)
+  /*!
+    Adds a tally to the main PTItem list.
+    \param TRef :: Tally item to insert
+    \return 0 :: Successful
+    \return -1 :: Tally already in use
+  */
+{
+  ELog::RegMethod RegA("SimPHITS","addTally");
+  
+  const std::string keyNum=TRef.getKey();
+  if (PTItem.find(keyNum)!=PTItem.end())
+    throw ColErr::InContainerError<std::string>(keyNum,"Tally Present");
+
+  phitsSystem::phitsTally* TX=TRef.clone();
+  PTItem.emplace(keyNum,TX);
+  return;
+}
+
+void
 SimPHITS::writeSource(std::ostream& OX) const
   /*!
     Writes out the sources 
@@ -204,12 +224,9 @@ SimPHITS::writeTally(std::ostream& OX) const
   OX<<"$ -----------------------------------------------------------"<<std::endl;
   OX<<"$ ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"$ -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
-  //  for(const TallyTYPE::value_type& TI : TItem)
-  //    TI.second->write(OX);
+  ELog::EM<<"Size -== "<<PTItem.size()<<ELog::endDiag;
+  for(const PTallyTYPE::value_type& TI : PTItem)
+    TI.second->write(OX);
 
   return;
 }

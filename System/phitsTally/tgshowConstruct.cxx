@@ -68,7 +68,7 @@
 #include "meshConstruct.h"
 #include "MeshXYZ.h"
 #include "phitsTally.h"
-#include "T3DShow.h"
+#include "TGShow.h"
 #include "tgshowConstruct.h" 
 
 namespace phitsSystem
@@ -96,7 +96,7 @@ tgshowConstruct::createTally(SimPHITS& System,
   //  UB.setParticle(PType);
   UB.setCoordinates(APt,BPt);
   UB.setIndex(MPts);
-  //  System.addTally(UB);
+  System.addTally(UB);
 
   return;
 }
@@ -182,4 +182,4 @@ tgshowConstruct::writeHelp(std::ostream& OX)
   return;
 }
 
-}  // NAMESPACE tallySystem
+}  // NAMESPACE phitsSystem

@@ -65,7 +65,8 @@ operator<<(std::ostream& OX,const phitsTally& TX)
 }
 
 phitsTally::phitsTally(const int ID)  :
-  idNumber(ID)
+  keyName(std::to_string(ID)),
+  idNumber(ID),epsFlag(0),vtkFlag(0),vtkFormat(1)
   /*!
     Constructor 
     \param ID :: phitsTally ID number
@@ -73,7 +74,8 @@ phitsTally::phitsTally(const int ID)  :
 {}
 
 phitsTally::phitsTally(const std::string& KName,const int ID)  :
-  keyName(KName),idNumber(ID)
+  keyName(KName+std::to_string(ID)),idNumber(ID),
+  epsFlag(0),vtkFlag(0),vtkFormat(1)
   /*!
     Constructor 
     \param KName :: keyname

@@ -1718,6 +1718,23 @@ Simulation::makeObjectsDNForCNF()
 }
 
 void
+Simulation::processActiveMaterials() const
+  /*!
+    Set materials as active in DBMaterail Database
+  */
+{
+  ELog::RegMethod RegA("Simulation","processActiveMaterials");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+
+  for(const OTYPE::value_type& mc : OList)
+    DB.setActive(mc.second->getMat());
+  return;
+}
+
+
+void
 Simulation::prepareWrite() 
   /*!
     Carries out preparations that are

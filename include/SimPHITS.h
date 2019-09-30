@@ -42,7 +42,7 @@ class SimPHITS : public Simulation
  public:
 
   /// Tally  : tally
-  typedef std::map<int,phitsSystem::phitsTally*> PTallyTYPE;
+  typedef std::map<std::string,phitsSystem::phitsTally*> PTallyTYPE;
 
  private:
 
@@ -52,7 +52,7 @@ class SimPHITS : public Simulation
 
   PTallyTYPE PTItem;                   ///< Phits tally map
   
-  phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics
+  phitsSystem::phitsPhysics* PhysPtr;   ///< Phits physics 
   
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;

@@ -270,23 +270,6 @@ SimFLUKA::setExtraSourceName(const std::string& S)
 }
 
 void
-SimFLUKA::processActiveMaterials() const
-  /*!
-    Set materials as active in DBMaterail Database
-  */
-{
-  ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
-
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  DB.resetActive();
-
-  for(const OTYPE::value_type& mc : OList)
-    DB.setActive(mc.second->getMat());
-  return;
-}
-
-
-void
 SimFLUKA::writeTally(std::ostream& OX) const
   /*!
     Writes out the tallies using a nice boost binding

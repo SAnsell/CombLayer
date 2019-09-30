@@ -576,6 +576,9 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimPHITS");
 
+  // Definitions section
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
 
   ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
   SimPHITSPtr->prepareWrite();
@@ -590,8 +593,6 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   //  SimPHITSPtr->masterSourceRotation();
   // Ensure we done loop
   
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
   do
     {
       SimProcess::writeIndexSimPHITS(*SimPHITSPtr,OName,MCIndex);

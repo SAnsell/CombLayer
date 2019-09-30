@@ -42,7 +42,6 @@
 #include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -56,7 +55,8 @@ namespace phitsSystem
 {
 
 TGShow::TGShow(const int ID) :
-  phitsTally(ID)
+  phitsTally(ID),
+  axisDirection(1),lineWidth(0.5)
   /*!
     Constructor
     \param ID :: Identity number of tally 
@@ -64,8 +64,9 @@ TGShow::TGShow(const int ID) :
 {}
 
 TGShow::TGShow(const TGShow& A) : 
-  phitsTally(A),
-  mesh(A.mesh),axisDirection(A.axisDirection),trcl(A.trcl)
+  phitsTally(A),grid(A.grid),
+  axisDirection(A.axisDirection),lineWidth(A.lineWidth),
+  title(A.title),xTxt(A.xTxt),yTxt(A.yTxt)
   /*!
     Copy constructor
     \param A :: TGShow to copy
@@ -83,9 +84,12 @@ TGShow::operator=(const TGShow& A)
   if (this!=&A)
     {
       phitsTally::operator=(A);
-      mesh=A.mesh;
+      grid=A.grid;
       axisDirection=A.axisDirection;
-      trcl=A.trcl;
+      lineWidth=A.lineWidth;
+      title=A.title;
+      xTxt=A.xTxt;
+      yTxt=A.yTxt;
     }
   return *this;
 }
@@ -116,7 +120,8 @@ TGShow::setIndex(const std::array<size_t,3>& A)
    */
 {
   ELog::RegMethod RegA("TGShow","setIndex");
-  mesh.setSize(A[0],A[1],A[2]);
+
+  grid.setSize(A[0],A[1],A[2]);
   return;
 }
 
@@ -129,11 +134,11 @@ TGShow::setCoordinates(const Geometry::Vec3D& A,const Geometry::Vec3D& B)
    */
 {
   ELog::RegMethod RegA("TGShow","setCoordinates");
-  mesh.setCoordinates(A,B);
+  grid.setCoordinates(A,B);
   return;
 }
 
-  
+
 void
 TGShow::write(std::ostream& OX) const
   /*!
@@ -145,6 +150,12 @@ TGShow::write(std::ostream& OX) const
 
   
   OX<<"[T-gshow]\n";
+
+  if (!title.empty())
+    OX<<"  title = "<<title<<"\n";
+  if (!xTxt.empty())  OX<<"  x-txt = "<<xTxt<<"\n";
+  if (!yTxt.empty())  OX<<"  y-txt = "<<yTxt<<"\n";
+
   return;
 }
 
