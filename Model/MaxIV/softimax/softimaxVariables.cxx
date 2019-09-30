@@ -727,6 +727,12 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateB",0.0,0);
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.setBFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
+
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);

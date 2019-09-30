@@ -79,6 +79,7 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::BremColl> bremCollA;
   /// gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateB;
+  std::shared_ptr<constructSystem::Bellows> bellowD;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;

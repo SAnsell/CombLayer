@@ -133,7 +133,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
-  gateB(new constructSystem::GateValveCube(newName+"GateB"))
+  gateB(new constructSystem::GateValveCube(newName+"GateB")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -146,7 +147,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
   // monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
   // gateD(new constructSystem::GateValveCube(newName+"GateD")),
-  // bellowD(new constructSystem::Bellows(newName+"BellowD")),
   // diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   // bremMonoCollA(new xraySystem::BremMonoColl(newName+"BremMonoCollA")),
   // bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -202,6 +202,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(pumpTubeA);
   OR.addObject(bremCollA);
   OR.addObject(gateB);
+  OR.addObject(bellowD);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -213,7 +214,6 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // OR.addObject(gateC);
   // OR.addObject(monoBox);
   // OR.addObject(gateD);
-  // OR.addObject(bellowD);
   // OR.addObject(diagBoxA);
   // OR.addObject(bremMonoCollA);
   // OR.addObject(bellowE);
@@ -418,11 +418,6 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   M1Stand->addInsertCell(outerCell);
   M1Stand->createAll(System,*M1Tube,0);
 
-  // offPipeB->createAll(System,*M1Tube,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
-  // offPipeB->insertInCell(System,outerCell);
-  // offPipeB->setCell("OuterVoid",outerCell);
-
   // gateA->createAll(System,*offPipeB,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
   // gateA->insertInCell(System,outerCell);
@@ -541,6 +536,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   bremCollA->createExtension(System,gateB->getCell("Void")); // !!! UGLY - it does not actually intersect gateB
 
+  bellowD->setFront(*gateB,2);
+  bellowD->createAll(System,*gateB,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
+  bellowD->insertInCell(System,outerCell);
+
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
@@ -616,11 +616,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateD,2);
   // gateD->insertInCell(System,outerCell);
 
-
-  // bellowD->setFront(*gateD,2);
-  // bellowD->createAll(System,*gateD,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
-  // bellowD->insertInCell(System,outerCell);
 
   // // fake insert
   // diagBoxA->addAllInsertCell(masterCell->getName());
