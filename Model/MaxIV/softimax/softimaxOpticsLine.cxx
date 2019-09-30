@@ -19,38 +19,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
-#include <list>
+// #include <fstream>
+// #include <iomanip>
+// #include <iostream>
+// #include <sstream>
+// #include <cmath>
+// #include <complex>
+// #include <list>
 #include <vector>
 #include <set>
 #include <map>
-#include <string>
-#include <algorithm>
-#include <iterator>
+// #include <string>
+// #include <algorithm>
+// #include <iterator>
 #include <memory>
 
-#include "Exception.h"
-#include "FileReport.h"
+// #include "Exception.h"
+// #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
-#include "OutputLog.h"
+// #include "GTKreport.h"
+// #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+// #include "MatrixBase.h"
+// #include "Matrix.h"
 #include "Vec3D.h"
-#include "inputParam.h"
-#include "Surface.h"
-#include "surfIndex.h"
+// #include "inputParam.h"
+// #include "Surface.h"
+// #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Rules.h"
+// #include "Rules.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
@@ -66,7 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
+// #include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -75,17 +75,17 @@
 #include "InnerZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "World.h"
-#include "AttachSupport.h"
+// #include "World.h"
+// #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 
-#include "insertObject.h"
-#include "insertPlate.h"
-#include "VacuumPipe.h"
+// #include "insertObject.h"
+// #include "insertPlate.h"
+// #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
-#include "VacuumBox.h"
+// #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
@@ -93,17 +93,17 @@
 #include "BlockStand.h"
 #include "CrossPipe.h"
 #include "BremColl.h"
-#include "BremMonoColl.h"
-#include "MonoVessel.h"
-#include "MonoCrystals.h"
+// #include "BremMonoColl.h"
+// #include "MonoVessel.h"
+// #include "MonoCrystals.h"
 #include "GateValveCube.h"
-#include "JawUnit.h"
+// #include "JawUnit.h"
 #include "JawFlange.h"
-#include "FlangeMount.h"
+// #include "FlangeMount.h"
 #include "Mirror.h"
-#include "MonoBox.h"
-#include "MonoShutter.h"
-#include "DiffPumpXIADP03.h"
+// #include "MonoBox.h"
+// #include "MonoShutter.h"
+// #include "DiffPumpXIADP03.h"
 #include "softimaxOpticsLine.h"
 
 namespace xraySystem
