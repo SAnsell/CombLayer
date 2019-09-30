@@ -150,7 +150,7 @@ TGShow::write(std::ostream& OX) const
 
   
   OX<<"[T-gshow]\n";
-
+  grid.write2D(OX);
   if (!title.empty())
     OX<<"  title = "<<title<<"\n";
   if (!xTxt.empty())  OX<<"  x-txt = "<<xTxt<<"\n";

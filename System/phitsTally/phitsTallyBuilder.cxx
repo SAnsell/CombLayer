@@ -81,7 +81,7 @@ tallySelection(SimPHITS& System,
   
   System.populateCells();
   System.createObjSurfMap();
-  ELog::EM<<"ADSFSADF"<<ELog::endDiag;
+
   for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
       const std::string TType=

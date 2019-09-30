@@ -71,6 +71,7 @@
 #include "TallyBuilder.h"
 #include "flukaTallyBuilder.h"
 #include "flukaTallySelector.h"
+#include "phitsTallyBuilder.h"
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
@@ -569,7 +570,7 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   /*!
     Carry out the construction of the geometry
     and wieght/tallies
-    \param SimFLUKAPtr :: Simulation point
+    \param SimPHITSPtr :: Simulation point
     \param IParam :: input pararmeter
     \param OName :: output file name
    */
@@ -581,9 +582,11 @@ buildFullSimPHITS(SimPHITS* SimPHITSPtr,
   const int multi=IParam.getValue<int>("multi");
 
   ModelSupport::setDefaultPhysics(*SimPHITSPtr,IParam);
-  SimPHITSPtr->prepareWrite();
+  SimPHITSPtr->prepareWrite();  // this can be deleteted??
   
-  // tallySystem::tallySelection(*SimPHITSPtr,IParam);
+  phitsSystem::tallySelection(*SimPHITSPtr,IParam);
+  SimPHITSPtr->processActiveMaterials();
+    
   SimProcess::importanceSim(*SimPHITSPtr,IParam);
 
   SimProcess::inputProcessForSim(*SimPHITSPtr,IParam); // energy cut etc
