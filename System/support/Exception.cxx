@@ -3,7 +3,7 @@
  
  * File:   support/Exception.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -603,6 +603,7 @@ DimensionError<ndim,T>::DimensionError(const std::vector<T>& A,
     }
   setOutLine();
 }
+
 
 template<unsigned int ndim,typename T>
 DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
@@ -1515,6 +1516,7 @@ template class ColErr::MisMatch<long int>;
 template class ColErr::MisMatch<unsigned long int>;
 template class ColErr::ArrayError<2>;
 template class ColErr::DimensionError<4,long int>;
+template class ColErr::DimensionError<3,size_t>;
 template class ColErr::CastError<mainSystem::IItemBase>;
 template class ColErr::CastError<TimeData::WorkSpace>;
 template class ColErr::CastError<SDef::SrcBase>;

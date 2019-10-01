@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,11 +164,31 @@ SimPHITS::setICNTL(const std::string& ICName)
     }
   else if (ICName=="plot")
     {
-      icntl=8;
+      icntl=7;
       return;
     }
     
   throw ColErr::InContainerError<std::string>(ICName,"ICName");
+  return;
+}
+
+void
+SimPHITS::addTally(const phitsSystem::phitsTally& TRef)
+  /*!
+    Adds a tally to the main PTItem list.
+    \param TRef :: Tally item to insert
+    \return 0 :: Successful
+    \return -1 :: Tally already in use
+  */
+{
+  ELog::RegMethod RegA("SimPHITS","addTally");
+  
+  const std::string keyNum=TRef.getKey();
+  if (PTItem.find(keyNum)!=PTItem.end())
+    throw ColErr::InContainerError<std::string>(keyNum,"Tally Present");
+
+  phitsSystem::phitsTally* TX=TRef.clone();
+  PTItem.emplace(keyNum,TX);
   return;
 }
 
@@ -204,12 +224,9 @@ SimPHITS::writeTally(std::ostream& OX) const
   OX<<"$ -----------------------------------------------------------"<<std::endl;
   OX<<"$ ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"$ -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
-  //  for(const TallyTYPE::value_type& TI : TItem)
-  //    TI.second->write(OX);
+  ELog::EM<<"Size -== "<<PTItem.size()<<ELog::endDiag;
+  for(const PTallyTYPE::value_type& TI : PTItem)
+    TI.second->write(OX);
 
   return;
 }
@@ -353,6 +370,7 @@ SimPHITS::writePhysics(std::ostream& OX) const
   OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
   OX<<" file(1)     = /home/ansell/phits"<<std::endl;  
   OX<<" file(6)     = phits.out"<<std::endl;
+  OX<<" file(7)     = /home/ansell/mcnpxNew/xsdir_short"<<std::endl;
   OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
 
   ELog::EM<<"NOTE NOT WRITING PHYSICS"<<ELog::endDiag;
