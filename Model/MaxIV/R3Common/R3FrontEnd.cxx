@@ -560,6 +560,13 @@ R3FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
 
+  // ONLY FOR RETURN
+  lastComp=System.getSharedPtr(undulatorFC.getKeyName());
+  
+
+  return;
+
+
   magBlockM1->setCutSurf("front",undulatorFC,2);
   magBlockM1->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);

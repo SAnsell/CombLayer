@@ -84,6 +84,7 @@
 #include "R3Beamline.h"
 #include "BALDER.h"
 #include "COSAXS.h"
+#include "DANMAX.h"
 #include "MAXPEEM.h"
 #include "FLEXPES.h"
 #include "FORMAX.h"
@@ -267,6 +268,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
   static const std::map<std::string,std::string> beamNAMES
     ({ {"BALDER","OpticCentre1"},
        {"COSAXS","OpticCentre1"},
+       {"DANMAX","OpticCentre1"},
        {"FORMAX","OpticCentre8"},
        {"MICROMAX","OpticCentre1"},
 	  
@@ -317,6 +319,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new BALDER("Balder"));
       else if (BL=="COSAXS")	
 	BLPtr.reset(new COSAXS("Cosaxs"));
+      else if (BL=="DANMAX")	
+	BLPtr.reset(new DANMAX("Danmax"));
       else if (BL=="FORMAX")	
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")	

@@ -509,7 +509,6 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::CollGenerator CollGen;
-  setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::FlangeMountGenerator FlangeGen;
 
@@ -698,7 +697,8 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
-  PTubeGen.setCF<CF63>();
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
   PTubeGen.setBFlangeCF<CF63>();
   PTubeGen.setPortLength(-5.0,-7.5);
@@ -706,7 +706,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   PTubeGen.setBPortOffset(2.45,0);
   
   // ystep/radius length
-  PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
+  PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",7);
 
   const std::string portName=Name+"Port";
@@ -760,11 +760,12 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
-  PTubeGen.setCF<CF40>();
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<CF40>();
   PTubeGen.setAFlangeCF<CF63>();
   PTubeGen.setPortLength(-5.0,-5.0);
   // ystep/radius length
-  PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
+  PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",4);
 
   const std::string portName=Name+"Port";
@@ -905,11 +906,12 @@ opticsVariables(FuncDataBase& Control,
   BremGen.generateColl(Control,preName+"BremCollA",0,8.0);
 
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF63>();
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
   PTubeGen.setPortLength(-6.0,-5.0);
   // ystep/radius length
-  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
+  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,25.0);
   Control.addVariable(preName+"FilterBoxANPorts",4);
   
   PItemGen.setCF<setVariable::CF40>(4.0);
@@ -1065,10 +1067,11 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
   
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF40>();
+  PTubeGen.setPipeCF<CF40>();
+  PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(3.0,3.0);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,CF40::innerRadius,4.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,4.0);
   Control.addVariable(baseName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
 
@@ -1085,7 +1088,7 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
 
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,CF40::innerRadius,4.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
   LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);

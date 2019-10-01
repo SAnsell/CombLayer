@@ -203,16 +203,17 @@ splitterVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
 
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF40>();
+  PTubeGen.setPipeCF<CF63>();
+  PTubeGen.setPortCF<CF40>();  
   PTubeGen.setPortLength(2.5,2.5);
 
   const std::string pumpNameA=splitKey+"PumpTubeAA";
   const std::string pumpNameB=splitKey+"PumpTubeBA";
   const Geometry::Vec3D zVec(0,0,1);
   const Geometry::Vec3D centPoint(0,0,0);
-  PTubeGen.generateCFTube<CF63>(Control,pumpNameA,0.0,20.0);
+  PTubeGen.generateTube(Control,pumpNameA,0.0,20.0);
   Control.addVariable(pumpNameA+"NPorts",1);
-  PTubeGen.generateCFTube<CF63>(Control,pumpNameB,0.0,20.0);
+  PTubeGen.generateTube(Control,pumpNameB,0.0,20.0);
   Control.addVariable(pumpNameB+"NPorts",1);
 
   PItemGen.setCF<setVariable::CF63>(14.95);
@@ -1036,7 +1037,6 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::SqrFMaskGenerator CollGen;
-  setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
   Control.addVariable(frontKey+"OuterRadius",35.0);

@@ -302,19 +302,10 @@ monoShutterVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","monoShutterVariables");
 
-  setVariable::PortTubeGenerator PTubeGen;
-  setVariable::PortItemGenerator PItemGen;
-  setVariable::FlangeMountGenerator FlangeGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
   
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF63>();
-  PTubeGen.setPortLength(3.0,3.0);
-  PTubeGen.setAPortOffset(0,-3.0);
-  PTubeGen.setBPortOffset(0,-3.0);
-
   // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
   
@@ -508,10 +499,11 @@ opticsVariables(FuncDataBase& Control,
   // ACTUAL ROUND PIPE + 4 filter tubles and 1 base tube [large]
   
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF63>();
+  PTubeGen.setPipe(9.0,0.5);
+  PTubeGen.setPortCF<CF63>();
   PTubeGen.setPortLength(10.7,10.7);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,opticsName+"FilterBox",0.0,9.0,54.0);
+  PTubeGen.generateTube(Control,opticsName+"FilterBox",0.0,54.0);
   Control.addVariable(opticsName+"FilterBoxNPorts",4);
 
   PItemGen.setCF<setVariable::CF50>(20.0);
@@ -600,10 +592,11 @@ opticsVariables(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,opticsName+"SlitsA",0.0,0.8,0.8);
 
-  PTubeGen.setCF<CF100>();
+  PTubeGen.setPipe(9.0,0.5);
+  PTubeGen.setPortCF<CF100>();
   PTubeGen.setPortLength(1.0,1.0);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,9.0,54.0);
+  PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,54.0);
 
   Control.addVariable(opticsName+"ShieldPipeNPorts",4);
 
@@ -650,10 +643,11 @@ opticsVariables(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,opticsName+"SlitsB",0.0,0.8,0.8);
 
-  PTubeGen.setCF<CF100>();
+  PTubeGen.setPipe(9.0,0.5);
+  PTubeGen.setPortCF<CF100>();
   PTubeGen.setPortLength(1.0,1.0);
   // ystep/radius/length
-  PTubeGen.generateTube(Control,opticsName+"ViewTube",0.0,9.0,39.0);
+  PTubeGen.generateTube(Control,opticsName+"ViewTube",0.0,39.0);
 
   Control.addVariable(opticsName+"ViewTubeNPorts",4);
 
@@ -742,10 +736,11 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",10.0,152.0);
   
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF40>();
+  PTubeGen.setPipeCF<CF40>();
+  PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(3.0,3.0);
-  // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,CF40::innerRadius,4.0);
+  // ystep/length
+  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,4.0);
   Control.addVariable(baseName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
 
@@ -764,7 +759,7 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",10.0,188.0);
 
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,CF40::innerRadius,4.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,4.0);
   LBGen.generateBox(Control,baseName+"PumpBoxB",5.5,12.0);
   
   Control.addVariable(baseName+"IonPumpBNPorts",1);

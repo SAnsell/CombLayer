@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   formaxInc/formaxFrontEnd.h
+ * File:   balderInc/balderFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_formaxFrontEnd_h
-#define xraySystem_formaxFrontEnd_h
+#ifndef xraySystem_balderFrontEnd_h
+#define xraySystem_balderFrontEnd_h
 
 namespace insertSystem
 {

@@ -74,7 +74,8 @@ MonoShutterGenerator::MonoShutterGenerator() :
   PItemGen->setCF<setVariable::CF40>(0.45);
   PItemGen->setPlate(0.0,"Void");  
 
-  PTubeGen->setCF<CF63>();
+  PTubeGen->setPipe(7.5,0.5);
+  PTubeGen->setPortCF<CF63>();
   PTubeGen->setPortLength(3.0,3.0);
 
   PTubeGen->setAPortOffset(0,-3.0);
@@ -121,7 +122,7 @@ MonoShutterGenerator::generateShutter(FuncDataBase& Control,
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
   
   // Main outer structure:
-  PTubeGen->generateTube(Control,keyName+"Pipe",0.0,7.50,20.0);
+  PTubeGen->generateTube(Control,keyName+"Pipe",0.0,20.0);
   Control.addVariable(keyName+"PipeNPorts",2);
   
   const Geometry::Vec3D ZVec(0,0,1);

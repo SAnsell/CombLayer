@@ -99,7 +99,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
     ({"R1RING","RING1","FLEXPES","MAXPEEM","SPECIES"});
 
   const std::set<std::string> R3Beam
-    ({"R3RING","RING3","FORMAX","COSAXS","BALDER"});
+    ({"R3RING","RING3","BALDER","COSAXS","DANMAX","FORMAX"});
 
   
   typedef void (*VariableFunction)(FuncDataBase&);
@@ -108,6 +108,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
   const VMap VarInit({
      {"BALDER",    &BALDERvariables},
      {"COSAXS",    &COSAXSvariables},
+     {"DANMAX",    &DANMAXvariables},
      {"FLEXPES",   &FLEXPESvariables},
      {"FORMAX",    &FORMAXvariables},
      {"MAXPEEM",   &MAXPEEMvariables},

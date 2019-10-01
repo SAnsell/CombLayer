@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/MirrorGenerator1.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,12 +47,12 @@ class LeadBoxGenerator
   double wallThick;         ///< wall thickness
   double portGap;           ///< Clearance to port
 
-  double plateWidth; 
-  double plateHeight;
-  double plateThick; 
-  
-  std::string wallMat;      ///< Wall material layer
+  double plateWidth;        ///< Pipe cover plate
+  double plateHeight;       ///< Pipe Height
+  double plateThick;        ///< Pipe thickness
+
   std::string voidMat;      ///< void material 
+  std::string wallMat;      ///< Wall material layer
     
 
  public:

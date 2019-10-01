@@ -71,7 +71,8 @@ PortTubeGenerator::PortTubeGenerator() :
   */
 {}
 
-PortTubeGenerator::PortTubeGenerator(const PortTubeGenerator& A) : 
+PortTubeGenerator::PortTubeGenerator(const PortTubeGenerator& A) :
+  radius(A.radius),
   wallThick(A.wallThick),portAXStep(A.portAXStep),
   portAZStep(A.portAZStep),portAWallThick(A.portAWallThick),
   portATubeLength(A.portATubeLength),portATubeRadius(A.portATubeRadius),
@@ -98,6 +99,7 @@ PortTubeGenerator::operator=(const PortTubeGenerator& A)
 {
   if (this!=&A)
     {
+      radius=A.radius;
       wallThick=A.wallThick;
       portAXStep=A.portAXStep;
       portAZStep=A.portAZStep;
@@ -124,6 +126,19 @@ PortTubeGenerator::~PortTubeGenerator()
    Destructor
  */
 {}
+  
+void
+PortTubeGenerator::setPipe(const double R,const double T)
+  /*!
+    Set the main radius/thickness
+    \param R :: radius of port tube
+    \param T :: Thickness of port tube
+   */
+{
+  radius=R;
+  wallThick=T;
+  return;
+}
   
 void
 PortTubeGenerator::setPort(const double R,const double L,
@@ -243,6 +258,19 @@ PortTubeGenerator::setBFlange(const double R,const double L)
 
 template<typename CF>
 void
+PortTubeGenerator::setPipeCF()
+  /*!
+    Set the main radius/thickness from
+    CF units.
+   */
+{
+  radius=CF::innerRadius;
+  wallThick=CF::wallThick;
+  return;
+}
+
+template<typename CF>
+void
 PortTubeGenerator::setAPortCF()
   /*!
     Setter for Port A
@@ -301,7 +329,7 @@ PortTubeGenerator::setBFlangeCF()
   
 template<typename CF>
 void
-PortTubeGenerator::setCF()
+PortTubeGenerator::setPortCF()
   /*!
     Set pipe/flange to CF-X format
   */
@@ -325,38 +353,17 @@ PortTubeGenerator::getTotalLength(const double primLength) const
   return L+flangeALen+flangeBLen;
 }
   
-template<typename CF>
-void
-PortTubeGenerator::generateCFTube(FuncDataBase& Control,
-				  const std::string& keyName,
-				  const double yStep,
-				  const double length) const
- /*!
-    Primary funciton for setting the variables
-    \param Control :: Database to add variables 
-    \param keyName :: head name for variable
-    \param yStep :: y-offset 
-    \param length :: length of box - ports
-  */
-{
-  ELog::RegMethod RegA("PortTubeGenerator","generatorCFTube");
-  
-  generateTube(Control,keyName,yStep,CF::innerRadius,length);  
-  return;
-}
 
 void
 PortTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
 				const double yStep,
-				const double radius,
 				const double length) const
  /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: y-offset 
-    \param radius :: radius of inner void
     \param length :: length of box - ports
   */
 {
@@ -394,28 +401,21 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
   
   return;
-
 }
 
 ///\cond TEMPLATE
-  template void PortTubeGenerator::generateCFTube<CF40>
-  (FuncDataBase&,const std::string&,const double,const double) const;
-  template void PortTubeGenerator::generateCFTube<CF63>
-  (FuncDataBase&,const std::string&,const double,const double) const;
-  template void PortTubeGenerator::generateCFTube<CF100>
-  (FuncDataBase&,const std::string&,const double,const double) const;
-  template void PortTubeGenerator::generateCFTube<CF120>
-  (FuncDataBase&,const std::string&,const double,const double) const;
-  template void PortTubeGenerator::generateCFTube<CF150>
-  (FuncDataBase&,const std::string&,const double,const double) const;
 
+  template void PortTubeGenerator::setPipeCF<CF40>();
+  template void PortTubeGenerator::setPipeCF<CF63>();
+  template void PortTubeGenerator::setPipeCF<CF100>();
+  template void PortTubeGenerator::setPipeCF<CF120>();
+  template void PortTubeGenerator::setPipeCF<CF150>();
 
-
-  template void PortTubeGenerator::setCF<CF40>();
-  template void PortTubeGenerator::setCF<CF63>();
-  template void PortTubeGenerator::setCF<CF100>();
-  template void PortTubeGenerator::setCF<CF120>();
-  template void PortTubeGenerator::setCF<CF150>();
+  template void PortTubeGenerator::setPortCF<CF40>();
+  template void PortTubeGenerator::setPortCF<CF63>();
+  template void PortTubeGenerator::setPortCF<CF100>();
+  template void PortTubeGenerator::setPortCF<CF120>();
+  template void PortTubeGenerator::setPortCF<CF150>();
 
   template void PortTubeGenerator::setAPortCF<CF40>();
   template void PortTubeGenerator::setAPortCF<CF63>();
