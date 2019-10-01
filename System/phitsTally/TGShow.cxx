@@ -163,10 +163,7 @@ TGShow::write(std::ostream& OX) const
   OX<<"  epsout = "<<epsFlag<<"\n";
   OX<<"  vtkout = "<<vtkFlag<<"\n";
   OX<<"  vtkfmt = "<<vtkFormat<<"\n";
-  if (epsFlag)
-    OX<<"  file = "<<keyName<<".ps \n";
-  else if (vtkFlag)
-    OX<<"  file = "<<keyName<<".vtk \n";
+  OX<<"  file = "<<keyName<<"\n";
   OX.flush();
   return;
 }

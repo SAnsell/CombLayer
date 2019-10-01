@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,7 +164,7 @@ SimPHITS::setICNTL(const std::string& ICName)
     }
   else if (ICName=="plot")
     {
-      icntl=8;
+      icntl=7;
       return;
     }
     
@@ -370,6 +370,7 @@ SimPHITS::writePhysics(std::ostream& OX) const
   OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
   OX<<" file(1)     = /home/ansell/phits"<<std::endl;  
   OX<<" file(6)     = phits.out"<<std::endl;
+  OX<<" file(7)     = /home/ansell/mcnpxNew/xsdir_short"<<std::endl;
   OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
 
   ELog::EM<<"NOTE NOT WRITING PHYSICS"<<ELog::endDiag;
