@@ -560,13 +560,6 @@ R3FrontEnd::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,masterCell,*this,0);
 
-  // ONLY FOR RETURN
-  lastComp=System.getSharedPtr(undulatorFC.getKeyName());
-  
-
-  return;
-
-
   magBlockM1->setCutSurf("front",undulatorFC,2);
   magBlockM1->createAll(System,undulatorFC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*magBlockM1,2);
@@ -601,13 +594,12 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-
   if (stopPoint=="Dipole")
     {
       lastComp=dipolePipe;
       return;
     }
-  lastComp=dipolePipe;
+
   bellowA->createAll(System,*dipolePipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
@@ -631,8 +623,8 @@ R3FrontEnd::buildObjects(Simulation& System)
   bellowC->createAll(System,*collABPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
-  
 
+  
   collTubeB->setFront(*bellowC,2);
   collTubeB->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeB,2);

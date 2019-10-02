@@ -541,12 +541,15 @@ PipeTube::applyPortRotation()
       const Geometry::Vec3D& QVvec=QV.getVec();
       const Geometry::Vec3D QAxis=X*QVvec.X()+
 	Y*QVvec.Y()+Z*QVvec.Z();
-      
+
       const Geometry::Quaternion QVmain(QV[0],QAxis);  
       QVmain.rotate(X);
       QVmain.rotate(Y);
       QVmain.rotate(Z);
+
+      // This moves in the new Y direction
       const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
+      
       Origin+=offset;
     }
 
@@ -568,6 +571,7 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
     throw ColErr::IndexError<size_t>
       (pIndex,Ports.size(),"PI exceeds number of Ports");
 
+  // No Y point so no displacement
   const Geometry::Vec3D PC=
     X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
   const Geometry::Vec3D PA=
@@ -580,14 +584,15 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
   std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
   // calc external impact point:
 
+
   const double R=radius+wallThick;
   const double ELen=Ports[pIndex]->getExternalLength();
   const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
   
   const Geometry::Vec3D RPoint=
     SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
-  
-  return RPoint-PA*ELen;
+
+  return RPoint-PA*ELen - PC*2.0;
 }
 
 
