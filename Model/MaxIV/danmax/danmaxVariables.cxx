@@ -73,6 +73,7 @@
 #include "WallLeadGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
+#include "BremBlockGenerator.h"
 
 namespace setVariable
 {
@@ -433,7 +434,7 @@ opticsVariables(FuncDataBase& Control,
   /*
     Vacuum optics components in the optics hutch
     \param Control :: Function data base
-    \param preName :: beamline name
+    \param beamName :: beamline name
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","danmaxVariables");
@@ -446,14 +447,13 @@ opticsVariables(FuncDataBase& Control,
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::CrossGenerator CrossGen;
-  setVariable::VacBoxGenerator VBoxGen;
-  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::BremBlockGenerator BremGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
+
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
-  setVariable::FlangeMountGenerator FlangeGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::MirrorGenerator MirrGen;
 
   PipeGen.setNoWindow();   // no window
@@ -498,7 +498,18 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,opticsName+"PipeA",0,38.3);
   BellowGen.generateBellow(Control,opticsName+"BellowB",0,16.0);
 
-  // ACTUAL ROUND PIPE + 4 filter tubles and 1 base tube [large]
+  const std::string collName=opticsName+"CollTubeA";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,collName,0.0,30.0);  // 10h/20d
+  Control.addVariable(collName+"NPorts",2);   // beam ports
+
+  PItemGen.setCF<setVariable::CF40>(3.45);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,5,0),ZVec);
+  PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,5,0),-ZVec);
+
+
   return;
 }
 

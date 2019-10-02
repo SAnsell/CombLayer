@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   maxpeem/BremBlock.cxx
+ * File:   commonBeam/BremBlock.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -109,7 +108,10 @@ BremBlock::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   // Void + Fe special:
-  radius=Control.EvalVar<double>(keyName+"Radius");
+  radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
+  width=Control.EvalDefVar<double>(keyName+"Width",-1.0);
+  height=Control.EvalDefVar<double>(keyName+"Height",-1.0);
+
   length=Control.EvalVar<double>(keyName+"Length");  
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
@@ -121,6 +123,10 @@ BremBlock::populate(const FuncDataBase& Control)
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+
+  if (radius<Geometry::zeroTol &&
+      (width<Geometry::zeroTol || height<Geometry::zeroTol))
+    throw ColErr::SizeError<double>(radius,0.0,"Radius and W/H beloww zero");
 
   return;
 }
@@ -190,7 +196,15 @@ BremBlock::createSurfaces()
   
 
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  if (radius>Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  else
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+    }
   return;
 }
 
@@ -211,13 +225,13 @@ BremBlock::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 1003 -1004 1005 -1006 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,frontSurf+backSurf+Out);
   
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," -7 (-1003: 1004 : -1005: 1006)");
+  Out=ModelSupport::getSetComposite
+    (SMap,buildIndex," 3 -4 5 -6 -7 (-1003: 1004 : -1005: 1006)");
   makeCell("Shield",System,cellIndex++,mainMat,0.0,Out+frontSurf+backSurf);
 
   // If front back set then don't add to exclude --
   // thus buildIndex+1 or buildIndex+2 will not exist.
-  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -7 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"1 -2 -7 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;

@@ -56,7 +56,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
-  class BremColl;
+  class BremBlock;
   class BremMonoColl;
   class FlangeMount;
   class Mirror;
@@ -102,7 +102,10 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   /// bellows to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
-
+  /// Collimator zone
+  std::shared_ptr<constructSystem::PipeTube> collTubeA;
+  /// Brem Collimator
+  std::shared_ptr<xraySystem::BremBlock> bremColl;
   /*
   /// First gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateA;

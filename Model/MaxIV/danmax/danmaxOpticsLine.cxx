@@ -90,7 +90,7 @@
 #include "PortTube.h"
 
 #include "CrossPipe.h"
-#include "BremColl.h"
+#include "BremBlock.h"
 #include "BremMonoColl.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
@@ -124,12 +124,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),    
-  bellowB(new constructSystem::Bellows(newName+"BellowB"))
-
-
-
-
-
+  bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  collTubeA(new constructSystem::PipeTube(newName+"CollTubeA")),
+  bremColl(new xraySystem::BremBlock(newName+"BremColl"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -146,6 +143,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowA);
   OR.addObject(pipeA);
   OR.addObject(bellowB);
+  OR.addObject(collTubeA);
+  OR.addObject(bremColl);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -351,7 +350,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateTubeAItem->setBladeCentre(*gateTubeA,0);
   gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
-  
   bellowA->setFront(GPI,GPI.getSideIndex("OuterPlate"));
   bellowA->createAll(System,GPI,"OuterPlate");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
@@ -367,6 +365,10 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
   bellowB->insertInCell(System,outerCell);
   
+  // FAKE insertcell: required
+  collTubeA->addAllInsertCell(masterCell->getName());
+  collTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  collTubeA->createAll(System,*bellowB,"back");
   
   lastComp=triggerPipe;
   return;

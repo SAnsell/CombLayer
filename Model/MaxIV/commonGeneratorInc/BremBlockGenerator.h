@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/BremBlock.h
+ * File:   commonBeamInc/BremBlockGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,60 +19,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_BremBlock_h
-#define xraySystem_BremBlock_h
+#ifndef xraySystem_BremBlockGenerator_h
+#define xraySystem_BremBlockGenerator_h
 
 class Simulation;
 
-namespace xraySystem
+namespace setVariable
 {
   
 /*!
-  \class BremBlock
+  \class BremBlockGenerator
   \version 1.0
   \author S. Ansell
-  \date May 2018
-  \brief Bremsstralung Collimator unit  
+  \date October 2019
+  \brief Bremsstralung Collimator unit  builder
 */
 
-class BremBlock :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+class BremBlockGenerator 
 {
  private:
 
   double radius;              ///< Main radius [-ve to use square]
   double width;               ///< Optional width
   double height;              ///< Optional height
-  double length;              ///< Main length  
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
+  
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidDist;          ///< Mid distance width of hole
+  double holeMidWidth;         ///< Mid width of hole
+  double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
   
-  int voidMat;                ///< void material
-  int mainMat;                ///< main material
+  std::string voidMat;                ///< void material
+  std::string mainMat;                ///< main material
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
   
  public:
 
-  BremBlock(const std::string&);
-  BremBlock(const BremBlock&);
-  BremBlock& operator=(const BremBlock&);
-  virtual ~BremBlock();
+  BremBlockGenerator();
+  BremBlockGenerator(const BremBlockGenerator&);
+  BremBlockGenerator& operator=(const BremBlockGenerator&);
+  ~BremBlockGenerator();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void setMaterial(const std::string&,const std::string&);
+  void setHoleXY(const double,const double);
+  void setAperature(const double,const double,const double,
+		    const double,const double,
+		    const double,const double);
+  
+  void generateBlock(FuncDataBase&,const std::string&,
+		     const double,const double) const;
 
 };
 
