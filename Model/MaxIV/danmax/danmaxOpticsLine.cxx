@@ -123,55 +123,13 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateTubeA(new constructSystem::PipeTube(newName+"GateTubeA")),
   gateTubeAItem(new xraySystem::FlangeMount(newName+"GateTubeAItem")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  gateA(new constructSystem::GateValveCube(newName+"GateA")),
-  bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
-  filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
-  filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
-  gateB(new constructSystem::GateValveCube(newName+"GateB")),
-  screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
-  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
-  adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
-  diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
-  primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
-  bellowC(new constructSystem::Bellows(newName+"BellowC")),  
-  gateC(new constructSystem::GateValveCube(newName+"GateC")),
-  monoBox(new xraySystem::MonoBox(newName+"MonoBox")),
-  monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
-  gateD(new constructSystem::GateValveCube(newName+"GateD")),
-  bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
-  bremMonoCollA(new xraySystem::BremMonoColl(newName+"BremMonoCollA")),
-  bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  gateE(new constructSystem::GateValveCube(newName+"GateE")),
-  mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
-  mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
-  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-  gateF(new constructSystem::GateValveCube(newName+"GateF")),
-  bellowF(new constructSystem::Bellows(newName+"BellowF")),  
-  diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
-  jawCompB({
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit0"),
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit1")
-	}),
+  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),    
+  bellowB(new constructSystem::Bellows(newName+"BellowB"))
 
-  bellowG(new constructSystem::Bellows(newName+"BellowG")),  
-  gateG(new constructSystem::GateValveCube(newName+"GateG")),
-  mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
-  mirrorFrontB(new xraySystem::Mirror(newName+"MirrorFrontB")),
-  mirrorBackB(new xraySystem::Mirror(newName+"MirrorBackB")),
-  gateH(new constructSystem::GateValveCube(newName+"GateH")),
-  bellowH(new constructSystem::Bellows(newName+"BellowH")),  
-  diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
-  jawCompC({
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
-      std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit1")
-	}),
-  bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  gateI(new constructSystem::GateValveCube(newName+"GateI")),
-  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  
-  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
+
+
+
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -186,43 +144,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeAItem);
 
   OR.addObject(bellowA);
-  OR.addObject(gateA);
-  OR.addObject(bremCollA);
-  OR.addObject(filterBoxA);
-  OR.addObject(filterStick);
-  OR.addObject(gateB);
-  OR.addObject(screenPipeA);
-  OR.addObject(screenPipeB);
-  OR.addObject(adaptorPlateA);
-  OR.addObject(diffPumpA);
-  OR.addObject(primeJawBox);
-  OR.addObject(bellowC);
-  OR.addObject(gateC);
-  OR.addObject(monoBox);
-  OR.addObject(gateD);
-  OR.addObject(bellowD);
-  OR.addObject(diagBoxA);
-  OR.addObject(bremMonoCollA);
-  OR.addObject(bellowE);
-  OR.addObject(gateE);
-  OR.addObject(mirrorBoxA);
-  OR.addObject(mirrorFrontA);
-  OR.addObject(mirrorBackA);
-  OR.addObject(gateF);
-  OR.addObject(bellowF);
-  OR.addObject(diagBoxB);
-  OR.addObject(bellowG);
-  OR.addObject(gateG);
-  OR.addObject(mirrorBoxB);
-  OR.addObject(mirrorFrontB);
-  OR.addObject(mirrorBackB);
-  OR.addObject(gateH);
-  OR.addObject(bellowH);
-  OR.addObject(diagBoxC);
-  OR.addObject(gateI);
-  OR.addObject(monoShutter);
-  OR.addObject(bellowJ);
-  OR.addObject(gateJ);
+  OR.addObject(pipeA);
+  OR.addObject(bellowB);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -286,8 +209,8 @@ danmaxOpticsLine::constructMonoShutter
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
 
-  int outerCell;
-  
+  int outerCell(0);
+  /*  
   gateI->setFront(FC,linkPt);
   gateI->createAll(System,FC,linkPt);
   outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateI,2);
@@ -316,7 +239,7 @@ danmaxOpticsLine::constructMonoShutter
   gateJ->createAll(System,*bellowJ,2);
   outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateJ,2);
   gateJ->insertInCell(System,outerCell);
-  
+  */  
   return outerCell;
 }
 
@@ -414,7 +337,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,masterCell,TPI,TPI.getSideIndex("OuterPlate"));
   triggerPipe->insertAllInCell(System,outerCell);
 
-
   // FAKE insertcell: required
   gateTubeA->addAllInsertCell(masterCell->getName());
   gateTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
@@ -429,6 +351,23 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateTubeAItem->setBladeCentre(*gateTubeA,0);
   gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
+  
+  bellowA->setFront(GPI,GPI.getSideIndex("OuterPlate"));
+  bellowA->createAll(System,GPI,"OuterPlate");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
+  bellowA->insertInCell(System,outerCell);
+
+  pipeA->setFront(*bellowA,2);
+  pipeA->createAll(System,*bellowA,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
+  pipeA->insertInCell(System,outerCell);
+
+  bellowB->setFront(*pipeA,2);
+  bellowB->createAll(System,*pipeA,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
+  bellowB->insertInCell(System,outerCell);
+  
+  
   lastComp=triggerPipe;
   return;
   /*
@@ -438,10 +377,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gaugeA->insertInCell(System,outerCell);
 
 
-  bellowA->setFront(*gaugeA,2);
-  bellowA->createAll(System,*gaugeA,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
 
   gateA->setFront(*bellowA,2);
   gateA->createAll(System,*bellowA,2);

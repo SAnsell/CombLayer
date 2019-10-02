@@ -96,8 +96,14 @@ class danmaxOpticsLine :
   /// Gate block [item]
   std::shared_ptr<xraySystem::FlangeMount> gateTubeAItem;
 
-  /// bellows after ion pump to filter
+  /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
+  /// Mid trigger -> collimator
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// bellows to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+
+  /*
   /// First gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// Vacuum pipe for collimator
@@ -192,7 +198,8 @@ class danmaxOpticsLine :
 
   /// Last gate valve:
   std::shared_ptr<constructSystem::GateValveCube> gateJ;
-
+  */
+  
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle

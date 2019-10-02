@@ -115,9 +115,10 @@ class VacuumPipe :
 
   void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
   void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 
