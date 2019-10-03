@@ -129,7 +129,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   collTubeA(new constructSystem::PipeTube(newName+"CollTubeA")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   filterPipe(new constructSystem::VacuumPipe(newName+"FilterPipe")),
-  gateA(new constructSystem::GateValveCylinder(newName+"GateA"))
+  gateA(new constructSystem::GateValveCylinder(newName+"GateA")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),    
+  bellowD(new constructSystem::Bellows(newName+"BellowD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -150,6 +153,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bremColl);
   OR.addObject(filterPipe);
   OR.addObject(gateA);
+  OR.addObject(bellowC);
+  OR.addObject(lauePipe);
+  OR.addObject(bellowD);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -394,6 +400,22 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateA->createAll(System,*filterPipe,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
+
+    // after gate value
+  bellowC->setFront(*gateA,gateA->getSideIndex("back"));
+  bellowC->createAll(System,*gateA,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
+  bellowC->insertInCell(System,outerCell);
+
+  lauePipe->setFront(*bellowC,2);
+  lauePipe->createAll(System,*bellowC,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*lauePipe,2);
+  lauePipe->insertInCell(System,outerCell);
+
+  bellowD->setFront(*lauePipe,2);
+  bellowD->createAll(System,*lauePipe,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
+  bellowD->insertInCell(System,outerCell);
 
   lastComp=triggerPipe;
   return;
