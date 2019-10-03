@@ -39,6 +39,7 @@ class BremBlockGenerator
 {
  private:
 
+  bool centFlag;              ///< centre flag
   double radius;              ///< Main radius [-ve to use square]
   double width;               ///< Optional width
   double height;              ///< Optional height
@@ -65,6 +66,7 @@ class BremBlockGenerator
   BremBlockGenerator& operator=(const BremBlockGenerator&);
   ~BremBlockGenerator();
 
+  void centre() { centFlag=1; }
   void setMaterial(const std::string&,const std::string&);
   void setRadius(const double);
   void setCube(const double,const double);

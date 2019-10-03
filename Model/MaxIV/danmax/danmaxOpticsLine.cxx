@@ -371,7 +371,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   collTubeA->createAll(System,*bellowB,"back");
 
   bremColl->addInsertCell(collTubeA->getCell("Void"));
-  bremColl->createAll(System,*collTubeA,0);
+  bremColl->createAll(System,*collTubeA,"OrgOrigin");
   
   lastComp=triggerPipe;
   return;

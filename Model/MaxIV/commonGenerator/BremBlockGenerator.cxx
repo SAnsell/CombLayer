@@ -58,13 +58,14 @@ namespace setVariable
 {
 
 BremBlockGenerator::BremBlockGenerator() :
-  radius(0.0),width(7.2),height(7.2),
+  centFlag(0),radius(0.0),width(7.2),height(7.2),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
   holeMidDist(-0.6),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
   
   voidMat("Void"),mainMat("Tungsten")
+
   /*!
     Constructor and defaults
   */
@@ -176,7 +177,8 @@ BremBlockGenerator::generateBlock(FuncDataBase& Control,
   ELog::RegMethod RegA("BremBlockGenerator","generatorColl");
   
   Control.addVariable(keyName+"YStep",yStep);
-
+  Control.addVariable(keyName+"CentreFlag",static_cast<int>(centFlag));
+  
   if (radius<Geometry::zeroTol)
     {
       Control.addVariable(keyName+"Width",width);

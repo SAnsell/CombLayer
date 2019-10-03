@@ -43,6 +43,8 @@ class BremBlock :
 {
  private:
 
+  bool centreFlag;            ///< centre origin
+
   double radius;              ///< Main radius [-ve to use square]
   double width;               ///< Optional width
   double height;              ///< Optional height
@@ -52,6 +54,9 @@ class BremBlock :
   double holeZStep;            ///< Z-offset of hole
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
+  double holeMidDist;          ///< Mid hole distance from front
+  double holeMidWidth;         ///< Mid width of hole
+  double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
   
@@ -59,7 +64,7 @@ class BremBlock :
   int mainMat;                ///< main material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,7 +76,8 @@ class BremBlock :
   BremBlock& operator=(const BremBlock&);
   virtual ~BremBlock();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

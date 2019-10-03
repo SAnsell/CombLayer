@@ -61,7 +61,7 @@ BremCollGenerator::BremCollGenerator() :
   width(7.2),height(6.6),wallThick(0.5),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
-  holeMidDist(-0.7),holeMidWidth(0.7),holeMidHeight(0.7),
+  holeMidDist(-1.0),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
   extLength(5.0),extRadius(2.5),pipeDepth(2.0),pipeXSec(0.9),
   pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
@@ -165,12 +165,11 @@ BremCollGenerator::generateColl(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBRadius",flangeARadius);
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);  
 
-  const double HD(holeMidDist<0.0 ? -length*holeMidDist : holeMidDist);
   Control.addVariable(keyName+"HoleXStep",holeXStep);
   Control.addVariable(keyName+"HoleZStep",holeZStep);
   Control.addVariable(keyName+"HoleAWidth",holeAWidth);
   Control.addVariable(keyName+"HoleAHeight",holeAHeight);
-  Control.addVariable(keyName+"HoleMidDist",HD);
+  Control.addVariable(keyName+"HoleMidDist",holeMidDist);
   Control.addVariable(keyName+"HoleMidWidth",holeMidWidth);
   Control.addVariable(keyName+"HoleMidHeight",holeMidHeight);
   Control.addVariable(keyName+"HoleBWidth",holeBWidth);

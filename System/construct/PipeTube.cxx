@@ -178,7 +178,7 @@ PipeTube::populate(const FuncDataBase& Control)
       if (OFlag) windowPort->setWrapVolume();
       windowPort->setMain(L,R,W);
       windowPort->setFlange(FR,FT);
-      windowPort->setCoverPlate(CT,capMat);
+      windowPort->setCoverPlate(CT,CMat);
       windowPort->setMaterial(voidMat,wallMat);
 
       PCentre.push_back(Centre);
@@ -376,6 +376,8 @@ PipeTube::createLinks()
 
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
   nameSideIndex(6,"InnerSide");
+
+  
   return;
 }
 
@@ -503,6 +505,7 @@ PipeTube::setPortRotation(const size_t index,
   portConnectIndex=index;
   if (portConnectIndex>1)
     rotAxis=RAxis.unit();
+  
   return;
 }
 
@@ -520,6 +523,10 @@ PipeTube::applyPortRotation()
     throw ColErr::IndexError<size_t>
       (portConnectIndex,Ports.size()+3,"PI exceeds number of Ports+3");
 
+  // create extra link:
+  nameSideIndex(7,"OrgOrigin");
+  const Geometry::Vec3D YOriginal=Y;
+  
   Geometry::Vec3D YPrime(0,-1,0);
   if (portConnectIndex<3)
     {
@@ -529,6 +536,8 @@ PipeTube::applyPortRotation()
 	  Y*=1;
 	  X*=-1;
 	}
+      FixedComp::setConnect(7,Origin,YOriginal);
+
       return;
     }
   else
@@ -549,8 +558,9 @@ PipeTube::applyPortRotation()
 
       // This moves in the new Y direction
       const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
-      
       Origin+=offset;
+      ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+      FixedComp::setConnect(7,Origin,YOriginal);
     }
 
   return;

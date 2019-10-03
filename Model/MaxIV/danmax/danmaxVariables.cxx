@@ -509,10 +509,11 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,collName+"Port0",Geometry::Vec3D(0,5,0),ZVec);
   PItemGen.generatePort(Control,collName+"Port1",Geometry::Vec3D(0,5,0),-ZVec);
 
+  BremGen.centre();
   BremGen.setCube(7.5,7.5);
-  BremGen.setAperature(-0.6,1.2,0.6,0.4,0.3,0.6,0.45);  // WRONG
+  BremGen.setAperature(6.0, 1.2,0.6, 0.4,0.3, 0.6,0.45);  // WRONG
   BremGen.generateBlock(Control,opticsName+"BremColl",0.0,10.0);
-  
+  Control.addVariable(opticsName+"BremCollZStep",5.0);
   return;
 }
 
