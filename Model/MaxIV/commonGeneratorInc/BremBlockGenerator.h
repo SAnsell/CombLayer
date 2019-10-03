@@ -66,6 +66,8 @@ class BremBlockGenerator
   ~BremBlockGenerator();
 
   void setMaterial(const std::string&,const std::string&);
+  void setRadius(const double);
+  void setCube(const double,const double);
   void setHoleXY(const double,const double);
   void setAperature(const double,const double,const double,
 		    const double,const double,

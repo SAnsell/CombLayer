@@ -93,6 +93,33 @@ BremBlockGenerator::setMaterial(const std::string& MMat,
 }
 
 void
+BremBlockGenerator::setRadius(const double R)
+  /*!
+    Make block cylinder
+    \param R :: Radius
+   */
+{
+  radius=R;
+  width=-1.0;
+  height=-1.0;
+  return;
+}
+
+void
+BremBlockGenerator::setCube(const double W,const double H)
+  /*!
+    Make block blockshape
+    \param W :: Width
+    \param H :: Height
+   */
+{
+  radius=-1.0;
+  width=W;
+  height=H;
+  return;
+}
+
+void
 BremBlockGenerator::setHoleXY(const double HX,const double HZ)
   /*!
     Set the hole offset
@@ -113,6 +140,7 @@ BremBlockGenerator::setAperature(const double MLength,
 				 const double backW,const double backH)
 /*!
     Set the widths
+    \param MLength :: Aperature length
     \param frontW :: Front width
     \param frontH :: Front height
     \param midW :: min width

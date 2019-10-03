@@ -369,7 +369,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   collTubeA->addAllInsertCell(masterCell->getName());
   collTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   collTubeA->createAll(System,*bellowB,"back");
-  
+
+  bremColl->addInsertCell(collTubeA->getCell("Void"));
+  bremColl->createAll(System,*collTubeA,0);
   lastComp=triggerPipe;
   return;
   /*
