@@ -3,7 +3,7 @@
  
  * File:   construct/DiskChopper.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -156,9 +155,9 @@ DiskChopper::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nDisk;i++)
     {
       DiskBlades DItem;
-      const std::string kN=keyName+StrFunc::makeString(i);
-      DItem.thick=Control.EvalPair<double>(kN,keyName,"Thick");
-      DItem.innerThick=Control.EvalDefPair<double>
+      const std::string kN=keyName+std::to_string(i);
+      DItem.thick=Control.EvalTail<double>(kN,keyName,"Thick");
+      DItem.innerThick=Control.EvalDefTail<double>
         (kN,keyName,"InnerThick",DItem.thick);
       DItem.innerMat=ModelSupport::EvalMat<int>
 	(Control,kN+"InnerMat",keyName+"InnerMat");
@@ -167,13 +166,13 @@ DiskChopper::populate(const FuncDataBase& Control)
       totalThick+=DItem.thick;
       totalThick+=(i) ? diskGap : 0.0;
       
-      const size_t NB=Control.EvalPair<size_t>(kN,keyName,"NBlades");
+      const size_t NB=Control.EvalTail<size_t>(kN,keyName,"NBlades");
       for(size_t j=0;j<NB;j++)
 	{
-	  const std::string PAStr("PhaseAngle"+StrFunc::makeString(j));
-	  const std::string OAStr("OpenAngle"+StrFunc::makeString(j));
-	  const double pA=Control.EvalPair<double>(kN,keyName,PAStr);
-	  const double oA=Control.EvalPair<double>(kN,keyName,OAStr);
+	  const std::string PAStr("PhaseAngle"+std::to_string(j));
+	  const std::string OAStr("OpenAngle"+std::to_string(j));
+	  const double pA=Control.EvalTail<double>(kN,keyName,PAStr);
+	  const double oA=Control.EvalTail<double>(kN,keyName,OAStr);
 	  DItem.addOpen(pA,oA);
 	}
       DInfo.push_back(DItem);

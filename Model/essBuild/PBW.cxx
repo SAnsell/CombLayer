@@ -3,7 +3,7 @@
 
  * File:   essBuild/PBW.cxx
  *
- * Copyright (c) 2004-2018 by Konstantin Batkov
+ * Copyright (c) 2004-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -237,7 +236,7 @@ PBW::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("PBW","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   plugLength1=Control.EvalVar<double>(keyName+"PlugLength1");
   plugLength2=Control.EvalVar<double>(keyName+"PlugLength2");
@@ -276,22 +275,6 @@ PBW::populate(const FuncDataBase& Control)
 
   coolingMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolingMat");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return;
-}
-
-void
-PBW::createUnitVector(const attachSystem::FixedComp& FC,const long int& sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: object for origin
-  */
-{
-  ELog::RegMethod RegA("PBW","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
 
   return;
 }

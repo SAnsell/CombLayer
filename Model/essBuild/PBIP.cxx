@@ -3,7 +3,7 @@
 
  * File:   essBuild/PBIP.cxx
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -74,7 +73,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "FixedOffset.h"
@@ -183,7 +181,7 @@ PBIP::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("PBIP","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");

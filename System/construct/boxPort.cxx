@@ -3,7 +3,7 @@
  
  * File:   construct/boxPort.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,18 +182,18 @@ boxPort::populate(const FuncDataBase& Control)
   if (!(populated & 1))
     {
       const size_t NB=
-	Control.EvalDefPair<size_t>(keyName,baseName,"NBolts",0);
+	Control.EvalDefTail<size_t>(keyName,baseName,"NBolts",0);
       const double BR=
-	Control.EvalDefPair<double>(keyName,baseName,"BoltRadius",0.0);
+	Control.EvalDefTail<double>(keyName,baseName,"BoltRadius",0.0);
 
-      const double IW=Control.EvalPair<double>(keyName,baseName,"InnerWidth");
-      const double OW=Control.EvalPair<double>(keyName,baseName,"OuterWidth");
-      const double IH=Control.EvalPair<double>(keyName,baseName,"InnerHeight");
-      const double OH=Control.EvalPair<double>(keyName,baseName,"OuterHeight");
+      const double IW=Control.EvalTail<double>(keyName,baseName,"InnerWidth");
+      const double OW=Control.EvalTail<double>(keyName,baseName,"OuterWidth");
+      const double IH=Control.EvalTail<double>(keyName,baseName,"InnerHeight");
+      const double OH=Control.EvalTail<double>(keyName,baseName,"OuterHeight");
 
       double TK(1.0);  // default value to ignore if active/front/back
       if (!backActive() || !frontActive())
-	TK=Control.EvalPair<double>(keyName,baseName,"Thickness");
+	TK=Control.EvalTail<double>(keyName,baseName,"Thickness");
       
       setDimensions(NB,IW,OW,IH,OH,TK,BR);
     }
@@ -211,9 +211,9 @@ boxPort::populate(const FuncDataBase& Control)
     }
   if (!(populated & 4))
     {
-      sealRadius=Control.EvalDefPair<double>
+      sealRadius=Control.EvalDefTail<double>
 	(keyName,baseName,"SealRadius",0.0);
-      sealThick=Control.EvalDefPair<double>
+      sealThick=Control.EvalDefTail<double>
 	(keyName,baseName,"SealThick",0.2);
       sealMat=ModelSupport::EvalDefMat<int>
 	(Control,keyName+"SealMat",baseName+"SealMat",0);

@@ -131,18 +131,18 @@ Octupole::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
   
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
 
-  frameRadius=Control.EvalPair<double>(keyName,baseName,"FrameRadius");
-  frameThick=Control.EvalPair<double>(keyName,baseName,"FrameThick");
+  frameRadius=Control.EvalTail<double>(keyName,baseName,"FrameRadius");
+  frameThick=Control.EvalTail<double>(keyName,baseName,"FrameThick");
 
-  poleYAngle=Control.EvalPair<double>(keyName,baseName,"PoleYAngle");
-  poleGap=Control.EvalPair<double>(keyName,baseName,"PoleGap");
-  poleRadius=Control.EvalPair<double>(keyName,baseName,"PoleRadius");
-  poleWidth=Control.EvalPair<double>(keyName,baseName,"PoleWidth");
+  poleYAngle=Control.EvalTail<double>(keyName,baseName,"PoleYAngle");
+  poleGap=Control.EvalTail<double>(keyName,baseName,"PoleGap");
+  poleRadius=Control.EvalTail<double>(keyName,baseName,"PoleRadius");
+  poleWidth=Control.EvalTail<double>(keyName,baseName,"PoleWidth");
 
-  coilRadius=Control.EvalPair<double>(keyName,baseName,"CoilRadius");
-  coilWidth=Control.EvalPair<double>(keyName,baseName,"CoilWidth");
+  coilRadius=Control.EvalTail<double>(keyName,baseName,"CoilRadius");
+  coilWidth=Control.EvalTail<double>(keyName,baseName,"CoilWidth");
   
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");

@@ -3,7 +3,7 @@
  
  * File:   build/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,11 +138,11 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
       plateCut Item;
       const std::string keyIndex(keyName+"P"+std::to_string(i+1));
       const double PY=
-	Control.EvalPair<double>(keyIndex,keyName+"P","Dist");
+	Control.EvalPair<double>(keyIndex+"Dist",keyName+"PDist");
       Item.centre=Y*PY;
       Item.axis=Y;
       Item.thick=
-	Control.EvalPair<double>(keyIndex,keyName+"P","Thick");
+	Control.EvalPair<double>(keyIndex+"Thick",keyName+"PThick");
       
       Item.mat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"Mat",keyName+"PMat");
@@ -150,7 +150,7 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
 	(Control,keyIndex+"LayreMat",keyName+"PLayerMat");
       if (Item.layerMat>=0)
 	Item.layerThick=Control.EvalPair<double>
-	  (keyIndex,keyName+"P","LayerThick");
+	  (keyIndex+"LayerThick",keyName+"PLayerThick");
       PCut.push_back(Item);
     }
   // Sphere:
@@ -161,12 +161,14 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
       
       const std::string keyIndex(keyName+"CutSph"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"CutSph","Cent");
+	(keyIndex+"Cent",keyName+"CutSphCent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"CutSph","Axis");
+	(keyIndex+"Axis",keyName+"CutSphAxis");
       Item.axis.makeUnit();
-      Item.radius=Control.EvalPair<double>(keyIndex,keyName+"CutSph","Radius");
-      Item.dist=Control.EvalPair<double>(keyIndex,keyName+"CutSph","Dist");
+      Item.radius=Control.EvalPair<double>
+	(keyIndex+"Radius",keyName+"CutSphRadius");
+      Item.dist=Control.EvalPair<double>
+	(keyIndex+"Dist",keyName+"CutSphDist");
       Item.mat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"Mat",keyName+"CutSphMat");
       Item.defCutPlane();
@@ -181,19 +183,24 @@ TS2ModifyTarget::populate(const FuncDataBase& Control)
       
       const std::string keyIndex(keyName+"Cone"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"Cone","Cent");
+	(keyIndex+"Cent",keyName+"ConeCent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"Cone","Axis");
+	(keyIndex+"Axis",keyName+"ConeAxis");
       Item.axis.makeUnit();
-      Item.angleA=Control.EvalPair<double>(keyIndex,keyName+"Cone","AngleA");
-      Item.angleB=Control.EvalPair<double>(keyIndex,keyName+"Cone","AngleB");
-      Item.dist=Control.EvalPair<double>(keyIndex,keyName+"Cone","Dist");
+      Item.angleA=Control.EvalPair<double>
+	(keyIndex+"AngleA",keyName+"ConeAngleA");
+      Item.angleB=Control.EvalPair<double>
+	(keyIndex+"AngleB",keyName+"ConeAngleB");
+      Item.dist=Control.EvalPair<double>
+	(keyIndex+"Dist",keyName+"ConeDist");
+      
       Item.mat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"Mat",keyName+"ConeMat");
       Item.layerMat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"LayerMat",keyName+"ConeLayerMat");
       Item.layerThick=
-	Control.EvalPair<double>(keyIndex,keyName+"Cone","LayerThick");
+	Control.EvalPair<double>
+	(keyIndex+"LayerThick",keyName+"ConeLayerThick");
       Item.layerThick*=cos(M_PI*std::abs(Item.angleA)/180.0);
       //      Item.defCutPlane();
       CCut.push_back(Item);

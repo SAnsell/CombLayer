@@ -3,7 +3,7 @@
  
  * File:   photon/CylContainer.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,8 +152,8 @@ CylContainer::populate(const FuncDataBase& Control)
   for(size_t i=0;i<nLayers;i++)
     {
       const std::string kN=keyName+std::to_string(i);
-      H=Control.EvalPair<double>(kN,keyName,"Height");   
-      R=Control.EvalPair<double>(kN,keyName,"Radius");   
+      H=Control.EvalTail<double>(kN,keyName,"Height");   
+      R=Control.EvalTail<double>(kN,keyName,"Radius");   
       M=ModelSupport::EvalMat<int>(Control,kN+"Mat",keyName+"Mat");
       
       T=Control.EvalDefVar<double>(keyName+"Temp",0.0);

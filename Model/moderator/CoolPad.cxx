@@ -3,7 +3,7 @@
  
  * File:   moderator/CoolPad.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,24 +141,24 @@ CoolPad::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("CoolPad","populate");
 
   // Two keys : one with a number and the default
-  //  fixIndex=Control.EvalPair<size_t>(keyName,keyName,"FixIndex");
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
-  thick=Control.EvalPair<double>(keyName,baseName,"Thick");
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
-  height=Control.EvalPair<double>(keyName,baseName,"Height");
+  //  fixIndex=Control.EvalTail<size_t>(keyName,keyName,"FixIndex");
+  xStep=Control.EvalTail<double>(keyName,baseName,"XStep");
+  zStep=Control.EvalTail<double>(keyName,baseName,"ZStep");
+  thick=Control.EvalTail<double>(keyName,baseName,"Thick");
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
+  height=Control.EvalTail<double>(keyName,baseName,"Height");
   Mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
-  const size_t nZ=Control.EvalPair<size_t>(keyName,baseName,"NZigZag");
+  const size_t nZ=Control.EvalTail<size_t>(keyName,baseName,"NZigZag");
   CPts.clear();
   for(size_t i=0;i<nZ;i++)
     {
       const std::string tagIndex="Cent"+std::to_string(i+1);
-      CPts.push_back(Control.EvalPair<Geometry::Vec3D>
+      CPts.push_back(Control.EvalTail<Geometry::Vec3D>
 		     (keyName,baseName,tagIndex));
     }
 
-  IWidth=Control.EvalPair<double>(keyName,baseName,"IWidth");
-  IDepth=Control.EvalPair<double>(keyName,baseName,"IDepth");
+  IWidth=Control.EvalTail<double>(keyName,baseName,"IWidth");
+  IDepth=Control.EvalTail<double>(keyName,baseName,"IDepth");
 
   IMat=ModelSupport::EvalMat<int>(Control,keyName+"IMat",baseName+"IMat");
   

@@ -3,7 +3,7 @@
  
  * File:   delft/Rabbit.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -150,31 +149,31 @@ Rabbit::populate(const FuncDataBase& Control)
   
       objName=Control.EvalVar<std::string>(keyName+"GridKey");
       // First get inner widths:
-      length=Control.EvalPair<double>(keyName,baseName,"Length");
-      capThick=Control.EvalPair<double>(keyName,baseName,"CapThick");
+      length=Control.EvalTail<double>(keyName,baseName,"Length");
+      capThick=Control.EvalTail<double>(keyName,baseName,"CapThick");
       capMat=ModelSupport::EvalMat<int>(Control,keyName+"CapMat",
 					baseName+"CapMat");
       
-      nLayer=Control.EvalPair<size_t>(keyName,baseName,"NLayer");
+      nLayer=Control.EvalTail<size_t>(keyName,baseName,"NLayer");
       double D;
       int M;
       for(size_t i=0;i<nLayer;i++)
 	{ 
-	  const std::string mName="Mat"+StrFunc::makeString(i);
-	  D=Control.EvalPair<double>(keyName,baseName,
-				     "Radius"+StrFunc::makeString(i));
+	  const std::string mName="Mat"+std::to_string(i);
+	  D=Control.EvalTail<double>(keyName,baseName,
+				     "Radius"+std::to_string(i));
 	  M=ModelSupport::EvalMat<int>(Control,keyName+mName,baseName+mName);
 	  
 	  Radii.push_back(D);
 	  Mat.push_back(M);
 	}
       
-      sampleRadius=Control.EvalPair<double>(keyName,baseName,"SampleRadius");
+      sampleRadius=Control.EvalTail<double>(keyName,baseName,"SampleRadius");
       sampleMat=ModelSupport::EvalMat<int>(Control,keyName+"SampleMat",
 					   baseName+"SampleMat");
-      capsuleRadius=Control.EvalPair<double>(keyName,baseName,"CapsuleRadius");
-      capsuleWall=Control.EvalPair<double>(keyName,baseName,"CapsuleWall");
-      capsuleLen=Control.EvalPair<double>(keyName,baseName,"CapsuleLen");
+      capsuleRadius=Control.EvalTail<double>(keyName,baseName,"CapsuleRadius");
+      capsuleWall=Control.EvalTail<double>(keyName,baseName,"CapsuleWall");
+      capsuleLen=Control.EvalTail<double>(keyName,baseName,"CapsuleLen");
       capsuleMat=ModelSupport::EvalMat<int>(Control,keyName+"CapsuleMat",
 					    baseName+"CapsuleMat");
     }

@@ -175,7 +175,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
 
   FixedOffset::populate(Control);
 
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
   flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
   outerRadius=outRadius;

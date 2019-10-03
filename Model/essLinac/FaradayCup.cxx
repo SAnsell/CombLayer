@@ -3,7 +3,7 @@
 
  * File:   essBuild/FaradayCup.cxx
  *
- * Copyright (c) 2004-2018 by Konstantin Batkov
+ * Copyright (c) 2004-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,7 +182,7 @@ FaradayCup::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   active=Control.EvalDefVar<int>(keyName+"Active", 1);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");

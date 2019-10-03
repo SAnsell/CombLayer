@@ -3,7 +3,7 @@
  
  * File:   moderator/DecLayer.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -113,7 +111,6 @@ DecLayer::operator=(const DecLayer& A)
   return *this;
 }
 
-
 DecLayer::~DecLayer() 
   /*!
     Destructor
@@ -134,7 +131,7 @@ DecLayer::populate(const FuncDataBase& Control)
   for(int i=0;i<nLayers;i++)
      {
        const std::string keyIndex(lkeyName+std::to_string(i+1));
-       const double T=Control.EvalPair<double>(keyIndex,lkeyName,"Thick");
+       const double T=Control.EvalTail<double>(keyIndex,lkeyName,"Thick");
        if (T>Geometry::zeroTol)
 	 {
 	   lThick.push_back(T);
@@ -142,7 +139,7 @@ DecLayer::populate(const FuncDataBase& Control)
 	     (ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",
 					 lkeyName+"Mat"));
 	   lTemp.push_back
-	     (Control.EvalPair<double>(keyIndex,lkeyName,"Temp"));
+	     (Control.EvalTail<double>(keyIndex,lkeyName,"Temp"));
 	 }	 
      }
   centMat=ModelSupport::EvalMat<int>(Control,lkeyName+"CentMat");

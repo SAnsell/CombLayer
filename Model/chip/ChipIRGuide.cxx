@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -240,7 +239,7 @@ ChipIRGuide::populateWallItems(const FuncDataBase& Control)
       WCObj.clear();
       for(size_t i=0;i<nCuts;i++)
 	{
-	  const std::string KN="CutKey"+StrFunc::makeString(i);
+	  const std::string KN="CutKey"+std::to_string(i);
 	  WCObj.push_back(std::shared_ptr<constructSystem::WallCut>
 			  (new constructSystem::WallCut("CGCut",i)));
 	  OR.addObject(WCObj.back());
@@ -289,10 +288,9 @@ ChipIRGuide::populate(const FuncDataBase& Control)
   const int NL=Control.EvalVar<int>(keyName+"NLiner");
   for(int i=0;i<NL;i++)
     {
-      const std::string keyIndex=
-	StrFunc::makeString(keyName+"Liner",i+1);
+      const std::string keyIndex=keyName+"Liner"+std::to_string(i+1);
       LThick.push_back
-	(Control.EvalPair<double>(keyIndex,keyName+"Liner","Thick"));
+	(Control.EvalPair<double>(keyIndex+"Thick",keyName+"LinerThick"));
       LMat.push_back
 	(ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",keyName+"LinerMat"));
 
@@ -1062,6 +1060,7 @@ void
 ChipIRGuide::addWallCuts(Simulation& System)
   /*!
     Add wallcuts if necessary
+    \param System :: Simulation to use
    */
 {
   ELog::RegMethod RegA("ChipIRGuide","makeWallCuts");

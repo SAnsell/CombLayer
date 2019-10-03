@@ -3,7 +3,7 @@
  
  * File:   construct/WallCut.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -138,7 +137,7 @@ WallCut::populateKey(const FuncDataBase& Control)
 {  
   ELog::RegMethod RegA("WallCut","populateKey");
   
-  insertKey=Control.EvalPair<std::string>(keyName,baseName,"InsertKey");
+  insertKey=Control.EvalTail<std::string>(keyName,baseName,"InsertKey");
   return;
 }
   
@@ -153,14 +152,14 @@ WallCut::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(baseName,Control);
 
-  height=Control.EvalPair<double>(keyName,baseName,"Height");
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
+  height=Control.EvalTail<double>(keyName,baseName,"Height");
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
 
 
   mat=ModelSupport::EvalDefMat<int>(Control,keyName+"Mat",
 				    baseName+"Mat",0);
-  matTemp=Control.EvalDefPair<double>
+  matTemp=Control.EvalDefTail<double>
     (keyName,baseName,"MatTemp",0.0);
   
   return;

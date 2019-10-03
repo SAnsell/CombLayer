@@ -154,7 +154,7 @@ IMatBulkInsert::populate(const Simulation& System)
   xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
-  frontGap=Control.EvalPair<double>(keyName,baseName,"FrontGap");
+  frontGap=Control.EvalTail<double>(keyName,baseName,"FrontGap");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   

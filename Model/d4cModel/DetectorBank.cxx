@@ -3,7 +3,7 @@
  
  * File:   d4cModel/DetectorBank.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,16 +153,16 @@ DetectorBank::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  centreOffset=Control.EvalPair<double>(keyName,baseName,"CentreOffset");
-  centreAngle=Control.EvalPair<double>(keyName,baseName,"CentreAngle");
+  centreOffset=Control.EvalTail<double>(keyName,baseName,"CentreOffset");
+  centreAngle=Control.EvalTail<double>(keyName,baseName,"CentreAngle");
   xyAngle-=centreAngle;
   centreAngle*=M_PI/180.0;
 
-  detHeight=Control.EvalPair<double>(keyName,baseName,"DetHeight");
-  detLength=Control.EvalPair<double>(keyName,baseName,"DetLength");
-  detDepth=Control.EvalPair<double>(keyName,baseName,"DetDepth");
+  detHeight=Control.EvalTail<double>(keyName,baseName,"DetHeight");
+  detLength=Control.EvalTail<double>(keyName,baseName,"DetLength");
+  detDepth=Control.EvalTail<double>(keyName,baseName,"DetDepth");
 
-  wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
+  wallThick=Control.EvalTail<double>(keyName,baseName,"WallThick");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+"WallMat");

@@ -116,8 +116,8 @@ BremBlock::populate(const FuncDataBase& Control)
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
-  holeAHeight=Control.EvalPair<double>(keyName,"HoleAHeight","HoleHeight");
-  holeAWidth=Control.EvalPair<double>(keyName,"HoleAWidth","HoleWidth");
+  holeAHeight=Control.EvalHead<double>(keyName,"HoleAHeight","HoleHeight");
+  holeAWidth=Control.EvalHead<double>(keyName,"HoleAWidth","HoleWidth");
   holeBHeight=Control.EvalDefVar<double>(keyName+"HoleBHeight",holeAHeight);
   holeBWidth=Control.EvalDefVar<double>(keyName+"HoleBWidth",holeAWidth);
   

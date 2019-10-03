@@ -3,7 +3,7 @@
  
  * File:   construct/CrystalMount.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,22 +154,22 @@ CrystalMount::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  active=Control.EvalDefPair<int>(keyName,baseName,"Active",1);
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
-  thick=Control.EvalPair<double>(keyName,baseName,"Thick");
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
+  active=Control.EvalDefTail<int>(keyName,baseName,"Active",1);
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
+  thick=Control.EvalTail<double>(keyName,baseName,"Thick");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
 
-  gap=Control.EvalPair<double>(keyName,baseName,"Gap");
-  wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
-  baseThick=Control.EvalDefPair<double>(keyName,baseName,"BaseThick",wallThick);
+  gap=Control.EvalTail<double>(keyName,baseName,"Gap");
+  wallThick=Control.EvalTail<double>(keyName,baseName,"WallThick");
+  baseThick=Control.EvalDefTail<double>(keyName,baseName,"BaseThick",wallThick);
 
   xtalMat=ModelSupport::EvalMat<int>(Control,keyName+"XtalMat",
                                      baseName+"XtalMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
                                      baseName+"WallMat");
 
-  yRotation=Control.EvalPair<double>(keyName,baseName,"YRotation");
-  zRotation=Control.EvalPair<double>(keyName,baseName,"ZRotation");
+  yRotation=Control.EvalTail<double>(keyName,baseName,"YRotation");
+  zRotation=Control.EvalTail<double>(keyName,baseName,"ZRotation");
   return;
 }
 

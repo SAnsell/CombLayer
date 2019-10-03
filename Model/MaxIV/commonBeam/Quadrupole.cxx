@@ -188,22 +188,22 @@ Quadrupole::populate(const FuncDataBase& Control)
   
   vertGap=Control.EvalVar<double>(keyName+"VertGap");
 
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
-  height=Control.EvalPair<double>(keyName,baseName,"Height");
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
+  height=Control.EvalTail<double>(keyName,baseName,"Height");
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
 
-  coilLength=Control.EvalPair<double>(keyName,baseName,"CoilLength");
-  coilCornerRad=Control.EvalPair<double>(keyName,baseName,"CoilCornerRad");
-  coilWidth=Control.EvalPair<double>(keyName,baseName,"CoilWidth");
+  coilLength=Control.EvalTail<double>(keyName,baseName,"CoilLength");
+  coilCornerRad=Control.EvalTail<double>(keyName,baseName,"CoilCornerRad");
+  coilWidth=Control.EvalTail<double>(keyName,baseName,"CoilWidth");
 
-  frameThick=Control.EvalPair<double>(keyName,baseName,"FrameThick");
+  frameThick=Control.EvalTail<double>(keyName,baseName,"FrameThick");
   
-  poleLength=Control.EvalPair<double>(keyName,baseName,"PoleLength");
-  poleRadius=Control.EvalPair<double>(keyName,baseName,"PoleRadius");
-  poleZStep=Control.EvalPair<double>(keyName,baseName,"PoleZStep");
-  poleYAngle=Control.EvalPair<double>(keyName,baseName,"PoleYAngle");
-  poleStep=Control.EvalPair<double>(keyName,baseName,"PoleStep");
-  poleWidth=Control.EvalPair<double>(keyName,baseName,"PoleWidth");
+  poleLength=Control.EvalTail<double>(keyName,baseName,"PoleLength");
+  poleRadius=Control.EvalTail<double>(keyName,baseName,"PoleRadius");
+  poleZStep=Control.EvalTail<double>(keyName,baseName,"PoleZStep");
+  poleYAngle=Control.EvalTail<double>(keyName,baseName,"PoleYAngle");
+  poleStep=Control.EvalTail<double>(keyName,baseName,"PoleStep");
+  poleWidth=Control.EvalTail<double>(keyName,baseName,"PoleWidth");
   
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");

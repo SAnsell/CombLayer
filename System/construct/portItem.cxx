@@ -237,15 +237,15 @@ portItem::populate(const FuncDataBase& Control)
   centreOffset=
     Control.EvalVar<Geometry::Vec3D>(keyName+"Centre");
   axisOffset=
-    Control.EvalPair<Geometry::Vec3D>(keyName,portBase,"Axis");
+    Control.EvalTail<Geometry::Vec3D>(keyName,portBase,"Axis");
       
-  externalLength=Control.EvalPair<double>(keyName,portBase,"Length");
-  radius=Control.EvalPair<double>(keyName,portBase,"Radius");
-  wall=Control.EvalPair<double>(keyName,portBase,"Wall");
+  externalLength=Control.EvalTail<double>(keyName,portBase,"Length");
+  radius=Control.EvalTail<double>(keyName,portBase,"Radius");
+  wall=Control.EvalTail<double>(keyName,portBase,"Wall");
   
-  flangeRadius=Control.EvalPair<double>(keyName,portBase,"FlangeRadius");
-  flangeLength=Control.EvalPair<double>(keyName,portBase,"FlangeLength");
-  capThick=Control.EvalDefPair<double>(keyName,portBase,"CapThick",0.0);
+  flangeRadius=Control.EvalTail<double>(keyName,portBase,"FlangeRadius");
+  flangeLength=Control.EvalTail<double>(keyName,portBase,"FlangeLength");
+  capThick=Control.EvalDefTail<double>(keyName,portBase,"CapThick",0.0);
 
   voidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);

@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -173,16 +172,16 @@ GuideBay::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(baseKey,Control);
   
-  height=Control.EvalPair<double>(keyName,baseKey,"Height");
-  depth=Control.EvalPair<double>(keyName,baseKey,"Depth");
-  midRadius=Control.EvalPair<double>(keyName,baseKey,"MidRadius");
-  viewAngle=Control.EvalPair<double>(keyName,baseKey,"ViewAngle")*M_PI/180.0;
-  innerHeight=Control.EvalPair<double>(keyName,baseKey,"InnerHeight");
-  innerDepth=Control.EvalPair<double>(keyName,baseKey,"InnerDepth");
+  height=Control.EvalTail<double>(keyName,baseKey,"Height");
+  depth=Control.EvalTail<double>(keyName,baseKey,"Depth");
+  midRadius=Control.EvalTail<double>(keyName,baseKey,"MidRadius");
+  viewAngle=Control.EvalTail<double>(keyName,baseKey,"ViewAngle")*M_PI/180.0;
+  innerHeight=Control.EvalTail<double>(keyName,baseKey,"InnerHeight");
+  innerDepth=Control.EvalTail<double>(keyName,baseKey,"InnerDepth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseKey+"Mat");
 
-  nItems=Control.EvalPair<size_t>(keyName,baseKey,"NItems");
+  nItems=Control.EvalTail<size_t>(keyName,baseKey,"NItems");
   return;
 }
   
@@ -384,7 +383,7 @@ GuideBay::createGuideItems(Simulation& System,
   const attachSystem::FixedComp* ModFC=
     System.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
                                                "Focus unit not found");
-  const std::string BL=StrFunc::makeString("G",bayNumber)+"BLine"+modName;
+  const std::string BL="G"+std::to_string(bayNumber)+"BLine"+modName;
   
   const long int lFocusIndex=(bayNumber==1) ? 2 : 3;
   const long int rFocusIndex=(bayNumber==1) ? 1 : 4;

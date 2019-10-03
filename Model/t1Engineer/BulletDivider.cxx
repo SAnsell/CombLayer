@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/BulletDivider.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2019 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -81,7 +80,7 @@ namespace ts1System
 BulletDivider::BulletDivider(const std::string& Key,const int Index,
 			       const int sideDir)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(Index),6),
+  attachSystem::FixedComp(Key+std::to_string(Index),6),
   ID(Index),baseName(Key),
   divDirection(sideDir)
   /*!
@@ -144,16 +143,16 @@ BulletDivider::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BulletDivider","populate");
 
-  YStep=Control.EvalPair<double>(keyName,baseName,"YStep");
+  YStep=Control.EvalTail<double>(keyName,baseName,"YStep");
 
   const size_t nRadii=
-    Control.EvalPair<size_t>(keyName,baseName,"NRadii");
+    Control.EvalTail<size_t>(keyName,baseName,"NRadii");
 
   double R,L;
   radii.push_back(0.0);  // set later
   for(size_t i=0;i<nRadii;i++)
     {
-      const std::string Rkey=StrFunc::makeString(i);
+      const std::string Rkey=std::to_string(i);
       
       R=Control.EvalDefPair<double>(keyName+"Radius"+Rkey,
 				    keyName+"Radius",-1.0);
@@ -170,7 +169,7 @@ BulletDivider::populate(const FuncDataBase& Control)
       length.push_back(L);
     }
   
-  wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
+  wallThick=Control.EvalTail<double>(keyName,baseName,"WallThick");
   // Material
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+"WallMat");

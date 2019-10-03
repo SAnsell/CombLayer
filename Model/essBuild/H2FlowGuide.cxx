@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2FlowGuide.cxx 
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,19 +166,19 @@ H2FlowGuide::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2FlowGuide","populate");
 
+  const std::string flowName(baseName+endName);
+  baseThick=Control.EvalTail<double>(keyName,flowName,"BaseThick");
+  baseLen=Control.EvalTail<double>(keyName,flowName,"BaseLen");
+  baseArmSep=Control.EvalTail<double>(keyName,flowName,"BaseArmSep");
+  baseOffset=Control.EvalTail<Geometry::Vec3D>(keyName,flowName,"BaseOffset");
 
-  baseThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
-  baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
-  baseArmSep=Control.EvalPair<double>(keyName,baseName+endName,"BaseArmSep");
-  baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
-
-  armThick=Control.EvalPair<double>(keyName,baseName+endName,"ArmThick");
-  armLen=Control.EvalPair<double>(keyName,baseName+endName,"ArmLen");
-  armOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"ArmOffset");
+  armThick=Control.EvalTail<double>(keyName,flowName,"ArmThick");
+  armLen=Control.EvalTail<double>(keyName,flowName,"ArmLen");
+  armOffset=Control.EvalTail<Geometry::Vec3D>(keyName,flowName,"ArmOffset");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
-				     baseName+endName+"WallMat");
-  wallTemp=Control.EvalPair<double>(keyName,baseName+endName,"WallTemp");
+				     flowName+"WallMat");
+  wallTemp=Control.EvalTail<double>(keyName,flowName,"WallTemp");
   
   return;
 }

@@ -229,7 +229,24 @@ FuncDataBase::EvalPair(const std::string& KeyA,
 
 template<typename T>
 T
-FuncDataBase::EvalPair(const std::string& KeyA,
+FuncDataBase::EvalHead(const std::string& Key,
+		       const std::string& TailA,
+		       const std::string& TailB) const
+  /*!
+    Finds the value of a variable item 
+    \param Key  :: Primary keyname
+    \param TailA :: First tail 
+    \param TailB :: Second tail
+    \return Value of variable 
+    \throw InContainterError if no variables exists
+  */
+{
+  return EvalPair<T>(Key+TailA,Key+TailB);
+}
+
+template<typename T>
+T
+FuncDataBase::EvalTail(const std::string& KeyA,
 		       const std::string& KeyB,
 		       const std::string& Tail) const
   /*!
@@ -270,10 +287,28 @@ FuncDataBase::EvalDefPair(const std::string& KeyA,
 
 template<typename T>
 T
-FuncDataBase::EvalDefPair(const std::string& KeyA,
-		       const std::string& KeyB,
-		       const std::string& Tail,
-		       const T& defVal) const
+FuncDataBase::EvalDefHead(const std::string& Key,
+			  const std::string& TailA,
+			  const std::string& TailB,
+			  const T& defVal) const
+  /*!
+    Finds the value of a variable item 
+    \param Key  :: Primary keyname
+    \param TailA :: First tail 
+    \param TailB :: Second tail
+    \param defVal :: default value
+    \return Value of variable 
+  */
+{
+  return EvalDefPair<T>(Key+TailA,Key+TailB,defVal);
+}
+
+template<typename T>
+T
+FuncDataBase::EvalDefTail(const std::string& KeyA,
+			  const std::string& KeyB,
+			  const std::string& Tail,
+			  const T& defVal) const
   /*!
     Finds the value of a variable item 
     \param KeyA :: First string to search    
@@ -1151,24 +1186,40 @@ template std::string FuncDataBase::EvalPair(const std::string&,
 template Geometry::Vec3D FuncDataBase::EvalPair(const std::string&,
 						const std::string&) const;
 
+// EVALHEAD
 
-template double FuncDataBase::EvalPair(const std::string&,
+template double FuncDataBase::EvalHead(const std::string&,
 				       const std::string&,
 				       const std::string&) const;
-template int FuncDataBase::EvalPair(const std::string&,
+template int FuncDataBase::EvalHead(const std::string&,
 				    const std::string&,
 				    const std::string&) const;
-template size_t FuncDataBase::EvalPair(const std::string&,
+template size_t FuncDataBase::EvalHead(const std::string&,
 				       const std::string&,
 				       const std::string&) const;
-template std::string FuncDataBase::EvalPair(const std::string&,
+template std::string FuncDataBase::EvalHead(const std::string&,
 					    const std::string&,
 					    const std::string&) const;
-template Geometry::Vec3D FuncDataBase::EvalPair(const std::string&,
+template Geometry::Vec3D FuncDataBase::EvalHead(const std::string&,
 						const std::string&,
 						const std::string&) const;
+// EVALTAIL
 
-
+template double FuncDataBase::EvalTail(const std::string&,
+				       const std::string&,
+				       const std::string&) const;
+template int FuncDataBase::EvalTail(const std::string&,
+				    const std::string&,
+				    const std::string&) const;
+template size_t FuncDataBase::EvalTail(const std::string&,
+				       const std::string&,
+				       const std::string&) const;
+template std::string FuncDataBase::EvalTail(const std::string&,
+					    const std::string&,
+					    const std::string&) const;
+template Geometry::Vec3D FuncDataBase::EvalTail(const std::string&,
+						const std::string&,
+						const std::string&) const;
 
 
 // EVALDEFPAIR
@@ -1179,19 +1230,40 @@ template double FuncDataBase::EvalDefPair
 template int FuncDataBase::EvalDefPair
 (const std::string&,const std::string&,const int&) const;
 
-template double FuncDataBase::EvalDefPair
+
+// EVALDEFTAIL
+
+template double FuncDataBase::EvalDefHead
 (const std::string&,const std::string&,
  const std::string&, const double&) const;
 
-template int FuncDataBase::EvalDefPair
+template int FuncDataBase::EvalDefHead
 (const std::string&,const std::string&,
  const std::string&, const int&) const;
 
-template size_t FuncDataBase::EvalDefPair
+template size_t FuncDataBase::EvalDefHead
 (const std::string&,const std::string&,
  const std::string&, const size_t&) const;
 
-template Geometry::Vec3D FuncDataBase::EvalDefPair
+template Geometry::Vec3D FuncDataBase::EvalDefHead
+(const std::string&,const std::string&,
+ const std::string&, const Geometry::Vec3D&) const;
+
+// EVALDEFTAIL
+
+template double FuncDataBase::EvalDefTail
+(const std::string&,const std::string&,
+ const std::string&, const double&) const;
+
+template int FuncDataBase::EvalDefTail
+(const std::string&,const std::string&,
+ const std::string&, const int&) const;
+
+template size_t FuncDataBase::EvalDefTail
+(const std::string&,const std::string&,
+ const std::string&, const size_t&) const;
+
+template Geometry::Vec3D FuncDataBase::EvalDefTail
 (const std::string&,const std::string&,
  const std::string&, const Geometry::Vec3D&) const;
 

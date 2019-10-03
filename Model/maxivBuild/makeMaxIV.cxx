@@ -352,7 +352,6 @@ makeMaxIV::build(Simulation& System,
   ELog::RegMethod RegA("makeMaxIV","build");
 
   //  const FuncDataBase& Control=System.getDataBase();
-  int voidCell(74123);
 
   if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;

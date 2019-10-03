@@ -86,14 +86,24 @@ class FuncDataBase
   T EvalDefVar(const std::string&,const T&) const;      
   template<typename T>
   T EvalPair(const std::string&,const std::string&) const;      
+
   template<typename T>
-  T EvalPair(const std::string&,const std::string&,
+  T EvalHead(const std::string&,const std::string&,
 	     const std::string&) const;      
+  template<typename T>
+  T EvalTail(const std::string&,const std::string&,
+	     const std::string&) const;      
+
   template<typename T>
   T EvalDefPair(const std::string&,const std::string&,
 		const T&) const;      
+
   template<typename T>
-  T EvalDefPair(const std::string&,const std::string&,
+  T EvalDefTail(const std::string&,const std::string&,
+		const std::string&,const T&) const;      
+
+  template<typename T>
+  T EvalDefHead(const std::string&,const std::string&,
 		const std::string&,const T&) const;      
 
   template<typename T>

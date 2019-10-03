@@ -148,9 +148,9 @@ FeedThrough::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("FeedThrough","populate");
   
 
-  Offset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName,"Offset");
-  height=Control.EvalPair<double>(keyName,baseName,"Height");
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
+  Offset=Control.EvalTail<Geometry::Vec3D>(keyName,baseName,"Offset");
+  height=Control.EvalTail<double>(keyName,baseName,"Height");
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
 
   size_t index(0);
   CPts.clear();

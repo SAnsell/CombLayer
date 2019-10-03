@@ -3,7 +3,7 @@
  
  * File:   bibBuild/GuideShield.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -147,18 +146,18 @@ GuideShield::populate(const Simulation& System)
 
   Height.clear();
   Width.clear();
-  nLayers=Control.EvalPair<size_t>(keyName,baseName,"NLayer");
+  nLayers=Control.EvalTail<size_t>(keyName,baseName,"NLayer");
   double W(innerWidth),H(innerHeight);
   int M;
   for(size_t i=0;i<nLayers;i++)
     {
-      W+=Control.EvalPair<double>(keyName,baseName,
-				 StrFunc::makeString("Width",i+1));
-      H+=Control.EvalPair<double>(keyName,baseName,
-				 StrFunc::makeString("Height",i+1));
+      W+=Control.EvalTail<double>
+	(keyName,baseName,"Width"+std::to_string(i+1));
+      H+=Control.EvalTail<double>
+	(keyName,baseName,"Height"+std::to_string(i+1));
       M=ModelSupport::EvalMat<int>
-	(Control,keyName+StrFunc::makeString("Mat",i+1),
-	 baseName+StrFunc::makeString("Mat",i+1));
+	(Control,keyName+"Mat"+std::to_string(i+1),
+	 baseName+"Mat"+std::to_string(i+1));
 
       Height.push_back(H);
       Width.push_back(W);

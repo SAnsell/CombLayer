@@ -230,47 +230,47 @@ GeneralShutter::populate(const FuncDataBase& Control)
       populated |= 2;
     }
 
-  closed=Control.EvalDefPair<int>(keyName,baseName,"Closed",0);
-  reversed=Control.EvalDefPair<int>(keyName,baseName,"Reversed",0);
+  closed=Control.EvalDefTail<int>(keyName,baseName,"Closed",0);
+  reversed=Control.EvalDefTail<int>(keyName,baseName,"Reversed",0);
 
   const std::string keyNum=keyName+std::to_string(shutterNumber+1);
   
-  totalWidth=Control.EvalPair<double>(keyName,baseName,"Width");
+  totalWidth=Control.EvalTail<double>(keyName,baseName,"Width");
 
-  upperSteel=Control.EvalPair<double>(keyName,baseName,"UpperSteel");
-  lowerSteel=Control.EvalPair<double>(keyName,baseName,"LowerSteel");
+  upperSteel=Control.EvalTail<double>(keyName,baseName,"UpperSteel");
+  lowerSteel=Control.EvalTail<double>(keyName,baseName,"LowerSteel");
 
-  shutterHeight=Control.EvalPair<double>(keyName,baseName,"Height");
-  shutterDepth=Control.EvalPair<double>(keyName,baseName,"Depth");
-  voidZOffset=Control.EvalDefPair<double>(keyName,baseName,"VoidZOffset",0.0);
-  centZOffset=Control.EvalDefPair<double>(keyName,baseName,"centZOffSet",0.0);
-  openZShift=Control.EvalDefPair<double>(keyName,baseName,"OpenZShift",0.0);
+  shutterHeight=Control.EvalTail<double>(keyName,baseName,"Height");
+  shutterDepth=Control.EvalTail<double>(keyName,baseName,"Depth");
+  voidZOffset=Control.EvalDefTail<double>(keyName,baseName,"VoidZOffset",0.0);
+  centZOffset=Control.EvalDefTail<double>(keyName,baseName,"centZOffSet",0.0);
+  openZShift=Control.EvalDefTail<double>(keyName,baseName,"OpenZShift",0.0);
   closedZShift=openZShift-
-    Control.EvalPair<double>(keyName,baseName,"ClosedZOffset");
+    Control.EvalTail<double>(keyName,baseName,"ClosedZOffset");
 
-  voidDivide=Control.EvalPair<double>(keyName,baseName,"VoidDivide");
-  voidHeight=Control.EvalPair<double>(keyName,baseName,"VoidHeight");
-  voidHeightInner=Control.EvalPair<double>(keyName,baseName,"VoidHeightInner");
-  voidWidthInner=Control.EvalPair<double>(keyName,baseName,"VoidWidthInner");
-  voidHeightOuter=Control.EvalPair<double>(keyName,baseName,"VoidHeightOuter");
-  voidWidthOuter=Control.EvalPair<double>(keyName,baseName,"VoidWidthOuter");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
-  zAngle=Control.EvalDefPair<double>(keyName,baseName,"ZAngle",0.0);
+  voidDivide=Control.EvalTail<double>(keyName,baseName,"VoidDivide");
+  voidHeight=Control.EvalTail<double>(keyName,baseName,"VoidHeight");
+  voidHeightInner=Control.EvalTail<double>(keyName,baseName,"VoidHeightInner");
+  voidWidthInner=Control.EvalTail<double>(keyName,baseName,"VoidWidthInner");
+  voidHeightOuter=Control.EvalTail<double>(keyName,baseName,"VoidHeightOuter");
+  voidWidthOuter=Control.EvalTail<double>(keyName,baseName,"VoidWidthOuter");
+  xyAngle=Control.EvalTail<double>(keyName,baseName,"XYAngle");
+  zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",0.0);
 
   shutterMat=ModelSupport::EvalMat<int>
     (Control,keyName+"SteelMat",baseName+"SteelMat");
 
   // Construct the clearance gaps
-  clearGap=Control.EvalPair<double>(keyName,baseName,"ClearGap");
-  clearBoxStep=Control.EvalPair<double>(keyName,baseName,"ClearBoxStep");
-  clearBoxLen=Control.EvalPair<double>(keyName,baseName,"ClearBoxLen");
-  const size_t NStep= Control.EvalPair<size_t>
+  clearGap=Control.EvalTail<double>(keyName,baseName,"ClearGap");
+  clearBoxStep=Control.EvalTail<double>(keyName,baseName,"ClearBoxStep");
+  clearBoxLen=Control.EvalTail<double>(keyName,baseName,"ClearBoxLen");
+  const size_t NStep= Control.EvalTail<size_t>
     (keyName,baseName,"ClearNStep");
   clearCent.clear();
   for(size_t i=0;i<NStep;i++)
     {
       const std::string SCent="ClearCent"+std::to_string(i);
-      const double CD=Control.EvalPair<double>(keyName,baseName,SCent);
+      const double CD=Control.EvalTail<double>(keyName,baseName,SCent);
       clearCent.push_back(CD);
     }
     

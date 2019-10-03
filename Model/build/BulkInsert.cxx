@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -185,7 +184,7 @@ BulkInsert::populate(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BulkInsert","populate");
 
-  const std::string numName=keyName+StrFunc::makeString(shutterNumber+1);
+  const std::string numName=keyName+std::to_string(shutterNumber+1);
   impZero=Control.EvalDefPair<int>(numName+"ImpZero",keyName+"ImpZero",0);  
   // Global from shutter size:
 
@@ -198,15 +197,15 @@ BulkInsert::populate(const FuncDataBase& Control,
     }
   xyAngle=GS.getAngle();
 
-  zOffset=Control.EvalPair<double>(keyName,baseName,"ZOffset");
-  innerWidth=Control.EvalPair<double>(keyName,baseName,"IWidth");
-  innerHeight=Control.EvalPair<double>(keyName,baseName,"IHeight"
+  zOffset=Control.EvalTail<double>(keyName,baseName,"ZOffset");
+  innerWidth=Control.EvalTail<double>(keyName,baseName,"IWidth");
+  innerHeight=Control.EvalTail<double>(keyName,baseName,"IHeight"
 				       );
-  outerWidth=Control.EvalPair<double>(keyName,baseName,"OWidth");
-  outerHeight=Control.EvalPair<double>(keyName,baseName,"OHeight");
+  outerWidth=Control.EvalTail<double>(keyName,baseName,"OWidth");
+  outerHeight=Control.EvalTail<double>(keyName,baseName,"OHeight");
   
   
-  const std::string KeyNum=StrFunc::makeString(shutterNumber+1);
+  const std::string KeyNum=std::to_string(shutterNumber+1);
 
   
   if (Control.hasVariable(keyName+"InnerMat"))

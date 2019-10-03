@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   sinbadBuild/sbadDetector.cxx
+ *
+ * Copyright (c) 2004-2019 by A. Milocco
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -43,7 +64,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -55,7 +75,7 @@ namespace sinbadSystem
 
 sbadDetector::sbadDetector(const std::string& Key,const size_t ID) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(ID),0),
+  attachSystem::FixedComp(Key+std::to_string(ID),0),
   baseName(Key),detID(ID),
   active(0)
   /*!
@@ -129,15 +149,14 @@ sbadDetector::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("sbadDetector","populate");
 
   active=Control.EvalVar<int>(keyName+"Active");
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
-  zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
+  xStep=Control.EvalTail<double>(keyName,baseName,"XStep");
+  yStep=Control.EvalTail<double>(keyName,baseName,"YStep");
+  zStep=Control.EvalTail<double>(keyName,baseName,"ZStep");
+  xyAngle=Control.EvalTail<double>(keyName,baseName,"XYAngle");
+  zAngle=Control.EvalTail<double>(keyName,baseName,"ZAngle");
 
-  radius=Control.EvalPair<double>(keyName,baseName,"Radius");
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
-  radius=Control.EvalPair<double>(keyName,baseName,"Radius");
+  radius=Control.EvalTail<double>(keyName,baseName,"Radius");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
 

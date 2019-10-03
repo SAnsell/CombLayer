@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -136,22 +135,21 @@ beamSlot::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   
   // First get inner widths:
-  axisAngle=Control.EvalPair<double>(keyName+"AxisAngle",keyName+"AxisAngle");
+  axisAngle=Control.EvalVar<double>(keyName+"AxisAngle");
   
-  xStep=Control.EvalPair<double>(keyName+"XStep",baseName+"XStep");
-  zStep=Control.EvalPair<double>(keyName+"ZStep",baseName+"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName+"XYAngle",baseName+"XYAngle");
-  zAngle=Control.EvalPair<double>(keyName+"ZAngle",baseName+"ZAngle");
+  xStep=Control.EvalDefTail<double>(keyName,baseName,"XStep",xStep);
+  yStep=Control.EvalDefTail<double>(keyName,baseName,"YStep",yStep);
+  xyAngle=Control.EvalDefTail<double>(keyName,baseName,"XYAngle",xyAngle);
+  zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
 
   
-  xSize=Control.EvalPair<double>(keyName+"XSize",baseName+"XSize");
-  zSize=Control.EvalPair<double>(keyName+"ZSize",baseName+"ZSize");
+  xSize=Control.EvalTail<double>(keyName,baseName,"XSize");
+  zSize=Control.EvalTail<double>(keyName,baseName,"ZSize");
 
-  endThick=Control.EvalPair<double>(keyName+"EndThick",baseName+"EndThick");
-  divideThick=Control.EvalPair<double>(keyName+"DivideThick",
-				       baseName+"DivideThick");
+  endThick=Control.EvalTail<double>(keyName,baseName,"EndThick");
+  divideThick=Control.EvalTail<double>(keyName,baseName,"DivideThick");
 
-  NChannels=Control.EvalPair<size_t>(keyName,baseName,"NChannels");
+  NChannels=Control.EvalTail<size_t>(keyName,baseName,"NChannels");
 
   glassMat=ModelSupport::EvalMat<int>(Control,keyName+"GlassMat",
 				      baseName+"GlassMat");

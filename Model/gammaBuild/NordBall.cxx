@@ -3,7 +3,7 @@
  
  * File:   gammaBuild/NordBall.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,18 +149,18 @@ NordBall::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  nFace=Control.EvalPair<size_t>(keyName,baseName,"NFace");
-  faceWidth=Control.EvalPair<double>(keyName,baseName,"FaceWidth");
-  backWidth=Control.EvalPair<double>(keyName,baseName,"BackWidth");
-  frontLength=Control.EvalPair<double>(keyName,baseName,"FrontLength");
-  backLength=Control.EvalPair<double>(keyName,baseName,"BackLength");
-  wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
+  nFace=Control.EvalTail<size_t>(keyName,baseName,"NFace");
+  faceWidth=Control.EvalTail<double>(keyName,baseName,"FaceWidth");
+  backWidth=Control.EvalTail<double>(keyName,baseName,"BackWidth");
+  frontLength=Control.EvalTail<double>(keyName,baseName,"FrontLength");
+  backLength=Control.EvalTail<double>(keyName,baseName,"BackLength");
+  wallThick=Control.EvalTail<double>(keyName,baseName,"WallThick");
 
-  plateThick=Control.EvalPair<double>(keyName,baseName,"PlateThick");
-  plateRadius=Control.EvalPair<double>(keyName,baseName,"PlateRadius");
-  supportThick=Control.EvalPair<double>(keyName,baseName,"SupportThick");
-  elecRadius=Control.EvalPair<double>(keyName,baseName,"ElecRadius");
-  elecThick=Control.EvalPair<double>(keyName,baseName,"ElecThick");
+  plateThick=Control.EvalTail<double>(keyName,baseName,"PlateThick");
+  plateRadius=Control.EvalTail<double>(keyName,baseName,"PlateRadius");
+  supportThick=Control.EvalTail<double>(keyName,baseName,"SupportThick");
+  elecRadius=Control.EvalTail<double>(keyName,baseName,"ElecRadius");
+  elecThick=Control.EvalTail<double>(keyName,baseName,"ElecThick");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");  
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
@@ -175,22 +175,6 @@ NordBall::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-NordBall::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors.
-    Note angle shift carried out first so easy YStep system
-    \param FC :: Fixed Component
-    \param sideIndex :: link point
-  */
-{
-  ELog::RegMethod RegA("NordBall","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
 
 void
 NordBall::createSurfaces()

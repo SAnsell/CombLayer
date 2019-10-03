@@ -3,7 +3,7 @@
  
  * File:   species/TankMonoVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
@@ -187,14 +186,14 @@ TankMonoVessel::populate(const FuncDataBase& Control)
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
-	Control.EvalPair<Geometry::Vec3D>(portName,portBase,"Axis");
+	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
       
-      L=Control.EvalPair<double>(portName,portBase,"Length");
-      R=Control.EvalPair<double>(portName,portBase,"Radius");
-      W=Control.EvalPair<double>(portName,portBase,"Wall");
-      FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
-      CT=Control.EvalDefPair<double>(portName,portBase,"CapThick",0.0);
+      L=Control.EvalTail<double>(portName,portBase,"Length");
+      R=Control.EvalTail<double>(portName,portBase,"Radius");
+      W=Control.EvalTail<double>(portName,portBase,"Wall");
+      FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
+      FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
+      CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
       capMat=ModelSupport::EvalDefMat<int>
 	(Control,portName+"CapMat",portBase+"CapMat",wallMat);
 
