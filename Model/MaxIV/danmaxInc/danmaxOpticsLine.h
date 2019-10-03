@@ -38,6 +38,7 @@ namespace constructSystem
   class PortTube;
   class PipeTube;
   class GateValveCube;
+  class GateValveCylinder;
   class JawValveCube;
   class JawFlange;
   class DiffPumpXIADP03;
@@ -106,9 +107,11 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> collTubeA;
   /// Brem Collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;
-  /*
+  /// Filter unit pipe
+  std::shared_ptr<constructSystem::VacuumPipe> filterPipe;
   /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
+  std::shared_ptr<constructSystem::GateValveCylinder> gateA;
+  /*
   /// Vacuum pipe for collimator
   std::shared_ptr<xraySystem::BremColl> bremCollA;
   /// Filter tube

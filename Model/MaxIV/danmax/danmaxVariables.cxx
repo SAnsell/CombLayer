@@ -514,6 +514,14 @@ opticsVariables(FuncDataBase& Control,
   BremGen.setAperature(6.0, 1.2,0.6, 0.4,0.3, 0.6,0.45);  // WRONG
   BremGen.generateBlock(Control,opticsName+"BremColl",0.0,10.0);
   Control.addVariable(opticsName+"BremCollZStep",5.0);
+
+  // filter pipe [add filter later]
+  PipeGen.generatePipe(Control,opticsName+"FilterPipe",0,3.0);
+
+  GateGen.setCylCF<setVariable::CF40>();
+  GateGen.setLength(1.1);
+  GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
+
   return;
 }
 

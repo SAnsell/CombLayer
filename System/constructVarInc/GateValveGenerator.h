@@ -40,6 +40,7 @@ class GateValveGenerator
  private:
 
   double length;                ///< Void length
+  double radius;                ///< Radius if round
   double width;                 ///< Void width (full)
   double height;                ///< height 
   double depth;                 ///< depth
@@ -57,7 +58,10 @@ class GateValveGenerator
   double bladeLift;             ///< Height of blade up
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
-  
+
+  double liftWidth;             ///< Lifting width
+  double liftHeight;            ///< Height of lifting space
+
   std::string voidMat;          ///< Void material
   std::string bladeMat;         ///< Void material
   std::string wallMat;          ///< Pipe material
@@ -70,6 +74,7 @@ class GateValveGenerator
   GateValveGenerator& operator=(const GateValveGenerator&);
   ~GateValveGenerator();
 
+  template<typename CF> void setCylCF();
   template<typename CF> void setCF();
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();

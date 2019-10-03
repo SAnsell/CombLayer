@@ -80,7 +80,8 @@ class GateValveCube :
   GateValveCube& operator=(const GateValveCube&);
   virtual ~GateValveCube();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

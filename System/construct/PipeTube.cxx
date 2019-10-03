@@ -559,7 +559,6 @@ PipeTube::applyPortRotation()
       // This moves in the new Y direction
       const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
       Origin+=offset;
-      ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
       FixedComp::setConnect(7,Origin,YOriginal);
     }
 

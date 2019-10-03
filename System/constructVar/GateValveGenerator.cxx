@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -59,10 +58,11 @@ namespace setVariable
 {
 
 GateValveGenerator::GateValveGenerator() :
-  length(7.0),width(24.0),height(46.0),depth(10.5),
+  length(7.0),radius(-1.0),width(24.0),height(46.0),depth(10.5),
   wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.0),
   portBRadius(5.0),portBThick(1.0),portBLen(1.0),
-  bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),voidMat("Void"),
+  bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),
+  liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
   bladeMat("Aluminium"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -75,6 +75,25 @@ GateValveGenerator::~GateValveGenerator()
    Destructor
  */
 {}
+
+template<typename CF>
+void
+GateValveGenerator::setCylCF()
+  /*!
+    Set pipe/flange to CF format
+  */
+{
+  setAPortCF<CF>();
+  setBPortCF<CF>();
+  radius=1.1*CF::flangeRadius;
+  liftWidth=1.2*CF::innerRadius;
+  liftHeight=2.2*CF::flangeRadius;
+  width=2.1*CF::flangeRadius;
+  bladeRadius=1.1*CF::innerRadius;
+  bladeLift=2.2*CF::innerRadius;
+  
+  return;
+}
 
 template<typename CF>
 void
@@ -94,6 +113,7 @@ GateValveGenerator::setCF()
   return;
 }
 
+  
 void
 GateValveGenerator::setOuter(const double L,const double W,
 			     const double H,const double D)
@@ -206,10 +226,19 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"Depth",depth);
-
+  if (radius>Geometry::zeroTol)
+    {
+      Control.addVariable(keyName+"Radius",radius);
+      Control.addVariable(keyName+"LiftWidth",liftWidth);
+      Control.addVariable(keyName+"LiftHeight",liftHeight);
+    }
+  else
+    {
+      Control.addVariable(keyName+"Width",width);
+      Control.addVariable(keyName+"Height",height);
+      Control.addVariable(keyName+"Depth",depth);
+    }
+  
   Control.addVariable(keyName+"WallThick",wallThick);
 
   Control.addVariable(keyName+"PortARadius",portARadius);	
@@ -235,6 +264,10 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
 }
 
 ///\cond TEMPLATE
+
+template void GateValveGenerator::setCylCF<CF40>();
+template void GateValveGenerator::setCylCF<CF63>();
+template void GateValveGenerator::setCylCF<CF100>();
 
 template void GateValveGenerator::setCF<CF40>();
 template void GateValveGenerator::setCF<CF63>();
