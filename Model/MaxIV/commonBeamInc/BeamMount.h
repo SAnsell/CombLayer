@@ -43,7 +43,7 @@ class BeamMount :
 {
  private:
   
-  int blockFlag;     ///< build the block [1:centre / 2 low Edge]    
+  int blockFlag;           ///< build the block [1:centre / 2 low Edge]    
   bool upFlag;             ///< Up/down
 
   double outLift;         ///< Amount to lift [when raised]

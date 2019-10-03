@@ -117,27 +117,28 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> lauePipe;
   /// bellows from laue mono
   std::shared_ptr<constructSystem::Bellows> bellowD;
-  
+  /// Pipe for slit section
+  std::shared_ptr<constructSystem::PortTube> slitTube;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::BeamMount>,4> jaws;
+
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
 
+  void constructSlitTube(Simulation&,MonteCarlo::Object*,
+		     const attachSystem::FixedComp&,const std::string&);
+  
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
      const attachSystem::FixedComp&,const long int);
 
-  int constructDiag
-    (Simulation&,
-     MonteCarlo::Object**,
-     constructSystem::PortTube&,
-     std::array<std::shared_ptr<constructSystem::JawFlange>,2>&,
-     const attachSystem::FixedComp&,
-     const long int);
-
+  
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);
+
   void createLinks();
   
  public:

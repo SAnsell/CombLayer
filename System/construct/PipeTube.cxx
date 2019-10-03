@@ -699,7 +699,8 @@ PipeTube::splitVoidPorts(Simulation& System,
   if (!splitName.empty())
     for(const int CN : cells)
       CellMap::addCell(splitName,CN);
-    
+
+
   return (cells.empty()) ? CN : cells.back()+1;
 }
 

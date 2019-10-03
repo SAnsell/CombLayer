@@ -102,6 +102,7 @@
 #include "Mirror.h"
 #include "MonoBox.h"
 #include "MonoShutter.h"
+#include "BeamMount.h"
 #include "DiffPumpXIADP03.h"
 #include "danmaxOpticsLine.h"
 
@@ -132,7 +133,14 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateA(new constructSystem::GateValveCylinder(newName+"GateA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),    
-  bellowD(new constructSystem::Bellows(newName+"BellowD"))
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  slitTube(new constructSystem::PortTube(newName+"SlitTube")),
+  jaws({
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusX"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
+      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")} )
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -184,6 +192,7 @@ void
 danmaxOpticsLine::createSurfaces()
   /*!
     Create surfaces for outer void
+    Mainly for the masterCell 
   */
 {
   ELog::RegMethod RegA("danmaxOpticsLine","createSurface");
@@ -253,59 +262,54 @@ danmaxOpticsLine::constructMonoShutter
   return outerCell;
 }
 
-
-int
-danmaxOpticsLine::constructDiag
-  (Simulation& System,
-   MonteCarlo::Object** masterCellPtr,
-   constructSystem::PortTube& diagBoxItem,
-   std::array<std::shared_ptr<constructSystem::JawFlange>,2>& jawComp,
-   const attachSystem::FixedComp& FC,const long int linkPt)
-/*!
-    Construct a diagnostic box
-    \param System :: Simulation for building
-    \param diagBoxItem :: Diagnostic box item
-    \param jawComp :: Jaw componets to build in diagnostic box
-    \param FC :: FixedComp for start point
-    \param linkPt :: side index
-    \return outerCell
+void
+danmaxOpticsLine::constructSlitTube(Simulation& System,
+				    MonteCarlo::Object* masterCell,
+				    const attachSystem::FixedComp& initFC, 
+				    const std::string& sideName)
+  /*!
+    Build the DM2 split package
+    \param System :: Simuation to use
    */
 {
-  ELog::RegMethod RegA("danmaxOpticsLine","constructDiag");
+  ELog::RegMethod RegA("danmaxOpticsLine","buildSlitTube");
 
   int outerCell;
-
-  // fake insert
-
-  diagBoxItem.addAllInsertCell((*masterCellPtr)->getName());  
-  diagBoxItem.setFront(FC,linkPt);
-  diagBoxItem.createAll(System,FC,linkPt);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,diagBoxItem,2);
-  diagBoxItem.insertAllInCell(System,outerCell);
-
-
-  for(size_t index=0;index<2;index++)
-    {
-      const constructSystem::portItem& DPI=diagBoxItem.getPort(index);
-      jawComp[index]->setFillRadius
-	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
-      
-      jawComp[index]->addInsertCell(diagBoxItem.getCell("Void"));
-      if (index)
-	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
-      jawComp[index]->createAll
-	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
-    }
   
-  diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
-			     diagBoxItem.getCell("Void"),{0,2});
-  diagBoxItem.splitObject(System,-11,outerCell);
-  diagBoxItem.splitObject(System,12,outerCell);
-  diagBoxItem.splitObject(System,2001,outerCell);
-  cellIndex+=3;
-    
-  return outerCell;
+  // FAKE insertcell: required
+  slitTube->addAllInsertCell(masterCell->getName());
+  slitTube->createAll(System,initFC,sideName);
+  slitTube->intersectPorts(System,0,1);
+  slitTube->intersectPorts(System,1,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitTube,2);
+  slitTube->insertAllInCell(System,outerCell);
+
+  slitTube->splitVoidPorts(System,"SplitVoid",1001,
+			   slitTube->getCell("Void"),
+			   Geometry::Vec3D(0,1,0));
+
+
+  slitTube->splitObject(System,1501,outerCell,
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+  cellIndex++;  // remember creates an extra cell in  primary
+
+  for(size_t i=8;i<jaws.size();i++)
+    {
+      const constructSystem::portItem& PI=slitTube->getPort(i);
+      jaws[i]->addInsertCell("Support",PI.getCell("Void"));
+      jaws[i]->addInsertCell("Support",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("Block",slitTube->getCell("SplitVoid",i));
+      jaws[i]->createAll(System,*slitTube,0,
+			 PI,PI.getSideIndex("InnerPlate"));
+    }
+
+
+  
+
+  return;
 }
+
   
 
 void
@@ -417,6 +421,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
+
+  constructSlitTube(System,masterCell,*bellowD,"back");
+  
   lastComp=triggerPipe;
   return;
 

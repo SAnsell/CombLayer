@@ -429,6 +429,63 @@ monoVariables(FuncDataBase& Control,const double YStep)
 }
 
 void
+opticsSlitPackage(FuncDataBase& Control,
+		  const std::string& opticsName)
+  /*!
+    Builds the DM2 slit package
+    \param Control :: Function data base for variables
+    \param opticsName :: PreNaem
+   */
+{
+  setVariable::PortTubeGenerator PortTubeGen;  
+  setVariable::JawValveGenerator JawGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::BeamMountGenerator BeamMGen;
+  
+    /// SLIT PACKAGE
+  
+  const std::string sName=opticsName+"SlitTube";
+  const double tLen(48.2);
+  PortTubeGen.setPipeCF<CF200>();
+
+  PortTubeGen.setPortCF<CF40>();
+  PortTubeGen.setPortLength(-5.0,-5.0);
+  PortTubeGen.generateTube(Control,sName,0.0,tLen);  
+
+  Control.addVariable(sName+"NPorts",3);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF150>(6.1);
+  PItemGen.setPlate(setVariable::CF150::flangeLength,"Stainless304");
+
+  // Top port 16.0: Side 20.0cm  from front :  Vacuum 1/2 way
+  //
+  const Geometry::Vec3D topJaw(0.0,16.0-tLen/2.0,0.0);
+  const Geometry::Vec3D sideJaw(0.0,20.0-tLen/2.0,0.0);
+  const Geometry::Vec3D vacPort(0.0,0.0,0.0);
+    
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  PItemGen.setOuterVoid(0); /// allow easy join
+  PItemGen.generatePort(Control,sName+"Port0",topJaw,ZVec);
+  PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
+  PItemGen.generatePort(Control,sName+"Port2",vacPort,-ZVec);
+  //  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
+
+  // Jaw units:
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(0.0,2.5);
+  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Stainless304");    
+  const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
+  for(size_t i=0;i<4;i++)
+    {
+      const std::string fname=opticsName+jawKey[i];
+      BeamMGen.generateMount(Control,fname,1);  // outer of beam
+    }
+  
+  return;
+}
+
+void
 opticsVariables(FuncDataBase& Control,
 		const std::string& beamName)
   /*
@@ -453,7 +510,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
 
   setVariable::GateValveGenerator GateGen;
-  setVariable::JawValveGenerator JawGen;
   setVariable::MirrorGenerator MirrGen;
 
   PipeGen.setNoWindow();   // no window
@@ -527,43 +583,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,opticsName+"LauePipe",0,300.0);
   BellowGen.generateBellow(Control,opticsName+"BellowD",0,16.0);
 
-
-  /// SLIT PACKAGE
-
-  const std::string sName=opticsName+"SlitTube";
-  const double tLen(50.2);
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.generateTube(Control,sName,0.0,tLen);  
-
-  Control.addVariable(sName+"NPorts",4);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF63>(6.1);
-  PItemGen.setPlate(setVariable::CF63::flangeLength,"Stainless304");
-
-  // -1/5 missed
-  const Geometry::Vec3D XVec(1,0,0);
-  const Geometry::Vec3D ZVec(0,0,1);
-  const Geometry::Vec3D PStep(0,tLen/10.0,0);
-  Geometry::Vec3D CPt(0.0,-tLen/2.0,0.0);
-  CPt+=PStep*3.0;
-  PItemGen.generatePort(Control,sName+"Port0",CPt,-XVec);
-  CPt+=PStep*1.8;
-  PItemGen.generatePort(Control,sName+"Port1",CPt,XVec);
-  CPt+=PStep*1.8;
-  PItemGen.generatePort(Control,sName+"Port2",CPt,-ZVec);
-  CPt+=PStep*1.8;
-  PItemGen.setOuterVoid(0); /// ???
-  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
-
-  // Jaw units:
-  BeamMGen.setThread(1.0,"Nickel");
-  BeamMGen.setLift(0.0,2.5);
-  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Stainless304");    
-  const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
-  for(size_t i=0;i<4;i++)
-    {
-      const std::string fname=slitKey+jawKey[i];
-      BeamMGen.generateMount(Control,fname,1);  // outer of beam
-    }		       
+  opticsSlitPackage(Control,opticsName);
 
   return;
 }

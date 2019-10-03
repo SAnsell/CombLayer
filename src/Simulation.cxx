@@ -1572,20 +1572,28 @@ Simulation::splitObject(const int CA,const int SN)
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs(std::abs(SN));
 
-
+  ELog::EM<<"Buld == "<<CA<<" "<<SN<<ELog::endDiag;
+  for(const auto P : IP)
+    ELog::EM<<"Pair == "<<P.first<<" "<<P.second<<ELog::endDiag;
       
   // Now make two cells and replace this cell with A + B
 
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
-
+  ELog::EM<<"PRE ==      ==  "<<AX<<ELog::endDiag;
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
-    CPtr->procString(AX.writeMCNPX());
+    {
+      ELog::EM<<"SN == "<<-SN<<"==  "<<AX<<ELog::endDiag;
+      CPtr->procString(AX.writeMCNPX());
+    }
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
-    DPtr->procString(AX.writeMCNPX());
+    {
+      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
+      DPtr->procString(AX.writeMCNPX());
+    }
   
   return CB;
 }

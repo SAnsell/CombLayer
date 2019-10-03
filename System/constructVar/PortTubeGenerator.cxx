@@ -410,6 +410,7 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   template void PortTubeGenerator::setPipeCF<CF100>();
   template void PortTubeGenerator::setPipeCF<CF120>();
   template void PortTubeGenerator::setPipeCF<CF150>();
+  template void PortTubeGenerator::setPipeCF<CF200>();
 
   template void PortTubeGenerator::setPortCF<CF40>();
   template void PortTubeGenerator::setPortCF<CF63>();
