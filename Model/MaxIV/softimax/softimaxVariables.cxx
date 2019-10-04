@@ -63,6 +63,9 @@
 #include "PortItemGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "VacBoxGenerator.h"
+#include "GratingMonoGenerator.h"
+#include "GratingUnitGenerator.h"
+#include "TankMonoVesselGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
@@ -89,6 +92,7 @@ namespace softimaxVar
   void frontMaskVariables(FuncDataBase&,const std::string&);
   void wallVariables(FuncDataBase&,const std::string&);
   //  void monoShutterVariables(FuncDataBase&,const std::string&);
+  void monoVariables(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -190,6 +194,66 @@ wallVariables(FuncDataBase& Control,
 
   return;
 }
+
+void
+monoVariables(FuncDataBase& Control,
+	      const std::string& monoKey)
+  /*!
+    Builds the variables for the mono packge
+    \param Control :: Database
+    \param slitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("softimaxVariables[F]","monoVariables");
+
+  //  setVariable::PipeGenerator PipeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::TankMonoVesselGenerator MBoxGen;
+  setVariable::GratingMonoGenerator MXtalGen;
+  setVariable::GratingUnitGenerator MUnitGen;
+
+  // PipeGen.setMat("Stainless304");
+  // PipeGen.setNoWindow();
+  // PipeGen.setCF<setVariable::CF63>();
+  // PipeGen.setBFlange(17.8,1.0);
+  // PipeGen.generatePipe(Control,monoKey+"OffPipeA",0,3.0);
+  // Control.addVariable(monoKey+"OffPipeAFlangeBackZStep",-7.0);
+
+  // ystep/width/height/depth/length
+  //
+  MBoxGen.setCF<CF63>();   // set ports
+  MBoxGen.setAFlange(17.8,1.0);
+  MBoxGen.setBFlange(17.8,1.0);
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,54.91,36.45,36.45); // ystep,R,height,depth
+  Control.addVariable(monoKey+"MonoVesselOuterSize",65);
+  //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
+  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
+  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
+
+
+  const std::string portName=monoKey+"MonoVessel";
+  Control.addVariable(monoKey+"MonoVesselNPorts",1); // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF120>(5.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,portName+"Port0",
+			Geometry::Vec3D(0,5.0,0.0),
+			Geometry::Vec3D(1,0,0));
+
+  // crystals
+  MXtalGen.generateGrating(Control,monoKey+"MonoXtal",0.0,3.0);
+  // monounit
+  MUnitGen.generateGrating(Control,monoKey+"Grating",0.0,0.0);
+
+  // PipeGen.setCF<setVariable::CF63>();
+  // PipeGen.setAFlange(17.8,1.0);
+  // PipeGen.generatePipe(Control,monoKey+"OffPipeB",0,3.0);
+  // Control.addVariable(monoKey+"OffPipeBFlangeFrontZStep",-7.0);
+
+  return;
+}
+
 
 // void
 // monoShutterVariables(FuncDataBase& Control,
@@ -308,53 +372,6 @@ opticsHutVariables(FuncDataBase& Control,
 // }
 
 
-void
-monoVariables(FuncDataBase& Control)
-  /*!
-    Set the variables for the mono
-    \param Control :: DataBase to use
-  */
-{
-  ELog::RegMethod RegA("softimaxVariables[F]","monoVariables");
-  const std::string preName("SoftiMAXOpticsLine");
-  
-  setVariable::MonoBoxGenerator VBoxGen;
-
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF63>();
-  VBoxGen.setAPortCF<CF40>();
-  VBoxGen.setPortLength(5.0,5.0); // La/Lb
-  VBoxGen.setLids(3.0,1.0,1.0); // over/base/roof
-
-  VBoxGen.setBPortOffset(2.5,0.0);
-  // ystep/width/height/depth/length
-  // height+depth == 452mm  -- 110/ 342
-  VBoxGen.generateBox(Control,preName+"MonoBox",0.0,77.2,11.0,34.20,95.1);
-
-    // CRYSTALS:
-  Control.addVariable(preName+"MonoXtalYAngle",90.0);
-  Control.addVariable(preName+"MonoXtalZStep",0.0);
-  Control.addVariable(preName+"MonoXtalGap",2.5);
-  Control.addVariable(preName+"MonoXtalTheta",10.0);
-  Control.addVariable(preName+"MonoXtalPhiA",0.0);
-  Control.addVariable(preName+"MonoXtalPhiA",0.0);
-  Control.addVariable(preName+"MonoXtalWidth",10.0);
-  Control.addVariable(preName+"MonoXtalLengthA",8.0);
-  Control.addVariable(preName+"MonoXtalLengthB",12.0);
-  Control.addVariable(preName+"MonoXtalThickA",4.0);
-  Control.addVariable(preName+"MonoXtalThickB",3.0);
-  Control.addVariable(preName+"MonoXtalBaseALength",10.0);
-  Control.addVariable(preName+"MonoXtalBaseBLength",14.0);
-  Control.addVariable(preName+"MonoXtalBaseGap",0.3);
-  Control.addVariable(preName+"MonoXtalBaseThick",1.0);
-  Control.addVariable(preName+"MonoXtalBaseExtra",2.0);
-  
-  Control.addVariable(preName+"MonoXtalMat","Silicon80K");
-  Control.addVariable(preName+"MonoXtalBaseMat","Copper");
-
-  return;
-}
 
 // void
 // mirrorBox(FuncDataBase& Control,const std::string& Name,
@@ -605,8 +622,8 @@ opticsVariables(FuncDataBase& Control,
   std::string Name;
 
   Control.addVariable(preName+"OuterLeft",70.0);
-  Control.addVariable(preName+"OuterRight",50.0);
-  Control.addVariable(preName+"OuterTop",60.0);
+  Control.addVariable(preName+"OuterRight",70.0);
+  Control.addVariable(preName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
@@ -732,6 +749,8 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowD",0,12.0);
 
+  monoVariables(Control,preName);
+
 
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
@@ -809,8 +828,6 @@ opticsVariables(FuncDataBase& Control,
 
   // GateGen.setCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateC",0.0,0);
-
-  // softimaxVar::monoVariables(Control);
 
   // GateGen.setCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateD",0.0,0);

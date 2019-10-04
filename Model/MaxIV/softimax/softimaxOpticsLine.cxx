@@ -100,6 +100,7 @@
 // #include "JawUnit.h"
 #include "JawFlange.h"
 // #include "FlangeMount.h"
+#include "TankMonoVessel.h"
 #include "Mirror.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
@@ -134,7 +135,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
-  bellowD(new constructSystem::Bellows(newName+"BellowD"))
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -203,6 +205,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bremCollA);
   OR.addObject(gateB);
   OR.addObject(bellowD);
+  OR.addObject(monoVessel);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -436,6 +439,44 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   return;
 }
 
+void
+softimaxOpticsLine::buildMono(Simulation& System,
+				 MonteCarlo::Object* masterCell,
+				 const attachSystem::FixedComp& initFC,
+				 const long int sideIndex)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideIndex :: start link point
+  */
+{
+  ELog::RegMethod RegA("softimaxOpticsBeamline","buildMono");
+
+  int outerCell;
+
+  // offPipeA->createAll(System,initFC,sideIndex);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeA,2);
+  // offPipeA->insertInCell(System,outerCell);
+
+  // FAKE insertcell: required
+  monoVessel->addInsertCell(masterCell->getName());
+  monoVessel->createAll(System,initFC,sideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
+  monoVessel->insertInCell(System,outerCell);
+
+  // grating->addInsertCell(monoVessel->getCell("Void"));
+  // grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
+  // grating->createAll(System,*monoVessel,0);
+
+  // offPipeB->createAll(System,*monoVessel,2);
+  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
+  // offPipeB->insertInCell(System,outerCell);
+
+  return;
+}
+
 
 void
 softimaxOpticsLine::buildObjects(Simulation& System)
@@ -541,6 +582,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
+  buildMono(System,masterCell,*bellowD,2);
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);

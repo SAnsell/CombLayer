@@ -28,6 +28,7 @@ namespace xraySystem
   class BlockStand;
   class BremColl;
   class Mirror;
+  class TankMonoVessel;
   
   /*!
     \class softimaxOpticsLine
@@ -80,6 +81,7 @@ class softimaxOpticsLine :
   /// gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   std::shared_ptr<constructSystem::Bellows> bellowD;
+  std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;
@@ -188,6 +190,8 @@ class softimaxOpticsLine :
 
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
+  void buildMono(Simulation&,MonteCarlo::Object*,
+		 const attachSystem::FixedComp&,const long int);
 
   void populate(const FuncDataBase&);
   void createSurfaces();
