@@ -29,6 +29,7 @@ namespace xraySystem
   class BremColl;
   class Mirror;
   class TankMonoVessel;
+  class GratingUnit;
   
   /*!
     \class softimaxOpticsLine
@@ -81,7 +82,10 @@ class softimaxOpticsLine :
   /// gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Monochromator
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
+  /// Grating
+  std::shared_ptr<xraySystem::GratingUnit> grating;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;

@@ -10,7 +10,7 @@ global_settings {
   assumed_gamma 1.0
 }
 
-#declare view = 4;
+#declare view = 6;
 #declare cameraAngle = 90;
 
 #switch ( view )
@@ -31,13 +31,16 @@ global_settings {
     #declare cameraLocation = <2380, 8450, 10>;
     #declare cameraLookAt   = <2380, 8400, 0>;
   #break
-  #case(4) // Tungsten collimator
+  #case(5) // Tungsten collimator
     #declare cameraLocation = <2432, 8450, 10>;
     #declare cameraLookAt   = <2432, 8400, 0>;
+  #case(6) // Monochromator
+    #declare cameraLocation = <2514, 8550, 10>;
+    #declare cameraLookAt   = <2514, 8400, 0>;
   #break
   #else // whole optics line top view
-    #declare cameraLocation = <2300, 8450, 60>;
-    #declare cameraLookAt   = <2300, 8408, 0>;
+    #declare cameraLocation = <2400, 8450, 160>;
+    #declare cameraLookAt   = <2400, 8408, 0>;
 #break
 #end
 

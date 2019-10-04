@@ -101,6 +101,7 @@
 #include "JawFlange.h"
 // #include "FlangeMount.h"
 #include "TankMonoVessel.h"
+#include "GratingUnit.h"
 #include "Mirror.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
@@ -136,7 +137,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel"))
+  monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
+  grating(new xraySystem::GratingUnit(newName+"Grating"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -466,9 +468,9 @@ softimaxOpticsLine::buildMono(Simulation& System,
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
   monoVessel->insertInCell(System,outerCell);
 
-  // grating->addInsertCell(monoVessel->getCell("Void"));
-  // grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
-  // grating->createAll(System,*monoVessel,0);
+  grating->addInsertCell(monoVessel->getCell("Void"));
+  grating->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
+  grating->createAll(System,*monoVessel,0);
 
   // offPipeB->createAll(System,*monoVessel,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*offPipeB,2);
