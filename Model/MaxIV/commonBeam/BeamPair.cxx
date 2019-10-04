@@ -118,6 +118,11 @@ BeamPair::populate(const FuncDataBase& Control)
   gapA=Control.EvalVar<double>(keyName+"GapA");
   gapB=Control.EvalVar<double>(keyName+"GapB");
 
+  xStepA=Control.EvalVar<double>(keyName+"XStepA");
+  yStepA=Control.EvalVar<double>(keyName+"YStepA");
+  xStepB=Control.EvalVar<double>(keyName+"XStepB");
+  yStepB=Control.EvalVar<double>(keyName+"YStepB");
+  
   blockXYAngle=Control.EvalDefVar<double>(keyName+"BlockXYAngle",0.0);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -190,7 +195,6 @@ BeamPair::createSurfaces()
 
   // Not can have a local rotation of the beam component
   // construct support
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,supportRadius);
 
   if (!isActive("mountSurf"))
     {
@@ -200,21 +204,22 @@ BeamPair::createSurfaces()
 
   // BLOCK A : [UPPER]
   // action in Y direction:
-  ELog::EM<<"BY == "<<bY<<" "<<Y<<" : "<<Z<<ELog::endDiag;
-  const Geometry::Vec3D bA(bOrigin+X*xStepA+Y*yStepA+Z*gapA);
+  const Geometry::Vec3D bA(bOrigin+X*xStepA+Z*yStepA-Y*gapA);
   const Geometry::Vec3D wAxis=(bY*Y).unit();
+
   
   ModelSupport::buildPlane(SMap,buildIndex+1,bA-bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+2,bA+bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+3,bA-wAxis*(width/2.0),wAxis);
   ModelSupport::buildPlane(SMap,buildIndex+4,bA+wAxis*(width/2.0),wAxis);
-  ModelSupport::buildPlane(SMap,buildIndex+5,bA-Y*(height),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+5,bA-Y*height,Y);
   ModelSupport::buildPlane(SMap,buildIndex+6,bA,Y);
 
   // BLOCK B : [LOWER]
   // action in Y direction:
-  const Geometry::Vec3D bB(bOrigin+X*xStepB+Y*yStepB-Z*gapB);
-  ELog::EM<<"Beam Centre == "<<bB<<ELog::endDiag;
+  const Geometry::Vec3D bB(bOrigin+X*xStepB+Z*yStepB+Y*gapB);
+
+  
   ModelSupport::buildPlane(SMap,buildIndex+11,bB-bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+12,bB+bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+13,bB-wAxis*(width/2.0),wAxis);
@@ -222,7 +227,11 @@ BeamPair::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,bB,Y);
   ModelSupport::buildPlane(SMap,buildIndex+16,bB+Y*(height),Y);
 
-
+  // Support tube
+  const Geometry::Vec3D cylA(bA+wAxis*(width/2.0-supportRadius));
+  const Geometry::Vec3D cylB(bB-wAxis*(width/2.0-supportRadius));
+  ModelSupport::buildCylinder(SMap,buildIndex+7,cylA,Y,supportRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,cylB,Y,supportRadius);
   return; 
 }
 
@@ -248,19 +257,17 @@ BeamPair::createObjects(Simulation& System)
   addOuterSurf("BlockB",Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  //  makeCell("Support",System,cellIndex++,supportMat,0.0,Out+mountSurf);
+  makeCell("SupportA",System,cellIndex++,supportMat,0.0,Out+mountSurf);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
-  //  makeCell("Block",System,cellIndex++,blockMat,0.0,Out);
-  //  addOuterSurf("Block",Out);
-
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -15 " );
+  makeCell("SupportB",System,cellIndex++,supportMat,0.0,Out+mountSurf);
    
   // final exclude:
   //  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -6");
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  //  addOuterSurf("Support",Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );  
-  //  addOuterSurf("Block",Out);
+  addOuterSurf("SupportA",Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 -15" );
+  addOuterSurf("SupportB",Out);
   
   return; 
 }

@@ -138,7 +138,24 @@ BeamPairGenerator::setBlock(const double W,const double H,
   return;
 }
 
-				  
+void
+BeamPairGenerator::setXYStep(const double xA,const double yA,
+			     const double xB,const double yB)
+  /*!
+    Simple setter for xy-step
+    \param xA :: Offset step 
+    \param yA :: Offset step 
+    \param xB :: Offset step for B
+    \param yb :: Inital step 
+   */
+{
+  xStepA=xA;
+  yStepA=yA;
+  xStepB=xB;
+  yStepB=yB;
+  return;
+}
+  
 void
 BeamPairGenerator::generateMount(FuncDataBase& Control,
 				  const std::string& keyName,

@@ -472,9 +472,10 @@ opticsSlitPackage(FuncDataBase& Control,
   //  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
 
   // Jaw units:
-  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setThread(0.5,"Nickel");
   BeamMGen.setLift(0.0,2.5);
   BeamMGen.setGap(1.0,1.0);
+  BeamMGen.setXYStep(0.6,0.0,-0.6,0);
   BeamMGen.setBlock(4.0,2.0,1.0,0.0,"Tungsten");
   
   const std::string jawKey[]={"JawX","JawZ"};
@@ -587,6 +588,10 @@ opticsVariables(FuncDataBase& Control,
 
   opticsSlitPackage(Control,opticsName);
 
+
+  GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
+  BellowGen.generateBellow(Control,opticsName+"BellowE",0,16.0);
+  
   return;
 }
 

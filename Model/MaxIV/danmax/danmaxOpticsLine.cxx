@@ -139,7 +139,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   jaws({
       std::make_shared<xraySystem::BeamPair>(newName+"JawX"),
       std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
-	})
+	}),
+  gateB(new constructSystem::GateValveCylinder(newName+"GateB")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE"))
 
   /*!
     Constructor
@@ -164,6 +166,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
+  OR.addObject(slitTube);
+  OR.addObject(jaws[0]);
+  OR.addObject(jaws[1]);
+  
+  OR.addObject(gateB);
+  OR.addObject(bellowE);
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -285,8 +293,8 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
   slitTube->insertAllInCell(System,outerCell);
 
   slitTube->splitVoidPorts(System,"SplitVoid",1001,
-			   slitTube->getCell("Void"),
-			   Geometry::Vec3D(0,1,0));
+   			   slitTube->getCell("Void"),
+   			   Geometry::Vec3D(0,1,0));
 
 
   slitTube->splitObject(System,1501,outerCell,
@@ -295,19 +303,18 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
   cellIndex++;  // remember creates an extra cell in  primary
 
 
-  for(size_t i=0;i<jaws.size();i+=20)
+  for(size_t i=0;i<jaws.size();i++)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
       jaws[i]->addInsertCell("SupportA",PI.getCell("Void"));
       jaws[i]->addInsertCell("SupportA",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("SupportB",PI.getCell("Void"));
+      jaws[i]->addInsertCell("SupportB",slitTube->getCell("SplitVoid",i));
       jaws[i]->addInsertCell("BlockA",slitTube->getCell("SplitVoid",i));
       jaws[i]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",i));
       jaws[i]->createAll(System,*slitTube,0,
 			 PI,PI.getSideIndex("InnerPlate"));
-    }
-
-
-  
+    }  
 
   return;
 }
@@ -425,6 +432,19 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
 
   constructSlitTube(System,masterCell,*bellowD,"back");
+
+
+  gateB->setFront(*slitTube,slitTube->getSideIndex("back"));
+  gateB->createAll(System,*slitTube,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
+  gateB->insertInCell(System,outerCell);
+
+    // after gate value
+  bellowE->setFront(*gateB,gateB->getSideIndex("back"));
+  bellowE->createAll(System,*gateB,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
+  bellowE->insertInCell(System,outerCell);
+
   
   lastComp=triggerPipe;
   return;

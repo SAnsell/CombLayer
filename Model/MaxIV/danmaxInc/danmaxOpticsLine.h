@@ -123,6 +123,10 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PortTube> slitTube;
   /// Jaws for the slit tube (x/z pair)
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
+  // Gate after slittube
+  std::shared_ptr<constructSystem::GateValveCylinder> gateB;
+  /// bellows to laue mono:
+  std::shared_ptr<constructSystem::Bellows> bellowE;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

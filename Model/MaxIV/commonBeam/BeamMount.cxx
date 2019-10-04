@@ -72,7 +72,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BeamMount.h"
@@ -176,9 +175,6 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
   else
     {
       beamFC.createUnitVector(flangeFC,fIndex);
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]X == "<<XBeam<<ELog::endDiag;
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]Y == "<<YBeam<<ELog::endDiag;
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]Z == "<<ZBeam<<ELog::endErr;
     }
   applyOffset();
 
