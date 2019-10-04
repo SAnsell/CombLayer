@@ -57,7 +57,7 @@ class BeamPair :
   double xStepB;           ///< xStep of unit B
   double yStepB;           ///< yStep of unit B
   
-  double blockXYAngle;          ///< Rotation angle about Z
+  double blockXYAngle;     ///< Rotation angle about Z
   double height;           ///< height total 
   double width;            ///< width accross beam
   double length;           ///< Thickness in normal direction to reflection  

@@ -103,6 +103,7 @@
 #include "MonoBox.h"
 #include "MonoShutter.h"
 #include "BeamMount.h"
+#include "BeamPair.h"
 #include "DiffPumpXIADP03.h"
 #include "danmaxOpticsLine.h"
 
@@ -136,10 +137,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   slitTube(new constructSystem::PortTube(newName+"SlitTube")),
   jaws({
-      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusX"),
-      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusX"),
-      std::make_shared<xraySystem::BeamMount>(newName+"JawMinusZ"),
-      std::make_shared<xraySystem::BeamMount>(newName+"JawPlusZ")} )
+      std::make_shared<xraySystem::BeamPair>(newName+"JawX"),
+      std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
+	})
 
   /*!
     Constructor
@@ -294,12 +294,14 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
 			Geometry::Vec3D(0,0,1));
   cellIndex++;  // remember creates an extra cell in  primary
 
-  for(size_t i=8;i<jaws.size();i++)
+
+  for(size_t i=0;i<jaws.size();i+=20)
     {
       const constructSystem::portItem& PI=slitTube->getPort(i);
-      jaws[i]->addInsertCell("Support",PI.getCell("Void"));
-      jaws[i]->addInsertCell("Support",slitTube->getCell("SplitVoid",i));
-      jaws[i]->addInsertCell("Block",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("SupportA",PI.getCell("Void"));
+      jaws[i]->addInsertCell("SupportA",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("BlockA",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",i));
       jaws[i]->createAll(System,*slitTube,0,
 			 PI,PI.getSideIndex("InnerPlate"));
     }

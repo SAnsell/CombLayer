@@ -82,7 +82,7 @@ namespace xraySystem
 {
 
 BeamPair::BeamPair(const std::string& Key) :
-  attachSystem::ContainedGroup("Block","BlockB","SupportA","SupportB"),
+  attachSystem::ContainedGroup("BlockA","BlockB","SupportA","SupportB"),
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -199,21 +199,29 @@ BeamPair::createSurfaces()
     }
 
   // BLOCK A : [UPPER]
-  ModelSupport::buildPlane(SMap,buildIndex+1,
-			   bOrigin-bY*(length/2.0),bY);
-  ModelSupport::buildPlane(SMap,buildIndex+2,
-			   bOrigin+bY*(length/2.0),bY);
-  ModelSupport::buildPlane(SMap,buildIndex+3,
-			   bOrigin-bX*(width/2.0),bX);
-  ModelSupport::buildPlane(SMap,buildIndex+4,
-			   bOrigin+bX*(width/2.0),bX);
+  // action in Y direction:
+  ELog::EM<<"BY == "<<bY<<" "<<Y<<" : "<<Z<<ELog::endDiag;
+  const Geometry::Vec3D bA(bOrigin+X*xStepA+Y*yStepA+Z*gapA);
+  const Geometry::Vec3D wAxis=(bY*Y).unit();
   
-  
-  ModelSupport::buildPlane(SMap,buildIndex+5,
-			   bOrigin-bZ*(height/2.0),bZ);
-  
-  ModelSupport::buildPlane(SMap,buildIndex+6,
-			   bOrigin+bZ*(height/2.0),bZ);
+  ModelSupport::buildPlane(SMap,buildIndex+1,bA-bY*(length/2.0),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+2,bA+bY*(length/2.0),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+3,bA-wAxis*(width/2.0),wAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+4,bA+wAxis*(width/2.0),wAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+5,bA-Y*(height),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+6,bA,Y);
+
+  // BLOCK B : [LOWER]
+  // action in Y direction:
+  const Geometry::Vec3D bB(bOrigin+X*xStepB+Y*yStepB-Z*gapB);
+  ELog::EM<<"Beam Centre == "<<bB<<ELog::endDiag;
+  ModelSupport::buildPlane(SMap,buildIndex+11,bB-bY*(length/2.0),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+12,bB+bY*(length/2.0),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+13,bB-wAxis*(width/2.0),wAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+14,bB+wAxis*(width/2.0),wAxis);
+  ModelSupport::buildPlane(SMap,buildIndex+15,bB,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+16,bB+Y*(height),Y);
+
 
   return; 
 }
@@ -231,21 +239,28 @@ BeamPair::createObjects(Simulation& System)
 
   std::string Out;
 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
+  makeCell("BlockA",System,cellIndex++,blockMat,0.0,Out);
+  addOuterSurf("BlockA",Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 " );
+  makeCell("BlockB",System,cellIndex++,blockMat,0.0,Out);
+  addOuterSurf("BlockB",Out);
+
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  makeCell("Support",System,cellIndex++,supportMat,0.0,Out+mountSurf);
+  //  makeCell("Support",System,cellIndex++,supportMat,0.0,Out+mountSurf);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
-  makeCell("Block",System,cellIndex++,blockMat,0.0,Out);
-  addOuterSurf("Block",Out);
+  //  makeCell("Block",System,cellIndex++,blockMat,0.0,Out);
+  //  addOuterSurf("Block",Out);
 
-    
-  
+   
   // final exclude:
   //  Out=ModelSupport::getComposite(SMap,buildIndex,"-117 -6");
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
-  addOuterSurf("Support",Out);
+  //  addOuterSurf("Support",Out);
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );  
-  addOuterSurf("Block",Out);
+  //  addOuterSurf("Block",Out);
   
   return; 
 }

@@ -91,6 +91,19 @@ BeamPairGenerator::setLift(const double A,const double B)
 }
 
 void
+BeamPairGenerator::setGap(const double A,const double B)
+  /*!
+    Set the thread 
+    \param A :: gap upward 
+    \param B :: gap downwar
+   */
+{
+  gapA=A;   // up directoin
+  gapB=B;
+  return;
+}
+
+void
 BeamPairGenerator::setThread(const double R,
 			     const std::string& Mat)
   /*!

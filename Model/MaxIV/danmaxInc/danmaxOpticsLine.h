@@ -57,6 +57,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
+  class BeamPair;
   class BremBlock;
   class BremMonoColl;
   class FlangeMount;
@@ -64,6 +65,7 @@ namespace xraySystem
   class MonoBox;
   class MonoCrystals;
   class MonoShutter;
+
   
   /*!
     \class danmaxOpticsLine
@@ -120,7 +122,7 @@ class danmaxOpticsLine :
   /// Pipe for slit section
   std::shared_ptr<constructSystem::PortTube> slitTube;
   /// Jaws for the slit tube (x/z pair)
-  std::array<std::shared_ptr<xraySystem::BeamMount>,4> jaws;
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

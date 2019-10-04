@@ -61,7 +61,7 @@
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
 #include "FlangeMountGenerator.h"
-#include "BeamMountGenerator.h"
+#include "BeamPairGenerator.h"
 #include "MirrorGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "ShutterUnitGenerator.h"
@@ -440,7 +440,7 @@ opticsSlitPackage(FuncDataBase& Control,
   setVariable::PortTubeGenerator PortTubeGen;  
   setVariable::JawValveGenerator JawGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::BeamMountGenerator BeamMGen;
+  setVariable::BeamPairGenerator BeamMGen;
   
     /// SLIT PACKAGE
   
@@ -474,9 +474,11 @@ opticsSlitPackage(FuncDataBase& Control,
   // Jaw units:
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(0.0,2.5);
-  BeamMGen.setEdgeBlock(3.0,3.0,2.0,0.0,"Stainless304");    
-  const std::string jawKey[]={"JawMinusX","JawPlusX","JawMinusZ","JawPlusZ"};
-  for(size_t i=0;i<4;i++)
+  BeamMGen.setGap(1.0,1.0);
+  BeamMGen.setBlock(4.0,2.0,1.0,0.0,"Tungsten");
+  
+  const std::string jawKey[]={"JawX","JawZ"};
+  for(size_t i=0;i<2;i++)
     {
       const std::string fname=opticsName+jawKey[i];
       BeamMGen.generateMount(Control,fname,1);  // outer of beam
