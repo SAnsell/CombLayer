@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/BeamMount.h
+ * File:   commonBeamInc/BeamPair.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_BeamMount_h
-#define xraySystem_BeamMount_h
+#ifndef xraySystem_BeamPair_h
+#define xraySystem_BeamPair_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class BeamMount
+  \class BeamPair
   \author S. Ansell
   \version 1.0
   \date January 2018
   \brief Focasable mirror in mount
 */
 
-class BeamMount :
+class BeamPair :
   public attachSystem::ContainedGroup,
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ExternalCut,
@@ -43,21 +43,28 @@ class BeamMount :
 {
  private:
   
-  int blockFlag;           ///< build the block [1:centre / 2 low Edge]    
   bool upFlag;             ///< Up/down
 
-  double outLift;         ///< Amount to lift [when raised]
-  double beamLift;        ///< Amount to lift by in the beam
+  double outLiftA;          ///< lift [when raised from beam cent]
+  double outLiftB;          ///< lift [when raised from beam cent]
+  double gapA;             ///< Gap from centre point (top +ve up)
+  double gapB;             ///< Gap from centre point (base +ve down)
   
   double supportRadius;    ///< Radius of support  
-  int supportMat;          ///< support material
 
-
-  double blockXYAngle;     ///< rotation
+  double xStepA;           ///< xstep of unit A
+  double yStepA;           ///< yStep of unit A
+  double xStepB;           ///< xStep of unit B
+  double yStepB;           ///< yStep of unit B
+  
+  double blockXYAngle;          ///< Rotation angle about Z
   double height;           ///< height total 
   double width;            ///< width accross beam
   double length;           ///< Thickness in normal direction to reflection  
-  int blockMat;            ///< Base material
+
+
+  int blockMat;            ///< block material    
+  int supportMat;          ///< support material
 
   // Functions:
 
@@ -72,10 +79,10 @@ class BeamMount :
   
  public:
 
-  BeamMount(const std::string&);
-  BeamMount(const BeamMount&);
-  BeamMount& operator=(const BeamMount&);
-  virtual ~BeamMount();
+  BeamPair(const std::string&);
+  BeamPair(const BeamPair&);
+  BeamPair& operator=(const BeamPair&);
+  virtual ~BeamPair();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,

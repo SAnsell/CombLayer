@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/BeamMountGenerator.cxx
+ * File:   commonBeam/BeamPairGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -51,22 +51,25 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "CFFlanges.h"
-#include "BeamMountGenerator.h"
+#include "BeamPairGenerator.h"
 
 namespace setVariable
 {
 
-BeamMountGenerator::BeamMountGenerator() :
-  blockType(0),outLift(5.0),beamLift(0.0),supportRadius(1.0),
-  supportMat("Nickel"),xyAngle(0.0),height(4.0),width(3.0),
-  length(5.0),blockMat("Tungsten")
+BeamPairGenerator::BeamPairGenerator() :
+  outLiftA(7.0),outLiftB(5.0),
+  gapA(0.3),gapB(0.3),supportRadius(0.5),
+  supportMat("Nickel"),
+  xStepA(0.4),yStepA(-0.8),
+  xStepB(-0.4),yStepB(0.8),
+  xyAngle(0.0),height(2.0),width(4.0),
+  length(1.0),blockMat("Tungsten")
   /*!
     Constructor and defaults
   */
 {}
 
-BeamMountGenerator::~BeamMountGenerator() 
+BeamPairGenerator::~BeamPairGenerator() 
  /*!
    Destructor
  */
@@ -75,22 +78,21 @@ BeamMountGenerator::~BeamMountGenerator()
 
 
 void
-BeamMountGenerator::setLift(const double A,
-			    const double B)
+BeamPairGenerator::setLift(const double A,const double B)
   /*!
     Set the thread 
     \param A :: beam/out lift
     \param B :: beam/out lift
    */
 {
-  beamLift=std::min(A,B);
-  outLift=std::max(A,B);
+  outLiftA=A;
+  outLiftB=B;
   return;
 }
 
 void
-BeamMountGenerator::setThread(const double R,
-			      const std::string& Mat)
+BeamPairGenerator::setThread(const double R,
+			     const std::string& Mat)
   /*!
     Set the thread 
     \param R :: Thread radius
@@ -103,10 +105,10 @@ BeamMountGenerator::setThread(const double R,
 }
 
 void
-BeamMountGenerator::setCentreBlock(const double W,const double H,
-				   const double L,const double XYA,
-				   const std::string& Mat)
-  /*!
+BeamPairGenerator::setBlock(const double W,const double H,
+			    const double L,const double XYA,
+			    const std::string& Mat)
+/*!
     Set the centred block
     \param W :: Width
     \param H :: Height
@@ -115,7 +117,6 @@ BeamMountGenerator::setCentreBlock(const double W,const double H,
     \param Mat :: Material of blade
    */
 {
-  blockType=1;
   width=W;
   height=H;
   length=L;
@@ -123,32 +124,10 @@ BeamMountGenerator::setCentreBlock(const double W,const double H,
   blockMat=Mat;
   return;
 }
-void
-BeamMountGenerator::setEdgeBlock(const double W,const double H,
-				 const double L,const double XYA,
-				 const std::string& Mat)
-  /*!
-    Set the edge  block
-    \param W :: Width
-    \param H :: Height
-    \param L :: Length
-    \param XYA :: xyAngle
-    \param Mat :: Material of blade
-   */
-{
-  blockType=2;
-  xyAngle=XYA;
-  width=W;
-  height=H;
-  length=L;
-  blockMat=Mat;
-  return;
-}
-
 
 				  
 void
-BeamMountGenerator::generateMount(FuncDataBase& Control,
+BeamPairGenerator::generateMount(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const int upFlag) const
   /*!
@@ -158,20 +137,24 @@ BeamMountGenerator::generateMount(FuncDataBase& Control,
     \param blockType :: Block position [0:None,1:Mid,2:lower edge]		    \param upFlag :: true if item open/withdrawn
   */
 {
-  ELog::RegMethod RegA("BeamMountGenerator","generatorMount");
+  ELog::RegMethod RegA("BeamPairGenerator","generatorMount");
 
-  Control.addVariable(keyName+"XYAngle",xyAngle);
-
-  Control.addVariable(keyName+"BlockFlag",blockType);
   Control.addVariable(keyName+"UpFlag",upFlag);
 
   Control.addVariable(keyName+"BeamZStep",0.0);
 
-  Control.addVariable(keyName+"OutLift",outLift);
-  Control.addVariable(keyName+"BeamLift",beamLift);
-  
+  Control.addVariable(keyName+"OutLiftA",outLiftA);
+  Control.addVariable(keyName+"OutLiftB",outLiftB);
+  Control.addVariable(keyName+"GapA",gapA);
+  Control.addVariable(keyName+"GapB",gapB);
+
   Control.addVariable(keyName+"SupportRadius",supportRadius);
   Control.addVariable(keyName+"SupportMat",supportMat);
+
+  Control.addVariable(keyName+"XStepA",xStepA);
+  Control.addVariable(keyName+"YStepA",yStepA);
+  Control.addVariable(keyName+"XStepB",xStepB);
+  Control.addVariable(keyName+"YStepB",yStepB);
   
   // always add even if not needed
   Control.addVariable(keyName+"Width",width);

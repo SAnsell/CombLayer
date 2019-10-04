@@ -549,7 +549,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 
 void
 portItem::intersectPair(Simulation& System,
-			const portItem& Outer) const
+			portItem& Outer) const
   /*!
     Intersect two port
     \param Simulation :: Simulation to use
@@ -562,8 +562,18 @@ portItem::intersectPair(Simulation& System,
   Outer.insertComponent(System,"Wall",mainComp);
   const HeadRule outerComp(Outer.getFullRule(3).complement());
   const HeadRule outerWallComp(Outer.getFullRule(4).complement());
+
   this->insertComponent(System,"Wall",outerWallComp);
   this->insertComponent(System,"Void",outerComp);
+
+  const HeadRule voidRadius(getFullRule(6).complement());
+  const HeadRule outerVoidRadius(Outer.getFullRule(6).complement());
+  const HeadRule wallComp(getFullRule(4).complement());
+  if (outerFlag && Outer.outerFlag)  // both
+    {
+      this->insertComponent(System,"OutVoid",outerVoidRadius);
+      Outer.insertComponent(System,"OutVoid",wallComp);
+    }    
   return;
 }
 

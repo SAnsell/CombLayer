@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/BeamMount.cxx
+ * File:   commonBeam/BeamPair.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -75,14 +75,14 @@
 #include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
-#include "BeamMount.h"
+#include "BeamPair.h"
 
 
 namespace xraySystem
 {
 
-BeamMount::BeamMount(const std::string& Key) :
-  attachSystem::ContainedGroup("Block","Support"),
+BeamPair::BeamPair(const std::string& Key) :
+  attachSystem::ContainedGroup("Block","BlockB","SupportA","SupportB"),
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -93,38 +93,36 @@ BeamMount::BeamMount(const std::string& Key) :
 {}
 
 
-BeamMount::~BeamMount()
+BeamPair::~BeamPair()
   /*!
     Destructor
    */
 {}
 
 void
-BeamMount::populate(const FuncDataBase& Control)
+BeamPair::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("BeamMount","populate");
+  ELog::RegMethod RegA("BeamPair","populate");
 
   FixedOffsetGroup::populate(Control);
-
-  blockFlag=Control.EvalDefVar<int>(keyName+"BlockFlag",0);
   
   upFlag=Control.EvalDefVar<int>(keyName+"UpFlag",1);
-  outLift=Control.EvalVar<double>(keyName+"OutLift");
-  beamLift=Control.EvalVar<double>(keyName+"BeamLift");
+  
+  outLiftA=Control.EvalVar<double>(keyName+"OutLiftA");
+  outLiftB=Control.EvalVar<double>(keyName+"OutLiftB");
 
+  gapA=Control.EvalVar<double>(keyName+"GapA");
+  gapB=Control.EvalVar<double>(keyName+"GapB");
 
-  if (blockFlag)
-    {
-      blockXYAngle=Control.EvalDefVar<double>(keyName+"BlockXYAngle",0.0);
-      width=Control.EvalVar<double>(keyName+"Width");
-      height=Control.EvalVar<double>(keyName+"Height");
-      length=Control.EvalVar<double>(keyName+"Length");
-      blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
-    }
+  blockXYAngle=Control.EvalDefVar<double>(keyName+"BlockXYAngle",0.0);
+  width=Control.EvalVar<double>(keyName+"Width");
+  height=Control.EvalVar<double>(keyName+"Height");
+  length=Control.EvalVar<double>(keyName+"Length");
+  blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
 
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
@@ -134,7 +132,7 @@ BeamMount::populate(const FuncDataBase& Control)
 }
 
 void
-BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
+BeamPair::createUnitVector(const attachSystem::FixedComp& centreFC,
 			   const long int cIndex,
 			   const attachSystem::FixedComp& flangeFC,
 			   const long int fIndex)
@@ -153,7 +151,7 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
     \param fIndex :: direction for links
   */
 {
-  ELog::RegMethod RegA("BeamMount","createUnitVector");
+  ELog::RegMethod RegA("BeamPair","createUnitVector");
 
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
@@ -170,35 +168,22 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
   const double MY=centreFC.getLinkPt(cIndex).dotProd(ZBeam);
   BC += ZBeam * (MY-BY);
   if (XBeam.abs()>0.5)
-    {
-      beamFC.createUnitVector(BC,XBeam,YBeam,ZBeam);
-    }
+    beamFC.createUnitVector(BC,XBeam,YBeam,ZBeam);
   else
-    {
       beamFC.createUnitVector(flangeFC,fIndex);
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]X == "<<XBeam<<ELog::endDiag;
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]Y == "<<YBeam<<ELog::endDiag;
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]Z == "<<ZBeam<<ELog::endErr;
-    }
   applyOffset();
 
-  if (upFlag)
-    beamFC.applyShift(0,0,-outLift);  // only lift offset
-  else
-    beamFC.applyShift(0,0,-beamLift);  // only beam offset
-
   setDefault("Main","Beam");
-
   return;
 }
 
 void
-BeamMount::createSurfaces()
+BeamPair::createSurfaces()
   /*!
     Create planes for mirror block and support
   */
 {
-  ELog::RegMethod RegA("BeamMount","createSurfaces");
+  ELog::RegMethod RegA("BeamPair","createSurfaces");
 
 
   const attachSystem::FixedComp& beamFC=getKey("Beam");
@@ -213,47 +198,34 @@ BeamMount::createSurfaces()
       setCutSurf("mountSurf",SMap.realSurf(buildIndex+101));
     }
 
-  if (blockFlag==0)
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+5,bOrigin,Y);
-    }
-  else             // make centre block
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,
-			       bOrigin-bY*(length/2.0),bY);
-      ModelSupport::buildPlane(SMap,buildIndex+2,
-			       bOrigin+bY*(length/2.0),bY);
-      ModelSupport::buildPlane(SMap,buildIndex+3,
-			       bOrigin-bX*(width/2.0),bX);
-      ModelSupport::buildPlane(SMap,buildIndex+4,
-			       bOrigin+bX*(width/2.0),bX);
-      
-      if (blockFlag==1)  // make centre
-	{
-	  ModelSupport::buildPlane(SMap,buildIndex+5,
-				   bOrigin-bZ*(height/2.0),bZ);
+  // BLOCK A : [UPPER]
+  ModelSupport::buildPlane(SMap,buildIndex+1,
+			   bOrigin-bY*(length/2.0),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+2,
+			   bOrigin+bY*(length/2.0),bY);
+  ModelSupport::buildPlane(SMap,buildIndex+3,
+			   bOrigin-bX*(width/2.0),bX);
+  ModelSupport::buildPlane(SMap,buildIndex+4,
+			   bOrigin+bX*(width/2.0),bX);
+  
+  
+  ModelSupport::buildPlane(SMap,buildIndex+5,
+			   bOrigin-bZ*(height/2.0),bZ);
+  
+  ModelSupport::buildPlane(SMap,buildIndex+6,
+			   bOrigin+bZ*(height/2.0),bZ);
 
-	  ModelSupport::buildPlane(SMap,buildIndex+6,
-				   bOrigin+bZ*(height/2.0),bZ);
-	}
-      else             // make on lower edge
-	{
-	  ModelSupport::buildPlane(SMap,buildIndex+5,
-				   bOrigin-bZ*height,bZ);
-	  ModelSupport::buildPlane(SMap,buildIndex+6,bOrigin,bZ);
-	}
-    }
   return; 
 }
 
 void
-BeamMount::createObjects(Simulation& System)
+BeamPair::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("BeamMount","createObjects");
+  ELog::RegMethod RegA("BeamPair","createObjects");
 
   const std::string mountSurf(ExternalCut::getRuleStr("mountSurf"));
 
@@ -262,12 +234,10 @@ BeamMount::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," -7 -5 " );
   makeCell("Support",System,cellIndex++,supportMat,0.0,Out+mountSurf);
 
-  if (blockFlag)
-    {
-      Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
-      makeCell("Block",System,cellIndex++,blockMat,0.0,Out);
-      addOuterSurf("Block",Out);
-    }
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 " );
+  makeCell("Block",System,cellIndex++,blockMat,0.0,Out);
+  addOuterSurf("Block",Out);
+
     
   
   // final exclude:
@@ -281,18 +251,18 @@ BeamMount::createObjects(Simulation& System)
 }
 
 void
-BeamMount::createLinks()
+BeamPair::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("BeamMount","createLinks");
+  ELog::RegMethod RegA("BeamPair","createLinks");
   
   return;
 }
 
 void
-BeamMount::createAll(Simulation& System,
+BeamPair::createAll(Simulation& System,
 		    const attachSystem::FixedComp& centreFC,
 		    const long int cIndex,
 		    const attachSystem::FixedComp& flangeFC,
@@ -306,7 +276,7 @@ BeamMount::createAll(Simulation& System,
     \param fIndex :: direction for links
    */
 {
-  ELog::RegMethod RegA("BeamMount","createAll");
+  ELog::RegMethod RegA("BeamPair","createAll");
   populate(System.getDataBase());
 
   createUnitVector(centreFC,cIndex,flangeFC,fIndex);

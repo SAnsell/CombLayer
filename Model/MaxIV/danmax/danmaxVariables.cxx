@@ -465,7 +465,7 @@ opticsSlitPackage(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setOuterVoid(0); /// allow easy join
+  PItemGen.setOuterVoid(1); /// 
   PItemGen.generatePort(Control,sName+"Port0",topJaw,ZVec);
   PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
   PItemGen.generatePort(Control,sName+"Port2",vacPort,-ZVec);
