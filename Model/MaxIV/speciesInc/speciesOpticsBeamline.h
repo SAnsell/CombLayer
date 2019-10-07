@@ -126,8 +126,6 @@ class speciesOpticsBeamline :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main mono vessel
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
-  /// Mono Crystals
-  std::shared_ptr<xraySystem::GratingMono> monoXtal;
   /// Grating
   std::shared_ptr<xraySystem::GratingUnit> grating;
   /// Offset pipe leaving MonoTube

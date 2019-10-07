@@ -104,8 +104,9 @@
 #include "MonoShutter.h"
 #include "BeamMount.h"
 #include "BeamPair.h"
-#include "DiffPumpXIADP03.h"
 #include "danmaxOpticsLine.h"
+#include "DCMTank.h"
+#include "MonoBlockXstals.h"
 
 namespace xraySystem
 {
@@ -141,7 +142,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
 	}),
   gateB(new constructSystem::GateValveCylinder(newName+"GateB")),
-  bellowE(new constructSystem::Bellows(newName+"BellowE"))
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals"))
 
   /*!
     Constructor
@@ -172,6 +175,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   
   OR.addObject(gateB);
   OR.addObject(bellowE);
+  OR.addObject(monoVessel);
+  OR.addObject(mbXstals);
+
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -221,53 +227,35 @@ danmaxOpticsLine::createSurfaces()
   return;
 }
 
-int
-danmaxOpticsLine::constructMonoShutter
-  (Simulation& System,MonteCarlo::Object** masterCellPtr,
-   const attachSystem::FixedComp& FC,const long int linkPt)
-/*!
-    Construct a monoshutter system
-    \param System :: Simulation for building
-    \param masterCellPtr Pointer to mast cell
-    \param FC :: FixedComp for start point
-    \param linkPt :: side index
-    \return outerCell
-   */
+void
+danmaxOpticsLine::constructMono(Simulation& System,
+				MonteCarlo::Object* masterCell,
+				const attachSystem::FixedComp& initFC, 
+				const std::string& sideName)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
 {
-  ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
+  ELog::RegMethod RegA("danmaxOpticsLine","buildMono");
 
-  int outerCell(0);
-  /*  
-  gateI->setFront(FC,linkPt);
-  gateI->createAll(System,FC,linkPt);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateI,2);
-  gateI->insertInCell(System,outerCell);
+  int outerCell;
 
-  monoShutter->addAllInsertCell((*masterCellPtr)->getName());
-  monoShutter->setCutSurf("front",*gateI,2);
-  monoShutter->createAll(System,*gateI,2);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*monoShutter,2);
+  // FAKE insertcell: required
+  monoVessel->addInsertCell(masterCell->getName());
+  monoVessel->createAll(System,initFC,sideName);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoVessel,2);
+  monoVessel->insertInCell(System,outerCell);
 
-  monoShutter->insertAllInCell(System,outerCell);
-  monoShutter->splitObject(System,"-PortACut",outerCell);
-  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
-  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  monoShutter->splitObject(System,"PortBCut",outerCell);
-  cellIndex+=3;
+  
+  mbXstals->addInsertCell(monoVessel->getCell("Void"));
+  //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
+  mbXstals->createAll(System,*monoVessel,0);
 
-  bellowJ->setFront(*monoShutter,2);
-  bellowJ->createAll(System,*monoShutter,2);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*bellowJ,2);
-  bellowJ->insertInCell(System,outerCell);
-
-
-  gateJ->setFront(*bellowJ,2);
-  gateJ->createAll(System,*bellowJ,2);
-  outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateJ,2);
-  gateJ->insertInCell(System,outerCell);
-  */  
-  return outerCell;
+  return;
 }
 
 void
@@ -445,6 +433,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
   bellowE->insertInCell(System,outerCell);
 
+  constructMono(System,masterCell,*bellowE,"back");
   
   lastComp=triggerPipe;
   return;

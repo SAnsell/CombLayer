@@ -76,21 +76,6 @@ TankMonoVesselGenerator::~TankMonoVesselGenerator()
    Destructor
  */
 {}
-
-void
-TankMonoVesselGenerator::setLid(const double OE,
-				const double OD,
-				const double RT)
-  /*!
-    Set Mono varibles				
-    \param OE :: OverHang
-    \param OD :: Overhang depth
-    \param RT :: Roof thick
-  */
-{
-  return;
-}
-  
   
 void
 TankMonoVesselGenerator::generateBox(FuncDataBase& Control,

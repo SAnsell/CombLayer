@@ -3,7 +3,7 @@
  
  * File:   speciesInc/TankMonoVessel.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,19 +43,19 @@ class TankMonoVessel :
 {
  private:
 
-  const bool centreOrigin;      ///< Construct on the centre line
-  double outerSize;             ///< Distance for outer void
+  const bool centreOrigin;    ///< Construct on the centre line
+  double outerSize;           ///< Distance for outer void
   
-  double voidRadius;            ///< void main radius
-  double voidDepth;             ///< void depth to dome
-  double voidHeight;            ///< void height to lid flange
-  double baseGap;               ///< Extra at base for curve
-  double topGap;                ///< Extra at top for curve
+  double voidRadius;          ///< void main radius
+  double voidDepth;           ///< void depth to dome
+  double voidHeight;          ///< void height to lid flange
+  double baseGap;             ///< Extra at base for curve
+  double topGap;              ///< Extra at top for curve
   
-  double wallThick;             ///< Thick of side walls
-  double lidOffset;               ///< Lid flange step from voidHeight line
-  double lidRadius;             ///< Lid flange radius
-  double lidDepth;              ///< Lid flange depth
+  double wallThick;           ///< Thick of side walls
+  double lidOffset;           ///< Lid flange step from voidHeight line
+  double lidRadius;           ///< Lid flange radius
+  double lidDepth;            ///< Lid flange depth
 
   double portAXStep;          ///< XStep of port
   double portAZStep;          ///< ZStep of port
@@ -106,7 +106,8 @@ class TankMonoVessel :
   void delayPorts() { delayPortBuild=1; }
   void createPorts(Simulation&);
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

@@ -141,7 +141,6 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   screenB(new xraySystem::PipeShield(newName+"ScreenB")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
-  monoXtal(new xraySystem::GratingMono(newName+"MonoXtal")),
   grating(new xraySystem::GratingUnit(newName+"Grating")),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -199,7 +198,6 @@ speciesOpticsBeamline::speciesOpticsBeamline(const std::string& Key) :
   OR.addObject(screenB);
   OR.addObject(offPipeA);
   OR.addObject(monoVessel);
-  OR.addObject(monoXtal);
   OR.addObject(grating);
   OR.addObject(offPipeB);
   OR.addObject(bellowD);
@@ -448,7 +446,6 @@ speciesOpticsBeamline::buildSlitPackage(Simulation& System,
   slitTube->splitVoidPorts(System,"SplitVoid",1001,
 			   slitTube->getCell("Void"),
 			   Geometry::Vec3D(0,1,0));
-
 
   slitTube->splitObject(System,1501,outerCell,
 			Geometry::Vec3D(0,0,0),

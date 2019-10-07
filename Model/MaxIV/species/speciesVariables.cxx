@@ -516,7 +516,6 @@ m3MirrorVariables(FuncDataBase& Control,
   setVariable::JawValveGenerator JawGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::TankMonoVesselGenerator MBoxGen;
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow(); 

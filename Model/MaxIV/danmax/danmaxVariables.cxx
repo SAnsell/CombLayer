@@ -73,6 +73,8 @@
 #include "WallLeadGenerator.h"
 #include "QuadUnitGenerator.h"
 #include "DipoleChamberGenerator.h"
+#include "DCMTankGenerator.h"
+#include "MonoBlockXstalsGenerator.h"
 #include "BremBlockGenerator.h"
 
 namespace setVariable
@@ -86,7 +88,8 @@ void frontMaskVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
-  
+
+void monoPackage(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -292,7 +295,49 @@ exptHutVariables(FuncDataBase& Control,
 
   return;
 }
+
+void
+monoPackage(FuncDataBase& Control,const std::string& monoKey)
+  /*!
+    Builds the variables for the mono packge
+    \param Control :: Database
+    \param slitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("speciesVariables[F]","monoPackage");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::DCMTankGenerator MBoxGen;
+  setVariable::MonoBlockXstalsGenerator MXtalGen;
   
+  // ystep/width/height/depth/length
+  // 
+  MBoxGen.setCF<CF40>();   // set ports
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  // radius : Heigh / depth  [need heigh = 0]
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,30.0,0.0,16.0);
+
+  //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
+  //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
+  //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
+  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
+
+
+  const std::string portName=monoKey+"MonoVessel";
+  Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,portName+"Port0",
+			Geometry::Vec3D(0,5.0,-10.0),
+			Geometry::Vec3D(1,0,0));
+
+  // crystals
+  MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
+  
+
+  return;
+}
+
 void
 monoShutterVariables(FuncDataBase& Control,
 		     const std::string& preName)
@@ -361,72 +406,6 @@ shieldVariables(FuncDataBase& Control)
   return;
 }
   
-void
-monoVariables(FuncDataBase& Control,const double YStep)
-  /*!
-    Set the variables for the mono
-    \param Control :: DataBase to use
-    \param YStep :: Distance to step
-  */
-{
-  ELog::RegMethod RegA("danmaxVariables[F]","monoVariables");
-  setVariable::PortItemGenerator PItemGen;
-    
-  const std::string preName("DanmaxOpticsLine");
-
-  Control.addVariable(preName+"MonoVacYStep",YStep);
-  Control.addVariable(preName+"MonoVacZStep",2.0);
-  Control.addVariable(preName+"MonoVacRadius",33.0);
-  Control.addVariable(preName+"MonoVacRingWidth",21.5);
-  Control.addVariable(preName+"MonoVacOutWidth",16.5);
-  Control.addVariable(preName+"MonoVacWallThick",1.0);
-
-  Control.addVariable(preName+"MonoVacDoorThick",2.54);
-  Control.addVariable(preName+"MonoVacBackThick",2.54);
-  Control.addVariable(preName+"MonoVacDoorFlangeRad",4.0);
-  Control.addVariable(preName+"MonoVacRingFlangeRad",4.0);
-  Control.addVariable(preName+"MonoVacDoorFlangeLen",2.54);
-  Control.addVariable(preName+"MonoVacRingFlangeLen",2.54);
-
-  Control.addVariable(preName+"MonoVacInPortZStep",-2.0);
-  Control.addVariable(preName+"MonoVacOutPortZStep",2.0);
-  
-  Control.addVariable(preName+"MonoVacPortRadius",5.0);
-  Control.addVariable(preName+"MonoVacPortLen",4.65);
-  Control.addVariable(preName+"MonoVacPortThick",0.3);
-  Control.addVariable(preName+"MonoVacPortFlangeLen",1.5);
-  Control.addVariable(preName+"MonoVacPortFlangeRad",2.7);
-
-  Control.addVariable(preName+"MonoVacWallMat","Stainless304");
-  // CRYSTALS:
-  Control.addVariable(preName+"MonoXtalZStep",-2.0);
-  Control.addVariable(preName+"MonoXtalGap",4.0);
-  Control.addVariable(preName+"MonoXtalTheta",10.0);
-  Control.addVariable(preName+"MonoXtalPhiA",0.0);
-  Control.addVariable(preName+"MonoXtalPhiA",0.0);
-  Control.addVariable(preName+"MonoXtalWidth",10.0);
-  Control.addVariable(preName+"MonoXtalLengthA",8.0);
-  Control.addVariable(preName+"MonoXtalLengthB",12.0);
-  Control.addVariable(preName+"MonoXtalThickA",4.0);
-  Control.addVariable(preName+"MonoXtalThickB",3.0);
-  Control.addVariable(preName+"MonoXtalBaseALength",10.0);
-  Control.addVariable(preName+"MonoXtalBaseBLength",14.0);
-  Control.addVariable(preName+"MonoXtalBaseGap",0.3);
-  Control.addVariable(preName+"MonoXtalBaseThick",1.0);
-  Control.addVariable(preName+"MonoXtalBaseExtra",2.0);
-  
-  Control.addVariable(preName+"MonoXtalMat","Silicon80K");
-  Control.addVariable(preName+"MonoXtalBaseMat","Copper");
-
-  // 20cm above port tube
-  const Geometry::Vec3D XVecMinus(-1,0,0);
-  PItemGen.setCF<setVariable::CF50>(10.0);
-  PItemGen.setPlate(1.0,"LeadGlass");
-
-  PItemGen.generatePort(Control,preName+"MonoVacPort0",
-			Geometry::Vec3D(0,0,0),XVecMinus);
-  return;
-}
 
 void
 opticsSlitPackage(FuncDataBase& Control,
@@ -497,13 +476,13 @@ opticsVariables(FuncDataBase& Control,
     \param beamName :: beamline name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","danmaxVariables");
+  ELog::RegMethod RegA("danmaxVariables[F]","opticsVariables");
 
   const std::string opticsName(beamName+"OpticsLine");
 
   Control.addVariable(opticsName+"OuterLeft",70.0);
-  Control.addVariable(opticsName+"OuterRight",50.0);
-  Control.addVariable(opticsName+"OuterTop",60.0);
+  Control.addVariable(opticsName+"OuterRight",70.0);
+  Control.addVariable(opticsName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
@@ -588,9 +567,10 @@ opticsVariables(FuncDataBase& Control,
 
   opticsSlitPackage(Control,opticsName);
 
-
   GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowE",0,16.0);
+
+  monoPackage(Control,opticsName);
   
   return;
 }

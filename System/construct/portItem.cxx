@@ -586,7 +586,7 @@ portItem::intersectVoidPair(Simulation& System,
     \param Outer :: second port to intersect
   */
 {
-  ELog::RegMethod RegA("portItem","intersectPair");
+  ELog::RegMethod RegA("portItem","intersectVoidPair");
 
   if (CellMap::hasItem("OutVoid"))
     {

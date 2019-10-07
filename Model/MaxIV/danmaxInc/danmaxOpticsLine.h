@@ -41,7 +41,7 @@ namespace constructSystem
   class GateValveCylinder;
   class JawValveCube;
   class JawFlange;
-  class DiffPumpXIADP03;
+
 }
 
 
@@ -62,9 +62,8 @@ namespace xraySystem
   class BremMonoColl;
   class FlangeMount;
   class Mirror;
-  class MonoBox;
-  class MonoCrystals;
-  class MonoShutter;
+  class MonoBlockXstals;
+  class DCMTank;
 
   
   /*!
@@ -127,6 +126,11 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCylinder> gateB;
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// Main mono vessel
+  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+  /// Grating
+  std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
+
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -134,6 +138,8 @@ class danmaxOpticsLine :
 
 
   void constructSlitTube(Simulation&,MonteCarlo::Object*,
+			 const attachSystem::FixedComp&,const std::string&);
+  void constructMono(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
   
   int constructMonoShutter
