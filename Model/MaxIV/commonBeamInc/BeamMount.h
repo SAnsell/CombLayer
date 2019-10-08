@@ -43,7 +43,7 @@ class BeamMount :
 {
  private:
   
-  int blockFlag;     ///< build the block [1:centre / 2 low Edge]    
+  int blockFlag;           ///< build the block [1:centre / 2 low Edge]    
   bool upFlag;             ///< Up/down
 
   double outLift;         ///< Amount to lift [when raised]
@@ -52,7 +52,8 @@ class BeamMount :
   double supportRadius;    ///< Radius of support  
   int supportMat;          ///< support material
 
-    
+
+  double blockXYAngle;     ///< rotation
   double height;           ///< height total 
   double width;            ///< width accross beam
   double length;           ///< Thickness in normal direction to reflection  

@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,9 +228,9 @@ ReflectRods::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(baseName,Control);
   
-  centSpc=Control.EvalPair<double>(keyName,baseName,"CentSpace");
-  radius=Control.EvalPair<double>(keyName,baseName,"Radius");
-  linerThick=Control.EvalPair<double>(keyName,baseName,"LinerThick");
+  centSpc=Control.EvalTail<double>(keyName,baseName,"CentSpace");
+  radius=Control.EvalTail<double>(keyName,baseName,"Radius");
+  linerThick=Control.EvalTail<double>(keyName,baseName,"LinerThick");
   
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat",
 				      baseName+"InnerMat");

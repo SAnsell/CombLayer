@@ -162,14 +162,14 @@ PipeTube::populate(const FuncDataBase& Control)
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
-	Control.EvalPair<Geometry::Vec3D>(portName,portBase,"Axis");
+	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
       
-      L=Control.EvalPair<double>(portName,portBase,"Length");
-      R=Control.EvalPair<double>(portName,portBase,"Radius");
-      W=Control.EvalPair<double>(portName,portBase,"Wall");
-      FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
-      CT=Control.EvalDefPair<double>(portName,portBase,"CapThick",0.0);
+      L=Control.EvalTail<double>(portName,portBase,"Length");
+      R=Control.EvalTail<double>(portName,portBase,"Radius");
+      W=Control.EvalTail<double>(portName,portBase,"Wall");
+      FR=Control.EvalTail<double>(portName,portBase,"FlangeRadius");
+      FT=Control.EvalTail<double>(portName,portBase,"FlangeLength");
+      CT=Control.EvalDefTail<double>(portName,portBase,"CapThick",0.0);
       CMat=ModelSupport::EvalDefMat<int>
 	(Control,portName+"CapMat",portBase+"CapMat",capMat);
 
@@ -178,7 +178,7 @@ PipeTube::populate(const FuncDataBase& Control)
       if (OFlag) windowPort->setWrapVolume();
       windowPort->setMain(L,R,W);
       windowPort->setFlange(FR,FT);
-      windowPort->setCoverPlate(CT,capMat);
+      windowPort->setCoverPlate(CT,CMat);
       windowPort->setMaterial(voidMat,wallMat);
 
       PCentre.push_back(Centre);
@@ -376,6 +376,8 @@ PipeTube::createLinks()
 
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
   nameSideIndex(6,"InnerSide");
+
+  
   return;
 }
 
@@ -503,6 +505,7 @@ PipeTube::setPortRotation(const size_t index,
   portConnectIndex=index;
   if (portConnectIndex>1)
     rotAxis=RAxis.unit();
+  
   return;
 }
 
@@ -520,6 +523,10 @@ PipeTube::applyPortRotation()
     throw ColErr::IndexError<size_t>
       (portConnectIndex,Ports.size()+3,"PI exceeds number of Ports+3");
 
+  // create extra link:
+  nameSideIndex(7,"OrgOrigin");
+  const Geometry::Vec3D YOriginal=Y;
+  
   Geometry::Vec3D YPrime(0,-1,0);
   if (portConnectIndex<3)
     {
@@ -529,6 +536,8 @@ PipeTube::applyPortRotation()
 	  Y*=1;
 	  X*=-1;
 	}
+      FixedComp::setConnect(7,Origin,YOriginal);
+
       return;
     }
   else
@@ -541,13 +550,16 @@ PipeTube::applyPortRotation()
       const Geometry::Vec3D& QVvec=QV.getVec();
       const Geometry::Vec3D QAxis=X*QVvec.X()+
 	Y*QVvec.Y()+Z*QVvec.Z();
-      
+
       const Geometry::Quaternion QVmain(QV[0],QAxis);  
       QVmain.rotate(X);
       QVmain.rotate(Y);
       QVmain.rotate(Z);
+
+      // This moves in the new Y direction
       const Geometry::Vec3D offset=calcCylinderDistance(pIndex);
       Origin+=offset;
+      FixedComp::setConnect(7,Origin,YOriginal);
     }
 
   return;
@@ -568,6 +580,7 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
     throw ColErr::IndexError<size_t>
       (pIndex,Ports.size(),"PI exceeds number of Ports");
 
+  // No Y point so no displacement
   const Geometry::Vec3D PC=
     X*PCentre[pIndex].X()+Y*PCentre[pIndex].Y()+Z*PCentre[pIndex].Z();
   const Geometry::Vec3D PA=
@@ -580,14 +593,15 @@ PipeTube::calcCylinderDistance(const size_t pIndex) const
   std::tie(CPoint,std::ignore)=CylLine.closestPoints(PortLine);
   // calc external impact point:
 
+
   const double R=radius+wallThick;
   const double ELen=Ports[pIndex]->getExternalLength();
   const Geometry::Cylinder mainC(0,Geometry::Vec3D(0,0,0),Y,R);
   
   const Geometry::Vec3D RPoint=
     SurInter::getLinePoint(PC,PA,&mainC,CPoint-PA*ELen);
-  
-  return RPoint-PA*ELen;
+
+  return RPoint-PA*ELen - PC*2.0;
 }
 
 
@@ -685,7 +699,8 @@ PipeTube::splitVoidPorts(Simulation& System,
   if (!splitName.empty())
     for(const int CN : cells)
       CellMap::addCell(splitName,CN);
-    
+
+
   return (cells.empty()) ? CN : cells.back()+1;
 }
 

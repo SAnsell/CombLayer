@@ -137,13 +137,13 @@ QuadUnit::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
   flangeARadius=
-    Control.EvalPair<double>(keyName,"FlangeARadius","FlangeRadius");
+    Control.EvalTail<double>(keyName,"FlangeARadius","FlangeRadius");
   flangeBRadius=
-    Control.EvalPair<double>(keyName,"FlangeBRadius","FlangeRadius");
+    Control.EvalTail<double>(keyName,"FlangeBRadius","FlangeRadius");
   flangeALength=
-    Control.EvalPair<double>(keyName,"FlangeALength","FlangeLength");
+    Control.EvalTail<double>(keyName,"FlangeALength","FlangeLength");
   flangeBLength=
-    Control.EvalPair<double>(keyName,"FlangeBLength","FlangeLength");
+    Control.EvalTail<double>(keyName,"FlangeBLength","FlangeLength");
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

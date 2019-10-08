@@ -3,7 +3,7 @@
 
  * File:   essBuild/Linac.cxx
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov
+ * Copyright (c) 2004-2019 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -196,7 +195,7 @@ Linac::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   // This is to be replaces with -tEng IParam
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");

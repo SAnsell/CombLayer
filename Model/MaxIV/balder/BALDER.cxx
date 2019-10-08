@@ -95,7 +95,7 @@
 #include "balderOpticsBeamline.h"
 #include "ConnectZone.h"
 #include "PipeShield.h"
-#include "ExptBeamline.h"
+#include "balderExptBeamline.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -118,7 +118,7 @@ BALDER::BALDER(const std::string& KN) :
   connectZone(new ConnectZone(newName+"Connect")),
   joinPipeC(new constructSystem::LeadPipe(newName+"JoinPipeC")),
   exptHut(new ExperimentalHutch(newName+"Expt")),
-  exptBeam(new ExptBeamline(newName+"ExptLine"))
+  exptBeam(new balderExptBeamline(newName+"ExptLine"))
   /*!
     Constructor
     \param KN :: Keyname
@@ -192,7 +192,6 @@ BALDER::build(Simulation& System,
   opticsHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
 
   // Ugly HACK to get the two objects to merge
-  ELog::EM<<"Side index -= "<<opticsHut->getLinkSurf("frontCut")<<ELog::endDiag;
   r3Ring->insertComponent
     (System,"OuterFlat",SIndex,
      *opticsHut,opticsHut->getSideIndex("frontCut"));
@@ -227,7 +226,10 @@ BALDER::build(Simulation& System,
   //  exptHut->addInsertCell(voidCell);
 
   exptHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
+
+  exptHut->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
   
   connectZone->registerJoinPipe(joinPipeC);
@@ -262,8 +264,6 @@ BALDER::build(Simulation& System,
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
-
-
 
   return;
 }

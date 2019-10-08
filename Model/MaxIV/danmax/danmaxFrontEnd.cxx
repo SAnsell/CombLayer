@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File: balder/ExptBeamline.cxx
+ * File: danmax/danmaxFrontEnd.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -47,7 +47,6 @@
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
@@ -61,9 +60,11 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -71,33 +72,30 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
+#include "InnerZone.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "generateSurf.h"
+#include "ModelSupport.h"
 
-#include "insertObject.h"
-#include "insertCylinder.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
 #include "PortTube.h"
-#include "PipeShield.h"
+#include "Wiggler.h"
+#include "R3FrontEnd.h"
 
-#include "ExptBeamline.h"
+#include "danmaxFrontEnd.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
   
-ExptBeamline::ExptBeamline(const std::string& Key) :
-  attachSystem::CopiedComp(Key,Key),
-  attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
-  beamStop(new insertSystem::insertCylinder(newName+"BeamStop"))
-  
+danmaxFrontEnd::danmaxFrontEnd(const std::string& Key) :
+  R3FrontEnd(Key),
+  undulatorTube(new constructSystem::PortTube(newName+"UndulatorTube")),
+  undulator(new Wiggler(newName+"Undulator"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -107,77 +105,61 @@ ExptBeamline::ExptBeamline(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(beamStop);
+  OR.addObject(undulatorTube);
+  OR.addObject(undulator);
 }
   
-ExptBeamline::~ExptBeamline()
+danmaxFrontEnd::~danmaxFrontEnd()
   /*!
     Destructor
    */
 {}
 
 void
-ExptBeamline::populate(const FuncDataBase& Control)
-  /*!
-    Populate the intial values [movement]
-    \param Control :: Database of variables
-  */
-{
-  ELog::RegMethod RegA("ExptBeamline","populate");
-  FixedOffset::populate(Control);
-  return;
-}
-
-
-
-void
-ExptBeamline::buildObjects(Simulation& System)
-  /*!
-    Build all the objects relative to the main FC
-    point.
-    \param System :: Simulation to use
-  */
-{
-  ELog::RegMethod RegA("ExptBeamline","buildObjects");
-
-  beamStop->addInsertCell(ContainedComp::getInsertCells());
-  beamStop->createAll(System,*this,0);
-
-
-  return;
-}
-
-void
-ExptBeamline::createLinks()
+danmaxFrontEnd::createLinks()
   /*!
     Create a front/back link
    */
 {
-  return;
-} 
+  ELog::RegMethod RegA("danmaxFrontEnd","createLinks");
   
-void 
-ExptBeamline::createAll(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-  /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param FC :: Fixed component
-    \param sideIndex :: link point
-   */
-{
-  // For output stream
-  ELog::RegMethod RControl("ExptBeamline","build");
-
-  populate(System.getDataBase());
-  
-  createUnitVector(FC,sideIndex);
-  buildObjects(System);
-  createLinks();
+  setLinkSignedCopy(0,*undulatorTube,1);
+  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
+  
 
+const attachSystem::FixedComp&
+danmaxFrontEnd::buildUndulator(Simulation& System,
+			       MonteCarlo::Object* masterCell,
+			       const attachSystem::FixedComp& preFC,
+			       const long int preSideIndex)
+/*!
+    Build all the objects relative to the main FC
+    point.
+    \param System :: Simulation to use
+    \param masterCell :: Main cell with all components in
+    \param preFC :: Initial cell
+    \param preSideIndex :: Initial side index
+    \return link object 
+  */
+{
+  ELog::RegMethod RegA("danmaxFrontEnd","buildUndulator");
 
+  int outerCell;
+
+  undulatorTube->createAll(System,preFC,preSideIndex);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*undulatorTube,2);
+  
+  undulator->addInsertCell(undulatorTube->getCell("Void"));
+  undulator->createAll(System,*undulatorTube,0);
+
+  CellMap::addCell("UndulatorOuter",outerCell);
+  undulatorTube->insertAllInCell(System,outerCell);
+  return *undulatorTube;
+
+}
+
+  
 }   // NAMESPACE xraySystem
 

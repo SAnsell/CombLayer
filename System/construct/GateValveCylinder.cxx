@@ -168,6 +168,8 @@ GateValveCylinder::populate(const FuncDataBase& Control)
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
+  liftWidth=Control.EvalVar<double>(keyName+"LiftWidth");
+  liftHeight=Control.EvalVar<double>(keyName+"LiftHeight");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -256,6 +258,21 @@ GateValveCylinder::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
+  
+  // Lift region:
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*liftWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*liftWidth,X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z); // mid plane
+  ModelSupport::buildPlane
+    (SMap,buildIndex+6,Origin+Z*(radius+liftHeight),Z);
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+13,Origin-X*(liftWidth+wallThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+14,Origin+X*(liftWidth+wallThick),X);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+16,Origin+Z*(radius+liftHeight+wallThick),Z);
+
   // flange
 
   ModelSupport::buildCylinder
@@ -299,12 +316,16 @@ GateValveCylinder::createObjects(Simulation& System)
   const std::string backComp=backComplement();    // 102
   // Void 
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 -7 (307:-301:302) ");
+				 " 1 -2 (-7: (3 -4 5 -6))  (307:-301:302) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // Main body
   Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 7 -17 ");
+				 " 1 -2 7 -17 (-3:4:-5) ");
+  makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
+  // Top body
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 11 -12 17 13 -14 -16 5 (-1:2:-3:4:6) ");
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
 
   // blade
@@ -343,7 +364,8 @@ GateValveCylinder::createObjects(Simulation& System)
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
+  Out=ModelSupport::getComposite
+    (SMap,buildIndex," 11 -12 (-17 : (13 -14 5 -16))");
   addOuterSurf(Out);
   if (portAExtends || portBExtends)
     {
@@ -357,7 +379,8 @@ GateValveCylinder::createObjects(Simulation& System)
       
       addOuterUnionSurf(Out+frontStr+backStr);
     }
-      
+
+  addOuterUnionSurf(Out+frontStr+backStr);
 
   return;
 }

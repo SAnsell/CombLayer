@@ -85,6 +85,7 @@
 #include "BALDER.h"
 #include "COSAXS.h"
 #include "SOFTIMAX.h"
+#include "DANMAX.h"
 #include "MAXPEEM.h"
 #include "FLEXPES.h"
 #include "FORMAX.h"
@@ -269,6 +270,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
     ({ {"BALDER","OpticCentre1"},
        {"COSAXS","OpticCentre1"},
        {"SOFTIMAX","OpticCentre1"},
+       {"DANMAX","OpticCentre1"},
        {"FORMAX","OpticCentre8"},
        {"MICROMAX","OpticCentre1"},
 	  
@@ -321,6 +323,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new COSAXS("Cosaxs"));
       else if (BL=="SOFTIMAX")
 	BLPtr.reset(new SOFTIMAX("SoftiMAX"));
+      else if (BL=="DANMAX")	
+	BLPtr.reset(new DANMAX("Danmax"));
       else if (BL=="FORMAX")	
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")	
@@ -352,7 +356,6 @@ makeMaxIV::build(Simulation& System,
   ELog::RegMethod RegA("makeMaxIV","build");
 
   //  const FuncDataBase& Control=System.getDataBase();
-  int voidCell(74123);
 
   if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;

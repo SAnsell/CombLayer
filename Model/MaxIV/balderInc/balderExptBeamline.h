@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/ExptBeamline.h
+ * File:   balderInc/balderExptBeamline.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_ExptBeamline_h
-#define xraySystem_ExptBeamline_h
+#ifndef xraySystem_balderExptBeamline_h
+#define xraySystem_balderExptBeamline_h
 
 namespace insertSystem
 {
@@ -58,33 +58,43 @@ namespace xraySystem
   class PipeShield;
     
   /*!
-    \class ExptBeamline
+    \class balderExptBeamline
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class ExptBeamline :
+class balderExptBeamline :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
-  /// Beam stop
-  std::shared_ptr<insertSystem::insertCylinder> beamStop;
+  double sampleYStep;        ///< Distance for sample to move
+  double sampleRadius;       ///< Spherical sample radius
 
+  double beamStopYStep;          ///< Distance for beam to step
+  double beamStopRadius;     ///< beamstop radius
+  double beamStopThick;      ///< beamstop thick
+
+  int sampleMat;             ///< Sample material
+  int beamStopMat;           ///< beamStop Mat
+
+  
   void populate(const FuncDataBase&);
+  void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
   
  public:
   
-  ExptBeamline(const std::string&);
-  ExptBeamline(const ExptBeamline&);
-  ExptBeamline& operator=(const ExptBeamline&);
-  ~ExptBeamline();
+  balderExptBeamline(const std::string&);
+  balderExptBeamline(const balderExptBeamline&);
+  balderExptBeamline& operator=(const balderExptBeamline&);
+  ~balderExptBeamline();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

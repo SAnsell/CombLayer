@@ -65,8 +65,9 @@ class PortTube :
   PortTube(const PortTube&);
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
-  
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

@@ -262,7 +262,6 @@ R3FrontEnd::createSurfaces()
 
   if (!frontActive())
     {
-      ELog::EM<<"Front == "<<Origin<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*frontOffset,Y);
       setFront(SMap.realSurf(buildIndex+1));
     }
@@ -595,13 +594,12 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*dipolePipe,2);
   dipolePipe->insertInCell(System,outerCell);
 
-
   if (stopPoint=="Dipole")
     {
       lastComp=dipolePipe;
       return;
     }
-  lastComp=dipolePipe;
+
   bellowA->createAll(System,*dipolePipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
   bellowA->insertInCell(System,outerCell);
@@ -625,8 +623,8 @@ R3FrontEnd::buildObjects(Simulation& System)
   bellowC->createAll(System,*collABPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
   bellowC->insertInCell(System,outerCell);
-  
 
+  
   collTubeB->setFront(*bellowC,2);
   collTubeB->createAll(System,*bellowC,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*collTubeB,2);

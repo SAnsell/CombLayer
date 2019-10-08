@@ -3,7 +3,7 @@
  
  * File:   constructVarInc/VacBoxGenerator.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ class PortTubeGenerator
 {
  private:
 
+  double radius;             ///< Main inner radius
   double wallThick;          ///< Wall thick [generic]
 
   double portAXStep;         ///< Step on in-port
@@ -69,7 +70,8 @@ class PortTubeGenerator
   ~PortTubeGenerator();
 
 
-  template<typename CF> void setCF();
+  template<typename CF> void setPipeCF();
+  template<typename CF> void setPortCF();
   template<typename CF> void setAPortCF();
   template<typename CF> void setBPortCF();
   template<typename CF> void setAFlangeCF();
@@ -78,6 +80,8 @@ class PortTubeGenerator
   /// set wall thickness  
   void setWallThick(const double T) { wallThick=T; }
 
+  void setPipe(const double,const double);
+  
   void setPortLength(const double,const double);
   void setPort(const double,const double,const double);
   void setAPort(const double,const double,const double);
@@ -93,11 +97,8 @@ class PortTubeGenerator
 
   
   double getTotalLength(const double) const;
-  template<typename CF>
-    void generateCFTube(FuncDataBase&,const std::string&,
-			const double,const double) const;
   void generateTube(FuncDataBase&,const std::string&,
-		   const double,const double,const double) const;
+		   const double,const double) const;
 
 };
 

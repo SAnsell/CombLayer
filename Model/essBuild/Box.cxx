@@ -169,7 +169,7 @@ Box::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Box","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
 
   double L(0.0);
   double W(0.0);

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/targCoolant.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -154,11 +153,11 @@ targCoolant::populate(const FuncDataBase& Control)
       plateCut Item;
       const std::string keyIndex(keyName+"P"+std::to_string(i+1));
       const double PY=
-	Control.EvalPair<double>(keyIndex,keyName+"P","Dist");
+	Control.EvalPair<double>(keyIndex+"Dist",keyName+"PDist");
       Item.centre=Y*PY;
       Item.axis=Y;
       Item.thick=
-	Control.EvalPair<double>(keyIndex,keyName+"P","Thick");
+	Control.EvalPair<double>(keyIndex+"Thick",keyName+"PThick");
       
       Item.mat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"Mat",keyName+"PMat");
@@ -166,7 +165,7 @@ targCoolant::populate(const FuncDataBase& Control)
 	(Control,keyIndex+"LayreMat",keyName+"PLayerMat");
       if (Item.layerMat>=0)
 	Item.layerThick=Control.EvalPair<double>
-	  (keyIndex,keyName+"P","LayerThick");
+	  (keyIndex+"LayerThick",keyName+"PLayerThick");
       PCut.push_back(Item);
     }
   // Sphere:
@@ -177,12 +176,14 @@ targCoolant::populate(const FuncDataBase& Control)
       
       const std::string keyIndex(keyName+"CutSph"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"CutSph","Cent");
+	(keyIndex+"Cent",keyName+"CutSphCent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"CutSph","Axis");
+	(keyIndex+"Axis",keyName+"CutSphAxis");
       Item.axis.makeUnit();
-      Item.radius=Control.EvalPair<double>(keyIndex,keyName+"CutSph","Radius");
-      Item.dist=Control.EvalPair<double>(keyIndex,keyName+"CutSph","Dist");
+      Item.radius=Control.EvalPair<double>
+	(keyIndex+"Radius",keyName+"CutSphRadius");
+      Item.dist=Control.EvalPair<double>
+	(keyIndex+"Dist",keyName+"CutSphDist");
       Item.mat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"Mat",keyName+"CutSphMat");
       Item.defCutPlane();
@@ -197,19 +198,21 @@ targCoolant::populate(const FuncDataBase& Control)
       
       const std::string keyIndex(keyName+"Cone"+std::to_string(i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"Cone","Cent");
+	(keyIndex+"Cone",keyName+"ConeCent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,keyName+"Cone","Axis");
+	(keyIndex+"Axis",keyName+"ConeAxis");
       Item.axis.makeUnit();
-      Item.angleA=Control.EvalPair<double>(keyIndex,keyName+"Cone","AngleA");
-      Item.angleB=Control.EvalPair<double>(keyIndex,keyName+"Cone","AngleB");
-      Item.dist=Control.EvalPair<double>(keyIndex,keyName+"Cone","Dist");
+      Item.angleA=Control.EvalPair<double>
+	(keyIndex+"AngleA",keyName+"ConeAngleA");
+      Item.angleB=Control.EvalPair<double>
+      	(keyIndex+"AngleB",keyName+"ConeAngleB");
+      Item.dist=Control.EvalPair<double>(keyIndex+"Dist",keyName+"ConeDist");
       Item.mat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"Mat",keyName+"ConeMat");
       Item.layerMat=ModelSupport::EvalMat<int>
 	(Control,keyIndex+"LayerMat",keyName+"ConeLayerMat");
-      Item.layerThick=
-	Control.EvalPair<double>(keyIndex,keyName+"Cone","LayerThick");
+      Item.layerThick=Control.EvalPair<double>
+	(keyIndex+"LayerThick",keyName+"ConeLayerThick");
       Item.layerThick*=cos(M_PI*fabs(Item.angleA)/180.0);
       //      Item.defCutPlane();
       CCut.push_back(Item);
@@ -320,12 +323,11 @@ targCoolant::createObjects(Simulation& System)
   int offset;
   
   std::vector<MonteCarlo::Object*> QPtr;
-  std::vector<int>::const_iterator vc;
-  for(vc=activeCells.begin();vc!=activeCells.end();vc++)
+  for(const int cell : activeCells)
     {
-      MonteCarlo::Object* QA=System.findObject(*vc);
+      MonteCarlo::Object* QA=System.findObject(cell);
       if (!QA)      
-	throw ColErr::InContainerError<int>(*vc,"MainBody cell not found");
+	throw ColErr::InContainerError<int>(cell,"MainBody cell not found");
       QPtr.push_back(QA);
     }
 
@@ -363,11 +365,10 @@ targCoolant::createObjects(Simulation& System)
 	}
       ExPlate.makeComplement();
 
-      for_each(QPtr.begin(),QPtr.end(),
-	       boost::bind(&MonteCarlo::Object::addSurfString,_1,
-			   ExPlate.display()));
+      for(MonteCarlo::Object* objPtr : QPtr)
+	objPtr->addSurfString(ExPlate.display());
     }
-
+  
   if (!SCut.empty())
     {
       // Sphere:
@@ -423,9 +424,9 @@ targCoolant::createObjects(Simulation& System)
 	}
       ExCone.makeComplement();
 
-      for_each(QPtr.begin(),QPtr.end(),
-	       boost::bind(&MonteCarlo::Object::addSurfString,_1,
-			   ExCone.display()));	    
+      for(MonteCarlo::Object* objPtr : QPtr)
+	objPtr->addSurfString(ExCone.display());
+
     }
 
   return;
@@ -438,12 +439,11 @@ targCoolant::addCells(const std::vector<int>& CN)
     \param CN :: Cell numbers
   */
 {
-  std::vector<int>::const_iterator vc;
-  for(vc=CN.begin();vc!=CN.end();vc++)
+  for(const int cellN : CN)
     {
-      if (std::find(activeCells.begin(),activeCells.end(),*vc)==
+      if (std::find(activeCells.begin(),activeCells.end(),cellN)==
 	  activeCells.end())
-	activeCells.push_back(*vc);
+	activeCells.push_back(cellN);
     }
   return;
 }

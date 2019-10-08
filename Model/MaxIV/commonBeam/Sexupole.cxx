@@ -133,17 +133,17 @@ Sexupole::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
   
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
 
-  frameRadius=Control.EvalPair<double>(keyName,baseName,"FrameRadius");
-  frameThick=Control.EvalPair<double>(keyName,baseName,"FrameThick");
+  frameRadius=Control.EvalTail<double>(keyName,baseName,"FrameRadius");
+  frameThick=Control.EvalTail<double>(keyName,baseName,"FrameThick");
 
-  poleGap=Control.EvalPair<double>(keyName,baseName,"PoleGap");
-  poleRadius=Control.EvalPair<double>(keyName,baseName,"PoleRadius");
-  poleWidth=Control.EvalPair<double>(keyName,baseName,"PoleWidth");
+  poleGap=Control.EvalTail<double>(keyName,baseName,"PoleGap");
+  poleRadius=Control.EvalTail<double>(keyName,baseName,"PoleRadius");
+  poleWidth=Control.EvalTail<double>(keyName,baseName,"PoleWidth");
 
-  coilRadius=Control.EvalPair<double>(keyName,baseName,"CoilRadius");
-  coilWidth=Control.EvalPair<double>(keyName,baseName,"CoilWidth");
+  coilRadius=Control.EvalTail<double>(keyName,baseName,"CoilRadius");
+  coilWidth=Control.EvalTail<double>(keyName,baseName,"CoilWidth");
   
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");
@@ -237,7 +237,6 @@ Sexupole::createObjects(Simulation& System)
   ELog::RegMethod RegA("Sexupole","createObjects");
 
   std::string Out;
-
   
   std::string unitStr=" 1M -2M ";
   unitStr+=ModelSupport::getSeqIntersection
@@ -245,7 +244,7 @@ Sexupole::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex+1000,buildIndex,unitStr);
   addOuterSurf(Out);
 
-  unitStr=ModelSupport::getSeqUnion(1,2*NPole,1);
+  unitStr=ModelSupport::getSeqUnion(1,static_cast<int>(2*NPole),1);
   Out+=ModelSupport::getComposite(SMap,buildIndex+1000,unitStr);
 
   makeCell("Frame",System,cellIndex++,frameMat,0.0,Out);

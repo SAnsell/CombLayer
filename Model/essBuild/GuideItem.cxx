@@ -193,33 +193,33 @@ GuideItem::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("GuideItem","populate");
 
   FixedOffsetGroup::populate(Control);
-  active=Control.EvalPair<int>(keyName,baseName,"Active");
+  active=Control.EvalTail<int>(keyName,baseName,"Active");
 
-  beamXYAngle=Control.EvalPair<double>(keyName,baseName,"BeamXYAngle");
-  beamZAngle=Control.EvalPair<double>(keyName,baseName,"BeamZAngle");
-  beamXStep=Control.EvalPair<double>(keyName,baseName,"BeamXStep");
-  beamZStep=Control.EvalPair<double>(keyName,baseName,"BeamZStep");
+  beamXYAngle=Control.EvalTail<double>(keyName,baseName,"BeamXYAngle");
+  beamZAngle=Control.EvalTail<double>(keyName,baseName,"BeamZAngle");
+  beamXStep=Control.EvalTail<double>(keyName,baseName,"BeamXStep");
+  beamZStep=Control.EvalTail<double>(keyName,baseName,"BeamZStep");
 
-  beamHeight=Control.EvalPair<double>(keyName,baseName,"BeamHeight");
-  beamWidth=Control.EvalPair<double>(keyName,baseName,"BeamWidth");
+  beamHeight=Control.EvalTail<double>(keyName,baseName,"BeamHeight");
+  beamWidth=Control.EvalTail<double>(keyName,baseName,"BeamWidth");
 
-  sideGap=Control.EvalPair<double>(keyName,baseName,"SideGap");
-  topGap=Control.EvalPair<double>(keyName,baseName,"TopGap");
-  baseGap=Control.EvalPair<double>(keyName,baseName,"BaseGap");
+  sideGap=Control.EvalTail<double>(keyName,baseName,"SideGap");
+  topGap=Control.EvalTail<double>(keyName,baseName,"TopGap");
+  baseGap=Control.EvalTail<double>(keyName,baseName,"BaseGap");
 
   double D,W,H,L(RInner);
-  nSegment=Control.EvalPair<size_t>(keyName,baseName,"NSegment");
+  nSegment=Control.EvalTail<size_t>(keyName,baseName,"NSegment");
   for(size_t i=0;i<nSegment;i++)
     {
-      W=Control.EvalPair<double>(keyName,baseName,
+      W=Control.EvalTail<double>(keyName,baseName,
 				 "Width"+std::to_string(i+1));
-      H=Control.EvalPair<double>(keyName,baseName,
+      H=Control.EvalTail<double>(keyName,baseName,
 				 "Height"+std::to_string(i+1));
-      D=Control.EvalPair<double>(keyName,baseName,
+      D=Control.EvalTail<double>(keyName,baseName,
 				 "Depth"+std::to_string(i+1));
       if (i!=nSegment-1)
 	{
-	  L+=Control.EvalPair<double>(keyName,baseName,
+	  L+=Control.EvalTail<double>(keyName,baseName,
 				      "Length"+std::to_string(i+1));
 	  length.push_back(L);
 	}
@@ -228,7 +228,7 @@ GuideItem::populate(const FuncDataBase& Control)
       width.push_back(W);
     }
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
-  filled=Control.EvalPair<int>(keyName,baseName,"Filled");
+  filled=Control.EvalTail<int>(keyName,baseName,"Filled");
 
 
   return;

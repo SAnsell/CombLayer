@@ -72,7 +72,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BeamMount.h"
@@ -119,6 +118,7 @@ BeamMount::populate(const FuncDataBase& Control)
 
   if (blockFlag)
     {
+      blockXYAngle=Control.EvalDefVar<double>(keyName+"BlockXYAngle",0.0);
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       length=Control.EvalVar<double>(keyName+"Length");
@@ -175,9 +175,6 @@ BeamMount::createUnitVector(const attachSystem::FixedComp& centreFC,
   else
     {
       beamFC.createUnitVector(flangeFC,fIndex);
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]X == "<<XBeam<<ELog::endDiag;
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]Y == "<<YBeam<<ELog::endDiag;
-      ELog::EM<<"XAXIS Fail["<<keyName<<"]Z == "<<ZBeam<<ELog::endErr;
     }
   applyOffset();
 

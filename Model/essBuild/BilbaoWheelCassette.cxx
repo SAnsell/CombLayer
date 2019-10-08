@@ -283,13 +283,13 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
 
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-  bricksActive=Control.EvalDefPair<int>(keyName,commonName,"BricksActive", 0);
+  engActive=Control.EvalTail<int>(keyName,"","EngineeringActive");
+  bricksActive=Control.EvalDefTail<int>(keyName,commonName,"BricksActive", 0);
 
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
 
-  wallThick=Control.EvalPair<double>(keyName,commonName,"WallThick");
+  wallThick=Control.EvalTail<double>(keyName,commonName,"WallThick");
   wallThick /= 2.0; // there is half wall from each side of neighbouring sectors
   wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",
 				     keyName+"WallMat");
@@ -299,29 +299,29 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   temp=Control.EvalVar<double>(baseName+"Temp");
 
   // for detailed wall geometry (if bricksActive=true)
-  nWallSeg=Control.EvalPair<size_t>(keyName,commonName,"NWallSeg");
+  nWallSeg=Control.EvalTail<size_t>(keyName,commonName,"NWallSeg");
   for (size_t i=0; i<nWallSeg; i++)
     {
-      wallSegLength.push_back(Control.EvalPair<double>
+      wallSegLength.push_back(Control.EvalTail<double>
 			      (keyName,commonName,
 			       "WallSegLength"+std::to_string(i)));
-      nBricks.push_back(Control.EvalPair<size_t>
+      nBricks.push_back(Control.EvalTail<size_t>
 			(keyName,commonName,
 			 "WallSegNBricks"+std::to_string(i)));
     }
   wallSegDelta=delta/2.0; // otherwise wall planes near bricks are not parallel
-  wallSegThick=Control.EvalPair<double>(keyName,commonName,"WallSegThick");
+  wallSegThick=Control.EvalTail<double>(keyName,commonName,"WallSegThick");
 
-  brickWidth=Control.EvalPair<double>(keyName,commonName,"BrickWidth");
-  brickLength=Control.EvalPair<double>(keyName,commonName,"BrickLength");
-  brickGap=Control.EvalPair<double>(keyName,commonName,"BrickGap");
+  brickWidth=Control.EvalTail<double>(keyName,commonName,"BrickWidth");
+  brickLength=Control.EvalTail<double>(keyName,commonName,"BrickLength");
+  brickGap=Control.EvalTail<double>(keyName,commonName,"BrickGap");
   brickSteelMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickSteelMat",
 					   keyName+"BrickSteelMat");
   brickWMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickWMat",
 				       keyName+"BrickWMat");
-  nSteelRows=Control.EvalPair<size_t>(keyName,commonName,"NSteelRows");
+  nSteelRows=Control.EvalTail<size_t>(keyName,commonName,"NSteelRows");
 
-  pipeCellThick=Control.EvalPair<double>(keyName,commonName,"PipeCellThick");
+  pipeCellThick=Control.EvalTail<double>(keyName,commonName,"PipeCellThick");
   pipeCellMat=ModelSupport::EvalMat<int>(Control,commonName+"PipeCellMat",
 					 keyName+"PipeCellMat");
 

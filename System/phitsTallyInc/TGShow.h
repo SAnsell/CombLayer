@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/TGShow.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,17 @@ class TGShow : public phitsTally
 {
  private:
 
-  MeshXYZ mesh;                     ///< Mesh volume
-  int axisDirection;                ///< Axis direction xy,yz,xz
-  int trcl;                         ///< transform number
+  MeshXYZ grid;                     ///< Axis grid
+  
+  int output;                      ///< output type
+  int axisDirection;                ///< Axis direction xy,yz,xz (+/- rev)
+  double lineWidth;                 ///< Width scale [default =0.5]
+    
+  std::string title;               ///< title
+  std::string xTxt;               ///< x-text
+  std::string yTxt;               ///< y-Text
+
+  size_t getZeroIndex() const;
   
  public:
 

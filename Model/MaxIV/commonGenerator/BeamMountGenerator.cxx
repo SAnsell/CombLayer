@@ -160,6 +160,8 @@ BeamMountGenerator::generateMount(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BeamMountGenerator","generatorMount");
 
+  Control.addVariable(keyName+"XYAngle",xyAngle);
+
   Control.addVariable(keyName+"BlockFlag",blockType);
   Control.addVariable(keyName+"UpFlag",upFlag);
 

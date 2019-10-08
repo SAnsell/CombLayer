@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTallyModification.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ getActiveTally(SimPHITS& Sim,const std::string& tName)
 
   for(SimPHITS::PTallyTYPE::value_type& mc : tmap)
     {
-      std::string KN=mc.second->getKeyName();
+      std::string KN=mc.second->getKey();
       if (tName.back()=='*')
 	{
 	  // method to make KN ==> stuff*
@@ -93,36 +93,8 @@ getActiveTally(SimPHITS& Sim,const std::string& tName)
     }
   return Out;
 }
-int
-setParticleType(SimPHITS& Sim,const int tNumber,
-                const std::string& partType) 
-  /*!
-    Get the last tally point based on the tallynumber
-    \param Sim :: System to access tally tables
-    \param tNumber :: Tally number [0 for all]
-    \param partType :: particle type
-    \return tally number [0 on fail]
-  */
-{
-  ELog::RegMethod RegA("phitsTallyModificaiton[F]","setParticleType");
-
   
-  SimPHITS::PTallyTYPE& tmap=Sim.getTallyMap();
-  int fnum(0);
-  for(SimPHITS::PTallyTYPE::value_type& mc : tmap)
-    {
-      if (tNumber==0 || mc.first==tNumber ||
-          (tNumber<0 && (mc.first % 10) == -tNumber))
-	{
-	  //          mc.second->setParticles(partType);
-          fnum++;
-	}
-    }
-  return fnum;
-}
-
-  
-
+ 
 int
 setParticle(SimPHITS& Sim,const std::string& tName,
 	    const std::string& particle)

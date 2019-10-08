@@ -45,6 +45,7 @@ namespace setVariable
   void BALDERvariables(FuncDataBase&);
   void COSAXSvariables(FuncDataBase&);
   void SOFTIMAXvariables(FuncDataBase&);
+  void DANMAXvariables(FuncDataBase&);
   void FORMAXvariables(FuncDataBase&);
 
   void R3FrontEndVariables(FuncDataBase&,const std::string&,

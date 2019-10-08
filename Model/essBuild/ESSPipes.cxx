@@ -173,8 +173,8 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   const attachSystem::FixedComp* lobe=
     System.getObjectThrow<attachSystem::FixedComp>(lobeName,"FixedComp::Lobe");
 
-  const attachSystem::CellMap* waterCM=
-    System.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");
+  // const attachSystem::CellMap* waterCM=
+  //   System.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");
 
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeSpecialization); 

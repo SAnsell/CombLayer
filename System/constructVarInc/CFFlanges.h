@@ -144,6 +144,25 @@ struct CF150
   static constexpr size_t nBolts=20;
 };
 
+/*!
+  \struct CF200
+  \version 1.0
+  \author S. Ansell
+  \date October 2019
+  \brief CFFlanges for CF200
+*/
+
+struct CF200
+{
+  static constexpr double innerRadius=10.0;
+  static constexpr double wallThick=0.5;
+  static constexpr double flangeRadius=12.65;
+  static constexpr double flangeLength=2.45;
+  static constexpr double bellowStep=2.5;
+  static constexpr double bellowThick=2.5;
+  static constexpr size_t nBolts=24;
+};
+
 
 /*!
   \struct CF350

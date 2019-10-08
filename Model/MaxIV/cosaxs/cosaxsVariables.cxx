@@ -428,7 +428,8 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
-  PTubeGen.setCF<CF63>();
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
   PTubeGen.setBFlangeCF<CF63>();
   PTubeGen.setPortLength(-5.0,-7.5);
@@ -436,7 +437,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   PTubeGen.setBPortOffset(2.45,0);
   
   // ystep/radius length
-  PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
+  PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",7);
 
   const std::string portName=Name+"Port";
@@ -490,10 +491,11 @@ diagUnit2(FuncDataBase& Control,const std::string& Name)
 
   // ports offset by 24.5mm in x direction
   // length 425+ 75 (a) 50 b
-  PTubeGen.setCF<CF63>();
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<CF63>();
   PTubeGen.setPortLength(-5.0,-5.0);
   // ystep/radius length
-  PTubeGen.generateTube(Control,Name,0.0,7.5,DLength);
+  PTubeGen.generateTube(Control,Name,0.0,DLength);
   Control.addVariable(Name+"NPorts",4);
 
   const std::string portName=Name+"Port";
@@ -590,11 +592,12 @@ opticsVariables(FuncDataBase& Control,
   BremGen.generateColl(Control,preName+"BremCollA",0,5.4);
 
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF63>();
+  PTubeGen.setPipe(7.5,0.5);
+  PTubeGen.setPortCF<CF63>();
   PTubeGen.setBPortCF<CF40>();
   PTubeGen.setPortLength(-6.0,-5.0);
   // ystep/radius length
-  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,7.5,25.0);
+  PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,25.0);
   Control.addVariable(preName+"FilterBoxANPorts",4);
   
   PItemGen.setCF<setVariable::CF40>(4.0);

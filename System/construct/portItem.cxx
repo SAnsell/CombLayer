@@ -237,15 +237,15 @@ portItem::populate(const FuncDataBase& Control)
   centreOffset=
     Control.EvalVar<Geometry::Vec3D>(keyName+"Centre");
   axisOffset=
-    Control.EvalPair<Geometry::Vec3D>(keyName,portBase,"Axis");
+    Control.EvalTail<Geometry::Vec3D>(keyName,portBase,"Axis");
       
-  externalLength=Control.EvalPair<double>(keyName,portBase,"Length");
-  radius=Control.EvalPair<double>(keyName,portBase,"Radius");
-  wall=Control.EvalPair<double>(keyName,portBase,"Wall");
+  externalLength=Control.EvalTail<double>(keyName,portBase,"Length");
+  radius=Control.EvalTail<double>(keyName,portBase,"Radius");
+  wall=Control.EvalTail<double>(keyName,portBase,"Wall");
   
-  flangeRadius=Control.EvalPair<double>(keyName,portBase,"FlangeRadius");
-  flangeLength=Control.EvalPair<double>(keyName,portBase,"FlangeLength");
-  capThick=Control.EvalDefPair<double>(keyName,portBase,"CapThick",0.0);
+  flangeRadius=Control.EvalTail<double>(keyName,portBase,"FlangeRadius");
+  flangeLength=Control.EvalTail<double>(keyName,portBase,"FlangeLength");
+  capThick=Control.EvalDefTail<double>(keyName,portBase,"CapThick",0.0);
 
   voidMat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
@@ -549,7 +549,7 @@ portItem::calcBoundaryCrossing(const objectGroups& OGrp,
 
 void
 portItem::intersectPair(Simulation& System,
-			const portItem& Outer) const
+			portItem& Outer) const
   /*!
     Intersect two port
     \param Simulation :: Simulation to use
@@ -562,8 +562,18 @@ portItem::intersectPair(Simulation& System,
   Outer.insertComponent(System,"Wall",mainComp);
   const HeadRule outerComp(Outer.getFullRule(3).complement());
   const HeadRule outerWallComp(Outer.getFullRule(4).complement());
+
   this->insertComponent(System,"Wall",outerWallComp);
   this->insertComponent(System,"Void",outerComp);
+
+  const HeadRule voidRadius(getFullRule(6).complement());
+  const HeadRule outerVoidRadius(Outer.getFullRule(6).complement());
+  const HeadRule wallComp(getFullRule(4).complement());
+  if (outerFlag && Outer.outerFlag)  // both
+    {
+      this->insertComponent(System,"OutVoid",outerVoidRadius);
+      Outer.insertComponent(System,"OutVoid",wallComp);
+    }    
   return;
 }
 
@@ -576,7 +586,7 @@ portItem::intersectVoidPair(Simulation& System,
     \param Outer :: second port to intersect
   */
 {
-  ELog::RegMethod RegA("portItem","intersectPair");
+  ELog::RegMethod RegA("portItem","intersectVoidPair");
 
   if (CellMap::hasItem("OutVoid"))
     {

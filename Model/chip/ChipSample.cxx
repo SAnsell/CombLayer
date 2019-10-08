@@ -3,7 +3,7 @@
  
  * File:   chip/ChipSample.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,11 +133,11 @@ ChipSample::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(baseName,Control);
   
-  tableNum=Control.EvalPair<int>(keyName,baseName,"TableNum");
+  tableNum=Control.EvalTail<int>(keyName,baseName,"TableNum");
   
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
-  height=Control.EvalPair<double>(keyName,baseName,"Height");
-  length=Control.EvalPair<double>(keyName,baseName,"Depth");
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
+  height=Control.EvalTail<double>(keyName,baseName,"Height");
+  length=Control.EvalTail<double>(keyName,baseName,"Depth");
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat",
 					baseName+"DefMat");
       

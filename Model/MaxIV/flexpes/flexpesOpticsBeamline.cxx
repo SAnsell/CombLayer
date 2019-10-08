@@ -775,6 +775,7 @@ flexpesOpticsBeamline::buildOutGoingPipes(Simulation& System,
   outPipeB->addInsertCell(rightCell);
   outPipeB->createAll(System,*pumpTubeBA,2);
 
+  screenB->addAllInsertCell(ContainedComp::getMainCell());
   screenB->addAllInsertCell(leftCell);
   screenB->addAllInsertCell(rightCell);
 

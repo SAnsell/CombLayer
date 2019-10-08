@@ -51,7 +51,7 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
 
 
 my @mainLib=qw( visit src simMC  construct physics input process 
-    transport scatMat endf crystal  source monte funcBase log monte 
+    transport scatMat endf crystal source monte funcBase log monte 
     flukaMagnetic flukaProcess flukaPhysics 
     flukaTally phitsProcess phitsPhysics 
     phitsTally phitsSupport tally 
@@ -98,11 +98,9 @@ $gM->addDepUnit("essBeamline", [@essBeam,@essSupport]);
 my @maxiv = qw( maxivBuild );
 push(@maxiv,@mainLib);
 $gM->addDepUnit("maxiv", [@maxiv,
-			  qw(R3Common balder cosaxs softimax commonBeam  flexpes formax
+			  qw(R3Common balder cosaxs softimax commonBeam  danmax flexpes formax
                              maxpeem  micromax 
 			   commonGenerator R3Common R1Common  species)]);
-
-
 
 my @filter = qw( filter photon );
 push(@filter,@mainLib);

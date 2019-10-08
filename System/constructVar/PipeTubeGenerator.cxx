@@ -227,8 +227,7 @@ PipeTubeGenerator::setCap(const bool AFlag,const bool BFlag)
   return;
 }
 
-  
-  
+   
 void
 PipeTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,

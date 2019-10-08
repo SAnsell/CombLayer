@@ -142,9 +142,9 @@ Magnet::populate(const FuncDataBase& Control)
   segIndex=Control.EvalVar<size_t>(keyName+"SegIndex");
   segLen=Control.EvalDefVar<size_t>(keyName+"SegLen",1);
 
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
-  height=Control.EvalPair<double>(keyName,baseName,"Height");
-  width=Control.EvalPair<double>(keyName,baseName,"Width");
+  length=Control.EvalTail<double>(keyName,baseName,"Length");
+  height=Control.EvalTail<double>(keyName,baseName,"Height");
+  width=Control.EvalTail<double>(keyName,baseName,"Width");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat",
 				   baseName+"FeMat");

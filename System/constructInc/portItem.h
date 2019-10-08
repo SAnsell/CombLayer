@@ -110,7 +110,7 @@ class portItem :
   
   void constructTrack(Simulation&);
   
-  void intersectPair(Simulation&,const portItem&) const;
+  void intersectPair(Simulation&,portItem&) const;
   void intersectVoidPair(Simulation&,const portItem&) const;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

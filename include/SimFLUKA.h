@@ -129,7 +129,6 @@ class SimFLUKA : public Simulation
   
   void setDefaultPhysics(const std::string&);
   void setForCinder();
-  void processActiveMaterials() const;
   
   virtual void write(const std::string&) const;
 

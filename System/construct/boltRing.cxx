@@ -3,7 +3,7 @@
  
  * File:   construct/boltRing.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,18 +223,18 @@ boltRing::populate(const FuncDataBase& Control)
   if (!(populated & 1))
     {
       const size_t NB=
-	Control.EvalDefPair<size_t>(keyName,baseName,"NBolts",0);
+	Control.EvalDefTail<size_t>(keyName,baseName,"NBolts",0);
       const double BR=
-	Control.EvalDefPair<double>(keyName,baseName,"BoltRadius",0.0);
-      const double IR=Control.EvalPair<double>(keyName,baseName,"InnerRadius");
-      const double OR=Control.EvalPair<double>(keyName,baseName,"OuterRadius");
+	Control.EvalDefTail<double>(keyName,baseName,"BoltRadius",0.0);
+      const double IR=Control.EvalTail<double>(keyName,baseName,"InnerRadius");
+      const double OR=Control.EvalTail<double>(keyName,baseName,"OuterRadius");
 
       double TK(1.0);  // default value to ignore if active/front/back
       if (!backActive() || !frontActive())
-	TK=Control.EvalPair<double>(keyName,baseName,"Thickness");
+	TK=Control.EvalTail<double>(keyName,baseName,"Thickness");
       
       const double AO=
-	Control.EvalDefPair<double>(keyName,baseName,"AngleOffset",0.0);
+	Control.EvalDefTail<double>(keyName,baseName,"AngleOffset",0.0);
 
       setDimensions(NB,IR,OR,TK,BR,AO);
     }
@@ -249,11 +249,11 @@ boltRing::populate(const FuncDataBase& Control)
     }
   if (!(populated & 4))
     {
-      sealRadius=Control.EvalDefPair<double>
+      sealRadius=Control.EvalDefTail<double>
 	(keyName,baseName,"SealRadius",0.0);
-      sealThick=Control.EvalDefPair<double>
+      sealThick=Control.EvalDefTail<double>
 	(keyName,baseName,"SealThick",0.2);
-      sealDepth=Control.EvalDefPair<double>
+      sealDepth=Control.EvalDefTail<double>
 	(keyName,baseName,"SealDepth",sealThick);
       sealMat=ModelSupport::EvalDefMat<int>(Control,
 					    keyName+"SealMat",

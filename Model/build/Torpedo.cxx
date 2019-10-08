@@ -159,9 +159,9 @@ Torpedo::populate(const FuncDataBase& Control,
   innerRadius=Control.EvalVar<double>("bulkShutterRadius");
   xyAngle=GS.getAngle();
   
-  zOffset=Control.EvalPair<double>(keyName,baseName,"ZOffset");
-  Width=Control.EvalPair<double>(keyName,baseName,"Width");
-  Height=Control.EvalPair<double>(keyName,baseName,"Width");
+  zOffset=Control.EvalTail<double>(keyName,baseName,"ZOffset");
+  Width=Control.EvalTail<double>(keyName,baseName,"Width");
+  Height=Control.EvalTail<double>(keyName,baseName,"Width");
   
   return;
 }

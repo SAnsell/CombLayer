@@ -3,7 +3,7 @@
  
  * File:   construct/WedgeInsert.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,17 +157,17 @@ WedgeInsert::populate(const FuncDataBase& Control)
       zStep=Cent.Z();
     }
 
-  viewWidth=Control.EvalPair<double>(keyName,baseName,"ViewWidth");   
-  viewHeight=Control.EvalPair<double>(keyName,baseName,"ViewHeight");   
-  viewXY=Control.EvalPair<double>(keyName,baseName,"ViewXY");   
-  viewZ=Control.EvalPair<double>(keyName,baseName,"ViewZ");   
+  viewWidth=Control.EvalTail<double>(keyName,baseName,"ViewWidth");   
+  viewHeight=Control.EvalTail<double>(keyName,baseName,"ViewHeight");   
+  viewXY=Control.EvalTail<double>(keyName,baseName,"ViewXY");   
+  viewZ=Control.EvalTail<double>(keyName,baseName,"ViewZ");   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");   
 
-  wall=Control.EvalPair<double>(keyName,baseName,"Wall");   
+  wall=Control.EvalTail<double>(keyName,baseName,"Wall");   
   wallMat=(wall>Geometry::zeroTol) ? 
     ModelSupport::EvalMat<int>(Control,keyName+"WallMat"
 			       ,baseName+"WallMat") : 0;   
-  temp=Control.EvalPair<double>(keyName,baseName,"Temp");
+  temp=Control.EvalTail<double>(keyName,baseName,"Temp");
   
   return;
 }

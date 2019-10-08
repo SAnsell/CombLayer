@@ -105,6 +105,7 @@ FixedComp::splitObject(Simulation& System,
     
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,O,Axis);
 
+  ELog::EM<<"buildIndex== "<<buildIndex<<" "<<SNoffset<<ELog::endDiag;
   const int cellExtra=
     System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
 

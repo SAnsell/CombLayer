@@ -1572,13 +1572,11 @@ Simulation::splitObject(const int CA,const int SN)
   const std::vector<std::pair<int,int>>
     IP=CPtr->getImplicatePairs(std::abs(SN));
 
-
       
   // Now make two cells and replace this cell with A + B
 
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
-
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
     CPtr->procString(AX.writeMCNPX());
@@ -1716,6 +1714,23 @@ Simulation::makeObjectsDNForCNF()
   validateObjSurfMap();
   return;
 }
+
+void
+Simulation::processActiveMaterials() const
+  /*!
+    Set materials as active in DBMaterail Database
+  */
+{
+  ELog::RegMethod RegA("Simulation","processActiveMaterials");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+
+  for(const OTYPE::value_type& mc : OList)
+    DB.setActive(mc.second->getMat());
+  return;
+}
+
 
 void
 Simulation::prepareWrite() 

@@ -45,7 +45,9 @@ class GateValveCylinder :
  private:
   
   double length;                ///< Void length
-  double radius;                 ///< Radius
+  double radius;                ///< Radius
+  double liftWidth;             ///< width of lift region
+  double liftHeight;            ///< width of lift region
   
   double wallThick;             ///< Wall thickness
   double portARadius;            ///< Port inner radius (opening)
@@ -78,7 +80,8 @@ class GateValveCylinder :
   GateValveCylinder& operator=(const GateValveCylinder&);
   virtual ~GateValveCylinder();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
+  using FixedComp::createAll;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

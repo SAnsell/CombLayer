@@ -182,22 +182,22 @@ FixedOffset::populate(const std::string& baseName,
   ELog::RegMethod RegA("FixedOffset","populate(baseName)");
 
   // defaults used to fixedoffset can be used in a setting class.
-  preXYAngle=Control.EvalDefPair<double>(keyName,baseName,
+  preXYAngle=Control.EvalDefTail<double>(keyName,baseName,
 					 "PreXYAngle",preXYAngle);
-  preZAngle=Control.EvalDefPair<double>(keyName,baseName,"PreZAngle",preZAngle);
+  preZAngle=Control.EvalDefTail<double>(keyName,baseName,"PreZAngle",preZAngle);
 
-  const Geometry::Vec3D CentOffset=Control.EvalDefPair<Geometry::Vec3D>
+  const Geometry::Vec3D CentOffset=Control.EvalDefTail<Geometry::Vec3D>
     (keyName,baseName,"CentOffset",Geometry::Vec3D(0,0,0));
   xStep=CentOffset.X();
   yStep=CentOffset.Y();
   zStep=CentOffset.Z();
 
 
-  xStep=Control.EvalDefPair<double>(keyName,baseName,"XStep",xStep);
-  yStep=Control.EvalDefPair<double>(keyName,baseName,"YStep",yStep);
-  zStep=Control.EvalDefPair<double>(keyName,baseName,"ZStep",zStep);
-  xyAngle=Control.EvalDefPair<double>(keyName,baseName,"XYAngle",xyAngle);
-  zAngle=Control.EvalDefPair<double>(keyName,baseName,"ZAngle",zAngle);
+  xStep=Control.EvalDefTail<double>(keyName,baseName,"XStep",xStep);
+  yStep=Control.EvalDefTail<double>(keyName,baseName,"YStep",yStep);
+  zStep=Control.EvalDefTail<double>(keyName,baseName,"ZStep",zStep);
+  xyAngle=Control.EvalDefTail<double>(keyName,baseName,"XYAngle",xyAngle);
+  zAngle=Control.EvalDefTail<double>(keyName,baseName,"ZAngle",zAngle);
   return;
   
 }

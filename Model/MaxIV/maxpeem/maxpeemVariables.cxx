@@ -201,16 +201,17 @@ splitterVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,splitKey+"GateBA",0.0,0);
 
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setCF<CF40>();
+  PTubeGen.setPipeCF<CF63>();
+  PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(2.5,2.5);
 
   const std::string pumpNameA=splitKey+"PumpTubeAA";
   const std::string pumpNameB=splitKey+"PumpTubeBA";
   const Geometry::Vec3D zVec(0,0,1);
   const Geometry::Vec3D centPoint(0,0,0);
-  PTubeGen.generateCFTube<CF63>(Control,pumpNameA,0.0,20.0);
+  PTubeGen.generateTube(Control,pumpNameA,0.0,20.0);
   Control.addVariable(pumpNameA+"NPorts",1);
-  PTubeGen.generateCFTube<CF63>(Control,pumpNameB,0.0,20.0);
+  PTubeGen.generateTube(Control,pumpNameB,0.0,20.0);
   Control.addVariable(pumpNameB+"NPorts",1);
 
   PItemGen.setCF<setVariable::CF63>(14.95);
@@ -635,7 +636,7 @@ opticsHutVariables(FuncDataBase& Control,
     \param caveName :: Cave name
   */
 {
-  ELog::RegMethod RegA("balderVariables","opticsHutVariables");
+  ELog::RegMethod RegA("maxpeemVariables","opticsHutVariables");
 
   Control.addVariable(hutName+"Height",200.0);
   Control.addVariable(hutName+"Length",950.0);

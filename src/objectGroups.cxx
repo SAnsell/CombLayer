@@ -602,6 +602,27 @@ objectGroups::getObjectThrow(const std::string& Name,
   return FCPtr;
 }
 
+std::shared_ptr<attachSystem::FixedComp>
+objectGroups::getSharedPtr(const std::string& Name) const
+  /*!
+    Find a FixedComp [if it exists] 
+    Throws InContainerError if not 
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return ObjectPtr 
+  */
+{
+  ELog::RegMethod RegA("objectGroups","getSharedPtr");
+
+  cMapTYPE::const_iterator mc=Components.find(Name);
+
+  if (mc==Components.end())
+    throw ColErr::InContainerError<std::string>
+      (Name,"FixedComp Name in Components");
+  
+  return mc->second;
+}
+
 
 template<>
 const attachSystem::ContainedComp* 

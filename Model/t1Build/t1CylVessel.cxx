@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1CylVessel.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -280,7 +280,7 @@ t1CylVessel::createWindows(Simulation& System)
       Geometry::Vec3D PCent;
       Geometry::Vec3D PAxis;
       // Centres:
-      PCent=Control.EvalPair<Geometry::Vec3D>(CKey,CHgh,IndexStr);
+      PCent=Control.EvalTail<Geometry::Vec3D>(CKey,CHgh,IndexStr);
       // Angles:
       if (Control.hasVariable(AKey+IndexStr))
 	PAxis=Control.EvalVar<Geometry::Vec3D>(AKey+IndexStr);
