@@ -180,6 +180,21 @@ FrontBackCut::setBack(const std::string& BRule)
 
 void
 FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
+                       const std::string& sideName)
+  /*!
+    Set a front wall
+    \param WFC :: Front line
+    \param sideNAme :: link point
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(FC,index)");
+
+  ExternalCut::setCutSurf("front",WFC,sideName);
+  return;
+}
+
+void
+FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
                        const long int sideIndex)
   /*!
     Set a front wall
@@ -190,6 +205,21 @@ FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
   ELog::RegMethod RegA("FrontBackCut","setFront(FC,index)");
 
   ExternalCut::setCutSurf("front",WFC,sideIndex);
+  return;
+}
+
+void
+FrontBackCut::setBack(const attachSystem::FixedComp& WFC,
+                      const std::string& sideName)
+  /*!
+    Set a back wall
+    \param WFC :: Back component
+    \param sideName :: link point
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBack");
+
+  ExternalCut::setCutSurf("back",WFC,sideName);
   return;
 }
 

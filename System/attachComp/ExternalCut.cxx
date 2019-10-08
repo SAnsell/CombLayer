@@ -242,9 +242,9 @@ ExternalCut::setCutSurf(const std::string& extName,
 
 void
 ExternalCut::setCutSurf(const std::string& extName,
-		     const attachSystem::FixedComp& WFC,
-		     const long int sideIndex)
-  /*!
+			const attachSystem::FixedComp& WFC,
+			const long int sideIndex)
+/*!
     Set a surface from a linkpoint
     \param extName :: external-cut name
     \param WFC :: Fixedcomp

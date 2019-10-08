@@ -90,6 +90,7 @@ void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
 void monoPackage(FuncDataBase&,const std::string&);
+void viewPackage(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -292,6 +293,41 @@ exptHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
   */
+
+  return;
+}
+
+void
+viewPackage(FuncDataBase& Control,const std::string& viewKey)
+  /*!
+    Builds the variables for the ViewTube 2
+    \param Control :: Database
+    \param viewKey :: prename
+  */
+{
+  ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;  
+  setVariable::PortItemGenerator PItemGen;
+  
+  // will be rotated vertical
+  const std::string pipeName=viewKey+"ViewTube";
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  // up 15cm / 32.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
+
+
+  Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,0,-1));
 
   return;
 }
@@ -571,6 +607,10 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowE",0,16.0);
 
   monoPackage(Control,opticsName);
+
+  GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
+  viewPackage(Control,opticsName);
+
   
   return;
 }
@@ -693,7 +733,6 @@ DANMAXvariables(FuncDataBase& Control)
 
   // note bellow skip
   LeadPipeGen.generateCladPipe(Control,"DanmaxJoinPipeC",10.0,80.0);
-
 
   danmaxVar::exptHutVariables(Control,"DanmaxExpt");
 

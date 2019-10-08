@@ -55,6 +55,8 @@ class FrontBackCut :
   void setBack(const std::string&);
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
+  void setFront(const attachSystem::FixedComp&,const std::string&);
+  void setBack(const attachSystem::FixedComp&,const std::string&);
 
   void setFrontDivider(const std::string&);
   void setBackDivider(const std::string&);

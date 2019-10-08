@@ -144,7 +144,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateB(new constructSystem::GateValveCylinder(newName+"GateB")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
-  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals"))
+  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
+  gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube"))
 
   /*!
     Constructor
@@ -177,7 +179,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowE);
   OR.addObject(monoVessel);
   OR.addObject(mbXstals);
-
+  OR.addObject(gateC);
+  OR.addObject(viewTube);
+    
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -254,6 +258,7 @@ danmaxOpticsLine::constructMono(Simulation& System,
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   mbXstals->createAll(System,*monoVessel,0);
+
 
   return;
 }
@@ -434,6 +439,13 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   bellowE->insertInCell(System,outerCell);
 
   constructMono(System,masterCell,*bellowE,"back");
+
+  gateC->setFront(*monoVessel,"back");
+  gateC->createAll(System,*monoVessel,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
+  gateC->insertInCell(System,outerCell);
+  
+
   
   lastComp=triggerPipe;
   return;
