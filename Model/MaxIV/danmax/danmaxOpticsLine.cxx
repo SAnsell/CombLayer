@@ -146,7 +146,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
   gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
-  viewTube(new constructSystem::PipeTube(newName+"ViewTube"))
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen"))
 
   /*!
     Constructor
@@ -181,6 +182,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(mbXstals);
   OR.addObject(gateC);
   OR.addObject(viewTube);
+  OR.addObject(viewTubeScreen);
     
 }
   
@@ -446,7 +448,21 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateC->insertInCell(System,outerCell);
   
 
+  // FAKE insertcell: required
+  viewTube->addAllInsertCell(masterCell->getName());
+  viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  viewTube->createAll(System,*gateC,"back");
   
+  const constructSystem::portItem& VPI=viewTube->getPort(1);
+  const constructSystem::portItem& VPScreen=viewTube->getPort(2);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VPI,VPI.getSideIndex("OuterPlate"));
+  viewTube->insertAllInCell(System,outerCell);
+  /*
+  viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
+  viewTubeScreen->setBladeCentre(*viewTube,0);
+  viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
+  */
   lastComp=triggerPipe;
   return;
 

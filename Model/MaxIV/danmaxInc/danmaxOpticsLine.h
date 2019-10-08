@@ -134,6 +134,8 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCylinder> gateC;
   /// Beam viewer 2
   std::shared_ptr<constructSystem::PipeTube> viewTube;
+  /// Beam viewer [item]
+  std::shared_ptr<xraySystem::FlangeMount> viewTubeScreen;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
