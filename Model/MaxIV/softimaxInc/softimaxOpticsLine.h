@@ -100,7 +100,7 @@ class softimaxOpticsLine :
   /// Bellow from gate C
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// first vacuum chamber
-  std::shared_ptr<constructSystem::CrossPipe> gaugeB;
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeB;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;

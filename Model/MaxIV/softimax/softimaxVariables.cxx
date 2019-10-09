@@ -823,10 +823,20 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
-  CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
-  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,preName+"GaugeB",0.0,10.6,8.0);  // ystep/height/depth
+  // will be rotated vertical
+  const std::string pumpTubeBname=preName+"PumpTubeB";
+  SimpleTubeGen.setCF<CF100>(); // counted 16 bolts
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,pumpTubeBname,0.0,40.0);
+  Control.addVariable(pumpTubeBname+"NPorts",2);   // beam ports
 
+  PItemGen.setCF<setVariable::CF63>(5.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pumpTubeBname+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  PItemGen.setCF<setVariable::CF63>(4.95);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pumpTubeBname+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();

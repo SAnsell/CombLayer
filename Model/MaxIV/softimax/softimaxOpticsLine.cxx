@@ -147,7 +147,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   grating(new xraySystem::GratingUnit(newName+"Grating")),
   gateC(new constructSystem::GateValveCube(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  gaugeB(new constructSystem::CrossPipe(newName+"GaugeB"))
+  pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -222,7 +222,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(monoVessel);
   OR.addObject(gateC);
   OR.addObject(bellowE);
-  OR.addObject(gaugeB);
+  OR.addObject(pumpTubeB);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -660,10 +660,16 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
   bellowE->insertInCell(System,outerCell);
 
-  gaugeB->setFront(*bellowE,2);
-  gaugeB->createAll(System,*bellowE,2);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeB,2);
-  gaugeB->insertInCell(System,outerCell);
+  // FAKE insertcell: required
+  pumpTubeB->addAllInsertCell(masterCell->getName());
+  pumpTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpTubeB->createAll(System,*bellowE,2);
+
+  const constructSystem::portItem& pumpTubeBCPI=pumpTubeB->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,pumpTubeBCPI,pumpTubeBCPI.getSideIndex("OuterPlate"));
+  pumpTubeB->insertAllInCell(System,outerCell);
+  //  pumpTubeB->intersectPorts(System,1,2);
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
