@@ -655,7 +655,7 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.setLift(0.0,2.5);
   BeamMGen.setGap(1.0,1.0);
   BeamMGen.setXYStep(0.6,0.0,-0.6,0);
-  BeamMGen.setBlock(4.0,2.0,1.0,0.0,"Tungsten");
+  BeamMGen.setBlock(4.0,2.0,1.0,0.0,"Copper");
 
   const std::string jawKey[]={"JawX","JawZ"};
   for(size_t i=0;i<2;i++)

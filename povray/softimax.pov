@@ -10,7 +10,7 @@ global_settings {
   assumed_gamma 1.0
 }
 
-#declare view = 6;
+#declare view = 105;
 #declare cameraAngle = 90;
 
 #switch ( view )
@@ -34,9 +34,15 @@ global_settings {
   #case(5) // Tungsten collimator
     #declare cameraLocation = <2432, 8450, 10>;
     #declare cameraLookAt   = <2432, 8400, 0>;
+  #break
   #case(6) // Monochromator
     #declare cameraLocation = <2514, 8550, 10>;
     #declare cameraLookAt   = <2514, 8400, 0>;
+  #break
+  #case(105) // slitTube
+    #declare cameraLocation = <2420, 8450, 10>;
+    #declare cameraLookAt   = <2500, 8400, 0>;
+    #declare cameraAngle = 30;
   #break
   #else // whole optics line top view
     #declare cameraLocation = <2400, 8450, 160>;
@@ -46,7 +52,7 @@ global_settings {
 
 light_source {
   <2300, 8460, 100> White
-  //    shadowless
+//  shadowless
 }
 
 camera {
