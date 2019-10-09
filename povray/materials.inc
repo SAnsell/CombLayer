@@ -2,7 +2,6 @@
 // automatically generated colours.
 // Feel free to edit this file according to your taste.
 
-#declare matAluminium    = texture { pigment{color rgb <0.89, 0.91, 0.91> }};
 #declare matB4C          = texture { pigment{color rgb <0.1, 0.1, 0.1> }};
 //#declare matConcrete     = texture {T_Wood8};
 
@@ -71,6 +70,8 @@
   }
 }
 
+
+
 ///////////////////// RUSTY METAL
 // http://www.oyonale.com/modeles.php?lang=en&page=45
 
@@ -94,4 +95,46 @@
     }
     scale 50
 }
-////////////////////////
+//////////////////////// ALUMINIUM
+
+// T_Pan_Interior from
+// http://www.oyonale.com/modeles.php?lang=en&page=41
+#declare matAluminium = texture{
+    pigment{White*0.9}
+        finish{
+	  ambient 0
+	  diffuse 1
+	  specular 1
+	  roughness 0.015
+	  metallic
+	  brilliance 6
+	  reflection{
+	    0,1 fresnel on metallic
+	  }
+	}
+}
+
+//////////////////////////////// SiO2 ~ Granite /////////
+
+// stone ground from
+// http://www.oyonale.com/modeles.php?lang=en&page=41
+#declare matSiO2a =  texture{
+  pigment{
+    image_map{jpeg "povray/stone04.jpg"}
+  }
+  normal{
+    bump_map{jpeg "povray/stone04.jpg"}
+    bump_size 5
+  }
+  finish{
+    ambient 0
+    diffuse 1
+  }
+//  rotate x*90
+  scale 160
+}
+
+#declare matSiO2= texture{
+    pigment{rgb 0.1}
+    finish{ambient 0 diffuse 1 specular 0.5 roughness 0.07 reflection{0,0.2 fresnel on}}
+}
