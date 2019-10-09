@@ -820,6 +820,14 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
+
+  CrossGen.setPorts(1.2,1.2);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
+    (Control,preName+"GaugeB",0.0,10.6,8.0);  // ystep/height/depth
+
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
@@ -905,9 +913,6 @@ opticsVariables(FuncDataBase& Control,
 
   // softimaxVar::diagUnit(Control,preName+"DiagBoxA");
   // BremMonoGen.generateColl(Control,preName+"BremMonoCollA",0.0,10.0);
-
-  // BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.generateBellow(Control,preName+"BellowE",0,12.0);
 
   // GateGen.setCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateE",0.0,0);

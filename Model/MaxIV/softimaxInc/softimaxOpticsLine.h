@@ -97,6 +97,10 @@ class softimaxOpticsLine :
   std::shared_ptr<xraySystem::GratingUnit> grating;
   // Gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateC;
+  /// Bellow from gate C
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// first vacuum chamber
+  std::shared_ptr<constructSystem::CrossPipe> gaugeB;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;
@@ -129,8 +133,6 @@ class softimaxOpticsLine :
   // std::shared_ptr<constructSystem::PortTube> diagBoxA;
   // /// Mono-Collimator for collimator
   // std::shared_ptr<xraySystem::BremMonoColl> bremMonoCollA;
-  // /// Bellow from diagnositics
-  // std::shared_ptr<constructSystem::Bellows> bellowE;
   // // Gate for first mirror
   // std::shared_ptr<constructSystem::GateValveCube> gateE;
 
