@@ -144,7 +144,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
 	std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
     }),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
-  grating(new xraySystem::GratingUnit(newName+"Grating"))
+  grating(new xraySystem::GratingUnit(newName+"Grating")),
+  gateC(new constructSystem::GateValveCube(newName+"GateC"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -217,6 +218,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(jaws[0]);
   OR.addObject(jaws[1]);
   OR.addObject(monoVessel);
+  OR.addObject(gateC);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -646,6 +648,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildMono(System,masterCell,*slitTube,2);
 
+  gateC->setFront(*monoVessel,2);
+  gateC->createAll(System,*monoVessel,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
+  gateC->insertInCell(System,outerCell);
+
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
   // filterBoxA->createAll(System,*bremCollA,2);
@@ -697,10 +704,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // // primeJawBox->insertInCell(System,outerCell);
 
 
-  // gateC->setFront(*bellowC,2);
-  // gateC->createAll(System,*bellowC,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
-  // gateC->insertInCell(System,outerCell);
 
   // // fake insert
   // monoBox->addInsertCell(masterCell->getName());

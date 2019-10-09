@@ -816,6 +816,9 @@ opticsVariables(FuncDataBase& Control,
 
   monoVariables(Control,preName);
 
+  GateGen.setLength(2.5);
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,preName+"GateC",0.0,0);
 
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
