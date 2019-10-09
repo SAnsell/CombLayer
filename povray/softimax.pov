@@ -6,10 +6,12 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 0;
+#declare view = 601;
 #declare cameraAngle = 90;
 
 #declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+// another possibility to affect speed is command argument -q0 ... -q11
+// so one can set quick=0 and play with -q0
 
 
 #if (quick=1)
@@ -81,10 +83,14 @@ global_settings {
     #declare cameraLocation = <2560, 8550, 50>;
     #declare cameraLookAt   = <2560, 8400, 0>;
   #break
-  #case(105) // slitTube
+  #case(601) // slitTube
     #declare cameraLocation = <2420, 8450, 10>;
     #declare cameraLookAt   = <2500, 8400, 0>;
     #declare cameraAngle = 30;
+  #break
+  #case(602) // gateC
+    #declare cameraLocation = <2670, 8450, 10>;
+    #declare cameraLookAt   = <2628, 8409, 3.2>;
   #break
   #else // whole optics line top view
     #declare cameraLocation = <2400, 8450, 160>;
