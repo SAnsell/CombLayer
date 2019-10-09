@@ -754,6 +754,8 @@ PipeTube::insertAllInCell(Simulation& System,const int cellN)
   /*!
     Overload of containdGroup so that the ports can also 
     be inserted if needed
+    \param System :: Simulation to use    
+    \param cellN :: Cell for insert
   */
 {
   ContainedGroup::insertAllInCell(System,cellN);
@@ -764,7 +766,72 @@ PipeTube::insertAllInCell(Simulation& System,const int cellN)
     }
   return;
 }
+
+void
+PipeTube::insertAllInCell(Simulation& System,
+			  const std::vector<int>& cellVec)
+  /*!
+    Overload of containdGroup so that the ports can also 
+    be inserted if needed
+    \param System :: Simulation to use    
+    \param cellVec :: Cells for insert
+  */
+{
+  ContainedGroup::insertAllInCell(System,cellVec);
+  if (!delayPortBuild)
+    {
+      for(const std::shared_ptr<portItem>& PC : Ports)
+	PC->insertInCell(System,cellVec);
+    }
+  return;
+}
+
+void
+PipeTube::insertMainInCell(Simulation& System,const int cellN)
+  /*!
+    Fix of insertInAllCells to only do main body without ports
+    \param System :: Simulation to use    
+    \param cellN :: Cell of insert
+  */
+{
+  ContainedGroup::insertAllInCell(System,cellN);
+  return;
+}
+
+void
+PipeTube::insertMainInCell(Simulation& System,
+			   const std::vector<int>& cellVec)
+  /*!
+    Fix of insertInAllCells to only do main body without ports
+    \param System :: Simulation to use    
+    \param cellVec :: Cells of insert
+  */
+{
+  ContainedGroup::insertAllInCell(System,cellVec);
+  return;
+}
+
+void
+PipeTube::insertPortInCell(Simulation& System,
+			   const std::vector<std::set<int>>& cellVec)
+  /*!
+    Allow ports to be intersected into arbitary cell list
+    \param System :: Simulation to use    
+    \param cellVec :: Sets of cellnumbers corresponding to each port (in order)
+    for which the port will be inserted into.
+  */
+{
+  ELog::RegMethod RegA("PipeTube","insertPortInCell");
   
+  for(size_t index=0;index<Ports.size() && index<cellVec.size();index++)
+    {
+      const std::set<int>& cellSet=cellVec[index];
+      for(const int CN : cellSet)
+	Ports[index]->insertInCell(System,CN);
+    }
+  return;
+}
+
   
 void
 PipeTube::createAll(Simulation& System,

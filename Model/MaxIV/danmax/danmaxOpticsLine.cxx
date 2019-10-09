@@ -144,7 +144,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateB(new constructSystem::GateValveCylinder(newName+"GateB")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
-  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals"))
+  mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
+  gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen"))
 
   /*!
     Constructor
@@ -177,7 +180,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowE);
   OR.addObject(monoVessel);
   OR.addObject(mbXstals);
-
+  OR.addObject(gateC);
+  OR.addObject(viewTube);
+  OR.addObject(viewTubeScreen);
+    
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -228,6 +234,56 @@ danmaxOpticsLine::createSurfaces()
 }
 
 void
+danmaxOpticsLine::constructViewScreen(Simulation& System,
+				      MonteCarlo::Object* masterCell,
+				      const attachSystem::FixedComp& initFC, 
+				      const std::string& sideName)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","constructViewScreen");
+
+  // FAKE insertcell: required
+  viewTube->addAllInsertCell(masterCell->getName());
+  viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  viewTube->createAll(System,initFC,sideName);
+  viewTube->intersectPorts(System,1,2);
+
+  const constructSystem::portItem& VPA=viewTube->getPort(0);
+  const constructSystem::portItem& VPB=viewTube->getPort(1);
+  const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
+  
+  const int outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  const Geometry::Vec3D  Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
+  this->splitObjectAbsolute(System,1501,outerCell,
+			      viewTube->getCentre(),VPB.getY());
+  this->splitObjectAbsolute(System,1502,outerCell+1,
+			      viewTube->getCentre(),Axis);
+  
+  const std::vector<int> cellUnit=this->getCells("OuterVoid");
+  viewTube->insertMainInCell(System,cellUnit);
+  VPA.insertInCell(System,this->getCell("OuterVoid"));
+  
+  //  viewTube->insertPortInCell(System,{cellN,cellM,cellX});
+  viewTube->insertPortInCell
+    (System,{{outerCell},{outerCell+1},{outerCell+2}});
+
+  cellIndex+=2;
+  /*
+  viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
+  viewTubeScreen->setBladeCentre(*viewTube,0);
+  viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
+  */
+  return;
+}
+
+void
 danmaxOpticsLine::constructMono(Simulation& System,
 				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& initFC, 
@@ -254,6 +310,7 @@ danmaxOpticsLine::constructMono(Simulation& System,
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   mbXstals->createAll(System,*monoVessel,0);
+
 
   return;
 }
@@ -434,7 +491,14 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   bellowE->insertInCell(System,outerCell);
 
   constructMono(System,masterCell,*bellowE,"back");
-  
+
+  gateC->setFront(*monoVessel,"back");
+  gateC->createAll(System,*monoVessel,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
+  gateC->insertInCell(System,outerCell);
+
+  constructViewScreen(System,masterCell,*gateC,"back");
+
   lastComp=triggerPipe;
   return;
 

@@ -130,7 +130,12 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::DCMTank> monoVessel;
   /// Grating
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
-
+  /// Gate value BL-V3
+  std::shared_ptr<constructSystem::GateValveCylinder> gateC;
+  /// Beam viewer 2
+  std::shared_ptr<constructSystem::PipeTube> viewTube;
+  /// Beam viewer [item]
+  std::shared_ptr<xraySystem::FlangeMount> viewTubeScreen;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -141,6 +146,8 @@ class danmaxOpticsLine :
 			 const attachSystem::FixedComp&,const std::string&);
   void constructMono(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
+  void constructViewScreen(Simulation&,MonteCarlo::Object*,
+			   const attachSystem::FixedComp&,const std::string&);
   
   int constructMonoShutter
     (Simulation&,MonteCarlo::Object**,
