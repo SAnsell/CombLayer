@@ -51,8 +51,8 @@ global_settings {
 #end
 
 light_source {
-  <2300, 8460, 100> White
-//  shadowless
+  cameraLocation + <-100,0,50> White
+  shadowless
 }
 
 camera {
