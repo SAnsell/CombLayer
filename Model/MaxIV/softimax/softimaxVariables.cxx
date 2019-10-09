@@ -232,6 +232,7 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
   Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
+  Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
 
 
   const std::string portName=monoKey+"MonoVessel";
