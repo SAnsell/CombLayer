@@ -104,6 +104,11 @@ class PipeTube :
   void createPorts(Simulation&);
 
   virtual void insertAllInCell(Simulation&,const int);
+  virtual void insertAllInCell(Simulation&,const std::vector<int>&);
+  virtual void insertMainInCell(Simulation&,const int);
+  virtual void insertMainInCell(Simulation&,const std::vector<int>&);
+  virtual void insertPortInCell(Simulation&,
+				const std::vector<std::set<int>>&);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

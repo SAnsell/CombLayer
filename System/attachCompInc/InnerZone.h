@@ -53,7 +53,7 @@ class InnerZone
 
   std::string FCName;                  ///< Fixed comp name [if available]
   int& cellIndex;                      ///< Cell index from FCPtr
-  attachSystem::FixedComp* FCPtr;      ///< Point to FixedComp 
+  attachSystem::FixedComp* FCPtr;      ///< Point to FixedComp for object
   attachSystem::CellMap* CellPtr;      ///< Pointer to cell map 
 
   HeadRule surroundHR;               ///< Rule of surround

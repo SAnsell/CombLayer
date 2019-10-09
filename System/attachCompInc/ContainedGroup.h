@@ -110,6 +110,7 @@ class ContainedGroup
   void insertObjects(Simulation&);
 
   virtual void insertAllInCell(Simulation&,const int);
+  virtual void insertAllInCell(Simulation&,const std::vector<int>&);
   
   void insertInCell(const std::string&,Simulation&,const int);
   void insertInCell(const std::string&,Simulation&,const std::vector<int>&);

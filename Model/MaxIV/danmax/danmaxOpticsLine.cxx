@@ -234,6 +234,56 @@ danmaxOpticsLine::createSurfaces()
 }
 
 void
+danmaxOpticsLine::constructViewScreen(Simulation& System,
+				      MonteCarlo::Object* masterCell,
+				      const attachSystem::FixedComp& initFC, 
+				      const std::string& sideName)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","constructViewScreen");
+
+  // FAKE insertcell: required
+  viewTube->addAllInsertCell(masterCell->getName());
+  viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  viewTube->createAll(System,initFC,sideName);
+  viewTube->intersectPorts(System,1,2);
+
+  const constructSystem::portItem& VPA=viewTube->getPort(0);
+  const constructSystem::portItem& VPB=viewTube->getPort(1);
+  const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
+  
+  const int outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
+  const Geometry::Vec3D  Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
+  this->splitObjectAbsolute(System,1501,outerCell,
+			      viewTube->getCentre(),VPB.getY());
+  this->splitObjectAbsolute(System,1502,outerCell+1,
+			      viewTube->getCentre(),Axis);
+  
+  const std::vector<int> cellUnit=this->getCells("OuterVoid");
+  viewTube->insertMainInCell(System,cellUnit);
+  VPA.insertInCell(System,this->getCell("OuterVoid"));
+  
+  //  viewTube->insertPortInCell(System,{cellN,cellM,cellX});
+  viewTube->insertPortInCell
+    (System,{{outerCell},{outerCell+1},{outerCell+2}});
+
+  cellIndex+=2;
+  /*
+  viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
+  viewTubeScreen->setBladeCentre(*viewTube,0);
+  viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
+  */
+  return;
+}
+
+void
 danmaxOpticsLine::constructMono(Simulation& System,
 				MonteCarlo::Object* masterCell,
 				const attachSystem::FixedComp& initFC, 
@@ -446,23 +496,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateC->createAll(System,*monoVessel,"back");
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
   gateC->insertInCell(System,outerCell);
-  
 
-  // FAKE insertcell: required
-  viewTube->addAllInsertCell(masterCell->getName());
-  viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  viewTube->createAll(System,*gateC,"back");
-  
-  const constructSystem::portItem& VPI=viewTube->getPort(1);
-  const constructSystem::portItem& VPScreen=viewTube->getPort(2);
-  outerCell=buildZone.createOuterVoidUnit
-    (System,masterCell,VPI,VPI.getSideIndex("OuterPlate"));
-  viewTube->insertAllInCell(System,outerCell);
-  /*
-  viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
-  viewTubeScreen->setBladeCentre(*viewTube,0);
-  viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
-  */
+  constructViewScreen(System,masterCell,*gateC,"back");
+
   lastComp=triggerPipe;
   return;
 

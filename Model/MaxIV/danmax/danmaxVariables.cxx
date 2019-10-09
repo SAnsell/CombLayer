@@ -328,10 +328,10 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.generatePort(Control,pipeName+"Port1",
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(0,0,-1));
-  PItemGen.setCF<setVariable::CF63>(8.0);
+  PItemGen.setCF<setVariable::CF40>(8.0);
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,8.75,0),
-			Geometry::Vec3D(1,0,-1));
+			Geometry::Vec3D(-1,0,-1));
 
   return;
 }

@@ -614,6 +614,24 @@ ContainedGroup::insertAllInCell(Simulation& System,
 }
 
 void 
+ContainedGroup::insertAllInCell(Simulation& System,
+				const std::vector<int>& CVec)
+  /*!
+    Inserts all contained components into the cell 
+    \param System :: Simulation to get cells
+    \param CN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","insertInCell(Vec)");
+  
+  CTYPE::iterator mc;
+  for(CTYPE::value_type& mc : CMap)
+    mc.second.insertInCell(System,CVec);
+
+  return;
+}
+
+void 
 ContainedGroup::insertInCell(const std::string& Key,
 			     Simulation& System,
 			     const std::vector<int>& CVec)

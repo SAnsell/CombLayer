@@ -111,7 +111,6 @@ FixedComp::splitObject(Simulation& System,
   if (CMapPtr)
     CMapPtr->registerExtra(cellN,cellExtra);
   
-
   OutCell.push_back(cellN);
   OutCell.push_back(cellExtra);
   return OutCell;  
@@ -147,10 +146,14 @@ FixedComp::splitObjectAbsolute(Simulation& System,
 
   CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
   if (CMapPtr)
-    CMapPtr->registerExtra(cellN,cellExtra);
+    {
+      const std::string Unit=CMapPtr->findCell(cellN);
+      CMapPtr->registerExtra(cellN,cellExtra);
+    }
 
   OutCell.push_back(cellN);
   OutCell.push_back(cellExtra);
+  
   return OutCell;  
 }
 
