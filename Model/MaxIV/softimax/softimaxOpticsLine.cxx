@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-// #include <fstream>
+#include <fstream>
 // #include <iomanip>
 // #include <iostream>
-// #include <sstream>
+#include <sstream>
 // #include <cmath>
 // #include <complex>
 // #include <list>
@@ -35,11 +35,11 @@
 #include <memory>
 
 // #include "Exception.h"
-// #include "FileReport.h"
+#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 // #include "GTKreport.h"
-// #include "OutputLog.h"
+#include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 // #include "MatrixBase.h"
@@ -590,6 +590,8 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->createAll(System,*bellowA,2);
+
+  ELog::EM << "SA fixed splitting with many ports for FLUKA: see danmaxOpticsLine::constructViewScreen" << ELog::endDiag;
 
 
   const constructSystem::portItem& CPI=pumpM1->getPort(1);
