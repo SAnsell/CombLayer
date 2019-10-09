@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   softimaxInc/softimaxOpticsLine.h
  *
  * Copyright (c) 2004-2019 by Konstantin Batkov
@@ -16,21 +16,26 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_softimaxOpticsLine_h
 #define xraySystem_softimaxOpticsLine_h
 
+namespace constructSystem
+{
+  class PortTube;
+}
 
 namespace xraySystem
 {
   class BlockStand;
   class BremColl;
   class Mirror;
+  class BeamPair;
   class TankMonoVessel;
   class GratingUnit;
-  
+
   /*!
     \class softimaxOpticsLine
     \version 1.0
@@ -61,7 +66,7 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
   /// first ion pump
   std::shared_ptr<constructSystem::CrossPipe> gaugeA;
-  
+
   /// bellows after ion pump to filter
   std::shared_ptr<constructSystem::Bellows> bellowA;
   std::shared_ptr<constructSystem::PipeTube> pumpM1;
@@ -82,6 +87,10 @@ class softimaxOpticsLine :
   /// gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateB;
   std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Pipe for slit section
+  std::shared_ptr<constructSystem::PortTube> slitTube;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
   /// Monochromator
   std::shared_ptr<xraySystem::TankMonoVessel> monoVessel;
   /// Grating
@@ -101,7 +110,7 @@ class softimaxOpticsLine :
   // std::shared_ptr<constructSystem::VacuumPipe> adaptorPlateA;
   // /// Diffusion pump
   // std::shared_ptr<constructSystem::DiffPumpXIADP03> diffPumpA;
-  
+
   // /// Primary jaw (Box)
   // std::shared_ptr<constructSystem::VacuumBox> primeJawBox;
   // /// Bellow to gate on mono
@@ -110,7 +119,7 @@ class softimaxOpticsLine :
   // std::shared_ptr<constructSystem::GateValveCube> gateC;
   // /// Mono box
   // std::shared_ptr<xraySystem::MonoBox> monoBox;
-  // /// Mono Xstal 
+  // /// Mono Xstal
   // std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
   // // Gate to isolate mono
   // std::shared_ptr<constructSystem::GateValveCube> gateD;
@@ -125,7 +134,7 @@ class softimaxOpticsLine :
   // // Gate for first mirror
   // std::shared_ptr<constructSystem::GateValveCube> gateE;
 
-  // /// Mirror box 
+  // /// Mirror box
   // std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
   // /// Mirror front
   // std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
@@ -168,7 +177,7 @@ class softimaxOpticsLine :
 
   // /// Shutter pipe
   // std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-    
+
   // /// Joining Bellows (pipe large):
   // std::shared_ptr<constructSystem::Bellows> bellowJ;
 
@@ -194,6 +203,8 @@ class softimaxOpticsLine :
 
   void buildM1Mirror(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const long int);
+  void constructSlitTube(Simulation&,MonteCarlo::Object*,
+			 const attachSystem::FixedComp&,const std::string&);
   void buildMono(Simulation&,MonteCarlo::Object*,
 		 const attachSystem::FixedComp&,const long int);
 
@@ -201,14 +212,14 @@ class softimaxOpticsLine :
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
+
   softimaxOpticsLine(const std::string&);
   softimaxOpticsLine(const softimaxOpticsLine&);
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
   ~softimaxOpticsLine();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

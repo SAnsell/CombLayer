@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: softimax/softimaxOpticsLine.cxx
  *
  * Copyright (c) 2004-2019 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 // #include <fstream>
@@ -103,6 +103,7 @@
 #include "TankMonoVessel.h"
 #include "GratingUnit.h"
 #include "Mirror.h"
+#include "BeamPair.h"
 // #include "MonoBox.h"
 // #include "MonoShutter.h"
 // #include "DiffPumpXIADP03.h"
@@ -112,7 +113,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -121,7 +122,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(*this,cellIndex),
-  
+
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   gaugeA(new constructSystem::CrossPipe(newName+"GaugeA")),
@@ -137,6 +138,11 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bremCollA(new xraySystem::BremColl(newName+"BremCollA")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  slitTube(new constructSystem::PortTube(newName+"SlitTube")),
+  jaws({
+	std::make_shared<xraySystem::BeamPair>(newName+"JawX"),
+	std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
+    }),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
   grating(new xraySystem::GratingUnit(newName+"Grating"))
 
@@ -159,20 +165,20 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
   // mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
   // gateF(new constructSystem::GateValveCube(newName+"GateF")),
-  // bellowF(new constructSystem::Bellows(newName+"BellowF")),  
+  // bellowF(new constructSystem::Bellows(newName+"BellowF")),
   // diagBoxB(new constructSystem::PortTube(newName+"DiagBoxB")),
   // jawCompB({
   //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit0"),
   //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxBJawUnit1")
   // 	}),
 
-  // bellowG(new constructSystem::Bellows(newName+"BellowG")),  
+  // bellowG(new constructSystem::Bellows(newName+"BellowG")),
   // gateG(new constructSystem::GateValveCube(newName+"GateG")),
   // mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
   // mirrorFrontB(new xraySystem::Mirror(newName+"MirrorFrontB")),
   // mirrorBackB(new xraySystem::Mirror(newName+"MirrorBackB")),
   // gateH(new constructSystem::GateValveCube(newName+"GateH")),
-  // bellowH(new constructSystem::Bellows(newName+"BellowH")),  
+  // bellowH(new constructSystem::Bellows(newName+"BellowH")),
   // diagBoxC(new constructSystem::PortTube(newName+"DiagBoxC")),
   // jawCompC({
   //     std::make_shared<constructSystem::JawFlange>(newName+"DiagBoxCJawUnit0"),
@@ -181,7 +187,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // bellowI(new constructSystem::Bellows(newName+"BellowI")),
   // gateI(new constructSystem::GateValveCube(newName+"GateI")),
   // monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  
+
   // bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   // gateJ(new constructSystem::GateValveCube(newName+"GateJ"))
   /*!
@@ -191,7 +197,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
   OR.addObject(gaugeA);
@@ -207,6 +213,9 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bremCollA);
   OR.addObject(gateB);
   OR.addObject(bellowD);
+  OR.addObject(slitTube);
+  OR.addObject(jaws[0]);
+  OR.addObject(jaws[1]);
   OR.addObject(monoVessel);
 
   // OR.addObject(filterBoxA);
@@ -242,7 +251,7 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   // OR.addObject(bellowJ);
   // OR.addObject(gateJ);
 }
-  
+
 softimaxOpticsLine::~softimaxOpticsLine()
   /*!
     Destructor
@@ -260,7 +269,7 @@ softimaxOpticsLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
-  
+
   return;
 }
 
@@ -305,7 +314,7 @@ softimaxOpticsLine::constructMonoShutter
   ELog::RegMethod RegA("softimaxOpticsLine","constructMonoShutter");
 
   int outerCell;
-  
+
   // gateI->setFront(FC,linkPt);
   // gateI->createAll(System,FC,linkPt);
   // outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateI,2);
@@ -334,7 +343,7 @@ softimaxOpticsLine::constructMonoShutter
   // gateJ->createAll(System,*bellowJ,2);
   // outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,*gateJ,2);
   // gateJ->insertInCell(System,outerCell);
-  
+
   return outerCell;
 }
 
@@ -362,7 +371,7 @@ softimaxOpticsLine::constructDiag
 
   // fake insert
 
-  diagBoxItem.addAllInsertCell((*masterCellPtr)->getName());  
+  diagBoxItem.addAllInsertCell((*masterCellPtr)->getName());
   diagBoxItem.setFront(FC,linkPt);
   diagBoxItem.createAll(System,FC,linkPt);
   outerCell=buildZone.createOuterVoidUnit(System,*masterCellPtr,diagBoxItem,2);
@@ -374,21 +383,21 @@ softimaxOpticsLine::constructDiag
       const constructSystem::portItem& DPI=diagBoxItem.getPort(index);
       jawComp[index]->setFillRadius
 	(DPI,DPI.getSideIndex("InnerRadius"),DPI.getCell("Void"));
-      
+
       jawComp[index]->addInsertCell(diagBoxItem.getCell("Void"));
       if (index)
 	jawComp[index]->addInsertCell(jawComp[index-1]->getCell("Void"));
       jawComp[index]->createAll
 	(System,DPI,DPI.getSideIndex("InnerPlate"),diagBoxItem,0);
     }
-  
+
   diagBoxItem.splitVoidPorts(System,"SplitOuter",2001,
 			     diagBoxItem.getCell("Void"),{0,2});
   diagBoxItem.splitObject(System,-11,outerCell);
   diagBoxItem.splitObject(System,12,outerCell);
   diagBoxItem.splitObject(System,2001,outerCell);
   cellIndex+=3;
-    
+
   return outerCell;
 }
 
@@ -437,6 +446,55 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   // screenA->createAll(System,*pipeC,0);
   // screenA->insertInCell("Wings",System,gateA->getCell("OuterVoid"));
   // screenA->insertInCell("Wings",System,offPipeB->getCell("OuterVoid"));
+
+  return;
+}
+
+void
+softimaxOpticsLine::constructSlitTube(Simulation& System,
+				      MonteCarlo::Object* masterCell,
+				      const attachSystem::FixedComp& initFC,
+				      const std::string& sideName)
+  /*!
+    Build the Baffle before Monochromator
+    \param System :: Simuation to use
+   */
+{
+  ELog::RegMethod RegA("softimaxOpticsLine","buildSlitTube");
+
+  int outerCell;
+
+  // FAKE insertcell: required
+  slitTube->addAllInsertCell(masterCell->getName());
+  slitTube->createAll(System,initFC,sideName);
+  slitTube->intersectPorts(System,0,1);
+  slitTube->intersectPorts(System,1,2);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*slitTube,2);
+  slitTube->insertAllInCell(System,outerCell);
+
+  slitTube->splitVoidPorts(System,"SplitVoid",1001,
+			   slitTube->getCell("Void"),
+			   Geometry::Vec3D(0,1,0));
+
+
+  slitTube->splitObject(System,1501,outerCell,
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+  cellIndex++;  // remember creates an extra cell in  primary
+
+
+  for(size_t i=0;i<jaws.size();i++)
+    {
+      const constructSystem::portItem& PI=slitTube->getPort(i);
+      jaws[i]->addInsertCell("SupportA",PI.getCell("Void"));
+      jaws[i]->addInsertCell("SupportA",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("SupportB",PI.getCell("Void"));
+      jaws[i]->addInsertCell("SupportB",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("BlockA",slitTube->getCell("SplitVoid",i));
+      jaws[i]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",i));
+      jaws[i]->createAll(System,*slitTube,0,
+			 PI,PI.getSideIndex("InnerPlate"));
+    }
 
   return;
 }
@@ -491,7 +549,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   ELog::RegMethod RegA("softimaxOpticsLine","buildObjects");
 
   int outerCell;
-  
+
   buildZone.setFront(getRule("front"));
   buildZone.setBack(getRule("back"));
 
@@ -513,7 +571,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   triggerPipe->createAll(System,*pipeInit,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*triggerPipe,2);
   triggerPipe->insertInCell(System,outerCell);
-  
+
   gaugeA->setFront(*triggerPipe,2);
   gaugeA->createAll(System,*triggerPipe,2);
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gaugeA,2);
@@ -584,7 +642,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
   bellowD->insertInCell(System,outerCell);
 
-  buildMono(System,masterCell,*bellowD,2);
+  constructSlitTube(System,masterCell,*bellowD,"back");
+
+  buildMono(System,masterCell,*slitTube,2);
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
@@ -595,7 +655,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   // cellIndex++;
   // bremCollA->createExtension(System,filterBoxA->getCell("FrontPortVoid"));
-  
+
   // const constructSystem::portItem& PI=filterBoxA->getPort(3);
   // filterStick->addInsertCell("Body",PI.getCell("Void"));
   // filterStick->addInsertCell("Body",filterBoxA->getCell("Void"));
@@ -668,7 +728,7 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*diagBoxA,2);
   // diagBoxA->insertAllInCell(System,outerCell);
 
-  
+
   // diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
   //    			   diagBoxA->getCell("Void"),
   //  			   {0,1, 1,2});
@@ -694,74 +754,74 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // // lastComp=gateJ;
   // // return;
 
-  
-  // bellowE->setFront(*diagBoxA,2);  
+
+  // bellowE->setFront(*diagBoxA,2);
   // bellowE->createAll(System,*diagBoxA,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
   // bellowE->insertInCell(System,outerCell);
 
-  // gateE->setFront(*bellowE,2);  
+  // gateE->setFront(*bellowE,2);
   // gateE->createAll(System,*bellowE,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateE,2);
   // gateE->insertInCell(System,outerCell);
-  
-  // mirrorBoxA->setFront(*gateE,2);  
+
+  // mirrorBoxA->setFront(*gateE,2);
   // mirrorBoxA->createAll(System,*gateE,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxA,2);
   // mirrorBoxA->insertInCell(System,outerCell);
-  
+
   // mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
   // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  
+
   // mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
   // mirrorFrontA->createAll(System,*mirrorBoxA,0);
 
   // mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
   // mirrorBackA->createAll(System,*mirrorBoxA,0);
 
-  // gateF->setFront(*mirrorBoxA,2);  
+  // gateF->setFront(*mirrorBoxA,2);
   // gateF->createAll(System,*mirrorBoxA,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateF,2);
   // gateF->insertInCell(System,outerCell);
 
-  // bellowF->setFront(*gateF,2);  
+  // bellowF->setFront(*gateF,2);
   // bellowF->createAll(System,*gateF,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
   // bellowF->insertInCell(System,outerCell);
 
   // constructDiag(System,&masterCell,*diagBoxB,jawCompB,*bellowF,2);
 
-  // bellowG->setFront(*diagBoxB,2);  
+  // bellowG->setFront(*diagBoxB,2);
   // bellowG->createAll(System,*diagBoxB,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowG,2);
   // bellowG->insertInCell(System,outerCell);
 
 
-  // gateG->setFront(*bellowG,2);  
+  // gateG->setFront(*bellowG,2);
   // gateG->createAll(System,*bellowG,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateG,2);
   // gateG->insertInCell(System,outerCell);
 
-  // mirrorBoxB->setFront(*gateG,2);  
+  // mirrorBoxB->setFront(*gateG,2);
   // mirrorBoxB->createAll(System,*gateG,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*mirrorBoxB,2);
   // mirrorBoxB->insertInCell(System,outerCell);
 
   // mirrorBoxB->splitObject(System,3001,mirrorBoxB->getCell("Void"),
   // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  
-  
+
+
   // mirrorFrontB->addInsertCell(mirrorBoxB->getCell("Void",0));
   // mirrorFrontB->createAll(System,*mirrorBoxB,0);
   // mirrorBackB->addInsertCell(mirrorBoxB->getCell("Void",1));
   // mirrorBackB->createAll(System,*mirrorBoxB,0);
 
-  // gateH->setFront(*mirrorBoxB,2);  
+  // gateH->setFront(*mirrorBoxB,2);
   // gateH->createAll(System,*mirrorBoxB,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateH,2);
   // gateH->insertInCell(System,outerCell);
 
-  // bellowH->setFront(*gateH,2);  
+  // bellowH->setFront(*gateH,2);
   // bellowH->createAll(System,*gateH,2);
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowH,2);
   // bellowH->insertInCell(System,outerCell);
@@ -787,14 +847,14 @@ softimaxOpticsLine::createLinks()
    */
 {
   ELog::RegMethod RControl("softimaxOpticsLine","createLinks");
-  
+
   setLinkSignedCopy(0,*pipeInit,1);
   setLinkSignedCopy(1,*lastComp,2);
   return;
 }
-  
-  
-void 
+
+
+void
 softimaxOpticsLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -810,7 +870,7 @@ softimaxOpticsLine::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  
+
   buildObjects(System);
   createLinks();
   return;
@@ -818,4 +878,3 @@ softimaxOpticsLine::createAll(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-
