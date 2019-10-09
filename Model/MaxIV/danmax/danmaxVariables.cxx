@@ -309,6 +309,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
   setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
+  setVariable::BellowGenerator BellowGen;
   
   // will be rotated vertical
   const std::string pipeName=viewKey+"ViewTube";
@@ -332,6 +333,10 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(-1,0,-1));
+
+  // bellows on shield block
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,viewKey+"BellowF",0,10.0);    
 
   return;
 }

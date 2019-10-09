@@ -136,6 +136,8 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> viewTube;
   /// Beam viewer [item]
   std::shared_ptr<xraySystem::FlangeMount> viewTubeScreen;
+  /// bellows to second mono
+  std::shared_ptr<constructSystem::Bellows> bellowF;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

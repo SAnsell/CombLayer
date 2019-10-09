@@ -147,7 +147,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
   gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
-  viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen"))
+  viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF"))
 
   /*!
     Constructor
@@ -183,7 +184,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(gateC);
   OR.addObject(viewTube);
   OR.addObject(viewTubeScreen);
-    
+  OR.addObject(bellowF);
+  
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -258,7 +260,7 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   const constructSystem::portItem& VPB=viewTube->getPort(1);
   const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
   
-  const int outerCell=buildZone.createOuterVoidUnit
+  int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   const Geometry::Vec3D  Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
   this->splitObjectAbsolute(System,1501,outerCell,
@@ -273,13 +275,21 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   //  viewTube->insertPortInCell(System,{cellN,cellM,cellX});
   viewTube->insertPortInCell
     (System,{{outerCell},{outerCell+1},{outerCell+2}});
-
   cellIndex+=2;
+
   /*
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
   viewTubeScreen->setBladeCentre(*viewTube,0);
   viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
   */
+
+  bellowF->FrontBackCut::setFront(VPB,"OuterPlate");
+  bellowF->createAll(System,VPB,"OuterPlate");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
+  bellowF->insertInCell(System,outerCell);
+  VPC.insertInCell(System,outerCell);
+  
+
   return;
 }
 
