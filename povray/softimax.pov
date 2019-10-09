@@ -10,7 +10,7 @@ global_settings {
   assumed_gamma 1.0
 }
 
-#declare view = 105;
+#declare view = 6;
 #declare cameraAngle = 90;
 
 #switch ( view )
@@ -36,8 +36,8 @@ global_settings {
     #declare cameraLookAt   = <2432, 8400, 0>;
   #break
   #case(6) // Monochromator
-    #declare cameraLocation = <2514, 8550, 10>;
-    #declare cameraLookAt   = <2514, 8400, 0>;
+    #declare cameraLocation = <2560, 8550, 50>;
+    #declare cameraLookAt   = <2560, 8400, 0>;
   #break
   #case(105) // slitTube
     #declare cameraLocation = <2420, 8450, 10>;
