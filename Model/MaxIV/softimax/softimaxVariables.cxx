@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-// #include <fstream>
+#include <fstream>
 #include <iomanip>
-// #include <iostream>
-// #include <sstream>
+#include <iostream>
+#include <sstream>
 #include <cmath>
-// #include <complex>
-// #include <list>
+#include <complex>
+#include <list>
 #include <vector>
 #include <set>
 #include <map>
 // #include <string>
 // #include <algorithm>
 
-// #include "Exception.h"
-// #include "FileReport.h"
+#include "Exception.h"
+#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 // #include "GTKreport.h"
-// #include "OutputLog.h"
+#include "OutputLog.h"
 // #include "support.h"
 // #include "MatrixBase.h"
 // #include "Matrix.h"
@@ -736,14 +736,15 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
-  PItemGen.setCF<setVariable::CF63>(5.4); // port length
+  PItemGen.setCF<setVariable::CF40>(5.4); // port length, CF63 does not work
+  ELog::EM << "Use CF63 here" << ELog::endDiag;
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pumpName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
 
   const Geometry::Vec3D pAngVec(0.75,0.0,cos(M_PI*37.0/180.0));
   const double PLen=14.0-8.05/cos(M_PI*37.0/180.0);
   PItemGen.setCF<setVariable::CF40>(PLen);
-  PItemGen.setOuterVoid(0);
+  PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,pumpName+"Port2",
 			Geometry::Vec3D(0,0,0),-pAngVec);
 

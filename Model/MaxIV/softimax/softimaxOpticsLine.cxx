@@ -589,22 +589,48 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // FAKE insertcell: required
   pumpM1->addAllInsertCell(masterCell->getName());
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  pumpM1->createAll(System,*bellowA,2);
+  pumpM1->createAll(System,*bellowA,"back");
+  pumpM1->intersectPorts(System,1,2);
 
-  ELog::EM << "SA fixed splitting with many ports for FLUKA: see danmaxOpticsLine::constructViewScreen" << ELog::endDiag;
+  ///////////// split for FLUKA
+  const constructSystem::portItem& VP0=pumpM1->getPort(0);
+  const constructSystem::portItem& VP1=pumpM1->getPort(1);
+  const constructSystem::portItem& VP2=pumpM1->getPort(2);
+  //  const constructSystem::portItem& VP3=pumpM1->getPort(3);
+  const constructSystem::portItem& VP4=pumpM1->getPort(4);
+  //  const constructSystem::portItem& VP5=pumpM1->getPort(5);
+  const constructSystem::portItem& VP6=pumpM1->getPort(6);
 
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,VP1,VP1.getSideIndex("OuterPlate"));
+  const Geometry::Vec3D  Axis12=pumpM1->getY()*(VP1.getY()+VP2.getY())/2.0;
+  const Geometry::Vec3D  Axis26=pumpM1->getY()*(VP2.getY()+VP6.getY())/2.0;
 
-  const constructSystem::portItem& CPI=pumpM1->getPort(1);
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,
-				CPI,CPI.getSideIndex("OuterPlate"));
-  pumpM1->insertAllInCell(System,outerCell);
-  pumpM1->splitObjectAbsolute(System,1501,outerCell,
-				 pumpM1->getLinkPt(0),
-				 Geometry::Vec3D(0,0,1));
-  cellIndex++;
+  this->splitObjectAbsolute(System,1501,outerCell,
+			    (VP1.getCentre()+VP4.getCentre())/2.0,
+  			    Z);
+  this->splitObjectAbsolute(System,1502,outerCell+1,
+    			    pumpM1->getCentre(),
+			    VP4.getY());
+  this->splitObjectAbsolute(System,1503,outerCell,
+			    pumpM1->getCentre(),Axis12);
+  this->splitObjectAbsolute(System,1504,outerCell+3,
+   			    pumpM1->getCentre(),Axis26);
 
-  gateA->setFront(CPI,CPI.getSideIndex("OuterPlate"));
-  gateA->createAll(System,CPI,CPI.getSideIndex("OuterPlate"));
+  const std::vector<int> cellUnit=this->getCells("OuterVoid");
+  pumpM1->insertMainInCell(System,cellUnit);
+  //  VP0.insertInCell(System,this->getCell("OuterVoid"));
+
+  pumpM1->insertPortInCell
+    (System,{{outerCell+4},{outerCell},{outerCell+3},{outerCell},
+	     {outerCell+2},{outerCell+1},
+	     {outerCell+4}});
+
+  cellIndex+=5;
+  /////////////////////////////////////////
+
+  gateA->setFront(VP1,VP1.getSideIndex("OuterPlate"));
+  gateA->createAll(System,VP1,VP1.getSideIndex("OuterPlate"));
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
   gateA->insertInCell(System,outerCell);
 
