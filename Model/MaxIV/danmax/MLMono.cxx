@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/MLMono.cxx
+ * File:   danmax/MLMono.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -120,11 +120,14 @@ MLMono::populate(const FuncDataBase& Control)
   lengthB=Control.EvalVar<double>(keyName+"LenghtB");
 
   supportAGap=Control.EvalVar<double>(keyName+"SupportAGap");  
-  supportSide=Control.EvalVar<double>(keyName+"SupportASide");
+  supportASide=Control.EvalVar<double>(keyName+"SupportASide");
   supportABase=Control.EvalVar<double>(keyName+"SupportABase");
 
-  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MLMonoMat");
-  baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
+  mirrorAMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorAMat");
+  mirrorBMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorBMat");
+  baseAMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseAMat");
+  baseBMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseBMat");
+
 
   return;
 }

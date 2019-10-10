@@ -64,6 +64,8 @@ namespace xraySystem
   class Mirror;
   class MonoBlockXstals;
   class DCMTank;
+  class MLMono;
+  class MLMVessel;
 
   
   /*!
@@ -140,6 +142,8 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// MirrorMonoBox
   std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
+  /// Mirror-Mono system
+  std::shared_ptr<xraySystem::MLMono> MLM;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

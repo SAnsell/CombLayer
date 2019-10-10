@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmaxInc/Mirror.h
+ * File:   danmaxInc/MLMono.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -32,7 +32,7 @@ namespace xraySystem
   \author S. Ansell
   \version 1.0
   \date October 2019
-  \brief Mirror Mono [horizontal]
+  \brief Double Mirror Mono arrangement
 */
 
 class MLMono :
@@ -59,8 +59,8 @@ class MLMono :
   double supportASide;      ///< Side thickness
   double supportABase;      ///< Base thickness
 
-  int mirrAMat;             ///< XStal material
-  int mirrBMat;             ///< XStal material
+  int mirrorAMat;             ///< XStal material
+  int mirrorBMat;             ///< XStal material
   int baseAMat;              ///< Base material
   int baseBMat;              ///< Base material
 

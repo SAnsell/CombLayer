@@ -104,9 +104,10 @@
 #include "MonoShutter.h"
 #include "BeamMount.h"
 #include "BeamPair.h"
-#include "danmaxOpticsLine.h"
 #include "DCMTank.h"
 #include "MonoBlockXstals.h"
+#include "MLMono.h"
+#include "danmaxOpticsLine.h"
 
 namespace xraySystem
 {
@@ -149,7 +150,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
-  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel"))
+  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
+  MLM(new xraySystem::MLMono(newName+"MLM"))
 
   /*!
     Constructor
@@ -352,9 +354,9 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
   MLMVessel->insertInCell(System,outerCell);
 
   
-  //  mbXstals->addInsertCell(monoVessel->getCell("Void"));
-  //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
-  //  mbXstals->createAll(System,*monoVessel,0);
+  MLM->addInsertCell(MLMVessel->getCell("Void"));
+  //  MLM->copyCutSurf("innerCylinder",*MLMVessel,"innerRadius");
+  MLM->createAll(System,*MLMVessel,0);
 
 
   return;
