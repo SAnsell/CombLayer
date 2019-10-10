@@ -6,10 +6,10 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 601;
+#declare view = 2;
 #declare cameraAngle = 90;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -68,7 +68,7 @@ global_settings {
     #declare cameraLookAt   = <2280, 8400, 0>;
   #break
   #case(2) // pump unit M1
-    #declare cameraLocation = <2320, 8450, 10>;
+    #declare cameraLocation = <2300, 8450, 10>;
     #declare cameraLookAt   = <2320, 8400, 0>;
   #break
   #case(3) // Mirror system M1
