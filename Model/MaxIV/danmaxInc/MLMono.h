@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/MonoBlockXstals.h
-*
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * File:   danmaxInc/Mirror.h
+ *
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_MonoBlockXstals_h
-#define xraySystem_MonoBlockXstals_h
+#ifndef xraySystem_MLMono_h
+#define xraySystem_MLMono_h
 
 class Simulation;
 
@@ -28,17 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class MonoBlockXstals
+  \class MLMono
   \author S. Ansell
   \version 1.0
-  \date January 2018
-  \brief Paired Mono-crystal constant exit gap
-
-  Built as if the crystals are horrizontal but can
-  be rotated
+  \date October 2019
+  \brief Mirror Mono [horizontal]
 */
 
-class MonoBlockXstals :
+class MLMono :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap,
@@ -46,12 +43,10 @@ class MonoBlockXstals :
 {
  private:
 
-  double gap;              ///< Gap thickness
-  double theta;            ///< Theta angle [rot: Z]
+  double gap;               ///< Gap thickness
 
-  double phiA;              ///< phi angle of first [rot:Y]
-  double phiB;              ///< phi angle of second [rot:Y]
-  
+  double theta;             ///< Theta angle [mirror -xray 2T]
+
   double widthA;            ///< Width of block across beam
   double heightA;           ///< Depth into beam
   double lengthA;           ///< Length along beam
@@ -60,40 +55,31 @@ class MonoBlockXstals :
   double heightB;           ///< Depth into beam
   double lengthB;           ///< Length along beam
 
-  double baseALength;       ///< Base length
-  double baseAHeight;       ///< Base thickness
-  double baseAWidth;        ///< Edge aligned to crystal
+  double supportAGap;       ///< Base under gap below mirror
+  double supportASide;      ///< Side thickness
+  double supportABase;      ///< Base thickness
 
-  double topALength;        ///< Top length
-  double topAHeight;        ///< Top thickness
-  double topAWidth;         ///< Edge aligned to crystal
-
-  double baseBLength;       ///< Base length
-  double baseBHeight;       ///< Base thickness
-  double baseBWidth;        ///< Edge aligned to crystal
-
-  double topBLength;       ///< Top length
-  double topBHeight;       ///< Top thickness
-  double topBWidth;        ///< Edge aligned to crystal
-  
-  int xtalMat;             ///< XStal material
-  int baseMat;             ///< Base material
+  int mirrAMat;             ///< XStal material
+  int mirrBMat;             ///< XStal material
+  int baseAMat;              ///< Base material
+  int baseBMat;              ///< Base material
 
   // Functions:
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
  public:
 
-  MonoBlockXstals(const std::string&);
-  MonoBlockXstals(const MonoBlockXstals&);
-  MonoBlockXstals& operator=(const MonoBlockXstals&);
-  virtual ~MonoBlockXstals();
+  MLMono(const std::string&);
+  MLMono(const MLMono&);
+  MLMono& operator=(const MLMono&);
+  virtual ~MLMono();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

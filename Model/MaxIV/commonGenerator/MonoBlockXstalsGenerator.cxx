@@ -57,7 +57,7 @@ namespace setVariable
 {
 
 MonoBlockXstalsGenerator::MonoBlockXstalsGenerator() :
-  gap(0.6),phiA(0.0),phiB(0.0),
+  gap(0.7),phiA(0.0),phiB(0.0),
   widthA(5.0),heightA(2.0),lengthA(5.0),
   widthB(3.0),heightB(2.0),lengthB(10.0),
   baseALength(11.0),baseAHeight(1.5),baseAWidth(6.0),
@@ -70,6 +70,60 @@ MonoBlockXstalsGenerator::MonoBlockXstalsGenerator() :
   */
 {}
 
+MonoBlockXstalsGenerator::MonoBlockXstalsGenerator
+(const MonoBlockXstalsGenerator& A) : 
+  gap(A.gap),phiA(A.phiA),phiB(A.phiB),widthA(A.widthA),
+  heightA(A.heightA),lengthA(A.lengthA),widthB(A.widthB),
+  heightB(A.heightB),lengthB(A.lengthB),baseALength(A.baseALength),
+  baseAHeight(A.baseAHeight),baseAWidth(A.baseAWidth),
+  topALength(A.topALength),topAHeight(A.topAHeight),
+  topAWidth(A.topAWidth),baseBLength(A.baseBLength),
+  baseBHeight(A.baseBHeight),baseBWidth(A.baseBWidth),
+  topBLength(A.topBLength),topBHeight(A.topBHeight),
+  topBWidth(A.topBWidth),xtalMat(A.xtalMat),baseMat(A.baseMat)
+  /*!
+    Copy constructor
+    \param A :: MonoBlockXstalsGenerator to copy
+  */
+{}
+
+MonoBlockXstalsGenerator&
+MonoBlockXstalsGenerator::operator=(const MonoBlockXstalsGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: MonoBlockXstalsGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      gap=A.gap;
+      phiA=A.phiA;
+      phiB=A.phiB;
+      widthA=A.widthA;
+      heightA=A.heightA;
+      lengthA=A.lengthA;
+      widthB=A.widthB;
+      heightB=A.heightB;
+      lengthB=A.lengthB;
+      baseALength=A.baseALength;
+      baseAHeight=A.baseAHeight;
+      baseAWidth=A.baseAWidth;
+      topALength=A.topALength;
+      topAHeight=A.topAHeight;
+      topAWidth=A.topAWidth;
+      baseBLength=A.baseBLength;
+      baseBHeight=A.baseBHeight;
+      baseBWidth=A.baseBWidth;
+      topBLength=A.topBLength;
+      topBHeight=A.topBHeight;
+      topBWidth=A.topBWidth;
+      xtalMat=A.xtalMat;
+      baseMat=A.baseMat;
+    }
+  return *this;
+}
+
 
   
 MonoBlockXstalsGenerator::~MonoBlockXstalsGenerator() 
@@ -77,7 +131,6 @@ MonoBlockXstalsGenerator::~MonoBlockXstalsGenerator()
    Destructor
  */
 {}
-
   
 
 void

@@ -58,7 +58,8 @@ namespace setVariable
 {
 
 VacBoxGenerator::VacBoxGenerator() :
-  wallThick(0.5),
+  wallThick(0.5),feHeight(0.5),feDepth(0.5),
+  feWidth(0.5),feFront(0.5),feBack(0.5),
   portAXStep(0.0),portAZStep(0.0),
   portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
   portBXStep(0.0),portBZStep(0.0),
@@ -298,9 +299,32 @@ VacBoxGenerator::setBFlange(const double R,const double L)
 }
 
 void
+VacBoxGenerator::setAllThick(const double WH,const double WD,
+			     const double WW,const double WF,
+			     const double WB)
+  /*!
+    Set all the wall thicknessesx
+    \param WH :: Wall height
+    \param WD :: Wall depth
+    \param WW :: Wall width
+    \param WF :: Wall front
+    \param WB :: Wall back
+   */
+{
+  feHeight=WH;
+  feDepth=WD;
+  feWidth=WW;
+  feFront=WF;
+  feBack=WB;
+  wallThick=-1.0;
+  
+  return;
+}
+
+void
 VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
-			     const double yStep,const double width,const
-			     double height,const double depth,
+			     const double yStep,const double width,
+			     const double height,const double depth,
 			     const double length) const
   /*!
     Primary funciton for setting the variables
@@ -322,8 +346,17 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"VoidWidth",width);
   Control.addVariable(keyName+"VoidLength",length);
 
-  Control.addVariable(keyName+"WallThick",wallThick);
-	
+  if (wallThick > -Geometry::zeroTol)
+    Control.addVariable(keyName+"WallThick",wallThick);
+  else
+    {
+      Control.addVariable(keyName+"FeHeight",feHeight);
+      Control.addVariable(keyName+"FeDepth",feDepth);
+      Control.addVariable(keyName+"FeWidth",feWidth);
+      Control.addVariable(keyName+"FeFront",feFront);
+      Control.addVariable(keyName+"FeBack",feBack);
+    }
+  
   Control.addVariable(keyName+"PortAXStep",portAXStep);
   Control.addVariable(keyName+"PortAZStep",portAZStep);
   Control.addVariable(keyName+"PortAWallThick",portAWallThick);

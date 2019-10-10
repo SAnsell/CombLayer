@@ -270,8 +270,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
        {"COSAXS","OpticCentre1"},
        {"DANMAX","OpticCentre1"},
        {"FORMAX","OpticCentre8"},
-       {"MICROMAX","OpticCentre1"},
-	  
+       {"MICROMAX","OpticCentre1"}
     });
 
   // Determine if R1Ring/beamlines need to be built 
@@ -299,7 +298,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	}
     }
   if (!activeR3) return 0;
-  
+
 
   const int voidCell(74123);
   r3Ring->addInsertCell(voidCell);
@@ -325,7 +324,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")	
 	BLPtr.reset(new MICROMAX("MicroMax"));
-        
+
       if (!activeStop.empty())
 	{
 	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
@@ -335,7 +334,6 @@ makeMaxIV::buildR3Ring(Simulation& System,
       BLPtr->build(System,*r3Ring,
 		   r3Ring->getSideIndex(beamNAMES.at(BL)));
     }
-      
   return 1;    // R3 Built
 }  
 

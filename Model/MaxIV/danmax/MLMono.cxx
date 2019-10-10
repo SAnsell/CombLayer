@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/Mirror.cxx
+ * File:   commonBeam/MLMono.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -72,13 +72,13 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
-#include "Mirror.h"
+#include "MLMono.h"
 
 
 namespace xraySystem
 {
 
-Mirror::Mirror(const std::string& Key) :
+MLMono::MLMono(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),attachSystem::SurfMap()
@@ -89,89 +89,48 @@ Mirror::Mirror(const std::string& Key) :
   */
 {}
 
-Mirror::Mirror(const Mirror& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  theta(A.theta),phi(A.phi),radius(A.radius),width(A.width),
-  thick(A.thick),length(A.length),baseTop(A.baseTop),
-  baseDepth(A.baseDepth),baseOutWidth(A.baseOutWidth),
-  baseGap(A.baseGap),mirrMat(A.mirrMat),baseMat(A.baseMat)
-  /*!
-    Copy constructor
-    \param A :: Mirror to copy
-  */
-{}
-
-Mirror&
-Mirror::operator=(const Mirror& A)
-  /*!
-    Assignment operator
-    \param A :: Mirror to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedRotate::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      theta=A.theta;
-      phi=A.phi;
-      radius=A.radius;
-      width=A.width;
-      thick=A.thick;
-      length=A.length;
-      baseTop=A.baseTop;
-      baseDepth=A.baseDepth;
-      baseOutWidth=A.baseOutWidth;
-      baseGap=A.baseGap;
-      mirrMat=A.mirrMat;
-      baseMat=A.baseMat;
-    }
-  return *this;
-}
 
 
-
-Mirror::~Mirror()
+MLMono::~MLMono()
   /*!
     Destructor
    */
 {}
 
 void
-Mirror::populate(const FuncDataBase& Control)
+MLMono::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("Mirror","populate");
+  ELog::RegMethod RegA("MLMono","populate");
 
   FixedRotate::populate(Control);
 
+  gap=Control.EvalVar<double>(keyName+"Gap");
   theta=Control.EvalVar<double>(keyName+"Theta");
-  phi=Control.EvalDefVar<double>(keyName+"Phi",0.0);
   
-  radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
-  width=Control.EvalVar<double>(keyName+"Width");
-  thick=Control.EvalVar<double>(keyName+"Thick");
-  length=Control.EvalVar<double>(keyName+"Length");
-  
-  baseTop=Control.EvalVar<double>(keyName+"BaseTop");
-  baseDepth=Control.EvalVar<double>(keyName+"BaseDepth");
-  baseOutWidth=Control.EvalVar<double>(keyName+"BaseOutWidth");
-  baseGap=Control.EvalVar<double>(keyName+"BaseGap");
+  widthA=Control.EvalVar<double>(keyName+"WidthA");
+  heightA=Control.EvalVar<double>(keyName+"HeightA");
+  lengthA=Control.EvalVar<double>(keyName+"LenghtA");
 
-  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
+  widthB=Control.EvalVar<double>(keyName+"WidthB");
+  heightB=Control.EvalVar<double>(keyName+"HeightB");
+  lengthB=Control.EvalVar<double>(keyName+"LenghtB");
+
+  supportAGap=Control.EvalVar<double>(keyName+"SupportAGap");  
+  supportSide=Control.EvalVar<double>(keyName+"SupportASide");
+  supportABase=Control.EvalVar<double>(keyName+"SupportABase");
+
+  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MLMonoMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
   return;
 }
 
 void
-Mirror::createUnitVector(const attachSystem::FixedComp& FC,
+MLMono::createUnitVector(const attachSystem::FixedComp& FC,
                                const long int sideIndex)
   /*!
     Create the unit vectors.
@@ -180,7 +139,7 @@ Mirror::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: direction for link
   */
 {
-  ELog::RegMethod RegA("Mirror","createUnitVector");
+  ELog::RegMethod RegA("MLMono","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
@@ -188,16 +147,16 @@ Mirror::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-Mirror::createSurfaces()
+MLMono::createSurfaces()
   /*!
     Create planes for mirror block and support
   */
 {
-  ELog::RegMethod RegA("Mirror","createSurfaces");
+  ELog::RegMethod RegA("MLMono","createSurfaces");
 
   // main xstal CENTRE AT ORIGIN 
   const Geometry::Quaternion QXA
-    (Geometry::Quaternion::calcQRotDeg(-theta,X));
+    (Geometry::Quaternion::calcQRotDeg(-thetaA,X));
 
   Geometry::Vec3D PX(X);
   Geometry::Vec3D PY(Y);
@@ -207,37 +166,18 @@ Mirror::createSurfaces()
   QXA.rotate(PZ);
 
   const Geometry::Quaternion QYA
-    (Geometry::Quaternion::calcQRotDeg(phi,PY));
+    (Geometry::Quaternion::calcQRotDeg(phiA,PY));
 
   QYA.rotate(PX);
   QYA.rotate(PZ);
   
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(length/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(width/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(width/2.0),PX);
-
-  if (std::abs(radius)>Geometry::zeroTol)
-    {
-      // calc edge cut
-      const double tAngle = length/(2.0*radius);  // cos(-a) == cos(a)
-      const double lift = radius*(1.0-cos(tAngle));
-      if (radius<0)
-	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,-PZ);
-      else
-	ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*lift,PZ);
-      ModelSupport::buildCylinder(SMap,buildIndex+107,
-				  Origin-PZ*radius,PX,std::abs(radius));
-      ModelSupport::buildCylinder(SMap,buildIndex+117,
-				  Origin-PZ*radius,PX,std::abs(radius)+thick);
-    }
-  else
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*thick,PZ);
-      ModelSupport::buildPlane(SMap,buildIndex+106,Origin,PZ);
-    }
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(lengthA/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(lengthA/2.0),PY);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*(heightA/2.0),PZ);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+PZ*(heightA/2.0),PZ);
   
-
   // support
   ModelSupport::buildPlane(SMap,buildIndex+203,
 			   Origin-PX*(baseOutWidth+width/2.0),PX);
@@ -253,13 +193,13 @@ Mirror::createSurfaces()
 }
 
 void
-Mirror::createObjects(Simulation& System)
+MLMono::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
-  ELog::RegMethod RegA("Mirror","createObjects");
+  ELog::RegMethod RegA("MLMono","createObjects");
 
   std::string Out;
   // xstal
@@ -270,7 +210,7 @@ Mirror::createObjects(Simulation& System)
     Out=ModelSupport::getComposite
       (SMap,buildIndex," 103 -104 107 -117 105 ");    
   
-  makeCell("Mirror",System,cellIndex++,mirrMat,0.0,Out);
+  makeCell("MLMono",System,cellIndex++,mirrMat,0.0,Out);
 
   // Make sides
   Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
@@ -298,18 +238,18 @@ Mirror::createObjects(Simulation& System)
 }
 
 void
-Mirror::createLinks()
+MLMono::createLinks()
   /*!
     Creates a full attachment set
   */
 {
-  ELog::RegMethod RegA("Mirror","createLinks");
+  ELog::RegMethod RegA("MLMono","createLinks");
   
   return;
 }
 
 void
-Mirror::createAll(Simulation& System,
+MLMono::createAll(Simulation& System,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
@@ -319,7 +259,7 @@ Mirror::createAll(Simulation& System,
     \param sideIndex :: Side point
    */
 {
-  ELog::RegMethod RegA("Mirror","createAll");
+  ELog::RegMethod RegA("MLMono","createAll");
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);

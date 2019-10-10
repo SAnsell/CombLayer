@@ -148,13 +148,16 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
-  bellowF(new constructSystem::Bellows(newName+"BellowF"))
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel"))
 
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {
+  ELog::RegMethod RegA("danmaxOpticsLine","danmaxOpticsLine(constructor)");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
@@ -277,11 +280,12 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
     (System,{{outerCell},{outerCell+1},{outerCell+2}});
   cellIndex+=2;
 
-  /*
+  
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
+  viewTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
   viewTubeScreen->setBladeCentre(*viewTube,0);
-  viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
-  */
+  viewTubeScreen->createAll(System,VPC,"-InnerPlate");
+
 
   bellowF->FrontBackCut::setFront(VPB,"OuterPlate");
   bellowF->createAll(System,VPB,"OuterPlate");
@@ -320,6 +324,37 @@ danmaxOpticsLine::constructMono(Simulation& System,
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   mbXstals->createAll(System,*monoVessel,0);
+
+
+  return;
+}
+void
+danmaxOpticsLine::constructMirrorMono(Simulation& System,
+				      MonteCarlo::Object* masterCell,
+				      const attachSystem::FixedComp& initFC, 
+				      const std::string& sideName)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","buildMono");
+
+  int outerCell;
+
+  // FAKE insertcell: required
+  MLMVessel->addInsertCell(masterCell->getName());
+  MLMVessel->createAll(System,initFC,sideName);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*MLMVessel,2);
+  MLMVessel->insertInCell(System,outerCell);
+
+  
+  //  mbXstals->addInsertCell(monoVessel->getCell("Void"));
+  //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
+  //  mbXstals->createAll(System,*monoVessel,0);
 
 
   return;
@@ -509,7 +544,8 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructViewScreen(System,masterCell,*gateC,"back");
 
-  lastComp=triggerPipe;
+  constructMirrorMono(System,masterCell,*bellowF,"back");
+  lastComp=bellowF;
   return;
 
   /*

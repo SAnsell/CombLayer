@@ -138,6 +138,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::FlangeMount> viewTubeScreen;
   /// bellows to second mono
   std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// MirrorMonoBox
+  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -148,6 +150,8 @@ class danmaxOpticsLine :
 			 const attachSystem::FixedComp&,const std::string&);
   void constructMono(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
+  void constructMirrorMono(Simulation&,MonteCarlo::Object*,
+			   const attachSystem::FixedComp&,const std::string&);
   void constructViewScreen(Simulation&,MonteCarlo::Object*,
 			   const attachSystem::FixedComp&,const std::string&);
   

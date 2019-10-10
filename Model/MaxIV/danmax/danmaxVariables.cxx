@@ -89,6 +89,7 @@ void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
+void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
 
@@ -310,6 +311,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::FlangeMountGenerator FlangeGen;
   
   // will be rotated vertical
   const std::string pipeName=viewKey+"ViewTube";
@@ -334,6 +336,10 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(-1,0,-1));
 
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
+  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
+
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,viewKey+"BellowF",0,10.0);    
@@ -349,7 +355,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     \param slitKey :: prename
   */
 {
-  ELog::RegMethod RegA("speciesVariables[F]","monoPackage");
+  ELog::RegMethod RegA("danmaxVariables[F]","monoPackage");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::DCMTankGenerator MBoxGen;
@@ -359,14 +365,14 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // 
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
   // radius : Heigh / depth  [need heigh = 0]
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,30.0,0.0,16.0);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
-  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
-
+  Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.7);      // from primary
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
@@ -376,8 +382,49 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));
 
-  // crystals
+  // crystals gap 7mm
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
+  
+
+  return;
+}
+
+void
+mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
+  /*!
+    Builds the variables for the mirror mono package (MLM)
+    \param Control :: Database
+    \param monoKey :: prename
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::VacBoxGenerator MBoxGen;
+  setVariable::MonoBlockXstalsGenerator MXtalGen;
+  
+  // ystep/width/height/depth/length
+  // 
+  MBoxGen.setCF<CF40>();   // set ports
+  MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
+  // ystep/ width / heigh / depth / length
+  MBoxGen.generateBox
+    (Control,monoKey+"MLMVessel",0.0,57.0,12.5,31.0,109.0);
+
+  Control.addVariable(monoKey+"MLMVesselPortBXStep",-0.7);   // from primary
+
+  const std::string portName=monoKey+"MonoVessel";
+  Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,portName+"Port0",
+			Geometry::Vec3D(0,5.0,-10.0),
+			Geometry::Vec3D(1,0,0));
+
+  // crystals gap 7mm
+		      //  MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
   
 
   return;
@@ -619,7 +666,7 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
   viewPackage(Control,opticsName);
-
+  mirrorMonoPackage(Control,opticsName);
   
   return;
 }
