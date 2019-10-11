@@ -842,6 +842,11 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCF<setVariable::CF63>();
   GateGen.generateValve(Control,preName+"GateD",0.0,0);
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF63>();
+  PipeGen.setBFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,100.0);
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
@@ -899,11 +904,6 @@ opticsVariables(FuncDataBase& Control,
   // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
 
 
-  // // Now add addaptor pipe:
-  // PipeGen.setMat("Stainless304");
-  // PipeGen.setCF<CF63>();
-  // PipeGen.setBFlangeCF<CF150>();
-  // PipeGen.generatePipe(Control,preName+"AdaptorPlateA",0.0,6.0);
 
   // // length
   // DiffGen.generatePump(Control,preName+"DiffPumpA",53.24);

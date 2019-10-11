@@ -103,6 +103,8 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> pumpTubeB;
   // Gate valve
   std::shared_ptr<constructSystem::GateValveCube> gateD;
+  // vaccum pipe
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeA;
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;

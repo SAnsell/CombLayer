@@ -82,7 +82,7 @@
 
 // #include "insertObject.h"
 // #include "insertPlate.h"
-// #include "VacuumPipe.h"
+#include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 // #include "VacuumBox.h"
@@ -148,13 +148,13 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   gateC(new constructSystem::GateValveCube(newName+"GateC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
-  gateD(new constructSystem::GateValveCube(newName+"GateD"))
+  gateD(new constructSystem::GateValveCube(newName+"GateD")),
+  joinPipeA(new constructSystem::VacuumPipe(newName+"JoinPipeA"))
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   // screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
   // screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
-  // adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
   // diffPumpA(new constructSystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   // primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
   // gateC(new constructSystem::GateValveCube(newName+"GateC")),
@@ -224,12 +224,12 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowE);
   OR.addObject(pumpTubeB);
   OR.addObject(gateD);
+  OR.addObject(joinPipeA);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
   // OR.addObject(screenPipeA);
   // OR.addObject(screenPipeB);
-  // OR.addObject(adaptorPlateA);
   // OR.addObject(diffPumpA);
   // OR.addObject(primeJawBox);
   // OR.addObject(monoBox);
@@ -704,6 +704,11 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateD,2);
   gateD->insertInCell(System,outerCell);
 
+  joinPipeA->setFront(*gateD,2);
+  joinPipeA->createAll(System,*gateD,"back");
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*joinPipeA,2);
+  joinPipeA->insertInCell(System,outerCell);
+
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
   // filterBoxA->createAll(System,*bremCollA,2);
@@ -736,11 +741,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*screenPipeB,2);
   // screenPipeB->insertAllInCell(System,outerCell);
   // screenPipeB->intersectPorts(System,0,1);
-
-  // adaptorPlateA->setFront(*screenPipeB,2);
-  // adaptorPlateA->createAll(System,*screenPipeB,2);
-  // outerCell=buildZone.createOuterVoidUnit(System,masterCell,*adaptorPlateA,2);
-  // adaptorPlateA->insertInCell(System,outerCell);
 
 
   // diffPumpA->setCutSurf("front",*adaptorPlateA,2);
