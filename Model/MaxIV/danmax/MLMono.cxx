@@ -127,7 +127,16 @@ MLMono::populate(const FuncDataBase& Control)
   supportABase=Control.EvalVar<double>(keyName+"SupportABase");
   supportAPillar=Control.EvalVar<double>(keyName+"SupportAPillar");
   supportAPillarStep=Control.EvalVar<double>(keyName+"SupportAPillarStep");
- 
+
+  
+  supportBGap=Control.EvalVar<double>(keyName+"SupportBGap");
+  supportBExtra=Control.EvalVar<double>(keyName+"SupportBExtra");
+  supportBBackThick=Control.EvalVar<double>(keyName+"SupportBBackThick");
+  supportBBackLength=Control.EvalVar<double>(keyName+"SupportBBackLength");
+  supportBBase=Control.EvalVar<double>(keyName+"SupportBBase");
+  supportBPillar=Control.EvalVar<double>(keyName+"SupportBPillar");
+  supportBPillarStep=Control.EvalVar<double>(keyName+"SupportBPillarStep");
+
 
   mirrorAMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorAMat");
   mirrorBMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorBMat");
@@ -226,6 +235,75 @@ MLMono::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+337,PillarD,PZ,supportAPillar);
 
+
+  // main xstal CENTRE AT Shifted position [
+
+  
+  const double yDist=gap/tan(2.0*thetaA*M_PI/180.0);
+  const Geometry::Quaternion QXB
+    (Geometry::Quaternion::calcQRotDeg(-thetaB,X));
+
+  Geometry::Vec3D QX(-X);
+  Geometry::Vec3D QY(Y);
+  Geometry::Vec3D QZ(-Z);
+
+  QXB.rotate(QY);
+  QXB.rotate(QZ);
+
+  const Geometry::Quaternion QYB
+    (Geometry::Quaternion::calcQRotDeg(phiB,QY));
+
+  QYB.rotate(QX);
+  QYB.rotate(QZ);
+
+  const Geometry::Vec3D BOrg(Origin+PY*yDist+PX*gap);
+  ModelSupport::buildPlane(SMap,buildIndex+1101,BOrg-QY*(lengthB/2.0),QY);
+  ModelSupport::buildPlane(SMap,buildIndex+1102,BOrg+QY*(lengthB/2.0),QY);
+  ModelSupport::buildPlane(SMap,buildIndex+1103,BOrg-QX*widthB,QX);
+  ModelSupport::buildPlane(SMap,buildIndex+1104,BOrg,QX);
+  ModelSupport::buildPlane(SMap,buildIndex+1105,BOrg-QZ*(heightB/2.0),QZ);
+  ModelSupport::buildPlane(SMap,buildIndex+1106,BOrg+QZ*(heightB/2.0),QZ);
+
+  
+  // support A:
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1201,BOrg-QY*((lengthB+supportBExtra)/2.0),QY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1202,BOrg+QY*((lengthB+supportBExtra)/2.0),QY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1203,BOrg-QX*(widthB+supportBGap),QX);  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1205,BOrg-QZ*(heightB/2+supportBBase),QZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1206,BOrg+QZ*(heightB/2+supportBBase),QZ);
+
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1213,BOrg-QX*(widthB+supportBGap+supportBBackThick),QX);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1211,BOrg-QY*(supportBBackLength/2.0),QY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+1212,BOrg+QY*(supportBBackLength/2.0),QY);
+
+  // note extra /2.0 as in middle of extra step!
+  const Geometry::Vec3D QillarA=
+    BOrg-QY*((lengthB+supportBExtra/2.0)/2.0)-QX*supportBPillarStep;
+  const Geometry::Vec3D QillarB=
+    BOrg-QY*((lengthB+supportBExtra/2.0)/2.0)-QX*(widthB-supportBPillarStep);
+  const Geometry::Vec3D QillarC=
+    BOrg+QY*((lengthB+supportBExtra/2.0)/2.0)-QX*supportBPillarStep;
+  const Geometry::Vec3D QillarD=
+    BOrg+QY*((lengthB+supportBExtra/2.0)/2.0)-QX*(widthB-supportBPillarStep);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+1307,QillarA,QZ,supportBPillar);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+1317,QillarB,QZ,supportBPillar);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+1327,QillarC,QZ,supportBPillar);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+1337,QillarD,QZ,supportBPillar);
+
+  
   return; 
 }
 
@@ -275,7 +353,48 @@ MLMono::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 213 -104 205 -206");  
   addOuterSurf(Out);
+
+
+  // Currently the second Mirror is a copy of the above but we don't yet have
+  // a picture of it.
+
+  // Main crystal
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1101 -1102 1103 -1104 1105 -1106 ");  
+  makeCell("XStalB",System,cellIndex++,mirrorBMat,0.0,Out);
   
+  // Substrate
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1201 -1202 1203 -1104  1106 -1206 ");  
+  makeCell("TopB",System,cellIndex++,baseBMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1201 -1202 1203 -1104  1205 -1105 ");  
+  makeCell("BaseB",System,cellIndex++,baseBMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1201 -1202 1203 -1103 1105 -1106 ");  
+  makeCell("GapB",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1211 -1212 -1203 1213 1205 -1206 ");  
+  makeCell("BackB",System,cellIndex++,baseBMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1201 -1211 -1203 1213 1205 -1206 ");  
+  makeCell("BackBVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1212 -1202 -1203 1213 1205 -1206 ");  
+  makeCell("BackBVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1307 1105 -1106 ");
+  makeCell("RodB1",System,cellIndex++,baseBMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1317 1105 -1106 ");
+  makeCell("RodB2",System,cellIndex++,baseBMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1201 -1101 1103 -1104 1105 -1106 1307 1317 ");  
+  makeCell("SideBVoid",System,cellIndex++,0,0.0,Out);
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1327 1105 -1106 ");
+  makeCell("RodB3",System,cellIndex++,baseBMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1337 1105 -1106 ");
+  makeCell("RodB4",System,cellIndex++,baseBMat,0.0,Out);  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1102 -1202 1103 -1104 1105 -1106 1327 1337 ");  
+  makeCell("SideBVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1201 -1202 1213 -1104 1205 -1206");  
+  addOuterUnionSurf(Out);
+
   return; 
 }
 

@@ -60,6 +60,9 @@ MLMonoGenerator::MLMonoGenerator() :
   supportAGap(0.3),supportAExtra(2.4),
   supportABackThick(0.8),supportABackLength(9.0),
   supportABase(1.1),supportAPillar(0.5),supportAPillarStep(0.8),
+  supportBGap(0.3),supportBExtra(2.4),
+  supportBBackThick(0.8),supportBBackLength(9.0),
+  supportBBase(1.1),supportBPillar(0.5),supportBPillarStep(0.8),
   mirrorAMat("Silicon300K"),mirrorBMat("Silicon300K"),
   baseAMat("Copper"),baseBMat("Copper")
   /*!
@@ -112,6 +115,14 @@ MLMonoGenerator::generateMono(FuncDataBase& Control,
   Control.addVariable(keyName+"SupportABase",supportABase);
   Control.addVariable(keyName+"SupportAPillar",supportAPillar);
   Control.addVariable(keyName+"SupportAPillarStep",supportAPillarStep);
+
+  Control.addVariable(keyName+"SupportBGap",supportBGap);
+  Control.addVariable(keyName+"SupportBExtra",supportBExtra);
+  Control.addVariable(keyName+"SupportBBackThick",supportBBackThick);
+  Control.addVariable(keyName+"SupportBBackLength",supportBBackLength);
+  Control.addVariable(keyName+"SupportBBase",supportBBase);
+  Control.addVariable(keyName+"SupportBPillar",supportBPillar);
+  Control.addVariable(keyName+"SupportBPillarStep",supportBPillarStep);
 
   Control.addVariable(keyName+"MirrorAMat",mirrorAMat);
   Control.addVariable(keyName+"MirrorBMat",mirrorBMat);

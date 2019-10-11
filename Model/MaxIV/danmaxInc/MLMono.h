@@ -66,6 +66,14 @@ class MLMono :
   double supportAPillar;      ///< Side unit radius
   double supportAPillarStep;  ///< Side unit step
 
+  double supportBGap;         ///< Gap after mirror (before back)
+  double supportBExtra;       ///< Base/Top extra length
+  double supportBBackThick;   ///< Back thickness
+  double supportBBackLength;  ///< Back lenght (in part)
+  double supportBBase;        ///< Base/Top thickness
+  double supportBPillar;      ///< Side unit radius
+  double supportBPillarStep;  ///< Side unit step
+
   int mirrorAMat;             ///< XStal material
   int mirrorBMat;             ///< XStal material
   int baseAMat;               ///< Base material
