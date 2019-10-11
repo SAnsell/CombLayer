@@ -6,8 +6,8 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 6;
-#declare omnimaxOK = 1;
+#declare view = 101;
+#declare omnimaxOK = 0;
 #declare cameraAngle = 90;
 
 #declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
@@ -83,6 +83,10 @@ global_settings {
   #case(6) // Monochromator
     #declare cameraLocation = <2560, 8550, 50>;
     #declare cameraLookAt   = <2560, 8400, 0>;
+  #break
+  #case(101) // Front beam Undulator
+    #declare cameraLocation = <-350, 8450, 10>;
+    #declare cameraLookAt   = <-332, 8409, 3.2>;
   #break
   #case(601) // slitTube
     #declare cameraLocation = <2420, 8450, 10>;
