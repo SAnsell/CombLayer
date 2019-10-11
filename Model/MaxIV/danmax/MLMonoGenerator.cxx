@@ -59,7 +59,7 @@ MLMonoGenerator::MLMonoGenerator() :
   widthB(4.5),heightB(4.5),lengthB(20.0),
   supportAGap(0.3),supportAExtra(2.4),
   supportABackThick(0.8),supportABackLength(9.0),
-  supportABase(1.1),
+  supportABase(1.1),supportAPillar(0.5),supportAPillarStep(0.8),
   mirrorAMat("Silicon300K"),mirrorBMat("Silicon300K"),
   baseAMat("Copper"),baseBMat("Copper")
   /*!
@@ -88,6 +88,7 @@ MLMonoGenerator::generateMono(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MLMonoGenerator","generateBox");
 
+  Control.addVariable(keyName+"YAngle",180.0);
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"ThetaA",thetaA);
   Control.addVariable(keyName+"ThetaB",thetaB);
@@ -109,6 +110,8 @@ MLMonoGenerator::generateMono(FuncDataBase& Control,
   Control.addVariable(keyName+"SupportABackThick",supportABackThick);
   Control.addVariable(keyName+"SupportABackLength",supportABackLength);
   Control.addVariable(keyName+"SupportABase",supportABase);
+  Control.addVariable(keyName+"SupportAPillar",supportAPillar);
+  Control.addVariable(keyName+"SupportAPillarStep",supportAPillarStep);
 
   Control.addVariable(keyName+"MirrorAMat",mirrorAMat);
   Control.addVariable(keyName+"MirrorBMat",mirrorBMat);

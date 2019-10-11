@@ -55,6 +55,8 @@ class MLMonoGenerator
   double supportABackThick;   ///< Back thickness
   double supportABackLength;   ///< Back lenght (in part)
   double supportABase;         ///< Base/Top thickness
+  double supportAPillar;      ///< Side unit radius
+  double supportAPillarStep;  ///< Side unit step
 
 
   std::string mirrorAMat;             ///< XStal material

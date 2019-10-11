@@ -125,6 +125,8 @@ MLMono::populate(const FuncDataBase& Control)
   supportABackThick=Control.EvalVar<double>(keyName+"SupportABackThick");
   supportABackLength=Control.EvalVar<double>(keyName+"SupportABackLength");
   supportABase=Control.EvalVar<double>(keyName+"SupportABase");
+  supportAPillar=Control.EvalVar<double>(keyName+"SupportAPillar");
+  supportAPillarStep=Control.EvalVar<double>(keyName+"SupportAPillarStep");
  
 
   mirrorAMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorAMat");
@@ -205,6 +207,25 @@ MLMono::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+212,Origin+PY*(supportABackLength/2.0),PY);
 
+  // note extra /2.0 as in middle of extra step!
+  const Geometry::Vec3D PillarA=
+    Origin-PY*((lengthA+supportAExtra/2.0)/2.0)-PX*supportAPillarStep;
+  const Geometry::Vec3D PillarB=
+    Origin-PY*((lengthA+supportAExtra/2.0)/2.0)-PX*(widthA-supportAPillarStep);
+  const Geometry::Vec3D PillarC=
+    Origin+PY*((lengthA+supportAExtra/2.0)/2.0)-PX*supportAPillarStep;
+  const Geometry::Vec3D PillarD=
+    Origin+PY*((lengthA+supportAExtra/2.0)/2.0)-PX*(widthA-supportAPillarStep);
+
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+307,PillarA,PZ,supportAPillar);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+317,PillarB,PZ,supportAPillar);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+327,PillarC,PZ,supportAPillar);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+337,PillarD,PZ,supportAPillar);
+
   return; 
 }
 
@@ -237,9 +258,19 @@ MLMono::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,buildIndex," 212 -202 -203 213 205 -206 ");  
   makeCell("BackAVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -101 103 -104 105 -106 ");  
+  Out=ModelSupport::getComposite(SMap,buildIndex," -307 105 -106 ");
+  makeCell("RodA1",System,cellIndex++,baseAMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -317 105 -106 ");
+  makeCell("RodA2",System,cellIndex++,baseAMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -101 103 -104 105 -106 307 317 ");  
   makeCell("SideAVoid",System,cellIndex++,0,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -202 103 -104 105 -106 ");  
+
+
+  Out=ModelSupport::getComposite(SMap,buildIndex," -327 105 -106 ");
+  makeCell("RodA3",System,cellIndex++,baseAMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," -337 105 -106 ");
+  makeCell("RodA4",System,cellIndex++,baseAMat,0.0,Out);  
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -202 103 -104 105 -106 327 337 ");  
   makeCell("SideAVoid",System,cellIndex++,0,0.0,Out);
 
   Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 213 -104 205 -206");  
