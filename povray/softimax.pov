@@ -6,10 +6,11 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#declare view = 2;
+#declare view = 6;
+#declare omnimaxOK = 1;
 #declare cameraAngle = 90;
 
-#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -59,7 +60,7 @@ global_settings {
 
 #switch ( view )
   #case(0) // Optics line towards the ratchet wall
-    #declare cameraLocation = <2500, 8550, 40>;
+    #declare cameraLocation = <3000, 8550, 40>;
     #declare cameraLookAt   = <2320, 8400, 0>;
     #declare cameraAngle = 40;
   #break
@@ -122,6 +123,9 @@ global_settings {
 #end
 
 camera {
+  #if (omnimaxOK=1)
+    omnimax
+  #end
   location cameraLocation
   look_at  cameraLookAt
   angle    cameraAngle
