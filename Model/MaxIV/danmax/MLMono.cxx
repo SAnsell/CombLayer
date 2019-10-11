@@ -109,22 +109,27 @@ MLMono::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   gap=Control.EvalVar<double>(keyName+"Gap");
-  theta=Control.EvalVar<double>(keyName+"Theta");
+  thetaA=Control.EvalVar<double>(keyName+"ThetaA");
+  thetaB=Control.EvalVar<double>(keyName+"ThetaB");
   
   widthA=Control.EvalVar<double>(keyName+"WidthA");
   heightA=Control.EvalVar<double>(keyName+"HeightA");
-  lengthA=Control.EvalVar<double>(keyName+"LenghtA");
+  lengthA=Control.EvalVar<double>(keyName+"LengthA");
 
   widthB=Control.EvalVar<double>(keyName+"WidthB");
   heightB=Control.EvalVar<double>(keyName+"HeightB");
-  lengthB=Control.EvalVar<double>(keyName+"LenghtB");
+  lengthB=Control.EvalVar<double>(keyName+"LengthB");
 
-  supportAGap=Control.EvalVar<double>(keyName+"SupportAGap");  
-  supportASide=Control.EvalVar<double>(keyName+"SupportASide");
+  supportAGap=Control.EvalVar<double>(keyName+"SupportAGap");
+  supportAExtra=Control.EvalVar<double>(keyName+"SupportAExtra");
+  supportABackThick=Control.EvalVar<double>(keyName+"SupportABackThick");
+  supportABackLength=Control.EvalVar<double>(keyName+"SupportABackLength");
   supportABase=Control.EvalVar<double>(keyName+"SupportABase");
+ 
 
   mirrorAMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorAMat");
   mirrorBMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorBMat");
+
   baseAMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseAMat");
   baseBMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseBMat");
 
@@ -176,21 +181,29 @@ MLMono::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(lengthA/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(lengthA/2.0),PY);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*(widthA/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+PX*(widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*widthA,PX);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin,PX);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*(heightA/2.0),PZ);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+PZ*(heightA/2.0),PZ);
   
-  // support
-  ModelSupport::buildPlane(SMap,buildIndex+203,
-			   Origin-PX*(baseOutWidth+width/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+204,
-			   Origin+PX*(baseOutWidth+width/2.0),PX);
-  ModelSupport::buildPlane(SMap,buildIndex+205,Origin+PZ*baseTop,PZ);
-  ModelSupport::buildPlane(SMap,buildIndex+206,Origin-PZ*baseDepth,PZ);
+  // support A:
+  ModelSupport::buildPlane
+    (SMap,buildIndex+201,Origin-PY*((lengthA+supportAExtra)/2.0),PY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+202,Origin+PY*((lengthA+supportAExtra)/2.0),PY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+203,Origin-PX*(widthA+supportAGap),PX);  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+205,Origin-PZ*(heightA/2+supportABase),PZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+206,Origin+PZ*(heightA/2+supportABase),PZ);
 
-
-  ModelSupport::buildPlane(SMap,buildIndex+216,Origin-PZ*(thick+baseGap),PZ);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+213,Origin-PX*(widthA+supportAGap+supportABackThick),PX);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+211,Origin-PY*(supportABackLength/2.0),PY);
+  ModelSupport::buildPlane
+    (SMap,buildIndex+212,Origin+PY*(supportABackLength/2.0),PY);
 
   return; 
 }
@@ -206,35 +219,30 @@ MLMono::createObjects(Simulation& System)
 
   std::string Out;
   // xstal
-  if (std::abs(radius)<Geometry::zeroTol)
-    Out=ModelSupport::getComposite(SMap,buildIndex,
-				   " 101 -102 103 -104 105 -106 ");
-  else
-    Out=ModelSupport::getComposite
-      (SMap,buildIndex," 103 -104 107 -117 105 ");    
-  
-  makeCell("MLMono",System,cellIndex++,mirrMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 103 -104 105 -106 ");  
+  makeCell("XStalA",System,cellIndex++,mirrorAMat,0.0,Out);
 
-  // Make sides
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 -103 203 -205 206 ");
-  makeCell("LeftSide",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex," 101 -102 104 -204 -205 206 ");
-  makeCell("RightSide",System,cellIndex++,baseMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 101 -102 103 -104 -216 206 ");
-  makeCell("Base",System,cellIndex++,baseMat,0.0,Out);
+  // Substrate
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -104  106 -206 ");  
+  makeCell("TopA",System,cellIndex++,baseAMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -104  205 -105 ");  
+  makeCell("BaseA",System,cellIndex++,baseAMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 203 -103 105 -106 ");  
+  makeCell("GapA",System,cellIndex++,0,0.0,Out);
 
-  // vacuum units:
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 103 -104 -105 216" ); 
-  makeCell("BaseVac",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 -212 -203 213 205 -206 ");  
+  makeCell("BackA",System,cellIndex++,baseAMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -211 -203 213 205 -206 ");  
+  makeCell("BackAVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 212 -202 -203 213 205 -206 ");  
+  makeCell("BackAVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 103 -104 -205 106 " ); 
-  makeCell("TopVac",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -101 103 -104 105 -106 ");  
+  makeCell("SideAVoid",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,buildIndex," 102 -202 103 -104 105 -106 ");  
+  makeCell("SideAVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite
-    (SMap,buildIndex," 101 -102 203 -204 -205 206" ); 
+  Out=ModelSupport::getComposite(SMap,buildIndex," 201 -202 213 -104 205 -206");  
   addOuterSurf(Out);
   
   return; 

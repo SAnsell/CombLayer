@@ -75,6 +75,7 @@
 #include "DipoleChamberGenerator.h"
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
+#include "MLMonoGenerator.h"
 #include "BremBlockGenerator.h"
 
 namespace setVariable
@@ -401,7 +402,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::VacBoxGenerator MBoxGen;
-  setVariable::MonoBlockXstalsGenerator MXtalGen;
+  setVariable::MLMonoGenerator MXtalGen;
   
   // ystep/width/height/depth/length
   // 
@@ -423,10 +424,9 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));
 
-  // crystals gap 7mm
-		      //  MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
+  // crystals gap 4mm
+  MXtalGen.generateMono(Control,monoKey+"MLM",0.0,0.3,0.3);
   
-
   return;
 }
 

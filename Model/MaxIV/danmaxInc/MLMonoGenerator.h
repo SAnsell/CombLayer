@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmaxInc/MLMono.h
+ * File:   danmaxInc/MLMonoGenerator.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
  *
@@ -19,36 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_MLMono_h
-#define xraySystem_MLMono_h
+#ifndef setVariable_MLMonoGenerator_h
+#define setVariable_MLMonoGenerator_h
 
-class Simulation;
-
-namespace xraySystem
+namespace setVariable
 {
 
 /*!
-  \class MLMono
+  \class MLMonoGenerator
   \author S. Ansell
   \version 1.0
   \date October 2019
   \brief Double Mirror Mono arrangement
 */
 
-class MLMono :
-  public attachSystem::ContainedComp,
-  public attachSystem::FixedRotate,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class MLMonoGenerator 
 {
  private:
 
   double gap;               ///< Gap thickness
-
-  double thetaA;             ///< Theta angle [mirror -xray 2T]
-  double thetaB;             ///< Theta angle [mirror -xray 2T]
-  double phiA;             ///< Theta angle [mirror -xray 2T]
-  double phiB;             ///< Theta angle [mirror -xray 2T]
+  double phiA;               ///< Mono Pitch
+  double phiB;               ///< Mono Pitch
+      
 
   double widthA;            ///< Width of block across beam
   double heightA;           ///< Depth into beam
@@ -64,32 +56,23 @@ class MLMono :
   double supportABackLength;   ///< Back lenght (in part)
   double supportABase;         ///< Base/Top thickness
 
-  int mirrorAMat;             ///< XStal material
-  int mirrorBMat;             ///< XStal material
-  int baseAMat;               ///< Base material
-  int baseBMat;              ///< Base material
 
-  // Functions:
-
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  std::string mirrorAMat;             ///< XStal material
+  std::string mirrorBMat;             ///< XStal material
+  std::string baseAMat;               ///< Base material
+  std::string baseBMat;              ///< Base material
 
  public:
 
-  MLMono(const std::string&);
-  MLMono(const MLMono&);
-  MLMono& operator=(const MLMono&);
-  virtual ~MLMono();
+  MLMonoGenerator();
+  MLMonoGenerator(const MLMonoGenerator&);
+  MLMonoGenerator& operator=(const MLMonoGenerator&);
+  virtual ~MLMonoGenerator();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
-		 const long int);
-  
+
+  void generateMono(FuncDataBase&,const std::string&,
+		    const double,const double,const double) const;
+
 };
 
 }
