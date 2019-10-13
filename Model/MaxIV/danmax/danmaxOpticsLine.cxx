@@ -149,10 +149,13 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
+  gateD(new constructSystem::GateValveCylinder(newName+"GateD")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
-  MLM(new xraySystem::MLMono(newName+"MLM"))
-
+  MLM(new xraySystem::MLMono(newName+"MLM")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  gateE(new constructSystem::GateValveCylinder(newName+"GateE")),
+  beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -189,7 +192,13 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(gateC);
   OR.addObject(viewTube);
   OR.addObject(viewTubeScreen);
+  OR.addObject(gateD);
   OR.addObject(bellowF);
+  OR.addObject(MLMVessel);
+  OR.addObject(MLM);
+  OR.addObject(bellowG);
+  OR.addObject(gateE);
+  OR.addObject(beamStopTube);
   
 }
   

@@ -93,6 +93,7 @@ void exptHutVariables(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
+void beamStopPackage(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -344,6 +345,44 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,viewKey+"BellowF",0,10.0);    
+
+  return;
+}
+
+void
+beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
+  /*!
+    Builds the variables for the ViewTube 2
+    \param Control :: Database
+    \param viewKey :: prename
+  */
+{
+  ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  
+  // will be rotated vertical
+  const std::string pipeName=viewKey+"BeamStopTube";
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  // up 15cm / 32.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
+
+
+  Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,0,-1));
+  PItemGen.setCF<setVariable::CF40>(8.0);
 
   return;
 }
@@ -662,12 +701,20 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowE",0,16.0);
 
-  monoPackage(Control,opticsName);
+  monoPackage(Control,opticsName); 
 
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
-  viewPackage(Control,opticsName);
+
+  viewPackage(Control,opticsName);   // bellowF
+
+  GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
   mirrorMonoPackage(Control,opticsName);
+  BellowGen.generateBellow(Control,opticsName+"BellowG",0,16.0);
   
+  GateGen.generateValve(Control,opticsName+"GateE",0.0,0);  
+
+  beamStopPackage(Control,opticsName); 
+
   return;
 }
 
