@@ -847,6 +847,9 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,preName+"JoinPipeA",0.0,100.0);
 
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
+
   // GateGen.setLength(2.5);
   // GateGen.setCF<setVariable::CF40>();
   // GateGen.generateValve(Control,preName+"GateA",0.0,0);
@@ -933,9 +936,6 @@ opticsVariables(FuncDataBase& Control,
 
   // GateGen.setCF<setVariable::CF63>();
   // GateGen.generateValve(Control,preName+"GateF",0.0,0);
-
-  // BellowGen.setCF<setVariable::CF63>();
-  // BellowGen.generateBellow(Control,preName+"BellowF",0,12.0);
 
   // softimaxVar::diagUnit2(Control,preName+"DiagBoxB");
 
