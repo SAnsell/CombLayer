@@ -35,6 +35,8 @@ namespace xraySystem
   class BeamPair;
   class TankMonoVessel;
   class GratingUnit;
+  class FlangeMount;
+
 
   /*!
     \class softimaxOpticsLine
@@ -106,6 +108,9 @@ class softimaxOpticsLine :
   // vaccum pipe
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeA;
   std::shared_ptr<constructSystem::Bellows> bellowF;
+  std::shared_ptr<constructSystem::PipeTube> pumpTubeM3;
+  std::shared_ptr<xraySystem::FlangeMount> pumpTubeM3Baffle;
+
 
   // /// Vacuum pipe for collimator
   // std::shared_ptr<xraySystem::BremColl> bremCollA;

@@ -86,6 +86,7 @@
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "FlangeMount.h"
 // #include "VacuumBox.h"
 #include "portItem.h"
 #include "PipeTube.h"
@@ -151,7 +152,10 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpTubeB(new constructSystem::PipeTube(newName+"PumpTubeB")),
   gateD(new constructSystem::GateValveCube(newName+"GateD")),
   joinPipeA(new constructSystem::VacuumPipe(newName+"JoinPipeA")),
-  bellowF(new constructSystem::Bellows(newName+"BellowF"))
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  pumpTubeM3(new constructSystem::PipeTube(newName+"PumpTubeM3")),
+  pumpTubeM3Baffle(new xraySystem::FlangeMount(newName+"PumpTubeM3Baffle"))
+
 
   // filterBoxA(new constructSystem::PortTube(newName+"FilterBoxA")),
   // filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
@@ -227,6 +231,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(gateD);
   OR.addObject(joinPipeA);
   OR.addObject(bellowF);
+  OR.addObject(pumpTubeM3);
+  OR.addObject(pumpTubeM3Baffle);
 
   // OR.addObject(filterBoxA);
   // OR.addObject(filterStick);
@@ -693,6 +699,20 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   xrayConstruct::constructUnit
     (System,buildZone,masterCell,*joinPipeA,"back",*bellowF);
 
+  /////////////////// M3 Pump and baffle
+  // FAKE insertcell: required
+  pumpTubeM3->addAllInsertCell(masterCell->getName());
+  pumpTubeM3->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  pumpTubeM3->createAll(System,*bellowF,"back");
+
+  const constructSystem::portItem& GPI=pumpTubeM3->getPort(1);
+  outerCell=buildZone.createOuterVoidUnit
+    (System,masterCell,GPI,GPI.getSideIndex("OuterPlate"));
+  pumpTubeM3->insertAllInCell(System,outerCell);
+
+  pumpTubeM3Baffle->addInsertCell("Body",pumpTubeM3->getCell("Void"));
+  pumpTubeM3Baffle->setBladeCentre(*pumpTubeM3,0);
+  pumpTubeM3Baffle->createAll(System,*pumpTubeM3,std::string("InnerBack"));
 
   // filterBoxA->addAllInsertCell(masterCell->getName());
   // filterBoxA->setFront(*bremCollA,2);
