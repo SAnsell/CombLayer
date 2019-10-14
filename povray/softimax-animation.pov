@@ -29,7 +29,7 @@
 
 #declare cameraLocation = <beamlineStart-20+clock, 8450, 10>;
 #declare cameraLookAt   = <beamlineStart+clock,    8400, 0>;
-#if (cameraLocation.x<beamlineStart)
+#if (cameraLocation.x-20<beamlineStart)
   #declare cameraLookAt   = <beamlineStart, 8400, 0>;
 #end
 #if (cameraLocation.x>beamlineEnd)
