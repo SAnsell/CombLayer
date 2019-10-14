@@ -78,6 +78,7 @@
 #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
+#include "generalConstruct.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -249,6 +250,7 @@ danmaxOpticsLine::createSurfaces()
   return;
 }
 
+
 void
 danmaxOpticsLine::constructViewScreen(Simulation& System,
 				      MonteCarlo::Object* masterCell,
@@ -298,13 +300,10 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTubeScreen->createAll(System,VPC,"-InnerPlate");
 
 
-  bellowF->FrontBackCut::setFront(VPB,"OuterPlate");
-  bellowF->createAll(System,VPB,"OuterPlate");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowF,2);
-  bellowF->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,VPB,"OuterPlate",*bellowF);
   VPC.insertInCell(System,outerCell);
   
-
   return;
 }
 
@@ -475,21 +474,14 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateTubeAItem->setBladeCentre(*gateTubeA,0);
   gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
-  // after gate value
-  bellowA->setFront(GPI,GPI.getSideIndex("OuterPlate"));
-  bellowA->createAll(System,GPI,"OuterPlate");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,GPI,"OuterPlate",*bellowA);
 
-  pipeA->setFront(*bellowA,2);
-  pipeA->createAll(System,*bellowA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-
-  bellowB->setFront(*pipeA,2);
-  bellowB->createAll(System,*pipeA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
-  bellowB->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*pipeA,"back",*bellowB);
 
   // brem:
   // FAKE insertcell: required
@@ -505,57 +497,41 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   bremColl->addInsertCell(collTubeA->getCell("Void"));
   bremColl->createAll(System,*collTubeA,"OrgOrigin");
 
-  filterPipe->setFront(CPI,CPI.getSideIndex("OuterPlate"));
-  filterPipe->createAll(System,CPI,"OuterPlate");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterPipe,2);
-  filterPipe->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,CPI,"OuterPlate",*filterPipe);
 
-  gateA->setFront(*filterPipe,filterPipe->getSideIndex("back"));
-  gateA->createAll(System,*filterPipe,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*filterPipe,"back",*gateA);
 
-    // after gate value
-  bellowC->setFront(*gateA,gateA->getSideIndex("back"));
-  bellowC->createAll(System,*gateA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
-  bellowC->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*gateA,"back",*bellowC);
 
-  lauePipe->setFront(*bellowC,2);
-  lauePipe->createAll(System,*bellowC,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*lauePipe,2);
-  lauePipe->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowC,"back",*lauePipe);
 
-  bellowD->setFront(*lauePipe,2);
-  bellowD->createAll(System,*lauePipe,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
-  bellowD->insertInCell(System,outerCell);
-
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*lauePipe,"back",*bellowD);
 
   constructSlitTube(System,masterCell,*bellowD,"back");
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*slitTube,"back",*gateB);
 
-  gateB->setFront(*slitTube,slitTube->getSideIndex("back"));
-  gateB->createAll(System,*slitTube,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
-  gateB->insertInCell(System,outerCell);
-
-    // after gate value
-  bellowE->setFront(*gateB,gateB->getSideIndex("back"));
-  bellowE->createAll(System,*gateB,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
-  bellowE->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*gateB,"back",*bellowE);
+  
 
   constructMono(System,masterCell,*bellowE,"back");
-
-  gateC->setFront(*monoVessel,"back");
-  gateC->createAll(System,*monoVessel,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
-  gateC->insertInCell(System,outerCell);
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*monoVessel,"back",*gateC);
 
   constructViewScreen(System,masterCell,*gateC,"back");
 
   constructMirrorMono(System,masterCell,*bellowF,"back");
+
+
   lastComp=bellowF;
   return;
 

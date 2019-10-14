@@ -412,13 +412,13 @@ balderOpticsBeamline::buildObjects(Simulation& System)
   monoXtal->createAll(System,*monoV,0);
 
   // Note : join flag so can rotate on front/back
-  monoBellowA->setFront(*driftA,2,1);
-  monoBellowA->setBack(*monoV,1,1);
+  monoBellowA->setJoinFront(*driftA,2);
+  monoBellowA->setJoinBack(*monoV,1);
   monoBellowA->createAll(System,*driftA,2);
 
   // Note : join flag so can rotate on front/back
-  monoBellowB->setFront(*monoV,2,1); 
-  monoBellowB->setBack(*driftB,1,1);
+  monoBellowB->setJoinFront(*monoV,2); 
+  monoBellowB->setJoinBack(*driftB,1);
   monoBellowB->createAll(System,*driftB,-1);
 
   outerCell=buildZone.createOuterVoidUnit(System,masterCell,*monoBellowA,2);
