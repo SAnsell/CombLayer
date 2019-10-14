@@ -64,6 +64,8 @@ namespace xraySystem
   class Mirror;
   class MonoBlockXstals;
   class DCMTank;
+  class MLMono;
+  class MLMVessel;
 
   
   /*!
@@ -136,6 +138,20 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> viewTube;
   /// Beam viewer [item]
   std::shared_ptr<xraySystem::FlangeMount> viewTubeScreen;
+  /// Gate value BL-V4
+  std::shared_ptr<constructSystem::GateValveCylinder> gateD;
+  /// bellows to second mono
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// MirrorMonoBox
+  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
+  /// Mirror-Mono system
+  std::shared_ptr<xraySystem::MLMono> MLM;
+  /// bellows from second mono
+  std::shared_ptr<constructSystem::Bellows> bellowG;  
+  /// Gate value BL-V5
+  std::shared_ptr<constructSystem::GateValveCylinder> gateE;
+  /// BeamStopTube
+  std::shared_ptr<constructSystem::PipeTube> beamStopTube;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -146,6 +162,8 @@ class danmaxOpticsLine :
 			 const attachSystem::FixedComp&,const std::string&);
   void constructMono(Simulation&,MonteCarlo::Object*,
 		     const attachSystem::FixedComp&,const std::string&);
+  void constructMirrorMono(Simulation&,MonteCarlo::Object*,
+			   const attachSystem::FixedComp&,const std::string&);
   void constructViewScreen(Simulation&,MonteCarlo::Object*,
 			   const attachSystem::FixedComp&,const std::string&);
   

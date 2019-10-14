@@ -75,6 +75,7 @@
 #include "DipoleChamberGenerator.h"
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
+#include "MLMonoGenerator.h"
 #include "BremBlockGenerator.h"
 
 namespace setVariable
@@ -89,8 +90,10 @@ void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
 
+void mirrorMonoPackage(FuncDataBase&,const std::string&);
 void monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
+void beamStopPackage(FuncDataBase&,const std::string&);
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -309,6 +312,8 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
   setVariable::PipeTubeGenerator SimpleTubeGen;  
   setVariable::PortItemGenerator PItemGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlangeMountGenerator FlangeGen;
   
   // will be rotated vertical
   const std::string pipeName=viewKey+"ViewTube";
@@ -333,6 +338,52 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(-1,0,-1));
 
+  FlangeGen.setNoPlate();
+  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);  
+  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
+
+  // bellows on shield block
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,viewKey+"BellowF",0,10.0);    
+
+  return;
+}
+
+void
+beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
+  /*!
+    Builds the variables for the ViewTube 2
+    \param Control :: Database
+    \param viewKey :: prename
+  */
+{
+  ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::BellowGenerator BellowGen;
+  setVariable::FlangeMountGenerator FlangeGen;
+  
+  // will be rotated vertical
+  const std::string pipeName=viewKey+"BeamStopTube";
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  // up 15cm / 32.5cm down : Measured
+  SimpleTubeGen.generateTube(Control,pipeName,0.0,47.5);
+
+
+  Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
+
+  PItemGen.setCF<setVariable::CF40>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,0,-1));
+  PItemGen.setCF<setVariable::CF40>(8.0);
+
   return;
 }
 
@@ -344,7 +395,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     \param slitKey :: prename
   */
 {
-  ELog::RegMethod RegA("speciesVariables[F]","monoPackage");
+  ELog::RegMethod RegA("danmaxVariables[F]","monoPackage");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::DCMTankGenerator MBoxGen;
@@ -354,14 +405,14 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // 
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
   // radius : Heigh / depth  [need heigh = 0]
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",0.0,30.0,0.0,16.0);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
-  Control.addVariable(monoKey+"MonoVesselPortBZStep",3.2);      // from primary
-
+  Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.7);      // from primary
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
@@ -371,10 +422,50 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));
 
-  // crystals
+  // crystals gap 7mm
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
   
 
+  return;
+}
+
+void
+mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
+  /*!
+    Builds the variables for the mirror mono package (MLM)
+    \param Control :: Database
+    \param monoKey :: prename
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
+
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::VacBoxGenerator MBoxGen;
+  setVariable::MLMonoGenerator MXtalGen;
+  
+  // ystep/width/height/depth/length
+  // 
+  MBoxGen.setCF<CF40>();   // set ports
+  MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
+  // ystep/ width / heigh / depth / length
+  MBoxGen.generateBox
+    (Control,monoKey+"MLMVessel",0.0,57.0,12.5,31.0,109.0);
+
+  Control.addVariable(monoKey+"MLMVesselPortBXStep",-0.7);   // from primary
+
+  const std::string portName=monoKey+"MonoVessel";
+  Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
+  PItemGen.setCF<setVariable::CF63>(5.0);
+  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.generatePort(Control,portName+"Port0",
+			Geometry::Vec3D(0,5.0,-10.0),
+			Geometry::Vec3D(1,0,0));
+
+  // crystals gap 4mm
+  MXtalGen.generateMono(Control,monoKey+"MLM",0.0,0.3,0.3);
+  
   return;
 }
 
@@ -610,12 +701,20 @@ opticsVariables(FuncDataBase& Control,
   GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowE",0,16.0);
 
-  monoPackage(Control,opticsName);
+  monoPackage(Control,opticsName); 
 
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
-  viewPackage(Control,opticsName);
 
+  viewPackage(Control,opticsName);   // bellowF
+
+  GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
+  mirrorMonoPackage(Control,opticsName);
+  BellowGen.generateBellow(Control,opticsName+"BellowG",0,16.0);
   
+  GateGen.generateValve(Control,opticsName+"GateE",0.0,0);  
+
+  beamStopPackage(Control,opticsName); 
+
   return;
 }
 

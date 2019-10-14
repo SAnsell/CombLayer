@@ -113,8 +113,8 @@ class VacuumPipe :
   VacuumPipe& operator=(const VacuumPipe&);
   virtual ~VacuumPipe();
 
-  void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
-  void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
+  void setJoinFront(const attachSystem::FixedComp&,const long int);
+  void setJoinBack(const attachSystem::FixedComp&,const long int);
 
   using FixedComp::createAll;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

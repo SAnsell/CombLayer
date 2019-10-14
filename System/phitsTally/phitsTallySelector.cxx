@@ -57,8 +57,6 @@
 #include "Simulation.h"
 #include "SimPHITS.h"
 
-#include "userBinConstruct.h"
-
 #include "phitsTallyModification.h"
 #include "phitsTallySelector.h"
 

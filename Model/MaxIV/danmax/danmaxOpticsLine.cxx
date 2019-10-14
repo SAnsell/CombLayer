@@ -78,6 +78,7 @@
 #include "AttachSupport.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
+#include "generalConstruct.h"
 
 #include "insertObject.h"
 #include "insertPlate.h"
@@ -104,9 +105,10 @@
 #include "MonoShutter.h"
 #include "BeamMount.h"
 #include "BeamPair.h"
-#include "danmaxOpticsLine.h"
 #include "DCMTank.h"
 #include "MonoBlockXstals.h"
+#include "MLMono.h"
+#include "danmaxOpticsLine.h"
 
 namespace xraySystem
 {
@@ -147,13 +149,21 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
   gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
-  viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen"))
-
+  viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
+  gateD(new constructSystem::GateValveCylinder(newName+"GateD")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
+  MLM(new xraySystem::MLMono(newName+"MLM")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  gateE(new constructSystem::GateValveCylinder(newName+"GateE")),
+  beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube"))
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {
+  ELog::RegMethod RegA("danmaxOpticsLine","danmaxOpticsLine(constructor)");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
@@ -183,7 +193,14 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(gateC);
   OR.addObject(viewTube);
   OR.addObject(viewTubeScreen);
-    
+  OR.addObject(gateD);
+  OR.addObject(bellowF);
+  OR.addObject(MLMVessel);
+  OR.addObject(MLM);
+  OR.addObject(bellowG);
+  OR.addObject(gateE);
+  OR.addObject(beamStopTube);
+  
 }
   
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -233,6 +250,7 @@ danmaxOpticsLine::createSurfaces()
   return;
 }
 
+
 void
 danmaxOpticsLine::constructViewScreen(Simulation& System,
 				      MonteCarlo::Object* masterCell,
@@ -258,7 +276,7 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   const constructSystem::portItem& VPB=viewTube->getPort(1);
   const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
   
-  const int outerCell=buildZone.createOuterVoidUnit
+  int outerCell=buildZone.createOuterVoidUnit
     (System,masterCell,VPB,VPB.getSideIndex("OuterPlate"));
   const Geometry::Vec3D  Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
   this->splitObjectAbsolute(System,1501,outerCell,
@@ -273,13 +291,19 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   //  viewTube->insertPortInCell(System,{cellN,cellM,cellX});
   viewTube->insertPortInCell
     (System,{{outerCell},{outerCell+1},{outerCell+2}});
-
   cellIndex+=2;
-  /*
+
+  
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
+  viewTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
   viewTubeScreen->setBladeCentre(*viewTube,0);
-  viewTubeScreen->createAll(System,VPScreen,std::string("InnerBack"));
-  */
+  viewTubeScreen->createAll(System,VPC,"-InnerPlate");
+
+
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,VPB,"OuterPlate",*bellowF);
+  VPC.insertInCell(System,outerCell);
+  
   return;
 }
 
@@ -310,6 +334,37 @@ danmaxOpticsLine::constructMono(Simulation& System,
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   //  mbXstals->copyCutSurf("innerCylinder",*monoVessel,"innerRadius");
   mbXstals->createAll(System,*monoVessel,0);
+
+
+  return;
+}
+void
+danmaxOpticsLine::constructMirrorMono(Simulation& System,
+				      MonteCarlo::Object* masterCell,
+				      const attachSystem::FixedComp& initFC, 
+				      const std::string& sideName)
+  /*!
+    Sub build of the slit package unit
+    \param System :: Simulation to use
+    \param masterCell :: Main master volume
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","buildMono");
+
+  int outerCell;
+
+  // FAKE insertcell: required
+  MLMVessel->addInsertCell(masterCell->getName());
+  MLMVessel->createAll(System,initFC,sideName);
+  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*MLMVessel,2);
+  MLMVessel->insertInCell(System,outerCell);
+
+  
+  MLM->addInsertCell(MLMVessel->getCell("Void"));
+  //  MLM->copyCutSurf("innerCylinder",*MLMVessel,"innerRadius");
+  MLM->createAll(System,*MLMVessel,0);
 
 
   return;
@@ -419,21 +474,14 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   gateTubeAItem->setBladeCentre(*gateTubeA,0);
   gateTubeAItem->createAll(System,*gateTubeA,std::string("InnerBack"));
 
-  // after gate value
-  bellowA->setFront(GPI,GPI.getSideIndex("OuterPlate"));
-  bellowA->createAll(System,GPI,"OuterPlate");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,GPI,"OuterPlate",*bellowA);
 
-  pipeA->setFront(*bellowA,2);
-  pipeA->createAll(System,*bellowA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*pipeA,2);
-  pipeA->insertInCell(System,outerCell);
-
-  bellowB->setFront(*pipeA,2);
-  bellowB->createAll(System,*pipeA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowB,2);
-  bellowB->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowA,"back",*pipeA);
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*pipeA,"back",*bellowB);
 
   // brem:
   // FAKE insertcell: required
@@ -449,57 +497,42 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   bremColl->addInsertCell(collTubeA->getCell("Void"));
   bremColl->createAll(System,*collTubeA,"OrgOrigin");
 
-  filterPipe->setFront(CPI,CPI.getSideIndex("OuterPlate"));
-  filterPipe->createAll(System,CPI,"OuterPlate");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*filterPipe,2);
-  filterPipe->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,CPI,"OuterPlate",*filterPipe);
 
-  gateA->setFront(*filterPipe,filterPipe->getSideIndex("back"));
-  gateA->createAll(System,*filterPipe,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateA,2);
-  gateA->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*filterPipe,"back",*gateA);
 
-    // after gate value
-  bellowC->setFront(*gateA,gateA->getSideIndex("back"));
-  bellowC->createAll(System,*gateA,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowC,2);
-  bellowC->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*gateA,"back",*bellowC);
 
-  lauePipe->setFront(*bellowC,2);
-  lauePipe->createAll(System,*bellowC,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*lauePipe,2);
-  lauePipe->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*bellowC,"back",*lauePipe);
 
-  bellowD->setFront(*lauePipe,2);
-  bellowD->createAll(System,*lauePipe,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowD,2);
-  bellowD->insertInCell(System,outerCell);
-
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*lauePipe,"back",*bellowD);
 
   constructSlitTube(System,masterCell,*bellowD,"back");
 
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*slitTube,"back",*gateB);
 
-  gateB->setFront(*slitTube,slitTube->getSideIndex("back"));
-  gateB->createAll(System,*slitTube,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateB,2);
-  gateB->insertInCell(System,outerCell);
-
-    // after gate value
-  bellowE->setFront(*gateB,gateB->getSideIndex("back"));
-  bellowE->createAll(System,*gateB,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*bellowE,2);
-  bellowE->insertInCell(System,outerCell);
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*gateB,"back",*bellowE);
+  
 
   constructMono(System,masterCell,*bellowE,"back");
-
-  gateC->setFront(*monoVessel,"back");
-  gateC->createAll(System,*monoVessel,"back");
-  outerCell=buildZone.createOuterVoidUnit(System,masterCell,*gateC,2);
-  gateC->insertInCell(System,outerCell);
+  
+  xrayConstruct::constructUnit
+    (System,buildZone,masterCell,*monoVessel,"back",*gateC);
 
   constructViewScreen(System,masterCell,*gateC,"back");
 
-  lastComp=triggerPipe;
+  constructMirrorMono(System,masterCell,*bellowF,"back");
+
+
+  lastComp=bellowF;
   return;
 
   /*

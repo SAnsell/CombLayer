@@ -201,7 +201,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 10m to 14m
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->setFront(*VPipeA,2,true);
+  VPipeB->setJoinFront(*VPipeA,2);
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
@@ -210,7 +210,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 14m to 18m
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeC->setFront(*VPipeB,2,true);
+  VPipeC->setJoinFront(*VPipeB,2);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
 
   BendC->addInsertCell(VPipeC->getCells("Void"));
@@ -219,7 +219,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 18m to 22m
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeD->setFront(*VPipeC,2,true);
+  VPipeD->setJoinFront(*VPipeC,2);
   VPipeD->createAll(System,BendC->getKey("Guide0"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
@@ -228,7 +228,7 @@ NMX::build(Simulation& System,
 
   // PIPE from 22m to Wall
   VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeE->setFront(*VPipeD,2,true);
+  VPipeE->setJoinFront(*VPipeD,2);
   VPipeE->createAll(System,BendD->getKey("Guide0"),2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));

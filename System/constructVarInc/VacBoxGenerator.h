@@ -41,14 +41,20 @@ class VacBoxGenerator
 
   double wallThick;          ///< Wall thick [generic]
 
+  double feHeight;            ///< fe height [top only]
+  double feDepth;             ///< fe depth [low only]
+  double feWidth;             ///< fe width [total]
+  double feFront;             ///< fe front 
+  double feBack;              ///< fe back
+
   double portAXStep;         ///< X offset
   double portAZStep;         ///< Z offset
   double portAWallThick;     ///< Flange wall thickness
   double portATubeLength;    ///< Port tube
   double portATubeRadius;    ///< Port tube length
 
-  double portBXStep;
-  double portBZStep;
+  double portBXStep;         ///< X offset of second flange
+  double portBZStep;         ///< Z offset of second flange
   double portBWallThick;     ///< Flange wall thickness
   double portBTubeLength;    ///< Port tube
   double portBTubeRadius;    ///< Port tube length
@@ -71,6 +77,9 @@ class VacBoxGenerator
 
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }
+  void setAllThick(const double,const double,const double,
+		   const double,const double);
+
 
   template<typename CF> void setCF();
   template<typename CF> void setAPortCF();

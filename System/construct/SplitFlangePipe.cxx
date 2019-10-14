@@ -3,7 +3,7 @@
  
  * File:   construct/SplitFlangePipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "SpaceCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -420,49 +419,40 @@ SplitFlangePipe::createLinks()
 }
   
 void
-SplitFlangePipe::setFront(const attachSystem::FixedComp& FC,
-			  const long int sideIndex,
-			  const bool joinFlag)
+SplitFlangePipe::setJoinFront(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Set front surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
    */
 {
-  ELog::RegMethod RegA("SplitFlangePipe","setFront");
+  ELog::RegMethod RegA("SplitFlangePipe","setJoinFront");
   
   FrontBackCut::setFront(FC,sideIndex);
-  if (joinFlag)
-    {
-      frontJoin=1;
-      FPt=FC.getLinkPt(sideIndex);
-      FAxis=FC.getLinkAxis(sideIndex);
-    }
+  frontJoin=1;
+  FPt=FC.getLinkPt(sideIndex);
+  FAxis=FC.getLinkAxis(sideIndex);
     
   return;
 }
   
 void
-SplitFlangePipe::setBack(const attachSystem::FixedComp& FC,
-		    const long int sideIndex,
-		    const bool joinFlag)
+SplitFlangePipe::setJoinBack(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Set Back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
    */
 {
-  ELog::RegMethod RegA("SplitFlangePipe","setBack");
+  ELog::RegMethod RegA("SplitFlangePipe","setJoinBack");
   
   FrontBackCut::setBack(FC,sideIndex);
-  if (joinFlag)
-    {
-      backJoin=1;
-      BPt=FC.getLinkPt(sideIndex);
-      BAxis=FC.getLinkAxis(sideIndex);
-    }
+  backJoin=1;
+  BPt=FC.getLinkPt(sideIndex);
+  BAxis=FC.getLinkAxis(sideIndex);
+
   return;
 }
   

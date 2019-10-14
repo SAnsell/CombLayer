@@ -116,6 +116,7 @@ DANMAX::DANMAX(const std::string& KN) :
     \param KN :: Keyname
   */
 {
+  ELog::RegMethod RegA("DANMAX","DANMAX(constructor)");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -151,7 +152,7 @@ DANMAX::build(Simulation& System,
   const size_t prevIndex=(NS+PIndex-1) % NS;
   
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
-  
+
   frontBeam->setStopPoint(stopPoint);
   frontBeam->addInsertCell(r3Ring->getCell("InnerVoid",SIndex));
 

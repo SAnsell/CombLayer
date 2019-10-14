@@ -696,50 +696,40 @@ VacuumPipe::createLinks()
 }
   
 void
-VacuumPipe::setFront(const attachSystem::FixedComp& FC,
-		     const long int sideIndex,
-		     const bool joinFlag)
+VacuumPipe::setJoinFront(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Set front surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
    */
 {
-  ELog::RegMethod RegA("VacuumPipe","setFront");
+  ELog::RegMethod RegA("VacuumPipe","setJoinFront");
 
   
   FrontBackCut::setFront(FC,sideIndex);
-  if (joinFlag)
-    {
-      frontJoin=1;
-      FPt=FC.getLinkPt(sideIndex);
-      FAxis=FC.getLinkAxis(sideIndex);
-    }
-    
+  frontJoin=1;
+  FPt=FC.getLinkPt(sideIndex);
+  FAxis=FC.getLinkAxis(sideIndex);
   return;
 }
   
 void
-VacuumPipe::setBack(const attachSystem::FixedComp& FC,
-		    const long int sideIndex,
-		    const bool joinFlag)
+VacuumPipe::setJoinBack(const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Set Back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
-    \param joinFlag :: joint front to link object 
    */
 {
-  ELog::RegMethod RegA("VacuumPipe","setBack");
+  ELog::RegMethod RegA("VacuumPipe","setJoinBack");
   
   FrontBackCut::setBack(FC,sideIndex);
-  if (joinFlag)
-    {
-      backJoin=1;
-      BPt=FC.getLinkPt(sideIndex);
-      BAxis=FC.getLinkAxis(sideIndex);
-    }
+  backJoin=1;
+  BPt=FC.getLinkPt(sideIndex);
+  BAxis=FC.getLinkAxis(sideIndex);
+
   return;
 }
   

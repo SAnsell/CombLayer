@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Mirror.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@ class Mirror :
   double width;            ///< width accross beam
   double thick;            ///< Thickness in normal direction to reflection
   double length;           ///< length along beam
-
   
   double baseTop;          ///< Base distance above mirror
   double baseDepth;        ///< Base distance below mirror 

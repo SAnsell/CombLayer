@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/MonoBlockXstals.h
-*
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * File:   danmaxInc/MLMono.h
+ *
+ * Copyright (c) 2004-2019 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_MonoBlockXstals_h
-#define xraySystem_MonoBlockXstals_h
+#ifndef xraySystem_MLMono_h
+#define xraySystem_MLMono_h
 
 class Simulation;
 
@@ -28,17 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class MonoBlockXstals
+  \class MLMono
   \author S. Ansell
   \version 1.0
-  \date January 2018
-  \brief Paired Mono-crystal constant exit gap
-
-  Built as if the crystals are horrizontal but can
-  be rotated
+  \date October 2019
+  \brief Double Mirror Mono arrangement
 */
 
-class MonoBlockXstals :
+class MLMono :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::CellMap,
@@ -46,12 +43,13 @@ class MonoBlockXstals :
 {
  private:
 
-  double gap;              ///< Gap thickness
-  double theta;            ///< Theta angle [rot: Z]
+  double gap;               ///< Gap thickness
 
-  double phiA;              ///< phi angle of first [rot:Y]
-  double phiB;              ///< phi angle of second [rot:Y]
-  
+  double thetaA;             ///< Theta angle [mirror -xray 2T]
+  double thetaB;             ///< Theta angle [mirror -xray 2T]
+  double phiA;             ///< Theta angle [mirror -xray 2T]
+  double phiB;             ///< Theta angle [mirror -xray 2T]
+
   double widthA;            ///< Width of block across beam
   double heightA;           ///< Depth into beam
   double lengthA;           ///< Length along beam
@@ -60,40 +58,43 @@ class MonoBlockXstals :
   double heightB;           ///< Depth into beam
   double lengthB;           ///< Length along beam
 
-  double baseALength;       ///< Base length
-  double baseAHeight;       ///< Base thickness
-  double baseAWidth;        ///< Edge aligned to crystal
+  double supportAGap;         ///< Gap after mirror (before back)
+  double supportAExtra;       ///< Base/Top extra length
+  double supportABackThick;   ///< Back thickness
+  double supportABackLength;  ///< Back lenght (in part)
+  double supportABase;        ///< Base/Top thickness
+  double supportAPillar;      ///< Side unit radius
+  double supportAPillarStep;  ///< Side unit step
 
-  double topALength;        ///< Top length
-  double topAHeight;        ///< Top thickness
-  double topAWidth;         ///< Edge aligned to crystal
+  double supportBGap;         ///< Gap after mirror (before back)
+  double supportBExtra;       ///< Base/Top extra length
+  double supportBBackThick;   ///< Back thickness
+  double supportBBackLength;  ///< Back lenght (in part)
+  double supportBBase;        ///< Base/Top thickness
+  double supportBPillar;      ///< Side unit radius
+  double supportBPillarStep;  ///< Side unit step
 
-  double baseBLength;       ///< Base length
-  double baseBHeight;       ///< Base thickness
-  double baseBWidth;        ///< Edge aligned to crystal
-
-  double topBLength;       ///< Top length
-  double topBHeight;       ///< Top thickness
-  double topBWidth;        ///< Edge aligned to crystal
-  
-  int xtalMat;             ///< XStal material
-  int baseMat;             ///< Base material
+  int mirrorAMat;             ///< XStal material
+  int mirrorBMat;             ///< XStal material
+  int baseAMat;               ///< Base material
+  int baseBMat;              ///< Base material
 
   // Functions:
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
  public:
 
-  MonoBlockXstals(const std::string&);
-  MonoBlockXstals(const MonoBlockXstals&);
-  MonoBlockXstals& operator=(const MonoBlockXstals&);
-  virtual ~MonoBlockXstals();
+  MLMono(const std::string&);
+  MLMono(const MLMono&);
+  MLMono& operator=(const MLMono&);
+  virtual ~MLMono();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
