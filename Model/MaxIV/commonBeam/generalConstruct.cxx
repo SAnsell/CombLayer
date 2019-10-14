@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: commonBeam/generalContruct.cxx
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -129,7 +129,7 @@ constructUnit(Simulation& System,
 }
 
 ///\cond TEMPLATE
-  
+
 template int
 constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
 	      const attachSystem::FixedComp&,const std::string&,
@@ -141,9 +141,13 @@ constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
 template int
 constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
 	      const attachSystem::FixedComp&,const std::string&,
+	      constructSystem::GateValveCube&);
+
+template int
+constructUnit(Simulation&,attachSystem::InnerZone&,MonteCarlo::Object*,
+	      const attachSystem::FixedComp&,const std::string&,
 	      constructSystem::VacuumPipe&);
 
 ///\endcond TEMPLATE
-  
-}   // NAMESPACE xrayConstruct
 
+}   // NAMESPACE xrayConstruct
